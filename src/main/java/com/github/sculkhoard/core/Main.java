@@ -16,7 +16,9 @@ public class Main {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
         ItemRegistry.ITEMS.register(bus); //Load Items
+        BlockRegistry.BLOCKS.register(bus); //Load Blocks
     }
+
 
 
 }
