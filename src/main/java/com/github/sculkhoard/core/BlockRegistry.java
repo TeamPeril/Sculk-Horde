@@ -13,10 +13,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class BlockRegistry {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Main.MOD_ID);
 
-    //Register Block as Item
+    //Method to Register Blocks & Register them as items
     private static RegistryObject<Block> createBlock(String name, AbstractBlock.Properties properties) {
         RegistryObject<Block> block = BLOCKS.register(name, () -> new Block(properties));
-        ItemRegistry.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(ItemGroup.TAB_MISC)));
+        ItemRegistry.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(Main.SCULK_GROUP)));
         return block;
     }
 
