@@ -34,10 +34,6 @@ public class Main {
         public ItemStack makeIcon() {
             return new ItemStack(ItemRegistry.SCULK_MATTER.get());
         }
-
-        @Override
-        public void fill(NonNullList<ItemStack> items) {
-        }
     }
 
 }
