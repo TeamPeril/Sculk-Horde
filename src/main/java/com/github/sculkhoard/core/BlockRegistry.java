@@ -40,8 +40,8 @@ public class BlockRegistry {
     public static final RegistryObject<Block> ANCIENT_LARGE_TILE = 
     		createBlock("ancient_large_tile", AbstractBlock.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BLUE)
     				.strength(15f, 30f)//Hardness & Resistance
-    				.harvestTool(ToolType.PICKAXE) //Block Preferred Harvest Tool
-    				.harvestLevel(3) //-1 = All Levels; 0 = Wood; 1 = Stone & Gold; 2 = Iron; 3 = Diamond; 4 = Netherite
+    				.harvestTool(ToolType.PICKAXE) 
+    				.harvestLevel(3)
     				.sound(SoundType.ANCIENT_DEBRIS)
     				);
     
@@ -49,6 +49,7 @@ public class BlockRegistry {
     public static final RegistryObject<Block> CRUST = 
     		createBlock("crust", AbstractBlock.Properties.copy(Blocks.DIRT)
     				.sound(SoundType.SLIME_BLOCK)
+    				.harvestTool(ToolType.SHOVEL)
     				);
 
 }
