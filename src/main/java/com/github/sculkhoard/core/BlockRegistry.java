@@ -44,5 +44,11 @@ public class BlockRegistry {
     				.harvestLevel(3) //-1 = All Levels; 0 = Wood; 1 = Stone & Gold; 2 = Iron; 3 = Diamond; 4 = Netherite
     				.sound(SoundType.ANCIENT_DEBRIS)
     				);
+    
+    //Sculk Crust
+    public static final RegistryObject<Block> CRUST = 
+    		createBlock("crust", AbstractBlock.Properties.copy(Blocks.DIRT)
+    				.sound(SoundType.SLIME_BLOCK)
+    				);
 
 }
