@@ -14,7 +14,7 @@ public class Main {
 
     //Here I've created a variable of our mod id so we can use it throughout our project
     public static final String MOD_ID = "sculkhoard";
-    public static final ItemGroup SCULK_GROUP = new CreativeTabGroup(MOD_ID + "_tab");
+    public static final ItemGroup SCULK_GROUP = new CreativeTabGroup("sculkhoard_tab");
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
     public Main() {

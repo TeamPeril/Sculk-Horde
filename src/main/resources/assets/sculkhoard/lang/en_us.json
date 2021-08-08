@@ -1,5 +1,6 @@
 {
   "item.sculkhoard.sculk_matter": "Sculk Matter",
   "block.sculkhoard.ancient_large_bricks": "Ancient Large Sculk Bricks",
-  "itemGroup.sculkhoard": "Sculk Hoard"
+  "block.sculkhoard.ancient_large_tile": "Ancient Large Sculk Tile",
+  "itemGroup.sculkhoard_tab": "Sculk Hoard"
 }

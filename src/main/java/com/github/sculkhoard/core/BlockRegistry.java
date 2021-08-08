@@ -24,12 +24,23 @@ public class BlockRegistry {
         return block;
     }
 
+    //NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
+    
     //Register Ancient Large Bricks
-    //public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS = createBlock("ancient_large_bricks", AbstractBlock.Properties.copy(Blocks.STONE_BRICKS));
+    //public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS = createBlock("ancient_large_bricks", AbstractBlock.Properties.copy(Blocks.STONE_BRICKS)); //Old Method
     public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS = 
     		createBlock("ancient_large_bricks", AbstractBlock.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BLUE)
     				.strength(15f, 30f)//Hardness & Resistance
-    				.harvestTool(ToolType.PICKAXE) //Block Prefered Harvest Tool
+    				.harvestTool(ToolType.PICKAXE) //Block Preferred Harvest Tool
+    				.harvestLevel(3) //-1 = All Levels; 0 = Wood; 1 = Stone & Gold; 2 = Iron; 3 = Diamond; 4 = Netherite
+    				.sound(SoundType.ANCIENT_DEBRIS)
+    				);
+    
+    //Ancient Large Tile
+    public static final RegistryObject<Block> ANCIENT_LARGE_TILE = 
+    		createBlock("ancient_large_tile", AbstractBlock.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+    				.strength(15f, 30f)//Hardness & Resistance
+    				.harvestTool(ToolType.PICKAXE) //Block Preferred Harvest Tool
     				.harvestLevel(3) //-1 = All Levels; 0 = Wood; 1 = Stone & Gold; 2 = Iron; 3 = Diamond; 4 = Netherite
     				.sound(SoundType.ANCIENT_DEBRIS)
     				);
