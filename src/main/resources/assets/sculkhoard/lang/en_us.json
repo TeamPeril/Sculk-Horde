@@ -1,8 +1,11 @@
 {
   "itemGroup.sculkhoard_tab": "Sculk Hoard",
   "item.sculkhoard.sculk_matter": "Sculk Matter",
+  "item.sculkhoard.dev_wand": "Dev Wand",
   "block.sculkhoard.ancient_large_bricks": "Ancient Large Sculk Bricks",
   "block.sculkhoard.ancient_large_tile": "Ancient Large Sculk Tile",
   "block.sculkhoard.crust": "Sculk Crust"
+  "tooltip.sculkhoard.dev_wand": "Hold Left-Shift to Show Tool Tip"
+  "tooltip.sculkhoard.dev_wand.shift": "8=D"
   
 }
