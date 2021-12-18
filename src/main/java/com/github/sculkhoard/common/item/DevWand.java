@@ -1,10 +1,8 @@
-package com.github.sculkhoard.common;
+package com.github.sculkhoard.common.item;
 
 import java.util.List;
 
 import org.lwjgl.glfw.GLFW;
-
-import com.github.sculkhoard.core.Main;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
