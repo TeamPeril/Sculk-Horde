@@ -34,29 +34,42 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
 
     /* NOTE: In order to create a mob, there is a lot of things that need to be created/modified
      * For this entity, I created/modified the following files:
-     * Edited EntityRegistry.java
-     * Edited ModEventSubscriber.java
-     * Edited ClientModEventSubscriber.java
-     * Added SculkZombieEntity.java
-     * Added SculkZombieModel.java
-     * Added SculkZombieRenderer.java
+     * Edited core/ EntityRegistry.java
+     * Edited util/ ModEventSubscriber.java
+     * Edited client/ ClientModEventSubscriber.java
+     * Added common/entity/ SculkZombieEntity.java
+     * Added client/model/entity/ SculkZombieModel.java
+     * Added client/renderer/entity/ SculkZombieRenderer.java
      */
 
     private AnimationFactory factory = new AnimationFactory(this);
 
+    //Constructor
     public SculkZombieEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
+    /* passSpawnCondition
+     * @description A function that is called in ModEventSubscriber.java to give
+     * this mob its attributes.
+     */
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 18.0D)
-                .add(Attributes.ATTACK_DAMAGE, 1)
-                .add(Attributes.FOLLOW_RANGE,50)
-                .add(Attributes.MOVEMENT_SPEED, 0.01D);
+                .add(Attributes.MAX_HEALTH, 10.0D)
+                .add(Attributes.ATTACK_DAMAGE, 1.0D)
+                .add(Attributes.FOLLOW_RANGE,50.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.20D);
     }
 
+    /* passSpawnCondition
+     * @description determines whether a given possible spawn location meets your criteria
+     * @param config ???
+     * @param world The dimension the mob is attempting to be spawned in??
+     * @param reason Specifies on why a mob is attempting to be spawned.
+     * @param pos The Block Coordinates that the mob is being attempted to spawn at.
+     * @param random ???
+     */
     public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
     {
         // peaceful check
@@ -76,16 +89,16 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         this.goalSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
 
         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-        this.goalSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
+        //this.goalSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
 
         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
         //this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
 
         //MoveTowardsTargetGoal(mob, speedModifier, within)
-        this.goalSelector.addGoal(4, new MoveTowardsTargetGoal(this, 1.0, 20F));
+        this.goalSelector.addGoal(4, new MoveTowardsTargetGoal(this, 0.8F, 20F));
 
         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-        this.goalSelector.addGoal(7, new WaterAvoidingRandomWalkingGoal(this, 0));
+        //this.goalSelector.addGoal(7, new WaterAvoidingRandomWalkingGoal(this, 0.75F));
 
         //LookAtGoal(mob, targetType, lookDistance)
         this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
@@ -97,7 +110,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
 
         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
+        //this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
     }
 
     @Override
