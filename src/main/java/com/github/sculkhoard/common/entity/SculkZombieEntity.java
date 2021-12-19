@@ -4,8 +4,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -29,6 +32,16 @@ import java.util.Random;
 
 public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
 
+    /* NOTE: In order to create a mob, there is a lot of things that need to be created/modified
+     * For this entity, I created/modified the following files:
+     * Edited EntityRegistry.java
+     * Edited ModEventSubscriber.java
+     * Edited ClientModEventSubscriber.java
+     * Added SculkZombieEntity.java
+     * Added SculkZombieModel.java
+     * Added SculkZombieRenderer.java
+     */
+
     private AnimationFactory factory = new AnimationFactory(this);
 
     public SculkZombieEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
@@ -41,7 +54,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
                 .add(Attributes.MAX_HEALTH, 18.0D)
                 .add(Attributes.ATTACK_DAMAGE, 1)
                 .add(Attributes.FOLLOW_RANGE,50)
-                .add(Attributes.MOVEMENT_SPEED, 0.35D);
+                .add(Attributes.MOVEMENT_SPEED, 0.01D);
     }
 
     public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
@@ -57,8 +70,34 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
 
     @Override
     public void registerGoals() {
-        //this.goalSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-        //this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+        super.registerGoals();
+
+        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+        this.goalSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+
+        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+        this.goalSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
+
+        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
+        //this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
+
+        //MoveTowardsTargetGoal(mob, speedModifier, within)
+        this.goalSelector.addGoal(4, new MoveTowardsTargetGoal(this, 1.0, 20F));
+
+        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
+        this.goalSelector.addGoal(7, new WaterAvoidingRandomWalkingGoal(this, 0));
+
+        //LookAtGoal(mob, targetType, lookDistance)
+        this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+
+        //LookRandomlyGoal(mob)
+        this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
+
+        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+
+        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
     }
 
     @Override
@@ -85,32 +124,12 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         }
     }
 
-    @Override
-    public Iterable<ItemStack> getArmorSlots() {
-        return null;
-    }
-
-    @Override
-    public ItemStack getItemBySlot(EquipmentSlotType p_184582_1_) {
-        return null;
-    }
-
-    @Override
-    public void setItemSlot(EquipmentSlotType p_184201_1_, ItemStack p_184201_2_) {
-
-    }
-
-    @Override
-    public HandSide getMainArm() {
-        return null;
-    }
-
     //Animation Related Functions
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-        return PlayState.CONTINUE;
+        //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
+        return PlayState.STOP;
     }
 
     @Override

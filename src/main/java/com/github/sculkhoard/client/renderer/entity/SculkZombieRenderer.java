@@ -12,9 +12,9 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 import javax.annotation.Nullable;
 
-public class SculkZombieEntityRenderer extends GeoEntityRenderer<SculkZombieEntity> {
+public class SculkZombieRenderer extends GeoEntityRenderer<SculkZombieEntity> {
 
-    public SculkZombieEntityRenderer(EntityRendererManager renderManager)
+    public SculkZombieRenderer(EntityRendererManager renderManager)
     {
         super(renderManager, new SculkZombieModel());
         this.shadowStrength = 0.7F; //change 0.7 to the desired shadow size.

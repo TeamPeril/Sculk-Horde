@@ -1,6 +1,6 @@
 package com.github.sculkhoard.client;
 
-import com.github.sculkhoard.client.renderer.entity.SculkZombieEntityRenderer;
+import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.sculkhoard;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +17,6 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenders(final FMLClientSetupEvent event) {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ZOMBIE
-                .get(), SculkZombieEntityRenderer::new);
+                .get(), SculkZombieRenderer::new);
     }
 }
