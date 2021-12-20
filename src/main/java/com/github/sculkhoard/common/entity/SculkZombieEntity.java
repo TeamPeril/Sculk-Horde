@@ -87,10 +87,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
 
         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
         this.goalSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-
-        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-        //this.goalSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
-
+        
         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
         //this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
 
@@ -98,7 +95,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         this.goalSelector.addGoal(4, new MoveTowardsTargetGoal(this, 0.8F, 20F));
 
         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-        //this.goalSelector.addGoal(7, new WaterAvoidingRandomWalkingGoal(this, 0.75F));
+        this.goalSelector.addGoal(7, new WaterAvoidingRandomWalkingGoal(this, 0.75F));
 
         //LookAtGoal(mob, targetType, lookDistance)
         this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
