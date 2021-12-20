@@ -2,7 +2,7 @@ package com.github.sculkhoard.util;
 
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import com.github.sculkhoard.core.EntityRegistry;
-import com.github.sculkhoard.core.sculkhoard;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.event.RegistryEvent;
@@ -13,7 +13,7 @@ import static net.minecraft.entity.EntitySpawnPlacementRegistry.register;
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.PlacementType;
 
 
-@Mod.EventBusSubscriber(modid = sculkhoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = SculkHoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventSubscriber {
 
     /* registerEntities

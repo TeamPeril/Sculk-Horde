@@ -2,7 +2,7 @@ package com.github.sculkhoard.client;
 
 import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
 import com.github.sculkhoard.core.EntityRegistry;
-import com.github.sculkhoard.core.sculkhoard;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -10,7 +10,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = sculkhoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = SculkHoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEventSubscriber {
 
     @OnlyIn(Dist.CLIENT)

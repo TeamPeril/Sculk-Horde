@@ -14,12 +14,12 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class BlockRegistry {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, sculkhoard.MOD_ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHoard.MOD_ID);
 
     //Method to Register Blocks & Register them as items
     private static RegistryObject<Block> createBlock(String name, AbstractBlock.Properties properties) {
         RegistryObject<Block> block = BLOCKS.register(name, () -> new Block(properties));
-        ItemRegistry.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(sculkhoard.SCULK_GROUP)));
+        ItemRegistry.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().tab(SculkHoard.SCULK_GROUP)));
         return block;
     }
 

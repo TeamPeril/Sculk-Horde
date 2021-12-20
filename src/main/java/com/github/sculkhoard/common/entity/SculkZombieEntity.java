@@ -58,7 +58,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 10.0D)
                 .add(Attributes.ATTACK_DAMAGE, 1.0D)
-                .add(Attributes.FOLLOW_RANGE,50.0D)
+                .add(Attributes.FOLLOW_RANGE,25.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.20D);
     }
 
