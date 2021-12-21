@@ -1,28 +1,18 @@
 package com.github.sculkhoard.common.entity;
 
-import net.minecraft.block.Blocks;
+import com.github.sculkhoard.core.EntityRegistry;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombieEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -37,29 +27,54 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
      * Edited core/ EntityRegistry.java
      * Edited util/ ModEventSubscriber.java
      * Edited client/ ClientModEventSubscriber.java
+     * Edited common/world/ModWorldEvents.java
+     * Edited common/world/gen/ModEntityGen.java
      * Added common/entity/ SculkZombieEntity.java
      * Added client/model/entity/ SculkZombieModel.java
      * Added client/renderer/entity/ SculkZombieRenderer.java
      */
 
+    /* SPAWN_WEIGHT
+     * Used to determine spawn rarity
+     * Zombies = 100
+     * Sheep = 12
+     * Endermen = 10
+     * Cows = 8
+     * Witches = 5
+     */
+    public static int SPAWN_WEIGHT = 100;
+
+    //Used to Determine the minimum amount of this mob that will spawn in a group
+    public static int SPAWN_MIN = 1;
+
+    //Used to Determine the maximum amount of this mob that will spawn in a group
+    public static int SPAWN_MAX = 3;
+
+    public static int SPAWN_Y_MAX = 10;
+
     private AnimationFactory factory = new AnimationFactory(this);
 
-    //Constructor
-    public SculkZombieEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+    //Main Constructor
+    public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
-    /* passSpawnCondition
+    //Constructor where you only have to specify the world.
+    public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE.get(), worldIn);}
+
+    /* createAttributes
      * @description A function that is called in ModEventSubscriber.java to give
      * this mob its attributes.
      */
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 10.0D)
-                .add(Attributes.ATTACK_DAMAGE, 1.0D)
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.ARMOR, 4.0D)
+                .add(Attributes.ATTACK_DAMAGE, 3.0D)
+                .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 .add(Attributes.FOLLOW_RANGE,25.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.20D);
+                .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
     /* passSpawnCondition
@@ -76,45 +91,92 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         if (world.getDifficulty() == Difficulty.PEACEFUL)
             return false;
         // pass through if natural spawn and using individual spawn rules
-        if ((reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL))
+        if ((reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL && pos.getY() > SPAWN_Y_MAX))
             return false;
         return true;
     }
 
+    /* registerGoals
+     * @description Registers Goals with the entity. The goals determine how an AI behaves ingame.
+     * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
+     * You can manually add in goals in this function, however, I made an automatic system for this.
+     */
     @Override
     public void registerGoals() {
-        super.registerGoals();
 
-        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-        this.goalSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-        
-        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-        //this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
+        Goal[] goalSelectorPayload = goalSelectorPayload();
+        for(int priority = 0; priority < goalSelectorPayload.length; priority++)
+        {
+            this.goalSelector.addGoal(priority, goalSelectorPayload[priority]);
+        }
 
-        //MoveTowardsTargetGoal(mob, speedModifier, within)
-        this.goalSelector.addGoal(4, new MoveTowardsTargetGoal(this, 0.8F, 20F));
+        Goal[] targetSelectorPayload = targetSelectorPayload();
+        for(int priority = 0; priority < targetSelectorPayload.length; priority++)
+        {
+            this.goalSelector.addGoal(priority, targetSelectorPayload[priority]);
+        }
 
-        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-        this.goalSelector.addGoal(7, new WaterAvoidingRandomWalkingGoal(this, 0.75F));
-
-        //LookAtGoal(mob, targetType, lookDistance)
-        this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-
-        //LookRandomlyGoal(mob)
-        this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
-
-        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-
-        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-        //this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
     }
 
+    /* goalSelectorPayload
+     * @description Prepares an array of goals to give to registerGoals() for the goalSelector.
+     * The purpose was to make registering goals simpler by automatically determining priority
+     * based on the order of the items in the array. First element is of priority 0, which
+     * represents highest priority. Priority value then increases by 1, making each element
+     * less of a priority than the last.
+     * @return Goal[] Returns an array of goals ordered by priority
+     */
+    public Goal[] goalSelectorPayload()
+    {
+        Goal[] goals =
+                {
+                        //SwimGoal(mob)
+                        new SwimGoal(this),
+                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
+                        new MeleeAttackGoal(this, 1.0D, false),
+                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+                        //new NearestAttackableTargetGoal<>(this, PigEntity.class, true),
+                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
+                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
+                        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
+                        new WaterAvoidingRandomWalkingGoal(this, 1.0D),
+                        //LookAtGoal(mob, targetType, lookDistance)
+                        new LookAtGoal(this, PigEntity.class, 8.0F),
+                        //LookRandomlyGoal(mob)
+                        new LookRandomlyGoal(this)
+                };
+        return goals;
+    }
+
+    /* targetSelectorPayload
+     * @description Prepares an array of goals to give to registerGoals() for the targetSelector.
+     * The purpose was to make registering goals simpler by automatically determining priority
+     * based on the order of the items in the array. First element is of priority 0, which
+     * represents highest priority. Priority value then increases by 1, making each element
+     * less of a priority than the last.
+     * @return Goal[] Returns an array of goals ordered by priority
+     */
+    public Goal[] targetSelectorPayload()
+    {
+        Goal[] goals =
+                {
+                        //HurtByTargetGoal(mob)
+                        new HurtByTargetGoal(this).setAlertOthers(SculkZombieEntity.class),
+                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+                        new NearestAttackableTargetGoal<>(this, PigEntity.class, true)
+                };
+        return goals;
+    }
+
+    
+
+    /*
     @Override
     protected int getExperienceReward(PlayerEntity player)
     {
         return 3;
     }
+
 
     @Override
     public boolean doHurtTarget(Entity entityIn)
@@ -133,7 +195,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
             return true;
         }
     }
-
+    */
     //Animation Related Functions
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)

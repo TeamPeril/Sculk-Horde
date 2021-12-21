@@ -18,7 +18,7 @@ public class EntityRegistry {
     }
 
     public static final RegistryObject<EntityType<SculkZombieEntity>> SCULK_ZOMBIE =
-            ENTITY_TYPES.register("sculk_zombie", () -> EntityType.Builder.of(SculkZombieEntity::new,
+            ENTITY_TYPES.register("sculk_zombie", () -> EntityType.Builder.<SculkZombieEntity>of(SculkZombieEntity::new,
                     EntityClassification.MONSTER)
                     .sized(0.6f, 1.95f)
                     .clientTrackingRange(9)

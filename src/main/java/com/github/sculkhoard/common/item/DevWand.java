@@ -2,6 +2,7 @@ package com.github.sculkhoard.common.item;
 
 import java.util.List;
 
+import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.Minecraft;
@@ -52,8 +53,8 @@ public class DevWand extends Item{
 	@Override
 	public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {		
 		playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5)); //Give Player Effect
-		
-		ZombieEntity entity = new ZombieEntity(worldIn); //Create Zombie Instance
+
+		SculkZombieEntity entity = new SculkZombieEntity(worldIn); //Create Zombie Instance
 		
 		entity.setPos(playerIn.getX(), playerIn.getY(), playerIn.getZ()); //Set its position to player
 		
