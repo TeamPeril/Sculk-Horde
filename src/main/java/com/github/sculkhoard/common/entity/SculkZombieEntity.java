@@ -1,12 +1,15 @@
 package com.github.sculkhoard.common.entity;
 
+import com.github.sculkhoard.common.entity.goal.SculkZombieAttackGoal;
 import com.github.sculkhoard.core.EntityRegistry;
-import net.minecraft.entity.*;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.common.extensions.IForgeEntity;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -25,50 +29,57 @@ import java.util.Random;
 
 public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
 
-    /* NOTE: In order to create a mob, there is a lot of things that need to be created/modified
-     * For this entity, I created/modified the following files:
-     * Edited core/ EntityRegistry.java
-     * Edited util/ ModEventSubscriber.java
-     * Edited client/ ClientModEventSubscriber.java
-     * Edited common/world/ModWorldEvents.java
-     * Edited common/world/gen/ModEntityGen.java
-     * Added common/entity/ SculkZombieEntity.java
-     * Added client/model/entity/ SculkZombieModel.java
+    /**
+     * In order to create a mob, the following files were created/edited.<br>
+     * Edited core/ EntityRegistry.java<br>
+     * Edited util/ ModEventSubscriber.java<br>
+     * Edited client/ ClientModEventSubscriber.java<br>
+     * Edited common/world/ModWorldEvents.java<br>
+     * Edited common/world/gen/ModEntityGen.java<br>
+     * Added common/entity/ SculkZombie.java<br>
+     * Added client/model/entity/ SculkZombieModel.java<br>
      * Added client/renderer/entity/ SculkZombieRenderer.java
      */
 
-    /* SPAWN_WEIGHT
-     * Used to determine spawn rarity
-     * Zombies = 100
-     * Sheep = 12
-     * Endermen = 10
-     * Cows = 8
-     * Witches = 5
+    /**
+     * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
+     * 100 = Zombie<br>
+     * 12 = Sheep<br>
+     * 10 = Enderman<br>
+     * 8 = Cow<br>
+     * 5 = Witch<br>
      */
     public static int SPAWN_WEIGHT = 100;
 
-    //Used to Determine the minimum amount of this mob that will spawn in a group
+    /**
+     * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
+     * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
+     * SPAWN_Y_MAX determines the Maximum height this mob can spawn<br>
+     * factory The animation factory used for animations
+     */
     public static int SPAWN_MIN = 1;
-
-    //Used to Determine the maximum amount of this mob that will spawn in a group
     public static int SPAWN_MAX = 3;
-
-    //The Max Y-level that this mob can spawn (Diamonds spawn at 14)
     public static int SPAWN_Y_MAX = 15;
-
     private AnimationFactory factory = new AnimationFactory(this);
 
-    //Main Constructor
+    /**
+     * The Constructor
+     * @param type The Mob Type
+     * @param worldIn The world to initialize this mob in
+     */
     public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
-    //Constructor where you only have to specify the world.
+    /**
+     * An Easier Constructor where you do not have to specify the Mob Type
+     * @param worldIn  The world to initialize this mob in
+     */
     public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE.get(), worldIn);}
 
-    /* createAttributes
-     * @description A function that is called in ModEventSubscriber.java to give
-     * this mob its attributes.
+    /**
+     * Determines & registers the attributes of the mob.
+     * @return The Attributes
      */
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
@@ -81,13 +92,14 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
-    /* passSpawnCondition
-     * @description determines whether a given possible spawn location meets your criteria
+    /**
+     * The function that determines if a position is a good spawn location
      * @param config ???
-     * @param world The dimension the mob is attempting to be spawned in??
-     * @param reason Specifies on why a mob is attempting to be spawned.
-     * @param pos The Block Coordinates that the mob is being attempted to spawn at.
+     * @param world The world that the mob is trying to spawn in
+     * @param reason An object that indicates why a mob is being spawned
+     * @param pos The Block Position of the potential spawn location
      * @param random ???
+     * @return Returns a boolean determining if it is a suitable spawn location
      */
     public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
     {
@@ -99,8 +111,8 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         return true;
     }
 
-    /* registerGoals
-     * @description Registers Goals with the entity. The goals determine how an AI behaves ingame.
+    /**
+     * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
      * You can manually add in goals in this function, however, I made an automatic system for this.
      */
@@ -121,13 +133,13 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
 
     }
 
-    /* goalSelectorPayload
-     * @description Prepares an array of goals to give to registerGoals() for the goalSelector.
+    /**
+     * Prepares an array of goals to give to registerGoals() for the goalSelector.<br>
      * The purpose was to make registering goals simpler by automatically determining priority
      * based on the order of the items in the array. First element is of priority 0, which
      * represents highest priority. Priority value then increases by 1, making each element
      * less of a priority than the last.
-     * @return Goal[] Returns an array of goals ordered by priority
+     * @return Returns an array of goals ordered from highest to lowest piority
      */
     public Goal[] goalSelectorPayload()
     {
@@ -136,7 +148,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new MeleeAttackGoal(this, 1.0D, false),
+                        new SculkZombieAttackGoal(this, 1.0D, true),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -149,15 +161,14 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
         return goals;
     }
 
-    /* targetSelectorPayload
-     * @description Prepares an array of goals to give to registerGoals() for the targetSelector.
+    /**
+     * Prepares an array of goals to give to registerGoals() for the targetSelector.<br>
      * The purpose was to make registering goals simpler by automatically determining priority
      * based on the order of the items in the array. First element is of priority 0, which
      * represents highest priority. Priority value then increases by 1, making each element
      * less of a priority than the last.
-     * @return Goal[] Returns an array of goals ordered by priority
+     * @return Returns an array of goals ordered from highest to lowest piority
      */
-
     public Goal[] targetSelectorPayload()
     {
         Goal[] goals =
