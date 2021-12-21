@@ -6,7 +6,10 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -50,7 +53,8 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
     //Used to Determine the maximum amount of this mob that will spawn in a group
     public static int SPAWN_MAX = 3;
 
-    public static int SPAWN_Y_MAX = 10;
+    //The Max Y-level that this mob can spawn (Diamonds spawn at 14)
+    public static int SPAWN_Y_MAX = 15;
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -88,11 +92,10 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
     public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
     {
         // peaceful check
-        if (world.getDifficulty() == Difficulty.PEACEFUL)
-            return false;
+        if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
         // pass through if natural spawn and using individual spawn rules
-        if ((reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL && pos.getY() > SPAWN_Y_MAX))
-            return false;
+        else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
+        else if (pos.getY() > SPAWN_Y_MAX) return false;
         return true;
     }
 
@@ -134,8 +137,6 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new MeleeAttackGoal(this, 1.0D, false),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        //new NearestAttackableTargetGoal<>(this, PigEntity.class, true),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -156,19 +157,23 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
      * less of a priority than the last.
      * @return Goal[] Returns an array of goals ordered by priority
      */
+
     public Goal[] targetSelectorPayload()
     {
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new HurtByTargetGoal(this).setAlertOthers(SculkZombieEntity.class),
+                        new HurtByTargetGoal(this).setAlertOthers(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableTargetGoal<>(this, PigEntity.class, true)
+                        new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true),
+                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
+                        new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true),
+
                 };
         return goals;
     }
 
-    
+
 
     /*
     @Override
