@@ -1,30 +1,27 @@
 package com.github.sculkhoard.common.item;
 
-import java.util.List;
-
+import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraftforge.common.extensions.IForgeItem;
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.extensions.IForgeItem;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 public class DevWand extends Item implements IForgeItem {
 	/* NOTE:
@@ -62,20 +59,43 @@ public class DevWand extends Item implements IForgeItem {
 	{
 		PlayerEntity playerIn = context.getPlayer();
 		World worldIn = context.getLevel();
-		if(playerIn.isShiftKeyDown())
+
+		//If item is not on cool down
+		if(!playerIn.getCooldowns().isOnCooldown(this))
 		{
+			BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
+
+			double targetX;
+			double targetY;
+			double targetZ;
+
+			if(targetPos == null) //If Player NOT Looking at Block
+			{
+				System.out.println("Player is not looking at block");
+				targetX = (int) playerIn.getX();
+				targetY = (int) playerIn.getY();
+				targetZ = (int) playerIn.getZ();
+			}
+			else //If player Looking at Block
+			{
+				System.out.println("Player is looking at block");
+				targetX = (int) targetPos.getX() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
+				targetY = (int) targetPos.getY() + 1;
+				targetZ = (int) targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
+			}
+
 			playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5)); //Give Player Effect
 
 			SculkZombieEntity entity = new SculkZombieEntity(worldIn); //Create Zombie Instance
 
-			entity.setPos(playerIn.getX(), playerIn.getY(), playerIn.getZ()); //Set its position to player
+			entity.setPos(targetX, targetY, targetZ); //Set its position to player
 
 			worldIn.addFreshEntity(entity);//I think this spawns the actual instance into the world
 
 			playerIn.getCooldowns().addCooldown(this, 20); //Cool down for second (20 ticks per second)
 
-			return ActionResultType.FAIL; //Then we have to return this for some reason
+			return ActionResultType.PASS;
 		}
-		return ActionResultType.PASS;
+		return ActionResultType.FAIL;
 	}
 }

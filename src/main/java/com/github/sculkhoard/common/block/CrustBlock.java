@@ -17,6 +17,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+
 public class CrustBlock extends Block implements IForgeBlock {
 
     /**
@@ -99,11 +101,11 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = AbstractBlock.Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+        Properties prop = AbstractBlock.Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.ANCIENT_DEBRIS);
+                .sound(SoundType.SLIME_BLOCK);
         return prop;
     }
 
@@ -141,7 +143,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
     {
-        System.out.println("Hi I am a Crust Block, I don't do Anything :)");
+        if(DEBUG_MODE) System.out.println("Hi I am a Crust Block, I don't do Anything :)");
 
         return null; //Just Return null because We Are Not Modifying it
     }

@@ -1,6 +1,8 @@
 package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.block.CrustBlock;
+import com.github.sculkhoard.common.block.InfectedDirtBlock;
+import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -58,4 +60,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<CrustBlock> CRUST =
 			registerBlock("crust", () -> new CrustBlock());
+
+	public static final RegistryObject<Block> INFECTED_DIRT =
+			registerBlock("infected_dirt", () -> new InfectedDirtBlock());
 }
