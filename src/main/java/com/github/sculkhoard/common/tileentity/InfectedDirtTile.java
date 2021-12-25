@@ -2,9 +2,7 @@ package com.github.sculkhoard.common.tileentity;
 
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.VineBlock;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeTileEntity;

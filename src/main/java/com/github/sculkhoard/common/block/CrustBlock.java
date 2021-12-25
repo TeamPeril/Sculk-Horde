@@ -101,12 +101,11 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = AbstractBlock.Properties.of(MATERIAL, MAP_COLOR)
+        return AbstractBlock.Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.SLIME_BLOCK);
-        return prop;
     }
 
     /**

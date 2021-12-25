@@ -3,14 +3,16 @@ package com.github.sculkhoard.common.block;
 import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -19,9 +21,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+
 import javax.annotation.Nullable;
 import java.util.Random;
+
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 public class InfectedDirtBlock extends Block implements IForgeBlock {
 
@@ -161,50 +165,70 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         //If max spread attempts has not been reached && Given a 25% chance && the area is loaded, spread
         if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(bp,4))
         {
-            BlockPos UP = new BlockPos(bp.getX(), bp.getY() + 1, bp.getZ());
-            BlockPos DOWN = new BlockPos(bp.getX(), bp.getY() - 1, bp.getZ());
-            BlockPos FRONT = new BlockPos(bp.getX() + 1, bp.getY(), bp.getZ());
-            BlockPos BACK = new BlockPos(bp.getX() - 1, bp.getY(), bp.getZ());
-            BlockPos RIGHT = new BlockPos(bp.getX(), bp.getY(), bp.getZ() + 1);
-            BlockPos LEFT = new BlockPos(bp.getX() - 1, bp.getY(), bp.getZ());
-            BlockPos[] spreadDirections = {UP, DOWN, FRONT, BACK, RIGHT, LEFT};
-            BlockPos spreadPosition = spreadDirections[serverWorld.random.nextInt(6)];
-            Block spreadBlock = serverWorld.getBlockState(spreadPosition).getBlock();
-
-            thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1); //Increment spreadAttempts
-
-            //If target block is one that we can spread to, spread to it.
-            if(isValidSpreadBlock(spreadBlock))
-            {
-                if(DEBUG_MODE)
-                {
-                    System.out.println("Block at (" +
-                            bp.getX() + ", " +
-                            bp.getY() + ", " +
-                            bp.getZ() + ") " +
-                            "is spreading"
-                    );
-                }
-                serverWorld.setBlockAndUpdate(spreadPosition, this.defaultBlockState()); //Set the block
-                TileEntity childTile = serverWorld.getWorldServer().getBlockEntity(spreadPosition); //Get new block tile entity
-
-                //If no error with tile entity of child block
-                if(childTile instanceof InfectedDirtTile && childTile != null)
-                {
-                    //Deincrement maxSpreadAttempts of child
-                    ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
-                }
-                else
-                {
-                    System.out.println("ERROR: Child InfectedDirtTile not found.");
-                }
-            }
+            BlockPos spreadPosition = getRandomAdjacentBlockPos(bp, serverWorld); //Get a random adjacent block position
+            Block spreadBlock = serverWorld.getBlockState(spreadPosition).getBlock(); //Get the block at this position
+            attemptSpread(thisTile, serverWorld, spreadPosition, spreadBlock); //Attempt to spread to this position
         }
-        //If this block has run out of spread attempts.
+        //If this block has run out of spread attempts, convert to crust
         else if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
         {
-            serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());
+            serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());//Convert to crust
         }
+    }
+
+    /**
+     * Attempts to spread infjected dirt to a specific block position.
+     * @param thisTile The Tile Entity of this block
+     * @param serverWorld The ServerWorld of this block
+     * @param targetPos The Block Position of the target block
+     * @param targetBlock The class of the target block
+     */
+    public void attemptSpread(InfectedDirtTile thisTile, ServerWorld serverWorld, BlockPos targetPos, Block targetBlock)
+    {
+        thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1); //Increment spreadAttempts
+        //If target block is one that we can spread to, spread to it.
+        if(isValidSpreadBlock(targetBlock))
+        {
+            if(DEBUG_MODE)
+            {
+                System.out.println("New Infected Dirt at (" +
+                        targetPos.getX() + ", " +
+                        targetPos.getY() + ", " +
+                        targetPos.getZ() + ") "
+                );
+            }
+            serverWorld.setBlockAndUpdate(targetPos, this.defaultBlockState()); //Set the block
+            TileEntity childTile = serverWorld.getWorldServer().getBlockEntity(targetPos); //Get new block tile entity
+
+            //If no error with tile entity of child block
+            if(childTile instanceof InfectedDirtTile && childTile != null)
+            {
+                //De-increment maxSpreadAttempts of child
+                ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
+            }
+            else
+            {
+                System.out.println("ERROR: Child InfectedDirtTile not found.");
+            }
+        }
+    }
+
+    /**
+     * Choose random adjacent position to spread to
+     * @param origin The origin Block Position
+     * @param serverWorld The ServerWorld of the block
+     * @return The target Block Position
+     */
+    public BlockPos getRandomAdjacentBlockPos(BlockPos origin, ServerWorld serverWorld)
+    {
+        BlockPos UP = new BlockPos(origin.getX(), origin.getY() + 1, origin.getZ());
+        BlockPos DOWN = new BlockPos(origin.getX(), origin.getY() - 1, origin.getZ());
+        BlockPos FRONT = new BlockPos(origin.getX() + 1, origin.getY(), origin.getZ());
+        BlockPos BACK = new BlockPos(origin.getX() - 1, origin.getY(), origin.getZ());
+        BlockPos RIGHT = new BlockPos(origin.getX(), origin.getY(), origin.getZ() + 1);
+        BlockPos LEFT = new BlockPos(origin.getX() - 1, origin.getY(), origin.getZ());
+        BlockPos[] spreadDirections = {UP, DOWN, FRONT, BACK, RIGHT, LEFT};
+        return spreadDirections[serverWorld.random.nextInt(6)];
     }
 
     /**
