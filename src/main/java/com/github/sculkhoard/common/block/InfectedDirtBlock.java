@@ -19,6 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -173,6 +175,11 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         else if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
         {
             serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());//Convert to crust
+            //Given a 50% chance, place down sculk flora
+            if(serverWorld.random.nextInt(2) <= 0)
+            {
+                BlockAlgorithms.placeSculkFlora(bp.above(), serverWorld);
+            }
         }
     }
 
@@ -203,8 +210,9 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
             //If no error with tile entity of child block
             if(childTile instanceof InfectedDirtTile && childTile != null)
             {
-                //De-increment maxSpreadAttempts of child
-                ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
+                //A 1/500 to not De-increment maxSpreadAttempts of child
+                if(serverWorld.random.nextInt(500) > 0)
+                    ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
             }
             else
             {
@@ -221,13 +229,13 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
      */
     public BlockPos getRandomAdjacentBlockPos(BlockPos origin, ServerWorld serverWorld)
     {
-        BlockPos UP = new BlockPos(origin.getX(), origin.getY() + 1, origin.getZ());
-        BlockPos DOWN = new BlockPos(origin.getX(), origin.getY() - 1, origin.getZ());
-        BlockPos FRONT = new BlockPos(origin.getX() + 1, origin.getY(), origin.getZ());
-        BlockPos BACK = new BlockPos(origin.getX() - 1, origin.getY(), origin.getZ());
-        BlockPos RIGHT = new BlockPos(origin.getX(), origin.getY(), origin.getZ() + 1);
-        BlockPos LEFT = new BlockPos(origin.getX() - 1, origin.getY(), origin.getZ());
-        BlockPos[] spreadDirections = {UP, DOWN, FRONT, BACK, RIGHT, LEFT};
+        BlockPos[] spreadDirections = {
+                origin.above(),
+                origin.below(),
+                origin.north(),
+                origin.east(),
+                origin.south(),
+                origin.west()};
         return spreadDirections[serverWorld.random.nextInt(6)];
     }
 

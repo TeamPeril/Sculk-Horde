@@ -1,8 +1,11 @@
 package com.github.sculkhoard.client;
 
 import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
+import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,5 +21,17 @@ public class ClientModEventSubscriber {
     public static void registerRenders(final FMLClientSetupEvent event) {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ZOMBIE
                 .get(), SculkZombieRenderer::new);
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());
+        });
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
+        });
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout());
+        });
     }
 }
