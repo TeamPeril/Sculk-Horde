@@ -2,6 +2,7 @@ package com.github.sculkhoard.core;
 
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.EffectType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -29,6 +30,7 @@ public class SculkHoard {
         TileEntityRegistry.register(bus); //Load Tile Entities
         BlockRegistry.BLOCKS.register(bus); //Load Blocks
         EntityRegistry.register(bus); //Load Entities
+        EffectRegistry.EFFECTS.register(bus); //Load Effects
 
         //If dev environment
         if(!FMLEnvironment.production)

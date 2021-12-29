@@ -1,5 +1,6 @@
 package com.github.sculkhoard.client;
 
+import com.github.sculkhoard.client.renderer.entity.SculkMiteRenderer;
 import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -21,6 +22,9 @@ public class ClientModEventSubscriber {
     public static void registerRenders(final FMLClientSetupEvent event) {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ZOMBIE
                 .get(), SculkZombieRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE
+                .get(), SculkMiteRenderer::new);
 
         event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());

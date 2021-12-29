@@ -1,20 +1,18 @@
 package com.github.sculkhoard.util;
 
+import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
-import com.github.sculkhoard.common.world.gen.ModEntityGen;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
-import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import static net.minecraft.entity.EntitySpawnPlacementRegistry.register;
+
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.PlacementType;
+import static net.minecraft.entity.EntitySpawnPlacementRegistry.register;
 
 @Mod.EventBusSubscriber(modid = SculkHoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventSubscriber {
@@ -33,6 +31,28 @@ public class ModEventSubscriber {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_MITE.get(), SculkMiteEntity.createAttributes().build());
     }
+    /*
+    @SubscribeEvent
+    public static void onPotionRemoveEvent(PotionEvent.PotionRemoveEvent event)
+    {
+        EffectInstance effectInstance = event.getPotionEffect();
+        if(event.getPotion() == EffectRegistry.SCULK_INFECTION.get())
+        {
+            LivingEntity entity = event.getEntityLiving();
+            if(entity != null)
+            {
+                //Spawn Effect Level + 1 number of mites
+                for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
+                {
+                    SculkMiteEntity mite = new SculkMiteEntity(entity.level);
+                    mite.setPos(entity.getX(), entity.getY(), entity.getZ());
+                    entity.level.addFreshEntity(mite);
+                }
+            }
+        }
+    }
+    */
 }
 

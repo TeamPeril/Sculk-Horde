@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.common.entity.goal.SculkZombieAttackGoal;
+import com.github.sculkhoard.common.entity.goal.SculkMiteInfectGoal;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import net.minecraft.entity.CreatureEntity;
@@ -11,14 +11,13 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.common.extensions.IForgeEntity;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -28,18 +27,17 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
+public class SculkMiteEntity extends MonsterEntity implements IAnimatable {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
      * Edited core/ EntityRegistry.java<br>
      * Edited util/ ModEventSubscriber.java<br>
      * Edited client/ ClientModEventSubscriber.java<br>
-     * Edited common/world/ModWorldEvents.java<br>
      * Edited common/world/gen/ModEntityGen.java<br>
-     * Added common/entity/ SculkZombie.java<br>
-     * Added client/model/entity/ SculkZombieModel.java<br>
-     * Added client/renderer/entity/ SculkZombieRenderer.java
+     * Added common/entity/ SculkMite.java<br>
+     * Added client/model/entity/ SculkMiteModel.java<br>
+     * Added client/renderer/entity/ SculkMiteRenderer.java
      */
 
     /**
@@ -56,11 +54,19 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
      * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
      * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
      * SPAWN_Y_MAX determines the Maximum height this mob can spawn<br>
+     * INFECT_RANGE determines from how far away this mob can infect another<br>
+     * INFECT_EFFECT<br>
+     * INFECT_DURATION<br>
+     * INFECT_LEVEL<br>
      * factory The animation factory used for animations
      */
     public static int SPAWN_MIN = 1;
-    public static int SPAWN_MAX = 3;
+    public static int SPAWN_MAX = 5;
     public static int SPAWN_Y_MAX = 15;
+    public static int INFECT_RANGE  = 1;
+    public static Effect INFECT_EFFECT = Effects.HUNGER;
+    public static int INFECT_DURATION = 140;
+    public static int INFECT_LEVEL = 1;
     private AnimationFactory factory = new AnimationFactory(this);
 
     /**
@@ -68,7 +74,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, World worldIn) {
+    public SculkMiteEntity(EntityType<? extends SculkMiteEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
@@ -76,7 +82,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE.get(), worldIn);}
+    public SculkMiteEntity(World worldIn) {super(EntityRegistry.SCULK_MITE.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -85,12 +91,12 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.ARMOR, 4.0D)
-                .add(Attributes.ATTACK_DAMAGE, 3.0D)
+                .add(Attributes.MAX_HEALTH, 5.0D)
+                .add(Attributes.ARMOR, 1.0D)
+                .add(Attributes.ATTACK_DAMAGE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
                 .add(Attributes.FOLLOW_RANGE,25.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.25D);
+                .add(Attributes.MOVEMENT_SPEED, 0.30D);
     }
 
     /**
@@ -106,9 +112,9 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-        // If not because of chunk generation or natural, return false
+            // If not because of chunk generation or natural, return false
         else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
-        //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
+            //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
         else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
         return true;
     }
@@ -150,7 +156,7 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkZombieAttackGoal(this, 1.0D, true),
+                        new SculkMiteInfectGoal(this, 1.0D, true),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -178,24 +184,14 @@ public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
                         //HurtByTargetGoal(mob)
                         new HurtByTargetGoal(this).setAlertOthers(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true),
+                        new NearestAttackableTargetGoal<>(this, LivingEntity.class, true),
 
                 };
         return goals;
     }
 
 
-
-
-    @Override
-    protected int getExperienceReward(PlayerEntity player)
-    {
-        return 3;
-    }
-
-    //Animation Related Functions
+    //Animation Stuff below
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {

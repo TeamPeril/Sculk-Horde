@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.world.gen;
 
+import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import com.github.sculkhoard.core.EntityRegistry;
 import net.minecraft.entity.EntityType;
@@ -22,6 +23,15 @@ public class ModEntityGen {
                 SculkZombieEntity.SPAWN_WEIGHT,
                 SculkZombieEntity.SPAWN_MIN,
                 SculkZombieEntity.SPAWN_MAX,
+                Biomes.OCEAN,
+                Biomes.COLD_OCEAN);
+
+        addEntityToAllBiomesExceptThese(
+                event,
+                EntityRegistry.SCULK_MITE.get(),
+                SculkMiteEntity.SPAWN_WEIGHT,
+                SculkMiteEntity.SPAWN_MIN,
+                SculkMiteEntity.SPAWN_MAX,
                 Biomes.OCEAN,
                 Biomes.COLD_OCEAN);
     }
