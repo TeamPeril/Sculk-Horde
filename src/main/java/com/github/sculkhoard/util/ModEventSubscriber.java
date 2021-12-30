@@ -23,6 +23,7 @@ public class ModEventSubscriber {
     @SubscribeEvent
     public static void registerEntities(final RegistryEvent.Register<EntityType<?>> event) {
         register(EntityRegistry.SCULK_ZOMBIE.get(), PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkZombieEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_MITE.get(), PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteEntity::passSpawnCondition);
     }
 
     /* entityAttributes
@@ -33,26 +34,5 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_MITE.get(), SculkMiteEntity.createAttributes().build());
     }
-    /*
-    @SubscribeEvent
-    public static void onPotionRemoveEvent(PotionEvent.PotionRemoveEvent event)
-    {
-        EffectInstance effectInstance = event.getPotionEffect();
-        if(event.getPotion() == EffectRegistry.SCULK_INFECTION.get())
-        {
-            LivingEntity entity = event.getEntityLiving();
-            if(entity != null)
-            {
-                //Spawn Effect Level + 1 number of mites
-                for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
-                {
-                    SculkMiteEntity mite = new SculkMiteEntity(entity.level);
-                    mite.setPos(entity.getX(), entity.getY(), entity.getZ());
-                    entity.level.addFreshEntity(mite);
-                }
-            }
-        }
-    }
-    */
 }
 

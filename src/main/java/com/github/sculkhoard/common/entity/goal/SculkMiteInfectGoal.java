@@ -1,11 +1,10 @@
 package com.github.sculkhoard.common.entity.goal;
 
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
-import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.DamageSource;
 
 public class SculkMiteInfectGoal extends MeleeAttackGoal {
 
@@ -77,6 +76,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
             if(distance <= thisMob.INFECT_RANGE)
             {
                 target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
+                thisMob.die(DamageSource.GENERIC);
             }
         }
     }

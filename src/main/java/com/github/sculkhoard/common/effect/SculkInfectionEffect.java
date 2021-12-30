@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SculkInfectionEffect extends Effect implements IForgeEffect {
 
-    public static int liquidColor = 4738376;
+    public static int liquidColor = 338997;
     public static EffectType effectType = EffectType.HARMFUL;
 
 

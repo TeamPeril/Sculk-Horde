@@ -1,7 +1,9 @@
 package com.github.sculkhoard.common.entity;
 
+import com.github.sculkhoard.common.entity.goal.NearestAttackableNonSculkTargetGoal;
 import com.github.sculkhoard.common.entity.goal.SculkMiteInfectGoal;
 import com.github.sculkhoard.core.BlockRegistry;
+import com.github.sculkhoard.core.EffectRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
@@ -10,10 +12,8 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.potion.Effect;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -27,7 +27,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkMiteEntity extends MonsterEntity implements IAnimatable {
+public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -48,23 +48,21 @@ public class SculkMiteEntity extends MonsterEntity implements IAnimatable {
      * 8 = Cow<br>
      * 5 = Witch<br>
      */
-    public static int SPAWN_WEIGHT = 100;
+    public static int SPAWN_WEIGHT = 50;
 
     /**
      * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
      * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
-     * SPAWN_Y_MAX determines the Maximum height this mob can spawn<br>
      * INFECT_RANGE determines from how far away this mob can infect another<br>
-     * INFECT_EFFECT<br>
-     * INFECT_DURATION<br>
-     * INFECT_LEVEL<br>
+     * INFECT_EFFECT The effect given to living entities when attacked<br>
+     * INFECT_DURATION The duration of the effect<br>
+     * INFECT_LEVEL The level of the effect<br>
      * factory The animation factory used for animations
      */
     public static int SPAWN_MIN = 1;
     public static int SPAWN_MAX = 5;
-    public static int SPAWN_Y_MAX = 15;
-    public static int INFECT_RANGE  = 1;
-    public static Effect INFECT_EFFECT = Effects.HUNGER;
+    public static int INFECT_RANGE  = 5;
+    public static Effect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
     public static int INFECT_DURATION = 140;
     public static int INFECT_LEVEL = 1;
     private AnimationFactory factory = new AnimationFactory(this);
@@ -114,8 +112,8 @@ public class SculkMiteEntity extends MonsterEntity implements IAnimatable {
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
             // If not because of chunk generation or natural, return false
         else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
-            //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
-        else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
+            //If block below is not sculk crust, return false
+        else if (world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
         return true;
     }
 
@@ -138,7 +136,6 @@ public class SculkMiteEntity extends MonsterEntity implements IAnimatable {
         {
             this.goalSelector.addGoal(priority, targetSelectorPayload[priority]);
         }
-
     }
 
     /**
@@ -184,8 +181,7 @@ public class SculkMiteEntity extends MonsterEntity implements IAnimatable {
                         //HurtByTargetGoal(mob)
                         new HurtByTargetGoal(this).setAlertOthers(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableTargetGoal<>(this, LivingEntity.class, true),
-
+                        new NearestAttackableNonSculkTargetGoal<>(this, LivingEntity.class, true),
                 };
         return goals;
     }

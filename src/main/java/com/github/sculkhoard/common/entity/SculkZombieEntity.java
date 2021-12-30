@@ -28,7 +28,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkZombieEntity extends MonsterEntity implements IAnimatable {
+public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>

@@ -13,10 +13,10 @@ import net.minecraftforge.fml.common.Mod;
 public class ForgeEventSubscriber {
 
     @SubscribeEvent
-    public static void onPotionRemoveEvent(PotionEvent.PotionRemoveEvent event)
+    public static void onPotionExpireEvent(PotionEvent.PotionExpiryEvent event)
     {
         EffectInstance effectInstance = event.getPotionEffect();
-        if(event.getPotion() == EffectRegistry.SCULK_INFECTION.get())
+        if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
         {
             LivingEntity entity = event.getEntityLiving();
             if(entity != null)

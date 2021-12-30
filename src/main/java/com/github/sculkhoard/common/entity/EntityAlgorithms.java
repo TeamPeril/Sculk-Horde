@@ -1,13 +1,21 @@
 package com.github.sculkhoard.common.entity;
 
+import com.github.sculkhoard.core.EffectRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPredicate;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.EntityPredicates;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class EntityAlgorithms {
 
@@ -28,5 +36,10 @@ public class EntityAlgorithms {
             return blockpos;
         }
         return null;
+    }
+
+    public static boolean isLivingEntityInfected(LivingEntity e)
+    {
+        return e.hasEffect(EffectRegistry.SCULK_INFECTION.get());
     }
 }

@@ -1,6 +1,7 @@
 package com.github.sculkhoard.common.item;
 
 import com.github.sculkhoard.common.entity.EntityAlgorithms;
+import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -86,7 +87,7 @@ public class DevWand extends Item implements IForgeItem {
 
 			playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5)); //Give Player Effect
 
-			SculkZombieEntity entity = new SculkZombieEntity(worldIn); //Create Zombie Instance
+			SculkMiteEntity entity = new SculkMiteEntity(worldIn); //Create Zombie Instance
 
 			entity.setPos(targetX, targetY, targetZ); //Set its position to player
 
