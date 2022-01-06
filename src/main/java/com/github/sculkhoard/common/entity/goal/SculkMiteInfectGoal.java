@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.entity.goal;
 
+import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -58,7 +59,8 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
         SculkMiteEntity thisMob = this.mob;
         LivingEntity target = this.mob.getTarget();
 
-        if(this.mob.getTarget() == null)
+        //If entity is null or infected already, do not pursue
+        if(this.mob.getTarget() == null /*|| EntityAlgorithms.isLivingEntityInfected(this.mob.getTarget())*/)
         {
             stop();
         }
@@ -73,9 +75,11 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
             double targetY = target.getY();
             double targetZ = thisMob.getTarget().getZ();
             double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
-            if(distance <= thisMob.INFECT_RANGE)
+            if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
             {
                 target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
+
+                //Kill The Bastard
                 thisMob.die(DamageSource.GENERIC);
             }
         }

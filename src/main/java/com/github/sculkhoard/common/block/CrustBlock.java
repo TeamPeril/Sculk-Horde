@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.block;
 
+import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -119,7 +120,7 @@ public class CrustBlock extends Block implements IForgeBlock {
     {
         if(!worldIn.isClientSide())//Only do this on the client
         {
-            if(entity instanceof LivingEntity)//Only apply to living entities
+            if(entity instanceof LivingEntity && !(entity instanceof SculkLivingEntity))//Only apply to living entities
             {
                 LivingEntity livingEntity = ((LivingEntity) entity); //Cast
                 livingEntity.addEffect(new EffectInstance(STEP_ON_EFFECT)); //Give effect

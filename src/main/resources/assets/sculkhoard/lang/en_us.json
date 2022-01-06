@@ -9,8 +9,11 @@
   "block.sculkhoard.spike": "Sculk Spike",
   "block.sculkhoard.grass": "Sculk Grass",
   "block.sculkhoard.grass_short": "Sculk Short Grass",
+  "block.sculkhoard.cocoon_root": "Sculk Cocoon Root",
+  "block.sculkhoard.cocoon_goup": "Sculk Cocoon Goup",
   "tooltip.sculkhoard.dev_wand": "Hold \u00A7eLeft-Shift \u00A77to Show Tool Tip",
   "tooltip.sculkhoard.dev_wand.shift": "\u00A75Tip",
-  "entity.sculkhoard.sculk_zombie": "Sculk Zombie"
+  "entity.sculkhoard.sculk_zombie": "Sculk Zombie",
+  "entity.sculkhoard.sculk_mite": "Sculk Mite"
   
 }

@@ -5,6 +5,9 @@ import com.github.sculkhoard.core.EffectRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.DamageSource;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +30,7 @@ public class ForgeEventSubscriber {
                     SculkMiteEntity mite = new SculkMiteEntity(entity.level);
                     mite.setPos(entity.getX(), entity.getY(), entity.getZ());
                     entity.level.addFreshEntity(mite);
+                    entity.hurt(DamageSource.GENERIC, 4); //Do 2 hearts of damage per mite
                 }
             }
         }

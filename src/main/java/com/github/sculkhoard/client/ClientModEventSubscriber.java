@@ -31,6 +31,10 @@ public class ClientModEventSubscriber {
         });
 
         event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON_GOUP.get(), RenderType.translucent());
+        });
+
+        event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
         });
 

@@ -1,9 +1,6 @@
 package com.github.sculkhoard.core;
 
-import com.github.sculkhoard.common.block.CrustBlock;
-import com.github.sculkhoard.common.block.InfectedDirtBlock;
-import com.github.sculkhoard.common.block.SculkFloraBlock;
-import com.github.sculkhoard.common.block.SpikeBlock;
+import com.github.sculkhoard.common.block.*;
 import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -74,4 +71,10 @@ public class BlockRegistry {
 
 	public static final RegistryObject<SculkFloraBlock> GRASS_SHORT =
 			registerBlock("grass_short", () -> new SculkFloraBlock());
+
+	public static final RegistryObject<CocoonRootBlock> COCOON_ROOT =
+			registerBlock("cocoon_root", () -> new CocoonRootBlock());
+
+	public static final RegistryObject<CocoonGoupBlock> COCOON_GOUP =
+			registerBlock("cocoon_goup", () -> new CocoonGoupBlock());
 }

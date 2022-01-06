@@ -1,27 +1,22 @@
 package com.github.sculkhoard.common.block;
 
+import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.DamageSourceRegistry;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
-    /*  TODO:
-     *      Make Sculk Spike unable to be placed on regular dirt.
-     *      Make a better item model/texture for this block.
-     *
+    /*
      *  NOTE:
      *      In order for this block to render correctly, you must
      *      edit ClientModEventSubscriber.java to tell Minecraft
@@ -104,14 +99,13 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
     }
 
     /** Makes entities slow and damages them. I stole this code from the berry bush.<br>
-     * TODO: Make Sculk Mobs Not Affected
      * @param blockState The current blockstate
      * @param world The world this block si in
      * @param blockPos The position of this block
      * @param entity The entity inside
      */
     public void entityInside(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-        if (entity instanceof LivingEntity)
+        if (entity instanceof LivingEntity &&  !(entity instanceof SculkLivingEntity))
         {
             entity.makeStuckInBlock(blockState, new Vector3d((double)0.8F, 0.75D, (double)0.8F));
 

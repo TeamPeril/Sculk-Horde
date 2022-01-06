@@ -61,7 +61,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
      */
     public static int SPAWN_MIN = 1;
     public static int SPAWN_MAX = 5;
-    public static int INFECT_RANGE  = 5;
+    public static int INFECT_RANGE  = 2;
     public static Effect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
     public static int INFECT_DURATION = 140;
     public static int INFECT_LEVEL = 1;
