@@ -1,6 +1,8 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.tileentity.CocoonRootTile;
+import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
+import com.github.sculkhoard.common.tileentity.InfestedLogTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.TileEntityRegistry;
@@ -112,42 +114,35 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos origin, Random random)
     {
-        spreadToAdjacentBlocks(serverWorld, origin);
+
+        //Get tile entity for this block
+        TileEntity tileEntity = serverWorld.getBlockEntity(origin);
+        InfestedLogTile thisTile = null;
+
+        //If there is no error with the tile entity, then increment spreadAttempts and spread to it.
+        if(tileEntity instanceof InfestedLogTile && tileEntity != null)
+        {
+            thisTile = ((InfestedLogTile) tileEntity); //Cast
+        }
+        else
+        {
+            System.out.println("ERROR: Tile not found.");
+        }
+
+        if(!thisTile.hasSpread) spreadToAdjacentBlocks(serverWorld, origin);
+        thisTile.hasSpread = true;
     }
 
-    public void spreadToAdjacentBlocks(ServerWorld serverWorld, BlockPos origin)
+    private void spreadToAdjacentBlocks(ServerWorld serverWorld, BlockPos origin)
     {
         BlockPos aboveBlock = origin.above();
         BlockPos belowBlock = origin.below();
-        BlockPos[] spreadDirections = {
-                aboveBlock,
-                aboveBlock.north(),
-                aboveBlock.east(),
-                aboveBlock.south(),
-                aboveBlock.west(),
-                aboveBlock.north().east(),
-                aboveBlock.north().west(),
-                aboveBlock.south().east(),
-                aboveBlock.south().west(),
-                belowBlock,
-                belowBlock.north(),
-                belowBlock.east(),
-                belowBlock.south(),
-                belowBlock.west(),
-                belowBlock.north().east(),
-                belowBlock.north().west(),
-                belowBlock.south().east(),
-                belowBlock.south().west(),
-                origin,
-                origin.north(),
-                origin.east(),
-                origin.south(),
-                origin.west(),
-                origin.north().east(),
-                origin.north().west(),
-                origin.south().east(),
-                origin.south().west(),
-        };
+        ArrayList<BlockPos> spreadDirections = new ArrayList<>();
+        spreadDirections.add(origin.above());
+        spreadDirections.add(origin.below());
+        spreadDirections.addAll(getNeighbors2D(origin));
+        spreadDirections.addAll(getNeighbors2D(origin.above()));
+        spreadDirections.addAll(getNeighbors2D(origin.below()));
 
         for(BlockPos targetPos : spreadDirections)
         {
@@ -159,6 +154,20 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
         }
     }
 
+    private ArrayList<BlockPos> getNeighbors2D(BlockPos targetPos)
+    {
+        ArrayList<BlockPos> neighbors = new ArrayList<>();
+        neighbors.add(targetPos.north());
+        neighbors.add(targetPos.east());
+        neighbors.add(targetPos.south());
+        neighbors.add(targetPos.west());
+        neighbors.add(targetPos.north().east());
+        neighbors.add(targetPos.north().west());
+        neighbors.add(targetPos.south().east());
+        neighbors.add(targetPos.south().west());
+
+        return neighbors;
+    }
 
     /**
      * Determines if this block can spread to a position.
@@ -168,7 +177,16 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
      */
     public boolean isPositionValidForSpread(ServerWorld serverWorld, BlockPos targetPos)
     {
-        return serverWorld.getBlockState(targetPos.above()).is(BlockTags.LOGS);
+        boolean answer = serverWorld.getBlockState(targetPos).is(BlockTags.LOGS);
+        if(!answer && DEBUG_MODE)
+        {
+            System.out.println("Unable to spread to "
+                    + targetPos.toString()
+                    + " which is of block "
+                    + serverWorld.getBlockState(targetPos).toString()
+            );
+        }
+        return answer;
     }
 
     /**
@@ -222,4 +240,28 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
                 .sound(SoundType.STONE);
         return prop;
     }
+
+    /**
+     * A function called by forge to create the tile entity.
+     * @param state The current blockstate
+     * @param world The world the block is in
+     * @return Returns the tile entity.
+     */
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return TileEntityRegistry.INFESTED_LOG_TILE.get().create();
+    }
+
+    /**
+     * Returns If true we have a tile entity
+     * @param state The current block state
+     * @return True
+     */
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+
 }
