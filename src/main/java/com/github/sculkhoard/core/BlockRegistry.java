@@ -77,4 +77,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<CocoonGoupBlock> COCOON_GOUP =
 			registerBlock("cocoon_goup", () -> new CocoonGoupBlock());
+
+	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
+			registerBlock("infested_log", () -> new InfestedLogBlock());
 }

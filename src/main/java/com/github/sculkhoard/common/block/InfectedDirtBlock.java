@@ -207,6 +207,14 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
             serverWorld.setBlockAndUpdate(targetPos, this.defaultBlockState()); //Set the block
             TileEntity childTile = serverWorld.getWorldServer().getBlockEntity(targetPos); //Get new block tile entity
 
+            //if able, convert tree log block into infested variant
+            if(BlockRegistry.INFESTED_LOG.get().isPositionValidForSpread(serverWorld, targetPos.above()))
+            {
+                serverWorld.destroyBlock(targetPos.above(),false);
+                serverWorld.setBlockAndUpdate(targetPos.above(), BlockRegistry.INFESTED_LOG.get().defaultBlockState());
+
+            }
+
             //If no error with tile entity of child block
             if(childTile instanceof InfectedDirtTile && childTile != null)
             {

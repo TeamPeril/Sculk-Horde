@@ -216,7 +216,11 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
      */
     public void spawnRandomSculkLivingEntity(ServerWorld serverWorld, BlockPos bp)
     {
-        //ArrayList<Supplier<Ent>> spawnPool = new ArrayList<>();
+        /**
+         * Apperently there is a better way to do this,
+         * List<Supplier<EntityType<? extends SculkLivingEntity>>> spawnPool = new ArrayList<>();
+         * Have not tested this, doing it the lazy way for now
+         */
         ArrayList<EntityType> spawnPool = new ArrayList<>();
         spawnPool.add(EntityRegistry.SCULK_MITE.get());
         spawnPool.add(EntityRegistry.SCULK_ZOMBIE.get());

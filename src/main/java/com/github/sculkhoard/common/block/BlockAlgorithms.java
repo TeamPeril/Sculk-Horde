@@ -10,16 +10,16 @@ public class BlockAlgorithms {
 
     /**
      * A Jank solution to spawning flora. Given a random chance, spawn flora.
-     * @param pos The BlockPos to spawn it at
+     * @param targetPos The BlockPos to spawn it at
      * @param world The world to spawn it in.
      */
-    public static void placeSculkFlora(BlockPos pos, ServerWorld world)
+    public static void placeSculkFlora(BlockPos targetPos, ServerWorld world)
     {
         Block[] commonFlora = {
                 BlockRegistry.GRASS.get(),
                 BlockRegistry.GRASS_SHORT.get()
         };
-        Block targetBlock = world.getBlockState(pos).getBlock();
+        Block targetBlock = world.getBlockState(targetPos).getBlock();
 
         if(targetBlock == Blocks.AIR)
         {
@@ -27,11 +27,11 @@ public class BlockAlgorithms {
             // A 1/100 chance to be a spike
             if(world.random.nextInt(100) == 0) selectedFlora = BlockRegistry.SPIKE.get();
             // A 1/100 chance to be a cocoon root
-            else if(world.random.nextInt(100) == 1) selectedFlora = BlockRegistry.COCOON_ROOT.get();
+            //else if(world.random.nextInt(100) == 1) selectedFlora = BlockRegistry.COCOON_ROOT.get();
             // Else just a random common flora
             else selectedFlora = commonFlora[world.random.nextInt(commonFlora.length)];
 
-            world.setBlockAndUpdate(pos, selectedFlora.defaultBlockState());
+            world.setBlockAndUpdate(targetPos, selectedFlora.defaultBlockState());
         }
     }
 }
