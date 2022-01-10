@@ -60,7 +60,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
         LivingEntity target = this.mob.getTarget();
 
         //If entity is null or infected already, do not pursue
-        if(this.mob.getTarget() == null /*|| EntityAlgorithms.isLivingEntityInfected(this.mob.getTarget())*/)
+        if(this.mob.getTarget() == null || EntityAlgorithms.isLivingEntityInfected(this.mob.getTarget()))
         {
             stop();
         }
@@ -80,7 +80,13 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
                 target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
 
                 //Kill The Bastard
-                thisMob.die(DamageSource.GENERIC);
+                /**
+                 *  Note: <br>
+                 *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
+                 */
+                //thisMob.die(DamageSource.GENERIC);
+                thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
+
             }
         }
     }
