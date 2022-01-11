@@ -10,8 +10,8 @@ import net.minecraftforge.common.extensions.IForgeTileEntity;
 public class InfestedLogTile extends TileEntity implements IForgeTileEntity {
 
     /**
-     * maxSpreadAttempts is the max number of times the InfectedDirt can
-     * try to spread. It is not guaranteed that every attempt is successful. <br>
+     * hasSpread is a simple boolean that indicates if this block has spread already or not.
+     * This is so that lag is minimized with a mass amount of these logs existing. <br>
      * maxSpreadAttemptsIdentifier is the string used to identify maxSpreadAttempts
      * in CompoundNBT. It allows us to read/write to it.<br>
      */

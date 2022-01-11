@@ -80,4 +80,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
 			registerBlock("infested_log", () -> new InfestedLogBlock());
+
+	public static final RegistryObject<VeinBlock> VEIN =
+			registerBlock("vein", () -> new VeinBlock());
 }

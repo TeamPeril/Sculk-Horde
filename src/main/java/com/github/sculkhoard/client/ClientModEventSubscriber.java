@@ -31,15 +31,19 @@ public class ClientModEventSubscriber {
         });
 
         event.enqueueWork(() -> {
-            RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON_GOUP.get(), RenderType.translucent());
-        });
-
-        event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
         });
 
         event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout());
+        });
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON_GOUP.get(), RenderType.translucent());
+        });
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.translucent());
         });
     }
 }

@@ -1,37 +1,38 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.tileentity.CocoonRootTile;
-import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import com.github.sculkhoard.common.tileentity.InfestedLogTile;
 import com.github.sculkhoard.core.BlockRegistry;
-import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+import static net.minecraft.block.VineBlock.*;
 
 public class InfestedLogBlock extends Block implements IForgeBlock {
 
@@ -95,6 +96,37 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
     }
 
     /**
+     * Determines the properties of a block.<br>
+     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
+     * @return The Properties of the block
+     */
+    public static Properties getProperties()
+    {
+        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+                .strength(HARDNESS, BLAST_RESISTANCE)
+                .harvestTool(PREFERRED_TOOL)
+                .harvestLevel(HARVEST_LEVEL)
+                .sound(SoundType.STONE);
+        return prop;
+    }
+
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader ???
+     * @param tooltip ???
+     * @param flagIn ???
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.infested_log")); //Text that displays if holding shift
+
+    }
+
+    /**
      * Determines if this block will randomly tick or not.
      * @param blockState The current blockstate
      * @return True/False
@@ -133,6 +165,12 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
         thisTile.hasSpread = true;
     }
 
+    /**
+     * Gets all neighbors of the origin block in a 3x3x3 cube with the origin block in the center.
+     * It then checks each position to see if it is valid or not, if it is, it will spread.
+     * @param serverWorld The given server world the block is in
+     * @param origin The position of the block that is trying to spread
+     */
     private void spreadToAdjacentBlocks(ServerWorld serverWorld, BlockPos origin)
     {
         BlockPos aboveBlock = origin.above();
@@ -152,8 +190,21 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
                 serverWorld.updateNeighborsAt(targetPos, this.defaultBlockState().getBlock());
             }
         }
+
+        try {
+            placeFloraAroundLog(serverWorld, origin); //Place Flora Around itself
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Gets the positions of all neighboring blocks in a 3x3 2D Square.
+     * The square is of the X and Z axis. The center of this square is the origin block
+     * and is not included in the returned ArrayList.
+     * @param targetPos The position you wish to get the neighbors of.
+     * @return An arraylist of the position of the neighbors.
+     */
     private ArrayList<BlockPos> getNeighbors2D(BlockPos targetPos)
     {
         ArrayList<BlockPos> neighbors = new ArrayList<>();
@@ -177,8 +228,9 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
      */
     public boolean isPositionValidForSpread(ServerWorld serverWorld, BlockPos targetPos)
     {
+        boolean DEBUG_THIS = false;
         boolean answer = serverWorld.getBlockState(targetPos).is(BlockTags.LOGS);
-        if(!answer && DEBUG_MODE)
+        if(!answer && DEBUG_MODE && DEBUG_THIS)
         {
             System.out.println("Unable to spread to "
                     + targetPos.toString()
@@ -187,6 +239,50 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
             );
         }
         return answer;
+    }
+
+    public void placeFloraAroundLog(ServerWorld serverWorld, BlockPos origin) throws Exception {
+        boolean DEBUG_THIS = false;
+        Block vein = BlockRegistry.VEIN.get();
+        //BlockItemUseContext context = new BlockItemUseContext();
+        //vein.getStateForPlacement();
+        BlockPos[] possiblePositions = {
+                origin.north(),
+                origin.east(),
+                origin.south(),
+                origin.west()
+        };
+
+        //75% chance to place sculk vein for each face
+        for(BlockPos pos : possiblePositions)
+        {
+            if(serverWorld.random.nextInt(10) < 9 &&
+                    serverWorld.getBlockState(pos).canBeReplaced(Fluids.WATER))
+            {
+
+                if(DEBUG_MODE && DEBUG_THIS)
+                    System.out.println(
+                        "Attempting to Place Sculk Vein" + "\n" +
+                        "Position = origin.north()? " + (pos == origin.north()) + "\n" +
+                        "Position = origin.east()? " + (pos == origin.east()) + "\n" +
+                        "Position = origin.south()? " + (pos == origin.south()) + "\n" +
+                        "Position = origin.west()? " + (pos == origin.west()) + "\n"
+                );
+
+                if(pos.compareTo(origin.north()) == 0)
+                    serverWorld.setBlockAndUpdate(pos, vein.defaultBlockState().setValue(SOUTH, true));
+                else if(pos.compareTo(origin.east()) == 0)
+                    serverWorld.setBlockAndUpdate(pos, vein.defaultBlockState().setValue(WEST, true));
+                else if(pos.compareTo(origin.south()) == 0)
+                    serverWorld.setBlockAndUpdate(pos, vein.defaultBlockState().setValue(NORTH, true));
+                else if(pos.compareTo(origin.west()) == 0)
+                    serverWorld.setBlockAndUpdate(pos, vein.defaultBlockState().setValue(EAST, true));
+                else throw new Exception("illegal argument for placeFloraAroundLog()");
+
+            }
+        }
+
+
     }
 
     /**
@@ -224,21 +320,6 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
     public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
     {
         return false;
-    }
-
-    /**
-     * Determines the properties of a block.<br>
-     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
-     * @return The Properties of the block
-     */
-    public static Properties getProperties()
-    {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
-                .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.STONE);
-        return prop;
     }
 
     /**
