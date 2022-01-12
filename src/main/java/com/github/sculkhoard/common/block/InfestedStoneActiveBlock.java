@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
+import com.github.sculkhoard.common.tileentity.InfestedStoneActiveTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.Block;
@@ -19,8 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -29,14 +27,14 @@ import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
-public class InfectedDirtBlock extends Block implements IForgeBlock {
+public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
      * MAP_COLOR is the color that will show up on a map to represent this block
      */
-    public static Material MATERIAL = Material.DIRT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_BROWN;
+    public static Material MATERIAL = Material.STONE;
+    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_GRAY;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -46,7 +44,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 0.6f;
+    public static float HARDNESS = 1.5f;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>
@@ -55,12 +53,12 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
      * 6f = cobblestone<br>
      * 1,200f = obsidian
      */
-    public static float BLAST_RESISTANCE = 0.5f;
+    public static float BLAST_RESISTANCE = 6f;
 
     /**
      * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
      */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
+    public static ToolType PREFERRED_TOOL = ToolType.PICKAXE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -75,30 +73,44 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     public static int HARVEST_LEVEL = -1;
 
     /**
-     *  validSpreadBlocks is a list of blocks that infected dirt can spread to.<br>
+     *  validSpreadBlocks is a list of blocks that this block can spread to.<br>
      *  DEFAULT_MAX_SPREAD_ATTEMPTS is the max number of spread attempts assigned
      *  to this block by default.<br>
      *  This only really applies to the root block because every child of the root
      *  block will have a smaller amount of spread attempts assigned to it by the
      *  immediate parent.
      */
-    public static Block[] validSpreadBlocks = {Blocks.GRASS_BLOCK, Blocks.DIRT, Blocks.GRASS_PATH};
-    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 30;
+    public static Block[] validSpreadBlocks = {Blocks.STONE};
+    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 4;
 
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public InfectedDirtBlock(Properties prop) {
+    public InfestedStoneActiveBlock(Properties prop) {
         super(prop);
     }
+
 
     /**
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public InfectedDirtBlock() {
+    public InfestedStoneActiveBlock() {
         this(getProperties());
+    }
+    /**
+     * Determines the properties of a block.<br>
+     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
+     * @return The Properties of the block
+     */
+    public static Properties getProperties()
+    {
+        return Properties.of(MATERIAL, MAP_COLOR)
+                .strength(HARDNESS, BLAST_RESISTANCE)
+                .harvestTool(PREFERRED_TOOL)
+                .harvestLevel(HARVEST_LEVEL)
+                .sound(SoundType.STONE);
     }
 
     /**
@@ -129,68 +141,85 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
      * Gets called every time the block randomly ticks.
      * @param blockState The current Blockstate
      * @param serverWorld The current ServerWorld
-     * @param bp The current Block Position
+     * @param thisBlockPos The current Block Position
      * @param random ???
      */
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
+        boolean DEBUG_THIS = false;
 
         //Get tile entity for this block
-        TileEntity tileEntity = serverWorld.getBlockEntity(bp);
-        InfectedDirtTile thisTile = null;
+        TileEntity tileEntity = serverWorld.getBlockEntity(thisBlockPos);
+        InfestedStoneActiveTile thisTile = null;
+        try
+        {
+            thisTile = (InfestedStoneActiveTile) serverWorld.getBlockEntity(thisBlockPos);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.toString());
+        }
+
 
         //If there is no error with the tile entity, then increment spreadAttempts and spread to it.
-        if(tileEntity instanceof InfectedDirtTile && tileEntity != null)
+        if(tileEntity == null)
         {
-            thisTile = ((InfectedDirtTile) tileEntity); //Cast
+            System.out.println("ERROR: Tile Entity is null.");
         }
         else
         {
-            System.out.println("ERROR: InfectedDirtTile not found.");
+            if(tileEntity instanceof InfestedStoneActiveTile)
+            {
+                System.out.println("ERROR: Tile Entity is not of correct type.");
+            }
+            else
+            {
+                thisTile = ((InfestedStoneActiveTile) tileEntity); //Cast
+            }
         }
 
         //If this block has not attempted to spread before
         if(thisTile != null && thisTile.getMaxSpreadAttempts() == -1)
         {
             thisTile.setMaxSpreadAttempts(DEFAULT_MAX_SPREAD_ATTEMPTS);//Set to default
-            if(DEBUG_MODE)
+            if(DEBUG_MODE && DEBUG_THIS)
             {
                 System.out.println("Block at (" +
-                        bp.getX() + ", " +
-                        bp.getY() + ", " +
-                        bp.getZ() + ") " +
+                        thisBlockPos.getX() + ", " +
+                        thisBlockPos.getY() + ", " +
+                        thisBlockPos.getZ() + ") " +
                         "is getting the DEFAULT_MAX_SPREAD_ATTEMPTS"
                 );
             }
         }
 
         //If max spread attempts has not been reached && Given a 25% chance && the area is loaded, spread
-        if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(bp,4))
+        if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(thisBlockPos,4))
         {
-            BlockPos spreadPosition = getRandomAdjacentBlockPos(bp, serverWorld); //Get a random adjacent block position
+            BlockPos spreadPosition = getRandomAdjacentBlockPos(thisBlockPos, serverWorld); //Get a random adjacent block position
             Block spreadBlock = serverWorld.getBlockState(spreadPosition).getBlock(); //Get the block at this position
             attemptSpread(thisTile, serverWorld, spreadPosition, spreadBlock); //Attempt to spread to this position
         }
         //If this block has run out of spread attempts, convert to crust
         else if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
         {
-            serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());//Convert to crust
+            serverWorld.setBlockAndUpdate(thisBlockPos, BlockRegistry.INFESTED_STONE.get().defaultBlockState());//Convert to crust
             //Given a 50% chance, place down sculk flora
             if(serverWorld.random.nextInt(2) <= 0)
             {
-                BlockAlgorithms.placeSculkFlora(bp.above(), serverWorld);
+                BlockAlgorithms.placeSculkFlora(thisBlockPos.above(), serverWorld);
             }
         }
     }
 
     /**
-     * Attempts to spread infjected dirt to a specific block position.
+     * Attempts to spread to a specific block position.
      * @param thisTile The Tile Entity of this block
      * @param serverWorld The ServerWorld of this block
      * @param targetPos The Block Position of the target block
      * @param targetBlock The class of the target block
      */
-    public void attemptSpread(InfectedDirtTile thisTile, ServerWorld serverWorld, BlockPos targetPos, Block targetBlock)
+    public void attemptSpread(InfestedStoneActiveTile thisTile, ServerWorld serverWorld, BlockPos targetPos, Block targetBlock)
     {
         boolean DEBUG_THIS = false;
         thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1); //Increment spreadAttempts
@@ -199,7 +228,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         {
             if(DEBUG_MODE && DEBUG_THIS)
             {
-                System.out.println("New Block at (" +
+                System.out.println("New Infested Stone at (" +
                         targetPos.getX() + ", " +
                         targetPos.getY() + ", " +
                         targetPos.getZ() + ") "
@@ -208,7 +237,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
             serverWorld.setBlockAndUpdate(targetPos, this.defaultBlockState()); //Set the block
             TileEntity childTile = serverWorld.getWorldServer().getBlockEntity(targetPos); //Get new block tile entity
 
-            //if able, convert tree log block into infested variant above the new block
+            //if able, convert tree log block into infested variant
             if(BlockRegistry.INFESTED_LOG.get().isPositionValidForSpread(serverWorld, targetPos.above()))
             {
                 serverWorld.destroyBlock(targetPos.above(),false);
@@ -216,27 +245,16 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
 
             }
 
-            //if able, convert stone block into infested variant above & below the new block
-            BlockPos[] positionsToSpreadInfestedStone = {targetPos.above(), targetPos.below()};
-            for(BlockPos infestedStonePos : positionsToSpreadInfestedStone)
-            {
-                if(BlockRegistry.INFESTED_STONE_ACTIVE.get().isValidSpreadBlock(serverWorld.getBlockState(infestedStonePos).getBlock()))
-                {
-                    serverWorld.setBlockAndUpdate(infestedStonePos, BlockRegistry.INFESTED_STONE_ACTIVE.get().defaultBlockState());
-                }
-            }
-
-
             //If no error with tile entity of child block
-            if(childTile instanceof InfectedDirtTile && childTile != null)
+            if(childTile instanceof InfestedStoneActiveTile && childTile != null)
             {
                 //A 1/500 to not De-increment maxSpreadAttempts of child
                 if(serverWorld.random.nextInt(500) > 0)
-                    ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
+                    ((InfestedStoneActiveTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
             }
             else
             {
-                System.out.println("ERROR: Child InfectedDirtTile not found.");
+                System.out.println("ERROR: Child Tile not found.");
             }
         }
     }
@@ -251,12 +269,9 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     {
         BlockPos[] spreadDirections = {
                 origin.above(),
-                origin.below(),
-                origin.north(),
-                origin.east(),
-                origin.south(),
-                origin.west()};
-        return spreadDirections[serverWorld.random.nextInt(6)];
+                origin.below()
+        };
+        return spreadDirections[serverWorld.random.nextInt(spreadDirections.length)];
     }
 
     /**
@@ -294,20 +309,20 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         if(DEBUG_MODE)
         {
             TileEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof InfectedDirtTile && tile != null)
+            if(tile instanceof InfestedStoneActiveTile && tile != null)
             {
 
                 System.out.println("Block at (" +
                         pos.getX() + ", " +
                         pos.getY() + ", " +
                         pos.getZ() + ") " +
-                        "maxSpreadAttempts: " + ((InfectedDirtTile) tile).getMaxSpreadAttempts() +
-                        " spreadAttempts: " + ((InfectedDirtTile) tile).getSpreadAttempts()
+                        "maxSpreadAttempts: " + ((InfestedStoneActiveTile) tile).getMaxSpreadAttempts() +
+                        " spreadAttempts: " + ((InfestedStoneActiveTile) tile).getSpreadAttempts()
                 );
             }
             else
             {
-                System.out.println("Error accessing InfectedDirtTile");
+                System.out.println("Error accessing InfestedStoneActiveTile");
             }
         }
 
@@ -329,20 +344,6 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         return false;
     }
 
-    /**
-     * Determines the properties of a block.<br>
-     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
-     * @return The Properties of the block
-     */
-    public static Properties getProperties()
-    {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
-                .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.GRASS);
-        return prop;
-    }
 
     /**
      * A function called by forge to create the tile entity.
@@ -353,7 +354,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return TileEntityRegistry.INFECTED_DIRT_TILE.get().create();
+        return TileEntityRegistry.INFESTED_STONE_ACTIVE_TILE.get().create();
     }
 
     /**

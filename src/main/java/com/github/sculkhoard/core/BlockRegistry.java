@@ -1,10 +1,8 @@
 package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.block.*;
-import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -63,6 +61,15 @@ public class BlockRegistry {
 	public static final RegistryObject<InfectedDirtBlock> INFECTED_DIRT =
 			registerBlock("infected_dirt", () -> new InfectedDirtBlock());
 
+	public static final RegistryObject<InfestedStoneActiveBlock> INFESTED_STONE_ACTIVE =
+			registerBlock("infested_stone_active", () -> new InfestedStoneActiveBlock());
+
+	public static final RegistryObject<InfestedStoneBlock> INFESTED_STONE =
+			registerBlock("infested_stone", () -> new InfestedStoneBlock());
+
+	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
+			registerBlock("infested_log", () -> new InfestedLogBlock());
+
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
 
@@ -78,8 +85,8 @@ public class BlockRegistry {
 	public static final RegistryObject<CocoonGoupBlock> COCOON_GOUP =
 			registerBlock("cocoon_goup", () -> new CocoonGoupBlock());
 
-	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
-			registerBlock("infested_log", () -> new InfestedLogBlock());
+	public static final RegistryObject<SculkMassBlock> SCULK_MASS =
+			registerBlock("sculk_mass", () -> new SculkMassBlock());
 
 	public static final RegistryObject<VeinBlock> VEIN =
 			registerBlock("vein", () -> new VeinBlock());

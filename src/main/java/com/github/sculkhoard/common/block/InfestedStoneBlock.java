@@ -1,7 +1,6 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -20,14 +19,14 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
-public class CrustBlock extends Block implements IForgeBlock {
+public class InfestedStoneBlock extends Block implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
      * MAP_COLOR is the color that will show up on a map to represent this block
      */
-    public static Material MATERIAL = Material.DIRT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_BLUE;
+    public static Material MATERIAL = Material.STONE;
+    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_GRAY;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -37,7 +36,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 0.6f;
+    public static float HARDNESS = 1.5f;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>
@@ -46,12 +45,12 @@ public class CrustBlock extends Block implements IForgeBlock {
      * 6f = cobblestone<br>
      * 1,200f = obsidian
      */
-    public static float BLAST_RESISTANCE = 0.6f;
+    public static float BLAST_RESISTANCE = 6f;
 
     /**
      * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
      */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
+    public static ToolType PREFERRED_TOOL = ToolType.PICKAXE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -83,7 +82,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public CrustBlock(Properties prop) {
+    public InfestedStoneBlock(Properties prop) {
         super(prop);
     }
 
@@ -91,7 +90,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public CrustBlock() {
+    public InfestedStoneBlock() {
         this(getProperties());
     }
 
@@ -102,11 +101,11 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return AbstractBlock.Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.GRASS);
+                .sound(SoundType.STONE);
     }
 
     /**
@@ -143,7 +142,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
     {
-        if(DEBUG_MODE) System.out.println("Hi I am a Crust Block, I don't do Anything :)");
+        if(DEBUG_MODE) System.out.println("Hi I am a Infested Stone :)");
 
         return null; //Just Return null because We Are Not Modifying it
     }

@@ -1,6 +1,7 @@
 package com.github.sculkhoard.util;
 
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
+import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EffectRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.LivingEntity;
@@ -24,13 +25,19 @@ public class ForgeEventSubscriber {
             LivingEntity entity = event.getEntityLiving();
             if(entity != null)
             {
+
                 //Spawn Effect Level + 1 number of mites
+                int infectionDamage = 4;
                 for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
                 {
                     SculkMiteEntity mite = new SculkMiteEntity(entity.level);
                     mite.setPos(entity.getX(), entity.getY(), entity.getZ());
                     entity.level.addFreshEntity(mite);
-                    entity.hurt(DamageSource.GENERIC, 4); //Do 2 hearts of damage per mite
+                    if(entity.getHealth() <= infectionDamage)
+                    {
+                        entity.level.setBlockAndUpdate(entity.blockPosition(), BlockRegistry.SCULK_MASS.get().defaultBlockState());
+                    }
+                    entity.hurt(DamageSource.GENERIC, infectionDamage); //Do 2 hearts of damage per mite
                 }
             }
         }
