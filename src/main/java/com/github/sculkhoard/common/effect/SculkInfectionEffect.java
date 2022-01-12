@@ -13,6 +13,7 @@ import java.util.List;
 
 public class SculkInfectionEffect extends Effect implements IForgeEffect {
 
+    public static int spawnInterval = 20;
     public static int liquidColor = 338997;
     public static EffectType effectType = EffectType.HARMFUL;
 
@@ -38,6 +39,15 @@ public class SculkInfectionEffect extends Effect implements IForgeEffect {
         super.applyEffectTick(entity, amplifier);
     }
 
+    /**
+     * A function that is called every tick an entity has this effect. <br>
+     * I do not use because it does not provide any useful inputs like
+     * the entity it is affecting. <br>
+     * I instead use ForgeEventSubscriber.java to handle the logic.
+     * @param ticksLeft The amount of ticks remaining
+     * @param amplifier The level of the effect
+     * @return ??
+     */
     @Override
     public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
         return super.isDurationEffectTick(ticksLeft, amplifier);
@@ -48,4 +58,5 @@ public class SculkInfectionEffect extends Effect implements IForgeEffect {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;
     }
+
 }

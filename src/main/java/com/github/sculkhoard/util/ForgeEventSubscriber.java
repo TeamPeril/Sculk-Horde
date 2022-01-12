@@ -25,7 +25,6 @@ public class ForgeEventSubscriber {
             LivingEntity entity = event.getEntityLiving();
             if(entity != null)
             {
-
                 //Spawn Effect Level + 1 number of mites
                 int infectionDamage = 4;
                 for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
@@ -33,11 +32,10 @@ public class ForgeEventSubscriber {
                     SculkMiteEntity mite = new SculkMiteEntity(entity.level);
                     mite.setPos(entity.getX(), entity.getY(), entity.getZ());
                     entity.level.addFreshEntity(mite);
-                    if(entity.getHealth() <= infectionDamage)
-                    {
-                        entity.level.setBlockAndUpdate(entity.blockPosition(), BlockRegistry.SCULK_MASS.get().defaultBlockState());
-                    }
-                    entity.hurt(DamageSource.GENERIC, infectionDamage); //Do 2 hearts of damage per mite
+                    //Spawn Sculk Mass
+                    BlockRegistry.SCULK_MASS.get().spawn(entity.level, entity.blockPosition(), entity.getMaxHealth());
+                    //Do infectionDamage to victim per mite
+                    entity.hurt(DamageSource.GENERIC, infectionDamage);
                 }
             }
         }

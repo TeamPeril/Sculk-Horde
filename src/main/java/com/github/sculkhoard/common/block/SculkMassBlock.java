@@ -10,6 +10,7 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -71,6 +73,8 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
+    public static double HEALTH_ABSORB_MULTIPLIER = 1.5;
+
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -98,21 +102,36 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.SLIME_BLOCK)
-                .noOcclusion();
+                .noOcclusion()
+                .noDrops();
     }
 
-    /**
-     * This function is called when this block is placed. <br>
-     * Will set the nbt data maxSpreadAttempts.
-     * @param world The world the block is in
-     * @param bp The position the block is in
-     * @param blockState The state of the block
-     * @param entity The entity that placed it
-     * @param itemStack The item stack it was placed from
-     */
-    @Override
-    public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack) {
-        super.setPlacedBy(world, bp, blockState, entity, itemStack);
+    public void spawn(World world, BlockPos originPos, float healthAbsorbed)
+    {
+        BlockPos placementPos = originPos;
+        int MAX_ATTEMPTS = 64;
+        int attempts = 0;
+
+        //Try and find solid ground to place this block on
+        while(world.getBlockState(placementPos.below()).canBeReplaced(Fluids.WATER) && attempts <= MAX_ATTEMPTS)
+        {
+            placementPos = placementPos.below();
+            attempts++;
+        }
+        //If was able to find correct placement in under MAX_ATTEMPTS, then place it
+        if(attempts < MAX_ATTEMPTS)
+        {
+            //If we are attempting to place one where one already exist
+            if(world.getBlockState(placementPos).equals(this.defaultBlockState()))
+            {
+                //Add healthAbsored to it
+            }
+            else //If no sculk mass block exists here
+            {
+                world.setBlockAndUpdate(placementPos, this.defaultBlockState());
+            }
+
+        }
     }
 
     /**
@@ -184,6 +203,25 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         }
 
         return null; //Just Return null because We Are Not Modifying it
+    }
+
+    /**
+     * Determines what block the spike can be placed on <br>
+     * Goes through a list of valid blocks and checks if the
+     * given block is in that list.<br>
+     * @param blockState The block it is trying to be placed on
+     * @param iBlockReader ???
+     * @param pos The Position
+     * @return True/False
+     */
+    @Override
+    protected boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
+
+        if(!blockState.canBeReplaced(Fluids.WATER))
+        {
+            return true;
+        }
+        return false;
     }
 
     /**
