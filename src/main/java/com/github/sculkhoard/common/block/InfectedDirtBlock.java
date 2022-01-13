@@ -19,8 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -82,8 +80,15 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
      *  block will have a smaller amount of spread attempts assigned to it by the
      *  immediate parent.
      */
-    public static Block[] validSpreadBlocks = {Blocks.GRASS_BLOCK, Blocks.DIRT, Blocks.GRASS_PATH};
-    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 30;
+    public static Block[] validSpreadBlocks = {
+            Blocks.GRASS_BLOCK,
+            Blocks.DIRT,
+            Blocks.GRASS_PATH,
+            Blocks.COARSE_DIRT,
+            Blocks.FARMLAND
+    };
+    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 100;
+    public static float CHANCE_FOR_SCULK_VEIN = 0.75f;
 
     /**
      * The Constructor that takes in properties
@@ -136,19 +141,9 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
 
         boolean DEBUG_THIS = false;
-        //Get tile entity for this block
-        TileEntity tileEntity = serverWorld.getBlockEntity(bp);
-        InfectedDirtTile thisTile = null;
 
-        //If there is no error with the tile entity, then increment spreadAttempts and spread to it.
-        if(tileEntity instanceof InfectedDirtTile && tileEntity != null)
-        {
-            thisTile = ((InfectedDirtTile) tileEntity); //Cast
-        }
-        else
-        {
-            System.out.println("ERROR: InfectedDirtTile not found.");
-        }
+        //Get tile entity for this block
+        InfectedDirtTile thisTile = getTileEntity(serverWorld, bp);
 
         //If this block has not attempted to spread before
         if(thisTile != null && thisTile.getMaxSpreadAttempts() == -1)
@@ -194,7 +189,11 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     public void attemptSpread(InfectedDirtTile thisTile, ServerWorld serverWorld, BlockPos targetPos, Block targetBlock)
     {
         boolean DEBUG_THIS = false;
-        thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1); //Increment spreadAttempts
+
+        //Chance to not count a spread attempt
+        //if(serverWorld.random.nextDouble() <= thisTile.chanceToNotDegrade)
+            thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1);
+
         //If target block is one that we can spread to, spread to it.
         if(isValidSpreadBlock(targetBlock))
         {
@@ -206,8 +205,19 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
                         targetPos.getZ() + ") "
                 );
             }
+
             serverWorld.setBlockAndUpdate(targetPos, this.defaultBlockState()); //Set the block
             TileEntity childTile = serverWorld.getWorldServer().getBlockEntity(targetPos); //Get new block tile entity
+
+            //If no error with tile entity of child block, then setMaxSpreadAttempts()
+            if(childTile instanceof InfectedDirtTile && childTile != null)
+            {
+                ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
+            }
+            else
+            {
+                System.out.println("ERROR: Child InfectedDirtTile not found.");
+            }
 
             //if able, convert tree log block into infested variant above the new block
             if(BlockRegistry.INFESTED_LOG.get().isPositionValidForSpread(serverWorld, targetPos.above()))
@@ -227,18 +237,19 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
                 }
             }
 
+            //if able, place sculk vein above the new block
+            BlockPos[] positionsToSpreadVein = {
+                    targetPos.above(),
+                    targetPos.above().above(),
+                    targetPos.above().above().above(),
+                    targetPos.above().above().above().above()
+            };
+            for(BlockPos veinPos : positionsToSpreadVein)
+            {
+                if(serverWorld.random.nextFloat() <= CHANCE_FOR_SCULK_VEIN )
+                    BlockRegistry.VEIN.get().placeBlock(serverWorld, veinPos);
+            }
 
-            //If no error with tile entity of child block
-            if(childTile instanceof InfectedDirtTile && childTile != null)
-            {
-                //A 1/500% to not De-increment maxSpreadAttempts of child
-                if(serverWorld.random.nextInt(500) > 0)
-                    ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
-            }
-            else
-            {
-                System.out.println("ERROR: Child InfectedDirtTile not found.");
-            }
         }
     }
 
@@ -294,22 +305,15 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     {
         if(DEBUG_MODE)
         {
-            TileEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof InfectedDirtTile && tile != null)
-            {
+            InfectedDirtTile tile = getTileEntity(world, pos);
 
-                System.out.println("Block at (" +
-                        pos.getX() + ", " +
-                        pos.getY() + ", " +
-                        pos.getZ() + ") " +
-                        "maxSpreadAttempts: " + ((InfectedDirtTile) tile).getMaxSpreadAttempts() +
-                        " spreadAttempts: " + ((InfectedDirtTile) tile).getSpreadAttempts()
-                );
-            }
-            else
-            {
-                System.out.println("Error accessing InfectedDirtTile");
-            }
+            System.out.println("Block at (" +
+                    pos.getX() + ", " +
+                    pos.getY() + ", " +
+                    pos.getZ() + ") " +
+                    "maxSpreadAttempts: " + (tile.getMaxSpreadAttempts()) +
+                    " spreadAttempts: " + (tile.getSpreadAttempts()
+            ));
         }
 
         return null; //Just Return null because We Are Not Modifying it
@@ -365,6 +369,37 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
+    }
+
+    /**
+     * Just returns the tile entity
+     * @param world The world to check
+     * @param thisBlockPos The position to check
+     * @return The tile entity
+     */
+    public InfectedDirtTile getTileEntity(World world, BlockPos thisBlockPos)
+    {
+        //Get tile entity for this block
+        TileEntity tileEntity = world.getBlockEntity(thisBlockPos);
+        InfectedDirtTile thisTile = null;
+
+        if(thisTile == null)
+        {
+            if(!(thisTile instanceof InfectedDirtTile))
+            {
+                thisTile = (InfectedDirtTile) world.getBlockEntity(thisBlockPos);
+            }
+            else
+            {
+                System.out.println("Error: Tile of wrong instance.");
+            }
+        }
+        else
+        {
+            System.out.println("Error: Tile is null.");
+        }
+
+        return thisTile;
     }
 
 }

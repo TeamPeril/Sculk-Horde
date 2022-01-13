@@ -243,7 +243,7 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
 
     public void placeFloraAroundLog(ServerWorld serverWorld, BlockPos origin) throws Exception {
         boolean DEBUG_THIS = false;
-        Block vein = BlockRegistry.VEIN.get();
+        VeinBlock vein = BlockRegistry.VEIN.get();
         //BlockItemUseContext context = new BlockItemUseContext();
         //vein.getStateForPlacement();
         BlockPos[] possiblePositions = {
@@ -259,7 +259,8 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
             if(serverWorld.random.nextInt(10) < 9 &&
                     serverWorld.getBlockState(pos).canBeReplaced(Fluids.WATER))
             {
-
+                vein.placeBlock(serverWorld, pos);
+                /*
                 if(DEBUG_MODE && DEBUG_THIS)
                     System.out.println(
                         "Attempting to Place Sculk Vein" + "\n" +
@@ -278,7 +279,7 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
                 else if(pos.compareTo(origin.west()) == 0)
                     serverWorld.setBlockAndUpdate(pos, vein.defaultBlockState().setValue(EAST, true));
                 else throw new Exception("illegal argument for placeFloraAroundLog()");
-
+                */
             }
         }
 

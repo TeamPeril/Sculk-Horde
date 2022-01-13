@@ -2,6 +2,7 @@ package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -84,6 +85,8 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
 
     public static double HEALTH_ABSORB_MULTIPLIER = 2;
 
+    public static int infectedDirtMaxSpreadAttempts = 10;
+
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -147,7 +150,10 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 //Replace Block Under sculk mass with infected dirt if possible
                 if(BlockRegistry.INFECTED_DIRT.get().isValidSpreadBlock(world.getBlockState(placementPos.below()).getBlock()) )
                 {
-                    world.setBlockAndUpdate(placementPos.below(), BlockRegistry.INFECTED_DIRT.get().defaultBlockState());
+                    InfectedDirtBlock infectedDirt = BlockRegistry.INFECTED_DIRT.get();
+                    world.setBlockAndUpdate(placementPos.below(), infectedDirt.defaultBlockState());
+                    infectedDirt.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infectedDirtMaxSpreadAttempts);
+
                 }
             }
         }

@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.entity.SculkLivingEntity;
+import com.github.sculkhoard.core.BlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -8,12 +8,9 @@ import net.minecraft.block.VineBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -103,9 +100,100 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.VINE)
-                .noOcclusion();
+                .noOcclusion()
+                .noCollission();
     }
 
+    /**
+     * Will attempt to place the sculk vein if there is a solid wall.
+     * @param worldIn The world to place it in
+     * @param blockPosIn The desired position
+     */
+    public void placeBlock(World worldIn, BlockPos blockPosIn)
+    {
+        if(worldIn.getBlockState(blockPosIn).isAir())
+        {
+            Block vein = BlockRegistry.VEIN.get();
+            BlockState northBlock = worldIn.getBlockState(blockPosIn.north());
+            BlockState eastBlock = worldIn.getBlockState(blockPosIn.east());
+            BlockState southBlock = worldIn.getBlockState(blockPosIn.south());
+            BlockState westBlock = worldIn.getBlockState(blockPosIn.west());
+
+            if(isValidFace(worldIn, northBlock, blockPosIn, Direction.SOUTH))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(NORTH, true));
+            }
+            else if(isValidFace(worldIn, eastBlock, blockPosIn, Direction.WEST))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(EAST, true));
+            }
+            else if(isValidFace(worldIn, southBlock, blockPosIn, Direction.NORTH))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(SOUTH, true));
+            }
+            else if(isValidFace(worldIn, westBlock, blockPosIn, Direction.EAST))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(WEST, true));
+            }
+            /*
+            if(northBlock.isFaceSturdy(worldIn, blockPosIn, Direction.SOUTH)
+                    && !(northBlock.is(BlockRegistry.CRUST.get()))
+                    && !(northBlock.is(BlockRegistry.INFECTED_DIRT.get())))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(NORTH, true));
+            }
+            else if(eastBlock.isFaceSturdy(worldIn, blockPosIn, Direction.WEST)
+                    && !(eastBlock.is(BlockRegistry.CRUST.get()))
+                    && !(eastBlock.is(BlockRegistry.INFECTED_DIRT.get())))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(EAST, true));
+            }
+            else if(southBlock.isFaceSturdy(worldIn, blockPosIn, Direction.NORTH)
+                    && !(southBlock.is(BlockRegistry.CRUST.get()))
+                    && !(southBlock.is(BlockRegistry.INFECTED_DIRT.get())))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(SOUTH, true));
+            }
+            else if(westBlock.isFaceSturdy(worldIn, blockPosIn, Direction.EAST)
+                    && !(westBlock.is(BlockRegistry.CRUST.get()))
+                    && !(westBlock.is(BlockRegistry.INFECTED_DIRT.get())))
+            {
+                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(WEST, true));
+            }
+
+             */
+        }
+    }
+
+    /**
+     * Determines if a sculk vein can be placed on a block. <br>
+     * It won't be placed if face isn't sturdy or if infected dirt can spread to it.
+     * @param worldIn The world
+     * @param blockState The blockstate of the target block
+     * @param blockPosIn The position of the block
+     * @param direction The direction of the face
+     * @return
+     */
+    public boolean isValidFace(World worldIn, BlockState blockState, BlockPos blockPosIn, Direction direction)
+    {
+        if(!blockState.isFaceSturdy(worldIn, blockPosIn, direction))
+        {
+            return false;
+        }
+        else if(BlockRegistry.INFECTED_DIRT.get().isValidSpreadBlock(blockState.getBlock()))
+        {
+            return false;
+        }
+        else if(blockState.is(BlockRegistry.CRUST.get()))
+        {
+            return false;
+        }
+        else if(blockState.is(BlockRegistry.INFECTED_DIRT.get()))
+        {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * This is the description the item of the block will display when hovered over.

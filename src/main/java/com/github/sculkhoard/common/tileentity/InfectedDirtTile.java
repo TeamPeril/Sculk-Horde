@@ -13,15 +13,22 @@ public class InfectedDirtTile extends TileEntity implements IForgeTileEntity {
      * maxSpreadAttempts is the max number of times the InfectedDirt can
      * try to spread. It is not guaranteed that every attempt is successful. <br>
      * maxSpreadAttemptsIdentifier is the string used to identify maxSpreadAttempts
-     * in CompoundNBT. It allows us to read/write to it.<br>
+     * in CompoundNBT. It allows us to read/write to it.<br><br>
+     *
      * spreadAttempts tracks the number of times the block has tried to spread.<br>
      * spreadAttemptsIdentifier is the string used to read/write spreadAttempts
-     * from/to CompoundNBT.
+     * from/to CompoundNBT. <br><br>
+     *
+     * chanceToNotDegrade is the chance that a spread attempt wont count towards
+     * the spreadAttempts counter.<br>
+     * chanceToNotDegradeIdentifier is the string used to read/write from/to CompoundNBT.
      */
     public int maxSpreadAttempts = -1;
     public String maxSpreadAttemptsIdentifier = "maxSpreadAttempts";
     public int spreadAttempts = 0;
     public String spreadAttemptsIdentifier = "spreadAttempts";
+    public int chanceToNotDegrade = 1/500;
+    public String chanceToNotDegradeIdentifier = "chanceToNotDegrade";
 
     /**
      * The Constructor that takes in properties
@@ -49,6 +56,7 @@ public class InfectedDirtTile extends TileEntity implements IForgeTileEntity {
         super.load(blockState, compoundNBT);
         this.maxSpreadAttempts = compoundNBT.getInt(maxSpreadAttemptsIdentifier);
         this.spreadAttempts = compoundNBT.getInt(spreadAttemptsIdentifier);
+        this.chanceToNotDegrade = compoundNBT.getInt(chanceToNotDegradeIdentifier);
     }
 
     /**
@@ -61,6 +69,7 @@ public class InfectedDirtTile extends TileEntity implements IForgeTileEntity {
         super.save(compoundNBT);
         compoundNBT.putInt(maxSpreadAttemptsIdentifier, this.maxSpreadAttempts);
         compoundNBT.putInt(spreadAttemptsIdentifier, this.spreadAttempts);
+        compoundNBT.putInt(chanceToNotDegradeIdentifier, this.chanceToNotDegrade);
 
         return compoundNBT;
     }

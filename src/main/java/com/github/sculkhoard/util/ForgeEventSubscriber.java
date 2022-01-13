@@ -1,5 +1,6 @@
 package com.github.sculkhoard.util;
 
+import com.github.sculkhoard.common.block.SculkMassBlock;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EffectRegistry;
@@ -9,8 +10,6 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +43,8 @@ public class ForgeEventSubscriber {
                     entityLevel.addFreshEntity(mite);
 
                     //Spawn Sculk Mass
-                    BlockRegistry.SCULK_MASS.get().spawn(entityLevel, entityPosition, entityHealth);
+                    SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
+                    sculkMass.spawn(entityLevel, entityPosition, entityHealth);
                     //Do infectionDamage to victim per mite
                     entity.hurt(DamageSource.GENERIC, infectionDamage);
                 }
