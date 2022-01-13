@@ -1,9 +1,6 @@
 package com.github.sculkhoard.core;
 
-import com.github.sculkhoard.common.tileentity.CocoonRootTile;
-import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
-import com.github.sculkhoard.common.tileentity.InfestedLogTile;
-import com.github.sculkhoard.common.tileentity.InfestedStoneActiveTile;
+import com.github.sculkhoard.common.tileentity.*;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -34,6 +31,10 @@ public class TileEntityRegistry {
     public static RegistryObject<TileEntityType<InfestedStoneActiveTile>> INFESTED_STONE_ACTIVE_TILE =
             TILE_ENTITIES.register("infested_stone_active_tile", () -> TileEntityType.Builder.of(
                     InfestedStoneActiveTile::new, BlockRegistry.INFESTED_STONE_ACTIVE.get()).build(null));
+
+    public static RegistryObject<TileEntityType<SculkMassTile>> SCULK_MASS_TILE =
+            TILE_ENTITIES.register("sculk_mass_tile", () -> TileEntityType.Builder.of(
+                    SculkMassTile::new, BlockRegistry.SCULK_MASS.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         TILE_ENTITIES.register(eventBus);

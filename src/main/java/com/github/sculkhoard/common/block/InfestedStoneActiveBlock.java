@@ -81,7 +81,7 @@ public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
      *  immediate parent.
      */
     public static Block[] validSpreadBlocks = {Blocks.STONE};
-    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 4;
+    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 10;
 
     /**
      * The Constructor that takes in properties
@@ -168,7 +168,7 @@ public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
         }
         else
         {
-            if(tileEntity instanceof InfestedStoneActiveTile)
+            if(!(tileEntity instanceof InfestedStoneActiveTile))
             {
                 System.out.println("ERROR: Tile Entity is not of correct type.");
             }
@@ -269,7 +269,11 @@ public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
     {
         BlockPos[] spreadDirections = {
                 origin.above(),
-                origin.below()
+                origin.below(),
+                origin.north(),
+                origin.east(),
+                origin.south(),
+                origin.west()
         };
         return spreadDirections[serverWorld.random.nextInt(spreadDirections.length)];
     }

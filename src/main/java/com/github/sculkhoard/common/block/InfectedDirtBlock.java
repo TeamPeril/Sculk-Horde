@@ -135,6 +135,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
 
+        boolean DEBUG_THIS = false;
         //Get tile entity for this block
         TileEntity tileEntity = serverWorld.getBlockEntity(bp);
         InfectedDirtTile thisTile = null;
@@ -153,7 +154,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         if(thisTile != null && thisTile.getMaxSpreadAttempts() == -1)
         {
             thisTile.setMaxSpreadAttempts(DEFAULT_MAX_SPREAD_ATTEMPTS);//Set to default
-            if(DEBUG_MODE)
+            if(DEBUG_MODE && DEBUG_THIS)
             {
                 System.out.println("Block at (" +
                         bp.getX() + ", " +
@@ -230,7 +231,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
             //If no error with tile entity of child block
             if(childTile instanceof InfectedDirtTile && childTile != null)
             {
-                //A 1/500 to not De-increment maxSpreadAttempts of child
+                //A 1/500% to not De-increment maxSpreadAttempts of child
                 if(serverWorld.random.nextInt(500) > 0)
                     ((InfectedDirtTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
             }

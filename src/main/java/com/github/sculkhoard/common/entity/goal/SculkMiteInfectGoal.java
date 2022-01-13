@@ -32,7 +32,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
      */
     public void start()
     {
-        if(this.mob.getTarget() != null)
+        if(this.mob.getTarget() != null && EntityAlgorithms.isLivingEntityInfected(this.mob.getTarget()))
         {
             super.start();
         }

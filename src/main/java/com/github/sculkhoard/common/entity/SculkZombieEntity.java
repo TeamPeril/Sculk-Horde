@@ -31,11 +31,11 @@ import java.util.Random;
 public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable {
 
     /**
-     * In order to create a mob, the following files were created/edited.<br>
+     * In order to create a mob, the following java files were created/edited.<br>
      * Edited core/ EntityRegistry.java<br>
      * Edited util/ ModEventSubscriber.java<br>
      * Edited client/ ClientModEventSubscriber.java<br>
-     * Edited common/world/ModWorldEvents.java<br>
+     * Edited common/world/ModWorldEvents.java (this might not be necessary)<br>
      * Edited common/world/gen/ModEntityGen.java<br>
      * Added common/entity/ SculkZombie.java<br>
      * Added client/model/entity/ SculkZombieModel.java<br>
@@ -176,7 +176,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new HurtByTargetGoal(this).setAlertOthers(),
+                        new HurtByTargetGoal(this).setAlertOthers(), //This doesnt work
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
                         new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)

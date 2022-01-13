@@ -7,6 +7,8 @@ import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.PotionEvent;
@@ -20,6 +22,10 @@ public class ForgeEventSubscriber {
     public static void onPotionExpireEvent(PotionEvent.PotionExpiryEvent event)
     {
         EffectInstance effectInstance = event.getPotionEffect();
+
+        /**
+         * If Sculk Infection, spawn mites and mass.
+         */
         if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
         {
             LivingEntity entity = event.getEntityLiving();
@@ -29,15 +35,22 @@ public class ForgeEventSubscriber {
                 int infectionDamage = 4;
                 for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
                 {
-                    SculkMiteEntity mite = new SculkMiteEntity(entity.level);
+                    World entityLevel = entity.level;
+                    BlockPos entityPosition = entity.blockPosition();
+                    float entityHealth = entity.getMaxHealth();
+
+                    SculkMiteEntity mite = new SculkMiteEntity(entityLevel);
                     mite.setPos(entity.getX(), entity.getY(), entity.getZ());
-                    entity.level.addFreshEntity(mite);
+                    entityLevel.addFreshEntity(mite);
+
                     //Spawn Sculk Mass
-                    BlockRegistry.SCULK_MASS.get().spawn(entity.level, entity.blockPosition(), entity.getMaxHealth());
+                    BlockRegistry.SCULK_MASS.get().spawn(entityLevel, entityPosition, entityHealth);
                     //Do infectionDamage to victim per mite
                     entity.hurt(DamageSource.GENERIC, infectionDamage);
                 }
             }
         }
     }
+
+
 }

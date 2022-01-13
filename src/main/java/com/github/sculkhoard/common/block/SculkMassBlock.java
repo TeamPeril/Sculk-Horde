@@ -1,14 +1,21 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.tileentity.InfestedStoneActiveTile;
+import com.github.sculkhoard.common.entity.SculkLivingEntity;
+import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
+import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -19,12 +26,14 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
@@ -73,7 +82,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
-    public static double HEALTH_ABSORB_MULTIPLIER = 1.5;
+    public static double HEALTH_ABSORB_MULTIPLIER = 2;
 
     /**
      * The Constructor that takes in properties
@@ -106,11 +115,18 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 .noDrops();
     }
 
+    /**
+     * Spawns A Sculk Mass
+     * @param world
+     * @param originPos
+     * @param healthAbsorbed
+     */
     public void spawn(World world, BlockPos originPos, float healthAbsorbed)
     {
         BlockPos placementPos = originPos;
         int MAX_ATTEMPTS = 64;
         int attempts = 0;
+        SculkMassTile thisTile;
 
         //Try and find solid ground to place this block on
         while(world.getBlockState(placementPos.below()).canBeReplaced(Fluids.WATER) && attempts <= MAX_ATTEMPTS)
@@ -121,16 +137,19 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         //If was able to find correct placement in under MAX_ATTEMPTS, then place it
         if(attempts < MAX_ATTEMPTS)
         {
-            //If we are attempting to place one where one already exist
-            if(world.getBlockState(placementPos).equals(this.defaultBlockState()))
-            {
-                //Add healthAbsored to it
-            }
-            else //If no sculk mass block exists here
+            //If sculk mass does not yet exist, add it
+            if(!world.getBlockState(placementPos).equals(this.defaultBlockState()))
             {
                 world.setBlockAndUpdate(placementPos, this.defaultBlockState());
-            }
+                thisTile = getTileEntity(world, placementPos);
+                thisTile.addStoredSculkMass( (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER));
 
+                //Replace Block Under sculk mass with infected dirt if possible
+                if(BlockRegistry.INFECTED_DIRT.get().isValidSpreadBlock(world.getBlockState(placementPos.below()).getBlock()) )
+                {
+                    world.setBlockAndUpdate(placementPos.below(), BlockRegistry.INFECTED_DIRT.get().defaultBlockState());
+                }
+            }
         }
     }
 
@@ -141,7 +160,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     public boolean isRandomlyTicking(BlockState blockState) {
-        return false;
+        return true;
     }
 
     /**
@@ -154,17 +173,54 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
         boolean DEBUG_THIS = false;
+        SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
+        spawnSculkMob(serverWorld, thisBlockPos, thisTile.getStoredSculkMass());
 
+    }
+
+    /**
+     * Just returns the tile entity
+     * @param world The world to check
+     * @param thisBlockPos The position to check
+     * @return The tile entity
+     */
+    public SculkMassTile getTileEntity(World world, BlockPos thisBlockPos)
+    {
         //Get tile entity for this block
-        TileEntity tileEntity = serverWorld.getBlockEntity(thisBlockPos);
-        InfestedStoneActiveTile thisTile = null;
+        TileEntity tileEntity = world.getBlockEntity(thisBlockPos);
+        SculkMassTile thisTile = null;
         try
         {
-            thisTile = (InfestedStoneActiveTile) serverWorld.getBlockEntity(thisBlockPos);
+            thisTile = (SculkMassTile) world.getBlockEntity(thisBlockPos);
         }
         catch (Exception e)
         {
             System.out.println(e.toString());
+        }
+        return thisTile;
+    }
+
+    /**
+     * Will spawn a sculk mob based on the sculk mass given.
+     * @param world The world to spawn it in
+     * @param pos The position to spawn it in
+     * @param sculkMass The amount of mass that can be used to spawn it.
+     * @return
+     */
+    public void spawnSculkMob(World world, BlockPos pos, int sculkMass)
+    {
+        //Will prioritize spawning mobs higher on this list
+        ArrayList<EntityType> spawnPool = new ArrayList<>();
+        spawnPool.add(EntityRegistry.SCULK_ZOMBIE.get());
+
+        //List<Supplier<EntityType<? extends SculkLivingEntity>>> spawnPool2 = new ArrayList<>();
+        //spawnPool2.add( () -> new SculkZombieEntity(world));
+
+        for(EntityType entity : spawnPool)
+        {
+            entity.spawn((ServerWorld) world, null, null, pos, SpawnReason.NATURAL, true, true);
+            //if(sculkMass >= entity.getMaxHealth())
+            world.destroyBlock(pos, false);
         }
     }
 
@@ -185,20 +241,19 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         if(DEBUG_MODE)
         {
             TileEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof InfestedStoneActiveTile && tile != null)
+            if(tile instanceof SculkMassTile && tile != null)
             {
 
                 System.out.println("Block at (" +
                         pos.getX() + ", " +
                         pos.getY() + ", " +
                         pos.getZ() + ") " +
-                        "maxSpreadAttempts: " + ((InfestedStoneActiveTile) tile).getMaxSpreadAttempts() +
-                        " spreadAttempts: " + ((InfestedStoneActiveTile) tile).getSpreadAttempts()
+                        "getStoredSculkMass: " + ((SculkMassTile) tile).getStoredSculkMass()
                 );
             }
             else
             {
-                System.out.println("Error accessing InfestedStoneActiveTile");
+                System.out.println("Error accessing tile entity");
             }
         }
 
@@ -249,7 +304,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return TileEntityRegistry.INFESTED_STONE_ACTIVE_TILE.get().create();
+        return TileEntityRegistry.SCULK_MASS_TILE.get().create();
     }
 
     /**
