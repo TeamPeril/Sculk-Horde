@@ -73,6 +73,9 @@ public class BlockRegistry {
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
 
+	public static final RegistryObject<SmallShroomBlock> SMALL_SHROOM =
+			registerBlock("small_shroom", () -> new SmallShroomBlock());
+
 	public static final RegistryObject<SculkFloraBlock> GRASS =
 			registerBlock("grass", () -> new SculkFloraBlock());
 

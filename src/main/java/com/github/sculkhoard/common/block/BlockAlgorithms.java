@@ -28,7 +28,7 @@ public class BlockAlgorithms {
             // A 1/100 chance to be a spike
             if(world.random.nextInt(100) == 0) selectedFlora = BlockRegistry.SPIKE.get();
             // A 1/100 chance to be a cocoon root
-            //else if(world.random.nextInt(100) == 1) selectedFlora = BlockRegistry.COCOON_ROOT.get();
+            else if(world.random.nextInt(100) == 1) selectedFlora = BlockRegistry.SMALL_SHROOM.get();
             // Else just a random common flora
             else selectedFlora = commonFlora[world.random.nextInt(commonFlora.length)];
 

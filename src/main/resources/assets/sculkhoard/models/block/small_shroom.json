@@ -1,0 +1,6 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "sculkhoard:block/small_shroom"
+  }
+}

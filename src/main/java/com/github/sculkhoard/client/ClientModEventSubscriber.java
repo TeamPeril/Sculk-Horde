@@ -31,6 +31,10 @@ public class ClientModEventSubscriber {
         });
 
         event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout());
+        });
+
+        event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
         });
 
