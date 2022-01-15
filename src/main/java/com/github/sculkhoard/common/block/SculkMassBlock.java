@@ -1,11 +1,9 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.entity.SculkLivingEntity;
-import com.github.sculkhoard.common.entity.SculkZombieEntity;
-import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
+import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
-import com.github.sculkhoard.core.EntityRegistry;
+import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -15,8 +13,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -31,10 +27,7 @@ import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
@@ -126,7 +119,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public void spawn(World world, BlockPos originPos, float healthAbsorbed)
     {
-        BlockPos placementPos = originPos;
+        BlockPos placementPos = originPos.above();
         int MAX_ATTEMPTS = 64;
         int attempts = 0;
         SculkMassTile thisTile;
@@ -171,6 +164,8 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
 
     /**
      * Gets called every time the block randomly ticks.
+     * Will Attempt to call in reiforcements depending on how much sculk mass
+     * was absored.
      * @param blockState The current Blockstate
      * @param serverWorld The current ServerWorld
      * @param thisBlockPos The current Block Position
@@ -180,7 +175,18 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
         boolean DEBUG_THIS = false;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
-        spawnSculkMob(serverWorld, thisBlockPos, thisTile.getStoredSculkMass());
+        EntityFactory entityFactory = SculkHoard.entityFactory;
+        //spawnSculkMob(serverWorld, thisBlockPos, thisTile.getStoredSculkMass());
+
+        //Attempt to call in reinforcements and then update stored sculk mass
+        int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos);
+        thisTile.setStoredSculkMass(remainingBalance);
+
+        //Destroy if run out of sculk mass
+        if(thisTile.getStoredSculkMass() <= 0)
+        {
+            serverWorld.destroyBlock(thisBlockPos, false);
+        }
 
     }
 
@@ -211,10 +217,10 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param world The world to spawn it in
      * @param pos The position to spawn it in
      * @param sculkMass The amount of mass that can be used to spawn it.
-     * @return
      */
     public void spawnSculkMob(World world, BlockPos pos, int sculkMass)
     {
+        /*
         //Will prioritize spawning mobs higher on this list
         ArrayList<EntityType> spawnPool = new ArrayList<>();
         spawnPool.add(EntityRegistry.SCULK_ZOMBIE.get());
@@ -228,6 +234,9 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
             //if(sculkMass >= entity.getMaxHealth())
             world.destroyBlock(pos, false);
         }
+        */
+        //int remainingBalance = SculkHoard.entityFactory.requestReinforcementAny(sculkMass, world, pos);
+
     }
 
     /**
@@ -278,11 +287,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     @Override
     protected boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
 
-        if(!blockState.canBeReplaced(Fluids.WATER))
-        {
-            return true;
-        }
-        return false;
+        return !blockState.canBeReplaced(Fluids.WATER);
     }
 
     /**
