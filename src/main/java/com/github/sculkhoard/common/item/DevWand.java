@@ -3,6 +3,7 @@ package com.github.sculkhoard.common.item;
 import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.core.WorldDataSaver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
@@ -61,9 +62,14 @@ public class DevWand extends Item implements IForgeItem {
 		PlayerEntity playerIn = context.getPlayer();
 		World worldIn = context.getLevel();
 
-		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this))
+		//If Player is holding shift, just output sculk mass of world
+		if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
 		{
+		}
+		//If item is not on cool down
+		else if(!playerIn.getCooldowns().isOnCooldown(this))
+		{
+			//Ray trace to see what block the player is looking at
 			BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
 
 			double targetX;
@@ -85,15 +91,16 @@ public class DevWand extends Item implements IForgeItem {
 				targetZ = (int) targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
 			}
 
-			playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5)); //Give Player Effect
-
-			SculkMiteEntity entity = new SculkMiteEntity(worldIn); //Create Zombie Instance
-
-			entity.setPos(targetX, targetY, targetZ); //Set its position to player
-
-			worldIn.addFreshEntity(entity);//I think this spawns the actual instance into the world
-
-			playerIn.getCooldowns().addCooldown(this, 20); //Cool down for second (20 ticks per second)
+			//Give Player Effect
+			playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
+			//Create Mob Instance
+			SculkMiteEntity entity = new SculkMiteEntity(worldIn);
+			//Set Mob's Position
+			entity.setPos(targetX, targetY, targetZ);
+			//Spawn instance in world
+			worldIn.addFreshEntity(entity);
+			//Set Wand on cool down
+			playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 
 			return ActionResultType.PASS;
 		}

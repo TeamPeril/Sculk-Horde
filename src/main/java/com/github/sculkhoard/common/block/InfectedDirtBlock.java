@@ -89,6 +89,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
     };
     public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 100;
     public static float CHANCE_FOR_SCULK_VEIN = 0.75f;
+    public static final int TIMES_TO_SPREAD_PER_RANDOM_TICK = 10;
 
     /**
      * The Constructor that takes in properties
@@ -160,21 +161,25 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
             }
         }
 
-        //If max spread attempts has not been reached && Given a 25% chance && the area is loaded, spread
-        if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(bp,4))
+        //Attempt to spread TIMES_TO_SPREAD_PER_RANDOM_TICK times per random tick
+        for(int spreadAttempts = 0; spreadAttempts < TIMES_TO_SPREAD_PER_RANDOM_TICK; spreadAttempts ++)
         {
-            BlockPos spreadPosition = getRandomAdjacentBlockPos(bp, serverWorld); //Get a random adjacent block position
-            Block spreadBlock = serverWorld.getBlockState(spreadPosition).getBlock(); //Get the block at this position
-            attemptSpread(thisTile, serverWorld, spreadPosition, spreadBlock); //Attempt to spread to this position
-        }
-        //If this block has run out of spread attempts, convert to crust
-        else if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
-        {
-            serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());//Convert to crust
-            //Given a 50% chance, place down sculk flora
-            if(serverWorld.random.nextInt(2) <= 0)
+            //If max spread attempts has not been reached && Given a 25% chance && the area is loaded, spread
+            if (thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(bp, 4))
             {
-                BlockAlgorithms.placeSculkFlora(bp.above(), serverWorld);
+                BlockPos spreadPosition = getRandomAdjacentBlockPos(bp, serverWorld); //Get a random adjacent block position
+                Block spreadBlock = serverWorld.getBlockState(spreadPosition).getBlock(); //Get the block at this position
+                attemptSpread(thisTile, serverWorld, spreadPosition, spreadBlock); //Attempt to spread to this position
+            }
+            //If this block has run out of spread attempts, convert to crust
+            else if (thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
+            {
+                serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());//Convert to crust
+                //Given a 50% chance, place down sculk flora
+                if (serverWorld.random.nextInt(2) <= 0) {
+                    BlockAlgorithms.placeSculkFlora(bp.above(), serverWorld);
+                }
+                break;
             }
         }
     }

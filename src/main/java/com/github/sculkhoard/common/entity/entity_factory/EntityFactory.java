@@ -13,8 +13,9 @@ import java.util.ArrayList;
  * The Entity Factory is a data structure that serves as a way for the sculk to
  * make a transaction by spawning a mob, at a cost. It will prioritize spawning the highest
  * costing mob. Right now there is no world variable that stores the amount of accumulated
- * mass by the sculk, so we will worry about
- * that later.
+ * mass by the sculk, so we will worry about that later.
+ * <br>
+ * NOTE: Items are added to this in ModEventSubscriber.java
  */
 public class EntityFactory {
 

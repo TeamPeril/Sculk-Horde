@@ -10,12 +10,21 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.PlacementType;
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.register;
 
 @Mod.EventBusSubscriber(modid = SculkHoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventSubscriber {
+
+    @SubscribeEvent
+    public static void onCommonSetup(FMLCommonSetupEvent event)
+    {
+        //Add entries to the entity factory (please add them in order, I don't want to sort)
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), 1);
+    }
 
     /* registerEntities
      * @Description Registers entities

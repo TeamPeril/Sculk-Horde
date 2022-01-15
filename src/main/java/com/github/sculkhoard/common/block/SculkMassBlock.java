@@ -138,7 +138,17 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
             {
                 world.setBlockAndUpdate(placementPos, this.defaultBlockState());
                 thisTile = getTileEntity(world, placementPos);
-                thisTile.addStoredSculkMass( (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER));
+
+                /** There is some weird bug where this can be null, not sure why*/
+                if(thisTile != null) thisTile.addStoredSculkMass( (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER));
+                else
+                {
+                    System.out.println("Attempted to Access NULL tile at "
+                            + placementPos.toString()
+                            + "which is of blockstate "
+                            + world.getBlockState(placementPos).toString()
+                    );
+                }
 
                 //Replace Block Under sculk mass with infected dirt if possible
                 if(BlockRegistry.INFECTED_DIRT.get().isValidSpreadBlock(world.getBlockState(placementPos.below()).getBlock()) )
