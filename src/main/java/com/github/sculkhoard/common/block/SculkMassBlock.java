@@ -4,6 +4,7 @@ import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import com.github.sculkhoard.core.SculkWorldData;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -22,7 +23,9 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -139,7 +142,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 world.setBlockAndUpdate(placementPos, this.defaultBlockState());
                 thisTile = getTileEntity(world, placementPos);
 
-                /** There is some weird bug where this can be null, not sure why*/
+                //There is some weird bug where this can be null, not sure why
                 if(thisTile != null) thisTile.addStoredSculkMass( (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER));
                 else
                 {
@@ -183,7 +186,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
-        boolean DEBUG_THIS = false;
+        boolean DEBUG_THIS = true;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
         //spawnSculkMob(serverWorld, thisBlockPos, thisTile.getStoredSculkMass());
@@ -197,6 +200,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         {
             serverWorld.destroyBlock(thisBlockPos, false);
         }
+
 
     }
 

@@ -4,10 +4,14 @@ import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import com.github.sculkhoard.core.SculkWorldData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -24,7 +28,9 @@ public class ModEventSubscriber {
         //Add entries to the entity factory (please add them in order, I don't want to sort)
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20);
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), 1);
+        
     }
+
 
     /* registerEntities
      * @Description Registers entities
@@ -43,5 +49,6 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_MITE.get(), SculkMiteEntity.createAttributes().build());
     }
+
 }
 

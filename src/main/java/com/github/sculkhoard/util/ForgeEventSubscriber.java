@@ -10,9 +10,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.event.entity.living.PotionEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -24,9 +22,7 @@ public class ForgeEventSubscriber {
     {
         EffectInstance effectInstance = event.getPotionEffect();
 
-        /**
-         * If Sculk Infection, spawn mites and mass.
-         */
+        //If Sculk Infection, spawn mites and mass.
         if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
         {
             LivingEntity entity = event.getEntityLiving();
