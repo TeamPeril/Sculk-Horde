@@ -49,5 +49,9 @@ public class ClientModEventSubscriber {
         event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.translucent());
         });
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.INFESTED_LOG.get(), RenderType.translucent());
+        });
     }
 }

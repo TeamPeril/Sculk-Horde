@@ -106,7 +106,8 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.STONE);
+                .sound(SoundType.STONE)
+                .noOcclusion();
         return prop;
     }
 
