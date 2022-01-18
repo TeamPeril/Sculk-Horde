@@ -158,7 +158,8 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                         //LookAtGoal(mob, targetType, lookDistance)
                         new LookAtGoal(this, PigEntity.class, 8.0F),
                         //LookRandomlyGoal(mob)
-                        new LookRandomlyGoal(this)
+                        new LookRandomlyGoal(this),
+                        new OpenDoorGoal(this, true)
                 };
         return goals;
     }

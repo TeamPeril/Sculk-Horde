@@ -1,7 +1,8 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
-import com.github.sculkhoard.core.TileEntityRegistry;
+import com.github.sculkhoard.core.BlockRegistry;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -9,26 +10,24 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
+
 import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
-public class CocoonGoupBlock extends Block implements IForgeBlock {
+public class CocoonBlock extends Block implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -77,7 +76,7 @@ public class CocoonGoupBlock extends Block implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public CocoonGoupBlock(Properties prop) {
+    public CocoonBlock(Properties prop) {
         super(prop);
     }
 
@@ -85,8 +84,25 @@ public class CocoonGoupBlock extends Block implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public CocoonGoupBlock() {
+    public CocoonBlock() {
         this(getProperties());
+    }
+
+
+    /**
+     * Determines the properties of a block.<br>
+     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
+     * @return The Properties of the block
+     */
+    public static Properties getProperties()
+    {
+        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+                .strength(HARDNESS, BLAST_RESISTANCE)
+                .harvestTool(PREFERRED_TOOL)
+                .harvestLevel(HARVEST_LEVEL)
+                .noOcclusion()
+                .sound(SoundType.SLIME_BLOCK);
+        return prop;
     }
 
     @Override
@@ -94,48 +110,6 @@ public class CocoonGoupBlock extends Block implements IForgeBlock {
         return true;
     }
 
-    @Nullable
-    @Override
-    public PathNodeType getAiPathNodeType(BlockState state, IBlockReader world, BlockPos pos, @Nullable MobEntity entity) {
-        return PathNodeType.WATER;
-    }
-
-    /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE)
-        {
-            TileEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof InfectedDirtTile && tile != null)
-            {
-
-                System.out.println("Block at (" +
-                        pos.getX() + ", " +
-                        pos.getY() + ", " +
-                        pos.getZ() + ") " +
-                        "maxSpreadAttempts: " + ((InfectedDirtTile) tile).getMaxSpreadAttempts() +
-                        " spreadAttempts: " + ((InfectedDirtTile) tile).getSpreadAttempts()
-                );
-            }
-            else
-            {
-                System.out.println("Error accessing InfectedDirtTile");
-            }
-        }
-
-        return null; //Just Return null because We Are Not Modifying it
-    }
 
     /**
      * Determines if a specified mob type can spawn on this block, returning false will
@@ -149,23 +123,41 @@ public class CocoonGoupBlock extends Block implements IForgeBlock {
      */
     public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
     {
+        return false;
+    }
+
+    public boolean validPlacement(World world, BlockPos blockPos)
+    {
+        if(world.getBlockState(blockPos.below()).is(BlockRegistry.COCOON_ROOT.get())
+            && world.getBlockState(blockPos).canBeReplaced(Fluids.WATER))
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Determines if this block will randomly tick or not.
+     * @param blockState The current blockstate
+     * @return True/False
+     */
+    @Override
+    public boolean isRandomlyTicking(BlockState blockState) {
         return true;
     }
 
     /**
-     * Determines the properties of a block.<br>
-     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
-     * @return The Properties of the block
+     * Gets called every time the block randomly ticks.
+     * @param blockState The current Blockstate
+     * @param serverWorld The current ServerWorld
+     * @param bp The current Block Position
+     * @param random ???
      */
-    public static Properties getProperties()
+    @Override
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
-                .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
-                .noCollission()
-                .noOcclusion()
-                .sound(SoundType.SLIME_BLOCK);
-        return prop;
+        SculkHoard.entityFactory.requestReinforcementAny(1, serverWorld, bp, false);
     }
+
 }

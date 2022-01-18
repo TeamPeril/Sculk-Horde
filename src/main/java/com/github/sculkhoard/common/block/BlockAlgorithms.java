@@ -25,14 +25,32 @@ public class BlockAlgorithms {
         if(targetBlock == Blocks.AIR)
         {
             Block selectedFlora;
+            int chance = world.random.nextInt(100);
             // A 1/100 chance to be a spike
-            if(world.random.nextInt(100) == 0) selectedFlora = BlockRegistry.SPIKE.get();
+            if(chance == 0)
+            {
+                selectedFlora = BlockRegistry.SPIKE.get();
+                world.setBlockAndUpdate(targetPos, selectedFlora.defaultBlockState());
+            }
             // A 1/100 chance to be a cocoon root
-            else if(world.random.nextInt(100) == 1) selectedFlora = BlockRegistry.SMALL_SHROOM.get();
+            else if(chance == 1)
+            {
+                selectedFlora = BlockRegistry.SMALL_SHROOM.get();
+                world.setBlockAndUpdate(targetPos, selectedFlora.defaultBlockState());
+            }
+            else if(chance == 2)
+            {
+                BlockRegistry.COCOON_ROOT.get().placeBlock(world, targetPos);
+            }
             // Else just a random common flora
-            else selectedFlora = commonFlora[world.random.nextInt(commonFlora.length)];
+            else
+            {
+                selectedFlora = commonFlora[world.random.nextInt(commonFlora.length)];
+                world.setBlockAndUpdate(targetPos, selectedFlora.defaultBlockState());
+            }
 
-            world.setBlockAndUpdate(targetPos, selectedFlora.defaultBlockState());
+
+
 
         }
     }

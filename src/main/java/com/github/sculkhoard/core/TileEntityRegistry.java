@@ -20,10 +20,6 @@ public class TileEntityRegistry {
             TILE_ENTITIES.register("infected_dirt_tile", () -> TileEntityType.Builder.of(
                     InfectedDirtTile::new, BlockRegistry.INFECTED_DIRT.get()).build(null));
 
-    public static RegistryObject<TileEntityType<CocoonRootTile>> COCOON_ROOT_TILE =
-            TILE_ENTITIES.register("cocoon_root_tile", () -> TileEntityType.Builder.of(
-                    CocoonRootTile::new, BlockRegistry.COCOON_ROOT.get()).build(null));
-
     public static RegistryObject<TileEntityType<InfestedLogTile>> INFESTED_LOG_TILE =
             TILE_ENTITIES.register("infested_log_tile", () -> TileEntityType.Builder.of(
                     InfestedLogTile::new, BlockRegistry.INFESTED_LOG.get()).build(null));

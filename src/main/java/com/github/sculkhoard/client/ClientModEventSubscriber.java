@@ -43,7 +43,11 @@ public class ClientModEventSubscriber {
         });
 
         event.enqueueWork(() -> {
-            RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON_GOUP.get(), RenderType.translucent());
+            RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent());
+        });
+
+        event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent());
         });
 
         event.enqueueWork(() -> {

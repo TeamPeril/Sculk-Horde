@@ -1,34 +1,21 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.tileentity.CocoonRootTile;
 import com.github.sculkhoard.core.BlockRegistry;
-import com.github.sculkhoard.core.EntityRegistry;
-import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Random;
-
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 public class CocoonRootBlock extends Block implements IForgeBlock {
 
@@ -82,8 +69,7 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
      * mature = when there is a root and two goup blocks directly above it.
      * This is when it will spawn a mob.
      */
-    public enum growthStage{initial, child, mature}
-
+    public enum growthStage{immature, mature}
 
 
     /**
@@ -100,6 +86,28 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
      */
     public CocoonRootBlock() {
         this(getProperties());
+    }
+
+
+    /**
+     * Determines the properties of a block.<br>
+     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
+     * @return The Properties of the block
+     */
+    public static Properties getProperties()
+    {
+        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+                .strength(HARDNESS, BLAST_RESISTANCE)
+                .harvestTool(PREFERRED_TOOL)
+                .harvestLevel(HARVEST_LEVEL)
+                .sound(SoundType.STONE)
+                .noOcclusion();
+        return prop;
+    }
+
+    @Override
+    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
+        return true;
     }
 
     /**
@@ -137,34 +145,9 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
     public boolean grow(ServerWorld serverWorld, BlockPos bp)
     {
 
-        if(getGrowthStage(serverWorld, bp) == growthStage.mature)
+        if(getGrowthStage(serverWorld, bp) == growthStage.immature && BlockRegistry.COCOON.get().validPlacement(serverWorld, bp.above()))
         {
-            if(serverWorld.getBlockState(bp.above()).getBlock() == BlockRegistry.COCOON_GOUP.get()
-                    && serverWorld.getBlockState(bp.above().above()).getBlock() == BlockRegistry.COCOON_GOUP.get())
-            {
-                serverWorld.setBlockAndUpdate(bp.above(), Blocks.AIR.defaultBlockState());
-                serverWorld.setBlockAndUpdate(bp.above().above(), Blocks.AIR.defaultBlockState());
-                spawnRandomSculkLivingEntity(serverWorld, bp.above());
-                return true;
-            }
-        }
-        else if(getGrowthStage(serverWorld, bp) == growthStage.child)
-        {
-            if(serverWorld.getBlockState(bp.above()).getBlock() == BlockRegistry.COCOON_GOUP.get()
-                    && isPositionValidForGoup(serverWorld, bp.above().above()))
-            {
-                serverWorld.setBlockAndUpdate(bp.above().above(), BlockRegistry.COCOON_GOUP.get().defaultBlockState());
-                return true;
-            }
-        }
-        else if(getGrowthStage(serverWorld, bp) == growthStage.initial)
-        {
-            if(isPositionValidForGoup(serverWorld, bp.above())
-                    && isPositionValidForGoup(serverWorld, bp.above().above()))
-            {
-                serverWorld.setBlockAndUpdate(bp.above(), BlockRegistry.COCOON_GOUP.get().defaultBlockState());
-                return true;
-            }
+            serverWorld.setBlockAndUpdate(bp.above(), BlockRegistry.COCOON.get().defaultBlockState());
         }
         return false;
     }
@@ -179,105 +162,12 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
      */
     private growthStage getGrowthStage(ServerWorld serverWorld, BlockPos bp)
     {
-        //If there is 2 goup blocks stacked up above root
-        if(serverWorld.getBlockState(bp.above()).getBlock() == BlockRegistry.COCOON_GOUP.get()
-                && serverWorld.getBlockState(bp.above().above()).getBlock() == BlockRegistry.COCOON_GOUP.get())
-        {
+        Block aboveBlock = serverWorld.getBlockState(bp.above()).getBlock();
+        if(aboveBlock.is(BlockRegistry.COCOON.get()))
             return growthStage.mature;
-        }
-        //if there is only 1 goup block above root.
-        else if(serverWorld.getBlockState(bp.above()).getBlock() == BlockRegistry.COCOON_GOUP.get()
-                && serverWorld.getBlockState(bp.above().above()).getBlock() != BlockRegistry.COCOON_GOUP.get())
-        {
-            return growthStage.child;
-        }
-        //if there is no goup blocks above root.
-        else
-        {
-            return growthStage.initial;
-        }
+        return growthStage.immature;
     }
 
-    /**
-     * Determines if goup can be placed at a position.
-     * @param serverWorld The world
-     * @param bp The BlockPos
-     * @return True if valid, false otherwise.
-     */
-    public boolean isPositionValidForGoup(ServerWorld serverWorld, BlockPos bp)
-    {
-        return serverWorld.getBlockState(bp.above()).canBeReplaced(Fluids.WATER);
-    }
-
-    /**
-     * Spawns a Random Sculk Mob from a list.
-     * @param serverWorld The world to spawn it in.
-     * @param bp The BlockPos to spawn it in.
-     */
-    public void spawnRandomSculkLivingEntity(ServerWorld serverWorld, BlockPos bp)
-    {
-        /**
-         * Apperently there is a better way to do this,
-         * List<Supplier<EntityType<? extends SculkLivingEntity>>> spawnPool = new ArrayList<>();
-         * Have not tested this, doing it the lazy way for now
-         */
-        ArrayList<EntityType> spawnPool = new ArrayList<>();
-        spawnPool.add(EntityRegistry.SCULK_MITE.get());
-        spawnPool.add(EntityRegistry.SCULK_ZOMBIE.get());
-
-
-        //int rng = (int) (serverWorld.random.nextDouble() * (spawnPool.size()-1));
-        int rng = serverWorld.random.nextInt(spawnPool.size());
-        EntityType mob = spawnPool.get(rng);
-        if(mob == EntityRegistry.SCULK_MITE.get())
-        {
-            mob.spawn(serverWorld, null, null, bp, SpawnReason.SPAWNER, true, true);
-            mob.spawn(serverWorld, null, null, bp, SpawnReason.SPAWNER, true, true);
-        }
-        else
-        {
-            mob.spawn(serverWorld, null, null, bp, SpawnReason.SPAWNER, true, true);
-        }
-
-    }
-
-    /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE)
-        {
-            TileEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof CocoonRootTile && tile != null)
-            {
-                /*
-                System.out.println("Block at (" +
-                        pos.getX() + ", " +
-                        pos.getY() + ", " +
-                        pos.getZ() + ") " +
-                        "maxSpreadAttempts: " + ((CocoonRootTile) tile).getMaxSpreadAttempts() +
-                        " spreadAttempts: " + ((CocoonRootTile) tile).getSpreadAttempts()
-                );
-                */
-            }
-            else
-            {
-                System.out.println("Error accessing Tile");
-            }
-        }
-
-        return null; //Just Return null because We Are Not Modifying it
-    }
 
     /**
      * Determines if a specified mob type can spawn on this block, returning false will
@@ -294,41 +184,19 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
         return false;
     }
 
-    /**
-     * Determines the properties of a block.<br>
-     * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
-     * @return The Properties of the block
-     */
-    public static Properties getProperties()
+    public boolean mayPlaceHere(ServerWorld world, BlockPos blockPos)
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
-                .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.STONE);
-        return prop;
+       if(world.getBlockState(blockPos.below()).is(BlockRegistry.CRUST.get())
+            && world.getBlockState(blockPos).canBeReplaced(Fluids.WATER))
+       {
+           return true;
+       }
+       return false;
     }
 
-    /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return TileEntityRegistry.COCOON_ROOT_TILE.get().create();
+    public void placeBlock(ServerWorld world, BlockPos blockPos)
+    {
+        if(mayPlaceHere(world, blockPos))
+            world.setBlockAndUpdate(blockPos, this.defaultBlockState());
     }
-
-    /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
-     */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
 }
