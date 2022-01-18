@@ -1,4 +1,5 @@
 package com.github.sculkhoard.common.entity.entity_factory;
+import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.SculkWorldData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
@@ -6,7 +7,10 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -22,12 +26,32 @@ public class EntityFactory {
     //The List We Store all the entries in
     private static ArrayList<EntityFactoryEntry> entries;
 
+    @Nullable
+    private static SculkWorldData dataHandler;
+
     /**
      * Default Constructor
      */
     public EntityFactory()
     {
         entries = new ArrayList<>();
+    }
+
+    /**
+     * Used to get access to the world saved data.
+     * @return
+     */
+    private SculkWorldData  getDataHandler()
+    {
+        if(dataHandler == null)
+        {
+            if(ServerLifecycleHooks.getCurrentServer() == null)
+                return null;
+
+            DimensionSavedDataManager savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage();
+            dataHandler = savedData.computeIfAbsent(SculkWorldData::new, SculkHoard.SAVE_DATA_ID);
+        }
+        return dataHandler;
     }
 
     /**
@@ -46,7 +70,7 @@ public class EntityFactory {
      */
     public int getSculkAccumulatedMass()
     {
-        return SculkWorldData.get(Minecraft.getInstance().level).getSculkAccumulatedMass();
+        return getDataHandler().getSculkAccumulatedMass();
     }
 
     /**
@@ -55,7 +79,7 @@ public class EntityFactory {
      */
     public void addSculkAccumulatedMass(int amount)
     {
-        SculkWorldData.get(Minecraft.getInstance().level).addSculkAccumulatedMass(amount);
+        getDataHandler().addSculkAccumulatedMass(amount);
     }
 
     /**
@@ -64,7 +88,7 @@ public class EntityFactory {
      */
     public void subtractSculkAccumulatedMass(int amount)
     {
-        SculkWorldData.get(Minecraft.getInstance().level).subtractSculkAccumulatedMass(amount);
+        getDataHandler().subtractSculkAccumulatedMass(amount);
     }
 
     /**
@@ -73,7 +97,7 @@ public class EntityFactory {
      */
     public void setSculkAccumulatedMass(int amount)
     {
-        SculkWorldData.get(Minecraft.getInstance().level).setSculkAccumulatedMass(amount);
+        getDataHandler().setSculkAccumulatedMass(amount);
     }
 
     /**

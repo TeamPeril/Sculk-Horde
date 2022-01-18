@@ -42,15 +42,6 @@ public class SculkHoard {
         {
             DEBUG_MODE = true;
         }
-
-        /**
-         * This data structure will be used to spawn entities for the Sculk, but at a cost.
-         * Every entity in this list has a cost associated with it.
-         */
-        //entityFactory =
-        //entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20);
-        //entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), 1);
-
     }
 
     //Add Creative Item Tab

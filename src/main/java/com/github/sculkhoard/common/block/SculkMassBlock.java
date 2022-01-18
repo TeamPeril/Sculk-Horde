@@ -80,7 +80,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public static int HARVEST_LEVEL = -1;
 
     public static double HEALTH_ABSORB_MULTIPLIER = 2;
-
     public static int infectedDirtMaxSpreadAttempts = 10;
 
     /**
@@ -159,7 +158,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                     InfectedDirtBlock infectedDirt = BlockRegistry.INFECTED_DIRT.get();
                     world.setBlockAndUpdate(placementPos.below(), infectedDirt.defaultBlockState());
                     infectedDirt.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infectedDirtMaxSpreadAttempts);
-
                 }
             }
         }
@@ -189,7 +187,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         boolean DEBUG_THIS = true;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
-        //spawnSculkMob(serverWorld, thisBlockPos, thisTile.getStoredSculkMass());
 
         //Attempt to call in reinforcements and then update stored sculk mass
         int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos);
@@ -200,8 +197,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         {
             serverWorld.destroyBlock(thisBlockPos, false);
         }
-
-
     }
 
     /**
@@ -224,33 +219,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
             System.out.println(e.toString());
         }
         return thisTile;
-    }
-
-    /**
-     * Will spawn a sculk mob based on the sculk mass given.
-     * @param world The world to spawn it in
-     * @param pos The position to spawn it in
-     * @param sculkMass The amount of mass that can be used to spawn it.
-     */
-    public void spawnSculkMob(World world, BlockPos pos, int sculkMass)
-    {
-        /*
-        //Will prioritize spawning mobs higher on this list
-        ArrayList<EntityType> spawnPool = new ArrayList<>();
-        spawnPool.add(EntityRegistry.SCULK_ZOMBIE.get());
-
-        //List<Supplier<EntityType<? extends SculkLivingEntity>>> spawnPool2 = new ArrayList<>();
-        //spawnPool2.add( () -> new SculkZombieEntity(world));
-
-        for(EntityType entity : spawnPool)
-        {
-            entity.spawn((ServerWorld) world, null, null, pos, SpawnReason.NATURAL, true, true);
-            //if(sculkMass >= entity.getMaxHealth())
-            world.destroyBlock(pos, false);
-        }
-        */
-        //int remainingBalance = SculkHoard.entityFactory.requestReinforcementAny(sculkMass, world, pos);
-
     }
 
     /**

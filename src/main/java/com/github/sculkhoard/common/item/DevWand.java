@@ -2,6 +2,7 @@ package com.github.sculkhoard.common.item;
 
 import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
+import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.SculkWorldData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -77,10 +78,11 @@ public class DevWand extends Item implements IForgeItem {
 
 			if(targetPos == null) //If Player NOT Looking at Block
 			{
-				System.out.println("Sculk Accumulated Mass: " + SculkWorldData.get(Minecraft.getInstance().level).getSculkAccumulatedMass());
+
 			}
 			else //If player Looking at Block
 			{
+				System.out.println("Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass());
 				targetX = (int) targetPos.getX() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
 				targetY = (int) targetPos.getY() + 1;
 				targetZ = (int) targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block

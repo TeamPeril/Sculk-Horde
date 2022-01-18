@@ -1,17 +1,20 @@
 package com.github.sculkhoard.core;
-
+/**
+ * Learned from: <br>
+ * https://github.com/WayofTime/BloodMagic/blob/13ba49a92a03fb7a0aa2fe167cdc36ca206b60fe/src/main/java/wayoftime/bloodmagic/core/data/BMWorldSavedData.java#L13 <br>
+ * https://github.com/WayofTime/BloodMagic/blob/13ba49a92a03fb7a0aa2fe167cdc36ca206b60fe/src/main/java/wayoftime/bloodmagic/util/helper/NetworkHelper.java
+ */
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
-
 import javax.annotation.Nullable;
 
 /**
  * This Class is what we use to store data in the world.
  * Storing data in the overworld allows us to have persistent
- * data since the overworld is never unloaded.
+ * data since the overworld is never unloaded. <br>
  */
 public class SculkWorldData extends WorldSavedData {
 
@@ -48,7 +51,7 @@ public class SculkWorldData extends WorldSavedData {
         if(!world.isClientSide())
         {
             DimensionSavedDataManager dataManager = ((ServerWorld) world).getDataStorage();
-            return dataManager.computeIfAbsent(SculkWorldData::new, SculkHoard.MOD_ID);
+            return dataManager.computeIfAbsent(SculkWorldData::new, SculkHoard.SAVE_DATA_ID);
         }
 
         return null;

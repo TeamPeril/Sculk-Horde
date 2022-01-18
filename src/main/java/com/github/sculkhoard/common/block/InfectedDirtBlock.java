@@ -162,7 +162,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
         }
 
         //Attempt to spread TIMES_TO_SPREAD_PER_RANDOM_TICK times per random tick
-        for(int spreadAttempts = 0; spreadAttempts < TIMES_TO_SPREAD_PER_RANDOM_TICK; spreadAttempts ++)
+        for(int spreadAttempts = 0; spreadAttempts < thisTile.getMaxSpreadAttempts(); spreadAttempts ++)
         {
             //If max spread attempts has not been reached && Given a 25% chance && the area is loaded, spread
             if (thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(bp, 4))
@@ -172,7 +172,7 @@ public class InfectedDirtBlock extends Block implements IForgeBlock {
                 attemptSpread(thisTile, serverWorld, spreadPosition, spreadBlock); //Attempt to spread to this position
             }
             //If this block has run out of spread attempts, convert to crust
-            else if (thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
+            else if ((thisTile.getMaxSpreadAttempts()-1) - thisTile.getSpreadAttempts() <= 0)
             {
                 serverWorld.setBlockAndUpdate(bp, BlockRegistry.CRUST.get().defaultBlockState());//Convert to crust
                 //Given a 50% chance, place down sculk flora
