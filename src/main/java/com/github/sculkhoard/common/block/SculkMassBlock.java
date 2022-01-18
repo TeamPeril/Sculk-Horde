@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+import static com.github.sculkhoard.core.SculkHoard.entityFactory;
 
 public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -78,9 +79,9 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      *  4 = Netherite
      */
     public static int HARVEST_LEVEL = -1;
-
-    public static double HEALTH_ABSORB_MULTIPLIER = 2;
-    public static int infectedDirtMaxSpreadAttempts = 10;
+    public static final float SCULK_HOARD_MASS_TAX = (float) (1.0 / 3.0);
+    public static double HEALTH_ABSORB_MULTIPLIER = 3;
+    public static int infectedDirtMaxSpreadAttempts = 20;
 
     /**
      * The Constructor that takes in properties
@@ -121,6 +122,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public void spawn(World world, BlockPos originPos, float healthAbsorbed)
     {
+        boolean DEBUG_THIS = true;
         BlockPos placementPos = originPos.above();
         int MAX_ATTEMPTS = 64;
         int attempts = 0;
@@ -141,8 +143,27 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 world.setBlockAndUpdate(placementPos, this.defaultBlockState());
                 thisTile = getTileEntity(world, placementPos);
 
-                //There is some weird bug where this can be null, not sure why
-                if(thisTile != null) thisTile.addStoredSculkMass( (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER));
+                //Calcualate the total mass collected
+                int totalMassPreTax = (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER);
+                int totalMassTax = (int) (totalMassPreTax * SCULK_HOARD_MASS_TAX);
+                int totalMassAfterTax = totalMassPreTax - totalMassTax;
+
+                //Pay Mass Tax to the Sculk Hoard
+                SculkHoard.entityFactory.addSculkAccumulatedMass(totalMassTax);
+
+                if(DEBUG_MODE && DEBUG_THIS)
+                {
+                    System.out.println(
+                            "\n" + "totalMassPreTax: " + totalMassPreTax + "\n"
+                            + "totalMassTax: " + totalMassTax + "\n"
+                            + "totalMassAfterTax: " + totalMassAfterTax + "\n"
+                            + "Global Sculk Mass: " + entityFactory.getSculkAccumulatedMass()
+                    );
+                }
+
+                //Keep track in this tile the total sculk mass we collected
+                //BUG: thisTile can be null, not sure why
+                if(thisTile != null) thisTile.addStoredSculkMass(totalMassAfterTax);
                 else
                 {
                     System.out.println("Attempted to Access NULL tile at "
@@ -189,7 +210,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         EntityFactory entityFactory = SculkHoard.entityFactory;
 
         //Attempt to call in reinforcements and then update stored sculk mass
-        int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos);
+        int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos, true);
         thisTile.setStoredSculkMass(remainingBalance);
 
         //Destroy if run out of sculk mass

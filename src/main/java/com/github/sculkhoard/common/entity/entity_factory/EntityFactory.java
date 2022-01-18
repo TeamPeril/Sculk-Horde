@@ -13,6 +13,8 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+
 /**
  * The Entity Factory is a data structure that serves as a way for the sculk to
  * make a transaction by spawning a mob, at a cost. It will prioritize spawning the highest
@@ -79,7 +81,10 @@ public class EntityFactory {
      */
     public void addSculkAccumulatedMass(int amount)
     {
+        boolean DEBUG_THIS = true;
         getDataHandler().addSculkAccumulatedMass(amount);
+        if(DEBUG_MODE && DEBUG_THIS) System.out.println("addSculkAccumulatedMass(" + amount + ")");
+
     }
 
     /**
@@ -105,21 +110,30 @@ public class EntityFactory {
      * @param budget The max amount to spend
      * @param world The world to spawn it in.
      * @param pos The Position
+     * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
      * @return The Remaining Balance
      */
-    public int requestReinforcementAny(int budget, World world, BlockPos pos)
+    public int requestReinforcementAny(int budget, World world, BlockPos pos, boolean noCost)
     {
+        //If no Sculk Mass, then just return original budget
+        if(getSculkAccumulatedMass() <= 0 || entries.size() == 0 || budget == 0) {return budget;}
+
         //Go through each entry starting from beginning until it is something we can afford
+        EntityFactoryEntry currentEntry = entries.get(0);
+        int currentEntryCost = 0;
+
         for(int i = 0; i < entries.size(); i++)
         {
-            EntityFactoryEntry currentEntry = entries.get(i);
-            if(currentEntry.getCost() <= budget)
+            currentEntry = entries.get(i);
+            currentEntryCost = currentEntry.getCost();
+            if(currentEntryCost <= budget)
             {
                 currentEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
-                subtractSculkAccumulatedMass(currentEntry.getCost());
+                if(!noCost) subtractSculkAccumulatedMass(currentEntryCost);
                 return budget - currentEntry.getCost();
             }
         }
+
         return budget;
     }
 
@@ -135,6 +149,9 @@ public class EntityFactory {
      */
     public int requestReinforcementWhiteList(int budget, World world, BlockPos pos, ArrayList<EntityType> list)
     {
+        //If no Sculk Mass, then just return original budget
+        if(getSculkAccumulatedMass() <= 0) {return budget;}
+
         //Go through each entry starting from beginning until it is something we can afford
         for(int i = 0; i < entries.size(); i++)
         {
@@ -160,6 +177,9 @@ public class EntityFactory {
      */
     public int requestReinforcementBlackList(int budget, World world, BlockPos pos, ArrayList<EntityType> list)
     {
+        //If no Sculk Mass, then just return original budget
+        if(getSculkAccumulatedMass() <= 0) {return budget;}
+
         //Go through each entry starting from beginning until it is something we can afford
         for(int i = 0; i < entries.size(); i++)
         {
