@@ -16,6 +16,8 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
@@ -27,7 +29,7 @@ import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
-public class CocoonBlock extends Block implements IForgeBlock {
+public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -105,6 +107,8 @@ public class CocoonBlock extends Block implements IForgeBlock {
         return prop;
     }
 
+
+
     @Override
     public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
         return true;
@@ -126,16 +130,66 @@ public class CocoonBlock extends Block implements IForgeBlock {
         return false;
     }
 
-    public boolean validPlacement(World world, BlockPos blockPos)
+
+    /**
+     * Determines if this block can be placed on a given block
+     * @param blockState The block it is trying to be placed on
+     * @param iBlockReader An interface for objects like the world
+     * @param blockPos The pos of the block we are trying to place this on
+     * @return
+     */
+    @Override
+    public boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos)
     {
-        if(world.getBlockState(blockPos.below()).is(BlockRegistry.COCOON_ROOT.get())
-            && world.getBlockState(blockPos).canBeReplaced(Fluids.WATER))
+        boolean DEBUG_THIS = false;
+
+        boolean blockIsValid = false;
+        boolean cocoonPosCanBeReplacedByWater = false;
+        boolean cocoonPosHasNoNeighbors = true; //Assume false unless proven otherwise
+        BlockPos cocoonPos = blockPos.above();
+
+        cocoonPosCanBeReplacedByWater = iBlockReader.getBlockState(cocoonPos).canBeReplaced(Fluids.WATER);
+
+        //Check To see if the floor block is valid
+        Block[] validBlocks = {BlockRegistry.COCOON_ROOT.get()};
+        for(Block b : validBlocks)
         {
-            return true;
+            if(blockState.getBlock() == b) blockIsValid = true;
         }
-        return false;
+
+        //Check to see if where we will place the cocoon, has no neighbors
+        BlockPos[] cocoonPosNeighbors = {
+                cocoonPos.north(),
+                cocoonPos.east(),
+                cocoonPos.south(),
+                cocoonPos.west(),
+                cocoonPos.above()
+        };
+
+        for(BlockPos bp : cocoonPosNeighbors)
+        {
+            if(!iBlockReader.getBlockState(bp).isAir())
+                cocoonPosHasNoNeighbors = false;
+        }
+        if(DEBUG_MODE && DEBUG_THIS)
+            System.out.println(
+                    "\n" + "Attempted to Place " + this.getClass().toString()
+                     + " at " + blockPos.toString() + "\n"
+                     + "blockIsValid " + blockIsValid + "\n"
+                     + "cocoonPosHasNoNeighbors " + cocoonPosHasNoNeighbors
+            );
+        return blockIsValid && cocoonPosCanBeReplacedByWater && cocoonPosHasNoNeighbors;
     }
 
+    /**
+     * Called when a tile entity on a side of this block changes is created or is destroyed.
+     * @param world The world
+     * @param pos Block position in world
+     * @param neighbor Block position of neighbor
+     */
+    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor){
+        destroy((IWorld) world, pos, this.defaultBlockState());
+    }
 
     /**
      * Determines if this block will randomly tick or not.
@@ -158,6 +212,9 @@ public class CocoonBlock extends Block implements IForgeBlock {
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
     {
         SculkHoard.entityFactory.requestReinforcementAny(1, serverWorld, bp, false);
+        serverWorld.destroyBlock(bp,false);
+
     }
+
 
 }

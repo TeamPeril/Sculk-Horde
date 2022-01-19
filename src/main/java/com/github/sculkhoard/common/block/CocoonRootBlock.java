@@ -17,7 +17,9 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import java.util.Random;
 
-public class CocoonRootBlock extends Block implements IForgeBlock {
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+
+public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -105,10 +107,6 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
         return prop;
     }
 
-    @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
-        return true;
-    }
 
     /**
      * Determines if this block will randomly tick or not.
@@ -135,19 +133,17 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
 
     /**
      * This function causes the root to increment a single growth stage. <br>
-     * If the current state is initial, it will increment to child and place a single goup block above it. <br>
-     * If the current state is child, it will increment to mature and place another goup on top of the existing one. <br>
-     * If the current state is mature, it will increment to initial and remove the two goup blocks and summon a mob. <br>
+     * If the current state is immature, it will increment to mature and place a cocoon. <br>
      * @param serverWorld The world to spawn it in.
      * @param bp The BlockPos of the cocoon.
      * @return Returns whether the growth was successful or not.
      */
     public boolean grow(ServerWorld serverWorld, BlockPos bp)
     {
-
-        if(getGrowthStage(serverWorld, bp) == growthStage.immature && BlockRegistry.COCOON.get().validPlacement(serverWorld, bp.above()))
+        if(getGrowthStage(serverWorld, bp) == growthStage.immature)
         {
-            serverWorld.setBlockAndUpdate(bp.above(), BlockRegistry.COCOON.get().defaultBlockState());
+            BlockRegistry.COCOON.get().placeBlockOn(serverWorld, bp);
+            return  true;
         }
         return false;
     }
@@ -184,19 +180,33 @@ public class CocoonRootBlock extends Block implements IForgeBlock {
         return false;
     }
 
-    public boolean mayPlaceHere(ServerWorld world, BlockPos blockPos)
+    /**
+     * Determines if this block can be placed on a given block
+     * @param blockState The block it is trying to be placed on
+     * @param iBlockReader An interface for objects like the world
+     * @param blockPos The pos of the block we are trying to place this on
+     * @return
+     */
+    @Override
+    public boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos)
     {
-       if(world.getBlockState(blockPos.below()).is(BlockRegistry.CRUST.get())
-            && world.getBlockState(blockPos).canBeReplaced(Fluids.WATER))
-       {
-           return true;
-       }
-       return false;
-    }
+        boolean DEBUG_THIS = false;
 
-    public void placeBlock(ServerWorld world, BlockPos blockPos)
-    {
-        if(mayPlaceHere(world, blockPos))
-            world.setBlockAndUpdate(blockPos, this.defaultBlockState());
+        boolean blockIsValid = false;
+
+        //Check To see if the floor block is valid
+        Block[] validBlocks = {BlockRegistry.CRUST.get()};
+        for(Block b : validBlocks)
+        {
+            if(blockState.getBlock() == b) blockIsValid = true;
+        }
+
+        if(DEBUG_MODE && DEBUG_THIS)
+            System.out.println(
+                    "\n" + "Attempted to Place " + this.getClass().toString()
+                    + " at " + blockPos.toString() + "\n"
+                    + "blockIsValid " + blockIsValid + "\n"
+            );
+        return blockIsValid;
     }
 }

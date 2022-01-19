@@ -122,7 +122,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public void spawn(World world, BlockPos originPos, float healthAbsorbed)
     {
-        boolean DEBUG_THIS = true;
+        boolean DEBUG_THIS = false;
         BlockPos placementPos = originPos.above();
         int MAX_ATTEMPTS = 64;
         int attempts = 0;
@@ -205,7 +205,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
-        boolean DEBUG_THIS = true;
+        boolean DEBUG_THIS = false;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
 

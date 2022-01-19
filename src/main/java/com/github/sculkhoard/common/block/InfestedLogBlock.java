@@ -254,10 +254,10 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
                 origin.west()
         };
 
-        //75% chance to place sculk vein for each face
+        //50% chance to place sculk vein for each face
         for(BlockPos pos : possiblePositions)
         {
-            if(serverWorld.random.nextInt(10) < 9 &&
+            if(serverWorld.random.nextInt(10) < 5 &&
                     serverWorld.getBlockState(pos).canBeReplaced(Fluids.WATER))
             {
                 vein.placeBlock(serverWorld, pos);

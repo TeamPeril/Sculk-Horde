@@ -81,7 +81,7 @@ public class EntityFactory {
      */
     public void addSculkAccumulatedMass(int amount)
     {
-        boolean DEBUG_THIS = true;
+        boolean DEBUG_THIS = false;
         getDataHandler().addSculkAccumulatedMass(amount);
         if(DEBUG_MODE && DEBUG_THIS) System.out.println("addSculkAccumulatedMass(" + amount + ")");
 

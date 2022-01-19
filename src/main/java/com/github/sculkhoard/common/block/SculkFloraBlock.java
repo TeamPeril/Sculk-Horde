@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -98,7 +99,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * Goes through a list of valid blocks and checks if the
      * given block is in that list.<br>
      * @param blockState The block it is trying to be placed on
-     * @param iBlockReader ???
+     * @param iBlockReader An interface for objects like the world
      * @param pos The Position
      * @return True/False
      */
@@ -110,6 +111,17 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
             if(blockState.getBlock() == b) return true;
         }
         return false;
+    }
+
+    /**
+     * Used to place down block in the world.
+     * @param world The world
+     * @param blockPos The position
+     */
+    public void placeBlockOn(ServerWorld world, BlockPos blockPos)
+    {
+        if(mayPlaceOn(world.getBlockState(blockPos), world, blockPos))
+            world.setBlockAndUpdate(blockPos.above(), this.defaultBlockState());
     }
 
     /**
