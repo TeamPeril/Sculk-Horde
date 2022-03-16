@@ -2,6 +2,7 @@ package com.github.sculkhoard.util;
 
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.common.entity.entity_factory.EntityFactoryEntry;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.SculkWorldData;
@@ -26,8 +27,8 @@ public class ModEventSubscriber {
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
         //Add entries to the entity factory (please add them in order, I don't want to sort)
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20);
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), 1);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20, EntityFactoryEntry.StrategicValues.Melee);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), 1, EntityFactoryEntry.StrategicValues.Infector);
         
     }
 

@@ -14,11 +14,14 @@ public class EntityFactoryEntry {
 
     private int orderCost = 0;
     private EntityType entity = null;
+    public enum StrategicValues {Infector, Suppressor, Melee, Longrange, Fly};
+    public StrategicValues strategicValue = StrategicValues.Melee;
 
-    public EntityFactoryEntry(EntityType entity, int orderCost)
+    public EntityFactoryEntry(EntityType entity, int orderCost, StrategicValues value)
     {
         this.entity = entity;
         this.orderCost = orderCost;
+        this.strategicValue = value;
     }
 
     public int getCost()

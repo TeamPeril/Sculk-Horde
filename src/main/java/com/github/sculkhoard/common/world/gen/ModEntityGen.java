@@ -17,6 +17,7 @@ import java.util.List;
 public class ModEntityGen {
 
     public static void onEntitySpawn(final BiomeLoadingEvent event) {
+        /*
         addEntityToAllBiomesExceptThese(
                 event,
                 EntityRegistry.SCULK_ZOMBIE.get(),
@@ -34,6 +35,8 @@ public class ModEntityGen {
                 SculkMiteEntity.SPAWN_MAX,
                 Biomes.OCEAN,
                 Biomes.COLD_OCEAN);
+
+         */
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type,

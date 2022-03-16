@@ -1,31 +1,29 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
+import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
-import javax.annotation.Nullable;
 
+import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
@@ -73,6 +71,10 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      *  4 = Netherite
      */
     public static int HARVEST_LEVEL = -1;
+
+    private static final int ACTIVATION_DISTANCE = 64;
+
+    private List<LivingEntity> possibleTargets;
 
     /**
      * The Constructor that takes in properties
@@ -211,7 +213,15 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
     {
-        SculkHoard.entityFactory.requestReinforcementAny(1, serverWorld, bp, false);
+        ReinforcementContext context = new ReinforcementContext(bp.getX(), bp.getY());
+        /*
+        possibleTargets =
+                serverWorld.getLevel().getLoadedEntitiesOfClass(
+                        LivingEntity,
+                        this.getTargetSearchArea(this.getFollowDistance()),
+                        (Predicate<? super LivingEntity>) null);
+        */
+        SculkHoard.entityFactory.requestReinforcementAny(1, serverWorld, bp, false, context);
         serverWorld.destroyBlock(bp,false);
 
     }

@@ -2,6 +2,7 @@ package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactoryEntry;
+import com.github.sculkhoard.common.entity.gravemind.Gravemind;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,6 +24,7 @@ public class SculkHoard {
     public static final ItemGroup SCULK_GROUP = new CreativeTabGroup("sculkhoard_tab");
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
+    public static Gravemind gravemind;
 
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).

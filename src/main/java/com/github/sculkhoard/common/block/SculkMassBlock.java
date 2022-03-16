@@ -1,10 +1,10 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
+import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
-import com.github.sculkhoard.core.SculkWorldData;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -23,9 +23,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -208,9 +206,10 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         boolean DEBUG_THIS = false;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
+        ReinforcementContext context = new ReinforcementContext(thisBlockPos.getX(), thisBlockPos.getY());
 
         //Attempt to call in reinforcements and then update stored sculk mass
-        int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos, true);
+        int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos, true, context);
         thisTile.setStoredSculkMass(remainingBalance);
 
         //Destroy if run out of sculk mass

@@ -21,7 +21,9 @@ import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
  * costing mob. Right now there is no world variable that stores the amount of accumulated
  * mass by the sculk, so we will worry about that later.
  * <br>
- * NOTE: Items are added to this in ModEventSubscriber.java
+ * NOTE: <br>
+ * Items are added to this in ModEventSubscriber.java <br>
+ * This is initialized in the main class
  */
 public class EntityFactory {
 
@@ -30,6 +32,7 @@ public class EntityFactory {
 
     @Nullable
     private static SculkWorldData dataHandler;
+
 
     /**
      * Default Constructor
@@ -61,9 +64,9 @@ public class EntityFactory {
      * @param entity The entity to add
      * @param cost The cost of spawning the entity
      */
-    public void addEntry(EntityType entity, int cost)
+    public void addEntry(EntityType entity, int cost, EntityFactoryEntry.StrategicValues value)
     {
-        entries.add(new EntityFactoryEntry(entity, cost));
+        entries.add(new EntityFactoryEntry(entity, cost ,value));
     }
 
     /**
@@ -113,7 +116,7 @@ public class EntityFactory {
      * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
      * @return The Remaining Balance
      */
-    public int requestReinforcementAny(int budget, World world, BlockPos pos, boolean noCost)
+    public int requestReinforcementAny(int budget, World world, BlockPos pos, boolean noCost, ReinforcementContext context)
     {
         //If no Sculk Mass, then just return original budget
         if(getSculkAccumulatedMass() <= 0 || entries.size() == 0 || budget == 0) {return budget;}
@@ -147,7 +150,7 @@ public class EntityFactory {
      * @param list The White List
      * @return The Remaining Balance
      */
-    public int requestReinforcementWhiteList(int budget, World world, BlockPos pos, ArrayList<EntityType> list)
+    public int requestReinforcementWhiteList(int budget, World world, BlockPos pos, ArrayList<EntityType> list, ReinforcementContext context)
     {
         //If no Sculk Mass, then just return original budget
         if(getSculkAccumulatedMass() <= 0) {return budget;}
@@ -175,7 +178,7 @@ public class EntityFactory {
      * @param list The Black List
      * @return The Remaining Balance
      */
-    public int requestReinforcementBlackList(int budget, World world, BlockPos pos, ArrayList<EntityType> list)
+    public int requestReinforcementBlackList(int budget, World world, BlockPos pos, ArrayList<EntityType> list, ReinforcementContext context)
     {
         //If no Sculk Mass, then just return original budget
         if(getSculkAccumulatedMass() <= 0) {return budget;}
