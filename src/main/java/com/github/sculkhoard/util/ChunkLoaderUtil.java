@@ -55,7 +55,7 @@ public class ChunkLoaderUtil {
             return;
 
         LazyOptional<ChunkTracker> tracker = LazyOptional.of(() -> new ChunkTracker((ServerWorld)world));
-        e.addCapability(new ResourceLocation("chunkloaders", "chunk_tracker"), new ICapabilitySerializable<INBT>() {
+        e.addCapability(new ResourceLocation("sculkhoard", "chunk_tracker"), new ICapabilitySerializable<INBT>() {
             @Nonnull
             @Override
             public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
