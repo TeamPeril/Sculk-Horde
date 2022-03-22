@@ -19,8 +19,10 @@
   "block.sculkhoard.cocoon_root": "Sculk Cocoon Root",
   "block.sculkhoard.cocoon_goup": "Sculk Cocoon Goup",
   "block.sculkhoard.sculk_mass": "Organic Sculk Mass",
-  "tooltip.sculkhoard.dev_wand": "Hold \u00A7eLeft-Shift \u00A77to Show Tool Tip",
-  "tooltip.sculkhoard.dev_wand.shift": "\u00A75Tip",
+  "block.sculkhoard.sculk_dura_matter": "Sculk Dura Matter",
+  "block.sculkhoard.sculk_arachnoid": "Sculk Arachnoid",
+  "tooltip.sculkhoard.dev_wand": "Right-click to spawn mite. \nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to set Sculk Mass to 20k.",
+  "tooltip.sculkhoard.dev_wand.shift": "\u00A75JoeMama",
   "entity.sculkhoard.sculk_zombie": "Sculk Zombie",
   "entity.sculkhoard.sculk_mite": "Sculk Mite"
   

@@ -21,9 +21,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -96,6 +99,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public SculkMassBlock() {
         this(getProperties());
     }
+
     /**
      * Determines the properties of a block.<br>
      * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
@@ -113,12 +117,14 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     }
 
     /**
-     * Spawns A Sculk Mass
-     * @param world
-     * @param originPos
-     * @param healthAbsorbed
+     * Spawns A Sculk Mass. The sculk will cause the body to age 30 years over a few moments
+     * to generate mass for the sculk. One third of this mass is taxed and given to the
+     * gravemind. The rest of it is used to spawn a random sculk mob.
+     * @param world The world the mass is in.
+     * @param originPos The position to spawn the mob
+     * @param victimHealth How much health the victim has.
      */
-    public void spawn(World world, BlockPos originPos, float healthAbsorbed)
+    public void spawn(World world, BlockPos originPos, float victimHealth)
     {
         boolean DEBUG_THIS = false;
         BlockPos placementPos = originPos.above();
@@ -142,7 +148,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 thisTile = getTileEntity(world, placementPos);
 
                 //Calcualate the total mass collected
-                int totalMassPreTax = (int) (healthAbsorbed * HEALTH_ABSORB_MULTIPLIER);
+                int totalMassPreTax = (int) (victimHealth * HEALTH_ABSORB_MULTIPLIER);
                 int totalMassTax = (int) (totalMassPreTax * SCULK_HOARD_MASS_TAX);
                 int totalMassAfterTax = totalMassPreTax - totalMassTax;
 
@@ -165,9 +171,9 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 else
                 {
                     System.out.println("Attempted to Access NULL tile at "
-                            + placementPos.toString()
+                            + placementPos
                             + "which is of blockstate "
-                            + world.getBlockState(placementPos).toString()
+                            + world.getBlockState(placementPos)
                     );
                 }
 
@@ -206,16 +212,20 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         boolean DEBUG_THIS = false;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
-        ReinforcementContext context = new ReinforcementContext(thisBlockPos.getX(), thisBlockPos.getY());
+        ReinforcementContext context = new ReinforcementContext(thisBlockPos.getX(), thisBlockPos.getY(), thisBlockPos.getZ());
+        context.sender = ReinforcementContext.senderType.SculkMass;
+        context.budget = thisTile.getStoredSculkMass();
 
         //Attempt to call in reinforcements and then update stored sculk mass
-        int remainingBalance = entityFactory.requestReinforcementAny(thisTile.getStoredSculkMass(), serverWorld, thisBlockPos, true, context);
-        thisTile.setStoredSculkMass(remainingBalance);
-
-        //Destroy if run out of sculk mass
-        if(thisTile.getStoredSculkMass() <= 0)
+        entityFactory.requestReinforcementSculkMass(serverWorld, thisBlockPos, context);
+        if(context.isRequestViewed && context.isRequestApproved)
         {
-            serverWorld.destroyBlock(thisBlockPos, false);
+            thisTile.setStoredSculkMass(context.remaining_balance);
+            //Destroy if run out of sculk mass
+            if(thisTile.getStoredSculkMass() <= 0)
+            {
+                serverWorld.destroyBlock(thisBlockPos, false);
+            }
         }
     }
 
@@ -236,7 +246,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         }
         catch (Exception e)
         {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
         return thisTile;
     }
@@ -261,12 +271,12 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
             if(tile instanceof SculkMassTile && tile != null)
             {
 
-                System.out.println("Block at (" +
+                String debug_text = "Block at (" +
                         pos.getX() + ", " +
                         pos.getY() + ", " +
                         pos.getZ() + ") " +
-                        "getStoredSculkMass: " + ((SculkMassTile) tile).getStoredSculkMass()
-                );
+                        "getStoredSculkMass: " + ((SculkMassTile) tile).getStoredSculkMass();
+                player.displayClientMessage(new StringTextComponent(debug_text), false);
             }
             else
             {
@@ -288,7 +298,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     protected boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
-
         return !blockState.canBeReplaced(Fluids.WATER);
     }
 
@@ -302,11 +311,9 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
-    {
+    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType) {
         return false;
     }
-
 
     /**
      * A function called by forge to create the tile entity.
@@ -341,14 +348,13 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     /**
      * Determines Block Hitbox <br>
      * Stole from NetherRootsBlock.java
-     * @param p_220053_1_
-     * @param p_220053_2_
-     * @param p_220053_3_
-     * @param p_220053_4_
+     * @param blockState
+     * @param iBlockReader
+     * @param blockPos
+     * @param iSelectionContext
      * @return
      */
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
-
+    public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
         //Block.box(xOffset, yOffset, zOffset, width, height, length)
         return Block.box(1.0D, 0.0D, 1.0D, 15.0D, 3.0D, 15.0D);
     }

@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.block;
 
+import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
@@ -20,14 +22,15 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
+
+    boolean DEBUG_THIS = DEBUG_MODE && false;
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -72,9 +75,14 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
-    private static final int ACTIVATION_DISTANCE = 64;
-
-    private List<LivingEntity> possibleTargets;
+    /**
+     * ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
+     * possibleLivingEntityTargets - A list of nearby targets which are worth infecting.
+     * possibleAggressorTargets - A list of nearby targets which should be considered hostile.
+     */
+    private static final int ACTIVATION_DISTANCE = 32;
+    private List<LivingEntity> possibleLivingEntityTargets;
+    private List<LivingEntity> possibleAggressorTargets;
 
     /**
      * The Constructor that takes in properties
@@ -109,13 +117,17 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
         return prop;
     }
 
-
-
+    /**
+     * Allows Light to pass through the block.
+     * @param blockState The current blockstate
+     * @param blockReader ???
+     * @param blockPos The current block position
+     * @return true if light should pass through, false otherwise
+     */
     @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
+    public boolean propagatesSkylightDown(BlockState blockState, IBlockReader blockReader, BlockPos blockPos) {
         return true;
     }
-
 
     /**
      * Determines if a specified mob type can spawn on this block, returning false will
@@ -132,7 +144,6 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
         return false;
     }
 
-
     /**
      * Determines if this block can be placed on a given block
      * @param blockState The block it is trying to be placed on
@@ -143,8 +154,6 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
     @Override
     public boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos)
     {
-        boolean DEBUG_THIS = false;
-
         boolean blockIsValid = false;
         boolean cocoonPosCanBeReplacedByWater = false;
         boolean cocoonPosHasNoNeighbors = true; //Assume false unless proven otherwise
@@ -173,7 +182,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
             if(!iBlockReader.getBlockState(bp).isAir())
                 cocoonPosHasNoNeighbors = false;
         }
-        if(DEBUG_MODE && DEBUG_THIS)
+        if(DEBUG_THIS)
             System.out.println(
                     "\n" + "Attempted to Place " + this.getClass().toString()
                      + " at " + blockPos.toString() + "\n"
@@ -204,7 +213,8 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
     }
 
     /**
-     * Gets called every time the block randomly ticks.
+     * Gets called every time the block randomly ticks. <br>
+     * The cocoon is dumb and only sends out requests. Gravemind handles the logistics.
      * @param blockState The current Blockstate
      * @param serverWorld The current ServerWorld
      * @param bp The current Block Position
@@ -213,18 +223,50 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
     {
-        ReinforcementContext context = new ReinforcementContext(bp.getX(), bp.getY());
-        /*
-        possibleTargets =
-                serverWorld.getLevel().getLoadedEntitiesOfClass(
-                        LivingEntity,
-                        this.getTargetSearchArea(this.getFollowDistance()),
-                        (Predicate<? super LivingEntity>) null);
-        */
-        SculkHoard.entityFactory.requestReinforcementAny(1, serverWorld, bp, false, context);
-        serverWorld.destroyBlock(bp,false);
+        //TODO: Make system so that chunks can be loaded without player presence
+        //Create bounding cube to detect targets
+        AxisAlignedBB searchArea = EntityAlgorithms.getSearchAreaRectangle(bp.getX(), bp.getY(), bp.getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+
+        //Get targets inside bounding box.
+        possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);
+        EntityAlgorithms.filterOutNonAggressors(possibleAggressorTargets);
+        //if(true) System.out.println(Arrays.toString(possibleAggressorTargets.toArray()));
+
+        possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);
+        EntityAlgorithms.filterOutAggressors(possibleLivingEntityTargets);
+        //if(true) System.out.println(Arrays.toString(possibleLivingEntityTargets.toArray()));
+
+        //Give gravemind context to our request to make more informed situations
+        ReinforcementContext context = new ReinforcementContext(bp.getX(), bp.getY(), bp.getZ());
+        context.sender = ReinforcementContext.senderType.SculkCocoon;
+        if(!possibleAggressorTargets.isEmpty())
+        {
+            context.is_aggressor_nearby = true;
+            //if(DEBUG_THIS) System.out.println("Players Detected");
+        }
+        if(!possibleLivingEntityTargets.isEmpty())
+        {
+            context.is_non_sculk_mob_nearby = true;
+            //if(DEBUG_THIS) System.out.println("Non-Sculk Mobs Detected");
+        }
+
+        //If there is some sort of enemy near by, request reinforcement
+        if(context.is_non_sculk_mob_nearby || context.is_aggressor_nearby)
+        {
+            //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
+            System.out.println("Sending out Reinforcement Request");
+            SculkHoard.entityFactory.requestReinforcementAny(serverWorld, bp, false, context);
+
+            //If the gravemind has viewed
+            if(context.isRequestViewed)
+            {
+                //If our request is approved, delete cocoon
+                if(context.isRequestApproved)
+                {
+                    serverWorld.destroyBlock(bp,false);
+                }
+            }
+        }
 
     }
-
-
 }

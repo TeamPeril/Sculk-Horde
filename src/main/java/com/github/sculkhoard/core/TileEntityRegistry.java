@@ -32,6 +32,10 @@ public class TileEntityRegistry {
             TILE_ENTITIES.register("sculk_mass_tile", () -> TileEntityType.Builder.of(
                     SculkMassTile::new, BlockRegistry.SCULK_MASS.get()).build(null));
 
+    public static RegistryObject<TileEntityType<SculkBrainTile>> SCULK_BRAIN_TILE =
+            TILE_ENTITIES.register("sculk_brain_tile", () -> TileEntityType.Builder.of(
+                    SculkBrainTile::new, BlockRegistry.SCULK_BRAIN.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         TILE_ENTITIES.register(eventBus);
     }

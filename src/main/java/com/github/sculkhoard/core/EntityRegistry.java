@@ -1,5 +1,6 @@
 package com.github.sculkhoard.core;
 
+import com.github.sculkhoard.common.entity.SculkMiteAggressorEntity;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import net.minecraft.entity.EntityClassification;
@@ -34,6 +35,15 @@ public class EntityRegistry {
                     .sized(0.6f, 0.6f)
                     .clientTrackingRange(9)
                     .build(new ResourceLocation(SculkHoard.MOD_ID, "sculk_mite").toString())
+            );
+
+    public static final RegistryObject<EntityType<SculkMiteAggressorEntity>> SCULK_MITE_AGGRESSOR =
+            ENTITY_TYPES.register("sculk_mite_aggressor", () -> EntityType.Builder.<SculkMiteAggressorEntity>of(
+                            SculkMiteAggressorEntity::new,
+                            EntityClassification.MONSTER)
+                    .sized(0.6f, 0.6f)
+                    .clientTrackingRange(9)
+                    .build(new ResourceLocation(SculkHoard.MOD_ID, "sculk_mite_aggressor").toString())
             );
 
 

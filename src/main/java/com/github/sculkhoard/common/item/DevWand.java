@@ -19,6 +19,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -67,98 +68,53 @@ public class DevWand extends Item implements IForgeItem {
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
-		//If Player is holding shift, just output sculk mass of world
-		if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
-		{
-			System.out.println("Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass());
-		}
 		//If item is not on cool down
-		else if(!playerIn.getCooldowns().isOnCooldown(this))
+		if(!playerIn.getCooldowns().isOnCooldown(this))
 		{
-			//Ray trace to see what block the player is looking at
-			BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
-
-			double targetX;
-			double targetY;
-			double targetZ;
-
-			if(targetPos != null) //If player Looking at Block
+			//If Player is holding shift, just output sculk mass of world
+			if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
 			{
-				targetX = targetPos.getX() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
-				targetY = targetPos.getY() + 1;
-				targetZ = targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
-
-				//Give Player Effect
-				playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
-				//Create Mob Instance
-				SculkMiteEntity entity = new SculkMiteEntity(worldIn);
-				//Set Mob's Position
-				entity.setPos(targetX, targetY, targetZ);
-				//Spawn instance in world
-				worldIn.addFreshEntity(entity);
-				//Set Wand on cool down
+				playerIn.displayClientMessage(new StringTextComponent("Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass()), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
+				return ActionResult.pass(itemstack);
 			}
-			return ActionResult.pass(itemstack);
+			//If player clicks left-alt, set sculk mass to 10k
+			else if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
+			{
+				playerIn.displayClientMessage(new StringTextComponent("Setting Sculk Mass to 20k"), false);
+				SculkHoard.entityFactory.setSculkAccumulatedMass(20000);
+				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
+				return ActionResult.pass(itemstack);
+			}
+			else
+			{
+				//Ray trace to see what block the player is looking at
+				BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
+
+				double targetX;
+				double targetY;
+				double targetZ;
+
+				if(targetPos != null) //If player Looking at Block
+				{
+					targetX = targetPos.getX() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
+					targetY = targetPos.getY() + 1;
+					targetZ = targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
+
+					//Give Player Effect
+					playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
+					//Create Mob Instance
+					SculkMiteEntity entity = new SculkMiteEntity(worldIn);
+					//Set Mob's Position
+					entity.setPos(targetX, targetY, targetZ);
+					//Spawn instance in world
+					worldIn.addFreshEntity(entity);
+					//Set Wand on cool down
+					playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
+				}
+				return ActionResult.pass(itemstack);
+			}
 		}
 		return ActionResult.fail(itemstack);
 	}
-
-	/**
-	 * This is called when the item is used, before the block is activated.
-	 * When Player Shift Right Clicks with it, spawns sculk zombie
-	 * @return Return PASS to cause item cooldown. Anything else for no cool down.
-	 */
-	public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context)
-	{
-		/*
-		PlayerEntity playerIn = context.getPlayer();
-		World worldIn = context.getLevel();
-
-		//If Player is holding shift, just output sculk mass of world
-		if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
-		{
-		}
-		//If item is not on cool down
-		else if(!playerIn.getCooldowns().isOnCooldown(this))
-		{
-			//Ray trace to see what block the player is looking at
-			BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
-
-			double targetX;
-			double targetY;
-			double targetZ;
-
-			if(targetPos == null) //If Player NOT Looking at Block
-			{
-
-			}
-			else //If player Looking at Block
-			{
-				System.out.println("Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass());
-				targetX = (int) targetPos.getX() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
-				targetY = (int) targetPos.getY() + 1;
-				targetZ = (int) targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
-
-				//Give Player Effect
-				playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
-				//Create Mob Instance
-				SculkMiteEntity entity = new SculkMiteEntity(worldIn);
-				//Set Mob's Position
-				entity.setPos(targetX, targetY, targetZ);
-				//Spawn instance in world
-				worldIn.addFreshEntity(entity);
-				//Set Wand on cool down
-				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-			}
-
-
-			return ActionResultType.PASS;
-		}
-		*/
-		return ActionResultType.FAIL;
-
-	}
-
-
 }

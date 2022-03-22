@@ -55,6 +55,26 @@ public class BlockRegistry {
     				.sound(SoundType.ANCIENT_DEBRIS)
     				));
 
+	//Sculk Arachnoid
+	public static final RegistryObject<Block> SCULK_ARACHNOID =
+			registerBlock("sculk_arachnoid", () -> new Block(AbstractBlock.Properties.of(
+							Material.PLANT, MaterialColor.QUARTZ)
+					.strength(10f, 6f)//Hardness & Resistance
+					.harvestTool(ToolType.SHOVEL)
+					.harvestLevel(3)
+					.sound(SoundType.HONEY_BLOCK)
+			));
+
+	//Sculk Dura Matter
+	public static final RegistryObject<Block> SCULK_DURA_MATTER =
+			registerBlock("sculk_dura_matter", () -> new Block(AbstractBlock.Properties.of(
+							Material.PLANT, MaterialColor.QUARTZ)
+					.strength(15f, 30f)//Hardness & Resistance
+					.harvestTool(ToolType.PICKAXE)
+					.harvestLevel(3)
+					.sound(SoundType.ANCIENT_DEBRIS)
+			));
+
 	public static final RegistryObject<CrustBlock> CRUST =
 			registerBlock("crust", () -> new CrustBlock());
 
@@ -93,4 +113,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<VeinBlock> VEIN =
 			registerBlock("vein", () -> new VeinBlock());
+
+	public static final RegistryObject<SculkBrainBlock> SCULK_BRAIN =
+			registerBlock("sculk_brain", () -> new SculkBrainBlock());
 }

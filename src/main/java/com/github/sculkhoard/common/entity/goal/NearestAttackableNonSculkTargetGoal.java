@@ -1,8 +1,5 @@
 package com.github.sculkhoard.common.entity.goal;
 
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
-import com.github.sculkhoard.common.entity.SculkLivingEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -17,8 +14,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutFriendlies;
+
 public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends TargetGoal {
 
+    //TODO: Update how this class works so that we can dynamically add and remove mobs from being targets.
 
     protected final Class<T> targetType;
     protected final int randomInterval;
@@ -26,20 +26,20 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
     protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
 
-    public NearestAttackableNonSculkTargetGoal(MobEntity p_i50313_1_, Class<T> p_i50313_2_, boolean p_i50313_3_) {
-        this(p_i50313_1_, p_i50313_2_, p_i50313_3_, false);
+    public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee) {
+        this(mobEntity, targetClass, mustSee, false);
     }
 
-    public NearestAttackableNonSculkTargetGoal(MobEntity p_i50314_1_, Class<T> p_i50314_2_, boolean p_i50314_3_, boolean p_i50314_4_) {
-        this(p_i50314_1_, p_i50314_2_, 10, p_i50314_3_, p_i50314_4_, (Predicate<LivingEntity>)null);
+    public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee, boolean mustReach) {
+        this(mobEntity, targetClass, 10, mustSee, mustReach, (Predicate<LivingEntity>)null);
     }
 
-    public NearestAttackableNonSculkTargetGoal(MobEntity p_i50315_1_, Class<T> p_i50315_2_, int p_i50315_3_, boolean p_i50315_4_, boolean p_i50315_5_, @Nullable Predicate<LivingEntity> p_i50315_6_) {
-        super(p_i50315_1_, p_i50315_4_, p_i50315_5_);
-        this.targetType = p_i50315_2_;
-        this.randomInterval = p_i50315_3_;
+    public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate) {
+        super(mobEntity, mustSee, mustReach);
+        this.targetType = targetClass;
+        this.randomInterval = interval;
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
-        this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(p_i50315_6_);
+        this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
     public boolean canUse() {
@@ -51,8 +51,8 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
         }
     }
 
-    protected AxisAlignedBB getTargetSearchArea(double p_188511_1_) {
-        return this.mob.getBoundingBox().inflate(p_188511_1_, 4.0D, p_188511_1_);
+    protected AxisAlignedBB getTargetSearchArea(double range) {
+        return this.mob.getBoundingBox().inflate(range, 4.0D, range);
     }
 
     protected void findTarget() {
@@ -67,19 +67,7 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
                     (Predicate<? super LivingEntity>) null);
 
             //Remove Any Sculk Entities or entities already infected
-            for(int i = 0; i < possibleTargets.size(); i++)
-            {
-                if(possibleTargets.get(i) instanceof SculkLivingEntity)
-                {
-                    possibleTargets.remove(i);
-                    i--;
-                }
-                else if(EntityAlgorithms.isLivingEntityInfected(possibleTargets.get(i)))
-                {
-                    possibleTargets.remove(i);
-                    i--;
-                }
-            }
+            filterOutFriendlies(possibleTargets);
         }
         else //if targetType is player
         {

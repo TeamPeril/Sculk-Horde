@@ -1,5 +1,6 @@
 package com.github.sculkhoard.client;
 
+import com.github.sculkhoard.client.renderer.entity.SculkMiteAggressorRenderer;
 import com.github.sculkhoard.client.renderer.entity.SculkMiteRenderer;
 import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
 import com.github.sculkhoard.core.BlockRegistry;
@@ -25,6 +26,9 @@ public class ClientModEventSubscriber {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE
                 .get(), SculkMiteRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE_AGGRESSOR
+                .get(), SculkMiteAggressorRenderer::new);
 
         event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());

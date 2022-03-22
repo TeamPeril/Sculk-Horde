@@ -1,7 +1,8 @@
 package com.github.sculkhoard.common.entity.entity_factory;
+
+import com.github.sculkhoard.common.entity.gravemind.Gravemind;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.SculkWorldData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
@@ -12,8 +13,10 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+import static com.github.sculkhoard.core.SculkHoard.gravemind;
 
 /**
  * The Entity Factory is a data structure that serves as a way for the sculk to
@@ -27,12 +30,18 @@ import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
  */
 public class EntityFactory {
 
+    private boolean DEBUG_THIS = false;//DEBUG_MODE && true;
+
     //The List We Store all the entries in
     private static ArrayList<EntityFactoryEntry> entries;
+
+    public enum StrategicValues {Infector, Melee}
+    //TODO: Rename StrategicValues to be more descriptive
 
     @Nullable
     private static SculkWorldData dataHandler;
 
+    private static Random rng;
 
     /**
      * Default Constructor
@@ -40,13 +49,14 @@ public class EntityFactory {
     public EntityFactory()
     {
         entries = new ArrayList<>();
+        rng = new Random();
     }
 
     /**
      * Used to get access to the world saved data.
      * @return
      */
-    private SculkWorldData  getDataHandler()
+    private SculkWorldData getDataHandler()
     {
         if(dataHandler == null)
         {
@@ -64,9 +74,9 @@ public class EntityFactory {
      * @param entity The entity to add
      * @param cost The cost of spawning the entity
      */
-    public void addEntry(EntityType entity, int cost, EntityFactoryEntry.StrategicValues value)
+    public void addEntry(EntityType entity, int cost, StrategicValues value, Gravemind.evolution_states minEvolution)
     {
-        entries.add(new EntityFactoryEntry(entity, cost ,value));
+        entries.add(new EntityFactoryEntry(entity, cost ,value, minEvolution));
     }
 
     /**
@@ -110,90 +120,92 @@ public class EntityFactory {
 
     /**
      * Will spawn a reinforcement based on the budget given. Prioritizes spawning the highest costing reinforcement.
-     * @param budget The max amount to spend
      * @param world The world to spawn it in.
      * @param pos The Position
      * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
-     * @return The Remaining Balance
      */
-    public int requestReinforcementAny(int budget, World world, BlockPos pos, boolean noCost, ReinforcementContext context)
+    public void requestReinforcementAny(World world, BlockPos pos, boolean noCost, ReinforcementContext context)
     {
-        //If no Sculk Mass, then just return original budget
-        if(getSculkAccumulatedMass() <= 0 || entries.size() == 0 || budget == 0) {return budget;}
-
-        //Go through each entry starting from beginning until it is something we can afford
-        EntityFactoryEntry currentEntry = entries.get(0);
-        int currentEntryCost = 0;
-
-        for(int i = 0; i < entries.size(); i++)
+        if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
+        //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
+        if(getSculkAccumulatedMass() > 0 && entries.size() > 0 && context.budget != 0)
         {
-            currentEntry = entries.get(i);
-            currentEntryCost = currentEntry.getCost();
-            if(currentEntryCost <= budget)
+            if(DEBUG_THIS) System.out.println("Reinforcement Request Sent to Gravemind.");
+            if(gravemind.processReinforcementRequest(context))
             {
-                currentEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
-                if(!noCost) subtractSculkAccumulatedMass(currentEntryCost);
-                return budget - currentEntry.getCost();
+                //If approved types are not specified, then choose a random appropriate mob
+                if(context.approvedMobTypes.isEmpty())
+                {
+                    ArrayList<EntityFactoryEntry> lottery = new ArrayList<EntityFactoryEntry>();
+
+                    //Loop through list, collect all appropriate entries
+                    for (EntityFactoryEntry entry : entries) {
+                        //If valid, spawn the entity
+                        if (entry.isEntryAppropriate(context))
+                        {
+                            lottery.add(entry);
+                        }
+                    }
+                    int randomEntryIndex = rng.nextInt(lottery.size());
+                    EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
+                    randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+
+                    if (!noCost) subtractSculkAccumulatedMass(randomEntry.getCost());
+
+                }
+                else //If not, look for a mob that fits the requirements
+                {
+                    //Loop through each entry until we find a valid one
+                    for (EntityFactoryEntry entry : entries) {
+                        //If valid, spawn the entity
+                        if (entry.isEntryAppropriate(context)) {
+                            entry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+                            if (!noCost) subtractSculkAccumulatedMass(entry.getCost());
+                            break;
+                        }
+                    }
+                }
             }
         }
-
-        return budget;
+        else if(DEBUG_THIS) System.out.println("Reinforcement Request did not meet pre-screening requirements. \n" +
+                "is Sculk Mass > 0? " + (getSculkAccumulatedMass() > 0) + "\n" +
+                "is entries.size() > 0? " + (entries.size() > 0) + "\n" +
+                "is context.budget != 0?" + (context.budget != 0));
     }
 
-    /**
-     * Will spawn a reinforcement based on the budget given.
-     * Prioritizes spawning the highest costing reinforcement.
-     * Will only spawn mob if on white list.
-     * @param budget The max amount to spend
-     * @param world The world to spawn it in.
-     * @param pos The Position
-     * @param list The White List
-     * @return The Remaining Balance
-     */
-    public int requestReinforcementWhiteList(int budget, World world, BlockPos pos, ArrayList<EntityType> list, ReinforcementContext context)
-    {
-        //If no Sculk Mass, then just return original budget
-        if(getSculkAccumulatedMass() <= 0) {return budget;}
-
-        //Go through each entry starting from beginning until it is something we can afford
-        for(int i = 0; i < entries.size(); i++)
-        {
-            EntityFactoryEntry currentEntry = entries.get(i);
-            if(currentEntry.getCost() <= budget && list.contains(currentEntry))
-            {
-                currentEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
-                return budget - currentEntry.getCost();
-            }
-        }
-        return budget;
-    }
 
     /**
-     * Will spawn a reinforcement based on the budget given.
-     * Prioritizes spawning the highest costing reinforcement.
-     * Won't Spawn Mobs on Black List
-     * @param budget The max amount to spend
+     * Will spawn a reinforcement based on the budget given. Prioritizes spawning the highest costing reinforcement.
      * @param world The world to spawn it in.
      * @param pos The Position
-     * @param list The Black List
-     * @return The Remaining Balance
      */
-    public int requestReinforcementBlackList(int budget, World world, BlockPos pos, ArrayList<EntityType> list, ReinforcementContext context)
+    public void requestReinforcementSculkMass(World world, BlockPos pos, ReinforcementContext context)
     {
-        //If no Sculk Mass, then just return original budget
-        if(getSculkAccumulatedMass() <= 0) {return budget;}
-
-        //Go through each entry starting from beginning until it is something we can afford
-        for(int i = 0; i < entries.size(); i++)
+        //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
+        if(!(getSculkAccumulatedMass() <= 0 || entries.size() == 0 || context.budget == 0))
         {
-            EntityFactoryEntry currentEntry = entries.get(i);
-            if(currentEntry.getCost() <= budget && !list.contains(currentEntry))
-            {
-                currentEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
-                return budget - currentEntry.getCost();
+            //Spawn Random Mob If appropriate
+
+            context.isRequestViewed = true;
+            context.isRequestApproved = true;
+
+            ArrayList<EntityFactoryEntry> lottery = new ArrayList<EntityFactoryEntry>();
+
+            //Loop through list, collect all appropriate entries
+            for (EntityFactoryEntry entry : entries) {
+                //If valid, spawn the entity
+                if (entry.isEntryAppropriate(context))
+                {
+                    lottery.add(entry);
+                }
             }
+            int randomEntryIndex = rng.nextInt(lottery.size());
+            EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
+            //Set Remaining Balance
+            context.remaining_balance = context.budget - randomEntry.getCost();
+            //Spawn Mob
+            randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
         }
-        return budget;
     }
 }
 
