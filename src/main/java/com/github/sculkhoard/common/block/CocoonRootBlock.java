@@ -142,7 +142,7 @@ public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
     {
         if(getGrowthStage(serverWorld, bp) == growthStage.immature)
         {
-            BlockRegistry.COCOON.get().placeBlockOn(serverWorld, bp);
+            BlockRegistry.COCOON.get().placeBlockHere(serverWorld, bp.above());
             return  true;
         }
         return false;

@@ -1,13 +1,66 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.core.BlockRegistry;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
-import org.apache.logging.log4j.core.jmx.Server;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class BlockAlgorithms {
+
+    /**
+     * Will return an array list that represents a 3x3x3 cube of all block
+     * positions with the origin being the centroid. Does not include origin
+     * in this list.
+     * @param origin
+     * @return
+     */
+    public static ArrayList<BlockPos> getNeighborsCube(BlockPos origin)
+    {
+        ArrayList<BlockPos> list = new ArrayList<BlockPos>();
+        list.addAll(getNeighborsXZPlane(origin, false));
+        list.addAll(getNeighborsXZPlane(origin.above(), true));
+        list.addAll(getNeighborsXZPlane(origin.below(), true));
+        return list;
+    }
+
+    /**
+     * Will return an array list representing a 2D layer
+     * @param origin
+     * @return
+     */
+    public static ArrayList<BlockPos> getNeighborsXZPlane(BlockPos origin, boolean includeOrigin)
+    {
+        ArrayList<BlockPos> list = new ArrayList<BlockPos>();
+        list.add(origin.north());
+        list.add(origin.north().east());
+        list.add(origin.north().west());
+        list.add(origin.east());
+        list.add(origin.south());
+        list.add(origin.south().east());
+        list.add(origin.south().west());
+        list.add(origin.west());
+        if(includeOrigin) list.add(origin);
+
+        return list;
+    }
+
+    /**
+     * Chooses a random neighbor position
+     * @param origin The origin Block Position
+     * @param serverWorld The ServerWorld of the block
+     * @return The target Block Position
+     */
+    public static BlockPos getRandomNeighbor(ServerWorld serverWorld, BlockPos origin)
+    {
+        ArrayList<BlockPos> positions = getNeighborsCube(origin);
+        return positions.get(serverWorld.random.nextInt(positions.size()));
+    }
 
     /**
      * A Jank solution to spawning flora. Given a random chance, spawn flora.
@@ -16,38 +69,65 @@ public class BlockAlgorithms {
      */
     public static void placeSculkFlora(BlockPos targetPos, ServerWorld world)
     {
-        SculkFloraBlock[] commonFlora = {
-                BlockRegistry.GRASS.get(),
-                BlockRegistry.GRASS_SHORT.get()
+
+        ((SculkFloraBlock) SculkHoard.randomSculkFlora.getRandomEntry()).placeBlockHere(world, targetPos);
+
+    }
+
+    /**
+     * Will place random flora attached to a given position.
+     * @param serverWorld the world
+     * @param origin the position
+     */
+    public static void placeFloraAroundLog(ServerWorld serverWorld, BlockPos origin) {
+        boolean DEBUG_THIS = false;
+        VeinBlock vein = BlockRegistry.VEIN.get();
+
+        BlockPos[] possiblePositions = {
+                origin.north(),
+                origin.east(),
+                origin.south(),
+                origin.west()
         };
-        Block targetBlock = world.getBlockState(targetPos).getBlock();
 
-        if(targetBlock == Blocks.AIR)
+        //50% chance to place sculk vein for each face
+        for(BlockPos pos : possiblePositions)
         {
-            SculkFloraBlock selectedFlora;
-            int chance = world.random.nextInt(100);
-            // A 1/100 chance to be a spike
-            if(chance == 0)
+            if(serverWorld.random.nextInt(10) < 5 &&
+                    serverWorld.getBlockState(pos).isAir())
             {
-                selectedFlora = BlockRegistry.SPIKE.get();
+                vein.placeBlock(serverWorld, pos);
             }
-            // A 1/100 chance to be a cocoon root
-            else if(chance == 1)
-            {
-                selectedFlora = BlockRegistry.SMALL_SHROOM.get();
-            }
-            else if(chance == 2)
-            {
-                selectedFlora = BlockRegistry.COCOON_ROOT.get();
-            }
-            // Else just a random common flora
-            else
-            {
-                selectedFlora = commonFlora[world.random.nextInt(commonFlora.length)];
-            }
-            //world.setBlockAndUpdate(targetPos, selectedFlora.defaultBlockState());
-            selectedFlora.placeBlockOn(world, targetPos.below());
+        }
+    }
 
+    /**
+     * Places a line of sculk vein above a block. Length and height of line is random.
+     * @param serverWorld the world
+     * @param origin the block we want to place these above
+     */
+    public static void placePatchesOfVeinAbove(ServerWorld serverWorld, BlockPos origin)
+    {
+        int OFFSET_MAX = 3;
+        int LENGTH_MAX = 5;
+        int LENGTH_MIN = 3;
+
+        Random rng = new Random();
+        int offset = rng.nextInt(OFFSET_MAX);
+        int length = rng.nextInt(LENGTH_MAX - LENGTH_MIN) + LENGTH_MIN;
+        VeinBlock vein = BlockRegistry.VEIN.get();
+
+        //Attempt to place sculk vein in a straight line above origin
+        BlockPos indexPos = origin.above(offset);
+        for(int i = 0; i < length; i++)
+        {
+            indexPos = indexPos.above();
+
+            //75% chance to place vein
+            if(serverWorld.random.nextInt(4) <= 2)
+            {
+                vein.placeBlock(serverWorld, indexPos);
+            }
         }
     }
 }

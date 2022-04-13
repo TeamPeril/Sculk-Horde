@@ -1,6 +1,7 @@
 package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.block.*;
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -84,11 +85,14 @@ public class BlockRegistry {
 	public static final RegistryObject<InfestedStoneActiveBlock> INFESTED_STONE_ACTIVE =
 			registerBlock("infested_stone_active", () -> new InfestedStoneActiveBlock());
 
-	public static final RegistryObject<InfestedStoneBlock> INFESTED_STONE =
-			registerBlock("infested_stone", () -> new InfestedStoneBlock());
+	public static final RegistryObject<InfestedStoneDormantBlock> INFESTED_STONE_DORMANT =
+			registerBlock("infested_stone_dormant", () -> new InfestedStoneDormantBlock());
 
-	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
-			registerBlock("infested_log", () -> new InfestedLogBlock());
+	public static final RegistryObject<InfestedLogActiveBlock> INFESTED_LOG_ACTIVE =
+			registerBlock("infested_log_active", () -> new InfestedLogActiveBlock());
+
+	public static final RegistryObject<InfestedLogDormantBlock> INFESTED_LOG_DORMANT =
+			registerBlock("infested_log_dormant", () -> new InfestedLogDormantBlock());
 
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
@@ -116,4 +120,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<SculkBrainBlock> SCULK_BRAIN =
 			registerBlock("sculk_brain", () -> new SculkBrainBlock());
+
+	public static final RegistryObject<SpreadingBlock> SPREADING_BLOCK =
+			registerBlock("spreading_block", () -> new SpreadingBlock());
 }

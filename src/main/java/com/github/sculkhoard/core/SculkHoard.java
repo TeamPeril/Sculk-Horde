@@ -1,8 +1,10 @@
 package com.github.sculkhoard.core;
 
+import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactoryEntry;
 import com.github.sculkhoard.common.entity.gravemind.Gravemind;
+import com.github.sculkhoard.common.pools.PoolBlocks;
 import com.github.sculkhoard.util.PacketToggleChunk;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -30,6 +32,8 @@ public class SculkHoard {
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
+    public static InfestationConversionTable infestationConversionTable;
+    public static PoolBlocks randomSculkFlora;
 
     //This is something related to chunk loaders
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("sculkhoard", "main"), () -> "1", "1"::equals, "1"::equals);

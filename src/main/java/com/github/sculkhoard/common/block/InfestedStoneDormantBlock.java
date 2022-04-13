@@ -19,7 +19,7 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
-public class InfestedStoneBlock extends Block implements IForgeBlock {
+public class InfestedStoneDormantBlock extends Block implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -82,7 +82,7 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public InfestedStoneBlock(Properties prop) {
+    public InfestedStoneDormantBlock(Properties prop) {
         super(prop);
     }
 
@@ -90,7 +90,7 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public InfestedStoneBlock() {
+    public InfestedStoneDormantBlock() {
         this(getProperties());
     }
 

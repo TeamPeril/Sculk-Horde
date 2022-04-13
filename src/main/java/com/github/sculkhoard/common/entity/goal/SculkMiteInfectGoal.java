@@ -75,18 +75,22 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
             double targetY = target.getY();
             double targetZ = thisMob.getTarget().getZ();
             double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
+            //If in infect range & not client side & current mob health is less than or equal to 50% of max health
             if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
             {
-                target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
+                float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
+                if(targetMobRemainingHealth <= 0.5)
+                {
+                    target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
 
-                //Kill The Bastard
-                /**
-                 *  Note: <br>
-                 *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
-                 */
-                //thisMob.die(DamageSource.GENERIC);
-                thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
-
+                    //Kill The Bastard
+                    /**
+                     *  Note:
+                     *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
+                     */
+                    //thisMob.die(DamageSource.GENERIC);
+                    thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
+                }
             }
         }
     }

@@ -135,33 +135,6 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
             {
                 worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(WEST, true));
             }
-            /*
-            if(northBlock.isFaceSturdy(worldIn, blockPosIn, Direction.SOUTH)
-                    && !(northBlock.is(BlockRegistry.CRUST.get()))
-                    && !(northBlock.is(BlockRegistry.INFECTED_DIRT.get())))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(NORTH, true));
-            }
-            else if(eastBlock.isFaceSturdy(worldIn, blockPosIn, Direction.WEST)
-                    && !(eastBlock.is(BlockRegistry.CRUST.get()))
-                    && !(eastBlock.is(BlockRegistry.INFECTED_DIRT.get())))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(EAST, true));
-            }
-            else if(southBlock.isFaceSturdy(worldIn, blockPosIn, Direction.NORTH)
-                    && !(southBlock.is(BlockRegistry.CRUST.get()))
-                    && !(southBlock.is(BlockRegistry.INFECTED_DIRT.get())))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(SOUTH, true));
-            }
-            else if(westBlock.isFaceSturdy(worldIn, blockPosIn, Direction.EAST)
-                    && !(westBlock.is(BlockRegistry.CRUST.get()))
-                    && !(westBlock.is(BlockRegistry.INFECTED_DIRT.get())))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(WEST, true));
-            }
-
-             */
         }
     }
 
@@ -180,7 +153,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(BlockRegistry.INFECTED_DIRT.get().isValidSpreadBlock(blockState.getBlock()))
+        else if(BlockRegistry.INFECTED_DIRT.get().isValidVictim(blockState))
         {
             return false;
         }

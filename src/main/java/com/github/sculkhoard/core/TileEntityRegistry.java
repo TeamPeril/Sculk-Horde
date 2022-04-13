@@ -1,5 +1,6 @@
 package com.github.sculkhoard.core;
 
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhoard.common.tileentity.*;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +23,7 @@ public class TileEntityRegistry {
 
     public static RegistryObject<TileEntityType<InfestedLogTile>> INFESTED_LOG_TILE =
             TILE_ENTITIES.register("infested_log_tile", () -> TileEntityType.Builder.of(
-                    InfestedLogTile::new, BlockRegistry.INFESTED_LOG.get()).build(null));
+                    InfestedLogTile::new, BlockRegistry.INFESTED_LOG_ACTIVE.get()).build(null));
 
     public static RegistryObject<TileEntityType<InfestedStoneActiveTile>> INFESTED_STONE_ACTIVE_TILE =
             TILE_ENTITIES.register("infested_stone_active_tile", () -> TileEntityType.Builder.of(
@@ -35,6 +36,10 @@ public class TileEntityRegistry {
     public static RegistryObject<TileEntityType<SculkBrainTile>> SCULK_BRAIN_TILE =
             TILE_ENTITIES.register("sculk_brain_tile", () -> TileEntityType.Builder.of(
                     SculkBrainTile::new, BlockRegistry.SCULK_BRAIN.get()).build(null));
+
+    public static RegistryObject<TileEntityType<SpreadingTile>> SPREADING_BLOCK_TILE =
+            TILE_ENTITIES.register("spreading_block_tile", () -> TileEntityType.Builder.of(
+                    SpreadingTile::new, BlockRegistry.SPREADING_BLOCK.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         TILE_ENTITIES.register(eventBus);

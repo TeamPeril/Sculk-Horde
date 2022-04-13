@@ -4,6 +4,7 @@ import com.github.sculkhoard.core.BlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -88,10 +89,13 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.SLIME_BLOCK)
+                .sound(SoundType.GRASS)
                 .noCollission()
-                .air();
+                .instabreak();
+
     }
+
+
 
 
     /**
@@ -105,7 +109,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      */
     @Override
     protected boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
-        Block[] validBlocks = {BlockRegistry.CRUST.get()};
+        Block[] validBlocks = {BlockRegistry.CRUST.get(), BlockRegistry.INFESTED_STONE_DORMANT.get()};
         for(Block b : validBlocks)
         {
             if(blockState.getBlock() == b) return true;
@@ -116,12 +120,16 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     /**
      * Used to place down block in the world.
      * @param world The world
-     * @param blockPos The position
+     * @param targetPos The position
      */
-    public void placeBlockOn(ServerWorld world, BlockPos blockPos)
+    public void placeBlockHere(ServerWorld world, BlockPos targetPos)
     {
-        if(mayPlaceOn(world.getBlockState(blockPos), world, blockPos))
-            world.setBlockAndUpdate(blockPos.above(), this.defaultBlockState());
+        //If block below target is valid and the target can be replaced by water
+        if(mayPlaceOn(world.getBlockState(targetPos.below()), world, targetPos.below())
+        && world.getBlockState(targetPos).isAir())
+        {
+            world.setBlockAndUpdate(targetPos, this.defaultBlockState());
+        }
     }
 
     /**

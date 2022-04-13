@@ -80,7 +80,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      * possibleLivingEntityTargets - A list of nearby targets which are worth infecting.
      * possibleAggressorTargets - A list of nearby targets which should be considered hostile.
      */
-    private static final int ACTIVATION_DISTANCE = 32;
+    private final int ACTIVATION_DISTANCE = 32;
     private List<LivingEntity> possibleLivingEntityTargets;
     private List<LivingEntity> possibleAggressorTargets;
 

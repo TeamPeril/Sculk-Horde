@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
+import com.github.sculkhoard.common.entity.goal.HurtByTargetGoalSculkMite;
 import com.github.sculkhoard.common.entity.goal.NearestAttackableNonSculkTargetGoal;
 import com.github.sculkhoard.common.entity.goal.SculkMiteInfectGoal;
 import com.github.sculkhoard.core.BlockRegistry;
@@ -63,7 +64,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     public static int SPAWN_MAX = 5;
     public static int INFECT_RANGE  = 2;
     public static Effect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
-    public static int INFECT_DURATION = 140;
+    public static int INFECT_DURATION = 500;
     public static int INFECT_LEVEL = 1;
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -93,7 +94,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
                 .add(Attributes.ARMOR, 1.0D)
                 .add(Attributes.ATTACK_DAMAGE, 1.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE,25.0D)
+                .add(Attributes.FOLLOW_RANGE,30.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.30D);
     }
 
@@ -153,7 +154,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkMiteInfectGoal(this, 1.0D, true),
+                        new SculkMiteInfectGoal(this, 1.0D, false),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -179,7 +180,8 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new HurtByTargetGoal(this).setAlertOthers(),
+                        //new HurtByTargetGoal(this).setAlertOthers(),
+                        new HurtByTargetGoalSculkMite(this).setAlertSculkMiteAggressors(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
                         new NearestAttackableNonSculkTargetGoal<>(this, LivingEntity.class, true),
                 };

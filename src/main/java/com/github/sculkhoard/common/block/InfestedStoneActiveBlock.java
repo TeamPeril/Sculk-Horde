@@ -1,5 +1,8 @@
 package com.github.sculkhoard.common.block;
 
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
+import com.github.sculkhoard.common.tileentity.InfectedDirtTile;
 import com.github.sculkhoard.common.tileentity.InfestedStoneActiveTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.TileEntityRegistry;
@@ -27,7 +30,7 @@ import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
-public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
+public class InfestedStoneActiveBlock extends SpreadingBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -81,7 +84,7 @@ public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
      *  immediate parent.
      */
     public static Block[] validSpreadBlocks = {Blocks.STONE};
-    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 10;
+   // public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 10;
 
     /**
      * The Constructor that takes in properties
@@ -113,241 +116,16 @@ public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
                 .sound(SoundType.STONE);
     }
 
-    /**
-     * This function is called when this block is placed. <br>
-     * Will set the nbt data maxSpreadAttempts.
-     * @param world The world the block is in
-     * @param bp The position the block is in
-     * @param blockState The state of the block
-     * @param entity The entity that placed it
-     * @param itemStack The item stack it was placed from
-     */
     @Override
-    public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack) {
-        super.setPlacedBy(world, bp, blockState, entity, itemStack);
-    }
-
-    /**
-     * Determines if this block will randomly tick or not.
-     * @param blockState The current blockstate
-     * @return True/False
-     */
-    @Override
-    public boolean isRandomlyTicking(BlockState blockState) {
-        return true;
-    }
-
-    /**
-     * Gets called every time the block randomly ticks.
-     * @param blockState The current Blockstate
-     * @param serverWorld The current ServerWorld
-     * @param thisBlockPos The current Block Position
-     * @param random ???
-     */
-    @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
-        boolean DEBUG_THIS = false;
-
-        //Get tile entity for this block
-        TileEntity tileEntity = serverWorld.getBlockEntity(thisBlockPos);
-        InfestedStoneActiveTile thisTile = null;
-        try
-        {
-            thisTile = (InfestedStoneActiveTile) serverWorld.getBlockEntity(thisBlockPos);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.toString());
-        }
-
-
-        //If there is no error with the tile entity, then increment spreadAttempts and spread to it.
-        if(tileEntity == null)
-        {
-            System.out.println("ERROR: Tile Entity is null.");
-        }
-        else
-        {
-            if(!(tileEntity instanceof InfestedStoneActiveTile))
-            {
-                System.out.println("ERROR: Tile Entity is not of correct type.");
-            }
-            else
-            {
-                thisTile = ((InfestedStoneActiveTile) tileEntity); //Cast
-            }
-        }
-
-        //If this block has not attempted to spread before
-        if(thisTile != null && thisTile.getMaxSpreadAttempts() == -1)
-        {
-            thisTile.setMaxSpreadAttempts(DEFAULT_MAX_SPREAD_ATTEMPTS);//Set to default
-            if(DEBUG_MODE && DEBUG_THIS)
-            {
-                System.out.println("Block at (" +
-                        thisBlockPos.getX() + ", " +
-                        thisBlockPos.getY() + ", " +
-                        thisBlockPos.getZ() + ") " +
-                        "is getting the DEFAULT_MAX_SPREAD_ATTEMPTS"
-                );
-            }
-        }
-
-        //If max spread attempts has not been reached && Given a 25% chance && the area is loaded, spread
-        if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0 && serverWorld.random.nextInt(4) == 0 && serverWorld.isAreaLoaded(thisBlockPos,4))
-        {
-            BlockPos spreadPosition = getRandomAdjacentBlockPos(thisBlockPos, serverWorld); //Get a random adjacent block position
-            Block spreadBlock = serverWorld.getBlockState(spreadPosition).getBlock(); //Get the block at this position
-            attemptSpread(thisTile, serverWorld, spreadPosition, spreadBlock); //Attempt to spread to this position
-        }
-        //If this block has run out of spread attempts, convert to crust
-        else if(thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() <= 0)
-        {
-            serverWorld.setBlockAndUpdate(thisBlockPos, BlockRegistry.INFESTED_STONE.get().defaultBlockState());//Convert to crust
-            //Given a 50% chance, place down sculk flora
-            if(serverWorld.random.nextInt(2) <= 0)
-            {
-                BlockAlgorithms.placeSculkFlora(thisBlockPos.above(), serverWorld);
-            }
-        }
-    }
-
-    /**
-     * Attempts to spread to a specific block position.
-     * @param thisTile The Tile Entity of this block
-     * @param serverWorld The ServerWorld of this block
-     * @param targetPos The Block Position of the target block
-     * @param targetBlock The class of the target block
-     */
-    public void attemptSpread(InfestedStoneActiveTile thisTile, ServerWorld serverWorld, BlockPos targetPos, Block targetBlock)
+    protected boolean isValidVictim(BlockState blockState)
     {
-        boolean DEBUG_THIS = false;
-        thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1); //Increment spreadAttempts
-        //If target block is one that we can spread to, spread to it.
-        if(isValidSpreadBlock(targetBlock))
+        //NOTE: I made this an if statement for the sake of efficiency
+        if(blockState.getBlock() == Blocks.STONE)
         {
-            if(DEBUG_MODE && DEBUG_THIS)
-            {
-                System.out.println("New Infested Stone at (" +
-                        targetPos.getX() + ", " +
-                        targetPos.getY() + ", " +
-                        targetPos.getZ() + ") "
-                );
-            }
-            serverWorld.setBlockAndUpdate(targetPos, this.defaultBlockState()); //Set the block
-            TileEntity childTile = serverWorld.getWorldServer().getBlockEntity(targetPos); //Get new block tile entity
-
-            //if able, convert tree log block into infested variant
-            if(BlockRegistry.INFESTED_LOG.get().isPositionValidForSpread(serverWorld, targetPos.above()))
-            {
-                serverWorld.destroyBlock(targetPos.above(),false);
-                serverWorld.setBlockAndUpdate(targetPos.above(), BlockRegistry.INFESTED_LOG.get().defaultBlockState());
-
-            }
-
-            //If no error with tile entity of child block
-            if(childTile instanceof InfestedStoneActiveTile && childTile != null)
-            {
-                //A 1/500 to not De-increment maxSpreadAttempts of child
-                if(serverWorld.random.nextInt(500) > 0)
-                    ((InfestedStoneActiveTile) childTile).setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
-            }
-            else
-            {
-                System.out.println("ERROR: Child Tile not found.");
-            }
-        }
-    }
-
-    /**
-     * Choose random adjacent position to spread to
-     * @param origin The origin Block Position
-     * @param serverWorld The ServerWorld of the block
-     * @return The target Block Position
-     */
-    public BlockPos getRandomAdjacentBlockPos(BlockPos origin, ServerWorld serverWorld)
-    {
-        BlockPos[] spreadDirections = {
-                origin.above(),
-                origin.below(),
-                origin.north(),
-                origin.east(),
-                origin.south(),
-                origin.west()
-        };
-        return spreadDirections[serverWorld.random.nextInt(spreadDirections.length)];
-    }
-
-    /**
-     * Linear search through validSpreadBlocks array to check if
-     * the given block is in that list.
-     * @param block The block in question
-     * @return True/False
-     */
-    public boolean isValidSpreadBlock(Block block)
-    {
-        for(Block b : validSpreadBlocks)
-        {
-            if(b.is(block))
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
-
-    /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE)
-        {
-            TileEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof InfestedStoneActiveTile && tile != null)
-            {
-
-                System.out.println("Block at (" +
-                        pos.getX() + ", " +
-                        pos.getY() + ", " +
-                        pos.getZ() + ") " +
-                        "maxSpreadAttempts: " + ((InfestedStoneActiveTile) tile).getMaxSpreadAttempts() +
-                        " spreadAttempts: " + ((InfestedStoneActiveTile) tile).getSpreadAttempts()
-                );
-            }
-            else
-            {
-                System.out.println("Error accessing InfestedStoneActiveTile");
-            }
-        }
-
-        return null; //Just Return null because We Are Not Modifying it
-    }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param state The current state
-     * @param world The current world
-     * @param pos Block position in world
-     * @param type The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
-    {
-        return false;
-    }
-
 
     /**
      * A function called by forge to create the tile entity.
@@ -361,14 +139,24 @@ public class InfestedStoneActiveBlock extends Block implements IForgeBlock {
         return TileEntityRegistry.INFESTED_STONE_ACTIVE_TILE.get().create();
     }
 
+
     /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
+     * Just returns the tile entity
+     * @param world The world to check
+     * @param thisBlockPos The position to check
+     * @return The tile entity
      */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    @Nullable
+    public InfestedStoneActiveTile getTileEntity(World world, BlockPos thisBlockPos)
+    {
+        //Get tile entity for this block
+        InfestedStoneActiveTile thisTile = (InfestedStoneActiveTile) world.getBlockEntity(thisBlockPos);
+
+        if(thisTile == null || !(thisTile instanceof SpreadingTile))
+            createTileEntity(world.getBlockState(thisBlockPos), world);
+
+        return thisTile;
     }
+
 
 }

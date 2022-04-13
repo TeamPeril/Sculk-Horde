@@ -5,12 +5,15 @@ import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.common.entity.gravemind.Gravemind;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EffectRegistry;
+import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -58,31 +61,33 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(PotionEvent.PotionExpiryEvent event)
     {
-        EffectInstance effectInstance = event.getPotionEffect();
-
-        //If Sculk Infection, spawn mites and mass.
-        if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
+        if(!event.getEntity().level.isClientSide())
         {
-            LivingEntity entity = event.getEntityLiving();
-            if(entity != null)
+            EffectInstance effectInstance = event.getPotionEffect();
+
+            //If Sculk Infection, spawn mites and mass.
+            if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
             {
-                //Spawn Effect Level + 1 number of mites
-                int infectionDamage = 4;
-                for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
+                LivingEntity entity = event.getEntityLiving();
+                if(entity != null)
                 {
-                    World entityLevel = entity.level;
-                    BlockPos entityPosition = entity.blockPosition();
-                    float entityHealth = entity.getMaxHealth();
+                    //Spawn Effect Level + 1 number of mites
+                    int infectionDamage = 4;
+                    for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
+                    {
+                        World entityLevel = entity.level;
+                        BlockPos entityPosition = entity.blockPosition();
+                        float entityHealth = entity.getMaxHealth();
 
-                    SculkMiteEntity mite = new SculkMiteEntity(entityLevel);
-                    mite.setPos(entity.getX(), entity.getY(), entity.getZ());
-                    entityLevel.addFreshEntity(mite);
+                        //Spawn Mite
+                        EntityRegistry.SCULK_MITE.get().spawn((ServerWorld) event.getEntity().level, null, null, entityPosition, SpawnReason.SPAWNER, true, true);
 
-                    //Spawn Sculk Mass
-                    SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
-                    sculkMass.spawn(entityLevel, entityPosition, entityHealth);
-                    //Do infectionDamage to victim per mite
-                    entity.hurt(DamageSource.GENERIC, infectionDamage);
+                        //Spawn Sculk Mass
+                        SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
+                        sculkMass.spawn(entityLevel, entityPosition, entityHealth);
+                        //Do infectionDamage to victim per mite
+                        entity.hurt(DamageSource.GENERIC, infectionDamage);
+                    }
                 }
             }
         }

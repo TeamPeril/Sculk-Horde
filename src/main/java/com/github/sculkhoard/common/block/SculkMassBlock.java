@@ -1,5 +1,7 @@
 package com.github.sculkhoard.common.block;
 
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
@@ -82,7 +84,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public static int HARVEST_LEVEL = -1;
     public static final float SCULK_HOARD_MASS_TAX = (float) (1.0 / 3.0);
     public static double HEALTH_ABSORB_MULTIPLIER = 3;
-    public static int infectedDirtMaxSpreadAttempts = 20;
+    public static int infestedChildBlockMaxSpreadAttempts = 20;
 
     /**
      * The Constructor that takes in properties
@@ -124,6 +126,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param originPos The position to spawn the mob
      * @param victimHealth How much health the victim has.
      */
+    //@OnlyIn(Dist.DEDICATED_SERVER)
     public void spawn(World world, BlockPos originPos, float victimHealth)
     {
         boolean DEBUG_THIS = false;
@@ -177,12 +180,13 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                     );
                 }
 
-                //Replace Block Under sculk mass with infected dirt if possible
-                if(BlockRegistry.INFECTED_DIRT.get().isValidSpreadBlock(world.getBlockState(placementPos.below()).getBlock()) )
+                //Replace Block Under sculk mass with infested variant if possible
+                if(SculkHoard.infestationConversionTable.convertToActiveSpreader((ServerWorld) world, originPos.below()))
                 {
-                    InfectedDirtBlock infectedDirt = BlockRegistry.INFECTED_DIRT.get();
-                    world.setBlockAndUpdate(placementPos.below(), infectedDirt.defaultBlockState());
-                    infectedDirt.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infectedDirtMaxSpreadAttempts);
+                    SpreadingBlock spreadingBlock = BlockRegistry.SPREADING_BLOCK.get();
+                    if(spreadingBlock.getTileEntity(world, placementPos.below()) != null && spreadingBlock.getTileEntity(world, placementPos.below()) instanceof SpreadingTile)
+                        spreadingBlock.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infestedChildBlockMaxSpreadAttempts);
+                    //TODO: Figure out why this line above is causing crashing
                 }
             }
         }
