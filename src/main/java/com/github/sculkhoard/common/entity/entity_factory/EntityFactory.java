@@ -15,8 +15,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
-import static com.github.sculkhoard.core.SculkHoard.gravemind;
+import static com.github.sculkhoard.core.SculkHoard.*;
 
 /**
  * The Entity Factory is a data structure that serves as a way for the sculk to
@@ -77,6 +76,29 @@ public class EntityFactory {
     public void addEntry(EntityType entity, int cost, StrategicValues value, Gravemind.evolution_states minEvolution)
     {
         entries.add(new EntityFactoryEntry(entity, cost ,value, minEvolution));
+    }
+
+
+    //TODO: Fix this dumb method
+    /**
+     *
+     * @param value
+     * @return
+     */
+    @Nullable
+    public static ArrayList<EntityType> getAllEntriesOfThisCategory(StrategicValues value)
+    {
+        if(entries == null || entries.isEmpty())
+            return null;
+
+        ArrayList<EntityType> list = new ArrayList<EntityType>();
+        for(EntityFactoryEntry entry : entries)
+        {
+            if(entry.getCategory() == value)
+                list.add(entry.getEntity());
+        }
+
+        return list;
     }
 
     /**

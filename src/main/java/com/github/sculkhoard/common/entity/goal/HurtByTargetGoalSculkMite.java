@@ -1,14 +1,14 @@
 package com.github.sculkhoard.common.entity.goal;
 
-import com.github.sculkhoard.common.entity.SculkMiteAggressorEntity;
-import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.common.entity.SculkLivingEntity;
+import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.GameRules;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -77,11 +77,10 @@ public class HurtByTargetGoalSculkMite extends TargetGoal {
 
     protected void alertSculkMiteAggressors()
     {
-        boolean DEBUG_THIS = true;
+        boolean DEBUG_THIS = false;
         double d0 = this.getFollowDistance();
         AxisAlignedBB axisalignedbb = AxisAlignedBB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
-        List<MobEntity> list = this.mob.level.getLoadedEntitiesOfClass(SculkMiteAggressorEntity.class, axisalignedbb);
-        //list.addAll(this.mob.level.getLoadedEntitiesOfClass(SculkZombieEntity.class, axisalignedbb));
+        List<MobEntity> list = this.mob.level.getLoadedEntitiesOfClass(SculkLivingEntity.class, axisalignedbb);
         Iterator iterator = list.iterator();
 
         while(true)
@@ -98,46 +97,25 @@ public class HurtByTargetGoalSculkMite extends TargetGoal {
 
                 mobentity = (MobEntity)iterator.next();//Get Next Mob
 
+                ArrayList<EntityType> listOfProtectors = EntityFactory.getAllEntriesOfThisCategory(EntityFactory.StrategicValues.Melee);
                 boolean isAlertingSelf = this.mob == mobentity;
                 boolean hasTargetAlready = mobentity.getTarget() != null;
-                boolean isSculkMiteAggressor = mobentity instanceof SculkMiteAggressorEntity;
+                boolean isProtector = mobentity instanceof SculkLivingEntity;
 
                 if(DEBUG_THIS)
                 {
                     System.out.println("Attempting to Call Protectors");
                     System.out.println("[ isAlertingSelf? = " + isAlertingSelf
-                            + " hasTargetAlready? " + hasTargetAlready
-                            + " isSculkMiteAggressor? " + isSculkMiteAggressor + "]");
+                            + " hasTargetAlready? =" + hasTargetAlready
+                            + " isProtector? =" + isProtector + "]");
                 }
 
                 //If we arent trying to alert ourself & if protectors dont already have a target & is a mite aggressor
-                if (!isAlertingSelf && !hasTargetAlready && isSculkMiteAggressor)
+                if (!isAlertingSelf && !hasTargetAlready && isProtector)
                 {
                     this.alertOther(mobentity, this.mob.getLastHurtByMob());
-
-                    /*
-                    if (this.toIgnoreAlert == null) {
-                        break;
-                    }
-
-                    boolean flag = false;
-
-                    for(Class<?> oclass : this.toIgnoreAlert) {
-                        if (mobentity.getClass() == oclass) {
-                            flag = true;
-                            break;
-                        }
-                    }
-
-                    if (!flag) {
-                        break;
-                    }
-
-                     */
                 }
             }
-
-            //this.alertOther(mobentity, this.mob.getLastHurtByMob());
         }
     }
 

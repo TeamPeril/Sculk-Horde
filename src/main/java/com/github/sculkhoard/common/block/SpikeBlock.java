@@ -2,17 +2,27 @@ package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.DamageSourceRegistry;
+import com.github.sculkhoard.core.EffectRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
+
+import java.util.Random;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -66,6 +76,10 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = 3;
 
+   // public static Effect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
+    public static int INFECT_DURATION = 500;
+    public static int INFECT_LEVEL = 1;
+
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -116,8 +130,31 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
                 if (d0 >= (double)0.003F || d1 >= (double)0.003F)
                 {
                     entity.hurt(DamageSourceRegistry.SCULK_SPIKE, 1.0F);
+                    ((LivingEntity) entity).addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                    world.destroyBlock(blockPos, false);
                 }
             }
         }
+    }
+
+
+    /**
+     * Called periodically clientside on blocks near the player to show effects (like furnace fire particles). Note that
+     * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless
+     * of whether the block can receive random update ticks
+     */
+    @OnlyIn(Dist.CLIENT)
+    public void animateTick(BlockState pState, World pLevel, BlockPos pPos, Random pRand) {
+        VoxelShape voxelshape = this.getShape(pState, pLevel, pPos, ISelectionContext.empty());
+        Vector3d vector3d = voxelshape.bounds().getCenter();
+        double d0 = (double)pPos.getX() + vector3d.x;
+        double d1 = (double)pPos.getZ() + vector3d.z;
+
+        for(int i = 0; i < 3; ++i) {
+            if (pRand.nextBoolean()) {
+                pLevel.addParticle(ParticleTypes.MYCELIUM, d0 + pRand.nextDouble() / 5.0D, (double)pPos.getY() + (0.5D - pRand.nextDouble()), d1 + pRand.nextDouble() / 5.0D, 0.0D, 0.0D, 0.0D);
+            }
+        }
+
     }
 }

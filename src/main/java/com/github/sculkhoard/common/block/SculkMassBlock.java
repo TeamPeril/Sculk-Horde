@@ -186,7 +186,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                     SpreadingBlock spreadingBlock = BlockRegistry.SPREADING_BLOCK.get();
                     if(spreadingBlock.getTileEntity(world, placementPos.below()) != null && spreadingBlock.getTileEntity(world, placementPos.below()) instanceof SpreadingTile)
                         spreadingBlock.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infestedChildBlockMaxSpreadAttempts);
-                    //TODO: Figure out why this line above is causing crashing
                 }
             }
         }

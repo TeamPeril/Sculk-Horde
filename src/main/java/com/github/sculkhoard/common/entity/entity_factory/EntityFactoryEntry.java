@@ -4,6 +4,7 @@ import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.common.entity.gravemind.Gravemind;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 
@@ -36,6 +37,11 @@ public class EntityFactoryEntry {
     public EntityType getEntity()
     {
         return entity;
+    }
+
+    public EntityFactory.StrategicValues getCategory()
+    {
+        return strategicValue;
     }
 
     public boolean isEntryAppropriate(ReinforcementContext context)

@@ -22,7 +22,7 @@ import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
  */
 public class Gravemind {
 
-    private final boolean DEBUG_THIS = DEBUG_MODE && true; //Used to debug the gravemind
+    private final boolean DEBUG_THIS = DEBUG_MODE && false; //Used to debug the gravemind
 
     public enum evolution_states {Undeveloped, Immature, Mature}
     private evolution_states evolution_state;
@@ -33,8 +33,8 @@ public class Gravemind {
 
     public EntityFactory entityFactory;
 
-    private int MASS_GOAL_FOR_IMMATURE = 10000;
-    private int MASS_GOAL_FOR_MATURE = 100000;
+    private int MASS_GOAL_FOR_IMMATURE = 500;
+    private int MASS_GOAL_FOR_MATURE = 1000;
 
 
     /**
