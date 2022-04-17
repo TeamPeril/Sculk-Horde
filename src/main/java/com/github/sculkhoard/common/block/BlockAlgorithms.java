@@ -11,6 +11,8 @@ import net.minecraft.world.server.ServerWorld;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+
 public class BlockAlgorithms {
 
     /**
@@ -63,6 +65,27 @@ public class BlockAlgorithms {
     }
 
     /**
+     * Will only place sculk nodes if sky is visible
+     * @param world
+     * @param targetPos
+     */
+    public static void placeSculkNode(ServerWorld world, BlockPos targetPos)
+    {
+        //If we are too close to another node, do not create one
+        if(!SculkHoard.gravemind.isValidPositionForSculkNode(targetPos))
+            return;
+
+        //Given random chance and the target location can see the sky, create a sculk node
+        if(new Random().nextInt(1000) <= 1 && world.canSeeSky(targetPos))
+        {
+            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
+            SculkHoard.gravemind.sculkNodePositions.add(targetPos);
+            if(DEBUG_MODE) System.out.println("New Sculk Node Created at " + targetPos.toString());
+        }
+
+    }
+
+    /**
      * A Jank solution to spawning flora. Given a random chance, spawn flora.
      * @param targetPos The BlockPos to spawn it at
      * @param world The world to spawn it in.
@@ -93,7 +116,7 @@ public class BlockAlgorithms {
         //50% chance to place sculk vein for each face
         for(BlockPos pos : possiblePositions)
         {
-            if(serverWorld.random.nextInt(10) < 5 &&
+            if(serverWorld.random.nextInt(10) < 3 &&
                     serverWorld.getBlockState(pos).isAir())
             {
                 vein.placeBlock(serverWorld, pos);

@@ -148,6 +148,7 @@ public class InfestationConversionTable {
             if(dormantVariant == BlockRegistry.INFESTED_LOG_DORMANT.get())
                 BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
+            BlockAlgorithms.placeSculkNode(world, targetPos.above());
 
             BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
 

@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.common.entity.goal.HurtByTargetGoalSculkMite;
+import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.common.entity.goal.NearestAttackableNonSculkTargetGoal;
 import com.github.sculkhoard.common.entity.goal.SculkMiteInfectGoal;
 import com.github.sculkhoard.core.BlockRegistry;
@@ -99,6 +99,14 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     }
 
     /**
+     * @return if this entity may not naturally despawn.
+     */
+    @Override
+    public boolean isPersistenceRequired() {
+        return true;
+    }
+
+    /**
      * The function that determines if a position is a good spawn location<br>
      * @param config ???
      * @param world The world that the mob is trying to spawn in
@@ -179,9 +187,8 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     {
         Goal[] goals =
                 {
-                        //HurtByTargetGoal(mob)
-                        //new HurtByTargetGoal(this).setAlertOthers(),
-                        new HurtByTargetGoalSculkMite(this).setAlertSculkMiteAggressors(),
+                        //TargetAttacker(mob)
+                        new TargetAttacker(this).setAlertSculkLivingEntities(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
                         new NearestAttackableNonSculkTargetGoal<>(this, LivingEntity.class, true),
                 };

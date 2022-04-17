@@ -7,12 +7,13 @@ import com.github.sculkhoard.common.entity.goal.SculkZombieAttackGoal;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
-import net.minecraft.entity.*;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.AbstractRaiderEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +29,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -37,9 +38,9 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * Edited client/ ClientModEventSubscriber.java<br>
      * Edited common/world/ModWorldEvents.java (this might not be necessary)<br>
      * Edited common/world/gen/ModEntityGen.java<br>
-     * Added common/entity/ SculkZombie.java<br>
-     * Added client/model/entity/ SculkZombieModel.java<br>
-     * Added client/renderer/entity/ SculkZombieRenderer.java
+     * Added common/entity/ SculkSpitter.java<br>
+     * Added client/model/entity/ SculkSpitterModel.java<br>
+     * Added client/renderer/entity/ SculkSpitterRenderer.java
      */
 
     /**
@@ -50,7 +51,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * 8 = Cow<br>
      * 5 = Witch<br>
      */
-    public static int SPAWN_WEIGHT = 100;
+    public static int SPAWN_WEIGHT = 50;
 
     /**
      * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
@@ -68,7 +69,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, World worldIn) {
+    public SculkSpitterEntity(EntityType<? extends SculkSpitterEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
@@ -76,7 +77,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE.get(), worldIn);}
+    public SculkSpitterEntity(World worldIn) {super(EntityRegistry.SCULK_SPITTER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -89,7 +90,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                 .add(Attributes.ARMOR, 4.0D)
                 .add(Attributes.ATTACK_DAMAGE, 3.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE,25.0D)
+                .add(Attributes.FOLLOW_RANGE,40.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
@@ -149,8 +150,10 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                 {
                         //SwimGoal(mob)
                         new SwimGoal(this),
-                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkZombieAttackGoal(this, 1.0D, true),
+                        //
+                        new RangedAttackGoal(this, new AcidAttack(this)
+                                .setProjectileOriginOffset(0.8, 2, 0.8)
+                                .setDamage(4), 1.0D, 50, 30, 15, 15F, 1),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -181,8 +184,6 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
                         new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true),
-                        //new NearestAttackableTargetGoal<>(this, IAngerable.class, true),
-
                 };
         return goals;
     }

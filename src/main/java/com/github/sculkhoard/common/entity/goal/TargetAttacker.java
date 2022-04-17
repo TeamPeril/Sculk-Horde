@@ -1,7 +1,9 @@
 package com.github.sculkhoard.common.entity.goal;
 
+import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TargetGoal;
@@ -13,7 +15,9 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class HurtByTargetGoalSculkMite extends TargetGoal {
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+
+public class TargetAttacker extends TargetGoal {
 
     private static final EntityPredicate HURT_BY_TARGETING = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
     private boolean alertSameType;
@@ -22,13 +26,13 @@ public class HurtByTargetGoalSculkMite extends TargetGoal {
     private final Class<?>[] toIgnoreDamage;
     private Class<?>[] toIgnoreAlert;
 
-    public HurtByTargetGoalSculkMite(CreatureEntity sourceEntity, Class<?>... p_i50317_2_) {
+    public TargetAttacker(CreatureEntity sourceEntity, Class<?>... p_i50317_2_) {
         super(sourceEntity, true);
         this.toIgnoreDamage = p_i50317_2_;
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
-    public HurtByTargetGoalSculkMite setAlertSculkMiteAggressors(Class<?>... pReinforcementTypes) {
+    public TargetAttacker setAlertSculkLivingEntities(Class<?>... pReinforcementTypes) {
         this.alertSameType = true;
         this.toIgnoreAlert = pReinforcementTypes;
         return this;
@@ -67,15 +71,24 @@ public class HurtByTargetGoalSculkMite extends TargetGoal {
         this.mob.setTarget(this.mob.getLastHurtByMob());
         this.targetMob = this.mob.getTarget();
         this.timestamp = this.mob.getLastHurtByMobTimestamp();
-        this.unseenMemoryTicks = 300;
+        this.unseenMemoryTicks = 60;
+
+        /**If a mob isnt already a confirmed hostile, make it one.*/
+        if(!SculkHoard.gravemind.confirmedThreats.contains(this.mob.getLastHurtByMob())
+                && !(this.mob.getLastHurtByMob() instanceof SculkLivingEntity)
+                && this.mob.getLastHurtByMob() != null)
+        {
+            EntityAlgorithms.addHostile(mob.getLastHurtByMob());
+        }
+
         if (this.alertSameType) {
-            this.alertSculkMiteAggressors();
+            this.alertSculkLivingEntities();
         }
 
         super.start();
     }
 
-    protected void alertSculkMiteAggressors()
+    protected void alertSculkLivingEntities()
     {
         boolean DEBUG_THIS = false;
         double d0 = this.getFollowDistance();

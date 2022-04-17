@@ -1,13 +1,11 @@
 package com.github.sculkhoard.common.entity;
 
 import com.github.sculkhoard.core.EffectRegistry;
-import net.minecraft.entity.EntityType;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.IAngerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.monster.AbstractIllagerEntity;
 import net.minecraft.entity.monster.AbstractRaiderEntity;
-import net.minecraft.entity.monster.RavagerEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -15,8 +13,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.GameType;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
@@ -95,32 +91,38 @@ public class EntityAlgorithms {
         return isFriendly;
     }
 
-    /**
-     * Determines if an Entity is an enemy.
-     * @param e The Given Entity
-     * @return True if enemy, False otherwise
-     */
-    public static boolean isLivingEntityTarget(LivingEntity e)
-    {
-        return !isLivingEntityFriendly(e);
-    }
 
     /**
      * Determines if an Entity is an aggressor.
      * @param e The Given Entity
      * @return True if enemy, False otherwise
      */
-    public static boolean isLivingEntityAggressor(LivingEntity e)
+    public static boolean isLivingEntityHostile(LivingEntity e)
     {
-        return e instanceof PlayerEntity
-                || e instanceof IronGolemEntity
-                || e instanceof WitherEntity
-                || e instanceof AbstractRaiderEntity
-                || e instanceof IAngerable;
+        String entity = e.getClass().toString();
+        return SculkHoard.gravemind.confirmedThreats.contains(entity);
     }
 
     /**
-     * Gets all living entities in the given bounding box. Then filters the list.
+     * Adds a hostile if it hasnt been added
+     */
+    public static void addHostile(LivingEntity e)
+    {
+        if(e == null || e instanceof SculkLivingEntity)
+            return;
+
+        String entityString = e.getClass().toString();
+
+        if(!SculkHoard.gravemind.confirmedThreats.contains(entityString) && entityString != null && !entityString.isEmpty())
+        {
+            SculkHoard.gravemind.confirmedThreats.add(entityString);
+            if(DEBUG_MODE) System.out.println("Sculk Hoard now recognises " + entityString + " as a hostile");
+        }
+
+    }
+
+    /**
+     * Gets all living entities in the given bounding box.
      * @param serverWorld The given world
      * @param boundingBox The given bounding box to search for a target
      * @return A list of valid targets
@@ -151,7 +153,7 @@ public class EntityAlgorithms {
      * @param list
      * @return A list of valid infection targets
      */
-    public static void filterOutAggressors(List<LivingEntity> list)
+    public static void filterOutHostiles(List<LivingEntity> list)
     {
         for(int i = 0; i < list.size(); i++)
         {
@@ -181,7 +183,7 @@ public class EntityAlgorithms {
      * @param list
      * @return A list of valid infection targets
      */
-    public static void filterOutNonAggressors(List<LivingEntity> list)
+    public static void filterOutNonHostiles(List<LivingEntity> list)
     {
         for(int i = 0; i < list.size(); i++)
         {
@@ -191,7 +193,7 @@ public class EntityAlgorithms {
                 list.remove(i); //Remove from list
                 i--; //Go back one index since the new length of the list is one less.
             }
-            else if(!isLivingEntityAggressor(list.get(i)))
+            else if(!isLivingEntityHostile(list.get(i)))
             {
                 list.remove(i); //Remove from list
                 i--; //Go back one index since the new length of the list is one less.

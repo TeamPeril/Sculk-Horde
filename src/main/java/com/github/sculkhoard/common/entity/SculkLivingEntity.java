@@ -1,11 +1,19 @@
 package com.github.sculkhoard.common.entity;
 
 import com.github.sculkhoard.core.EntityRegistry;
+import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.World;
 
 public class SculkLivingEntity extends MonsterEntity {
+
+    public static final DataParameter<Integer> STATE = EntityDataManager.defineId(SculkLivingEntity.class,
+            DataSerializers.INT);
+
 
     /**
      * The Constructor <br>
@@ -17,4 +25,31 @@ public class SculkLivingEntity extends MonsterEntity {
         super(type, worldIn);
     }
 
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHoard.entityFactory.addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
+    }
+
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+    public int getAttckingState() {
+        return this.entityData.get(STATE);
+    }
+
+    public void setAttackingState(int time) {
+        this.entityData.set(STATE, time);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(STATE, 0);
+    }
 }

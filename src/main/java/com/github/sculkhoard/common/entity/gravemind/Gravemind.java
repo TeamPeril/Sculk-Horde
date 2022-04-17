@@ -5,6 +5,7 @@ import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 
@@ -29,9 +30,18 @@ public class Gravemind {
 
     public enum attack_states {Defensive, Offensive}
 
-    private attack_states attack_state;
+    public attack_states attack_state = attack_states.Defensive;
 
+    //This controls the reinforcement system.
     public EntityFactory entityFactory;
+
+    //This is a list of mob types that have attacked the sculk hoard
+    public static ArrayList<String> confirmedThreats;
+
+    //This is a list of all known positions of sculkNodes.
+    //We do not want to put them too close to each other.
+    public static ArrayList<BlockPos> sculkNodePositions;
+    private static int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
 
     private int MASS_GOAL_FOR_IMMATURE = 500;
     private int MASS_GOAL_FOR_MATURE = 1000;
@@ -47,7 +57,7 @@ public class Gravemind {
         evolution_state = evolution_states.Undeveloped;
         attack_state = attack_states.Defensive;
         entityFactory = SculkHoard.entityFactory;
-        deductCurrentState();
+        calulateCurrentState();
         if(DEBUG_THIS) System.out.println("Gravemind Initialized");
     }
 
@@ -65,7 +75,7 @@ public class Gravemind {
      * Used to figure out what state the gravemind is in. Called periodically. <br>
      * Useful for when world is loaded in because we dont store the state.
      */
-    public void deductCurrentState()
+    public void calulateCurrentState()
     {
         if(SculkHoard.entityFactory.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
             evolution_state = evolution_states.Immature;
@@ -73,6 +83,35 @@ public class Gravemind {
             evolution_state = evolution_states.Mature;
 
         if(DEBUG_THIS) System.out.println("Gravemind deduced the current state as: " + evolution_state);
+    }
+
+    /**
+     * Will check each known node location to see if there is one too close.
+     * @param potentialPos The potential location of a new node
+     * @return t rue if creation of new node is approved, false otherwise.
+     */
+    public boolean isValidPositionForSculkNode(BlockPos potentialPos)
+    {
+        if(sculkNodePositions.isEmpty())
+            return true;
+
+        for(BlockPos nodePos : sculkNodePositions)
+        {
+            //Get Distance from our potential location to the current index node position
+            int distanceFromPotentialToCurrentNode = (int)
+                    Math.sqrt(
+                            Math.pow(potentialPos.getX() - nodePos.getX(),2)
+                            + Math.pow(potentialPos.getY() - nodePos.getY(),2)
+                            + Math.pow(potentialPos.getZ() - nodePos.getZ(),2)
+                    );
+
+
+            //if we find a single node that is too close, disapprove of creating a new one
+            if(distanceFromPotentialToCurrentNode < MINIMUM_DISTANCE_BETWEEN_NODES)
+                return false;
+        }
+
+        return true;
     }
 
     public boolean processReinforcementRequest(ReinforcementContext context)
@@ -100,6 +139,7 @@ public class Gravemind {
             if(context.is_aggressor_nearby)
             {
                 context.approvedMobTypes.add(EntityFactory.StrategicValues.Melee);
+                context.approvedMobTypes.add(EntityFactory.StrategicValues.Ranged);
                 context.isRequestApproved = true;
             }
 

@@ -1,14 +1,11 @@
 package com.github.sculkhoard.common.entity.goal;
 
-import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TargetGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import javax.annotation.Nullable;
@@ -17,8 +14,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutFriendlies;
+import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutNonHostiles;
 
-public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends TargetGoal {
+public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends TargetGoal {
 
     //TODO: Update how this class works so that we can dynamically add and remove mobs from being targets.
 
@@ -31,19 +29,19 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
     protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
 
-    public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee) {
+    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee) {
         this(mobEntity, targetClass, mustSee, false);
     }
 
-    public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee, boolean mustReach) {
+    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee, boolean mustReach) {
         this(mobEntity, targetClass, 10, mustSee, mustReach, (Predicate<LivingEntity>)null);
     }
 
-    public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate) {
+    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate) {
         super(mobEntity, mustSee, mustReach);
         this.targetType = targetClass;
         this.randomInterval = interval;
-        this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
         this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
@@ -83,7 +81,7 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
                     (Predicate<? super LivingEntity>) null);
 
             //Remove Any Sculk Entities or entities already infected
-            filterOutFriendlies(possibleTargets);
+            filterOutNonHostiles(possibleTargets);
         }
         else //if targetType is player
         {

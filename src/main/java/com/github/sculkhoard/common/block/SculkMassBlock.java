@@ -84,7 +84,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public static int HARVEST_LEVEL = -1;
     public static final float SCULK_HOARD_MASS_TAX = (float) (1.0 / 3.0);
     public static double HEALTH_ABSORB_MULTIPLIER = 3;
-    public static int infestedChildBlockMaxSpreadAttempts = 20;
+    public static int infestedChildBlockMaxSpreadAttempts = 10;
 
     /**
      * The Constructor that takes in properties

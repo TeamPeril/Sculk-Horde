@@ -1,13 +1,18 @@
 package com.github.sculkhoard.common.block.BlockInfestation;
 
+import com.github.sculkhoard.core.BlockRegistry;
+import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.common.extensions.IForgeTileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 
-public class SpreadingTile extends TileEntity implements IForgeTileEntity {
+public class SpreadingTile extends TileEntity implements ITickableTileEntity {
 
     /**
      * maxSpreadAttempts is the max number of times this block can
@@ -29,6 +34,11 @@ public class SpreadingTile extends TileEntity implements IForgeTileEntity {
     public String spreadAttemptsIdentifier = "spreadAttempts";
     public int chanceToNotDegrade = 1/500;
     public String chanceToNotDegradeIdentifier = "chanceToNotDegrade";
+
+    private final int spreadIntervalInSeconds = 20; //300;
+    private final int ticksPerSecond = 20;
+    private static int tickTracker = 0;
+
 
     /**
      * The Constructor that takes in properties
@@ -110,4 +120,21 @@ public class SpreadingTile extends TileEntity implements IForgeTileEntity {
         return this.spreadAttempts;
     }
 
+    @Override
+    public void tick() {
+        if(this.level != null && !this.level.isClientSide)
+        {
+            tickTracker++;
+            if(tickTracker >= ticksPerSecond * spreadIntervalInSeconds)
+            {
+                tickTracker = 0;
+                ServerWorld thisWorld = (ServerWorld) this.level;
+                BlockPos thisPos = this.worldPosition;
+                BlockState thisBlockState = thisWorld.getBlockState(thisPos);
+                thisBlockState.randomTick(thisWorld, thisPos, thisWorld.random);
+
+            }
+        }
+
+    }
 }

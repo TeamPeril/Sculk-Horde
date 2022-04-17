@@ -88,9 +88,6 @@ public class SpreadingBlock extends Block implements IForgeBlock {
      */
     private static final int DEFAULT_MAX_SPREAD_ATTEMPTS = 30;
 
-    private static int tickTracker = 0;
-    private static int tickInterval = 20 * 20; //ticks_per_second * seconds
-
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -260,7 +257,8 @@ public class SpreadingBlock extends Block implements IForgeBlock {
         if(thisTile.getMaxSpreadAttempts() == -1)
             thisTile.setMaxSpreadAttempts(getDefaultMaxSpreadAttempts());//Set to default
 
-        if(chooseSpreadPosRandomly)
+        //Only spread if there is sculk mass
+        if(chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
         {
             //Attempt to spread Randomly
             for(int spreadAttempts = 0; spreadAttempts < thisTile.getMaxSpreadAttempts(); spreadAttempts ++)
@@ -279,7 +277,7 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                 }
             }
         }
-        else
+        else if(SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
         {
             //Get all neighbors and check if we can spread to all possible positions
             ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(targetPos);
@@ -289,7 +287,7 @@ public class SpreadingBlock extends Block implements IForgeBlock {
         }
 
         //Once done spreading, convert to dormant variant
-        if(isSpreadingComplete)
+        if(isSpreadingComplete || SculkHoard.entityFactory.getSculkAccumulatedMass() <= 0)
         {
             SculkHoard.infestationConversionTable.convertToDormant(serverWorld, targetPos);
         }
@@ -318,20 +316,16 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                     pPos.getY() + ", " +
                     pPos.getZ() + ") " +
                     "maxSpreadAttempts: " + (tile.getMaxSpreadAttempts()) +
-                    " spreadAttempts: " + (tile.getSpreadAttempts()) +
-                    " tickTracker: " + tickTracker;
-            //if(pLevel.isClientSide())
+                    " spreadAttempts: " + (tile.getSpreadAttempts());
             pPlayer.displayClientMessage(new StringTextComponent(debug), false);
         }
         return ActionResultType.SUCCESS;
     }
 
-
     @Override
-    public void tick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
-        tickTracker++;
-        spreadRoutine(serverWorld, bp, doesSpreadRandomly());
-        super.tick(blockState, serverWorld, bp, random);
+    public void randomTick(BlockState pState, ServerWorld pLevel, BlockPos pPos, Random pRandom) {
+        spreadRoutine(pLevel, pPos, doesSpreadRandomly());
+        super.randomTick(pState, pLevel, pPos, pRandom);
     }
 
     /**
@@ -355,7 +349,7 @@ public class SpreadingBlock extends Block implements IForgeBlock {
      */
     @Override
     public boolean isRandomlyTicking(BlockState blockState) {
-        return true;
+        return false;
     }
 
     /**
@@ -372,7 +366,6 @@ public class SpreadingBlock extends Block implements IForgeBlock {
     {
         return false;
     }
-
 
     /**
      * A function called by forge to create the tile entity.

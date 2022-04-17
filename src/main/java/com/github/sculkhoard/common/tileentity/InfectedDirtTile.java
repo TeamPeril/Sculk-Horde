@@ -8,7 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
 
-public class InfectedDirtTile extends SpreadingTile implements IForgeTileEntity {
+public class InfectedDirtTile extends SpreadingTile {
 
     /**
      * The Constructor that takes in properties

@@ -2,6 +2,7 @@ package com.github.sculkhoard.client;
 
 import com.github.sculkhoard.client.renderer.entity.SculkMiteAggressorRenderer;
 import com.github.sculkhoard.client.renderer.entity.SculkMiteRenderer;
+import com.github.sculkhoard.client.renderer.entity.SculkSpitterRenderer;
 import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -30,6 +31,9 @@ public class ClientModEventSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE_AGGRESSOR
                 .get(), SculkMiteAggressorRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_SPITTER
+                .get(), SculkSpitterRenderer::new);
+
         event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());
         });
@@ -47,6 +51,10 @@ public class ClientModEventSubscriber {
         });
 
         event.enqueueWork(() -> {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.SCULK_SHROOM_CULTURE.get(), RenderType.cutout());
+        });
+
+        event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent());
         });
 
@@ -57,6 +65,8 @@ public class ClientModEventSubscriber {
         event.enqueueWork(() -> {
             RenderTypeLookup.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.translucent());
         });
+
+
 
     }
 }

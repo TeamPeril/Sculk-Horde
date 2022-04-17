@@ -18,6 +18,7 @@
   "block.sculkhoard.grass_short": "Sculk Short Grass",
   "block.sculkhoard.vein": "Sculk Vein",
   "block.sculkhoard.small_shroom": "Small Sculk Shroom",
+  "block.sculkhoard.sculk_shroom_culture": "Sculk Shroom Culture",
   "tooltip.sculkhoard.vein": "A vine-like flora that almost feels like flesh.",
   "block.sculkhoard.cocoon": "Sculk Cocoon",
   "block.sculkhoard.cocoon_root": "Sculk Cocoon Root",
@@ -27,6 +28,7 @@
   "tooltip.sculkhoard.dev_wand": "Right-click to spawn mite. \nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to set Sculk Mass to 20k.",
   "tooltip.sculkhoard.dev_wand.shift": "\u00A75JoeMama",
   "entity.sculkhoard.sculk_zombie": "Sculk Zombie",
+  "entity.sculkhoard.sculk_spitter": "Sculk Spitter",
   "entity.sculkhoard.sculk_mite": "Sculk Mite"
   
 }

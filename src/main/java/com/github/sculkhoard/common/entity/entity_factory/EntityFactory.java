@@ -34,7 +34,7 @@ public class EntityFactory {
     //The List We Store all the entries in
     private static ArrayList<EntityFactoryEntry> entries;
 
-    public enum StrategicValues {Infector, Melee}
+    public enum StrategicValues {Infector, Melee, Ranged}
     //TODO: Rename StrategicValues to be more descriptive
 
     @Nullable

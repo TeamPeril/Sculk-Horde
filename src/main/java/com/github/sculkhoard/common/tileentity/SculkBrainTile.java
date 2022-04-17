@@ -6,20 +6,20 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraftforge.common.extensions.IForgeTileEntity;
 
 import javax.annotation.Nullable;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkBrainTile extends TileEntity implements IForgeTileEntity {
+public class SculkBrainTile extends TileEntity implements ITickableTileEntity {
 
     private int gridSize = 10;
-    private int radius = (gridSize - 1) / 2;;
+    private int radius = (gridSize - 1) / 2;
     private boolean [][] grid; //[X][Z]
     private boolean dataDirty = false;
 
@@ -162,5 +162,10 @@ public class SculkBrainTile extends TileEntity implements IForgeTileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
         this.handleData(pkt.getTag());
+    }
+
+    @Override
+    public void tick() {
+
     }
 }

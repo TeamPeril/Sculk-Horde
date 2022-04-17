@@ -223,17 +223,16 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
     {
-        //TODO: Make system so that chunks can be loaded without player presence
         //Create bounding cube to detect targets
         AxisAlignedBB searchArea = EntityAlgorithms.getSearchAreaRectangle(bp.getX(), bp.getY(), bp.getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
 
         //Get targets inside bounding box.
         possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);
-        EntityAlgorithms.filterOutNonAggressors(possibleAggressorTargets);
+        EntityAlgorithms.filterOutNonHostiles(possibleAggressorTargets);
         //if(true) System.out.println(Arrays.toString(possibleAggressorTargets.toArray()));
 
         possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);
-        EntityAlgorithms.filterOutAggressors(possibleLivingEntityTargets);
+        EntityAlgorithms.filterOutHostiles(possibleLivingEntityTargets);
         //if(true) System.out.println(Arrays.toString(possibleLivingEntityTargets.toArray()));
 
         //Give gravemind context to our request to make more informed situations
@@ -254,7 +253,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
         if(context.is_non_sculk_mob_nearby || context.is_aggressor_nearby)
         {
             //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
-            System.out.println("Sending out Reinforcement Request");
+            if(DEBUG_THIS) System.out.println("Sending out Reinforcement Request");
             SculkHoard.entityFactory.requestReinforcementAny(serverWorld, bp, false, context);
 
             //If the gravemind has viewed

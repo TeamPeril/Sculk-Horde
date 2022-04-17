@@ -106,6 +106,9 @@ public class BlockRegistry {
 	public static final RegistryObject<SculkFloraBlock> GRASS_SHORT =
 			registerBlock("grass_short", () -> new SculkFloraBlock());
 
+	public static final RegistryObject<SculkShroomCultureBlock> SCULK_SHROOM_CULTURE =
+			registerBlock("sculk_shroom_culture", () -> new SculkShroomCultureBlock());
+
 	public static final RegistryObject<CocoonRootBlock> COCOON_ROOT =
 			registerBlock("cocoon_root", () -> new CocoonRootBlock());
 

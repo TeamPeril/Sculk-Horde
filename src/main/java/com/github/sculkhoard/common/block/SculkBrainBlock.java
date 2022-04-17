@@ -1,6 +1,7 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.tileentity.SculkBrainTile;
+import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -125,6 +126,7 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
 
         boolean DEBUG_THIS = false;
+        SculkHoard.entityFactory.addSculkAccumulatedMass(1);
 
     }
 

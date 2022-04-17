@@ -2,7 +2,9 @@ package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.entity.SculkMiteAggressorEntity;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
+import com.github.sculkhoard.common.entity.SculkSpitterEntity;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.common.entity.projectile.SculkAcidSpitEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -45,6 +47,21 @@ public class EntityRegistry {
                     .clientTrackingRange(9)
                     .build(new ResourceLocation(SculkHoard.MOD_ID, "sculk_mite_aggressor").toString())
             );
+
+    public static final RegistryObject<EntityType<SculkSpitterEntity>> SCULK_SPITTER =
+            ENTITY_TYPES.register("sculk_spitter", () -> EntityType.Builder.<SculkSpitterEntity>of(
+                            SculkSpitterEntity::new,
+                            EntityClassification.MONSTER)
+                    .sized(0.6f, 0.6f)
+                    .clientTrackingRange(9)
+                    .build(new ResourceLocation(SculkHoard.MOD_ID, "sculk_spitter").toString())
+            );
+
+    public static final RegistryObject<EntityType<SculkAcidSpitEntity>> SCULK_ACID_SPIT = ENTITY_TYPES.register("sculk_acid_spit",
+            () -> EntityType.Builder.<SculkAcidSpitEntity>of(SculkAcidSpitEntity::new, EntityClassification.MISC)
+                    .clientTrackingRange(9).sized(0.5F, 0.5F)
+                    .build(new ResourceLocation(SculkHoard.MOD_ID, "unmaykr_bolt").toString()));
+
 
 
 }

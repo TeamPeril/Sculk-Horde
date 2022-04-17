@@ -21,13 +21,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
-import static com.github.sculkhoard.core.SculkHoard.gravemind;
+import static com.github.sculkhoard.core.SculkHoard.*;
 
 @Mod.EventBusSubscriber(modid = SculkHoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventSubscriber {
 
     private static long time_save_point = 0; //Used to track time passage.
+    private static int sculkMassCheck = 0;
+
 
     //This occurs when a world is loaded
     @SubscribeEvent
@@ -47,14 +48,20 @@ public class ForgeEventSubscriber {
     public static void WorldTickEvent(TickEvent.WorldTickEvent event)
     {
         int ticks_per_second = 20; //Unit is ticks
-        int seconds_between_intervals = 60; //Unit is Seconds
+        int seconds_between_intervals = 60 * 5; //Unit is Seconds
+
+
 
         //Every 'seconds_between_intervals' amount of seconds, check the gravemind state.
         if(event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
         {
             time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
-            gravemind.deductCurrentState(); //Have the gravemind update it's state if necessary
+            gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
             if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + gravemind.getEvolutionState().toString());
+
+
+            if(DEBUG_MODE) System.out.println("Accumulated Mass Per Minute: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
+            sculkMassCheck = entityFactory.getSculkAccumulatedMass();
         }
     }
 
