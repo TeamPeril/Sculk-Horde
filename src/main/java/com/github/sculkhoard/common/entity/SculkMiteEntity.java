@@ -41,6 +41,19 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
      * Added client/renderer/entity/ SculkMiteRenderer.java
      */
 
+    //The Health
+    public static final float MAX_HEALTH = 5F;
+    //The armor of the mob
+    public static final float ARMOR = 1F;
+    //ATTACK_DAMAGE determines How much damage it's melee attacks do
+    public static final float ATTACK_DAMAGE = 1F;
+    //ATTACK_KNOCKBACK determines the knockback a mob will take
+    public static final float ATTACK_KNOCKBACK = 1F;
+    //FOLLOW_RANGE determines how far away this mob can see and chase enemies
+    public static final float FOLLOW_RANGE = 30F;
+    //MOVEMENT_SPEED determines how far away this mob can see other mobs
+    public static final float MOVEMENT_SPEED = 0.3F;
+
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
      * 100 = Zombie<br>
@@ -50,22 +63,19 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
      * 5 = Witch<br>
      */
     public static int SPAWN_WEIGHT = 50;
-
-    /**
-     * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
-     * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
-     * INFECT_RANGE determines from how far away this mob can infect another<br>
-     * INFECT_EFFECT The effect given to living entities when attacked<br>
-     * INFECT_DURATION The duration of the effect<br>
-     * INFECT_LEVEL The level of the effect<br>
-     * factory The animation factory used for animations
-     */
+    //SPAWN_MIN determines the minimum amount of this mob that will spawn in a group
     public static int SPAWN_MIN = 1;
+    //SPAWN_MAX determines the maximum amount of this mob that will spawn in a group
     public static int SPAWN_MAX = 5;
+    //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
+    //INFECT_EFFECT The effect given to living entities when attacked
     public static Effect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
+    //INFECT_DURATION The duration of the effect
     public static int INFECT_DURATION = 500;
+    //INFECT_LEVEL The level of the effect
     public static int INFECT_LEVEL = 1;
+    //factory The animation factory used for animations
     private AnimationFactory factory = new AnimationFactory(this);
 
     /**
@@ -90,12 +100,12 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 5.0D)
-                .add(Attributes.ARMOR, 1.0D)
-                .add(Attributes.ATTACK_DAMAGE, 1.0D)
-                .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE,30.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.30D);
+                .add(Attributes.MAX_HEALTH, MAX_HEALTH)
+                .add(Attributes.ARMOR, ARMOR)
+                .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
+                .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
+                .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
     /**

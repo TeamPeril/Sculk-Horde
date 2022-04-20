@@ -42,6 +42,19 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * Added client/renderer/entity/ SculkZombieRenderer.java
      */
 
+    //The Health
+    public static final float MAX_HEALTH = 20F;
+    //The armor of the mob
+    public static final float ARMOR = 4F;
+    //ATTACK_DAMAGE determines How much damage it's melee attacks do
+    public static final float ATTACK_DAMAGE = 3F;
+    //ATTACK_KNOCKBACK determines the knockback a mob will take
+    public static final float ATTACK_KNOCKBACK = 1F;
+    //FOLLOW_RANGE determines how far away this mob can see and chase enemies
+    public static final float FOLLOW_RANGE = 25F;
+    //MOVEMENT_SPEED determines how far away this mob can see other mobs
+    public static final float MOVEMENT_SPEED = 0.25F;
+
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
      * 100 = Zombie<br>
@@ -51,7 +64,6 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * 5 = Witch<br>
      */
     public static int SPAWN_WEIGHT = 100;
-
     /**
      * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
      * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
@@ -85,12 +97,12 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.ARMOR, 4.0D)
-                .add(Attributes.ATTACK_DAMAGE, 3.0D)
-                .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE,25.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.25D);
+                .add(Attributes.MAX_HEALTH, MAX_HEALTH)
+                .add(Attributes.ARMOR, ARMOR)
+                .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
+                .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
+                .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
     /**

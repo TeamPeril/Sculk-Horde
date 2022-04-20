@@ -177,15 +177,23 @@ public class EntityFactory {
                 }
                 else //If not, look for a mob that fits the requirements
                 {
+                    ArrayList<EntityFactoryEntry> approvedEntries = new ArrayList<EntityFactoryEntry>();
                     //Loop through each entry until we find a valid one
                     for (EntityFactoryEntry entry : entries) {
                         //If valid, spawn the entity
                         if (entry.isEntryAppropriate(context)) {
-                            entry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
-                            if (!noCost) subtractSculkAccumulatedMass(entry.getCost());
-                            break;
+                            approvedEntries.add(entry);
                         }
                     }
+
+                    //Create Random index
+                    int randomEntryIndex = rng.nextInt(approvedEntries.size());
+                    //Get random entry
+                    EntityFactoryEntry randomApprovedEntry = approvedEntries.get(randomEntryIndex);
+                    //Spawn random entry
+                    randomApprovedEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+                    //If cost enabled, subtract cost
+                    if (!noCost) subtractSculkAccumulatedMass(randomApprovedEntry.getCost());
                 }
             }
         }
@@ -197,7 +205,7 @@ public class EntityFactory {
 
 
     /**
-     * Will spawn a reinforcement based on the budget given. Prioritizes spawning the highest costing reinforcement.
+     * Will spawn a reinforcement based on the budget given. Prioritizes spawning random costing reinforcement.
      * @param world The world to spawn it in.
      * @param pos The Position
      */
@@ -221,12 +229,17 @@ public class EntityFactory {
                     lottery.add(entry);
                 }
             }
-            int randomEntryIndex = rng.nextInt(lottery.size());
-            EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
-            //Set Remaining Balance
-            context.remaining_balance = context.budget - randomEntry.getCost();
-            //Spawn Mob
-            randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+
+            if(!lottery.isEmpty())
+            {
+                int randomEntryIndex = rng.nextInt(lottery.size());
+                EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
+                //Set Remaining Balance
+                context.remaining_balance = context.budget - randomEntry.getCost();
+                //Spawn Mob
+                randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+            }
+
         }
     }
 }

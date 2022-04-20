@@ -43,6 +43,19 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
      * Added client/renderer/entity/ SculkSpitterRenderer.java
      */
 
+    //The Health
+    public static final float MAX_HEALTH = 20F;
+    //The armor of the mob
+    public static final float ARMOR = 4F;
+    //ATTACK_DAMAGE determines How much damage it's melee attacks do
+    public static final float ATTACK_DAMAGE = 5F;
+    //ATTACK_KNOCKBACK determines the knockback a mob will take
+    public static final float ATTACK_KNOCKBACK = 2F;
+    //FOLLOW_RANGE determines how far away this mob can see and chase enemies
+    public static final float FOLLOW_RANGE = 40F;
+    //MOVEMENT_SPEED determines how far away this mob can see other mobs
+    public static final float MOVEMENT_SPEED = 0.3F;
+
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
      * 100 = Zombie<br>
@@ -86,12 +99,12 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.ARMOR, 4.0D)
-                .add(Attributes.ATTACK_DAMAGE, 3.0D)
-                .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .add(Attributes.FOLLOW_RANGE,40.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.25D);
+                .add(Attributes.MAX_HEALTH, MAX_HEALTH)
+                .add(Attributes.ARMOR, ARMOR)
+                .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
+                .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
+                .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
     /**
@@ -152,8 +165,8 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
                         new SwimGoal(this),
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
-                                .setProjectileOriginOffset(0.8, 2, 0.8)
-                                .setDamage(4), 1.0D, 50, 30, 15, 15F, 1),
+                                .setProjectileOriginOffset(0.8, 2.5, 0.8)
+                                .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 25F, 1),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)

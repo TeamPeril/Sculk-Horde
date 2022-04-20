@@ -52,7 +52,7 @@ public class EntityRegistry {
             ENTITY_TYPES.register("sculk_spitter", () -> EntityType.Builder.<SculkSpitterEntity>of(
                             SculkSpitterEntity::new,
                             EntityClassification.MONSTER)
-                    .sized(0.6f, 0.6f)
+                    .sized(0.6f, 1.95f)
                     .clientTrackingRange(9)
                     .build(new ResourceLocation(SculkHoard.MOD_ID, "sculk_spitter").toString())
             );

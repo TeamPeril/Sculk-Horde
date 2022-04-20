@@ -4,7 +4,10 @@ import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.util.ITooltipFlag;
@@ -34,11 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
-
 public class SpreadingBlock extends Block implements IForgeBlock {
 
-    private boolean DEBUG_THIS = false;
+    private final boolean DEBUG_THIS = false;
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -113,49 +114,11 @@ public class SpreadingBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.GRASS);
-        return prop;
-    }
-
-
-    /**
-     * This is the description the item of the block will display when hovered over.
-     * @param stack The item stack
-     * @param iBlockReader The world
-     * @param tooltip ???
-     * @param flagIn ???
-     */
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.spreading_block")); //Text that displays if holding shift
-
-    }
-
-    protected boolean doesSpreadRandomly()
-    {
-        return true;
-    }
-
-
-    protected boolean isValidVictim(BlockState blockState)
-    {
-        //NOTE: I made this an if statement for the sake of efficiency
-        if(blockState.getBlock() == Blocks.GRASS_BLOCK
-        || blockState.getBlock() == Blocks.DIRT
-        || blockState.getBlock() == Blocks.GRASS_PATH
-        || blockState.getBlock() == Blocks.COARSE_DIRT
-        || blockState.getBlock() == Blocks.FARMLAND)
-        {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -187,15 +150,73 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                 createTileEntity(world.getBlockState(thisBlockPos), world);
                 thisTile = (SpreadingTile) world.getBlockEntity(thisBlockPos);
             }
-
             return thisTile;
         }
-
         return null;
+    }
+
+
+    /**
+     * Returns what block state we want this block to convert into after its done spreading.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getDormantVariant()
+    {
+        return BlockRegistry.CRUST.get().defaultBlockState();
+    }
+
+
+    /**
+     * Returns what block state we want this block to convert into if converted back to original victim.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getVictimVariant()
+    {
+        return Blocks.DIRT.defaultBlockState();
     }
 
     /** Other**/
 
+    /**
+     * This changes the behavior of how this block spreads. If true, will choose random blocks to spread to.
+     * If false, will attempt to spread to all nearby blocks.
+     * @return
+     */
+    protected boolean doesSpreadRandomly()
+    {
+        return true;
+    }
+
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader The world
+     * @param tooltip ???
+     * @param flagIn ???
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.spreading_block")); //Text that displays if holding shift
+
+    }
+
+    /**
+     * Determines if a given block is a valid vicitim.
+     * @param blockState The Block
+     * @return true if valid, false otherwise
+     */
+    public boolean isValidVictim(BlockState blockState)
+    {
+        //NOTE: I made this an if statement for the sake of efficiency
+        return blockState.getBlock() == Blocks.GRASS_BLOCK
+                || blockState.getBlock() == Blocks.DIRT
+                || blockState.getBlock() == Blocks.GRASS_PATH
+                || blockState.getBlock() == Blocks.COARSE_DIRT
+                || blockState.getBlock() == Blocks.FARMLAND;
+    }
 
     /**
      * Attempt to spread to a specific block position.
@@ -257,27 +278,32 @@ public class SpreadingBlock extends Block implements IForgeBlock {
         if(thisTile.getMaxSpreadAttempts() == -1)
             thisTile.setMaxSpreadAttempts(getDefaultMaxSpreadAttempts());//Set to default
 
-        //Only spread if there is sculk mass
+        //If spreading randomly and if there is sculk mass
         if(chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
         {
-            //Attempt to spread Randomly
-            for(int spreadAttempts = 0; spreadAttempts < thisTile.getMaxSpreadAttempts(); spreadAttempts ++)
+            //If we have spreading attempts left
+            if(thisTile.getSpreadAttempts() < thisTile.getMaxSpreadAttempts())
             {
-                //If max spread attempts has not been reached, spread
-                if (thisTile.getMaxSpreadAttempts() - thisTile.getSpreadAttempts() > 0)
+                //Attempt to spread Randomly
+                for(int spreadAttempts = 0; spreadAttempts < thisTile.getMaxSpreadAttempts(); spreadAttempts ++)
                 {
-                    if(DEBUG_THIS) System.out.println("Attempting to Spread to Random Positions? " + chooseSpreadPosRandomly);
-                    attemptToSpreadHere(thisTile, serverWorld, BlockAlgorithms.getRandomNeighbor(serverWorld, targetPos)); //Attempt to spread to this position
-                }
-                //If this block has run out of spread attempts, convert
-                else if ((thisTile.getMaxSpreadAttempts()-1) - thisTile.getSpreadAttempts() <= 0)
-                {
-                    isSpreadingComplete = true;
-                    break;
+                    //If max spread attempts has not been reached, spread
+                    if (thisTile.getSpreadAttempts() < thisTile.getMaxSpreadAttempts())
+                    {
+                        if(DEBUG_THIS) System.out.println("Attempting to Spread to Random Positions? " + chooseSpreadPosRandomly);
+                        attemptToSpreadHere(thisTile, serverWorld, BlockAlgorithms.getRandomNeighbor(serverWorld, targetPos)); //Attempt to spread to this position
+                    }
                 }
             }
+            //If no attempts left
+            else
+            {
+                isSpreadingComplete = true;
+            }
+
         }
-        else if(SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
+        //If we are checking every vailid position instead of random ones
+        else if(!chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
         {
             //Get all neighbors and check if we can spread to all possible positions
             ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(targetPos);
@@ -288,58 +314,14 @@ public class SpreadingBlock extends Block implements IForgeBlock {
 
         //Once done spreading, convert to dormant variant
         if(isSpreadingComplete || SculkHoard.entityFactory.getSculkAccumulatedMass() <= 0)
-        {
             SculkHoard.infestationConversionTable.convertToDormant(serverWorld, targetPos);
-        }
-    }
 
-    /**
-     * Prints out debug variables to player when right-clicked.
-     * @param pState Block state
-     * @param pLevel The World of the block
-     * @param pPos The position of the block
-     * @param pPlayer The player who used it
-     * @param pHand The hand they used
-     * @param pHit What they are looking at
-     * @return If the action was successful or not.
-     */
-    @Override
-    public ActionResultType use(BlockState pState, World pLevel, BlockPos pPos, PlayerEntity pPlayer, Hand pHand, BlockRayTraceResult pHit) {
-
-        if(DEBUG_THIS)
-        {
-            if(!pLevel.isClientSide()) spreadRoutine((ServerWorld) pLevel, pPos, false);
-            SpreadingTile tile = getTileEntity(pLevel, pPos);
-
-            String debug = "Block at (" +
-                    pPos.getX() + ", " +
-                    pPos.getY() + ", " +
-                    pPos.getZ() + ") " +
-                    "maxSpreadAttempts: " + (tile.getMaxSpreadAttempts()) +
-                    " spreadAttempts: " + (tile.getSpreadAttempts());
-            pPlayer.displayClientMessage(new StringTextComponent(debug), false);
-        }
-        return ActionResultType.SUCCESS;
     }
 
     @Override
     public void randomTick(BlockState pState, ServerWorld pLevel, BlockPos pPos, Random pRandom) {
         spreadRoutine(pLevel, pPos, doesSpreadRandomly());
         super.randomTick(pState, pLevel, pPos, pRandom);
-    }
-
-    /**
-     * This function is called when this block is placed. <br>
-     * Will set the nbt data maxSpreadAttempts.
-     * @param world The world the block is in
-     * @param bp The position the block is in
-     * @param blockState The state of the block
-     * @param entity The entity that placed it
-     * @param itemStack The item stack it was placed from
-     */
-    @Override
-    public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack) {
-        super.setPlacedBy(world, bp, blockState, entity, itemStack);
     }
 
     /**

@@ -102,6 +102,16 @@ public class InfestedLogActiveBlock extends SpreadingBlock implements IForgeBloc
         return prop;
     }
 
+
+    /**
+     * Returns what block state we want this block to convert into after its done spreading.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getDormantVariant()
+    {
+        return BlockRegistry.INFESTED_LOG_DORMANT.get().defaultBlockState();
+    }
+
     @Override
     protected boolean doesSpreadRandomly()
     {
@@ -124,7 +134,7 @@ public class InfestedLogActiveBlock extends SpreadingBlock implements IForgeBloc
 
     }
     @Override
-    protected boolean isValidVictim(BlockState blockState)
+    public boolean isValidVictim(BlockState blockState)
     {
         //NOTE: I made this an if statement for the sake of efficiency
         if(blockState.is(BlockTags.LOGS))

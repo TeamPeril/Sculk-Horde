@@ -25,7 +25,7 @@
   "block.sculkhoard.sculk_mass": "Organic Sculk Mass",
   "block.sculkhoard.sculk_dura_matter": "Sculk Dura Matter",
   "block.sculkhoard.sculk_arachnoid": "Sculk Arachnoid",
-  "tooltip.sculkhoard.dev_wand": "Right-click to spawn mite. \nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to set Sculk Mass to 20k.",
+  "tooltip.sculkhoard.dev_wand": "Right-click to spawn mite. \nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to add 100 Sculk Mass.",
   "tooltip.sculkhoard.dev_wand.shift": "\u00A75JoeMama",
   "entity.sculkhoard.sculk_zombie": "Sculk Zombie",
   "entity.sculkhoard.sculk_spitter": "Sculk Spitter",

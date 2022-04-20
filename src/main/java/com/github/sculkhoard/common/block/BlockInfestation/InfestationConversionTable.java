@@ -14,14 +14,14 @@ import java.util.ArrayList;
 public class InfestationConversionTable {
 
     private static boolean DEBUG_THIS = false;
-    private ArrayList<InfestationConversionEntry> entries;
+    private ArrayList<SpreadingBlock> entries;
 
     /**
      * Default Constructor
      */
     public InfestationConversionTable()
     {
-        entries = new ArrayList<InfestationConversionEntry>();
+        entries = new ArrayList<SpreadingBlock>();
     }
 
     /**Accessor Methods**/
@@ -30,7 +30,7 @@ public class InfestationConversionTable {
      * Returns a list of all the entries.
      * @return
      */
-    public ArrayList<InfestationConversionEntry> getEntries()
+    public ArrayList<SpreadingBlock> getEntries()
     {
         return entries;
     }
@@ -47,20 +47,20 @@ public class InfestationConversionTable {
         if(DEBUG_THIS)
         {
             System.out.println("All entries: ");
-            for(InfestationConversionEntry entry : SculkHoard.infestationConversionTable.getEntries())
+            for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
             {
                 System.out.println(entry.toString());
             }
         }
 
         //Loop through each entry until we find the appropriate one.s
-        for(InfestationConversionEntry entry : SculkHoard.infestationConversionTable.getEntries())
+        for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
         {
             //System.out.println(entry.toString());
             //If the victim blocks is the same block as the entry
             if(entry.isValidVictim(victimBlock))
             {
-                return entry.getActiveSpreadingBlock();
+                return entry;
             }
             else if (DEBUG_THIS)
             {
@@ -78,15 +78,36 @@ public class InfestationConversionTable {
      * @return The dormant block variant.
      */
     @Nullable
-    private Block getDormantVariant(Block activeBlock)
+    private BlockState getDormantVariant(Block activeBlock)
     {
         //Loop through each entry until we find the appropriate one.s
-        for(InfestationConversionEntry entry : entries)
+        for(SpreadingBlock entry : entries)
         {
             //If the victim blocks is the same block as the entry
-            if(entry.getActiveSpreadingBlock() == activeBlock)
+            if(entry == activeBlock)
             {
-                return entry.getDormantBlock();
+                return entry.getDormantVariant();
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Returns what an block should convert back into if sculk is removed. <br>
+     * @param targetBlock The block that needs to be converted.
+     * @return The dormant block variant.
+     */
+    @Nullable
+    private BlockState getVictimVariant(Block targetBlock)
+    {
+        //Loop through each entry until we find the appropriate one.s
+        for(SpreadingBlock entry : entries)
+        {
+            //If the target block is the active or dormant variant
+            if(entry.getBlock() == targetBlock || entry.getDormantVariant().getBlock() == targetBlock)
+            {
+                return entry.getVictimVariant();
             }
         }
         return null;
@@ -97,11 +118,10 @@ public class InfestationConversionTable {
     /**
      * Adds an entry into the table.
      * @param active_spreading_block_in This is the block that the victim will turn into.
-     * @param dormant_block_in Once the active block is done spreading, this is what it will turn into.
      */
-    public void addEntry(SpreadingBlock active_spreading_block_in, Block dormant_block_in)
+    public void addEntry(SpreadingBlock active_spreading_block_in)
     {
-        entries.add(new InfestationConversionEntry(active_spreading_block_in, dormant_block_in));
+        entries.add(active_spreading_block_in);
     }
 
     /**
@@ -135,17 +155,17 @@ public class InfestationConversionTable {
     {
 
         Block targetBlock = world.getBlockState(targetPos).getBlock();
-        Block dormantVariant = getDormantVariant(targetBlock);
+        BlockState dormantVariant = getDormantVariant(targetBlock);
 
         if(dormantVariant != null)
         {
-            world.setBlockAndUpdate(targetPos, dormantVariant.defaultBlockState());
+            world.setBlockAndUpdate(targetPos, dormantVariant);
 
             //Given a 50% chance, place down sculk flora on block
             if (world.random.nextInt(2) <= 0)
                 BlockAlgorithms.placeSculkFlora(targetPos.above(), world);
 
-            if(dormantVariant == BlockRegistry.INFESTED_LOG_DORMANT.get())
+            if(dormantVariant.getBlock() == BlockRegistry.INFESTED_LOG_DORMANT.get())
                 BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
             BlockAlgorithms.placeSculkNode(world, targetPos.above());
@@ -159,6 +179,26 @@ public class InfestationConversionTable {
             if(DEBUG_THIS) System.out.println("Could not find dormant for " + targetBlock);
             return false;
         }
+    }
+
+
+    /**
+     * Converts a an active or dormant variant into a victim variant
+     * @param world The world of the block.
+     * @param targetPos The position of the block we are trying to convert.
+     */
+    public boolean convertToVictim(ServerWorld world, BlockPos targetPos)
+    {
+        Block targetBlock = world.getBlockState(targetPos).getBlock();
+        BlockState victimVariant = getVictimVariant(targetBlock);
+
+        if(victimVariant != null)
+        {
+            world.setBlockAndUpdate(targetPos, victimVariant);
+            return true;
+        }
+        return false;
+
     }
 
 }

@@ -24,7 +24,7 @@ public class ReinforcementContext {
      * senderType list all possible senders of a reinforcement request. <br>
      * sender indicates who sent this request.
      */
-    public enum senderType {Developer, SculkMass, SculkCocoon}
+    public enum senderType {Developer, SculkMass, SculkCocoon, SculkBroodHatcher}
     public senderType sender;
 
     /**

@@ -79,7 +79,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
             if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
             {
                 float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
-                if(targetMobRemainingHealth <= 0.5)
+                if(targetMobRemainingHealth <= 0.25)
                 {
                     target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
 

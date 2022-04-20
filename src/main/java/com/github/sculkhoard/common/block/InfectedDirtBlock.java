@@ -101,19 +101,14 @@ public class InfectedDirtBlock extends SpreadingBlock implements IForgeBlock {
         this(getProperties());
     }
 
-    @Override
-    protected boolean isValidVictim(BlockState blockState)
+
+    /**
+     * Returns what block state we want this block to convert into after its done spreading.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getDormantVariant()
     {
-        //NOTE: I made this an if statement for the sake of efficiency
-        if(blockState.getBlock() == Blocks.GRASS_BLOCK
-                || blockState.getBlock() == Blocks.DIRT
-                || blockState.getBlock() == Blocks.GRASS_PATH
-                || blockState.getBlock() == Blocks.COARSE_DIRT
-                || blockState.getBlock() == Blocks.FARMLAND)
-        {
-            return true;
-        }
-        return false;
+        return BlockRegistry.CRUST.get().defaultBlockState();
     }
 
     /**
@@ -129,6 +124,21 @@ public class InfectedDirtBlock extends SpreadingBlock implements IForgeBlock {
                 .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.GRASS);
         return prop;
+    }
+
+    @Override
+    public boolean isValidVictim(BlockState blockState)
+    {
+        //NOTE: I made this an if statement for the sake of efficiency
+        if(blockState.getBlock() == Blocks.GRASS_BLOCK
+                || blockState.getBlock() == Blocks.DIRT
+                || blockState.getBlock() == Blocks.GRASS_PATH
+                || blockState.getBlock() == Blocks.COARSE_DIRT
+                || blockState.getBlock() == Blocks.FARMLAND)
+        {
+            return true;
+        }
+        return false;
     }
 
     /**

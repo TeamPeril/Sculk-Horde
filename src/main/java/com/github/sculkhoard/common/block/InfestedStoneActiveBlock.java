@@ -116,8 +116,18 @@ public class InfestedStoneActiveBlock extends SpreadingBlock implements IForgeBl
                 .sound(SoundType.STONE);
     }
 
+
+    /**
+     * Returns what block state we want this block to convert into after its done spreading.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getDormantVariant()
+    {
+        return BlockRegistry.INFESTED_STONE_DORMANT.get().defaultBlockState();
+    }
+
     @Override
-    protected boolean isValidVictim(BlockState blockState)
+    public boolean isValidVictim(BlockState blockState)
     {
         //NOTE: I made this an if statement for the sake of efficiency
         if(blockState.getBlock() == Blocks.STONE)

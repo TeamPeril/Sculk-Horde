@@ -44,7 +44,7 @@ public class Gravemind {
     private static int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
 
     private int MASS_GOAL_FOR_IMMATURE = 500;
-    private int MASS_GOAL_FOR_MATURE = 1000;
+    private int MASS_GOAL_FOR_MATURE = 100000000;
 
 
     /**

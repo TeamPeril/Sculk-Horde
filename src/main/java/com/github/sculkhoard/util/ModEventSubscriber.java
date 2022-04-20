@@ -37,20 +37,21 @@ public class ModEventSubscriber {
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), 1, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
 
         SculkHoard.infestationConversionTable = new InfestationConversionTable();
-        SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFECTED_DIRT.get(), BlockRegistry.CRUST.get());
-        SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_STONE_ACTIVE.get(), BlockRegistry.INFESTED_STONE_DORMANT.get());
-        SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_LOG_ACTIVE.get(), BlockRegistry.INFESTED_LOG_DORMANT.get());
+        SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFECTED_DIRT.get());
+        SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_STONE_ACTIVE.get());
+        SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_LOG_ACTIVE.get());
 
         SculkHoard.gravemind.confirmedThreats = new ArrayList<String>();
         SculkHoard.gravemind.sculkNodePositions = new ArrayList<BlockPos>();
 
         SculkHoard.randomSculkFlora = new PoolBlocks();
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.COCOON_ROOT.get(), 1);
+
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 2);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 3);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.COCOON_ROOT.get(), 5);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 3);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 100);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 100);
