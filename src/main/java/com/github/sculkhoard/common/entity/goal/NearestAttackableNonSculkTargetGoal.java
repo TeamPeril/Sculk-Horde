@@ -16,6 +16,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutDoNotInteractMobs;
 import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutFriendlies;
 
 public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends TargetGoal {
@@ -84,6 +85,7 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
 
             //Remove Any Sculk Entities or entities already infected
             filterOutFriendlies(possibleTargets);
+            filterOutDoNotInteractMobs(possibleTargets);
         }
         else //if targetType is player
         {

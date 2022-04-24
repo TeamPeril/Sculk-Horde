@@ -6,6 +6,7 @@ import net.minecraft.entity.IAngerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.monster.AbstractRaiderEntity;
+import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -113,7 +114,7 @@ public class EntityAlgorithms {
 
         String entityString = e.getClass().toString();
 
-        if(!SculkHoard.gravemind.confirmedThreats.contains(entityString) && entityString != null && !entityString.isEmpty())
+        if(!SculkHoard.gravemind.confirmedThreats.contains(entityString) && entityString != null && !entityString.isEmpty() && !(e instanceof CreeperEntity))
         {
             SculkHoard.gravemind.confirmedThreats.add(entityString);
             if(DEBUG_MODE) System.out.println("Sculk Hoard now recognises " + entityString + " as a hostile");
@@ -142,6 +143,22 @@ public class EntityAlgorithms {
         for (int i = 0; i < list.size(); i++) {
             //If Friendly
             if (isLivingEntityFriendly(list.get(i))) {
+                list.remove(i); //Remove from list
+                i--; //Go back one index since the new length of the list is one less.
+            }
+        }
+    }
+
+
+    /**
+     * Filters out any friendlies from a list.
+     * @param list
+     * @return A list of valid infection targets
+     */
+    public static void filterOutDoNotInteractMobs(List<LivingEntity> list) {
+        for (int i = 0; i < list.size(); i++) {
+            //If Friendly
+            if (list.get(i) instanceof CreeperEntity) {
                 list.remove(i); //Remove from list
                 i--; //Go back one index since the new length of the list is one less.
             }
@@ -188,12 +205,7 @@ public class EntityAlgorithms {
         for(int i = 0; i < list.size(); i++)
         {
             //If friendly, filter
-            if(isLivingEntityFriendly(list.get(i)))
-            {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-            else if(!isLivingEntityHostile(list.get(i)))
+            if(isLivingEntityFriendly(list.get(i)) || !isLivingEntityHostile(list.get(i)))
             {
                 list.remove(i); //Remove from list
                 i--; //Go back one index since the new length of the list is one less.
