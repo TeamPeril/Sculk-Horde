@@ -50,7 +50,8 @@ public class ForgeEventSubscriber {
         int ticks_per_second = 20; //Unit is ticks
         int seconds_between_intervals = 60 * 5; //Unit is Seconds
 
-
+        SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
+        SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
 
         //Every 'seconds_between_intervals' amount of seconds, check the gravemind state.
         if(event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
@@ -60,7 +61,7 @@ public class ForgeEventSubscriber {
             if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + gravemind.getEvolutionState().toString());
 
 
-            if(DEBUG_MODE) System.out.println("Accumulated Mass Per Minute: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
+            if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Interval: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
             sculkMassCheck = entityFactory.getSculkAccumulatedMass();
         }
     }

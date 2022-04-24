@@ -4,12 +4,15 @@ import com.github.sculkhoard.core.BlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -175,5 +178,25 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      */
     public AbstractBlock.OffsetType getOffsetType() {
         return AbstractBlock.OffsetType.XZ;
+    }
+
+    @Override
+    public boolean canBeReplacedByLeaves(BlockState state, IWorldReader world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState pState, Fluid pFluid) {
+        return true;
+    }
+
+    @Override
+    public boolean canBeReplacedByLogs(BlockState state, IWorldReader world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState pState, BlockItemUseContext pUseContext) {
+        return true;
     }
 }

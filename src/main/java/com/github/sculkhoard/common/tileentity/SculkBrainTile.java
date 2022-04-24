@@ -9,9 +9,12 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
@@ -23,6 +26,8 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity {
     private boolean [][] grid; //[X][Z]
     private boolean dataDirty = false;
 
+    private long tickedAt = System.nanoTime();
+    private final long spreadEventIntervalInSeconds = 10; //300;
 
     /**
      * The Constructor that takes in properties
@@ -167,5 +172,17 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity {
     @Override
     public void tick() {
 
+        if(this.level != null && !this.level.isClientSide)
+        {
+            long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
+            if(timeElapsed >= spreadEventIntervalInSeconds)
+            {
+                tickedAt = System.nanoTime();
+                ServerWorld thisWorld = (ServerWorld) this.level;
+                BlockPos thisPos = this.worldPosition;
+                BlockState thisBlockState = thisWorld.getBlockState(thisPos);
+                thisBlockState.randomTick(thisWorld, thisPos, thisWorld.random);
+            }
+        }
     }
 }

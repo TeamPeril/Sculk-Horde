@@ -118,6 +118,15 @@ public class InfestedStoneActiveBlock extends SpreadingBlock implements IForgeBl
 
 
     /**
+     * Returns what block state we want this block to convert into if converted back to original victim.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getVictimVariant()
+    {
+        return Blocks.STONE.defaultBlockState();
+    }
+
+    /**
      * Returns what block state we want this block to convert into after its done spreading.
      * @return The BlockState this block will convert into
      */

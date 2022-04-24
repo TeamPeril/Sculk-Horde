@@ -72,13 +72,8 @@ public class DevConversionWand extends Item implements IForgeItem {
 	public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		
 		super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-		
-		//If User presses left shift, else
-		if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{
-			tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.dev_wand.shift")); //Text that displays if holding shift
-		} else {
-			tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.dev_wand")); //Text that displays if not holding shift
-		}
+		tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.dev_conversion_wand")); //Text that displays if not holding shift
+
 	}
 
 	@Override

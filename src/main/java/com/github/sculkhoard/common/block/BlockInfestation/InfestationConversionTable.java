@@ -3,6 +3,7 @@ package com.github.sculkhoard.common.block.BlockInfestation;
 import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import com.github.sculkhoard.util.ForgeEventSubscriber;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -17,11 +18,21 @@ public class InfestationConversionTable {
     private ArrayList<SpreadingBlock> entries;
 
     /**
+     * This is a queue used to convert blocks in a manner that prevents lag.
+     * The world ticks will handle this operation.
+     */
+    public ArrayList<BlockPos> convertToVictimQueue;
+    public ArrayList<BlockPos> convertToInfectedQueue;
+    public final int conversionAmountPerInterval = 10;
+
+    /**
      * Default Constructor
      */
     public InfestationConversionTable()
     {
         entries = new ArrayList<SpreadingBlock>();
+        convertToVictimQueue = new ArrayList<BlockPos>();
+        convertToInfectedQueue = new ArrayList<BlockPos>();
     }
 
     /**Accessor Methods**/
@@ -181,6 +192,43 @@ public class InfestationConversionTable {
         }
     }
 
+    /**
+     * Only process a specific amount every time this is called. <br>
+     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
+     * @param world The world
+     */
+    public void processVictimConversionQueue(ServerWorld world)
+    {
+        if(!world.isClientSide())
+        {
+            for(int i = 0; i < conversionAmountPerInterval && i < convertToVictimQueue.size(); i++)
+            {
+                BlockAlgorithms.replaceSculkFlora(world, convertToVictimQueue.get(i)); //Remove any flora
+                convertToVictim(world, convertToVictimQueue.get(i)); //convert
+                convertToVictimQueue.remove(i);
+                i--;
+            }
+        }
+    }
+
+
+    /**
+     * Only process a specific amount every time this is called. <br>
+     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
+     * @param world The world
+     */
+    public void processInfectionConversionQueue(ServerWorld world)
+    {
+        if(!world.isClientSide())
+        {
+            for(int i = 0; i < conversionAmountPerInterval && i < convertToInfectedQueue.size(); i++)
+            {
+                convertToActiveSpreader(world, convertToInfectedQueue.get(i)); //convert
+                convertToInfectedQueue.remove(i);
+                i--;
+            }
+        }
+    }
 
     /**
      * Converts a an active or dormant variant into a victim variant
@@ -198,7 +246,5 @@ public class InfestationConversionTable {
             return true;
         }
         return false;
-
     }
-
 }

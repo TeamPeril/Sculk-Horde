@@ -165,8 +165,8 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
                         new SwimGoal(this),
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
-                                .setProjectileOriginOffset(0.8, 2.5, 0.8)
-                                .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 25F, 1),
+                                .setProjectileOriginOffset(0.8, 0.9, 0.8)
+                                .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 30F, 1),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)

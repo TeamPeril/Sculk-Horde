@@ -13,16 +13,10 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -289,17 +283,13 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                 {
                     //If max spread attempts has not been reached, spread
                     if (thisTile.getSpreadAttempts() < thisTile.getMaxSpreadAttempts())
-                    {
-                        if(DEBUG_THIS) System.out.println("Attempting to Spread to Random Positions? " + chooseSpreadPosRandomly);
                         attemptToSpreadHere(thisTile, serverWorld, BlockAlgorithms.getRandomNeighbor(serverWorld, targetPos)); //Attempt to spread to this position
-                    }
                 }
             }
             //If no attempts left
             else
-            {
                 isSpreadingComplete = true;
-            }
+
 
         }
         //If we are checking every vailid position instead of random ones

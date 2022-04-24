@@ -43,8 +43,18 @@ public class Gravemind {
     public static ArrayList<BlockPos> sculkNodePositions;
     private static int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
 
-    private int MASS_GOAL_FOR_IMMATURE = 500;
-    private int MASS_GOAL_FOR_MATURE = 100000000;
+    //This is how much mass is needed to go from undeveloped to immature
+    private final int MASS_GOAL_FOR_IMMATURE = 500;
+    //This is how much mass is needed to go from immature to mature
+    private final int MASS_GOAL_FOR_MATURE = 100000000;
+
+    private final int SCULK_NODE_INFECT_RADIUS_UNDEVELOPED = 10;
+    //The radius that sculk nodes can infect in the immature state
+    private final int SCULK_NODE_INFECT_RADIUS_IMMATURE = 20;
+    //The radius that sculk nodes can infect in the mature state
+    private final int SCULK_NODE_INFECT_RADIUS_MATURE = 50;
+
+    public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
 
 
     /**
@@ -78,9 +88,15 @@ public class Gravemind {
     public void calulateCurrentState()
     {
         if(SculkHoard.entityFactory.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
+        {
+            sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_IMMATURE;
             evolution_state = evolution_states.Immature;
+        }
         else if(SculkHoard.entityFactory.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
+        {
+            sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_MATURE;
             evolution_state = evolution_states.Mature;
+        }
 
         if(DEBUG_THIS) System.out.println("Gravemind deduced the current state as: " + evolution_state);
     }
@@ -182,6 +198,22 @@ public class Gravemind {
                 || stateIn == evolution_states.Immature
                 || stateIn == evolution_states.Mature);
         }
+        return false;
+    }
+
+    /**
+     * Checks if a node position is present in {@link Gravemind#sculkNodePositions}
+     * @param pos The Position
+     * @return True if present, false if not
+     */
+    public boolean isSculkNodePositionRecorded(BlockPos pos)
+    {
+        for(BlockPos entry : sculkNodePositions)
+        {
+            if(entry.getX() == pos.getX() && entry.getZ() == pos.getY() && entry.getZ() == pos.getZ())
+                return true;
+        }
+
         return false;
     }
 }

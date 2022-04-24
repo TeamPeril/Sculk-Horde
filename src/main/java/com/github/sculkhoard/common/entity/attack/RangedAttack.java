@@ -52,7 +52,6 @@ public abstract class RangedAttack {
     }
 
     public void shoot() {
-        System.out.println("Attempting to shoot");
         LivingEntity targetEntity = this.thisMob.getTarget();
         World world = this.thisMob.getCommandSenderWorld();
         Vector3d vector3d = this.thisMob.getViewVector(1.0F);

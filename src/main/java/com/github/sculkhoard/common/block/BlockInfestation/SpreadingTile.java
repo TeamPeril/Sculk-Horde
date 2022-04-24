@@ -1,9 +1,6 @@
 package com.github.sculkhoard.common.block.BlockInfestation;
 
-import com.github.sculkhoard.core.BlockRegistry;
-import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -11,6 +8,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class SpreadingTile extends TileEntity implements ITickableTileEntity {
 
@@ -35,9 +35,11 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
     public int chanceToNotDegrade = 1/500;
     public String chanceToNotDegradeIdentifier = "chanceToNotDegrade";
 
-    private final int spreadIntervalInSeconds = 20; //300;
-    private final int ticksPerSecond = 20;
-    private static int tickTracker = 0;
+    private final int MAX_SPREAD_INVERVAL_SECONDS = 60;
+    private final int MIN_SPREAD_INVERVAL_SECONDS = 40;
+    private int spreadIntervalInSeconds = -1;
+    private long tickedAt = System.nanoTime();
+
 
 
     /**
@@ -53,6 +55,7 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
      * I made this so that registering tile entities can look cleaner
      */
     public SpreadingTile() {
+
         this(TileEntityRegistry.SPREADING_BLOCK_TILE.get());
     }
 
@@ -124,17 +127,19 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
     public void tick() {
         if(this.level != null && !this.level.isClientSide)
         {
-            tickTracker++;
-            if(tickTracker >= ticksPerSecond * spreadIntervalInSeconds)
+            long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
+            if(spreadIntervalInSeconds == -1)
             {
-                tickTracker = 0;
+                Random rng = new Random();
+                spreadIntervalInSeconds = rng.nextInt(MAX_SPREAD_INVERVAL_SECONDS + MIN_SPREAD_INVERVAL_SECONDS) + MIN_SPREAD_INVERVAL_SECONDS;
+            }
+            else if(timeElapsed >= spreadIntervalInSeconds) {
+                tickedAt = System.nanoTime();
                 ServerWorld thisWorld = (ServerWorld) this.level;
                 BlockPos thisPos = this.worldPosition;
                 BlockState thisBlockState = thisWorld.getBlockState(thisPos);
                 thisBlockState.randomTick(thisWorld, thisPos, thisWorld.random);
-
             }
         }
-
     }
 }

@@ -104,6 +104,15 @@ public class InfestedLogActiveBlock extends SpreadingBlock implements IForgeBloc
 
 
     /**
+     * Returns what block state we want this block to convert into if converted back to original victim.
+     * @return The BlockState this block will convert into
+     */
+    public BlockState getVictimVariant()
+    {
+        return Blocks.AIR.defaultBlockState();
+    }
+
+    /**
      * Returns what block state we want this block to convert into after its done spreading.
      * @return The BlockState this block will convert into
      */

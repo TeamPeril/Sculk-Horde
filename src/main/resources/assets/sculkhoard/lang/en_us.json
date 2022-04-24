@@ -2,6 +2,12 @@
   "itemGroup.sculkhoard_tab": "Sculk Hoard",
   "item.sculkhoard.sculk_matter": "Sculk Matter",
   "item.sculkhoard.dev_wand": "Dev Wand",
+  "tooltip.sculkhoard.dev_wand": "Right-click to spawn mite. \nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to add 100 Sculk Mass.",
+  "tooltip.sculkhoard.dev_wand.shift": "\u00A75JoeMama",
+  "item.sculkhoard.dev_conversion_wand": "Dev Conversion Wand",
+  "item.sculkhoard.anti_sculk_matter": "Anti Sculk Matter",
+  "tooltip.sculkhoard.anti_sculk_matter": "Converts Sculk Infested Blocks back into their non-infected variant in a large area.",
+  "tooltip.sculkhoard.dev_conversion_wand": "Converts blocks to infected variants.",
   "block.sculkhoard.ancient_large_bricks": "Ancient Large Sculk Bricks",
   "block.sculkhoard.ancient_large_tile": "Ancient Large Sculk Tile",
   "block.sculkhoard.crust": "Sculk Crust",
@@ -13,6 +19,7 @@
   "tooltip.sculkhoard.infested_log": "It looks like wood, but feels like bone?",
   "block.sculkhoard.infested_stone_active": "Sculk Infested Stone",
   "block.sculkhoard.infested_stone_dormant": "Sculk Infested Stone",
+  "block.sculkhoard.sculk_brain": "Sculk Brain Node",
   "block.sculkhoard.spike": "Sculk Spike",
   "block.sculkhoard.grass": "Sculk Grass",
   "block.sculkhoard.grass_short": "Sculk Short Grass",
@@ -25,10 +32,9 @@
   "block.sculkhoard.sculk_mass": "Organic Sculk Mass",
   "block.sculkhoard.sculk_dura_matter": "Sculk Dura Matter",
   "block.sculkhoard.sculk_arachnoid": "Sculk Arachnoid",
-  "tooltip.sculkhoard.dev_wand": "Right-click to spawn mite. \nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to add 100 Sculk Mass.",
-  "tooltip.sculkhoard.dev_wand.shift": "\u00A75JoeMama",
   "entity.sculkhoard.sculk_zombie": "Sculk Zombie",
   "entity.sculkhoard.sculk_spitter": "Sculk Spitter",
-  "entity.sculkhoard.sculk_mite": "Sculk Mite"
+  "entity.sculkhoard.sculk_mite": "Sculk Mite",
+  "entity.sculkhoard.sculk_mite_aggressor": "Sculk Mite Aggressor"
   
 }
