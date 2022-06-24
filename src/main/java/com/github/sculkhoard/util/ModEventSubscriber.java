@@ -34,10 +34,10 @@ public class ModEventSubscriber {
     {
         ChunkLoaderUtil.register(); //Something related to chunk loading
         //Add entries to the entity factory (please add them in order, I don't want to sort)
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
-        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER, 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE, 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR, 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
+        SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE, (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
 
         SculkHoard.infestationConversionTable = new InfestationConversionTable();
         SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFECTED_DIRT.get());
@@ -64,10 +64,10 @@ public class ModEventSubscriber {
      */
     @SubscribeEvent
     public static void registerEntities(final RegistryEvent.Register<EntityType<?>> event) {
-        register(EntityRegistry.SCULK_ZOMBIE.get(), PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkZombieEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_MITE.get(), PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteAggressorEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_SPITTER.get(), PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkSpitterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_ZOMBIE, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkZombieEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_MITE, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_MITE_AGGRESSOR, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteAggressorEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_SPITTER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkSpitterEntity::passSpawnCondition);
     }
 
     /* entityAttributes
@@ -75,10 +75,10 @@ public class ModEventSubscriber {
      */
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
-        event.put(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_MITE.get(), SculkMiteEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), SculkMiteAggressorEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_SPITTER.get(), SculkSpitterEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_ZOMBIE, SculkZombieEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_MITE, SculkMiteEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_MITE_AGGRESSOR, SculkMiteAggressorEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_SPITTER, SculkSpitterEntity.createAttributes().build());
     }
 
 }

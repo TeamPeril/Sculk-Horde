@@ -47,8 +47,11 @@ public class SculkHoard {
         ItemRegistry.ITEMS.register(bus); //Load Items
         TileEntityRegistry.register(bus); //Load Tile Entities
         BlockRegistry.BLOCKS.register(bus); //Load Blocks
-        EntityRegistry.register(bus); //Load Entities
+        EntityRegistry.register(bus); //Load Entities (this may not be necessary anymore)
+        bus.register(EntityRegistry.class); //Load Entities
+
         EffectRegistry.EFFECTS.register(bus); //Load Effects
+        ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
 
         //If dev environment
         if(!FMLEnvironment.production)

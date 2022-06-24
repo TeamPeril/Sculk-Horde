@@ -68,7 +68,7 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkMiteAggressorEntity(World worldIn) {super(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), worldIn);}
+    public SculkMiteAggressorEntity(World worldIn) {super(EntityRegistry.SCULK_MITE_AGGRESSOR, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.

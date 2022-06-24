@@ -88,7 +88,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE.get(), worldIn);}
+    public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.

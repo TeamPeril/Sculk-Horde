@@ -88,7 +88,7 @@ public class ForgeEventSubscriber {
                         float entityHealth = entity.getMaxHealth();
 
                         //Spawn Mite
-                        EntityRegistry.SCULK_MITE.get().spawn((ServerWorld) event.getEntity().level, null, null, entityPosition, SpawnReason.SPAWNER, true, true);
+                        EntityRegistry.SCULK_MITE.spawn((ServerWorld) event.getEntity().level, null, null, entityPosition, SpawnReason.SPAWNER, true, true);
 
                         //Spawn Sculk Mass
                         SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();

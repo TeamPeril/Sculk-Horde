@@ -3,7 +3,6 @@ package com.github.sculkhoard.common.entity;
 import com.github.sculkhoard.common.entity.attack.AcidAttack;
 import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
 import com.github.sculkhoard.common.entity.goal.RangedAttackGoal;
-import com.github.sculkhoard.common.entity.goal.SculkZombieAttackGoal;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -90,7 +89,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSpitterEntity(World worldIn) {super(EntityRegistry.SCULK_SPITTER.get(), worldIn);}
+    public SculkSpitterEntity(World worldIn) {super(EntityRegistry.SCULK_SPITTER, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.

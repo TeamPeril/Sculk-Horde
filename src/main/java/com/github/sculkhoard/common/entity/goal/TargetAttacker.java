@@ -44,21 +44,36 @@ public class TargetAttacker extends TargetGoal {
      * method as well.
      */
     public boolean canUse() {
-        int i = this.mob.getLastHurtByMobTimestamp();
-        LivingEntity livingentity = this.mob.getLastHurtByMob();
-        if (i != this.timestamp && livingentity != null) {
-            if (livingentity.getType() == EntityType.PLAYER && this.mob.level.getGameRules().getBoolean(GameRules.RULE_UNIVERSAL_ANGER)) {
+        int i = this.mob.getLastHurtByMobTimestamp(); //Get the timestamp of when we were last attacked
+        LivingEntity livingentity = this.mob.getLastHurtByMob(); //Get the mob that last attacked us
+
+        //Do not allow this behavior to execute if what attacked us was a sculk mob
+        if(livingentity instanceof SculkLivingEntity) {return false;}
+
+        //if ??? and living entity is not null
+        if (i != this.timestamp && livingentity != null)
+        {
+            //If the thing that attacked us was the player and universal anger is enabled.
+            if (livingentity.getType() == EntityType.PLAYER && this.mob.level.getGameRules().getBoolean(GameRules.RULE_UNIVERSAL_ANGER))
+            {
                 return false;
-            } else {
-                for(Class<?> oclass : this.toIgnoreDamage) {
-                    if (oclass.isAssignableFrom(livingentity.getClass())) {
+            }
+            else
+            {
+                //If we are told to ignore damage.
+                for(Class<?> oclass : this.toIgnoreDamage)
+                {
+                    if (oclass.isAssignableFrom(livingentity.getClass()))
+                    {
                         return false;
                     }
                 }
 
                 return this.canAttack(livingentity, HURT_BY_TARGETING);
             }
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -67,7 +82,10 @@ public class TargetAttacker extends TargetGoal {
      * Execute a one shot task or start executing a continuous task
      */
     @Override
-    public void start() {
+    public void start()
+    {
+        //if(this.mob.getLastHurtByMob() instanceof SculkLivingEntity) return;
+
         this.mob.setTarget(this.mob.getLastHurtByMob());
         this.targetMob = this.mob.getTarget();
         this.timestamp = this.mob.getLastHurtByMobTimestamp();

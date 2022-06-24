@@ -91,7 +91,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkMiteEntity(World worldIn) {super(EntityRegistry.SCULK_MITE.get(), worldIn);}
+    public SculkMiteEntity(World worldIn) {super(EntityRegistry.SCULK_MITE, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
