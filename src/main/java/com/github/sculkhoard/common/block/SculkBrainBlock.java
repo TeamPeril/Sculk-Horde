@@ -79,6 +79,8 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = 3;
 
+    public static final int tickIntervalSeconds = 1;
+
     //The current circle radius, this increments at an interval
     private int infectCircleRadius = 1;
     //Once we are done spreading, how long should we wait before trying again?
@@ -92,10 +94,10 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
     private boolean currentlyRepairing = false;
     ArrayList<BlockPos> repairList = new ArrayList<BlockPos>();
     private int repairRadius = 1;
-    private int innerMembraneRadius = 2;
+    private int innerMembraneRadius = 5;
     private int outerShellRadius = innerMembraneRadius + 1;
     //Once we are done repairing, how long should we wait before trying again?
-    private final long repairRoutineIntervalInMinutes = 1;
+    private final long repairRoutineIntervalInSeconds = 1;
     //The time which this node has finished the repair routine
     private long finishedRepairRoutineAt = 0;
 
@@ -204,8 +206,8 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
      */
     public void repairShellRoutine(ServerWorld serverWorld, BlockPos bp)
     {
-        long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - finishedRepairRoutineAt, TimeUnit.NANOSECONDS);
-        if(!currentlyRepairing && timeElapsed >= repairRoutineIntervalInMinutes)
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - finishedRepairRoutineAt, TimeUnit.NANOSECONDS);
+        if(!currentlyRepairing && timeElapsed >= repairRoutineIntervalInSeconds)
         {
             //TODO: Check if needs repairs
             repairList = BlockAlgorithms.getBlockPosInCircle((ServerWorld) serverWorld, bp, outerShellRadius, false, true);

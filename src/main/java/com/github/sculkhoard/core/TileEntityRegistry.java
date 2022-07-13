@@ -41,6 +41,10 @@ public class TileEntityRegistry {
             TILE_ENTITIES.register("spreading_block_tile", () -> TileEntityType.Builder.of(
                     SpreadingTile::new, BlockRegistry.SPREADING_BLOCK.get()).build(null));
 
+    public static RegistryObject<TileEntityType<SculkBeeNestTile>> SCULK_BEE_NEST_TILE =
+            TILE_ENTITIES.register("sculk_bee_nest_tile", () -> TileEntityType.Builder.of(
+                    SculkBeeNestTile::new, BlockRegistry.SCULK_BEE_NEST_BLOCK.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         TILE_ENTITIES.register(eventBus);
     }

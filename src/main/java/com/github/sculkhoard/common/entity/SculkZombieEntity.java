@@ -192,7 +192,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true),
+                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
                         //new NearestAttackableTargetGoal<>(this, IAngerable.class, true),
 
                 };

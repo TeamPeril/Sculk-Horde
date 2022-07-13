@@ -35,8 +35,8 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
     public int chanceToNotDegrade = 1/500;
     public String chanceToNotDegradeIdentifier = "chanceToNotDegrade";
 
-    private final int MAX_SPREAD_INVERVAL_SECONDS = 60;
-    private final int MIN_SPREAD_INVERVAL_SECONDS = 40;
+    private final int MAX_SPREAD_INVERVAL_SECONDS = 10;
+    private final int MIN_SPREAD_INVERVAL_SECONDS = 1;
     private int spreadIntervalInSeconds = -1;
     private long tickedAt = System.nanoTime();
 

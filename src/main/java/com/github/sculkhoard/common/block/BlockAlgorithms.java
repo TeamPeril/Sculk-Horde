@@ -1,8 +1,10 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
+import com.github.sculkhoard.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -10,7 +12,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
@@ -111,6 +115,87 @@ public class BlockAlgorithms {
         }
 
         return positions;
+    }
+
+
+    /**
+     * Finds the location of the nearest block given a predicate.
+     * @param worldIn The world
+     * @param origin The origin of the search location
+     * @param predicateIn The predicate that determines if a block is the one were searching for
+     * @param pDistance The search distance
+     * @return The position of the block
+     */
+    public Optional<BlockPos> findNearestBlock(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
+    {
+;
+        //?
+        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+
+        //Search area for block
+        for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
+        {
+            for(int j = 0; (double)j < pDistance; ++j)
+            {
+                for(int k = 0; k <= j; k = k > 0 ? -k : 1 - k)
+                {
+                    for(int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l)
+                    {
+                        blockpos$mutable.setWithOffset(origin, k, i - 1, l);
+
+                        //If the block is close enough and is the right blockstate
+                        if (origin.closerThan(blockpos$mutable, pDistance)
+                                && predicateIn.test(worldIn.getBlockState(blockpos$mutable)))
+                        {
+                            return Optional.of(blockpos$mutable); //Return position
+                        }
+                    }
+                }
+            }
+        }
+        //else return empty
+        return Optional.empty();
+    }
+
+
+    /**
+     * Finds the location of the nearest block given a predicate.
+     * @param worldIn The world
+     * @param origin The origin of the search location
+     * @param predicateIn The predicate that determines if a block is the one were searching for
+     * @param pDistance The search distance
+     * @return The position of the block
+     */
+    public static ArrayList<BlockPos> getBlocksInArea(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
+    {
+        ArrayList<BlockPos> list = new ArrayList<>();
+
+        //BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+
+        //Search area for block
+        for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
+        {
+            for(int j = 0; (double)j < pDistance; ++j)
+            {
+                for(int k = 0; k <= j; k = k > 0 ? -k : 1 - k)
+                {
+                    for(int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l)
+                    {
+                        //blockpos$mutable.setWithOffset(origin, k, i - 1, l);
+                        BlockPos temp = new BlockPos(origin.getX() + k, origin.getY() + i-1, origin.getZ() + l);
+
+                        //If the block is close enough and is the right blockstate
+                        if (origin.closerThan(temp, pDistance)
+                                && predicateIn.test(worldIn.getBlockState(temp)))
+                        {
+                            list.add(temp); //add position
+                        }
+                    }
+                }
+            }
+        }
+        //else return empty
+        return list;
     }
 
     /**

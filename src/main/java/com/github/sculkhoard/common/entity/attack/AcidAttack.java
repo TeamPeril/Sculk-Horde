@@ -25,5 +25,6 @@ public class AcidAttack extends RangedAttack{
     public SculkAcidicProjectileEntity getProjectile(World worldIn, LivingEntity shooterIn, float damageIn) {
         return new SculkAcidicProjectileEntity(worldIn, shooterIn, damageIn);
 
+
     }
 }

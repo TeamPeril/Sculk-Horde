@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
+import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
 import com.github.sculkhoard.common.entity.goal.SculkMiteAggressorAttackGoal;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -167,13 +168,8 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new HurtByTargetGoal(this).setAlertOthers(), //This doesnt work
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true),
-                        new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true),
-                        //new NearestAttackableTargetGoal<>(this, IAngerable.class, true),
+                        new HurtByTargetGoal(this).setAlertOthers(),
+                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
                 };
         return goals;
     }

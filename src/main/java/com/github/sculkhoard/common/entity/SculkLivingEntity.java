@@ -1,6 +1,5 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.MonsterEntity;

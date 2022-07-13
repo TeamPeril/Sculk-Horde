@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.tileentity;
 
+import com.github.sculkhoard.common.block.SculkBrainBlock;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import com.github.sculkhoard.util.ChunkLoaderUtil;
 import net.minecraft.block.BlockState;
@@ -175,7 +176,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity {
         if(this.level != null && !this.level.isClientSide)
         {
             long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-            if(timeElapsed >= spreadEventIntervalInSeconds)
+            if(timeElapsed >= SculkBrainBlock.tickIntervalSeconds)
             {
                 tickedAt = System.nanoTime();
                 ServerWorld thisWorld = (ServerWorld) this.level;

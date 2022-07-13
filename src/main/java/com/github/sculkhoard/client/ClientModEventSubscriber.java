@@ -1,9 +1,6 @@
 package com.github.sculkhoard.client;
 
-import com.github.sculkhoard.client.renderer.entity.SculkMiteAggressorRenderer;
-import com.github.sculkhoard.client.renderer.entity.SculkMiteRenderer;
-import com.github.sculkhoard.client.renderer.entity.SculkSpitterRenderer;
-import com.github.sculkhoard.client.renderer.entity.SculkZombieRenderer;
+import com.github.sculkhoard.client.renderer.entity.*;
 import com.github.sculkhoard.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhoard.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhoard.core.BlockRegistry;
@@ -47,6 +44,10 @@ public class ClientModEventSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE_AGGRESSOR, SculkMiteAggressorRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_SPITTER, SculkSpitterRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_BEE_INFECTOR, SculkBeeInfectorRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_BEE_HARVESTER, SculkBeeHarvesterRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY, m -> new SpriteRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
 

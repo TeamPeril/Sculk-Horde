@@ -1,10 +1,7 @@
 package com.github.sculkhoard.util;
 
 import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
-import com.github.sculkhoard.common.entity.SculkMiteAggressorEntity;
-import com.github.sculkhoard.common.entity.SculkMiteEntity;
-import com.github.sculkhoard.common.entity.SculkSpitterEntity;
-import com.github.sculkhoard.common.entity.SculkZombieEntity;
+import com.github.sculkhoard.common.entity.*;
 import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
 import com.github.sculkhoard.common.entity.gravemind.Gravemind;
 import com.github.sculkhoard.common.pools.PoolBlocks;
@@ -68,6 +65,8 @@ public class ModEventSubscriber {
         register(EntityRegistry.SCULK_MITE, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteEntity::passSpawnCondition);
         register(EntityRegistry.SCULK_MITE_AGGRESSOR, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteAggressorEntity::passSpawnCondition);
         register(EntityRegistry.SCULK_SPITTER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkSpitterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_BEE_INFECTOR, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeInfectorEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_BEE_HARVESTER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
     }
 
     /* entityAttributes
@@ -79,6 +78,8 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.SCULK_MITE, SculkMiteEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_MITE_AGGRESSOR, SculkMiteAggressorEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_SPITTER, SculkSpitterEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_BEE_INFECTOR, SculkBeeInfectorEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_BEE_HARVESTER, SculkBeeHarvesterEntity.createAttributes().build());
     }
 
 }

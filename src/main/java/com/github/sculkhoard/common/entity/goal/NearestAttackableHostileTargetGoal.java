@@ -28,16 +28,20 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
     protected LivingEntity target;
     protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
+    boolean despawnWhenIdle = false;
 
-    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee) {
+    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee)
+    {
         this(mobEntity, targetClass, mustSee, false);
     }
 
-    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee, boolean mustReach) {
+    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee, boolean mustReach)
+    {
         this(mobEntity, targetClass, 10, mustSee, mustReach, (Predicate<LivingEntity>)null);
     }
 
-    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate) {
+    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
+    {
         super(mobEntity, mustSee, mustReach);
         this.targetType = targetClass;
         this.randomInterval = interval;
@@ -45,11 +49,18 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
         this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
-    public boolean canUse() {
+    public NearestAttackableHostileTargetGoal enableDespawnWhenIdle()
+    {
+        despawnWhenIdle = true;
+        return this;
+    }
+
+    public boolean canUse()
+    {
         this.ticksSinceIdle++;
 
         //If mob is idle for too long, destroy it
-        if(ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
+        if(despawnWhenIdle && ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
         {
             this.mob.remove();
         }
@@ -65,11 +76,13 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
 
     }
 
-    protected AxisAlignedBB getTargetSearchArea(double range) {
+    protected AxisAlignedBB getTargetSearchArea(double range)
+    {
         return this.mob.getBoundingBox().inflate(range, 4.0D, range);
     }
 
-    protected void findTarget() {
+    protected void findTarget()
+    {
 
         //If targetType is not player, Get all possible targets, filter out sculk or infected mobs
         if (this.targetType != PlayerEntity.class && this.targetType != ServerPlayerEntity.class)

@@ -18,6 +18,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import software.bernie.geckolib3.GeckoLib;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
@@ -64,7 +65,8 @@ public class SculkHoard {
     }
 
     //Add Creative Item Tab
-    public static class CreativeTabGroup extends ItemGroup {
+    public static class CreativeTabGroup extends ItemGroup
+    {
         public CreativeTabGroup(String label) {
             super(label);
         }

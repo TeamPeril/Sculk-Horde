@@ -126,4 +126,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<SpreadingBlock> SPREADING_BLOCK =
 			registerBlock("spreading_block", () -> new SpreadingBlock());
+
+	public static final RegistryObject<SculkBeeNestBlock> SCULK_BEE_NEST_BLOCK =
+			registerBlock("sculk_bee_nest", () -> new SculkBeeNestBlock());
 }
