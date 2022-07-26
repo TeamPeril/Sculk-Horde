@@ -1,10 +1,7 @@
 package com.github.sculkhoard.core;
 
 
-import com.github.sculkhoard.common.item.AntiSculkMatter;
-import com.github.sculkhoard.common.item.DevConversionWand;
-import com.github.sculkhoard.common.item.DevWand;
-import com.github.sculkhoard.common.item.CustomItemProjectile;
+import com.github.sculkhoard.common.item.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
@@ -33,6 +30,9 @@ public class ItemRegistry {
 
 	public static final RegistryObject<CustomItemProjectile> SCULK_ACIDIC_PROJECTILE = ITEMS.register("sculk_acidic_projectile",
 			() -> new CustomItemProjectile());
+
+	public static final RegistryObject<SculkResinItem> SCULK_RESIN = ITEMS.register("sculk_resin",
+			() -> new SculkResinItem());
 
 	/** HELPER METHODS **/
 

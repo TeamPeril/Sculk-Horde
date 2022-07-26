@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.block;
 
+import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.common.tileentity.SculkBrainTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -81,29 +82,6 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
 
     public static final int tickIntervalSeconds = 1;
 
-    //The current circle radius, this increments at an interval
-    private int infectCircleRadius = 1;
-    //Once we are done spreading, how long should we wait before trying again?
-    private final long spreadRoutineIntervalInMinutes = 60;
-    //The time which this node has finished the spread routine
-    private long finishedInfectionRoutineAt = 0;
-    //Whether we are currently doing the spread routine
-    private boolean currentlySpreading = true;
-
-
-    private boolean currentlyRepairing = false;
-    ArrayList<BlockPos> repairList = new ArrayList<BlockPos>();
-    private int repairRadius = 1;
-    private int innerMembraneRadius = 5;
-    private int outerShellRadius = innerMembraneRadius + 1;
-    //Once we are done repairing, how long should we wait before trying again?
-    private final long repairRoutineIntervalInSeconds = 1;
-    //The time which this node has finished the repair routine
-    private long finishedRepairRoutineAt = 0;
-
-
-
-
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -122,7 +100,6 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
 
     /**
      * This function is called when this block is placed. <br>
-     * Will set the nbt data maxSpreadAttempts.
      * @param world The world the block is in
      * @param bp The position the block is in
      * @param blockState The state of the block
@@ -131,7 +108,7 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
      */
     @Override
     public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack) {
-        SculkHoard.gravemind.sculkNodePositions.add(bp);
+        SculkHoard.gravemind.gravemindMemory.addNodeToMemory(bp);
         super.setPlacedBy(world, bp, blockState, entity, itemStack);
     }
 
@@ -155,131 +132,14 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
 
-        boolean DEBUG_THIS = false;
+
         SculkHoard.entityFactory.addSculkAccumulatedMass(1);//Add 1 sculk mass to the hoard
+
         //make sure the gravemind knows about this position
-        if(!SculkHoard.gravemind.isSculkNodePositionRecorded(bp)) SculkHoard.gravemind.sculkNodePositions.add(bp);
-
-        infectionRoutine(serverWorld, bp);
-        repairShellRoutine(serverWorld, bp);
+        SculkHoard.gravemind.gravemindMemory.addNodeToMemory(bp);
 
     }
 
-    /**
-     * Will infect blocks in an increasing sized sphere. Once reaches max radius,
-     * will stop and pause for a specified amount of time, then restart.
-     * @param serverWorld The world
-     * @param bp The block position
-     */
-    public void infectionRoutine(ServerWorld serverWorld, BlockPos bp)
-    {
-        long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - finishedInfectionRoutineAt, TimeUnit.NANOSECONDS);
-        if(!currentlySpreading && timeElapsed >= spreadRoutineIntervalInMinutes)
-        {
-            currentlySpreading = true;
-            if(DEBUG_MODE) System.out.println("Sculk Node at " + bp + " will restart the spread routine.");
-        }
-
-        if(currentlySpreading)
-        {
-            //TODO Make a new function that does a sphere-ring hybrid instead of a full circle
-            SculkHoard.infestationConversionTable.convertToInfectedQueue.addAll(
-                    BlockAlgorithms.getBlockPosInCircle((ServerWorld) serverWorld, bp, infectCircleRadius, false, false)
-            );
-            infectCircleRadius++;
-            if(infectCircleRadius > SculkHoard.gravemind.sculk_node_infect_radius)
-            {
-                infectCircleRadius = 1;
-                finishedInfectionRoutineAt = System.nanoTime();
-                currentlySpreading = false;
-                if(DEBUG_MODE) System.out.println("Sculk Node at " + bp + " has completed its spread routine.");
-            }
-        }
-    }
-
-
-    /**
-     * Will infect blocks in an increasing sized sphere. Once reaches max radius,
-     * will stop and pause for a specified amount of time, then restart.
-     * @param serverWorld The world
-     * @param bp The block position
-     */
-    public void repairShellRoutine(ServerWorld serverWorld, BlockPos bp)
-    {
-        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - finishedRepairRoutineAt, TimeUnit.NANOSECONDS);
-        if(!currentlyRepairing && timeElapsed >= repairRoutineIntervalInSeconds)
-        {
-            //TODO: Check if needs repairs
-            repairList = BlockAlgorithms.getBlockPosInCircle((ServerWorld) serverWorld, bp, outerShellRadius, false, true);
-
-            for(int i = 0; i < repairList.size(); i++)
-            {
-                //If the current position is not filled with the appropraite shell block
-                if(isBlockValid(serverWorld, bp, repairList.get(i)))
-                {
-                    repairList.remove(i);
-                    i--;
-                }
-            }
-
-
-            if(! repairList.isEmpty())
-            {
-                if(DEBUG_MODE) System.out.println("Sculk Node at " + bp + " will start the repair routine.");
-                currentlyRepairing = true;
-            }
-            else
-            {
-                currentlyRepairing = false;
-            }
-
-        }
-        else if(currentlyRepairing)
-        {
-
-            if(repairList.isEmpty())
-            {
-                currentlyRepairing = false;
-                if(DEBUG_MODE) System.out.println("Sculk Node at " + bp + " has completed its repair routine.");
-                finishedRepairRoutineAt = System.nanoTime();
-            }
-            else
-            {
-                BlockPos repairPosition = repairList.get(0);
-                double deltaX = repairPosition.getX() - bp.getX();
-                double deltaY = repairPosition.getY() - bp.getY();
-                double deltaZ = repairPosition.getZ() - bp.getZ();
-                double distanceFromCenter = Math.sqrt(Math.pow( deltaX ,2) + Math.pow( deltaY ,2) + Math.pow( deltaZ ,2));
-                if(distanceFromCenter <= innerMembraneRadius)
-                    serverWorld.setBlockAndUpdate(repairPosition, BlockRegistry.SCULK_ARACHNOID.get().defaultBlockState());
-                else
-                    serverWorld.setBlockAndUpdate(repairPosition, BlockRegistry.SCULK_DURA_MATTER.get().defaultBlockState());
-                repairList.remove(0);
-            }
-        }
-    }
-
-    /**
-     * Given a block position, will check if this position is an outer shell or inenr shell position.
-     * Then it wil check if the block in that position is the correct one
-     * @param world The world
-     * @param center The center of the node
-     * @param target The target block we are checking
-     * @return
-     */
-    public boolean isBlockValid(ServerWorld world, BlockPos center, BlockPos target)
-    {
-        double deltaX = target.getX() - center.getX();
-        double deltaY = target.getY() - center.getY();
-        double deltaZ = target.getZ() - center.getZ();
-        double distanceFromCenter = Math.sqrt(Math.pow( deltaX ,2) + Math.pow( deltaY ,2) + Math.pow( deltaZ ,2));
-
-        if(distanceFromCenter <= innerMembraneRadius && world.getBlockState(target).getBlock() == BlockRegistry.SCULK_ARACHNOID.get()) //If inner shell
-            return true;
-        else if(distanceFromCenter > innerMembraneRadius && world.getBlockState(target).getBlock() == BlockRegistry.SCULK_DURA_MATTER.get()) //If outer shell
-            return true;
-        return false;
-    }
 
     /**
      * Determines if a specified mob type can spawn on this block, returning false will

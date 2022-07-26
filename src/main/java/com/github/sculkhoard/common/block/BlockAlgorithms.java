@@ -2,6 +2,8 @@ package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
 import com.github.sculkhoard.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhoard.common.entity.SculkBeeInfectorEntity;
+import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.block.BlockState;
@@ -20,6 +22,15 @@ import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 public class BlockAlgorithms {
 
+    public static float getSudoRNGFromPosition(BlockPos position, int min, int max)
+    {
+        int range = max - min;
+        long seed = position.getX() * position.getY() * position.getZ();
+        int rng = (int) (seed % (range + 1.0)); //Get output between 0 and range
+        rng += min;
+        return rng;
+    }
+
     /**
      * Will return an array list that represents a 3x3x3 cube of all block
      * positions with the origin being the centroid. Does not include origin
@@ -33,6 +44,26 @@ public class BlockAlgorithms {
         list.addAll(getNeighborsXZPlane(origin, false));
         list.addAll(getNeighborsXZPlane(origin.above(), true));
         list.addAll(getNeighborsXZPlane(origin.below(), true));
+        return list;
+    }
+
+
+    /**
+     * Will return an array list that represents the neighbors that are directly
+     * touching any face of the a block
+     * @param origin The target position
+     * @return A list of all adjacent neighbors
+     */
+    public static ArrayList<BlockPos> getAdjacentNeighbors(BlockPos origin)
+    {
+        ArrayList<BlockPos> list = new ArrayList<BlockPos>();
+        list.addAll(getNeighborsXZPlane(origin, false));
+        list.addAll(getNeighborsXZPlane(origin.above(), true));
+        list.addAll(getNeighborsXZPlane(origin.below(), true));
+        list.addAll(getNeighborsXZPlane(origin.north(), true));
+        list.addAll(getNeighborsXZPlane(origin.east(), true));
+        list.addAll(getNeighborsXZPlane(origin.south(), true));
+        list.addAll(getNeighborsXZPlane(origin.west(), true));
         return list;
     }
 
@@ -57,16 +88,28 @@ public class BlockAlgorithms {
         return list;
     }
 
-    public static ArrayList<BlockPos> getBlockPosInCircle(ServerWorld world, BlockPos Origin, int radius, boolean includeOrigin, boolean includeAir)
+    public static float getBlockDistance(BlockPos pos1, BlockPos pos2)
     {
-        boolean DEBUG_WITH_GLASS = DEBUG_MODE && false;
-        ArrayList<BlockPos> positions = new ArrayList<BlockPos>();
+        return (float) Math.sqrt( Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2) + Math.pow(pos2.getZ() - pos1.getZ(), 2));
+    }
+
+    /**
+     * Gets all blocks in a circle and retuns it in a list
+     * NOTE: Something is wrong with this algorithm, the size is too small
+     * @param Origin The center
+     * @param radius The radius
+     * @param includeOrigin Whether to include the origin
+     * @return A list of all the block positions
+     */
+    public static ArrayList<BlockPos> getBlockPosInCircle(BlockPos origin, int radius, boolean includeOrigin)
+    {
+        ArrayList<BlockPos> positions = new ArrayList<>();
         boolean shouldWeAddThisPosition = false;
 
         //Origin position
-        int center_x = Origin.getX();
-        int center_y = Origin.getY();
-        int center_z = Origin.getZ();
+        int center_x = origin.getX();
+        int center_y = origin.getY();
+        int center_z = origin.getZ();
 
         //Initial position is in corner
         int start_pos_x = center_x - radius - 1;
@@ -86,31 +129,22 @@ public class BlockAlgorithms {
                 {
                     int current_pos_x = start_pos_x + x_offset;
                     shouldWeAddThisPosition = true;
-                    double delta_x = Math.pow(current_pos_x - Origin.getX(), 2);
-                    double delta_y = Math.pow(current_pos_y - Origin.getY(), 2);
-                    double delta_z = Math.pow(current_pos_z - Origin.getZ(), 2);
+
                     BlockPos targetPos = new BlockPos(current_pos_x, current_pos_y, current_pos_z);
 
                     //If distance between center and current block is less than radius, it is in the circle
-                    double distance = Math.sqrt(delta_x + delta_y + delta_z);
+                    double distance = getBlockDistance(origin, targetPos);
 
                     //If outside of radius, do not include
                     if(distance > radius)
                         shouldWeAddThisPosition = false;
                     //If we are not including origin and this is the origin, do not include
-                    if(!includeOrigin && targetPos.getX() == Origin.getX() && targetPos.getY() == Origin.getY() && targetPos.getZ() == Origin.getZ())
-                        shouldWeAddThisPosition = false;
-                    //If we are not including air, and this block is air, do not include
-                    if(!includeAir && world.getBlockState(targetPos).isAir())
+                    if(!includeOrigin && targetPos.getX() == origin.getX() && targetPos.getY() == origin.getY() && targetPos.getZ() == origin.getZ())
                         shouldWeAddThisPosition = false;
 
                     //If not debugging, function as normal
-                    if(shouldWeAddThisPosition && !DEBUG_WITH_GLASS) positions.add(targetPos);
-                    //If debug mode, replace with glass
-                    else if(shouldWeAddThisPosition && DEBUG_WITH_GLASS) world.setBlockAndUpdate(targetPos, Blocks.GREEN_STAINED_GLASS.defaultBlockState());
-
+                    if(shouldWeAddThisPosition) positions.add(targetPos);
                 }
-
             }
         }
 
@@ -211,23 +245,45 @@ public class BlockAlgorithms {
     }
 
     /**
-     * Will only place sculk nodes if sky is visible
-     * @param world
-     * @param targetPos
+     * Checks immediate blocks to see if any of them are air
+     * @param serverWorld The world
+     * @param targetPos The position to check
+     * @return true if any air found, false otherwise
      */
-    public static void placeSculkNode(ServerWorld world, BlockPos targetPos)
+    public static boolean isExposedToAir(ServerWorld serverWorld, BlockPos targetPos)
     {
-        //If we are too close to another node, do not create one
-        if(!SculkHoard.gravemind.isValidPositionForSculkNode(targetPos))
-            return;
+        ArrayList<BlockPos> list = getAdjacentNeighbors(targetPos);
 
-        //Given random chance and the target location can see the sky, create a sculk node
-        if(new Random().nextInt(1000) <= 1 && world.canSeeSky(targetPos))
+        for(BlockPos position : list)
         {
-            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
-            SculkHoard.gravemind.sculkNodePositions.add(targetPos);
-            EntityType.LIGHTNING_BOLT.spawn(world, null, null, targetPos, SpawnReason.SPAWNER, true, true);
-            if(DEBUG_MODE) System.out.println("New Sculk Node Created at " + targetPos.toString());
+            if(serverWorld.getBlockState(position).isAir())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Will only place sculk nodes if sky is visible
+     * @param world The World to place it in
+     * @param targetPos The position to place it in
+     */
+    public static void placeSculkBeeHive(ServerWorld world, BlockPos targetPos)
+    {
+        //Given random chance and the target location can see the sky, create a sculk node
+        if(new Random().nextInt(4000) <= 1 && world.canSeeSky(targetPos))
+        {
+            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
+            SculkBeeNestTile nest = (SculkBeeNestTile) world.getBlockEntity(targetPos);
+
+            //Add 10 bees
+            nest.addOccupant(new SculkBeeHarvesterEntity(world), false);
+            nest.addOccupant(new SculkBeeHarvesterEntity(world), false);
+            nest.addOccupant(new SculkBeeInfectorEntity(world), false);
+            nest.addOccupant(new SculkBeeInfectorEntity(world), false);
         }
 
     }

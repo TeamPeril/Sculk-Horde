@@ -1,8 +1,7 @@
 package com.github.sculkhoard.util;
 
 import com.github.sculkhoard.common.block.SculkMassBlock;
-import com.github.sculkhoard.common.entity.SculkMiteEntity;
-import com.github.sculkhoard.common.entity.gravemind.Gravemind;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EffectRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -18,7 +17,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
 import static com.github.sculkhoard.core.SculkHoard.*;

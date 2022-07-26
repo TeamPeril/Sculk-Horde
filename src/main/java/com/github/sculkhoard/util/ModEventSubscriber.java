@@ -2,14 +2,13 @@ package com.github.sculkhoard.util;
 
 import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
 import com.github.sculkhoard.common.entity.*;
-import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
-import com.github.sculkhoard.common.entity.gravemind.Gravemind;
+import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.common.pools.PoolBlocks;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.event.RegistryEvent;
@@ -42,7 +41,7 @@ public class ModEventSubscriber {
         SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_LOG_ACTIVE.get());
 
         SculkHoard.gravemind.confirmedThreats = new ArrayList<String>();
-        SculkHoard.gravemind.sculkNodePositions = new ArrayList<BlockPos>();
+        //SculkHoard.gravemind.sculkNodePositions = new ArrayList<BlockPos>();
 
         SculkHoard.randomSculkFlora = new PoolBlocks();
 

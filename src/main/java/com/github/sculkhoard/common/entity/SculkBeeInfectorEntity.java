@@ -1,22 +1,29 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
+import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
+import com.github.sculkhoard.common.block.SculkFloraBlock;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
-import net.minecraft.entity.CreatureEntity;
+import com.github.sculkhoard.core.SculkHoard;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.DoublePlantBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -24,9 +31,11 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-import java.util.Random;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-public class SculkBeeInfectorEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements IAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -48,10 +57,8 @@ public class SculkBeeInfectorEntity extends SculkLivingEntity implements IAnimat
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 25F;
-    //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.25F;
-
-    public static final int SPAWN_Y_MAX =15;
+    //MOVEMENT_SPEED determines how fast this mob moves
+    public static final float MOVEMENT_SPEED = 0.5F;
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -78,33 +85,11 @@ public class SculkBeeInfectorEntity extends SculkLivingEntity implements IAnimat
     {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
-                .add(Attributes.ARMOR, ARMOR)
-                .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
-                .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
-                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(Attributes.FLYING_SPEED, 1.5F);
     }
 
-
-    /**
-     * The function that determines if a position is a good spawn location<br>
-     * @param config ???
-     * @param world The world that the mob is trying to spawn in
-     * @param reason An object that indicates why a mob is being spawned
-     * @param pos The Block Position of the potential spawn location
-     * @param random ???
-     * @return Returns a boolean determining if it is a suitable spawn location
-     */
-    public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
-    {
-        // If peaceful, return false
-        if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-            // If not because of chunk generation or natural, return false
-        else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
-            //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
-        else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
-        return true;
-    }
 
 
     /**
@@ -139,10 +124,23 @@ public class SculkBeeInfectorEntity extends SculkLivingEntity implements IAnimat
      */
     public Goal[] goalSelectorPayload()
     {
+        beePollinateGoal = new InfectFlowersGoal();
+        goToHiveGoal = new FindBeehiveGoal();
+        goToKnownFlowerGoal = new FindFlowerGoal();
+
         Goal[] goals =
                 {
+                        new UpdateBeehiveGoal(),
+                        new EnterBeehiveGoal(),
+                        beePollinateGoal,
+                        goToHiveGoal,
+                        goToKnownFlowerGoal,
+
+
                         //LookRandomlyGoal(mob)
                         new LookRandomlyGoal(this),
+                        new SculkBeeHarvesterEntity.WanderGoal(),
+                        new SwimGoal(this),
                 };
         return goals;
     }
@@ -159,23 +157,9 @@ public class SculkBeeInfectorEntity extends SculkLivingEntity implements IAnimat
     {
         Goal[] goals =
                 {
-                        //HurtByTargetGoal(mob)
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true),
-                        //new NearestAttackableTargetGoal<>(this, IAngerable.class, true),
-
                 };
         return goals;
-    }
-
-
-
-
-    @Override
-    protected int getExperienceReward(PlayerEntity player)
-    {
-        return 3;
     }
 
     //Animation Related Functions
@@ -195,4 +179,85 @@ public class SculkBeeInfectorEntity extends SculkLivingEntity implements IAnimat
     public AnimationFactory getFactory() {
         return this.factory;
     }
+
+    /**
+     * Represents a predicate (boolean-valued function) of one argument. <br>
+     * Currently determines if a block is a valid flower.
+     */
+    private final Predicate<BlockState> VALID_INFECTABLE_BLOCKS = (validBlocksPredicate) ->
+    {
+        if (validBlocksPredicate.is(BlockTags.TALL_FLOWERS))
+        {
+            if (validBlocksPredicate.is(Blocks.SUNFLOWER))
+            {
+                return validBlocksPredicate.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return validBlocksPredicate.is(BlockTags.SMALL_FLOWERS) || validBlocksPredicate.is(Blocks.GRASS);
+        }
+    };
+
+    /**
+     * Determines what flowers the bee can infect
+     * @return The predicate
+     */
+    @Override
+    protected Predicate<BlockState> getFlowerPredicate()
+    {
+        return VALID_INFECTABLE_BLOCKS;
+    }
+
+    /** CLASSES **/
+
+    private class InfectFlowersGoal extends SculkBeeHarvesterEntity.PollinateGoal
+    {
+        /**
+         * Constructor
+         */
+        InfectFlowersGoal()
+        {
+            super();
+        }
+
+        /**
+         * Reset the task's internal state. Called when this task is interrupted by another one
+         */
+        @Override
+        public void stop()
+        {
+            //If entity has pollinated for enough time
+            if (this.hasPollinatedLongEnough())
+            {
+                //Set entity to have nectar
+                SculkBeeInfectorEntity.this.setHasNectar(true);
+
+                //Convert Block Under bee to sculk active spreader
+                BlockPos spreadPos = SculkBeeInfectorEntity.this.blockPosition().below();
+                ServerWorld world = (ServerWorld) SculkBeeInfectorEntity.this.level;
+                if (SculkHoard.infestationConversionTable.convertToActiveSpreader((ServerWorld) SculkBeeInfectorEntity.this.level, spreadPos))
+                {
+                    SpreadingBlock spreadingBlock = BlockRegistry.SPREADING_BLOCK.get();
+                    if(spreadingBlock.getTileEntity(world, spreadPos) != null && spreadingBlock.getTileEntity(world, spreadPos) instanceof SpreadingTile)
+                    {
+                        spreadingBlock.getTileEntity(world, spreadPos).setMaxSpreadAttempts(20);
+                    }
+                }
+            }
+
+            //Set pollination to false
+            this.pollinating = false;
+            //Stop navigation
+            SculkBeeInfectorEntity.this.navigation.stop();
+            //reset cooldown
+            SculkBeeInfectorEntity.this.remainingCooldownBeforeLocatingNewFlower = 200;
+        }
+
+    } //END POLLINATE GOAL
+
 }

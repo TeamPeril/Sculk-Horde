@@ -68,7 +68,6 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
-
     /**
      * The Constructor that takes in properties
      * @param prop The Properties

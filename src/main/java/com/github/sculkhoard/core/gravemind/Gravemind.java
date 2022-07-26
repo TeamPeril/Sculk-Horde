@@ -1,13 +1,18 @@
-package com.github.sculkhoard.common.entity.gravemind;
+package com.github.sculkhoard.core.gravemind;
 
 
-import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
-import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.core.BlockRegistry;
+import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.SculkHoard;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
@@ -21,26 +26,33 @@ import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
  * -Coordinate Defense
  * -Make Coordination of Reinforcements more advanced
  */
-public class Gravemind {
+public class Gravemind
+{
 
-    private final boolean DEBUG_THIS = DEBUG_MODE && false; //Used to debug the gravemind
-
+    /** State Logic **/
     public enum evolution_states {Undeveloped, Immature, Mature}
+
     private evolution_states evolution_state;
 
     public enum attack_states {Defensive, Offensive}
 
     public attack_states attack_state = attack_states.Defensive;
 
+    //private GravemindState;
+
+    /** Controlable Assets **/
+
     //This controls the reinforcement system.
     public EntityFactory entityFactory;
+
+    public GravemindMemory gravemindMemory;
 
     //This is a list of mob types that have attacked the sculk hoard
     public static ArrayList<String> confirmedThreats;
 
+    /** Regular Variables **/
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
-    public static ArrayList<BlockPos> sculkNodePositions;
     private static int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
 
     //This is how much mass is needed to go from undeveloped to immature
@@ -67,8 +79,8 @@ public class Gravemind {
         evolution_state = evolution_states.Undeveloped;
         attack_state = attack_states.Defensive;
         entityFactory = SculkHoard.entityFactory;
+        gravemindMemory = new GravemindMemory();
         calulateCurrentState();
-        if(DEBUG_THIS) System.out.println("Gravemind Initialized");
     }
 
     public evolution_states getEvolutionState()
@@ -97,47 +109,11 @@ public class Gravemind {
             sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_MATURE;
             evolution_state = evolution_states.Mature;
         }
-
-        if(DEBUG_THIS) System.out.println("Gravemind deduced the current state as: " + evolution_state);
-    }
-
-    /**
-     * Will check each known node location to see if there is one too close.
-     * @param potentialPos The potential location of a new node
-     * @return t rue if creation of new node is approved, false otherwise.
-     */
-    public boolean isValidPositionForSculkNode(BlockPos potentialPos)
-    {
-        if(sculkNodePositions.isEmpty())
-            return true;
-
-        for(BlockPos nodePos : sculkNodePositions)
-        {
-            //Get Distance from our potential location to the current index node position
-            int distanceFromPotentialToCurrentNode = (int)
-                    Math.sqrt(
-                            Math.pow(potentialPos.getX() - nodePos.getX(),2)
-                            + Math.pow(potentialPos.getY() - nodePos.getY(),2)
-                            + Math.pow(potentialPos.getZ() - nodePos.getZ(),2)
-                    );
-
-
-            //if we find a single node that is too close, disapprove of creating a new one
-            if(distanceFromPotentialToCurrentNode < MINIMUM_DISTANCE_BETWEEN_NODES)
-                return false;
-        }
-
-        return true;
     }
 
     public boolean processReinforcementRequest(ReinforcementContext context)
     {
         context.isRequestViewed = true;
-        if(DEBUG_THIS)
-        {
-            System.out.println("Processing the Following Request:");
-            System.out.println(context.toString());
-        }
 
         //Auto approve is this reinforcement is requested by a developer or sculk mass
         if(context.sender == ReinforcementContext.senderType.Developer || context.sender == ReinforcementContext.senderType.SculkMass)
@@ -171,11 +147,6 @@ public class Gravemind {
             //TODO: Add functionality for mature state
         }
 
-        if(DEBUG_THIS)
-        {
-            System.out.println("Request Approved? " + context.isRequestApproved);
-            System.out.println(context.toString());
-        }
         return context.isRequestApproved;
     }
 
@@ -187,7 +158,9 @@ public class Gravemind {
     public boolean isEvolutionStateEqualOrLessThanCurrent(evolution_states stateIn)
     {
         if(evolution_state == evolution_states.Undeveloped)
+        {
             return (stateIn == evolution_states.Undeveloped);
+        }
         else if(evolution_state == evolution_states.Immature)
         {
             return (stateIn == evolution_states.Immature || stateIn == evolution_states.Undeveloped);
@@ -201,19 +174,160 @@ public class Gravemind {
         return false;
     }
 
+
     /**
-     * Checks if a node position is present in {@link Gravemind#sculkNodePositions}
-     * @param pos The Position
-     * @return True if present, false if not
+     * Will only place sculk nodes if sky is visible
+     * @param world The World to place it in
+     * @param targetPos The position to place it in
      */
-    public boolean isSculkNodePositionRecorded(BlockPos pos)
+    public static void placeSculkNode(ServerWorld world, BlockPos targetPos)
     {
-        for(BlockPos entry : sculkNodePositions)
+        //If we are too close to another node, do not create one
+        if(!SculkHoard.gravemind.isValidPositionForSculkNode(targetPos))
+            return;
+
+        //Given random chance and the target location can see the sky, create a sculk node
+        if(new Random().nextInt(1000) <= 1 && world.canSeeSky(targetPos))
         {
-            if(entry.getX() == pos.getX() && entry.getZ() == pos.getY() && entry.getZ() == pos.getZ())
-                return true;
+            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
+            SculkHoard.gravemind.gravemindMemory.addNodeToMemory(targetPos);
+            EntityType.LIGHTNING_BOLT.spawn(world, null, null, targetPos, SpawnReason.SPAWNER, true, true);
+            if(DEBUG_MODE) System.out.println("New Sculk Node Created at " + targetPos.toString());
+        }
+    }
+
+
+    /**
+     * Will check each known node location in {@link GravemindMemory#nodeEntries}
+     * to see if there is one too close.
+     * @param potentialPos The potential location of a new node
+     * @return true if creation of new node is approved, false otherwise.
+     */
+    public boolean isValidPositionForSculkNode(BlockPos potentialPos)
+    {
+        if(gravemindMemory.nodeEntries.isEmpty())
+            return true;
+
+        for(NodeEntry entry : gravemindMemory.nodeEntries)
+        {
+            //Get Distance from our potential location to the current index node position
+            int distanceFromPotentialToCurrentNode = (int) BlockAlgorithms.getBlockDistance(potentialPos, entry.position);
+
+            //if we find a single node that is too close, disapprove of creating a new one
+            if(distanceFromPotentialToCurrentNode < MINIMUM_DISTANCE_BETWEEN_NODES)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /** ######## Classes ######## **/
+
+    public class GravemindMemory
+    {
+
+        //We do not want to put them too close to each other.
+        public ArrayList<NodeEntry> nodeEntries;
+
+        public ArrayList<BlockPos> beeHivePositions;
+
+        public ArrayList<BlockPos> spawnerPositions;
+
+        /**
+         * Default Constructor
+         */
+        public GravemindMemory()
+        {
+            nodeEntries = new ArrayList<>();
         }
 
-        return false;
+        /** Accessors **/
+
+        /**
+         * Returns a list of known node positions
+         * @return
+         */
+        public ArrayList<NodeEntry> getNodeEntries()
+        {
+            return nodeEntries;
+        }
+
+        /**
+         * Will check the positons of all entries to see
+         * if they match the parameter.
+         * @param pos The position to cross reference
+         * @return true if in memory, false otherwise
+         */
+        public boolean isNodePositionInMemory(BlockPos position)
+        {
+            for(NodeEntry entry : nodeEntries)
+            {
+                if(entry.position == position)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /** ######## Modifiers ######## **/
+
+        /**
+         * Adds a position to the list if it does not already exist
+         * @param position
+         */
+        public void addNodeToMemory(BlockPos position)
+        {
+            if(!isNodePositionInMemory(position) && nodeEntries != null)
+            {
+                nodeEntries.add(new NodeEntry(position));
+            }
+        }
+
+        /** ######## Events ######### **/
+
+
+
+        /**
+         * Will verify all enties to see if they exist in the world.
+         * If not, they will be removed.
+         * @param worldIn The World
+         */
+        public void validateNodeEntries(ServerWorld worldIn)
+        {
+            for(int index = 0; index < nodeEntries.size(); index++)
+            {
+                //TODO: Figure out if not being in the overworld can mess this up
+                if(!nodeEntries.get(index).isEntryValid(worldIn))
+                {
+                    nodeEntries.remove(index);
+                    index--;
+                }
+            }
+        }
+    }
+
+    private class NodeEntry
+    {
+        public BlockPos position;
+        public long lastTimeWasActive;
+
+        public NodeEntry(BlockPos positionIn)
+        {
+            position = positionIn;
+            lastTimeWasActive = System.nanoTime();
+        }
+
+        public boolean isEntryValid(ServerWorld worldIn)
+        {
+            if(worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BRAIN.get()))
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
 }

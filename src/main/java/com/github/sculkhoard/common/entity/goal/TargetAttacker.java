@@ -2,7 +2,7 @@ package com.github.sculkhoard.common.entity.goal;
 
 import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
-import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
+import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 public class TargetAttacker extends TargetGoal {
 

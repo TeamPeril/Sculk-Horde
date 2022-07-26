@@ -1,7 +1,7 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.entity.EntityAlgorithms;
-import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.block.Block;
@@ -22,7 +22,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 

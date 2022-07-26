@@ -1,9 +1,8 @@
 package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
-import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
-import com.github.sculkhoard.common.entity.entity_factory.EntityFactoryEntry;
-import com.github.sculkhoard.common.entity.gravemind.Gravemind;
+import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.common.pools.PoolBlocks;
 import com.github.sculkhoard.util.PacketToggleChunk;
 import net.minecraft.item.ItemGroup;
@@ -16,9 +15,6 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import software.bernie.geckolib3.GeckoLib;
-
-import java.util.ArrayList;
-import java.util.logging.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
@@ -40,7 +36,8 @@ public class SculkHoard {
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("sculkhoard", "main"), () -> "1", "1"::equals, "1"::equals);
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
-    public SculkHoard() {
+    public SculkHoard()
+    {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
         GeckoLib.initialize();

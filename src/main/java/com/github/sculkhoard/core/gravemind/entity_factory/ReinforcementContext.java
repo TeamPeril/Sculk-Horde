@@ -1,4 +1,4 @@
-package com.github.sculkhoard.common.entity.entity_factory;
+package com.github.sculkhoard.core.gravemind.entity_factory;
 
 import java.util.ArrayList;
 

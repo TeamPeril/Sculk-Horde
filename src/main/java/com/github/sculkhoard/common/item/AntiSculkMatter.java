@@ -102,7 +102,7 @@ public class AntiSculkMatter extends Item implements IForgeItem {
             if (blockraytraceresult.getType() == RayTraceResult.Type.BLOCK)
             {
                 BlockPos origin_pos = blockraytraceresult.getBlockPos();
-                SculkHoard.infestationConversionTable.convertToVictimQueue.addAll(BlockAlgorithms.getBlockPosInCircle((ServerWorld) worldIn, origin_pos, 10, true, false));
+                SculkHoard.infestationConversionTable.convertToVictimQueue.addAll(BlockAlgorithms.getBlockPosInCircle(origin_pos, 10, true));
                 playerIn.getCooldowns().addCooldown(this, 20*5); //Cool down for second (20 ticks per second)
                 return ActionResult.sidedSuccess(itemstack, worldIn.isClientSide());
             }

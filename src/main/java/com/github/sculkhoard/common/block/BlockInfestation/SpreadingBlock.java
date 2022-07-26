@@ -270,7 +270,9 @@ public class SpreadingBlock extends Block implements IForgeBlock {
 
         //If this block has not attempted to spread before
         if(thisTile.getMaxSpreadAttempts() == -1)
+        {
             thisTile.setMaxSpreadAttempts(getDefaultMaxSpreadAttempts());//Set to default
+        }
 
         //If spreading randomly and if there is sculk mass
         if(chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
@@ -283,14 +285,13 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                 {
                     //If max spread attempts has not been reached, spread
                     if (thisTile.getSpreadAttempts() < thisTile.getMaxSpreadAttempts())
+                    {
                         attemptToSpreadHere(thisTile, serverWorld, BlockAlgorithms.getRandomNeighbor(serverWorld, targetPos)); //Attempt to spread to this position
+                    }
                 }
             }
             //If no attempts left
-            else
-                isSpreadingComplete = true;
-
-
+            else { isSpreadingComplete = true; }
         }
         //If we are checking every vailid position instead of random ones
         else if(!chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
@@ -298,13 +299,17 @@ public class SpreadingBlock extends Block implements IForgeBlock {
             //Get all neighbors and check if we can spread to all possible positions
             ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(targetPos);
             for(int i = 0; i < allNeighbors.size(); i++)
+            {
                 attemptToSpreadHere(thisTile, serverWorld, allNeighbors.get(i)); //Attempt to spread to this position
+            }
             isSpreadingComplete = true;
         }
 
         //Once done spreading, convert to dormant variant
         if(isSpreadingComplete || SculkHoard.entityFactory.getSculkAccumulatedMass() <= 0)
+        {
             SculkHoard.infestationConversionTable.convertToDormant(serverWorld, targetPos);
+        }
 
     }
 

@@ -3,6 +3,7 @@ package com.github.sculkhoard.common.block.BlockInfestation;
 import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.util.ForgeEventSubscriber;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -64,7 +65,7 @@ public class InfestationConversionTable {
             }
         }
 
-        //Loop through each entry until we find the appropriate one.s
+        //Loop through each entry until we find the appropriate one
         for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
         {
             //System.out.println(entry.toString());
@@ -135,6 +136,80 @@ public class InfestationConversionTable {
         entries.add(active_spreading_block_in);
     }
 
+    /** Boolean Methods **/
+
+
+    /**
+     * Will check all entries in the infestation conversion table to see if
+     * the given block is considered a victim to any entry.
+     * @param blockStateIn The block to check
+     * @return True if the block can be a victim, false otherwise.
+     */
+    @Nullable
+    public boolean isConsideredVictim(BlockState blockStateIn)
+    {
+        //Loop through each entry until we find the appropriate one
+        for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
+        {
+            //System.out.println(entry.toString());
+            //If the victim blocks is the same block as the entry
+            if(entry.isValidVictim(blockStateIn))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Will check all entries in the infestation conversion table to see if
+     * the given block is considered a victim to any entry.
+     * @param blockStateIn The block to check
+     * @return True if the block can be a victim, false otherwise.
+     */
+    @Nullable
+    public boolean isConsideredActiveSpreader(BlockState blockStateIn)
+    {
+        //Loop through each entry until we find the appropriate one
+        for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
+        {
+            //System.out.println(entry.toString());
+            //If the victim blocks is the same block as the entry
+            if(blockStateIn.is(entry))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Will check all entries in the infestation conversion table to see if
+     * the given block is considered a victim to any entry.
+     * @param blockStateIn The block to check
+     * @return True if the block can be a victim, false otherwise.
+     */
+    @Nullable
+    public boolean isConsideredDormantSpreader(BlockState blockStateIn)
+    {
+        //Loop through each entry until we find the appropriate one
+        for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
+        {
+            //System.out.println(entry.toString());
+            //If the victim blocks is the same block as the entry
+            if(blockStateIn.is(entry.getDormantVariant().getBlock()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /** Event Methods **/
+
     /**
      * Converts a target block into an actively spreading variant
      * @param world The world the block is in.
@@ -179,9 +254,11 @@ public class InfestationConversionTable {
             if(dormantVariant.getBlock() == BlockRegistry.INFESTED_LOG_DORMANT.get())
                 BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
-            BlockAlgorithms.placeSculkNode(world, targetPos.above());
+            Gravemind.placeSculkNode(world, targetPos.above());
 
             BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
+
+            BlockAlgorithms.placeSculkBeeHive(world, targetPos.above());
 
             return true;
         }

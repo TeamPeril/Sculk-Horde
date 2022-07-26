@@ -1,10 +1,8 @@
-package com.github.sculkhoard.common.entity.entity_factory;
+package com.github.sculkhoard.core.gravemind.entity_factory;
 
-import com.github.sculkhoard.common.entity.SculkLivingEntity;
-import com.github.sculkhoard.common.entity.gravemind.Gravemind;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 

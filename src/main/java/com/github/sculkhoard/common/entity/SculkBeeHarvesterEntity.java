@@ -1,13 +1,13 @@
 package com.github.sculkhoard.common.entity;
 
 import com.github.sculkhoard.common.block.BlockAlgorithms;
-import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
+import com.github.sculkhoard.common.block.SculkFloraBlock;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.google.common.collect.Lists;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -17,12 +17,10 @@ import net.minecraft.entity.ai.controller.LookController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.datasync.DataParameter;
@@ -34,9 +32,6 @@ import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.properties.DoubleBlockHalf;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntity;
@@ -88,27 +83,27 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     public static final int SPAWN_Y_MAX =15;
 
-    private AnimationFactory factory = new AnimationFactory(this);
+    protected AnimationFactory factory = new AnimationFactory(this);
 
-    private static final DataParameter<Byte> DATA_FLAGS_ID = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.BYTE);
-    private static final DataParameter<Integer> DATA_REMAINING_ANGER_TIME = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.INT);
-    private float rollAmount;
-    private float rollAmountO;
-    private int timeSinceSting;
-    private int ticksWithoutNectarSinceExitingHive;
-    private int stayOutOfHiveCountdown;
-    private int numCropsGrownSincePollination;
-    private int remainingCooldownBeforeLocatingNewHive = 0;
-    private int remainingCooldownBeforeLocatingNewFlower = 0;
+    protected static final DataParameter<Byte> DATA_FLAGS_ID = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Integer> DATA_REMAINING_ANGER_TIME = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.INT);
+    protected float rollAmount;
+    protected float rollAmountO;
+    protected int timeSinceSting;
+    protected int ticksWithoutNectarSinceExitingHive;
+    protected int stayOutOfHiveCountdown;
+    protected int numCropsGrownSincePollination;
+    protected int remainingCooldownBeforeLocatingNewHive = 0;
+    protected int remainingCooldownBeforeLocatingNewFlower = 0;
     @Nullable
-    private BlockPos savedFlowerPos = null;
+    protected BlockPos savedFlowerPos = null;
     @Nullable
-    private BlockPos hivePos = null;
-    private SculkBeeHarvesterEntity.PollinateGoal beePollinateGoal;
-    private SculkBeeHarvesterEntity.FindBeehiveGoal goToHiveGoal;
-    private SculkBeeHarvesterEntity.FindFlowerGoal goToKnownFlowerGoal;
-    private int underWaterTicks;
-    private final int COOLDOWN_FIND_NEW_HIVE = 1200;
+    protected BlockPos hivePos = null;
+    protected PollinateGoal beePollinateGoal;
+    protected SculkBeeHarvesterEntity.FindBeehiveGoal goToHiveGoal;
+    protected SculkBeeHarvesterEntity.FindFlowerGoal goToKnownFlowerGoal;
+    protected int underWaterTicks;
+    protected final int COOLDOWN_FIND_NEW_HIVE = 1200;
 
     /** Constructors **/
 
@@ -177,11 +172,11 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return this.hivePos;
     }
 
-    private int getCropsGrownSincePollination() {
+    protected int getCropsGrownSincePollination() {
         return this.numCropsGrownSincePollination;
     }
 
-    private boolean getFlag(int pFlagId) {
+    protected boolean getFlag(int pFlagId) {
         return (this.entityData.get(DATA_FLAGS_ID) & pFlagId) != 0;
     }
 
@@ -245,15 +240,15 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     /**----------Modifier Methods----------**/
 
-    private void resetNumCropsGrownSincePollination() {
+    protected void resetNumCropsGrownSincePollination() {
         this.numCropsGrownSincePollination = 0;
     }
 
-    private void incrementNumCropsGrownSincePollination() {
+    protected void incrementNumCropsGrownSincePollination() {
         ++this.numCropsGrownSincePollination;
     }
 
-    private void setHasNectar(boolean pHasNectar) {
+    protected void setHasNectar(boolean pHasNectar) {
         if (pHasNectar) {
             this.resetTicksWithoutNectarSinceExitingHive();
         }
@@ -261,11 +256,11 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         this.setFlag(8, pHasNectar);
     }
 
-    private void setHasStung(boolean pHasStung) {
+    protected void setHasStung(boolean pHasStung) {
         this.setFlag(4, pHasStung);
     }
 
-    private void setRolling(boolean pIsRolling) {
+    protected void setRolling(boolean pIsRolling) {
         this.setFlag(2, pIsRolling);
     }
 
@@ -274,7 +269,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     }
 
 
-    private void setFlag(int pFlagId, boolean pValue)
+    protected void setFlag(int pFlagId, boolean pValue)
     {
         if (pValue)
         {
@@ -295,7 +290,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         this.stayOutOfHiveCountdown = pStayOutOfHiveCountdown;
     }
 
-    private void updateRollAmount() {
+    protected void updateRollAmount() {
         this.rollAmountO = this.rollAmount;
         if (this.isRolling()) {
             this.rollAmount = Math.min(1.0F, this.rollAmount + 0.2F);
@@ -311,7 +306,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return this.hivePos != null;
     }
 
-    private boolean isHiveValid() {
+    protected boolean isHiveValid() {
         if (!this.hasHive()) {
             return false;
         } else {
@@ -320,7 +315,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         }
     }
 
-    private boolean doesHiveHaveSpace(BlockPos pHivePos)
+    protected boolean doesHiveHaveSpace(BlockPos pHivePos)
     {
         TileEntity tileentity = this.level.getBlockEntity(pHivePos);
         //TileEntity tileentity = .getTileEntity(this.level, pHivePos);
@@ -347,35 +342,28 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return this.getFlag(4);
     }
 
-    private boolean isRolling() {
+    protected boolean isRolling() {
         return this.getFlag(2);
     }
 
-    private boolean isTooFarAway(BlockPos pPos) {
+    protected boolean isTooFarAway(BlockPos pPos) {
         return !this.closerThan(pPos, 32);
     }
 
-    /**
-     * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
-     * the animal type)
-     */
-    public boolean isFood(ItemStack pStack) {
-        return pStack.getItem().is(ItemTags.FLOWERS);
-    }
-
-    private boolean isFlowerValid(BlockPos pPos) {
-        return this.level.isLoaded(pPos) && this.level.getBlockState(pPos).getBlock().is(BlockTags.FLOWERS);
+    protected boolean isFlowerValid(BlockPos pPos)
+    {
+        return this.level.isLoaded(pPos) & getFlowerPredicate().test(this.level.getBlockState(pPos));
     }
 
     public boolean hasSavedFlowerPos() {
         return this.savedFlowerPos != null;
     }
 
-    private boolean isTiredOfLookingForNectar() {
+    protected boolean isTiredOfLookingForNectar() {
         return this.ticksWithoutNectarSinceExitingHive > 3600;
     }
 
-    private boolean isHiveNearFire() {
+    protected boolean isHiveNearFire() {
         if (this.hivePos == null) {
             return false;
         } else {
@@ -384,7 +372,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         }
     }
 
-    private boolean wantsToEnterHive() {
+    protected boolean wantsToEnterHive() {
         if (this.stayOutOfHiveCountdown <= 0 && !this.beePollinateGoal.isPollinating() && !this.hasStung() && this.getTarget() == null) {
             boolean flag = this.isTiredOfLookingForNectar() || this.level.isRaining() || this.level.isNight() || this.hasNectar();
             return flag && !this.isHiveNearFire();
@@ -521,7 +509,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * less of a priority than the last.
      * @return Returns an array of goals ordered from highest to lowest piority
      */
-    public Goal[] goalSelectorPayload()
+    private Goal[] goalSelectorPayload()
     {
         this.beePollinateGoal = new SculkBeeHarvesterEntity.PollinateGoal();
         this.goToHiveGoal = new SculkBeeHarvesterEntity.FindBeehiveGoal();
@@ -552,7 +540,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * less of a priority than the last.
      * @return Returns an array of goals ordered from highest to lowest piority
      */
-    public Goal[] targetSelectorPayload()
+    private Goal[] targetSelectorPayload()
     {
         Goal[] goals =
                 {
@@ -688,17 +676,17 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.01D, 0.0D));
     }
 
-    private boolean closerThan(BlockPos pPos, int pDistance)
+    protected boolean closerThan(BlockPos pPos, int pDistance)
     {
         return pPos.closerThan(this.blockPosition(), (double)pDistance);
     }
 
-    private void spawnFluidParticle(World pLevel, double pStartX, double pEndX, double pStartZ, double pEndZ, double pPosY, IParticleData pParticleOption)
+    protected void spawnFluidParticle(World pLevel, double pStartX, double pEndX, double pStartZ, double pEndZ, double pPosY, IParticleData pParticleOption)
     {
         pLevel.addParticle(pParticleOption, MathHelper.lerp(pLevel.random.nextDouble(), pStartX, pEndX), pPosY, MathHelper.lerp(pLevel.random.nextDouble(), pStartZ, pEndZ), 0.0D, 0.0D, 0.0D);
     }
 
-    private void pathfindRandomlyTowards(BlockPos pPos)
+    protected void pathfindRandomlyTowards(BlockPos pPos)
     {
         //Get the bottom center position of the block
         Vector3d targetPos = Vector3d.atBottomCenterOf(pPos);
@@ -769,7 +757,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         /**
          * Constructor
          */
-        private PassiveGoal() {}
+        public PassiveGoal() {}
 
         public abstract boolean canBeeUse();
 
@@ -789,36 +777,28 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         }
     }
 
-    class PollinateGoal extends PassiveGoal
+    /**
+     * Represents a predicate (boolean-valued function) of one argument. <br>
+     * Currently determines if a block is a valid flower.
+     */
+    private final Predicate<BlockState> VALID_POLLINATION_BLOCKS = (validBlocksPredicate) ->
     {
-        /**
-         * Represents a predicate (boolean-valued function) of one argument. <br>
-         * Currently determines if a block is a valid flower.
-         */
-        private final Predicate<BlockState> VALID_POLLINATION_BLOCKS = (validBlocksPredicate) ->
-        {
-            if (validBlocksPredicate.is(BlockTags.TALL_FLOWERS))
-            {
-                if (validBlocksPredicate.is(Blocks.SUNFLOWER))
-                {
-                    return validBlocksPredicate.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                return validBlocksPredicate.is(BlockTags.SMALL_FLOWERS);
-            }
-        };
+        return validBlocksPredicate.getBlock() instanceof SculkFloraBlock;
+    };
 
-        private int successfulPollinatingTicks = 0;
-        private int lastSoundPlayedTick = 0;
-        private boolean pollinating;
-        private Vector3d hoverPos;
-        private int pollinatingTicks = 0;
+    protected Predicate<BlockState> getFlowerPredicate()
+    {
+        return VALID_POLLINATION_BLOCKS;
+    }
+
+    protected class PollinateGoal extends PassiveGoal
+    {
+
+        protected int successfulPollinatingTicks = 0;
+        protected int lastSoundPlayedTick = 0;
+        protected boolean pollinating;
+        protected Vector3d hoverPos;
+        protected int pollinatingTicks = 0;
 
         /**
          * Constructor
@@ -926,7 +906,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         /**
          * @return true if pollinating for more than x, false otherwise
          */
-        private boolean hasPollinatedLongEnough()
+        protected boolean hasPollinatedLongEnough()
         {
             return this.successfulPollinatingTicks > 400;
         }
@@ -934,7 +914,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         /**
          * @return TRUE if pollinating, FALSE otherwise
          */
-        private boolean isPollinating()
+        protected boolean isPollinating()
         {
             return this.pollinating;
         }
@@ -942,7 +922,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         /**
          * Sets this.pollinating to FALSE
          */
-        private void stopPollinating()
+        protected void stopPollinating()
         {
             this.pollinating = false;
         }
@@ -1079,7 +1059,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         /**
          * Tell the navigator we want to be at the hoverPos
          */
-        private void setWantedPos()
+        protected void setWantedPos()
         {
             SculkBeeHarvesterEntity.this.getMoveControl().setWantedPosition(this.hoverPos.x(), this.hoverPos.y(), this.hoverPos.z(), (double)0.35F);
         }
@@ -1088,7 +1068,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
          * Choose a random float
          * @return a random float
          */
-        private float getRandomOffset()
+        protected float getRandomOffset()
         {
             return (SculkBeeHarvesterEntity.this.random.nextFloat() * 2.0F - 1.0F) * 0.33333334F;
         }
@@ -1097,9 +1077,9 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
          * Finds the position closest flower
          * @return the BlockPos of the flower
          */
-        private Optional<BlockPos> findNearbyFlower()
+        protected Optional<BlockPos> findNearbyFlower()
         {
-            return this.findNearestBlock(this.VALID_POLLINATION_BLOCKS, 32.0D);
+            return this.findNearestBlock(getFlowerPredicate(), 32.0D);
         }
 
         /**
@@ -1108,7 +1088,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
          * @param pDistance The search distance
          * @return The Position of the block
          */
-        private Optional<BlockPos> findNearestBlock(Predicate<BlockState> pPredicate, double pDistance)
+        protected Optional<BlockPos> findNearestBlock(Predicate<BlockState> pPredicate, double pDistance)
         {
             //The origin of our search
             BlockPos blockpos = SculkBeeHarvesterEntity.this.blockPosition();
@@ -1144,12 +1124,12 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**
      * Tells an entity to enter a hive
      */
-    class EnterBeehiveGoal extends SculkBeeHarvesterEntity.PassiveGoal
+    protected class EnterBeehiveGoal extends SculkBeeHarvesterEntity.PassiveGoal
     {
         /**
          * Constructor
          */
-        private EnterBeehiveGoal(){}
+        protected EnterBeehiveGoal(){}
 
         /**
          * Determines if this goal can execute
@@ -1218,7 +1198,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * -Tells entity to go to hive if not navigating. <br>
      * -Checks to see if entity gets stuck.
      */
-    class FindBeehiveGoal extends SculkBeeHarvesterEntity.PassiveGoal
+    protected class FindBeehiveGoal extends SculkBeeHarvesterEntity.PassiveGoal
     {
         private int travellingTicks = SculkBeeHarvesterEntity.this.level.random.nextInt(10);
         private List<BlockPos> blacklistedTargets = Lists.newArrayList();
@@ -1445,7 +1425,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**
      * This goal makes the bee, if possible, to go to a known flower.
      */
-    class FindFlowerGoal extends SculkBeeHarvesterEntity.PassiveGoal {
+    protected class FindFlowerGoal extends SculkBeeHarvesterEntity.PassiveGoal {
         private int travellingTicks = SculkBeeHarvesterEntity.this.level.random.nextInt(10);
 
         /**
@@ -1542,12 +1522,12 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**
      * Update what this entity considers its home
      */
-    class UpdateBeehiveGoal extends SculkBeeHarvesterEntity.PassiveGoal {
+    protected class UpdateBeehiveGoal extends SculkBeeHarvesterEntity.PassiveGoal {
 
         /**
          * Constructor
          */
-        private UpdateBeehiveGoal() {}
+        protected UpdateBeehiveGoal() {}
 
         /**
          * Determines if this goal can start. <br>
@@ -1645,7 +1625,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**
      * Allow the entity to fly randomly around
      */
-    class WanderGoal extends Goal
+    protected class WanderGoal extends Goal
     {
         /**
          * Constructor

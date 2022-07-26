@@ -1,8 +1,11 @@
 package com.github.sculkhoard.common.tileentity;
 
 import com.github.sculkhoard.common.block.SculkBeeNestBlock;
+import com.github.sculkhoard.common.block.SculkBeeNestCellBlock;
 import com.github.sculkhoard.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhoard.core.EntityRegistry;
+import com.github.sculkhoard.common.procedural.structures.PlannedBlock;
+import com.github.sculkhoard.common.procedural.structures.SculkBeeNestProceduralStructure;
+import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;
@@ -10,32 +13,48 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.FireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.DebugPacketSender;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
-public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity {
-
+public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
+{
+    //This is a list of all the bees in the structure
     private final List<SculkBeeNestTile.Bee> stored = Lists.newArrayList();
-    @Nullable
-    private BlockPos savedFlowerPos = null;
 
-    public SculkBeeNestTile() {
+    //The procedural structure that will be built
+    private SculkBeeNestProceduralStructure beeNestStructure;
+
+    //Used for ticking this block at an interval
+    private int tickTracker = 0;
+
+    //The Maximum amount of honey this block can store
+    protected final int MAX_HONEY_LEVEL = 5;
+
+    //Repair routine will restart after an hour
+    private final long repairIntervalInMinutes = 30;
+    //Keep track of last time since repair so we know when to restart
+    private long lastTimeSinceRepair = -1;
+
+    /**
+     * Default Constructor
+     */
+    public SculkBeeNestTile()
+    {
         super(TileEntityRegistry.SCULK_BEE_NEST_TILE.get());
     }
 
@@ -47,7 +66,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
     {
         if (this.isFireNearby())
         {
-            this.emptyAllLivingFromHive((PlayerEntity)null, this.level.getBlockState(this.getBlockPos()), SculkBeeNestTile.State.EMERGENCY);
+            this.emptyAllLivingFromHive(null, this.level.getBlockState(this.getBlockPos()), SculkBeeNestTile.State.EMERGENCY);
         }
 
         super.setChanged();
@@ -77,7 +96,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
     }
 
     public boolean isFull() {
-        return this.stored.size() == 3;
+        return this.stored.size() == 10;
     }
 
     public void emptyAllLivingFromHive(@Nullable PlayerEntity pPlayer, BlockState pState, SculkBeeNestTile.State pReleaseStatus)
@@ -107,7 +126,8 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
 
     }
 
-    private List<Entity> releaseAllOccupants(BlockState pState, SculkBeeNestTile.State pReleaseStatus) {
+    private List<Entity> releaseAllOccupants(BlockState pState, SculkBeeNestTile.State pReleaseStatus)
+    {
         List<Entity> list = Lists.newArrayList();
         this.stored.removeIf((p_226966_4_) -> {
             return this.releaseOccupant(pState, p_226966_4_, list, pReleaseStatus);
@@ -115,8 +135,8 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
         return list;
     }
 
-    public void addOccupant(Entity p_226961_1_, boolean p_226961_2_) {
-        this.addOccupantWithPresetTicks(p_226961_1_, p_226961_2_, 0);
+    public void addOccupant(Entity entityIn, boolean hasNectar) {
+        this.addOccupantWithPresetTicks(entityIn, hasNectar, 0);
     }
 
     public int getOccupantCount() {
@@ -132,105 +152,108 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
     }
 
 
-    public void addOccupantWithPresetTicks(Entity entityIn, boolean p_226962_2_, int p_226962_3_)
+    public void addOccupantWithPresetTicks(Entity entityIn, boolean hasNectar, int ticksInHive)
     {
-        if (this.stored.size() < 3)
+        if (this.stored.size() < 10)
         {
             entityIn.stopRiding();
             entityIn.ejectPassengers();
             CompoundNBT compoundnbt = new CompoundNBT();
             entityIn.save(compoundnbt);
-            this.stored.add(new SculkBeeNestTile.Bee(compoundnbt, p_226962_3_, p_226962_2_ ? 2400 : 600));
+            this.stored.add(new SculkBeeNestTile.Bee(compoundnbt, ticksInHive, hasNectar ? 2400 : 600));
             this.stored.get(0);
             if (this.level != null)
             {
-                if (entityIn instanceof SculkBeeHarvesterEntity)
-                {
-                    SculkBeeHarvesterEntity beeentity = (SculkBeeHarvesterEntity)entityIn;
-                    if (beeentity.hasSavedFlowerPos() && (!this.hasSavedFlowerPos() || this.level.random.nextBoolean()))
-                    {
-                        this.savedFlowerPos = beeentity.getSavedFlowerPos();
-                    }
-                }
-
                 BlockPos blockpos = this.getBlockPos();
-                this.level.playSound((PlayerEntity)null, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), SoundEvents.BEEHIVE_ENTER, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.level.playSound(null, blockpos.getX(), blockpos.getY(), blockpos.getZ(), SoundEvents.BEEHIVE_ENTER, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
 
             entityIn.remove();
         }
     }
 
-    private boolean releaseOccupant(BlockState p_235651_1_, SculkBeeNestTile.Bee p_235651_2_, @Nullable List<Entity> p_235651_3_, SculkBeeNestTile.State state) {
-        if ((this.level.isNight() || this.level.isRaining()) && state != SculkBeeNestTile.State.EMERGENCY)
+    private boolean releaseOccupant(BlockState blockStateIn, SculkBeeNestTile.Bee entityIn, @Nullable List<Entity> entityListIn, SculkBeeNestTile.State state)
+    {
+        if (/*state != SculkBeeNestTile.State.EMERGENCY*/ false)
         {
             return false;
         }
         else
         {
             BlockPos blockpos = this.getBlockPos();
-            CompoundNBT compoundnbt = p_235651_2_.entityData;
+            CompoundNBT compoundnbt = entityIn.entityData;
             compoundnbt.remove("Passengers");
             compoundnbt.remove("Leash");
             compoundnbt.remove("UUID");
-            Direction direction = p_235651_1_.getValue(SculkBeeNestBlock.FACING);
-            BlockPos blockpos1 = blockpos.relative(direction);
-            boolean flag = !this.level.getBlockState(blockpos1).getCollisionShape(this.level, blockpos1).isEmpty();
-            if (flag && state != SculkBeeNestTile.State.EMERGENCY)
+
+            //Check if front of hive is blocked
+            Direction direction = blockStateIn.getValue(SculkBeeNestBlock.FACING);
+            BlockPos frontOfHive = blockpos.relative(direction);
+            boolean isEnteranceBlocked = !this.level.getBlockState(frontOfHive).getCollisionShape(this.level, frontOfHive).isEmpty();
+
+            //IF front of hive is blocked and it is not an emergency, do not release occupant
+            if (isEnteranceBlocked && state != SculkBeeNestTile.State.EMERGENCY)
             {
                 return false;
             }
             else
             {
+                //Load entity
                 Entity entity = EntityType.loadEntityRecursive(compoundnbt, this.level, (p_226960_0_) -> {
                     return p_226960_0_;
                 });
+
+                //If the entity isnt null
                 if (entity != null)
                 {
-
+                    //If the entity is an instance of sculk bee
                     if (entity instanceof SculkBeeHarvesterEntity)
                     {
+                        //Create entity
                         SculkBeeHarvesterEntity beeentity = (SculkBeeHarvesterEntity)entity;
-                        if (this.hasSavedFlowerPos()
-                                && !beeentity.hasSavedFlowerPos()
-                                && this.level.random.nextFloat() < 0.9F)
-                        {
-                            beeentity.setSavedFlowerPos(this.savedFlowerPos);
-                        }
 
+                        //If honey is being delivered to nest
                         if (state == SculkBeeNestTile.State.HONEY_DELIVERED)
                         {
-                            beeentity.dropOffNectar();
-                            if (p_235651_1_.getBlock().is(BlockTags.BEEHIVES))
-                            {
-                                int i = getHoneyLevel(p_235651_1_);
-                                if (i < 5) {
-                                    int j = this.level.random.nextInt(100) == 0 ? 2 : 1;
-                                    if (i + j > 5) {
-                                        --j;
-                                    }
+                            beeentity.dropOffNectar(); //give hive nector
 
-                                    this.level.setBlockAndUpdate(this.getBlockPos(), p_235651_1_.setValue(SculkBeeNestBlock.HONEY_LEVEL, Integer.valueOf(i + j)));
-                                }
+                            int currentHoneyLevel = getHoneyLevel(blockStateIn); //Get Current Honey Level
+
+                            //If we have not reached max level
+                            if (currentHoneyLevel < MAX_HONEY_LEVEL)
+                            {
+                                //Increment honey level
+                                this.level.setBlockAndUpdate(this.getBlockPos(), blockStateIn.setValue(SculkBeeNestBlock.HONEY_LEVEL, Integer.valueOf(currentHoneyLevel + 1)));
+
+                                if(beeNestStructure != null ) beeNestStructure.makeRandomBlockMature();
+
                             }
                         }
+                        //Give bee appropriate data on release
+                        this.setBeeReleaseData(entityIn.ticksInHive, beeentity);
 
-                        this.setBeeReleaseData(p_235651_2_.ticksInHive, beeentity);
-
-                        if (p_235651_3_ != null)
+                        //Keep track of released bee
+                        if (entityListIn != null)
                         {
-                            p_235651_3_.add(beeentity);
+                            entityListIn.add(beeentity);
                         }
 
+                        //Set bee to be at front of hive and rotate it appropriately
                         float f = entity.getBbWidth();
-                        double d3 = flag ? 0.0D : 0.55D + (double)(f / 2.0F);
+                        double d3 = isEnteranceBlocked ? 0.0D : 0.55D + (double)(f / 2.0F);
                         double d0 = (double)blockpos.getX() + 0.5D + d3 * (double)direction.getStepX();
                         double d1 = (double)blockpos.getY() + 0.5D - (double)(entity.getBbHeight() / 2.0F);
                         double d2 = (double)blockpos.getZ() + 0.5D + d3 * (double)direction.getStepZ();
                         entity.moveTo(d0, d1, d2, entity.yRot, entity.xRot);
                     }
+                    else
+                    {
+                        return false;
+                    }
 
+                    //PlaySound
                     this.level.playSound((PlayerEntity)null, blockpos, SoundEvents.BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    //Create bee
                     return this.level.addFreshEntity(entity);
 
                 }
@@ -242,15 +265,13 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
         }
     }
 
-    private void setBeeReleaseData(int p_235650_1_, SculkBeeHarvesterEntity p_235650_2_) {
+    private void setBeeReleaseData(int p_235650_1_, SculkBeeHarvesterEntity p_235650_2_)
+    {
         p_235650_2_.resetTicksWithoutNectarSinceExitingHive();
     }
 
-    private boolean hasSavedFlowerPos() {
-        return this.savedFlowerPos != null;
-    }
-
-    private void tickOccupants() {
+    private void tickOccupants()
+    {
         Iterator<SculkBeeNestTile.Bee> iterator = this.stored.iterator();
 
         SculkBeeNestTile.Bee sculkbeenesttile$bee;
@@ -269,51 +290,85 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity 
 
     }
 
+    @Override
     public void tick()
     {
         if (!this.level.isClientSide)
         {
+
             this.tickOccupants();
+
+            //Make Random Noises if there are bees inside
             BlockPos blockpos = this.getBlockPos();
             if (this.stored.size() > 0 && this.level.getRandom().nextDouble() < 0.005D)
             {
-                double d0 = (double)blockpos.getX() + 0.5D;
-                double d1 = (double)blockpos.getY();
-                double d2 = (double)blockpos.getZ() + 0.5D;
-                this.level.playSound((PlayerEntity)null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                double d0 = blockpos.getX() + 0.5D;
+                double d1 = blockpos.getY();
+                double d2 = blockpos.getZ() + 0.5D;
+                this.level.playSound(null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            }
+
+            /** Check if full of honey**/
+            //If full of honey, reset to 0 and add sculk mass to gravemind
+            //TODO Fix lazy solution of -1. figure out why this never got triggered normally
+            if(getHoneyLevel(this.getBlockState()) >= MAX_HONEY_LEVEL - 1)
+            {
+                this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(SculkBeeNestBlock.HONEY_LEVEL, Integer.valueOf(0)));
+                SculkHoard.gravemind.entityFactory.addSculkAccumulatedMass(10);
+            }
+
+            /** Structure Building Process **/
+            tickTracker++;
+            if(tickTracker >= 20 * 10) //Tick every 10 seconds
+            {
+                tickTracker = 0;
+                long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+
+                //If the Bee Nest Structure hasnt been initialized yet, do it
+                if(beeNestStructure == null)
+                {
+                    //Create Structure
+                    beeNestStructure = new SculkBeeNestProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+                }
+
+                //If currently building, call build tick.
+                if(beeNestStructure.isCurrentlyBuilding())
+                {
+                    beeNestStructure.buildTick();
+                    lastTimeSinceRepair = System.nanoTime();
+                }
+                //If enough time has passed, or we havent built yet, start build
+                else if(timeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1)
+                {
+                    beeNestStructure.startBuildProcedure();
+                }
             }
         }
     }
 
-    public void load(BlockState p_230337_1_, CompoundNBT p_230337_2_) {
+    public void load(BlockState p_230337_1_, CompoundNBT p_230337_2_)
+    {
         super.load(p_230337_1_, p_230337_2_);
         this.stored.clear();
         ListNBT listnbt = p_230337_2_.getList("Bees", 10);
 
-        for(int i = 0; i < listnbt.size(); ++i) {
+        for(int i = 0; i < listnbt.size(); ++i)
+        {
             CompoundNBT compoundnbt = listnbt.getCompound(i);
             SculkBeeNestTile.Bee sculkbeenesttile$bee = new SculkBeeNestTile.Bee(compoundnbt.getCompound("EntityData"), compoundnbt.getInt("TicksInHive"), compoundnbt.getInt("MinOccupationTicks"));
             this.stored.add(sculkbeenesttile$bee);
         }
-
-        this.savedFlowerPos = null;
-        if (p_230337_2_.contains("FlowerPos")) {
-            this.savedFlowerPos = NBTUtil.readBlockPos(p_230337_2_.getCompound("FlowerPos"));
-        }
-
     }
 
-    public CompoundNBT save(CompoundNBT pCompound) {
+    public CompoundNBT save(CompoundNBT pCompound)
+    {
         super.save(pCompound);
         pCompound.put("Bees", this.writeBees());
-        if (this.hasSavedFlowerPos()) {
-            pCompound.put("FlowerPos", NBTUtil.writeBlockPos(this.savedFlowerPos));
-        }
-
         return pCompound;
     }
 
-    public ListNBT writeBees() {
+    public ListNBT writeBees()
+    {
         ListNBT listnbt = new ListNBT();
 
         for(SculkBeeNestTile.Bee sculkbeenesttile$bee : this.stored) {

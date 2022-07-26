@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "mature=0": { "model": "sculkhoard:block/sculk_bee_nest_cell" },
+    "mature=1": { "model": "sculkhoard:block/sculk_bee_nest_cell_mature1" },
+    "mature=2": { "model": "sculkhoard:block/sculk_bee_nest_cell_mature2" },
+    "mature=3": { "model": "sculkhoard:block/sculk_bee_nest_cell_mature3" }
+  }
+}

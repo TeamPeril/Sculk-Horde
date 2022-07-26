@@ -165,6 +165,10 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
+        else if(blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+        {
+            return false;
+        }
         return true;
     }
 

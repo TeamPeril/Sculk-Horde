@@ -124,7 +124,8 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
     }
 
     @Override
-    public void tick() {
+    public void tick()
+    {
         if(this.level != null && !this.level.isClientSide)
         {
             long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);

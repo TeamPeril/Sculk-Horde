@@ -1,13 +1,16 @@
 package com.github.sculkhoard.client;
 
+import com.github.sculkhoard.client.particle.SculkCrustParticle;
 import com.github.sculkhoard.client.renderer.entity.*;
 import com.github.sculkhoard.common.entity.projectile.CustomItemProjectileEntity;
-import com.github.sculkhoard.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
+import com.github.sculkhoard.core.ParticleRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -16,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -69,7 +73,20 @@ public class ClientModEventSubscriber {
 
         event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.translucent()));
 
+    }
 
+    /**
+     * Used to register custom particle renders.
+     * Currently handles the Gorgon particle
+     *
+     * @param event the particle factory registry event
+     **/
+    @SubscribeEvent
+    public static void registerFactories(final ParticleFactoryRegisterEvent event)
+    {
+        ParticleManager particles = Minecraft.getInstance().particleEngine;
 
+        particles.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new);
+        
     }
 }

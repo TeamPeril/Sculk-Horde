@@ -8,12 +8,12 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class SculkBeeInfectorModel extends AnimatedGeoModel<SculkBeeInfectorEntity> {
     @Override
     public ResourceLocation getModelLocation(SculkBeeInfectorEntity object) {
-        return new ResourceLocation(SculkHoard.MOD_ID, "geo/sculk_bee_temp.geo.json");
+        return new ResourceLocation(SculkHoard.MOD_ID, "geo/sculk_bee_infector.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureLocation(SculkBeeInfectorEntity object) {
-        return new ResourceLocation(SculkHoard.MOD_ID, "textures/entity/sculk_bee_temp.png");
+        return new ResourceLocation(SculkHoard.MOD_ID, "textures/entity/sculk_infector_bee.png");
     }
 
     @Override

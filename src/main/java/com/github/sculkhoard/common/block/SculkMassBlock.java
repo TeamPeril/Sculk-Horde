@@ -2,8 +2,8 @@ package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
 import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
-import com.github.sculkhoard.common.entity.entity_factory.EntityFactory;
-import com.github.sculkhoard.common.entity.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -27,8 +27,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -185,7 +183,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 {
                     SpreadingBlock spreadingBlock = BlockRegistry.SPREADING_BLOCK.get();
                     if(spreadingBlock.getTileEntity(world, placementPos.below()) != null && spreadingBlock.getTileEntity(world, placementPos.below()) instanceof SpreadingTile)
-                        spreadingBlock.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infestedChildBlockMaxSpreadAttempts);
+                        spreadingBlock.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infestedChildBlockMaxSpreadAttempts + totalMassAfterTax);
                 }
             }
         }
