@@ -41,7 +41,6 @@ public class ModEventSubscriber {
         SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_LOG_ACTIVE.get());
 
         SculkHoard.gravemind.confirmedThreats = new ArrayList<String>();
-        //SculkHoard.gravemind.sculkNodePositions = new ArrayList<BlockPos>();
 
         SculkHoard.randomSculkFlora = new PoolBlocks();
 

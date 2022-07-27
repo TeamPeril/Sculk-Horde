@@ -193,34 +193,6 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         return true;
     }
 
-    /**
-     * Just returns the tile entity
-     * @param world The world to check
-     * @param thisBlockPos The position to check
-     * @return The tile entity
-     */
-    public SculkBrainTile getTileEntity(World world, BlockPos thisBlockPos)
-    {
-        //Get tile entity for this block
-        TileEntity tileEntity = world.getBlockEntity(thisBlockPos);
-        SculkBrainTile thisTile = null;
-        if(thisTile == null)
-        {
-            if(!(thisTile instanceof SculkBrainTile))
-            {
-                thisTile = (SculkBrainTile) world.getBlockEntity(thisBlockPos);
-            }
-            else
-            {
-                System.out.println("Error: Tile of wrong instance.");
-            }
-        }
-        else
-        {
-            System.out.println("Error: Tile is null.");
-        }
-        return thisTile;
-    }
 
     @Override
     public void onPlace(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving){

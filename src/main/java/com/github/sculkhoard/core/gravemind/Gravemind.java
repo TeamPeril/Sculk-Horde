@@ -51,9 +51,12 @@ public class Gravemind
     public static ArrayList<String> confirmedThreats;
 
     /** Regular Variables **/
+
+    private final ServerWorld world;
+
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
-    private static int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
+    private static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
 
     //This is how much mass is needed to go from undeveloped to immature
     private final int MASS_GOAL_FOR_IMMATURE = 500;
@@ -74,8 +77,9 @@ public class Gravemind
      * Called in ForgeEventSubscriber.java in world load event. <br>
      * WARNING: DO NOT CALL THIS FUNCTION UNLESS THE WORLD IS LOADED
      */
-    public Gravemind ()
+    public Gravemind (ServerWorld worldIn)
     {
+        world = worldIn;
         evolution_state = evolution_states.Undeveloped;
         attack_state = attack_states.Defensive;
         entityFactory = SculkHoard.entityFactory;
@@ -227,11 +231,12 @@ public class Gravemind
 
     public class GravemindMemory
     {
+        public ServerWorld world;
 
         //We do not want to put them too close to each other.
         public ArrayList<NodeEntry> nodeEntries;
 
-        public ArrayList<BlockPos> beeHivePositions;
+        public ArrayList<BeeNestEntry> beeNestEntries;
 
         public ArrayList<BlockPos> spawnerPositions;
 
@@ -241,6 +246,7 @@ public class Gravemind
         public GravemindMemory()
         {
             nodeEntries = new ArrayList<>();
+            beeNestEntries = new ArrayList<>();
         }
 
         /** Accessors **/
@@ -257,7 +263,7 @@ public class Gravemind
         /**
          * Will check the positons of all entries to see
          * if they match the parameter.
-         * @param pos The position to cross reference
+         * @param position The position to cross reference
          * @return true if in memory, false otherwise
          */
         public boolean isNodePositionInMemory(BlockPos position)
@@ -282,17 +288,29 @@ public class Gravemind
         {
             if(!isNodePositionInMemory(position) && nodeEntries != null)
             {
-                nodeEntries.add(new NodeEntry(position));
+                nodeEntries.add(new NodeEntry(this, position));
             }
         }
 
+        /**
+         * Adds a position to the list if it does not already exist
+         * @param position
+         */
+        public void addBeeNestToMemory(BlockPos position)
+        {
+            if(!isNodePositionInMemory(position) && beeNestEntries != null)
+            {
+                beeNestEntries.add(new BeeNestEntry(this, position));
+            }
+        }
+
+
         /** ######## Events ######### **/
-
-
 
         /**
          * Will verify all enties to see if they exist in the world.
-         * If not, they will be removed.
+         * If not, they will be removed. <br>
+         * Gets called in {@link com.github.sculkhoard.util.ForgeEventSubscriber#WorldTickEvent}
          * @param worldIn The World
          */
         public void validateNodeEntries(ServerWorld worldIn)
@@ -307,15 +325,49 @@ public class Gravemind
                 }
             }
         }
+
+
+        /**
+         * Will verify all enties to see if they exist in the world.
+         * Will also reasses the parentNode for each one.
+         * If not, they will be removed. <br>
+         * Gets called in {@link com.github.sculkhoard.util.ForgeEventSubscriber#WorldTickEvent}
+         * @param worldIn The World
+         */
+        public void validateBeeNestEntries(ServerWorld worldIn)
+        {
+            for(int index = 0; index < beeNestEntries.size(); index++)
+            {
+                beeNestEntries.get(index).setParentNode();
+                //TODO: Figure out if not being in the overworld can mess this up
+                if(!beeNestEntries.get(index).isEntryValid(worldIn))
+                {
+                    beeNestEntries.remove(index);
+                    index--;
+                }
+            }
+        }
     }
 
+    /**
+     * This class is a representation of the actual
+     * Sculk Nodes in the world that the horde has access
+     * to. It allows the gravemind to keep track of all.
+     */
     private class NodeEntry
     {
-        public BlockPos position;
-        public long lastTimeWasActive;
+        public GravemindMemory memory; //The Gravemind Memory
+        public BlockPos position; //The Location in the world where the node is
+        public long lastTimeWasActive; //The Last Time A node was active and working
 
-        public NodeEntry(BlockPos positionIn)
+        /**
+         * Default Constructor
+         * @param memoryIn The Gravemind Memory
+         * @param positionIn The physical location
+         */
+        public NodeEntry(GravemindMemory memoryIn, BlockPos positionIn)
         {
+            memory = memoryIn;
             position = positionIn;
             lastTimeWasActive = System.nanoTime();
         }
@@ -329,5 +381,65 @@ public class Gravemind
             return false;
         }
 
+    }
+
+    /**
+     * This class is a representation of the actual
+     * Bee Nests in the world that the horde has access
+     * to. It allows the gravemind to keep track of all.
+     */
+    private class BeeNestEntry
+    {
+        public GravemindMemory memory; //The Gravemind Memory
+        public BlockPos position; //The location in the world where the node is
+        public BlockPos parentNodePosition; //The location of the Sculk Node that this Nest belongs to
+
+        /**
+         * Default Constructor
+         * @param memoryIn The Gravemind Memory
+         * @param positionIn The Position of this Nest
+         */
+        public BeeNestEntry(GravemindMemory memoryIn, BlockPos positionIn)
+        {
+            memory = memoryIn;
+            position = positionIn;
+        }
+
+        /**
+         * Checks if the block does still exist in the world.
+         * @param worldIn The world to check
+         * @return True if valid, false otherwise.
+         */
+        public boolean isEntryValid(ServerWorld worldIn)
+        {
+            if(worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Checks list of node entries and finds the closest one.
+         * It then sets the parentNodePosition to be the position of
+         * the closest node.
+         */
+        public void setParentNode()
+        {
+            //Make sure nodeEntries isnt null and nodeEntries isnt empty
+            if(memory.nodeEntries != null && !memory.nodeEntries.isEmpty())
+            {
+                NodeEntry closestEntry = memory.nodeEntries.get(0);
+                for(NodeEntry entry : memory.nodeEntries)
+                {
+                    //If entry is closer than our current closest entry
+                    if(BlockAlgorithms.getBlockDistance(position, entry.position) < BlockAlgorithms.getBlockDistance(position, closestEntry.position))
+                    {
+                        closestEntry = entry;
+                    }
+                }
+                parentNodePosition = closestEntry.position;
+            }
+        }
     }
 }

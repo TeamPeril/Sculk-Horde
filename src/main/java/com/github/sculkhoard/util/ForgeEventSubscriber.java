@@ -33,9 +33,10 @@ public class ForgeEventSubscriber {
     public static void onWorldLoad(WorldEvent.Load event)
     {
         //Initalize Gravemind
-        gravemind = new Gravemind();
-        if(DEBUG_MODE && SculkHoard.gravemind != null) System.out.println("Gravemind Loaded");
-        else if(DEBUG_MODE && SculkHoard.gravemind == null) System.out.println("Gravemind is NULL");
+        if(!event.getWorld().isClientSide())
+        {
+            gravemind = new Gravemind((ServerWorld) event.getWorld());
+        }
     }
 
     /**
@@ -45,23 +46,32 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void WorldTickEvent(TickEvent.WorldTickEvent event)
     {
-        int ticks_per_second = 20; //Unit is ticks
-        int seconds_between_intervals = 60 * 5; //Unit is Seconds
-
-        SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
-        SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
-
-        //Every 'seconds_between_intervals' amount of seconds, check the gravemind state.
-        if(event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
+        if(!event.world.isClientSide())
         {
-            time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
-            gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
-            if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + gravemind.getEvolutionState().toString());
+            int ticks_per_second = 20; //Unit is ticks
+            int seconds_between_intervals = 60 /** 5*/; //Unit is Seconds
 
+            SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
+            SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
 
-            if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Interval: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
-            sculkMassCheck = entityFactory.getSculkAccumulatedMass();
+            //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
+            if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second) {
+                time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
+
+                //Calculate Current State
+                gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
+                if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + gravemind.getEvolutionState().toString());
+
+                //Check How much Mass Was Generated over this period
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Interval: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
+                sculkMassCheck = entityFactory.getSculkAccumulatedMass();
+
+                //Verification
+                gravemind.gravemindMemory.validateNodeEntries((ServerWorld) event.world);
+                gravemind.gravemindMemory.validateBeeNestEntries((ServerWorld) event.world);
+            }
         }
+
     }
 
     @SubscribeEvent

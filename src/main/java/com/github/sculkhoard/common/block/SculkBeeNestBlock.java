@@ -1,27 +1,21 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
-import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
-import com.github.sculkhoard.core.TileEntityRegistry;
-import net.minecraft.block.*;
+import com.github.sculkhoard.core.SculkHoard;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BeehiveBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.tileentity.BeehiveTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class SculkBeeNestBlock extends BeehiveBlock {
 
@@ -100,29 +94,10 @@ public class SculkBeeNestBlock extends BeehiveBlock {
                 .noDrops();
     }
 
-
-    /**
-     * Just returns the tile entity
-     * @param world The world to check
-     * @param thisBlockPos The position to check
-     * @return The tile entity
-     */
-    @Nullable
-    public SculkBeeNestTile getTileEntity(World world, BlockPos thisBlockPos)
-    {
-        //Get tile entity for this block
-        if(world.getBlockState(thisBlockPos).getBlock() instanceof SpreadingBlock)
-        {
-            SculkBeeNestTile thisTile = (SculkBeeNestTile) world.getBlockEntity(thisBlockPos);
-
-            //If tile entity not yet exist, create it
-            if(thisTile == null || !(thisTile instanceof SculkBeeNestTile))
-            {
-                thisTile = (SculkBeeNestTile) createTileEntity(world.getBlockState(thisBlockPos), world);
-            }
-            return thisTile;
-        }
-        return null;
+    @Override
+    public void onPlace(BlockState pState, World pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
+        super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
+        SculkHoard.gravemind.gravemindMemory.addBeeNestToMemory(pPos);
     }
 
     @Nullable
