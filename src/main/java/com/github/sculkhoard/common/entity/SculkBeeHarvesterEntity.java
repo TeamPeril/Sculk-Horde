@@ -379,7 +379,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     protected boolean wantsToEnterHive() {
         if (this.stayOutOfHiveCountdown <= 0 && !this.beePollinateGoal.isPollinating() && !this.hasStung() && this.getTarget() == null) {
-            boolean flag = this.isTiredOfLookingForNectar() || this.level.isRaining() || this.level.isNight() || this.hasNectar();
+            boolean flag = this.isTiredOfLookingForNectar() || this.hasNectar();
             return flag && !this.isHiveNearFire();
         } else {
             return false;
@@ -834,11 +834,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             {
                 return false;
             }
-            //if its raining, return false
-            else if (SculkBeeHarvesterEntity.this.level.isRaining())
-            {
-                return false;
-            }
             //There is a random chance to return false
             else if (SculkBeeHarvesterEntity.this.random.nextFloat() < 0.7F)
             {
@@ -881,11 +876,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             }
             //If no flower position stored in memory, return false
             else if (!SculkBeeHarvesterEntity.this.hasSavedFlowerPos())
-            {
-                return false;
-            }
-            //If its raining, return false
-            else if (SculkBeeHarvesterEntity.this.level.isRaining())
             {
                 return false;
             }

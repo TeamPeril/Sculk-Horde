@@ -275,6 +275,25 @@ public class Gravemind
             return nodeEntries;
         }
 
+
+        /**
+         * Will check the positons of all entries to see
+         * if they match the parameter.
+         * @param position The position to cross reference
+         * @return true if in memory, false otherwise
+         */
+        public boolean isBeeNestPositionInMemory(BlockPos position)
+        {
+            for(BeeNestEntry entry : beeNestEntries)
+            {
+                if(entry.position == position)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /**
          * Will check the positons of all entries to see
          * if they match the parameter.
@@ -313,7 +332,7 @@ public class Gravemind
          */
         public void addBeeNestToMemory(BlockPos position)
         {
-            if(!isNodePositionInMemory(position) && beeNestEntries != null)
+            if(!isBeeNestPositionInMemory(position) && beeNestEntries != null)
             {
                 beeNestEntries.add(new BeeNestEntry(this, position));
             }
