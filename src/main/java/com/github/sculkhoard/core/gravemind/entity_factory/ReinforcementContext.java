@@ -1,5 +1,7 @@
 package com.github.sculkhoard.core.gravemind.entity_factory;
 
+import net.minecraft.util.math.BlockPos;
+
 import java.util.ArrayList;
 
 public class ReinforcementContext {
@@ -16,9 +18,7 @@ public class ReinforcementContext {
     public int remaining_balance = -1;
     public boolean is_aggressor_nearby;
     public boolean is_non_sculk_mob_nearby;
-    public double locationX;
-    public double locationY;
-    public double locationZ;
+    public BlockPos position;
 
     /**
      * senderType list all possible senders of a reinforcement request. <br>
@@ -41,14 +41,12 @@ public class ReinforcementContext {
      * @param x The x position of where we want the reinforcement
      * @param y The y position of where we want the reinforcement
      */
-    public ReinforcementContext(double x, double y, double z)
+    public ReinforcementContext(BlockPos blockPosIn)
     {
         is_aggressor_nearby = false;
         is_non_sculk_mob_nearby = false;
         sender = null;
-        locationX = x;
-        locationY = y;
-        locationZ = z;
+        position = blockPosIn;
         approvedMobTypes = new ArrayList<EntityFactory.StrategicValues>();
     }
 
@@ -57,8 +55,7 @@ public class ReinforcementContext {
         if(budget != context.budget
         || is_aggressor_nearby != context.is_aggressor_nearby
         || is_non_sculk_mob_nearby != context.is_non_sculk_mob_nearby
-        || locationX != context.locationX
-        || locationY != context.locationY
+        || position != context.position
         || sender != context.sender
         || isRequestViewed != context.isRequestViewed
         || isRequestApproved != context.isRequestApproved
@@ -75,8 +72,7 @@ public class ReinforcementContext {
                 ", remaining_balance=" + remaining_balance +
                 ", is_aggressor_nearby=" + is_aggressor_nearby +
                 ", is_non_sculk_mob_nearby=" + is_non_sculk_mob_nearby +
-                ", locationX=" + locationX +
-                ", locationY=" + locationY +
+                ", position=" + position.toString() +
                 ", sender=" + sender +
                 ", isRequestViewed=" + isRequestViewed +
                 ", isRequestApproved=" + isRequestApproved +

@@ -1,6 +1,6 @@
 package com.github.sculkhoard.util;
 
-import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
+import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhoard.common.entity.*;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhoard.core.gravemind.Gravemind;
@@ -9,15 +9,12 @@ import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-
-import java.util.ArrayList;
 
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.PlacementType;
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.register;
@@ -35,18 +32,16 @@ public class ModEventSubscriber {
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR, 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_MITE, (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
 
-        SculkHoard.infestationConversionTable = new InfestationConversionTable();
+        SculkHoard.infestationConversionTable = new InfestationConversionHandler();
         SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFECTED_DIRT.get());
         SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_STONE_ACTIVE.get());
         SculkHoard.infestationConversionTable.addEntry(BlockRegistry.INFESTED_LOG_ACTIVE.get());
 
-        SculkHoard.gravemind.confirmedThreats = new ArrayList<String>();
-
         SculkHoard.randomSculkFlora = new PoolBlocks();
 
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 2);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), 2);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 3);
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.COCOON_ROOT.get(), 5);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 3);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 100);
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 100);

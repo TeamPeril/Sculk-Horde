@@ -57,12 +57,25 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
 
     public boolean canUse()
     {
-        this.ticksSinceIdle++;
-
-        //If mob is idle for too long, destroy it
-        if(despawnWhenIdle && ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
+        /**
+         * I shouldn't have to do this, but im doing this here.
+         * I cannot figure out how vanilla handles this.
+         * This targeting system is put together with tape and glue.
+         */
+        if(this.target != null && this.target.isDeadOrDying())
         {
-            this.mob.remove();
+            this.target = null;
+        }
+
+        //Despawn the mob if it has no target for too long
+        if(despawnWhenIdle)
+        {
+            this.ticksSinceIdle++;
+            //If mob is idle for too long, destroy it
+            if(despawnWhenIdle && ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
+            {
+                this.mob.remove();
+            }
         }
 
 

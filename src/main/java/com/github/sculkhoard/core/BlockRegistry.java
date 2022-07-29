@@ -132,4 +132,7 @@ public class BlockRegistry {
 
 	public static final RegistryObject<SculkBeeNestCellBlock> SCULK_BEE_NEST_CELL_BLOCK =
 			registerBlock("sculk_bee_nest_cell", () -> new SculkBeeNestCellBlock());
+
+	public static final RegistryObject<SculkSummonerBlock> SCULK_SUMMONER_BLOCK =
+			registerBlock("sculk_summoner", () -> new SculkSummonerBlock());
 }

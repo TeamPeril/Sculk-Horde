@@ -26,5 +26,11 @@ public class InfestedLogTile extends SpreadingTile implements IForgeTileEntity {
         this(TileEntityRegistry.INFESTED_LOG_TILE.get());
     }
 
+    @Override
+    protected boolean doesSpreadRandomly()
+    {
+        return false;
+    }
+
 
 }

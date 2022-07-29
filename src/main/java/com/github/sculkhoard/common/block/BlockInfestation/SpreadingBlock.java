@@ -115,14 +115,6 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                 .sound(SoundType.GRASS);
     }
 
-    /**
-     * Returns an integer representing how many times this block can initially spread.
-     * @return An int
-     */
-    public static int getDefaultMaxSpreadAttempts()
-    {
-        return DEFAULT_MAX_SPREAD_ATTEMPTS;
-    }
 
     /**
      * Just returns the tile entity
@@ -171,15 +163,6 @@ public class SpreadingBlock extends Block implements IForgeBlock {
 
     /** Other**/
 
-    /**
-     * This changes the behavior of how this block spreads. If true, will choose random blocks to spread to.
-     * If false, will attempt to spread to all nearby blocks.
-     * @return
-     */
-    protected boolean doesSpreadRandomly()
-    {
-        return true;
-    }
 
     /**
      * This is the description the item of the block will display when hovered over.
@@ -210,123 +193,6 @@ public class SpreadingBlock extends Block implements IForgeBlock {
                 || blockState.getBlock() == Blocks.GRASS_PATH
                 || blockState.getBlock() == Blocks.COARSE_DIRT
                 || blockState.getBlock() == Blocks.FARMLAND;
-    }
-
-    /**
-     * Attempt to spread to a specific block position.
-     * @param thisTile The Tile Entity of this block
-     * @param serverWorld The ServerWorld of this block
-     * @param targetPos The Block Position of the target block
-     */
-    private void attemptToSpreadHere(SpreadingTile thisTile, ServerWorld serverWorld, BlockPos targetPos)
-    {
-        //Make sure nothing is null
-        if(thisTile == null)
-        {
-            System.out.println("Error: thisTile not found.");
-            return;
-        }
-
-        if(DEBUG_THIS) System.out.println("Adding one to getSpreadAttempts of current value: " + thisTile.getSpreadAttempts());
-        thisTile.setSpreadAttempts(thisTile.getSpreadAttempts() + 1); //Add 1 to spread attempts
-
-        //Create new block and if successful,
-        if(SculkHoard.infestationConversionTable.convertToActiveSpreader(serverWorld, targetPos))
-        {
-            SpreadingTile childTile = (SpreadingTile) serverWorld.getWorldServer().getBlockEntity(targetPos); //Get new block tile entity
-            //Exit immediately if error
-            if((childTile == null || !(childTile instanceof SpreadingTile)))
-            {
-                System.out.println("Error: childTile not found.");
-                return;
-            }
-            if(DEBUG_THIS) System.out.println("thisTile maxSpreadAttempts: " + thisTile.getMaxSpreadAttempts() + " before change.");
-            if(DEBUG_THIS) System.out.println("childTile maxSpreadAttempts: " + childTile.getMaxSpreadAttempts() + " before change.");
-            childTile.setMaxSpreadAttempts(thisTile.getMaxSpreadAttempts() - 1);
-            if(DEBUG_THIS) System.out.println("childTile maxSpreadAttempts: " + childTile.getMaxSpreadAttempts() + " after change.");
-        }
-    }
-
-    /**
-     * Will attempt to spread to nearby neighbors.
-     * @param serverWorld The world
-     * @param targetPos The current block position
-     */
-    public void spreadRoutine(ServerWorld serverWorld, BlockPos targetPos, boolean chooseSpreadPosRandomly) {
-
-        //Get tile entity for this block
-        SpreadingTile thisTile = getTileEntity(serverWorld, targetPos);
-
-
-        //When true, this active block gets converted into dormant
-        boolean isSpreadingComplete = false;
-
-        //Just exit if thisTile is incorrect
-        if(thisTile == null || !(thisTile instanceof SpreadingTile))
-        {
-            if(DEBUG_THIS) System.out.println("Error: thisTile is null or of wrong instance type.");
-            return;
-        }
-
-        //If this block has not attempted to spread before
-        if(thisTile.getMaxSpreadAttempts() == -1)
-        {
-            thisTile.setMaxSpreadAttempts(getDefaultMaxSpreadAttempts());//Set to default
-        }
-
-        //If spreading randomly and if there is sculk mass
-        if(chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
-        {
-            //If we have spreading attempts left
-            if(thisTile.getSpreadAttempts() < thisTile.getMaxSpreadAttempts())
-            {
-                //Attempt to spread Randomly
-                for(int spreadAttempts = 0; spreadAttempts < thisTile.getMaxSpreadAttempts(); spreadAttempts ++)
-                {
-                    //If max spread attempts has not been reached, spread
-                    if (thisTile.getSpreadAttempts() < thisTile.getMaxSpreadAttempts())
-                    {
-                        attemptToSpreadHere(thisTile, serverWorld, BlockAlgorithms.getRandomNeighbor(serverWorld, targetPos)); //Attempt to spread to this position
-                    }
-                }
-            }
-            //If no attempts left
-            else { isSpreadingComplete = true; }
-        }
-        //If we are checking every vailid position instead of random ones
-        else if(!chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
-        {
-            //Get all neighbors and check if we can spread to all possible positions
-            ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(targetPos);
-            for(int i = 0; i < allNeighbors.size(); i++)
-            {
-                attemptToSpreadHere(thisTile, serverWorld, allNeighbors.get(i)); //Attempt to spread to this position
-            }
-            isSpreadingComplete = true;
-        }
-
-        //Once done spreading, convert to dormant variant
-        if(isSpreadingComplete || SculkHoard.entityFactory.getSculkAccumulatedMass() <= 0)
-        {
-            SculkHoard.infestationConversionTable.convertToDormant(serverWorld, targetPos);
-        }
-
-    }
-
-    @Override
-    public void randomTick(BlockState pState, ServerWorld pLevel, BlockPos pPos, Random pRandom) {
-        spreadRoutine(pLevel, pPos, doesSpreadRandomly());
-        super.randomTick(pState, pLevel, pPos, pRandom);
-    }
-
-    /**
-     * Determines if this block will randomly tick or not.
-     * @param blockState The current blockstate
-     * @return True/False
-     */
-    @Override
-    public boolean isRandomlyTicking(BlockState blockState) {
-        return false;
     }
 
     /**

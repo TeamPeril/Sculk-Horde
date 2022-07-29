@@ -2,6 +2,7 @@ package com.github.sculkhoard.common.entity;
 
 import com.github.sculkhoard.core.EffectRegistry;
 import com.github.sculkhoard.core.SculkHoard;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import net.minecraft.entity.IAngerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+import static com.github.sculkhoard.core.SculkHoard.gravemind;
 
 public class EntityAlgorithms {
     /**
@@ -73,51 +75,62 @@ public class EntityAlgorithms {
 
     /**
      * Determines if an Entity is friendy.
-     * @param e The Given Entity
+     * @param entity The Given Entity
      * @return True if friendly, False otherwise
      */
-    public static boolean isLivingEntityFriendly(LivingEntity e)
+    public static boolean isLivingEntityFriendly(LivingEntity entity)
     {
-        boolean isFriendly = false;
-        if(isLivingEntityInfected(e) || e instanceof SculkLivingEntity)
-            isFriendly = true;
-        //If Player is in creative or in spectator, consider them friendly
-        else if(e instanceof PlayerEntity)
+        //If the entity is infected, don't attack it
+        if(EntityAlgorithms.isLivingEntityInfected(entity) || entity instanceof SculkLivingEntity)
         {
-            ServerPlayerEntity player = (ServerPlayerEntity) e;
+            return true;
+        }
+        //If Player is in creative or in spectator, consider them friendly
+        else if(entity instanceof PlayerEntity)
+        {
+            ServerPlayerEntity player = (ServerPlayerEntity) entity;
             if(player.isCreative() || player.isSpectator())
-            isFriendly = true;
+            {
+                return true;
+            }
         }
 
-        return isFriendly;
+        //If the entity is not infected and it isnt a player in creative or spectator, then just assume not friendly
+        return false;
     }
 
 
     /**
      * Determines if an Entity is an aggressor.
-     * @param e The Given Entity
+     * @param entity The Given Entity
      * @return True if enemy, False otherwise
      */
-    public static boolean isLivingEntityHostile(LivingEntity e)
+    public static boolean isLivingEntityHostile(LivingEntity entity)
     {
-        String entity = e.getClass().toString();
-        return SculkHoard.gravemind.confirmedThreats.contains(entity);
+        Gravemind.EntityDesignation designation = gravemind.gravemindMemory.knownEntityDesignations.get(entity.getClass().toString());
+        if(designation != null)
+        {
+            return designation == Gravemind.EntityDesignation.HOSTILE;
+        }
+        return false;
+
     }
 
     /**
      * Adds a hostile if it hasnt been added
      */
-    public static void addHostile(LivingEntity e)
+    public static void addHostile(LivingEntity entity)
     {
-        if(e == null || e instanceof SculkLivingEntity)
-            return;
-
-        String entityString = e.getClass().toString();
-
-        if(!SculkHoard.gravemind.confirmedThreats.contains(entityString) && entityString != null && !entityString.isEmpty() && !(e instanceof CreeperEntity))
+        if(entity == null || entity instanceof SculkLivingEntity || entity instanceof CreeperEntity)
         {
-            SculkHoard.gravemind.confirmedThreats.add(entityString);
-            if(DEBUG_MODE) System.out.println("Sculk Hoard now recognises " + entityString + " as a hostile");
+            return;
+        }
+
+        String entityString = entity.getClass().toString();
+        if(entityString != null && !entityString.isEmpty())
+        {
+            Gravemind.EntityDesignation designation = gravemind.gravemindMemory.knownEntityDesignations.get(entityString);
+            gravemind.gravemindMemory.knownEntityDesignations.putIfAbsent(entityString, Gravemind.EntityDesignation.HOSTILE);
         }
 
     }

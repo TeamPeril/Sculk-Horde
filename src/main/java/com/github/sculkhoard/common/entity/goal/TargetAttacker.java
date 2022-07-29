@@ -90,8 +90,7 @@ public class TargetAttacker extends TargetGoal {
         this.unseenMemoryTicks = 60;
 
         /**If a mob isnt already a confirmed hostile, make it one.*/
-        if(!SculkHoard.gravemind.confirmedThreats.contains(this.mob.getLastHurtByMob())
-                && !(this.mob.getLastHurtByMob() instanceof SculkLivingEntity)
+        if(!(this.mob.getLastHurtByMob() instanceof SculkLivingEntity)
                 && this.mob.getLastHurtByMob() != null)
         {
             EntityAlgorithms.addHostile(mob.getLastHurtByMob());

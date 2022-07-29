@@ -143,10 +143,10 @@ public class EntityFactory {
     /**
      * Will spawn a reinforcement based on the budget given. Prioritizes spawning the highest costing reinforcement.
      * @param world The world to spawn it in.
-     * @param pos The Position
+     * @param spawnPosition The Position
      * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
      */
-    public void requestReinforcementAny(World world, BlockPos pos, boolean noCost, ReinforcementContext context)
+    public void requestReinforcementAny(World world, BlockPos spawnPosition, boolean noCost, ReinforcementContext context)
     {
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
@@ -170,7 +170,7 @@ public class EntityFactory {
                     }
                     int randomEntryIndex = rng.nextInt(lottery.size());
                     EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
-                    randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+                    randomEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
 
                     if (!noCost) subtractSculkAccumulatedMass(randomEntry.getCost());
 
@@ -191,7 +191,7 @@ public class EntityFactory {
                     //Get random entry
                     EntityFactoryEntry randomApprovedEntry = approvedEntries.get(randomEntryIndex);
                     //Spawn random entry
-                    randomApprovedEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+                    randomApprovedEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
                     //If cost enabled, subtract cost
                     if (!noCost) subtractSculkAccumulatedMass(randomApprovedEntry.getCost());
                 }

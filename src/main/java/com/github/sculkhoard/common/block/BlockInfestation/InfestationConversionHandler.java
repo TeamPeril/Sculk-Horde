@@ -13,27 +13,31 @@ import net.minecraft.world.server.ServerWorld;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-public class InfestationConversionTable {
-
-    private static boolean DEBUG_THIS = false;
+public class InfestationConversionHandler
+{
     private ArrayList<SpreadingBlock> entries;
 
     /**
-     * This is a queue used to convert blocks in a manner that prevents lag.
-     * The world ticks will handle this operation.
+     * This is a queue used to convert blocks in a manner that prevents lag for nodes.
+     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
      */
-    public ArrayList<BlockPos> convertToVictimQueue;
-    public ArrayList<BlockPos> convertToInfectedQueue;
-    public final int conversionAmountPerInterval = 10;
+    public ArrayList<BlockPos> convertToVictimNodeQueue;
+    public ArrayList<BlockPos> convertToInfectedNodeQueue;
+    public final int conversionAmountPerInterval = 1;
+
+    public ArrayList<ConversionRequest> conversionQueue;
+
+
 
     /**
      * Default Constructor
      */
-    public InfestationConversionTable()
+    public InfestationConversionHandler()
     {
-        entries = new ArrayList<SpreadingBlock>();
-        convertToVictimQueue = new ArrayList<BlockPos>();
-        convertToInfectedQueue = new ArrayList<BlockPos>();
+        entries = new ArrayList<>();
+        convertToVictimNodeQueue = new ArrayList<>();
+        convertToInfectedNodeQueue = new ArrayList<>();
+        conversionQueue = new ArrayList<>();
     }
 
     /**Accessor Methods**/
@@ -56,27 +60,13 @@ public class InfestationConversionTable {
     @Nullable
     private Block getActiveSpreadingVariant(BlockState victimBlock)
     {
-        if(DEBUG_THIS)
-        {
-            System.out.println("All entries: ");
-            for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
-            {
-                System.out.println(entry.toString());
-            }
-        }
-
         //Loop through each entry until we find the appropriate one
         for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
         {
-            //System.out.println(entry.toString());
             //If the victim blocks is the same block as the entry
             if(entry.isValidVictim(victimBlock))
             {
                 return entry;
-            }
-            else if (DEBUG_THIS)
-            {
-                //System.out.println(victimBlock + " != " + entry.getVictimBlock());
             }
         }
         return null;
@@ -145,13 +135,13 @@ public class InfestationConversionTable {
      * @param blockStateIn The block to check
      * @return True if the block can be a victim, false otherwise.
      */
+    //TODO this can probably be optimized with a dictionary
     @Nullable
     public boolean isConsideredVictim(BlockState blockStateIn)
     {
         //Loop through each entry until we find the appropriate one
         for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
         {
-            //System.out.println(entry.toString());
             //If the victim blocks is the same block as the entry
             if(entry.isValidVictim(blockStateIn))
             {
@@ -168,6 +158,7 @@ public class InfestationConversionTable {
      * @param blockStateIn The block to check
      * @return True if the block can be a victim, false otherwise.
      */
+    //TODO this can probably be optimized with a dictionary
     @Nullable
     public boolean isConsideredActiveSpreader(BlockState blockStateIn)
     {
@@ -191,13 +182,13 @@ public class InfestationConversionTable {
      * @param blockStateIn The block to check
      * @return True if the block can be a victim, false otherwise.
      */
+    //TODO this can probably be optimized with a dictionary
     @Nullable
     public boolean isConsideredDormantSpreader(BlockState blockStateIn)
     {
         //Loop through each entry until we find the appropriate one
         for(SpreadingBlock entry : SculkHoard.infestationConversionTable.getEntries())
         {
-            //System.out.println(entry.toString());
             //If the victim blocks is the same block as the entry
             if(blockStateIn.is(entry.getDormantVariant().getBlock()))
             {
@@ -227,7 +218,6 @@ public class InfestationConversionTable {
         }
         else
         {
-            if(DEBUG_THIS) System.out.println("Could not find active spreader for " + targetBlock);
             return false;
         }
     }
@@ -264,7 +254,6 @@ public class InfestationConversionTable {
         }
         else
         {
-            if(DEBUG_THIS) System.out.println("Could not find dormant for " + targetBlock);
             return false;
         }
     }
@@ -278,11 +267,51 @@ public class InfestationConversionTable {
     {
         if(!world.isClientSide())
         {
-            for(int i = 0; i < conversionAmountPerInterval && i < convertToVictimQueue.size(); i++)
+            for(int i = 0; i < conversionAmountPerInterval && i < convertToVictimNodeQueue.size(); i++)
             {
-                BlockAlgorithms.replaceSculkFlora(world, convertToVictimQueue.get(i)); //Remove any flora
-                convertToVictim(world, convertToVictimQueue.get(i)); //convert
-                convertToVictimQueue.remove(i);
+                BlockAlgorithms.replaceSculkFlora(world, convertToVictimNodeQueue.get(i)); //Remove any flora
+                convertToVictim(world, convertToVictimNodeQueue.get(i)); //convert
+                convertToVictimNodeQueue.remove(i);
+                i--;
+            }
+        }
+    }
+
+
+    /**
+     * Only process a specific amount every time this is called. <br>
+     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent} <br>
+     * NOTE: POTENTIAL ISSUE : since conversions are delayed, if the block changes, there can be unintended behavior
+     * @param world The world
+     */
+    public void processConversionQueue(ServerWorld world)
+    {
+        if(!world.isClientSide())
+        {
+            for(int i = 0; i < conversionAmountPerInterval && i < conversionQueue.size(); i++)
+            {
+                if(conversionQueue.get(i).convertToActiveSpreader)
+                {
+                    convertToActiveSpreader(world, conversionQueue.get(i).position); //convert
+                    if(isConsideredActiveSpreader(world.getBlockState(conversionQueue.get(i).position)))
+                    {
+                        SpreadingTile childTile = (SpreadingTile) world.getWorldServer().getBlockEntity(conversionQueue.get(i).position); //Get new block tile entity
+
+                        if(childTile != null)
+                        {
+                            childTile.setMaxSpreadAttempts(conversionQueue.get(i).getAttemptsToAssignChild());
+                        }
+                    }
+                }
+                else if(conversionQueue.get(i).convertToDormantSpreader)
+                {
+                    convertToDormant(world, conversionQueue.get(i).position); //convert
+                }
+                else
+                {
+                    convertToVictim(world, conversionQueue.get(i).position); //convert
+                }
+                conversionQueue.remove(i);
                 i--;
             }
         }
@@ -298,13 +327,25 @@ public class InfestationConversionTable {
     {
         if(!world.isClientSide())
         {
-            for(int i = 0; i < conversionAmountPerInterval && i < convertToInfectedQueue.size(); i++)
+            for(int i = 0; i < conversionAmountPerInterval && i < convertToInfectedNodeQueue.size(); i++)
             {
-                convertToActiveSpreader(world, convertToInfectedQueue.get(i)); //convert
-                convertToInfectedQueue.remove(i);
+                convertToActiveSpreader(world, convertToInfectedNodeQueue.get(i)); //convert
+                convertToInfectedNodeQueue.remove(i);
                 i--;
             }
         }
+    }
+
+
+    //TODO make this better so that you dont have to specify 3 booleans
+    public void addToConversionQueue(BlockPos positionIn, int maxSpreadAttemptsIn, boolean convertToActive, boolean convertToDormant, boolean convertToNormal)
+    {
+        ConversionRequest request = new ConversionRequest(positionIn);
+        request.attemptsToAssignChild = maxSpreadAttemptsIn;
+        if(convertToActive) request.setConvertToActiveSpreader();
+        else if(convertToDormant) request.setConvertToDormantSpreader();
+        else request.setConvertToNormal();
+        conversionQueue.add(request);
     }
 
     /**
@@ -323,5 +364,56 @@ public class InfestationConversionTable {
             return true;
         }
         return false;
+    }
+
+    /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
+
+    public class ConversionRequest
+    {
+        //The target position
+        private BlockPos position;
+        //How many spread attempts should child blocks get
+        private int attemptsToAssignChild;
+        //If true, we are convert to an active spreading variant,
+        private boolean convertToActiveSpreader;
+        //If true, we are convert to an active spreading variant,
+        private boolean convertToDormantSpreader;
+        //If true, we are convert to an active spreading variant,
+        private boolean convertToNormal;
+
+        public ConversionRequest(BlockPos positionIn)
+        {
+            position = positionIn;
+        }
+
+        public BlockPos getPosition()
+        {
+            return  position;
+        }
+
+        public int getAttemptsToAssignChild()
+        {
+            return  attemptsToAssignChild;
+        }
+
+        public void setAttemptsToAssignChild(int attemptsToAssignChildIn)
+        {
+            attemptsToAssignChild = attemptsToAssignChildIn;
+        }
+
+        public void setConvertToActiveSpreader()
+        {
+            convertToActiveSpreader = true;
+        }
+
+        public void setConvertToDormantSpreader()
+        {
+                convertToDormantSpreader = true;
+        }
+
+        public void setConvertToNormal()
+        {
+            convertToNormal = true;
+        }
     }
 }

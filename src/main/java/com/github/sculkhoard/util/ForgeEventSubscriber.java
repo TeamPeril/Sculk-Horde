@@ -53,6 +53,7 @@ public class ForgeEventSubscriber {
 
             SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
+            SculkHoard.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
             if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second) {

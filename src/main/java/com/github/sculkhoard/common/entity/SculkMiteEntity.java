@@ -200,7 +200,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
                         //TargetAttacker(mob)
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
                         //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableNonSculkTargetGoal<>(this, LivingEntity.class, true),
+                        new NearestAttackableNonSculkTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
                 };
         return goals;
     }

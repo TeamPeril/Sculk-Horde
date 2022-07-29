@@ -1,6 +1,6 @@
 package com.github.sculkhoard.core;
 
-import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionTable;
+import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.common.pools.PoolBlocks;
@@ -29,7 +29,7 @@ public class SculkHoard {
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
-    public static InfestationConversionTable infestationConversionTable;
+    public static InfestationConversionHandler infestationConversionTable;
     public static PoolBlocks randomSculkFlora;
 
     //This is something related to chunk loaders

@@ -213,7 +213,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         boolean DEBUG_THIS = false;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
-        ReinforcementContext context = new ReinforcementContext(thisBlockPos.getX(), thisBlockPos.getY(), thisBlockPos.getZ());
+        ReinforcementContext context = new ReinforcementContext(thisBlockPos);
         context.sender = ReinforcementContext.senderType.SculkMass;
         context.budget = thisTile.getStoredSculkMass();
 

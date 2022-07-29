@@ -2,17 +2,25 @@ package com.github.sculkhoard.core.gravemind;
 
 
 import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.common.entity.EntityAlgorithms;
+import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
@@ -47,9 +55,6 @@ public class Gravemind
 
     public GravemindMemory gravemindMemory;
 
-    //This is a list of mob types that have attacked the sculk hoard
-    public static ArrayList<String> confirmedThreats;
-
     /** Regular Variables **/
 
     private final ServerWorld world;
@@ -71,6 +76,10 @@ public class Gravemind
 
     public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
 
+    public enum EntityDesignation {
+        HOSTILE,
+        VICTIM
+    }
 
     /**
      * Default Constructor <br>
@@ -233,6 +242,9 @@ public class Gravemind
     {
         public ServerWorld world;
 
+        //Map<The Name of Mob, IsHostile?>
+        public Map<String, EntityDesignation> knownEntityDesignations;
+
         //We do not want to put them too close to each other.
         public ArrayList<NodeEntry> nodeEntries;
 
@@ -247,9 +259,12 @@ public class Gravemind
         {
             nodeEntries = new ArrayList<>();
             beeNestEntries = new ArrayList<>();
+            knownEntityDesignations = new HashMap<String, EntityDesignation>();
         }
 
         /** Accessors **/
+
+
 
         /**
          * Returns a list of known node positions
@@ -315,6 +330,7 @@ public class Gravemind
          */
         public void validateNodeEntries(ServerWorld worldIn)
         {
+            long startTime = System.nanoTime();
             for(int index = 0; index < nodeEntries.size(); index++)
             {
                 //TODO: Figure out if not being in the overworld can mess this up
@@ -324,6 +340,8 @@ public class Gravemind
                     index--;
                 }
             }
+            long endTime = System.nanoTime();
+            if(DEBUG_MODE) System.out.println("Node Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
         }
 
 
@@ -336,9 +354,10 @@ public class Gravemind
          */
         public void validateBeeNestEntries(ServerWorld worldIn)
         {
+            long startTime = System.nanoTime();
             for(int index = 0; index < beeNestEntries.size(); index++)
             {
-                beeNestEntries.get(index).setParentNode();
+                beeNestEntries.get(index).setParentNodeToClosest();
                 //TODO: Figure out if not being in the overworld can mess this up
                 if(!beeNestEntries.get(index).isEntryValid(worldIn))
                 {
@@ -346,6 +365,8 @@ public class Gravemind
                     index--;
                 }
             }
+            long endTime = System.nanoTime();
+            if(DEBUG_MODE) System.out.println("Bee Nest Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
         }
     }
 
@@ -424,7 +445,7 @@ public class Gravemind
          * It then sets the parentNodePosition to be the position of
          * the closest node.
          */
-        public void setParentNode()
+        public void setParentNodeToClosest()
         {
             //Make sure nodeEntries isnt null and nodeEntries isnt empty
             if(memory.nodeEntries != null && !memory.nodeEntries.isEmpty())

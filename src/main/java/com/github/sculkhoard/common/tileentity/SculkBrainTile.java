@@ -2,7 +2,6 @@ package com.github.sculkhoard.common.tileentity;
 
 import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.common.block.SculkBrainBlock;
-import com.github.sculkhoard.common.procedural.structures.SculkBeeNestProceduralStructure;
 import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
@@ -20,8 +19,6 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
-
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 /**
  * Chunkloader code created by SuperMartijn642
@@ -176,7 +173,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
         if(currentlySpreading)
         {
             //TODO Make a new function that does a sphere-ring hybrid instead of a full circle
-            SculkHoard.infestationConversionTable.convertToInfectedQueue.addAll(
+            SculkHoard.infestationConversionTable.convertToInfectedNodeQueue.addAll(
                     BlockAlgorithms.getBlockPosInCircle(bp, infectCircleRadius, false)
             );
             infectCircleRadius++;

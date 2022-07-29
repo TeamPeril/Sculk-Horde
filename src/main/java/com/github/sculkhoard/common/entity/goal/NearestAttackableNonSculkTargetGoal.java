@@ -1,6 +1,5 @@
 package com.github.sculkhoard.common.entity.goal;
 
-import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -8,8 +7,10 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TargetGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.DamageSource;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -24,13 +25,15 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
     //TODO: Update how this class works so that we can dynamically add and remove mobs from being targets.
 
     private final int ticksPerSecond = 20;
-    private final int ticksIdleThreshold = 60;
+    private final int ticksIdleThreshold = 20;
     private int ticksSinceIdle = 0;
     protected final Class<T> targetType;
     protected final int randomInterval;
     protected LivingEntity target;
     protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
+    boolean despawnWhenIdle = false;
+    private boolean mustReach;
 
     public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee) {
         this(mobEntity, targetClass, mustSee, false);
@@ -42,25 +45,50 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
 
     public NearestAttackableNonSculkTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate) {
         super(mobEntity, mustSee, mustReach);
+        this.mustReach = mustReach;
         this.targetType = targetClass;
         this.randomInterval = interval;
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
         this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
-    public boolean canUse() {
-        this.ticksSinceIdle++;
+    public NearestAttackableNonSculkTargetGoal enableDespawnWhenIdle()
+    {
+        despawnWhenIdle = true;
+        return this;
+    }
 
-        //If mob is idle for too long, destroy it
-        if(ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
+    public boolean canUse()
+    {
+        /**
+         * I shouldn't have to do this, but im doing this here.
+         * I cannot figure out how vanilla handles this.
+         * This targeting system is put together with tape and glue.
+         */
+        if(this.target != null && this.target.isDeadOrDying())
         {
-            this.mob.remove();
+            this.target = null;
+        }
+
+        //Despawn the mob if it has no target for too long
+        if(despawnWhenIdle)
+        {
+            this.ticksSinceIdle++;
+            //If mob is idle for too long, destroy it
+            if(despawnWhenIdle && ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
+            {
+                this.mob.remove();
+            }
         }
 
 
-        if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
+
+        if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0)
+        {
             return false;
-        } else {
+        }
+        else
+        {
             this.findTarget();
             return this.target != null;
         }
@@ -73,6 +101,8 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
     }
 
     protected void findTarget() {
+
+        //TODO filtering should be done in one loop, not multiple loops
 
         //If targetType is not player, Get all possible targets, filter out sculk or infected mobs
         if (this.targetType != PlayerEntity.class && this.targetType != ServerPlayerEntity.class)
@@ -98,6 +128,29 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
             );
         }
 
+        //Filter out targets we cannot see
+        if(this.mustSee || this.mustReach)
+        {
+            for(int index = 0; index < possibleTargets.size(); index++)
+            {
+                //If must see and cant see, remove.
+                if(this.mustSee && !this.mob.getSensing().canSee(possibleTargets.get(index)))
+                {
+                    possibleTargets.remove(possibleTargets.get(index));
+                    index--;
+                }
+                //if must reach but cannot reach, remove
+                else if(this.mustReach && !canReach(possibleTargets.get(index)))
+                {
+                    possibleTargets.remove(possibleTargets.get(index));
+                    index--;
+                }
+
+            }
+        }
+
+
+
         //If there is available targets
         if(possibleTargets.size() > 0)
         {
@@ -116,13 +169,41 @@ public class NearestAttackableNonSculkTargetGoal<T extends LivingEntity> extends
         }
     }
 
-    public void start() {
+    public void start()
+    {
         this.mob.setTarget(this.target);
         super.start();
     }
 
     public void setTarget(@Nullable LivingEntity p_234054_1_) {
         this.target = p_234054_1_;
+    }
+
+
+    /**
+     * Checks to see if this entity can find a short path to the given target.
+     */
+    private boolean canReach(LivingEntity pTarget)
+    {
+        Path path = this.mob.getNavigation().createPath(pTarget, 0);
+        if (path == null)
+        {
+            return false;
+        }
+        else
+        {
+            PathPoint pathpoint = path.getEndNode();
+            if (pathpoint == null)
+            {
+                return false;
+            }
+            else
+            {
+                int i = pathpoint.x - MathHelper.floor(pTarget.getX());
+                int j = pathpoint.z - MathHelper.floor(pTarget.getZ());
+                return (double)(i * i + j * j) <= 2.25D;
+            }
+        }
     }
 
 }

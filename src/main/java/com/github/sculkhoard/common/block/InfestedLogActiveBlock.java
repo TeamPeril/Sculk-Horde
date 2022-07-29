@@ -121,12 +121,6 @@ public class InfestedLogActiveBlock extends SpreadingBlock implements IForgeBloc
         return BlockRegistry.INFESTED_LOG_DORMANT.get().defaultBlockState();
     }
 
-    @Override
-    protected boolean doesSpreadRandomly()
-    {
-        return false;
-    }
-
     /**
      * This is the description the item of the block will display when hovered over.
      * @param stack The item stack
@@ -142,6 +136,7 @@ public class InfestedLogActiveBlock extends SpreadingBlock implements IForgeBloc
         tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.infested_log")); //Text that displays if holding shift
 
     }
+
     @Override
     public boolean isValidVictim(BlockState blockState)
     {

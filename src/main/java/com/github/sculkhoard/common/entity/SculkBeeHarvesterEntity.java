@@ -139,6 +139,11 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         this.entityData.define(DATA_REMAINING_ANGER_TIME, 0);
     }
 
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return false;
+    }
+
     /**----------Accessor Methods----------**/
 
 

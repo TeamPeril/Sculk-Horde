@@ -235,7 +235,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
         //if(true) System.out.println(Arrays.toString(possibleLivingEntityTargets.toArray()));
 
         //Give gravemind context to our request to make more informed situations
-        ReinforcementContext context = new ReinforcementContext(bp.getX(), bp.getY(), bp.getZ());
+        ReinforcementContext context = new ReinforcementContext(bp);
         context.sender = ReinforcementContext.senderType.SculkCocoon;
         if(!possibleAggressorTargets.isEmpty())
         {

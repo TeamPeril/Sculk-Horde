@@ -3,10 +3,7 @@ package com.github.sculkhoard.common.item;
 import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.util.ForgeEventSubscriber;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,11 +17,10 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-import org.lwjgl.glfw.GLFW;
+
 import java.util.List;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
@@ -102,7 +98,7 @@ public class AntiSculkMatter extends Item implements IForgeItem {
             if (blockraytraceresult.getType() == RayTraceResult.Type.BLOCK)
             {
                 BlockPos origin_pos = blockraytraceresult.getBlockPos();
-                SculkHoard.infestationConversionTable.convertToVictimQueue.addAll(BlockAlgorithms.getBlockPosInCircle(origin_pos, 10, true));
+                SculkHoard.infestationConversionTable.convertToVictimNodeQueue.addAll(BlockAlgorithms.getBlockPosInCircle(origin_pos, 10, true));
                 playerIn.getCooldowns().addCooldown(this, 20*5); //Cool down for second (20 ticks per second)
                 return ActionResult.sidedSuccess(itemstack, worldIn.isClientSide());
             }
