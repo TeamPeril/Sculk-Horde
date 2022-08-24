@@ -17,7 +17,8 @@ public class SculkZombieModel extends AnimatedGeoModel<SculkZombieEntity> {
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(SculkZombieEntity animatable) {
-        return null;
+    public ResourceLocation getAnimationFileLocation(SculkZombieEntity animatable)
+    {
+        return new ResourceLocation(SculkHoard.MOD_ID, "animations/sculk_zombie.animation.json");
     }
 }

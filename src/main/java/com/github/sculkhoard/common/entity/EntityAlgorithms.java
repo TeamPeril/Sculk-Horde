@@ -107,31 +107,8 @@ public class EntityAlgorithms {
      */
     public static boolean isLivingEntityHostile(LivingEntity entity)
     {
-        Gravemind.EntityDesignation designation = gravemind.gravemindMemory.knownEntityDesignations.get(entity.getClass().toString());
-        if(designation != null)
-        {
-            return designation == Gravemind.EntityDesignation.HOSTILE;
-        }
-        return false;
 
-    }
-
-    /**
-     * Adds a hostile if it hasnt been added
-     */
-    public static void addHostile(LivingEntity entity)
-    {
-        if(entity == null || entity instanceof SculkLivingEntity || entity instanceof CreeperEntity)
-        {
-            return;
-        }
-
-        String entityString = entity.getClass().toString();
-        if(entityString != null && !entityString.isEmpty())
-        {
-            Gravemind.EntityDesignation designation = gravemind.gravemindMemory.knownEntityDesignations.get(entityString);
-            gravemind.gravemindMemory.knownEntityDesignations.putIfAbsent(entityString, Gravemind.EntityDesignation.HOSTILE);
-        }
+        return gravemind.gravemindMemory.getHostileEntries().get(entity.getClass()) != null;
 
     }
 

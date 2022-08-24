@@ -13,11 +13,13 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import static com.github.sculkhoard.core.SculkHoard.*;
 
@@ -26,6 +28,8 @@ public class ForgeEventSubscriber {
 
     private static long time_save_point = 0; //Used to track time passage.
     private static int sculkMassCheck = 0;
+    private static int sculkNodeCheck = 0;
+    private static int sculkBeeNestCheck = 0;
 
 
     //This occurs when a world is loaded
@@ -33,9 +37,9 @@ public class ForgeEventSubscriber {
     public static void onWorldLoad(WorldEvent.Load event)
     {
         //Initalize Gravemind
-        if(!event.getWorld().isClientSide())
+        if(!event.getWorld().isClientSide() && gravemind == null && event.getWorld().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            gravemind = new Gravemind((ServerWorld) event.getWorld());
+            gravemind = new Gravemind();
         }
     }
 
@@ -46,14 +50,25 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void WorldTickEvent(TickEvent.WorldTickEvent event)
     {
-        if(!event.world.isClientSide())
+
+        if(!event.world.isClientSide() && gravemind != null && event.world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             int ticks_per_second = 20; //Unit is ticks
-            int seconds_between_intervals = 60 /** 5*/; //Unit is Seconds
+            int seconds_between_intervals = 5; //Unit is Seconds
 
             SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
+
+            if(sculkNodeCheck != gravemind.gravemindMemory.getNodeEntries().size())
+            {
+                sculkNodeCheck = gravemind.gravemindMemory.getNodeEntries().size();
+            }
+
+            if(sculkBeeNestCheck != gravemind.gravemindMemory.getBeeNestEntries().size())
+            {
+                sculkBeeNestCheck = gravemind.gravemindMemory.getBeeNestEntries().size();
+            }
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
             if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second) {
@@ -64,7 +79,7 @@ public class ForgeEventSubscriber {
                 if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + gravemind.getEvolutionState().toString());
 
                 //Check How much Mass Was Generated over this period
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Interval: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
                 sculkMassCheck = entityFactory.getSculkAccumulatedMass();
 
                 //Verification
@@ -78,7 +93,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(PotionEvent.PotionExpiryEvent event)
     {
-        if(!event.getEntity().level.isClientSide())
+        if(!event.getEntity().level.isClientSide() && gravemind != null && event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             EffectInstance effectInstance = event.getPotionEffect();
 

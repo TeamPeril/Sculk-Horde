@@ -1,8 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.common.entity.attack.AcidAttack;
 import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
-import com.github.sculkhoard.common.entity.goal.RangedAttackGoal;
 import com.github.sculkhoard.common.entity.goal.SculkZombieAttackGoal;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.core.BlockRegistry;
@@ -11,14 +9,14 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.AbstractRaiderEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -29,18 +27,18 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
-     * Edited core/ EntityRegistry.java<br>
-     * Edited util/ ModEventSubscriber.java<br>
-     * Edited client/ ClientModEventSubscriber.java<br>
-     * Edited common/world/ModWorldEvents.java (this might not be necessary)<br>
-     * Edited common/world/gen/ModEntityGen.java<br>
-     * Added common/entity/ SculkZombie.java<br>
-     * Added client/model/entity/ SculkZombieModel.java<br>
-     * Added client/renderer/entity/ SculkZombieRenderer.java
+     * Edited {@link EntityRegistry}<br>
+     * Edited {@link com.github.sculkhoard.util.ModEventSubscriber}<br>
+     * Edited {@link com.github.sculkhoard.client.ClientModEventSubscriber}<br>
+     * Edited {@link com.github.sculkhoard.common.world.ModWorldEvents} (this might not be necessary)<br>
+     * Edited {@link com.github.sculkhoard.common.world.gen.ModEntityGen}<br>
+     * Added {@link SculkHatcherEntity}<br>
+     * Added {@link com.github.sculkhoard.client.model.enitity.SculkHatcherModel} <br>
+     * Added {@link com.github.sculkhoard.client.renderer.entity.SculkHatcherRenderer}
      */
 
     //The Health
@@ -69,11 +67,12 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
      * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
      * SPAWN_Y_MAX determines the Maximum height this mob can spawn<br>
-     * factory The animation factory used for animations
      */
     public static int SPAWN_MIN = 1;
     public static int SPAWN_MAX = 3;
-    public static int SPAWN_Y_MAX = 15;
+    public static int SPAWN_Y_MAX = 80;
+
+    //factory The animation factory used for animations
     private AnimationFactory factory = new AnimationFactory(this);
 
     /**
@@ -81,7 +80,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, World worldIn) {
+    public SculkHatcherEntity(EntityType<? extends SculkHatcherEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
@@ -89,7 +88,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkZombieEntity(World worldIn) {super(EntityRegistry.SCULK_ZOMBIE, worldIn);}
+    public SculkHatcherEntity(World worldIn) {super(EntityRegistry.SCULK_HATCHER, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -163,7 +162,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkZombieAttackGoal(this, 1.0D, true),
+                        new SculkHatcherAttackGoal(this, 1.0D, true),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -209,18 +208,18 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
         return 3;
     }
 
-    //Animation Related Functions
+    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {
         //event.getController().setAnimation();
         if(event.isMoving())
         {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_zombie.walk", true));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_hatcher.walk", true));
         }
         else
         {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_zombie.idle", true));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_hatcher.idle", true));
         }
 
         return PlayState.CONTINUE;
@@ -234,5 +233,81 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
+
+    public class SculkHatcherAttackGoal extends MeleeAttackGoal
+    {
+
+        private final SculkHatcherEntity thisMob;
+        private long tickCooldownForSpawn = 20 * 1;
+        private long ticksInCooldown = 0;
+
+        /**
+         * The Constructor
+         * @param mob The mob that called this
+         * @param speedModifier How fast can they attack?
+         * @param followTargetIfNotSeen Should the mob follow their target if they cant see them.
+         */
+        public SculkHatcherAttackGoal(SculkHatcherEntity mob, double speedModifier, boolean followTargetIfNotSeen) {
+            super(mob, speedModifier, followTargetIfNotSeen);
+            this.thisMob = mob;
+        }
+
+
+        /**
+         * Starts the attack Sequence<br>
+         * We shouldn't have to check if the target is null since
+         * the super class does this. However, something funky is going on that
+         * causes a null pointer exception if we dont check this in tick(). I put
+         * it here aswell just in case.
+         */
+        public void start()
+        {
+            if(this.thisMob.getTarget() != null)
+            {
+                super.start();
+            }
+        }
+
+        /**
+         * Stops the attack sequence.
+         */
+        public void stop()
+        {
+            super.stop();
+        }
+
+        /**
+         * Gets called every tick the attack is active<br>
+         * We shouldn't have to check if the target is null since
+         * the super class does this. However, something funky is going on that
+         * causes a null pointer exception if we dont check this here. This is
+         * absolutely some sort of bug that I was unable to figure out. For the
+         * time being (assuming I ever fix this), this will have to do.
+         */
+        public void tick()
+        {
+            if(this.thisMob.getTarget() == null)
+            {
+                stop();
+            }
+            else
+            {
+                super.tick();
+                if(ticksInCooldown >= tickCooldownForSpawn && thisMob.getTarget() != null)
+                {
+                    ticksInCooldown = 0;
+                    BlockPos spawnPos = new BlockPos(thisMob.position());
+                    EntityRegistry.SCULK_MITE.spawn((ServerWorld) thisMob.level, null, null, spawnPos, SpawnReason.SPAWNER, true, true);
+                    thisMob.hurt(DamageSource.GENERIC, SculkMiteEntity.MAX_HEALTH);
+                }
+                else
+                {
+                    ticksInCooldown++;
+                }
+            }
+        }
     }
 }

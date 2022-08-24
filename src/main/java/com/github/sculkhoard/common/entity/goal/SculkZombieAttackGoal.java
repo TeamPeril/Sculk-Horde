@@ -3,7 +3,8 @@ package com.github.sculkhoard.common.entity.goal;
 import com.github.sculkhoard.common.entity.SculkZombieEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 
-public class SculkZombieAttackGoal extends MeleeAttackGoal {
+public class SculkZombieAttackGoal extends MeleeAttackGoal
+{
 
     private final SculkZombieEntity sculkZombie;
 

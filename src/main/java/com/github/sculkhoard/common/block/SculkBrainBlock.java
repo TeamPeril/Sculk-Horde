@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -107,9 +108,14 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
      * @param itemStack The item stack it was placed from
      */
     @Override
-    public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack) {
-        SculkHoard.gravemind.gravemindMemory.addNodeToMemory(bp);
+    public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack)
+    {
         super.setPlacedBy(world, bp, blockState, entity, itemStack);
+        //If world isnt client side and we are in the overworld
+        if(!world.isClientSide() && world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        {
+            SculkHoard.gravemind.gravemindMemory.addNodeToMemory(bp, (ServerWorld) world);
+        }
     }
 
     /**
@@ -136,7 +142,7 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         SculkHoard.entityFactory.addSculkAccumulatedMass(1);//Add 1 sculk mass to the hoard
 
         //make sure the gravemind knows about this position
-        SculkHoard.gravemind.gravemindMemory.addNodeToMemory(bp);
+        SculkHoard.gravemind.gravemindMemory.addNodeToMemory(bp, serverWorld);
 
     }
 

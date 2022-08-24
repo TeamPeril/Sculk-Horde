@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TargetGoal;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -93,7 +94,7 @@ public class TargetAttacker extends TargetGoal {
         if(!(this.mob.getLastHurtByMob() instanceof SculkLivingEntity)
                 && this.mob.getLastHurtByMob() != null)
         {
-            EntityAlgorithms.addHostile(mob.getLastHurtByMob());
+            SculkHoard.gravemind.gravemindMemory.addHostileToMemory(mob.getLastHurtByMob(), (ServerWorld) this.mob.level);
         }
 
         if (this.alertSameType) {

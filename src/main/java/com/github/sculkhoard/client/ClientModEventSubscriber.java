@@ -57,6 +57,8 @@ public class ClientModEventSubscriber {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY, m -> new SpriteRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_HATCHER, SculkHatcherRenderer::new);
+
         event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout()));
 
         event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout()));
@@ -71,7 +73,9 @@ public class ClientModEventSubscriber {
 
         event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent()));
 
-        event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.translucent()));
+        event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.cutout()));
+
+        event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), RenderType.cutout()));
 
     }
 

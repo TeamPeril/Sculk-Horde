@@ -300,13 +300,13 @@ public class BlockAlgorithms {
 
 
     /**
-     * Will only place sculk nodes if sky is visible
+     * Will only place Sculk Bee Hives
      * @param world The World to place it in
      * @param targetPos The position to place it in
      */
     public static void placeSculkBeeHive(ServerWorld world, BlockPos targetPos)
     {
-        //Given random chance and the target location can see the sky, create a sculk node
+        //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(4000) <= 1 && world.canSeeSky(targetPos))
         {
             world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());

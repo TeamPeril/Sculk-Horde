@@ -13,7 +13,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 
@@ -95,9 +97,15 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     }
 
     @Override
-    public void onPlace(BlockState pState, World pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
+    public void onPlace(BlockState pState, World pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving)
+    {
         super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
-        SculkHoard.gravemind.gravemindMemory.addBeeNestToMemory(pPos);
+
+        //If world isnt client side and we are in the overworld
+        if(!pLevel.isClientSide() && pLevel.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        {
+            SculkHoard.gravemind.gravemindMemory.addBeeNestToMemory(pPos, (ServerWorld) pLevel);
+        }
     }
 
     @Nullable
