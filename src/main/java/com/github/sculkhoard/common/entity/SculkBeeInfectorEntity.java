@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -162,12 +163,12 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
         return goals;
     }
 
-    //Animation Related Functions
+    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {
-        //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-        return PlayState.STOP;
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_bee.flying", true));
+        return PlayState.CONTINUE;
     }
 
     @Override
@@ -179,6 +180,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
     public AnimationFactory getFactory() {
         return this.factory;
     }
+
 
     /**
      * Represents a predicate (boolean-valued function) of one argument. <br>

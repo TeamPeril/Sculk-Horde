@@ -16,8 +16,10 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.world.ForgeChunkManager;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -186,8 +188,24 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
         }
     }
 
+    public static void forceLoadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean forceLoad, boolean tickingWithoutPlayer, boolean shouldLoadSurroundingAsWell) {
+
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ, forceLoad, true);
+
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX + 1, chunkZ, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX + 1, chunkZ + 1, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX + 1, chunkZ - 1, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX - 1, chunkZ, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX - 1, chunkZ + 1, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX - 1, chunkZ - 1, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ - 1, forceLoad, true);
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ + 1, forceLoad, true);
+
+    }
+
     public void unloadAllChunks()
     {
+
         this.level.getCapability(ChunkLoaderUtil.TRACKER_CAPABILITY).ifPresent(tracker -> {
             ChunkPos pos = this.level.getChunk(this.worldPosition).getPos();
             for(int x = 0; x < this.gridSize; x++){
@@ -197,6 +215,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
                 }
             }
         });
+
     }
 
     public void loadAllChunks()
@@ -211,6 +230,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
             }
         });
         this.dataDirty();
+
     }
 
     public void toggleChunks(int xOffset, int zOffset)

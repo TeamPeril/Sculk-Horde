@@ -50,6 +50,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -554,26 +555,19 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return goals;
     }
 
-    /**
-     * Handles Animation
-     * @param event ???
-     * @param <E> ???
-     * @return ???
-     */
+    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {
-        //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-        return PlayState.STOP;
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_bee.flying", true));
+        return PlayState.CONTINUE;
     }
 
-    /**
-     * Registers Animation Controllers
-     * @param data ???
-     */
     @Override
     public void registerControllers(AnimationData data) {
         data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
     }
+
+    /** ~~~~~~~~ Save Data ~~~~~~~~ **/
 
     public void addAdditionalSaveData(CompoundNBT pCompound) {
         super.addAdditionalSaveData(pCompound);

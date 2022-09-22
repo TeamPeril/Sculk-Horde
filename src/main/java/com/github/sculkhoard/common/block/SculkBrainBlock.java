@@ -203,15 +203,22 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
     @Override
     public void onPlace(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
         TileEntity tile = worldIn.getBlockEntity(pos);
-        if(tile instanceof SculkBrainTile)
-            ((SculkBrainTile)tile).loadAllChunks();
+        if(tile instanceof SculkBrainTile && !worldIn.isClientSide())
+        {
+            //((SculkBrainTile)tile).loadAllChunks();
+            ((SculkBrainTile)tile).forceLoadChunk((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, true, true, true);
+        }
+
     }
 
     @Override
     public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving){
         TileEntity tile = worldIn.getBlockEntity(pos);
-        if(tile instanceof SculkBrainTile)
-            ((SculkBrainTile)tile).unloadAllChunks();
+        if(tile instanceof SculkBrainTile && !worldIn.isClientSide())
+        {
+            //((SculkBrainTile)tile).unloadAllChunks();
+        }
+
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
