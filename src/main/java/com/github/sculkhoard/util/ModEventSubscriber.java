@@ -25,7 +25,6 @@ public class ModEventSubscriber {
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
-        ChunkLoaderUtil.register(); //Something related to chunk loading
         //Add entries to the entity factory (please add them in order, I don't want to sort)
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_HATCHER, (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHoard.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER, 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);

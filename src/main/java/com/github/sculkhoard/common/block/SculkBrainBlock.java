@@ -1,8 +1,6 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.common.tileentity.SculkBrainTile;
-import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.Block;
@@ -13,8 +11,6 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -26,11 +22,7 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -206,7 +198,7 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         if(tile instanceof SculkBrainTile && !worldIn.isClientSide())
         {
             //((SculkBrainTile)tile).loadAllChunks();
-            ((SculkBrainTile)tile).forceLoadChunk((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, true, true, true);
+            ((SculkBrainTile)tile).forceLoadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
 
     }
@@ -217,6 +209,7 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         if(tile instanceof SculkBrainTile && !worldIn.isClientSide())
         {
             //((SculkBrainTile)tile).unloadAllChunks();
+            ((SculkBrainTile)tile).unloadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
 
         super.onRemove(state, worldIn, pos, newState, isMoving);

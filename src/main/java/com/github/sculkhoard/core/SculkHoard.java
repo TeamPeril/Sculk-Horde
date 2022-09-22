@@ -1,19 +1,15 @@
 package com.github.sculkhoard.core;
 
 import com.github.sculkhoard.common.block.BlockInfestation.InfestationConversionHandler;
-import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.common.pools.PoolBlocks;
-import com.github.sculkhoard.util.PacketToggleChunk;
+import com.github.sculkhoard.core.gravemind.Gravemind;
+import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 import software.bernie.geckolib3.GeckoLib;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
@@ -31,9 +27,6 @@ public class SculkHoard {
     public static Gravemind gravemind;
     public static InfestationConversionHandler infestationConversionTable;
     public static PoolBlocks randomSculkFlora;
-
-    //This is something related to chunk loaders
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("sculkhoard", "main"), () -> "1", "1"::equals, "1"::equals);
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
     public SculkHoard()
@@ -56,9 +49,6 @@ public class SculkHoard {
         {
             DEBUG_MODE = true;
         }
-
-        //Something related to chunk loading
-        CHANNEL.registerMessage(0, PacketToggleChunk.class, PacketToggleChunk::encode, PacketToggleChunk::decode, PacketToggleChunk::handle);
     }
 
     //Add Creative Item Tab

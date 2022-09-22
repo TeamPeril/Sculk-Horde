@@ -249,7 +249,7 @@ public class Gravemind
         public Map<String, HostileEntry> hostileEntries;
 
         //We do not want to put them too close to each other.
-        private ArrayList<NodeEntry> nodeEntries; //= new ArrayList<>();
+        private ArrayList<NodeEntry> nodeEntries;
 
         private ArrayList<BeeNestEntry> beeNestEntries;
 

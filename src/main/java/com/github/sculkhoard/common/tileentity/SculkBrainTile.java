@@ -5,21 +5,13 @@ import com.github.sculkhoard.common.block.SculkBrainBlock;
 import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import com.github.sculkhoard.util.ChunkLoaderUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.world.ForgeChunkManager;
 
-import javax.annotation.Nullable;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,10 +19,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class SculkBrainTile extends TileEntity implements ITickableTileEntity
 {
-    private int gridSize = 10;
-    private int radius = (gridSize - 1) / 2;
-    private boolean [][] grid; //[X][Z]
-    private boolean dataDirty = false;
+
+    private final int CHUNK_LOAD_RADIUS = 15;
 
     private long tickedAt = System.nanoTime();
 
@@ -57,7 +47,6 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
     public SculkBrainTile(TileEntityType<?> type)
     {
         super(type);
-        this.grid = new boolean[gridSize][gridSize];
     }
 
     /**
@@ -71,44 +60,6 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
 
     /** Accessors **/
 
-    public int getGridSize() {return this.gridSize;}
-
-    private CompoundNBT getDirtyData()
-    {
-        if(this.dataDirty){
-            this.dataDirty = false;
-            return this.getData();
-        }
-        return null;
-    }
-
-    private CompoundNBT getData()
-    {
-        CompoundNBT tag = new CompoundNBT();
-        tag.putInt("gridSize", this.gridSize);
-        for(int x = 0; x < this.gridSize; x++){
-            for(int z = 0; z < this.gridSize; z++){
-                tag.putBoolean(x + ";" + z, this.grid[x][z]);
-            }
-        }
-        return tag;
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag()
-    {
-        CompoundNBT tag = super.getUpdateTag();
-        tag.put("data", this.getData());
-        return tag;
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket()
-    {
-        CompoundNBT tag = this.getDirtyData();
-        return tag == null || tag.isEmpty() ? null : new SUpdateTileEntityPacket(this.worldPosition, 0, tag);
-    }
 
     /** Modifiers **/
 
@@ -188,116 +139,57 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
         }
     }
 
-    public static void forceLoadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean forceLoad, boolean tickingWithoutPlayer, boolean shouldLoadSurroundingAsWell) {
+    public static void forceLoadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
 
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ, forceLoad, true);
-
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX + 1, chunkZ, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX + 1, chunkZ + 1, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX + 1, chunkZ - 1, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX - 1, chunkZ, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX - 1, chunkZ + 1, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX - 1, chunkZ - 1, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ - 1, forceLoad, true);
-        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ + 1, forceLoad, true);
-
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ, true, true);
     }
 
-    public void unloadAllChunks()
+    public void forceLoadChunksInRadius(ServerWorld world, BlockPos owner, int chunkOriginX, int chunkOriginZ)
     {
+        /*
+        If radius is 3, this is what the area of chunk loading will look like.
+            ooooooo
+            ooo*ooo
+            ooooooo
+        This means that the length of any side is (CHUNK_LOAD_RADIUS * 2) + 1.
+         */
 
-        this.level.getCapability(ChunkLoaderUtil.TRACKER_CAPABILITY).ifPresent(tracker -> {
-            ChunkPos pos = this.level.getChunk(this.worldPosition).getPos();
-            for(int x = 0; x < this.gridSize; x++){
-                for(int z = 0; z < this.gridSize; z++){
-                    if(this.grid[x][z])
-                        tracker.remove(new ChunkPos(pos.x + x - radius, pos.z + z - radius), this.worldPosition);
-                }
-            }
-        });
+        int startChunkX = chunkOriginX - CHUNK_LOAD_RADIUS;
+        int startChunkZ = chunkOriginZ - CHUNK_LOAD_RADIUS;
 
-    }
-
-    public void loadAllChunks()
-    {
-        this.level.getCapability(ChunkLoaderUtil.TRACKER_CAPABILITY).ifPresent(tracker -> {
-            ChunkPos pos = this.level.getChunk(this.worldPosition).getPos();
-            for(int x = 0; x < this.gridSize; x++){
-                for(int z = 0; z < this.gridSize; z++){
-                    this.grid[x][z] = true;
-                    tracker.add(new ChunkPos(pos.x + x - radius, pos.z + z - radius), this.worldPosition);
-                }
-            }
-        });
-        this.dataDirty();
-
-    }
-
-    public void toggleChunks(int xOffset, int zOffset)
-    {
-        this.level.getCapability(ChunkLoaderUtil.TRACKER_CAPABILITY).ifPresent(tracker -> {
-            ChunkPos pos = this.level.getChunk(this.worldPosition).getPos();
-            if(this.grid[xOffset + radius][zOffset + radius])
-                tracker.remove(new ChunkPos(pos.x + xOffset, pos.z + zOffset), this.worldPosition);
-            else
-                tracker.add(new ChunkPos(pos.x + xOffset, pos.z + zOffset), this.worldPosition);
-            this.grid[xOffset + radius][zOffset + radius] = !this.grid[xOffset + radius][zOffset + radius];
-        });
-        this.dataDirty();
-    }
-
-    public boolean isLoaded(int xOffset, int zOffset)
-    {
-        return this.grid[xOffset + radius][zOffset + radius];
-    }
-
-    public void dataDirty()
-    {
-        if(this.level.isClientSide){return;}
-
-        this.dataDirty = true;
-        this.setChanged();
-        this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
-    }
-
-    private void handleData(CompoundNBT tag)
-    {
-        this.gridSize = tag.contains("gridSize") ? tag.getInt("gridSize") : this.gridSize;
-        if(this.gridSize < 1 || this.gridSize % 2 == 0)
-            this.gridSize = 1;
-        this.radius = (this.gridSize - 1) / 2;
-        this.grid = new boolean[this.gridSize][this.gridSize];
-        for(int x = 0; x < this.gridSize; x++){
-            for(int z = 0; z < this.gridSize; z++){
-                this.grid[x][z] = tag.contains(x + ";" + z) && tag.getBoolean(x + ";" + z);
+        for(int xOffset = 0; xOffset < (CHUNK_LOAD_RADIUS * 2) + 1; xOffset++)
+        {
+            for(int zOffset = 0; zOffset < (CHUNK_LOAD_RADIUS * 2) + 1; zOffset++)
+            {
+                forceLoadChunk(world, owner, startChunkX + xOffset, startChunkZ + zOffset, true);
             }
         }
     }
 
-    @Override
-    public CompoundNBT save(CompoundNBT compound)
-    {
-        super.save(compound);
-        compound.put("data", this.getData());
-        return compound;
+    public static void unloadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
+
+        ForgeChunkManager.forceChunk(world, SculkHoard.MOD_ID, owner, chunkX, chunkZ, false, false);
     }
 
-    @Override
-    public void load(BlockState state, CompoundNBT compound)
+    public void unloadChunksInRadius(ServerWorld world, BlockPos owner, int chunkOriginX, int chunkOriginZ)
     {
-        super.load(state, compound);
-        this.handleData(compound.getCompound("data"));
-    }
+        /*
+        If radius is 3, this is what the area of chunk loading will look like.
+            ooooooo
+            ooo*ooo
+            ooooooo
+        This means that the length of any side is (CHUNK_LOAD_RADIUS * 2) + 1.
+         */
 
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag)
-    {
-        super.handleUpdateTag(state, tag);
-        this.handleData(tag.getCompound("data"));
-    }
+        int startChunkX = chunkOriginX - CHUNK_LOAD_RADIUS;
+        int startChunkZ = chunkOriginZ - CHUNK_LOAD_RADIUS;
 
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
-        this.handleData(pkt.getTag());
+        for(int xOffset = 0; xOffset < (CHUNK_LOAD_RADIUS * 2) + 1; xOffset++)
+        {
+            for(int zOffset = 0; zOffset < (CHUNK_LOAD_RADIUS * 2) + 1; zOffset++)
+            {
+                unloadChunk(world, owner, startChunkX + xOffset, startChunkZ + zOffset, true);
+            }
+        }
     }
 }

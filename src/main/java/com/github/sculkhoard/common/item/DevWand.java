@@ -3,6 +3,7 @@ package com.github.sculkhoard.common.item;
 import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.core.SculkHoard;
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
@@ -90,12 +91,18 @@ public class DevWand extends Item implements IForgeItem {
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this))
+		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
 		{
 			//If Player is holding shift, just output sculk mass of world
 			if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
 			{
-				playerIn.displayClientMessage(new StringTextComponent("Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass()), false);
+				playerIn.displayClientMessage(
+						new StringTextComponent(
+								"Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass() + "\n" +
+								"Known Nodes: " + SculkHoard.gravemind.gravemindMemory.getNodeEntries().size() + "\n" +
+								"Known Nests: " + SculkHoard.gravemind.gravemindMemory.getBeeNestEntries().size() + "\n" +
+								"Known Hostiles: " + SculkHoard.gravemind.gravemindMemory.getHostileEntries().size() + "\n"
+						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return ActionResult.pass(itemstack);
 			}
