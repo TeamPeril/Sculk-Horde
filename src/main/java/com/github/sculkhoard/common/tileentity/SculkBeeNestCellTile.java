@@ -1,21 +1,9 @@
 package com.github.sculkhoard.common.tileentity;
 
-import com.github.sculkhoard.common.block.SculkBrainBlock;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import com.github.sculkhoard.util.ChunkLoaderUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.server.ServerWorld;
-
-import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642

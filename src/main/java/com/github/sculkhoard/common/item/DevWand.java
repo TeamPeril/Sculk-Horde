@@ -99,9 +99,9 @@ public class DevWand extends Item implements IForgeItem {
 				playerIn.displayClientMessage(
 						new StringTextComponent(
 								"Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass() + "\n" +
-								"Known Nodes: " + SculkHoard.gravemind.gravemindMemory.getNodeEntries().size() + "\n" +
-								"Known Nests: " + SculkHoard.gravemind.gravemindMemory.getBeeNestEntries().size() + "\n" +
-								"Known Hostiles: " + SculkHoard.gravemind.gravemindMemory.getHostileEntries().size() + "\n"
+								"Known Nodes: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
+								"Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size() + "\n" +
+								"Known Hostiles: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return ActionResult.pass(itemstack);

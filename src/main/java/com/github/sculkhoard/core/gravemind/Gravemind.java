@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
-import static com.github.sculkhoard.core.SculkHoard.gravemind;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.
@@ -35,26 +34,19 @@ import static com.github.sculkhoard.core.SculkHoard.gravemind;
  */
 public class Gravemind
 {
-
-    /** State Logic **/
     public enum evolution_states {Undeveloped, Immature, Mature}
 
     private evolution_states evolution_state;
 
-    public enum attack_states {Defensive, Offensive}
-
-    public attack_states attack_state = attack_states.Defensive;
-
-    //private GravemindState;
-
-    /** Controlable Assets **/
+    //The World
+    private final ServerWorld WORLD;
 
     //This controls the reinforcement system.
     public static EntityFactory entityFactory;
 
-    public static GravemindMemory gravemindMemory;
-
-    /** Regular Variables **/
+    //Where we store all the data
+    private GravemindMemory gravemindMemory;
+    protected final String GRAVEMINDMEMORYNAME = SculkHoard.MOD_ID + "_gravemind_memory";
 
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
@@ -71,27 +63,22 @@ public class Gravemind
     //The radius that sculk nodes can infect in the mature state
     private final int SCULK_NODE_INFECT_RADIUS_MATURE = 50;
 
-    public int allowed_nodes = 1;
 
     //Determines the range which a sculk node can infect land around it
     public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
-
-    public enum EntityDesignation {
-        HOSTILE,
-        VICTIM
-    }
 
     /**
      * Default Constructor <br>
      * Called in ForgeEventSubscriber.java in world load event. <br>
      * WARNING: DO NOT CALL THIS FUNCTION UNLESS THE WORLD IS LOADED
      */
-    public Gravemind()
+    public Gravemind(ServerWorld worldIn)
     {
+        WORLD = worldIn;
         evolution_state = evolution_states.Undeveloped;
-        attack_state = attack_states.Defensive;
         entityFactory = SculkHoard.entityFactory;
-        gravemindMemory = new GravemindMemory();
+
+        gravemindMemory = WORLD.getDataStorage().computeIfAbsent(Gravemind.GravemindMemory::new, GRAVEMINDMEMORYNAME);
         calulateCurrentState();
     }
 
@@ -100,9 +87,17 @@ public class Gravemind
         return evolution_state;
     }
 
-    public attack_states getAttackState()
+
+
+    /** Accessors **/
+
+    /**
+     * Get the memory object that stores all the data
+     * @return The GravemindMemory
+     */
+    public GravemindMemory getGravemindMemory()
     {
-        return attack_state;
+        return gravemindMemory;
     }
 
     /**
@@ -154,10 +149,8 @@ public class Gravemind
                 context.isRequestApproved = true;
             }
         }
-        else if(evolution_state == evolution_states.Mature)
-        {
-            //TODO: Add functionality for mature state
-        }
+        //TODO: Add functionality for mature state
+
 
         return context.isRequestApproved;
     }
@@ -192,7 +185,7 @@ public class Gravemind
      * @param worldIn The World to place it in
      * @param targetPos The position to place it in
      */
-    public static void placeSculkNode(ServerWorld worldIn, BlockPos targetPos)
+    public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos)
     {
         //Random Chance to Place Node
         if(new Random().nextInt(100) < 1)
@@ -201,7 +194,7 @@ public class Gravemind
             if(SculkHoard.gravemind.isValidPositionForSculkNode(worldIn, targetPos))
             {
                 worldIn.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
-                SculkHoard.gravemind.gravemindMemory.addNodeToMemory(targetPos, worldIn);
+                getGravemindMemory().addNodeToMemory(targetPos, worldIn);
                 EntityType.LIGHTNING_BOLT.spawn(worldIn, null, null, targetPos, SpawnReason.SPAWNER, true, true);
                 //if(DEBUG_MODE) System.out.println("New Sculk Node Created at " + targetPos);
             }
@@ -222,7 +215,7 @@ public class Gravemind
             return false;
         }
 
-        for (NodeEntry entry : gravemindMemory.getNodeEntries())
+        for (NodeEntry entry : getGravemindMemory().getNodeEntries())
         {
             //Get Distance from our potential location to the current index node position
             int distanceFromPotentialToCurrentNode = (int) BlockAlgorithms.getBlockDistance(positionIn, entry.position);
@@ -241,7 +234,7 @@ public class Gravemind
 
     public class GravemindMemory extends WorldSavedData
     {
-        public static final String NAME = SculkHoard.MOD_ID + "_gravemind_memory";
+        public final String NAME = SculkHoard.MOD_ID + "_gravemind_memory";
 
         public ServerWorld world;
 
@@ -253,14 +246,12 @@ public class Gravemind
 
         private ArrayList<BeeNestEntry> beeNestEntries;
 
-        private ArrayList<BlockPos> spawnerPositions;
-
         /**
          * Default Constructor
          */
         public GravemindMemory()
         {
-            super(NAME);
+            super(GRAVEMINDMEMORYNAME);
             nodeEntries = new ArrayList<>();
             beeNestEntries = new ArrayList<>();
             hostileEntries = new HashMap<>();
@@ -280,30 +271,29 @@ public class Gravemind
 
         /**
          * Returns a list of known node positions
-         * @return
+         * @return An ArrayList of all node entries positions
          */
         public ArrayList<NodeEntry> getNodeEntries()
         {
-            return SculkHoard.gravemind.gravemindMemory.nodeEntries;
+            return getGravemindMemory().nodeEntries;
         }
 
         /**
          * Returns a list of known bee nest positions
-         * @return
+         * @return An ArrayList of all know bee nest positions
          */
         public ArrayList<BeeNestEntry> getBeeNestEntries()
         {
-            return SculkHoard.gravemind.gravemindMemory.beeNestEntries;
+            return getGravemindMemory().beeNestEntries;
         }
-
 
         /**
          * Returns the map of known hostiles
-         * @return
+         * @return An HashMap with all known hostile entities
          */
         public Map<String, HostileEntry> getHostileEntries()
         {
-            return gravemind.gravemindMemory.hostileEntries;
+            return getGravemindMemory().hostileEntries;
         }
 
         /**
@@ -352,10 +342,10 @@ public class Gravemind
         {
             if(!isNodePositionInMemory(positionIn) && getNodeEntries() != null)
             {
-                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GravemindMemory.NAME);
-                memory.getNodeEntries().add(new NodeEntry(positionIn));
-                memory.setDirty();
+                getGravemindMemory().getNodeEntries().add(new NodeEntry(positionIn));
+                getGravemindMemory().setDirty();
             }
+            else if(DEBUG_MODE) System.out.println("Attempted to Add Node To Memory but failed.");
         }
 
         /**
@@ -366,10 +356,10 @@ public class Gravemind
         {
             if(!isBeeNestPositionInMemory(positionIn) && getBeeNestEntries() != null)
             {
-                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GravemindMemory.NAME);
-                memory.getBeeNestEntries().add(new BeeNestEntry(positionIn));
-                memory.setDirty();
+                getGravemindMemory().getBeeNestEntries().add(new BeeNestEntry(positionIn));
+                getGravemindMemory().setDirty();
             }
+            else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
         }
 
         /**
@@ -382,14 +372,16 @@ public class Gravemind
         {
             if(entityIn == null || entityIn instanceof SculkLivingEntity || entityIn instanceof CreeperEntity)
             {
+                if(DEBUG_MODE) System.out.println("Attempted to Add Hostile To Memory but failed.");
                 return;
             }
 
             String identifier = entityIn.getClass().toString();
             if(identifier != null && !identifier.isEmpty())
             {
-                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GravemindMemory.NAME);
+                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GRAVEMINDMEMORYNAME);
                 memory.getHostileEntries().putIfAbsent(identifier, new HostileEntry(identifier));
+                memory.setDirty();
             }
         }
 
@@ -410,8 +402,9 @@ public class Gravemind
                 //TODO: Figure out if not being in the overworld can mess this up
                 if(!getNodeEntries().get(index).isEntryValid(worldIn))
                 {
-                    getNodeEntries().remove(index);
+                    getGravemindMemory().getNodeEntries().remove(index);
                     index--;
+                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GRAVEMINDMEMORYNAME).setDirty();
                 }
             }
             long endTime = System.nanoTime();
@@ -437,6 +430,7 @@ public class Gravemind
                 {
                     getBeeNestEntries().remove(index);
                     index--;
+                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GRAVEMINDMEMORYNAME).setDirty();
                 }
             }
             long endTime = System.nanoTime();
@@ -447,34 +441,29 @@ public class Gravemind
         @Nonnull
         public void load(CompoundNBT nbt)
         {
-            if(SculkHoard.gravemind == null)
-            {
-                SculkHoard.gravemind = new Gravemind();
-            }
+
             CompoundNBT gravemindData = nbt.getCompound("gravemindData");
 
             getNodeEntries().clear();
             getBeeNestEntries().clear();
             getHostileEntries().clear();
 
-            for(int i = 0; gravemindData.contains("node_entry" + i); i++)
-            {
+            for (int i = 0; gravemindData.contains("node_entry" + i); i++) {
                 getNodeEntries().add(NodeEntry.serialize(gravemindData.getCompound("node_entry" + i)));
             }
 
-            for(int i = 0; gravemindData.contains("bee_nest_entry" + i); i++)
-            {
+            for (int i = 0; gravemindData.contains("bee_nest_entry" + i); i++) {
                 getBeeNestEntries().add(BeeNestEntry.serialize(gravemindData.getCompound("bee_nest_entry" + i)));
             }
 
-            for(int i = 0; gravemindData.contains("hostile_entry" + i); i++)
-            {
+            for (int i = 0; gravemindData.contains("hostile_entry" + i); i++) {
                 //getHostileEntries().add(BeeNestEntry.serialize(gravemindData.getCompound("hostile_entry" + i)));
                 HostileEntry hostileEntry = HostileEntry.serialize(gravemindData.getCompound("hostile_entry" + i));
                 getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
             }
 
             System.out.print("");
+
         }
 
         /**
@@ -524,7 +513,7 @@ public class Gravemind
      */
     private static class NodeEntry
     {
-        private BlockPos position; //The Location in the world where the node is
+        private final BlockPos position; //The Location in the world where the node is
         private long lastTimeWasActive; //The Last Time A node was active and working
 
         /**
@@ -539,11 +528,7 @@ public class Gravemind
 
         public boolean isEntryValid(ServerWorld worldIn)
         {
-            if(worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BRAIN.get()))
-            {
-                return true;
-            }
-            return false;
+            return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BRAIN.get());
         }
 
         public CompoundNBT deserialize()
@@ -568,7 +553,7 @@ public class Gravemind
      */
     private static class BeeNestEntry
     {
-        private BlockPos position; //The location in the world where the node is
+        private final BlockPos position; //The location in the world where the node is
         private BlockPos parentNodePosition; //The location of the Sculk Node that this Nest belongs to
 
         /**
@@ -593,11 +578,7 @@ public class Gravemind
          */
         public boolean isEntryValid(ServerWorld worldIn)
         {
-            if(worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
-            {
-                return true;
-            }
-            return false;
+            return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get());
         }
 
         /**
@@ -608,10 +589,10 @@ public class Gravemind
         public void setParentNodeToClosest()
         {
             //Make sure nodeEntries isnt null and nodeEntries isnt empty
-            if(SculkHoard.gravemind.gravemindMemory.getNodeEntries() != null && !SculkHoard.gravemind.gravemindMemory.getNodeEntries().isEmpty())
+            if(SculkHoard.gravemind.getGravemindMemory().getNodeEntries() != null && !SculkHoard.gravemind.getGravemindMemory().getNodeEntries().isEmpty())
             {
-                NodeEntry closestEntry = SculkHoard.gravemind.gravemindMemory.getNodeEntries().get(0);
-                for(NodeEntry entry : SculkHoard.gravemind.gravemindMemory.getNodeEntries())
+                NodeEntry closestEntry = SculkHoard.gravemind.getGravemindMemory().getNodeEntries().get(0);
+                for(NodeEntry entry : SculkHoard.gravemind.getGravemindMemory().getNodeEntries())
                 {
                     //If entry is closer than our current closest entry
                     if(BlockAlgorithms.getBlockDistance(position, entry.position) < BlockAlgorithms.getBlockDistance(position, closestEntry.position))
@@ -645,7 +626,7 @@ public class Gravemind
      */
     private static class HostileEntry
     {
-        private String identifier; //The String that is the class name identifier of the mob. Example: class net.minecraft.entity.monster.SpiderEntity
+        private final String identifier; //The String that is the class name identifier of the mob. Example: class net.minecraft.entity.monster.SpiderEntity
 
         /**
          * Default Constructor

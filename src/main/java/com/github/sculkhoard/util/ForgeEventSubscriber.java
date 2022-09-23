@@ -13,7 +13,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -21,15 +20,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import static com.github.sculkhoard.core.SculkHoard.*;
+import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 @Mod.EventBusSubscriber(modid = SculkHoard.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventSubscriber {
 
-    private static long time_save_point = 0; //Used to track time passage.
-    private static int sculkMassCheck = 0;
-    private static int sculkNodeCheck = 0;
-    private static int sculkBeeNestCheck = 0;
+    private static long time_save_point; //Used to track time passage.
+    private static int sculkMassCheck;
+    private static int sculkNodeCheck;
+    private static int sculkBeeNestCheck;
 
 
     //This occurs when a world is loaded
@@ -37,10 +36,14 @@ public class ForgeEventSubscriber {
     public static void onWorldLoad(WorldEvent.Load event)
     {
         //Initalize Gravemind
-        if(!event.getWorld().isClientSide() && gravemind == null && event.getWorld().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!event.getWorld().isClientSide() && event.getWorld().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            gravemind = new Gravemind();
+            SculkHoard.gravemind = new Gravemind((ServerWorld) event.getWorld());
         }
+        time_save_point = 0; //Used to track time passage.
+        sculkMassCheck = 0;
+        sculkNodeCheck = 0;
+        sculkBeeNestCheck = 0;
     }
 
     /**
@@ -51,7 +54,7 @@ public class ForgeEventSubscriber {
     public static void WorldTickEvent(TickEvent.WorldTickEvent event)
     {
 
-        if(!event.world.isClientSide() && gravemind != null && event.world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!event.world.isClientSide() && SculkHoard.gravemind != null && event.world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             int ticks_per_second = 20; //Unit is ticks
             int seconds_between_intervals = 5; //Unit is Seconds
@@ -60,14 +63,14 @@ public class ForgeEventSubscriber {
             SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
 
-            if(sculkNodeCheck != gravemind.gravemindMemory.getNodeEntries().size())
+            if(sculkNodeCheck != SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size())
             {
-                sculkNodeCheck = gravemind.gravemindMemory.getNodeEntries().size();
+                sculkNodeCheck = SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size();
             }
 
-            if(sculkBeeNestCheck != gravemind.gravemindMemory.getBeeNestEntries().size())
+            if(sculkBeeNestCheck != SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size())
             {
-                sculkBeeNestCheck = gravemind.gravemindMemory.getBeeNestEntries().size();
+                sculkBeeNestCheck = SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size();
             }
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
@@ -75,16 +78,24 @@ public class ForgeEventSubscriber {
                 time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
 
                 //Calculate Current State
-                gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
-                if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + gravemind.getEvolutionState().toString());
+                SculkHoard.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
+                if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + SculkHoard.gravemind.getEvolutionState().toString());
 
                 //Check How much Mass Was Generated over this period
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
-                sculkMassCheck = entityFactory.getSculkAccumulatedMass();
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHoard.entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
+                sculkMassCheck = SculkHoard.entityFactory.getSculkAccumulatedMass();
 
+                if(DEBUG_MODE) System.out.println(
+                        "\n Known Nodes: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size()
+                        + "\n Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size()
+                        + "\n Known Hostiles: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() + "\n"
+
+                );
+
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHoard.entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
                 //Verification
-                gravemind.gravemindMemory.validateNodeEntries((ServerWorld) event.world);
-                gravemind.gravemindMemory.validateBeeNestEntries((ServerWorld) event.world);
+                SculkHoard.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
+                SculkHoard.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);
             }
         }
 
@@ -93,11 +104,12 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(PotionEvent.PotionExpiryEvent event)
     {
-        if(!event.getEntity().level.isClientSide() && gravemind != null && event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!event.getEntity().level.isClientSide() && SculkHoard.gravemind != null && event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             EffectInstance effectInstance = event.getPotionEffect();
 
             //If Sculk Infection, spawn mites and mass.
+            assert effectInstance != null;
             if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
             {
                 LivingEntity entity = event.getEntityLiving();

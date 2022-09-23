@@ -94,7 +94,7 @@ public class TargetAttacker extends TargetGoal {
         if(!(this.mob.getLastHurtByMob() instanceof SculkLivingEntity)
                 && this.mob.getLastHurtByMob() != null)
         {
-            SculkHoard.gravemind.gravemindMemory.addHostileToMemory(mob.getLastHurtByMob(), (ServerWorld) this.mob.level);
+            SculkHoard.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerWorld) this.mob.level);
         }
 
         if (this.alertSameType) {
