@@ -45,8 +45,11 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
     //The Maximum amount of honey this block can store
     protected final int MAX_HONEY_LEVEL = 5;
 
+    protected final int MIN_TICKS_IN_HIVE = 20 * 60 * 30; //30 Minutes
+
     //Repair routine will restart after an hour
     private final long repairIntervalInMinutes = 30;
+
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
 
@@ -160,7 +163,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
             entityIn.ejectPassengers();
             CompoundNBT compoundnbt = new CompoundNBT();
             entityIn.save(compoundnbt);
-            this.stored.add(new SculkBeeNestTile.Bee(compoundnbt, ticksInHive, hasNectar ? 2400 : 600));
+            this.stored.add(new SculkBeeNestTile.Bee(compoundnbt, ticksInHive, MIN_TICKS_IN_HIVE));
             this.stored.get(0);
             if (this.level != null)
             {

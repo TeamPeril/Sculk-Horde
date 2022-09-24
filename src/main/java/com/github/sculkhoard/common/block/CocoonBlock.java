@@ -227,11 +227,11 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
 
         //Get targets inside bounding box.
         possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);
-        EntityAlgorithms.filterOutNonHostiles(possibleAggressorTargets);
+        EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true);
         //if(true) System.out.println(Arrays.toString(possibleAggressorTargets.toArray()));
 
         possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);
-        EntityAlgorithms.filterOutHostiles(possibleLivingEntityTargets);
+        EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false);
         //if(true) System.out.println(Arrays.toString(possibleLivingEntityTargets.toArray()));
 
         //Give gravemind context to our request to make more informed situations

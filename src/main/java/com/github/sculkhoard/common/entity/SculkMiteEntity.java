@@ -1,7 +1,7 @@
 package com.github.sculkhoard.common.entity;
 
+import com.github.sculkhoard.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
-import com.github.sculkhoard.common.entity.goal.NearestAttackableNonSculkTargetGoal;
 import com.github.sculkhoard.common.entity.goal.SculkMiteInfectGoal;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EffectRegistry;
@@ -199,8 +199,8 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
                 {
                         //TargetAttacker(mob)
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableNonSculkTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
+                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetPassives()
                 };
         return goals;
     }

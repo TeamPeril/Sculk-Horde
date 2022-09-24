@@ -1,7 +1,7 @@
 package com.github.sculkhoard.common.entity;
 
 import com.github.sculkhoard.common.entity.attack.AcidAttack;
-import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
+import com.github.sculkhoard.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhoard.common.entity.goal.RangedAttackGoal;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.core.BlockRegistry;
@@ -192,10 +192,9 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     {
         Goal[] goals =
                 {
-                        //HurtByTargetGoal(mob)
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
+                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetInfected()
                 };
         return goals;
     }

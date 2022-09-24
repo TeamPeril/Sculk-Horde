@@ -63,6 +63,61 @@ public class EntityAlgorithms {
     }
 
     /**
+     * Filters out any mobs that do not fit the filter
+     * @param list The list of possible targets
+     */
+    public static void filterOutNonTargets(List<LivingEntity> list, boolean targetHostiles, boolean targetPassives, boolean targetInfected)
+    {
+        for(int i = 0; i < list.size(); i++)
+        {
+            boolean isNonTarget = false;
+
+            //If sculk living entity, do not attack
+            if(list.get(i) instanceof SculkLivingEntity)
+            {
+                isNonTarget = true;
+            }
+
+            //Do not attack creepers
+            if(list.get(i) instanceof CreeperEntity)
+            {
+                isNonTarget = true;
+            }
+
+            //If not attackable or invulnerable or is dead/dying
+            if(!list.get(i).isAttackable() || list.get(i).isInvulnerable() || list.get(i).isDeadOrDying())
+            {
+                isNonTarget = true;
+            }
+
+            //If we do not attack infected and entity is infected
+            if(!targetInfected && isLivingEntityInfected(list.get(i)))
+            {
+                isNonTarget = true;
+            }
+
+            //If we do not attack passives and entity is non-hostile
+            if(!targetPassives && !isLivingEntityHostile(list.get(i))) //NOTE: horde assumes everything is passive until provoked
+            {
+                isNonTarget = true;
+            }
+
+            //If we do not attack hostiles and target is hostile
+            if(!targetHostiles && isLivingEntityHostile(list.get(i)))
+            {
+                isNonTarget = true;
+            }
+
+            //If friendly, filter
+            if(isNonTarget)
+            {
+                list.remove(i); //Remove from list
+                i--; //Go back one index since the new length of the list is one less.
+            }
+        }
+    }
+
+    /**
      * Determines if an Entity is Infected based on if it has a potion effect
      * @param e The Given Entity
      * @return True if Infected, False otherwise
@@ -70,33 +125,6 @@ public class EntityAlgorithms {
     public static boolean isLivingEntityInfected(LivingEntity e)
     {
         return e.hasEffect(EffectRegistry.SCULK_INFECTION.get());
-    }
-
-
-    /**
-     * Determines if an Entity is friendy.
-     * @param entity The Given Entity
-     * @return True if friendly, False otherwise
-     */
-    public static boolean isLivingEntityFriendly(LivingEntity entity)
-    {
-        //If the entity is infected, don't attack it
-        if(EntityAlgorithms.isLivingEntityInfected(entity) || entity instanceof SculkLivingEntity)
-        {
-            return true;
-        }
-        //If Player is in creative or in spectator, consider them friendly
-        else if(entity instanceof PlayerEntity)
-        {
-            ServerPlayerEntity player = (ServerPlayerEntity) entity;
-            if(player.isCreative() || player.isSpectator())
-            {
-                return true;
-            }
-        }
-
-        //If the entity is not infected and it isnt a player in creative or spectator, then just assume not friendly
-        return false;
     }
 
 
@@ -122,84 +150,5 @@ public class EntityAlgorithms {
     {
         List<LivingEntity> livingEntitiesInRange = serverWorld.getLoadedEntitiesOfClass(LivingEntity.class, boundingBox, (Predicate<? super LivingEntity>) null);
         return livingEntitiesInRange;
-    }
-
-    /**
-     * Filters out any friendlies from a list.
-     * @param list
-     * @return A list of valid infection targets
-     */
-    public static void filterOutFriendlies(List<LivingEntity> list) {
-        for (int i = 0; i < list.size(); i++) {
-            //If Friendly
-            if (isLivingEntityFriendly(list.get(i))) {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-        }
-    }
-
-
-    /**
-     * Filters out any friendlies from a list.
-     * @param list
-     * @return A list of valid infection targets
-     */
-    public static void filterOutDoNotInteractMobs(List<LivingEntity> list) {
-        for (int i = 0; i < list.size(); i++) {
-            //If Friendly
-            if (list.get(i) instanceof CreeperEntity) {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-        }
-    }
-
-    /**
-     * Filters out any aggressors and friendlies from a list.
-     * @param list
-     * @return A list of valid infection targets
-     */
-    public static void filterOutHostiles(List<LivingEntity> list)
-    {
-        for(int i = 0; i < list.size(); i++)
-        {
-            //If Friendly
-            if(isLivingEntityFriendly(list.get(i)))
-            {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-            //If Player
-            else if(list.get(i) instanceof PlayerEntity)
-            {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-            //If Iron Golem
-            else if(list.get(i) instanceof IronGolemEntity)
-            {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-        }
-    }
-
-    /**
-     * Filters out any non-aggressors and friendlies from a list.
-     * @param list
-     * @return A list of valid infection targets
-     */
-    public static void filterOutNonHostiles(List<LivingEntity> list)
-    {
-        for(int i = 0; i < list.size(); i++)
-        {
-            //If friendly, filter
-            if(isLivingEntityFriendly(list.get(i)) || !isLivingEntityHostile(list.get(i)))
-            {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-        }
     }
 }

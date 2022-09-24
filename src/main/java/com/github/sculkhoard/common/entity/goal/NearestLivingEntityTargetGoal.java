@@ -13,12 +13,16 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutFriendlies;
-import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutNonHostiles;
+import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutNonTargets;
 
-public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends TargetGoal {
+public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
-    //TODO: Update how this class works so that we can dynamically add and remove mobs from being targets.
+
+    //flags to modify behavior
+    private boolean targetHostiles = false; //Should we attack hostiles?
+    private boolean targetPassives = false; //Should we target passives?
+    private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
+    boolean despawnWhenIdle = false; //Should we despawn after not having a target for a while?
 
     private final int ticksPerSecond = 20;
     private final int ticksIdleThreshold = 60;
@@ -28,32 +32,48 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
     protected LivingEntity target;
     protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
-    boolean despawnWhenIdle = false;
 
-    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee)
+    public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach)
     {
-        this(mobEntity, targetClass, mustSee, false);
+        this(mobEntity, mustSee, mustReach, (Predicate<LivingEntity>)null);
     }
 
-    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, boolean mustSee, boolean mustReach)
-    {
-        this(mobEntity, targetClass, 10, mustSee, mustReach, (Predicate<LivingEntity>)null);
-    }
-
-    public NearestAttackableHostileTargetGoal(MobEntity mobEntity, Class<T> targetClass, int interval, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
+    public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
     {
         super(mobEntity, mustSee, mustReach);
-        this.targetType = targetClass;
-        this.randomInterval = interval;
+        this.targetType = (Class<T>) LivingEntity.class;
+        this.randomInterval = 10;
         this.setFlags(EnumSet.of(Flag.TARGET));
         this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
-    public NearestAttackableHostileTargetGoal enableDespawnWhenIdle()
+    /** Options **/
+
+    public NearestLivingEntityTargetGoal enableDespawnWhenIdle()
     {
         despawnWhenIdle = true;
         return this;
     }
+
+    public NearestLivingEntityTargetGoal enableTargetHostiles()
+    {
+        targetHostiles = true;
+        return this;
+    }
+
+    public NearestLivingEntityTargetGoal enableTargetPassives()
+    {
+        targetPassives = true;
+        return this;
+    }
+
+    public NearestLivingEntityTargetGoal enableTargetInfected()
+    {
+        targetInfected = true;
+        return this;
+    }
+
+    /** Functionality **/
 
     public boolean canUse()
     {
@@ -78,10 +98,13 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
             }
         }
 
-
-        if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
+        //Have a random chance to not search for a target
+        if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0)
+        {
             return false;
-        } else {
+        }
+        else
+        {
             this.findTarget();
             return this.target != null;
         }
@@ -107,7 +130,7 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
                     (Predicate<? super LivingEntity>) null);
 
             //Remove Any Sculk Entities or entities already infected
-            filterOutNonHostiles(possibleTargets);
+            filterOutNonTargets(possibleTargets, targetHostiles, targetPassives, targetInfected);
         }
         else //if targetType is player
         {
@@ -143,8 +166,8 @@ public class NearestAttackableHostileTargetGoal<T extends LivingEntity> extends 
         super.start();
     }
 
-    public void setTarget(@Nullable LivingEntity p_234054_1_) {
-        this.target = p_234054_1_;
+    public void setTarget(@Nullable LivingEntity targetIn) {
+        this.target = targetIn;
     }
 
 }

@@ -100,10 +100,10 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
 
                 //Get targets inside bounding box.
                 possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-                EntityAlgorithms.filterOutNonHostiles(possibleAggressorTargets);
+                EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true);
 
                 possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-                EntityAlgorithms.filterOutHostiles(possibleLivingEntityTargets);
+                EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false);
 
                 //Choose a spawn position
                 BlockPos spawnPosition;

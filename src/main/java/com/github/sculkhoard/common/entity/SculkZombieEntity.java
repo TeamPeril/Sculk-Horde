@@ -1,10 +1,8 @@
 package com.github.sculkhoard.common.entity;
 
 import com.github.sculkhoard.common.entity.attack.AcidAttack;
-import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
+import com.github.sculkhoard.common.entity.goal.*;
 import com.github.sculkhoard.common.entity.goal.RangedAttackGoal;
-import com.github.sculkhoard.common.entity.goal.SculkZombieAttackGoal;
-import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
 import net.minecraft.entity.*;
@@ -192,9 +190,8 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable 
                 {
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
-                        //NearestAttackableTargetGoal(Mob, targetType, mustSee)
-                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
-                        //new NearestAttackableTargetGoal<>(this, IAngerable.class, true),
+                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetInfected()
 
                 };
         return goals;

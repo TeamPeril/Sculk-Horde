@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.common.entity.goal.NearestAttackableHostileTargetGoal;
+import com.github.sculkhoard.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhoard.common.entity.goal.SculkMiteAggressorAttackGoal;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.EntityRegistry;
@@ -11,10 +11,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.AbstractRaiderEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -169,7 +166,8 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
                 {
                         //HurtByTargetGoal(mob)
                         new HurtByTargetGoal(this).setAlertOthers(),
-                        new NearestAttackableHostileTargetGoal<>(this, LivingEntity.class, true).enableDespawnWhenIdle(),
+                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                                .enableDespawnWhenIdle().enableTargetHostiles()
                 };
         return goals;
     }

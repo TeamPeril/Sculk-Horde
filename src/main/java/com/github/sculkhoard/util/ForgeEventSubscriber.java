@@ -66,14 +66,16 @@ public class ForgeEventSubscriber {
             SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
 
-            //Verification Processes to ensure our data is accurate
-            SculkHoard.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
-            SculkHoard.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);
+
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
             if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
             {
                 time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
+
+                //Verification Processes to ensure our data is accurate
+                SculkHoard.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
+                SculkHoard.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);
 
                 //Calculate Current State
                 SculkHoard.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
