@@ -104,7 +104,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         //If world isnt client side and we are in the overworld
         if(!pLevel.isClientSide() && pLevel.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            SculkHoard.gravemind.getGravemindMemory().addBeeNestToMemory(pPos, (ServerWorld) pLevel);
+            SculkHoard.gravemind.getGravemindMemory().addBeeNestToMemory(pPos);
         }
     }
 

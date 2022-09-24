@@ -106,7 +106,7 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         //If world isnt client side and we are in the overworld
         if(!world.isClientSide() && world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            SculkHoard.gravemind.getGravemindMemory().addNodeToMemory(bp, (ServerWorld) world);
+            SculkHoard.gravemind.getGravemindMemory().addNodeToMemory(bp);
         }
     }
 
@@ -128,14 +128,9 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
      * @param random ???
      */
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random) {
-
-
-        SculkHoard.entityFactory.addSculkAccumulatedMass(1);//Add 1 sculk mass to the hoard
-
-        //make sure the gravemind knows about this position
-        SculkHoard.gravemind.getGravemindMemory().addNodeToMemory(bp, serverWorld);
-
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
+    {
+        SculkHoard.gravemind.getGravemindMemory().addSculkAccumulatedMass(1);//Add 1 sculk mass to the hoard
     }
 
 
@@ -197,7 +192,6 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         TileEntity tile = worldIn.getBlockEntity(pos);
         if(tile instanceof SculkBrainTile && !worldIn.isClientSide())
         {
-            //((SculkBrainTile)tile).loadAllChunks();
             ((SculkBrainTile)tile).forceLoadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
 
@@ -208,7 +202,6 @@ public class SculkBrainBlock extends Block implements IForgeBlock {
         TileEntity tile = worldIn.getBlockEntity(pos);
         if(tile instanceof SculkBrainTile && !worldIn.isClientSide())
         {
-            //((SculkBrainTile)tile).unloadAllChunks();
             ((SculkBrainTile)tile).unloadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
 

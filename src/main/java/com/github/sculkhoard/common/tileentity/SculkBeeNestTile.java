@@ -314,7 +314,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
             if(getHoneyLevel(this.getBlockState()) >= MAX_HONEY_LEVEL - 1)
             {
                 this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(SculkBeeNestBlock.HONEY_LEVEL, Integer.valueOf(0)));
-                SculkHoard.gravemind.entityFactory.addSculkAccumulatedMass(10);
+                SculkHoard.gravemind.getGravemindMemory().addSculkAccumulatedMass(10);
             }
 
             /** Structure Building Process **/

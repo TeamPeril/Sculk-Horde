@@ -27,23 +27,24 @@ public class ForgeEventSubscriber {
 
     private static long time_save_point; //Used to track time passage.
     private static int sculkMassCheck;
-    private static int sculkNodeCheck;
-    private static int sculkBeeNestCheck;
 
 
-    //This occurs when a world is loaded
+    /**
+     * This event gets called when a world loads.
+     * All we do is initialize the gravemind and some variables
+     * used to track changes.
+     * @param event The load event
+     */
     @SubscribeEvent
     public static void onWorldLoad(WorldEvent.Load event)
     {
         //Initalize Gravemind
         if(!event.getWorld().isClientSide() && event.getWorld().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            SculkHoard.gravemind = new Gravemind((ServerWorld) event.getWorld());
+            SculkHoard.gravemind = new Gravemind(); //Initialize Gravemind
+            time_save_point = 0; //Used to track time passage.
+            sculkMassCheck = 0; //Used to track changes in sculk mass
         }
-        time_save_point = 0; //Used to track time passage.
-        sculkMassCheck = 0;
-        sculkNodeCheck = 0;
-        sculkBeeNestCheck = 0;
     }
 
     /**
@@ -54,27 +55,24 @@ public class ForgeEventSubscriber {
     public static void WorldTickEvent(TickEvent.WorldTickEvent event)
     {
 
+        //Make sure this only gets ran on the server, gravemind has been initalized, and were in the overworld
         if(!event.world.isClientSide() && SculkHoard.gravemind != null && event.world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             int ticks_per_second = 20; //Unit is ticks
-            int seconds_between_intervals = 5; //Unit is Seconds
+            int seconds_between_intervals = 60*5; //Unit is Seconds
 
+            //Infestation Related Processes
             SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
             SculkHoard.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
 
-            if(sculkNodeCheck != SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size())
-            {
-                sculkNodeCheck = SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size();
-            }
-
-            if(sculkBeeNestCheck != SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size())
-            {
-                sculkBeeNestCheck = SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size();
-            }
+            //Verification Processes to ensure our data is accurate
+            SculkHoard.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
+            SculkHoard.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
-            if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second) {
+            if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
+            {
                 time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
 
                 //Calculate Current State
@@ -82,20 +80,17 @@ public class ForgeEventSubscriber {
                 if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + SculkHoard.gravemind.getEvolutionState().toString());
 
                 //Check How much Mass Was Generated over this period
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHoard.entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
-                sculkMassCheck = SculkHoard.entityFactory.getSculkAccumulatedMass();
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
+                sculkMassCheck = SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass();
 
                 if(DEBUG_MODE) System.out.println(
                         "\n Known Nodes: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size()
-                        + "\n Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size()
-                        + "\n Known Hostiles: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() + "\n"
+                        + "\n Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size()
+                        + "\n Known Hostiles: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().size() + "\n"
 
                 );
 
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHoard.entityFactory.getSculkAccumulatedMass() - sculkMassCheck));
-                //Verification
-                SculkHoard.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
-                SculkHoard.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
             }
         }
 

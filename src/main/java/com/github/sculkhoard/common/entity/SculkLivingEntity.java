@@ -29,7 +29,7 @@ public class SculkLivingEntity extends MonsterEntity {
      */
     @Override
     public void onRemovedFromWorld() {
-        SculkHoard.entityFactory.addSculkAccumulatedMass((int) this.getHealth());
+        SculkHoard.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
 

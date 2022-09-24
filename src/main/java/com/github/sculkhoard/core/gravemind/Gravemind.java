@@ -14,9 +14,12 @@ import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -38,30 +41,18 @@ public class Gravemind
 
     private evolution_states evolution_state;
 
-    //The World
-    private final ServerWorld WORLD;
-
     //This controls the reinforcement system.
     public static EntityFactory entityFactory;
 
-    //Where we store all the data
-    private GravemindMemory gravemindMemory;
-    protected final String GRAVEMINDMEMORYNAME = SculkHoard.MOD_ID + "_gravemind_memory";
+    public GravemindMemory gravemindMemory;
+
+
 
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
     private static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
 
-    //This is how much mass is needed to go from undeveloped to immature
-    private final int MASS_GOAL_FOR_IMMATURE = 500;
-    //This is how much mass is needed to go from immature to mature
-    private final int MASS_GOAL_FOR_MATURE = 100000000;
-
     private final int SCULK_NODE_INFECT_RADIUS_UNDEVELOPED = 10;
-    //The radius that sculk nodes can infect in the immature state
-    private final int SCULK_NODE_INFECT_RADIUS_IMMATURE = 20;
-    //The radius that sculk nodes can infect in the mature state
-    private final int SCULK_NODE_INFECT_RADIUS_MATURE = 50;
 
 
     //Determines the range which a sculk node can infect land around it
@@ -72,13 +63,12 @@ public class Gravemind
      * Called in ForgeEventSubscriber.java in world load event. <br>
      * WARNING: DO NOT CALL THIS FUNCTION UNLESS THE WORLD IS LOADED
      */
-    public Gravemind(ServerWorld worldIn)
+    public Gravemind()
     {
-        WORLD = worldIn;
         evolution_state = evolution_states.Undeveloped;
         entityFactory = SculkHoard.entityFactory;
 
-        gravemindMemory = WORLD.getDataStorage().computeIfAbsent(Gravemind.GravemindMemory::new, GRAVEMINDMEMORYNAME);
+        gravemindMemory = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHoard.SAVE_DATA_ID);
         calulateCurrentState();
     }
 
@@ -95,8 +85,17 @@ public class Gravemind
      * Get the memory object that stores all the data
      * @return The GravemindMemory
      */
+    @Nullable
     public GravemindMemory getGravemindMemory()
     {
+        if(gravemindMemory == null)
+        {
+            if(ServerLifecycleHooks.getCurrentServer() == null)
+                return null;
+
+            DimensionSavedDataManager savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage();
+            gravemindMemory = savedData.computeIfAbsent(GravemindMemory::new, SculkHoard.SAVE_DATA_ID);
+        }
         return gravemindMemory;
     }
 
@@ -106,14 +105,20 @@ public class Gravemind
      */
     public void calulateCurrentState()
     {
-        if(SculkHoard.entityFactory.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
+        //This is how much mass is needed to go from undeveloped to immature
+        int MASS_GOAL_FOR_IMMATURE = 500;
+        //This is how much mass is needed to go from immature to mature
+        int MASS_GOAL_FOR_MATURE = 100000000;
+        if(getGravemindMemory().getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
-            sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_IMMATURE;
+            //The radius that sculk nodes can infect in the immature state
+            sculk_node_infect_radius = 20;
             evolution_state = evolution_states.Immature;
         }
-        else if(SculkHoard.entityFactory.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
+        else if(getGravemindMemory().getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
         {
-            sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_MATURE;
+            //The radius that sculk nodes can infect in the mature state
+            sculk_node_infect_radius = 50;
             evolution_state = evolution_states.Mature;
         }
     }
@@ -194,7 +199,7 @@ public class Gravemind
             if(SculkHoard.gravemind.isValidPositionForSculkNode(worldIn, targetPos))
             {
                 worldIn.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
-                getGravemindMemory().addNodeToMemory(targetPos, worldIn);
+                getGravemindMemory().addNodeToMemory(targetPos);
                 EntityType.LIGHTNING_BOLT.spawn(worldIn, null, null, targetPos, SpawnReason.SPAWNER, true, true);
                 //if(DEBUG_MODE) System.out.println("New Sculk Node Created at " + targetPos);
             }
@@ -232,69 +237,70 @@ public class Gravemind
 
     /** ######## Classes ######## **/
 
+    /**
+     * This class handels all data that gets saved to and loaded from the world. <br>
+     * Learned World Data mechanics from: https://www.youtube.com/watch?v=tyTsdCzVz6w
+     */
     public class GravemindMemory extends WorldSavedData
     {
-        public final String NAME = SculkHoard.MOD_ID + "_gravemind_memory";
-
+        //The world
         public ServerWorld world;
 
         //Map<The Name of Mob, IsHostile?>
         public Map<String, HostileEntry> hostileEntries;
 
-        //We do not want to put them too close to each other.
+        //List of all known positions of nodes.
         private ArrayList<NodeEntry> nodeEntries;
 
+        //List of all known positions of bee nests
         private ArrayList<BeeNestEntry> beeNestEntries;
+
+        // the amount of mass that the sculk hoard has accumulated.
+        private int sculkAccumulatedMass = 0;
+
+        // used to write/read nbt data to/from the world.
+        private final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
 
         /**
          * Default Constructor
          */
         public GravemindMemory()
         {
-            super(GRAVEMINDMEMORYNAME);
+            super(SculkHoard.SAVE_DATA_ID);
             nodeEntries = new ArrayList<>();
             beeNestEntries = new ArrayList<>();
             hostileEntries = new HashMap<>();
         }
 
-        /**
-         * Constructor
-         * @param nameIn The name of the
-         */
-        public GravemindMemory(String nameIn)
-        {
-            super(nameIn);
-        }
-
-
         /** Accessors **/
+
+        /**
+         * Gets how much Sculk mass the Sculk horde has.
+         * @return An integer representing all Sculk mass accumulated.
+         */
+        public int getSculkAccumulatedMass()
+        {
+            setDirty();
+            return sculkAccumulatedMass;
+        }
 
         /**
          * Returns a list of known node positions
          * @return An ArrayList of all node entries positions
          */
-        public ArrayList<NodeEntry> getNodeEntries()
-        {
-            return getGravemindMemory().nodeEntries;
-        }
+        public ArrayList<NodeEntry> getNodeEntries() { return nodeEntries; }
 
         /**
          * Returns a list of known bee nest positions
          * @return An ArrayList of all know bee nest positions
          */
-        public ArrayList<BeeNestEntry> getBeeNestEntries()
-        {
-            return getGravemindMemory().beeNestEntries;
-        }
+        public ArrayList<BeeNestEntry> getBeeNestEntries() { return beeNestEntries; }
 
         /**
          * Returns the map of known hostiles
          * @return An HashMap with all known hostile entities
          */
-        public Map<String, HostileEntry> getHostileEntries()
-        {
-            return getGravemindMemory().hostileEntries;
-        }
+        public Map<String, HostileEntry> getHostileEntries() { return hostileEntries; }
 
         /**
          * Will check the positons of all entries to see
@@ -334,16 +340,48 @@ public class Gravemind
 
         /** ######## Modifiers ######## **/
 
+
+        /**
+         * Adds to the sculk accumulated mass
+         * @param amount The amount you want to add
+         */
+        public void addSculkAccumulatedMass(int amount)
+        {
+            setDirty();
+            sculkAccumulatedMass += amount;
+        }
+
+
+        /**
+         * Subtracts from the Sculk Accumulate Mass
+         * @param amount The amount to substract
+         */
+        public void subtractSculkAccumulatedMass(int amount)
+        {
+            setDirty();
+            sculkAccumulatedMass -= amount;
+        }
+
+        /**
+         * Sets the value of sculk accumulate mass.
+         * @param amount The amount to set it to.
+         */
+        public void setSculkAccumulatedMass(int amount)
+        {
+            setDirty();
+            sculkAccumulatedMass = amount;
+        }
+
         /**
          * Adds a position to the list if it does not already exist
          * @param positionIn
          */
-        public void addNodeToMemory(BlockPos positionIn, ServerWorld worldIn)
+        public void addNodeToMemory(BlockPos positionIn)
         {
             if(!isNodePositionInMemory(positionIn) && getNodeEntries() != null)
             {
-                getGravemindMemory().getNodeEntries().add(new NodeEntry(positionIn));
-                getGravemindMemory().setDirty();
+                getNodeEntries().add(new NodeEntry(positionIn));
+                setDirty();
             }
             else if(DEBUG_MODE) System.out.println("Attempted to Add Node To Memory but failed.");
         }
@@ -352,12 +390,12 @@ public class Gravemind
          * Adds a position to the list if it does not already exist
          * @param positionIn
          */
-        public void addBeeNestToMemory(BlockPos positionIn, ServerWorld worldIn)
+        public void addBeeNestToMemory(BlockPos positionIn)
         {
             if(!isBeeNestPositionInMemory(positionIn) && getBeeNestEntries() != null)
             {
-                getGravemindMemory().getBeeNestEntries().add(new BeeNestEntry(positionIn));
-                getGravemindMemory().setDirty();
+                getBeeNestEntries().add(new BeeNestEntry(positionIn));
+                setDirty();
             }
             else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
         }
@@ -377,9 +415,9 @@ public class Gravemind
             }
 
             String identifier = entityIn.getClass().toString();
-            if(identifier != null && !identifier.isEmpty())
+            if(!identifier.isEmpty())
             {
-                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GRAVEMINDMEMORYNAME);
+                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHoard.SAVE_DATA_ID);
                 memory.getHostileEntries().putIfAbsent(identifier, new HostileEntry(identifier));
                 memory.setDirty();
             }
@@ -404,7 +442,7 @@ public class Gravemind
                 {
                     getGravemindMemory().getNodeEntries().remove(index);
                     index--;
-                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GRAVEMINDMEMORYNAME).setDirty();
+                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHoard.SAVE_DATA_ID).setDirty();
                 }
             }
             long endTime = System.nanoTime();
@@ -430,15 +468,19 @@ public class Gravemind
                 {
                     getBeeNestEntries().remove(index);
                     index--;
-                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, GRAVEMINDMEMORYNAME).setDirty();
+                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHoard.SAVE_DATA_ID).setDirty();
                 }
             }
             long endTime = System.nanoTime();
             if(DEBUG_MODE) System.out.println("Bee Nest Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
         }
 
+        /**
+         * This method gets called every time the world loads data from memory.
+         * We extract data from the memory and store it in variables.
+         * @param nbt The memory where data is stored
+         */
         @Override
-        @Nonnull
         public void load(CompoundNBT nbt)
         {
 
@@ -447,6 +489,8 @@ public class Gravemind
             getNodeEntries().clear();
             getBeeNestEntries().clear();
             getHostileEntries().clear();
+
+            this.sculkAccumulatedMass = nbt.getInt(sculkAccumulatedMassIdentifier);
 
             for (int i = 0; gravemindData.contains("node_entry" + i); i++) {
                 getNodeEntries().add(NodeEntry.serialize(gravemindData.getCompound("node_entry" + i)));
@@ -467,15 +511,16 @@ public class Gravemind
         }
 
         /**
-         * Used to save the {@code SavedData} to a {@code CompoundTag}
-         *
-         * @param nbt the {@code CompoundTag} to save the {@code SavedData} to
+         * This method gets called every time the world saves data from memory.
+         * We take the data in our variables and store it to memory.
+         * @param nbt The memory where data is stored
          */
         @Override
-        @Nonnull
         public CompoundNBT save(CompoundNBT nbt)
         {
             CompoundNBT gravemindData = new CompoundNBT();
+
+            nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
 
             for(ListIterator<NodeEntry> iterator = getNodeEntries().listIterator(); iterator.hasNext();)
             {
@@ -494,15 +539,12 @@ public class Gravemind
                 hostileIndex++;
             }
 
-
             nbt.put("gravemindData", gravemindData);
             return nbt;
         }
 
 
     }
-
-
 
     /** ######## CLASSES ######### **/
 
@@ -526,11 +568,20 @@ public class Gravemind
             lastTimeWasActive = System.nanoTime();
         }
 
+        /**
+         * Checks the world to see if the node is still there.
+         * @param worldIn The world to check
+         * @return True if in the world at location, false otherwise
+         */
         public boolean isEntryValid(ServerWorld worldIn)
         {
             return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BRAIN.get());
         }
 
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
         public CompoundNBT deserialize()
         {
             CompoundNBT nbt = new CompoundNBT();
@@ -539,6 +590,10 @@ public class Gravemind
             return nbt;
         }
 
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
         public static NodeEntry serialize(CompoundNBT nbt)
         {
             return new NodeEntry(BlockPos.of(nbt.getLong("position")));
@@ -604,6 +659,11 @@ public class Gravemind
             }
         }
 
+
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
         public CompoundNBT deserialize()
         {
             CompoundNBT nbt = new CompoundNBT();
@@ -612,6 +672,11 @@ public class Gravemind
             return nbt;
         }
 
+
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
         public static BeeNestEntry serialize(CompoundNBT nbt)
         {
             return new BeeNestEntry(BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
@@ -638,6 +703,11 @@ public class Gravemind
             identifier = identifierIn;
         }
 
+
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
         public CompoundNBT deserialize()
         {
             CompoundNBT nbt = new CompoundNBT();
@@ -645,6 +715,10 @@ public class Gravemind
             return nbt;
         }
 
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
         public static HostileEntry serialize(CompoundNBT nbt)
         {
             return new HostileEntry(nbt.getString("identifier"));

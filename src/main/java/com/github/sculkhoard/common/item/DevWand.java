@@ -98,7 +98,7 @@ public class DevWand extends Item implements IForgeItem {
 			{
 				playerIn.displayClientMessage(
 						new StringTextComponent(
-								"Sculk Accumulated Mass: " + SculkHoard.entityFactory.getSculkAccumulatedMass() + "\n" +
+								"Sculk Accumulated Mass: " + SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() + "\n" +
 								"Known Nodes: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
 								"Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size() + "\n" +
 								"Known Hostiles: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().size() + "\n"
@@ -110,7 +110,7 @@ public class DevWand extends Item implements IForgeItem {
 			else if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
 			{
 				playerIn.displayClientMessage(new StringTextComponent("Adding 100 Sculk Mass"), false);
-				SculkHoard.entityFactory.addSculkAccumulatedMass(100);
+				SculkHoard.gravemind.getGravemindMemory().addSculkAccumulatedMass(100);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return ActionResult.pass(itemstack);
 			}

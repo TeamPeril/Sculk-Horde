@@ -183,7 +183,7 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
             }
 
             //If spreading randomly and if there is sculk mass
-            if (chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
+            if (chooseSpreadPosRandomly && SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0)
             {
                 //If we have spreading attempts left
                 if (getSpreadAttempts() < getMaxSpreadAttempts())
@@ -207,7 +207,7 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
                 }
             }
             //If we are checking every vailid position instead of random ones
-            else if (!chooseSpreadPosRandomly && SculkHoard.entityFactory.getSculkAccumulatedMass() > 0)
+            else if (!chooseSpreadPosRandomly && SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0)
             {
                 //Get all neighbors and check if we can spread to all possible positions
                 ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(this.getBlockPos());
@@ -220,7 +220,7 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
             }
 
             //Once done spreading, convert to dormant variant
-            if (isSpreadingComplete || SculkHoard.entityFactory.getSculkAccumulatedMass() <= 0)
+            if (isSpreadingComplete || SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
             {
                 SculkHoard.infestationConversionTable.convertToDormant((ServerWorld) this.level, this.getBlockPos());
             }

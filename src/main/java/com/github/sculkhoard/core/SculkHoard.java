@@ -20,7 +20,9 @@ public class SculkHoard {
 
     //Here I've created a variable of our mod id so we can use it throughout our project
     public static final String MOD_ID = "sculkhoard";
-    public static final String SAVE_DATA_ID = MOD_ID;
+    //The file name in the world data folder.
+    public static final String SAVE_DATA_ID = SculkHoard.MOD_ID + "_gravemind_memory";
+    //The Creative Tab that all the items appear in
     public static final ItemGroup SCULK_GROUP = new CreativeTabGroup("sculkhoard_tab");
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
