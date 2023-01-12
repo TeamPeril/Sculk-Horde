@@ -1,7 +1,7 @@
 package com.github.sculkhoard.common.tileentity;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
+import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;

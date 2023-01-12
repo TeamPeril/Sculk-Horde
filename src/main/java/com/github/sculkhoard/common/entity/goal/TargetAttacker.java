@@ -1,6 +1,5 @@
 package com.github.sculkhoard.common.entity.goal;
 
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhoard.core.SculkHoard;
@@ -126,7 +125,6 @@ public class TargetAttacker extends TargetGoal {
 
                 mobentity = (MobEntity)iterator.next();//Get Next Mob
 
-                ArrayList<EntityType> listOfProtectors = EntityFactory.getAllEntriesOfThisCategory(EntityFactory.StrategicValues.Melee);
                 boolean isAlertingSelf = this.mob == mobentity;
                 boolean hasTargetAlready = mobentity.getTarget() != null;
                 boolean isProtector = mobentity instanceof SculkLivingEntity;
@@ -139,7 +137,7 @@ public class TargetAttacker extends TargetGoal {
                             + " isProtector? =" + isProtector + "]");
                 }
 
-                //If we arent trying to alert ourself & if protectors dont already have a target & is a mite aggressor
+                //If we arent trying to alert ourself & if protectors dont already have a target
                 if (!isAlertingSelf && !hasTargetAlready && isProtector)
                 {
                     this.alertOther(mobentity, this.mob.getLastHurtByMob());

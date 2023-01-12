@@ -1,8 +1,6 @@
 package com.github.sculkhoard.common.block.BlockInfestation;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.core.BlockRegistry;
-import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,16 +18,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class SpreadingBlock extends Block implements IForgeBlock {
 

@@ -1,19 +1,9 @@
 package com.github.sculkhoard.common.item;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
-import com.github.sculkhoard.util.ForgeEventSubscriber;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -22,8 +12,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
 
 import java.util.List;
-
-import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
 
 public class SculkResinItem extends Item implements IForgeItem {
 

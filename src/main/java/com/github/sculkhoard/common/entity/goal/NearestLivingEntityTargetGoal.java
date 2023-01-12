@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.github.sculkhoard.common.entity.EntityAlgorithms.filterOutNonTargets;
+import static com.github.sculkhoard.util.EntityAlgorithms.filterOutNonTargets;
 
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 

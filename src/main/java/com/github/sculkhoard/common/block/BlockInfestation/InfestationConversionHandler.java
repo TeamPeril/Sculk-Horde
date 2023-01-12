@@ -1,9 +1,8 @@
 package com.github.sculkhoard.common.block.BlockInfestation;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
-import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.util.ForgeEventSubscriber;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -263,7 +262,7 @@ public class InfestationConversionHandler
      * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
      * @param world The world
      */
-    public void processVictimConversionQueue(ServerWorld world)
+    public void proccessConversionToVictimQueue(ServerWorld world)
     {
         if(!world.isClientSide())
         {
@@ -323,7 +322,7 @@ public class InfestationConversionHandler
      * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
      * @param world The world
      */
-    public void processInfectionConversionQueue(ServerWorld world)
+    public void processConversionToInfectedQueue(ServerWorld world)
     {
         if(!world.isClientSide())
         {

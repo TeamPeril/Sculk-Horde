@@ -1,9 +1,8 @@
 package com.github.sculkhoard.common.item;
 
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
+import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.core.SculkHoard;
-import com.github.sculkhoard.core.gravemind.Gravemind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.InputMappings;
@@ -101,7 +100,9 @@ public class DevWand extends Item implements IForgeItem {
 								"Sculk Accumulated Mass: " + SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() + "\n" +
 								"Known Nodes: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
 								"Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size() + "\n" +
-								"Known Hostiles: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().size() + "\n"
+								"Known Hostiles Amount: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().size() + "\n" +
+								"Known Hostiles List: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().toString() + "\n" +
+								"Conversion Queue Size: " + SculkHoard.infestationConversionTable.conversionQueue.size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return ActionResult.pass(itemstack);

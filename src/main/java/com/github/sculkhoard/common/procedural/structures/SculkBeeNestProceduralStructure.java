@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.procedural.structures;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.common.block.SculkBeeNestCellBlock;
 import com.github.sculkhoard.core.BlockRegistry;
 import net.minecraft.block.BlockState;
@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class SculkBeeNestProceduralStructure extends ProceduralStructure
 {

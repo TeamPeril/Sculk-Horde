@@ -127,9 +127,11 @@ public class RangedAttackGoal extends Goal {
     /**
      * Returns whether execution should begin. You can also read and cache any state
      * necessary for execution in this method as well.
+     *
+     * NOTE: I SHOULD NOT NEED TO CHECK IF THE ENTITY IS DEAD
      */
     public boolean canUse() {
-        return this.entity.getTarget() != null;
+        return this.entity.getTarget() != null && this.entity.getTarget().isDeadOrDying() == false;
     }
 
     /**
@@ -165,108 +167,108 @@ public class RangedAttackGoal extends Goal {
      */
     public void tick()
     {
+        if(!this.canUse()) {return;}
+
         LivingEntity targetEntity = this.entity.getTarget();
-        if (targetEntity != null)
+
+        double distanceToTargetSq = this.entity.distanceToSqr(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
+        boolean inLineOfSight = this.entity.getSensing().canSee(targetEntity);
+
+        //If target is in light
+        if (inLineOfSight != this.seeTime > 0)
+            this.seeTime = 0;
+
+        //NOTE: ++Variable returns the value after incrementing. Variable++ returns the value before this.
+        //If target can be seen
+        if (inLineOfSight)
         {
-            double distanceToTargetSq = this.entity.distanceToSqr(targetEntity.getX(), targetEntity.getY(),
-                    targetEntity.getZ());
-            boolean inLineOfSight = this.entity.getSensing().canSee(targetEntity);
-
-            //If target is in light
-            if (inLineOfSight != this.seeTime > 0)
-                this.seeTime = 0;
-
-            //NOTE: ++Variable returns the value after incrementing. Variable++ returns the value before this.
-            //If target can be seen
-            if (inLineOfSight)
-            {
-                ++this.seeTime; //Keep track of the ticks this target has been visible
-            }
-            else //If the target is not visible
-            {
-                //Finish a multishot attack in case we are in the middle of one
-                if (multiShot)
-                    finishMultiShot();
-
-                //De-increment the tick tracker for target being visible
-                --this.seeTime;
-            }
-
-            //If the distance to target is in range and we have seen the target long enough
-            if (distanceToTargetSq <= (double) this.maxAttackDistance && this.seeTime >= 20)
-            {
-                this.entity.getNavigation().stop();//Tell entity to stop
-                ++this.strafingTime; //Track how many ticks were strafing
-            }
-            else //If target not in range, move to it
-            {
-                //Go to the target mob
-                this.entity.getNavigation().moveTo(targetEntity, this.moveSpeedAmp);
-                this.strafingTime = -1; //Stop Strafing
-            }
-
-            //If we have reached the max threshold for strafing
-            if (this.strafingTime >= strafeTicksThreshold)
-            {
-                //Given a random chance, change strafe rotation
-                if ((double) this.entity.getRandom().nextFloat() < 0.3D)
-                {
-                    this.strafingClockwise = !this.strafingClockwise; //Change strafe direction
-                }
-                //Given random chance, change to strafe forward/backwards
-                if ((double) this.entity.getRandom().nextFloat() < 0.3D)
-                {
-                    this.strafingBackwards = !this.strafingBackwards;
-                }
-
-                this.strafingTime = 0; //Reset Strafing Time
-            }
-
-            //If directed to stop strafing
-            if (this.strafingTime > -1)
-            {
-                //If distance to target is 75% to 100% of maxAttackDistance
-                if (distanceToTargetSq > (double) (this.maxAttackDistance * 0.75F))
-                {
-                    this.strafingBackwards = false; //Stop strafing backwards
-                }
-                //If distance to target is between 0% to 25% of maxAttackDistance
-                else if (distanceToTargetSq < (double) (this.maxAttackDistance * 0.25F))
-                {
-                    this.strafingBackwards = true;
-                }
-
-                //Tell entity how to strafe given the booleans strafingBackwards and strafingClockwise
-                this.entity.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F,
-                        this.strafingClockwise ? 0.5F : -0.5F);
-                //Tell Entity to look at target
-                this.entity.lookAt(targetEntity, 30.0F, 30.0F);
-            }
-            else //If in process of strafing, just look at target entity
-            {
-                this.entity.getLookControl().setLookAt(targetEntity, 30.0F, 30.0F);
-            }
-
-
-            //If multishooting is enabled, do a multishot tick instead of a single one
-            if (multiShooting)
-            {
-                if (tickMultiShot())
-                    this.attack.shoot();
-                return;
-            }
-            //If multishooting is not enabled
-            else if (this.seeTime >= this.visibleTicksDelay)
-            {
-                if (this.attackTime >= this.attackCooldown)
-                {
-                    this.attack.shoot();
-                    this.attackTime = 0;
-                }
-                else
-                    this.attackTime++;
-            }
-            this.entity.setAttackingState(attackTime >= attackCooldown * 0.75 ? this.statecheck : 0);
+            ++this.seeTime; //Keep track of the ticks this target has been visible
         }
+        else //If the target is not visible
+        {
+            //Finish a multishot attack in case we are in the middle of one
+            if (multiShot)
+                finishMultiShot();
+
+            //De-increment the tick tracker for target being visible
+            --this.seeTime;
+        }
+
+        //If the distance to target is in range and we have seen the target long enough
+        if (distanceToTargetSq <= (double) this.maxAttackDistance && this.seeTime >= 20)
+        {
+            this.entity.getNavigation().stop();//Tell entity to stop
+            ++this.strafingTime; //Track how many ticks were strafing
+        }
+        else //If target not in range, move to it
+        {
+            //Go to the target mob
+            this.entity.getNavigation().moveTo(targetEntity, this.moveSpeedAmp);
+            this.strafingTime = -1; //Stop Strafing
+        }
+
+        //If we have reached the max threshold for strafing
+        if (this.strafingTime >= strafeTicksThreshold)
+        {
+            //Given a random chance, change strafe rotation
+            if ((double) this.entity.getRandom().nextFloat() < 0.3D)
+            {
+                this.strafingClockwise = !this.strafingClockwise; //Change strafe direction
+            }
+            //Given random chance, change to strafe forward/backwards
+            if ((double) this.entity.getRandom().nextFloat() < 0.3D)
+            {
+                this.strafingBackwards = !this.strafingBackwards;
+            }
+
+            this.strafingTime = 0; //Reset Strafing Time
+        }
+
+        //If directed to stop strafing
+        if (this.strafingTime > -1)
+        {
+            //If distance to target is 75% to 100% of maxAttackDistance
+            if (distanceToTargetSq > (double) (this.maxAttackDistance * 0.75F))
+            {
+                this.strafingBackwards = false; //Stop strafing backwards
+            }
+            //If distance to target is between 0% to 25% of maxAttackDistance
+            else if (distanceToTargetSq < (double) (this.maxAttackDistance * 0.25F))
+            {
+                this.strafingBackwards = true;
+            }
+
+            //Tell entity how to strafe given the booleans strafingBackwards and strafingClockwise
+            this.entity.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F,
+                    this.strafingClockwise ? 0.5F : -0.5F);
+            //Tell Entity to look at target
+            this.entity.lookAt(targetEntity, 30.0F, 30.0F);
+        }
+        else //If in process of strafing, just look at target entity
+        {
+            this.entity.getLookControl().setLookAt(targetEntity, 30.0F, 30.0F);
+        }
+
+
+        //If multishooting is enabled, do a multishot tick instead of a single one
+        if (multiShooting)
+        {
+            if (tickMultiShot())
+                this.attack.shoot();
+            return;
+        }
+        //If multishooting is not enabled
+        else if (this.seeTime >= this.visibleTicksDelay)
+        {
+            if (this.attackTime >= this.attackCooldown)
+            {
+                this.attack.shoot();
+                this.attackTime = 0;
+            }
+            else
+                this.attackTime++;
+        }
+        this.entity.setAttackingState(attackTime >= attackCooldown * 0.75 ? this.statecheck : 0);
+
     }
 }

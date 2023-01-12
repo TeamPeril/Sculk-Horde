@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.block;
 
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
+import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;

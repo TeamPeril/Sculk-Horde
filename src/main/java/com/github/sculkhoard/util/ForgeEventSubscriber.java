@@ -62,8 +62,11 @@ public class ForgeEventSubscriber {
             int seconds_between_intervals = 60*5; //Unit is Seconds
 
             //Infestation Related Processes
-            SculkHoard.infestationConversionTable.processVictimConversionQueue((ServerWorld) event.world);
-            SculkHoard.infestationConversionTable.processInfectionConversionQueue((ServerWorld) event.world);
+            //Used by anti sculk serum
+            SculkHoard.infestationConversionTable.proccessConversionToVictimQueue((ServerWorld) event.world);
+            //Used by Sculk Node
+            SculkHoard.infestationConversionTable.processConversionToInfectedQueue((ServerWorld) event.world);
+            //Used by Spreading Tiles
             SculkHoard.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
 
 

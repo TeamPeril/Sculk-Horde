@@ -1,29 +1,22 @@
 package com.github.sculkhoard.common.item;
 
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
-import com.github.sculkhoard.common.entity.SculkMiteEntity;
+import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.entity;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.common.block.SculkFloraBlock;
 import com.github.sculkhoard.common.entity.goal.TargetAttacker;
 import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
@@ -20,7 +20,6 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.datasync.DataParameter;
@@ -33,7 +32,6 @@ import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.tags.ITag;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;

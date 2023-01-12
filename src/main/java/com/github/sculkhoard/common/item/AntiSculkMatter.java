@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.item;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.util.ForgeEventSubscriber;
 import net.minecraft.client.util.ITooltipFlag;

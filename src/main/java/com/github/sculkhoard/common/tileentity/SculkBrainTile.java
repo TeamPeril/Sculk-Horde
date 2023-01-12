@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.tileentity;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.common.block.SculkBrainBlock;
 import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.core.SculkHoard;

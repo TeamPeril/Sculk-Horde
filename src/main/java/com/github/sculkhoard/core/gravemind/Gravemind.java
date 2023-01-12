@@ -1,7 +1,7 @@
 package com.github.sculkhoard.core.gravemind;
 
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -18,7 +18,6 @@ import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -414,7 +413,7 @@ public class Gravemind
                 return;
             }
 
-            String identifier = entityIn.getClass().toString();
+            String identifier = entityIn.getType().toString();
             if(!identifier.isEmpty())
             {
                 GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHoard.SAVE_DATA_ID);

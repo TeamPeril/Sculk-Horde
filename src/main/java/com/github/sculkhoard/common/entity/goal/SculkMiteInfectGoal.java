@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.entity.goal;
 
-import com.github.sculkhoard.common.entity.EntityAlgorithms;
+import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;

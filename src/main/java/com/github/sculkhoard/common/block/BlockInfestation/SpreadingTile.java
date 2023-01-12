@@ -1,6 +1,6 @@
 package com.github.sculkhoard.common.block.BlockInfestation;
 
-import com.github.sculkhoard.common.block.BlockAlgorithms;
+import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.BlockState;
@@ -38,8 +38,8 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
     public int chanceToNotDegrade = 1/500;
     public String chanceToNotDegradeIdentifier = "chanceToNotDegrade";
 
-    private final int MAX_SPREAD_INVERVAL_SECONDS = 10;
-    private final int MIN_SPREAD_INVERVAL_SECONDS = 5;
+    private final int MAX_SPREAD_INVERVAL_SECONDS = 60;
+    private final int MIN_SPREAD_INVERVAL_SECONDS = 30;
     private int spreadIntervalInSeconds = -1; //KEEP THIS -1
     private long tickedAt = System.nanoTime();
     private int allowedSpreadAttemptsPerTick = 1;
@@ -151,79 +151,78 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
     @Override
     public void tick()
     {
-        if(this.level != null && !this.level.isClientSide)
+        if(this.level == null || this.level.isClientSide)
         {
-            long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-            if(spreadIntervalInSeconds == -1)
-            {
-                Random rng = new Random();
-                spreadIntervalInSeconds = rng.nextInt(MAX_SPREAD_INVERVAL_SECONDS + MIN_SPREAD_INVERVAL_SECONDS) + MIN_SPREAD_INVERVAL_SECONDS;
-            }
-            else if(timeElapsed >= spreadIntervalInSeconds)
-            {
-                tickedAt = System.nanoTime();
-                spreadRoutine(doesSpreadRandomly());
-            }
+            return;
+        }
+
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
+        if(spreadIntervalInSeconds == -1)
+        {
+            Random rng = new Random();
+            spreadIntervalInSeconds = rng.nextInt(MAX_SPREAD_INVERVAL_SECONDS + MIN_SPREAD_INVERVAL_SECONDS) + MIN_SPREAD_INVERVAL_SECONDS;
+        }
+        else if(timeElapsed >= spreadIntervalInSeconds)
+        {
+            tickedAt = System.nanoTime();
+            spreadRoutine(doesSpreadRandomly());
         }
     }
 
 
     /**
      * Will attempt to spread to nearby neighbors.
-     * @param chooseSpreadPosRandomly Should the block attempt to spread through all neighbors, or choose randomly
+     * @param isSpreadingRandomly Should the block attempt to spread through all neighbors, or choose randomly
      */
-    public void spreadRoutine(boolean chooseSpreadPosRandomly)
+    public void spreadRoutine(boolean isSpreadingRandomly)
     {
-        if(this.level != null && !this.level.isClientSide)
+        if(this.level == null || this.level.isClientSide)
         {
-            //If this block has not attempted to spread before
-            if (getMaxSpreadAttempts() == -1)
+            return;
+        }
+        //Once done spreading, convert to dormant variant
+        if (isSpreadingComplete || SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
+        {
+            SculkHoard.infestationConversionTable.convertToDormant((ServerWorld) this.level, this.getBlockPos());
+            return;
+        }
+
+        //If we have initialized and are out of spreading attempts
+        if(getMaxSpreadAttempts() != -1 && getSpreadAttempts() >= getMaxSpreadAttempts())
+        {
+            isSpreadingComplete = true;
+            return;
+        }
+
+        //If this block has not attempted to spread before
+        if (getMaxSpreadAttempts() == -1)
+        {
+            setMaxSpreadAttempts(getDefaultMaxSpreadAttempts());//Set to default
+        }
+
+        //If spreading randomly and if there is sculk mass
+        if (isSpreadingRandomly)
+        {
+            //Attempt to spread Randomly
+            for (int spreadAttemptsThisTick = 0;  spreadAttemptsThisTick < allowedSpreadAttemptsPerTick && spreadAttempts < getMaxSpreadAttempts(); spreadAttemptsThisTick++)
             {
-                setMaxSpreadAttempts(getDefaultMaxSpreadAttempts());//Set to default
+                //Attempt to spread to this position
+                SculkHoard.infestationConversionTable.addToConversionQueue(BlockAlgorithms.getRandomNeighbor((ServerWorld) this.level, this.getBlockPos()), getMaxSpreadAttempts() - 1, true, false, false);
+                spreadAttempts++;
             }
 
-            //If spreading randomly and if there is sculk mass
-            if (chooseSpreadPosRandomly && SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0)
+        }
+        //If we are checking every vailid position instead of random ones
+        else if (!isSpreadingRandomly)
+        {
+            //Get all neighbors and check if we can spread to all possible positions
+            ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(this.getBlockPos());
+            for (int i = 0; i < allNeighbors.size(); i++)
             {
-                //If we have spreading attempts left
-                if (getSpreadAttempts() < getMaxSpreadAttempts())
-                {
-                    //Attempt to spread Randomly
-                    for (int spreadAttemptsThisTick = 0;  spreadAttemptsThisTick < allowedSpreadAttemptsPerTick && spreadAttempts < getMaxSpreadAttempts(); spreadAttemptsThisTick++)
-                    {
-                        //If max spread attempts has not been reached, spread
-                        if (getSpreadAttempts() < getMaxSpreadAttempts())
-                        {
-                            SculkHoard.infestationConversionTable.addToConversionQueue(BlockAlgorithms.getRandomNeighbor((ServerWorld) this.level, this.getBlockPos()), getMaxSpreadAttempts() - 1, true, false, false); //Attempt to spread to this position
-                        }
-                        spreadAttempts++;
-                    }
-                    //isSpreadingComplete = true;
-                }
-                //If no attempts left
-                else
-                {
-                    isSpreadingComplete = true;
-                }
+                //Attempt to spread to this position
+                SculkHoard.infestationConversionTable.addToConversionQueue(allNeighbors.get(i), getMaxSpreadAttempts() - 1, true, false, false);
             }
-            //If we are checking every vailid position instead of random ones
-            else if (!chooseSpreadPosRandomly && SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0)
-            {
-                //Get all neighbors and check if we can spread to all possible positions
-                ArrayList<BlockPos> allNeighbors = BlockAlgorithms.getNeighborsCube(this.getBlockPos());
-                for (int i = 0; i < allNeighbors.size(); i++)
-                {
-                    //attemptToSpreadHere(thisTile, serverWorld, allNeighbors.get(i)); //Attempt to spread to this position
-                    SculkHoard.infestationConversionTable.addToConversionQueue(allNeighbors.get(i), getMaxSpreadAttempts() - 1, true, false, false);
-                }
-                isSpreadingComplete = true;
-            }
-
-            //Once done spreading, convert to dormant variant
-            if (isSpreadingComplete || SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
-            {
-                SculkHoard.infestationConversionTable.convertToDormant((ServerWorld) this.level, this.getBlockPos());
-            }
+            isSpreadingComplete = true;
         }
 
     }

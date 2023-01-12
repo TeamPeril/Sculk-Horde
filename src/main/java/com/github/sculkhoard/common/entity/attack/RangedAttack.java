@@ -3,6 +3,7 @@ package com.github.sculkhoard.common.entity.attack;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhoard.common.item.CustomItemProjectile;
+import com.github.sculkhoard.util.ProjectileHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.SnowballEntity;
@@ -63,6 +64,20 @@ public abstract class RangedAttack {
         LivingEntity targetEntity = this.thisMob.getTarget();
         CustomItemProjectileEntity projectile = getProjectile(this.thisMob.level, this.thisMob, this.damage);
 
+        double d0 = targetEntity.getX() - this.thisMob.getX();
+        double d1 = targetEntity.getEyeY() - projectile.getY();
+        double d2 = targetEntity.getZ() - this.thisMob.getZ();
+        double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+        if (d3 > 40.0)
+            return;
+        double velocity = 1.6;
+        d1 = ProjectileHelper.computeY(d3, d1, velocity, projectile.getY(), targetEntity.getY(), targetEntity.getEyeY()-targetEntity.getY());
+        float inaccuracy = 0.0F;
+
+        projectile.shoot(d0, d1, d2, (float) velocity, inaccuracy);
+        this.thisMob.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1.0F);
+        this.thisMob.level.addFreshEntity(projectile);
+        /*
         //Math Stuff
         double d0 = (targetEntity.getEyeY()- targetEntity.getY()) / 2 + targetEntity.getY();
         double d1 = targetEntity.getX() - this.thisMob.getX();
@@ -75,6 +90,7 @@ public abstract class RangedAttack {
         float rng = (float) random();
         this.thisMob.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (rng * 0.4F + 0.8F));
         this.thisMob.level.addFreshEntity(projectile);
+        */
 
         //Shoot in a straight line if projectile is not affected by gravity
 
