@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "sculkhoard:block/dev_structure_tester"
+  }
+}

@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.block.BlockInfestation;
 
+import com.github.sculkhoard.core.gravemind.Gravemind;
 import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
@@ -148,6 +149,7 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
         return this.spreadAttempts;
     }
 
+
     @Override
     public void tick()
     {
@@ -208,7 +210,15 @@ public class SpreadingTile extends TileEntity implements ITickableTileEntity {
             {
                 //Attempt to spread to this position
                 SculkHoard.infestationConversionTable.addToConversionQueue(BlockAlgorithms.getRandomNeighbor((ServerWorld) this.level, this.getBlockPos()), getMaxSpreadAttempts() - 1, true, false, false);
-                spreadAttempts++;
+
+                if(SculkHoard.gravemind.getGravemindMemory().isInRangeOfNode(this.getBlockPos(), 128))
+                {
+                    spreadAttempts +=1;
+                }
+                else
+                {
+                    spreadAttempts+=10;
+                }
             }
 
         }

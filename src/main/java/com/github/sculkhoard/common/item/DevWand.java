@@ -117,6 +117,8 @@ public class DevWand extends Item implements IForgeItem {
 			}
 			else
 			{
+
+
 				//Ray trace to see what block the player is looking at
 				BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
 
@@ -141,6 +143,7 @@ public class DevWand extends Item implements IForgeItem {
 					//Set Wand on cool down
 					playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				}
+
 				return ActionResult.pass(itemstack);
 			}
 		}

@@ -40,11 +40,11 @@ public class ModEventSubscriber {
         SculkHoard.randomSculkFlora = new PoolBlocks();
 
         SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), 1);
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 2);
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 3);
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 3);
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 100);
-        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 100);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 4);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 6);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 6);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 200);
+        SculkHoard.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 200);
 
         
     }

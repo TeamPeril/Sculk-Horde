@@ -1,7 +1,7 @@
 package com.github.sculkhoard.common.tileentity;
 
 import com.github.sculkhoard.util.BlockAlgorithms;
-import com.github.sculkhoard.common.block.SculkBrainBlock;
+import com.github.sculkhoard.common.block.SculkNodeBlock;
 import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkBrainTile extends TileEntity implements ITickableTileEntity
+public class SculkNodeTile extends TileEntity implements ITickableTileEntity
 {
 
     private final int CHUNK_LOAD_RADIUS = 15;
@@ -44,7 +44,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkBrainTile(TileEntityType<?> type)
+    public SculkNodeTile(TileEntityType<?> type)
     {
         super(type);
     }
@@ -53,7 +53,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
      * A simpler constructor that does not take in entity type.<br>
      * I made this so that registering tile entities can look cleaner
      */
-    public SculkBrainTile() {
+    public SculkNodeTile() {
 
         this(TileEntityRegistry.SCULK_BRAIN_TILE.get());
     }
@@ -72,7 +72,7 @@ public class SculkBrainTile extends TileEntity implements ITickableTileEntity
         if(this.level != null && !this.level.isClientSide)
         {
             long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-            if(timeElapsed >= SculkBrainBlock.tickIntervalSeconds)
+            if(timeElapsed >= SculkNodeBlock.tickIntervalSeconds)
             {
                 tickedAt = System.nanoTime();
                 ServerWorld thisWorld = (ServerWorld) this.level;

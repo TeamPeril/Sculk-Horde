@@ -5,6 +5,7 @@ import com.github.sculkhoard.common.block.SculkFloraBlock;
 import com.github.sculkhoard.common.block.VeinBlock;
 import com.github.sculkhoard.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhoard.common.entity.SculkBeeInfectorEntity;
+import com.github.sculkhoard.common.procedural.structures.PlannedBlock;
 import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -23,7 +25,7 @@ public class BlockAlgorithms {
     public static float getSudoRNGFromPosition(BlockPos position, int min, int max)
     {
         int range = max - min;
-        long seed = position.getX() * position.getY() * position.getZ();
+        long seed = (long) position.getX() * position.getY() * position.getZ();
         int rng = (int) (seed % (range + 1.0)); //Get output between 0 and range
         rng += min;
         return rng;
@@ -33,12 +35,12 @@ public class BlockAlgorithms {
      * Will return an array list that represents a 3x3x3 cube of all block
      * positions with the origin being the centroid. Does not include origin
      * in this list.
-     * @param origin
-     * @return
+     * @param origin The Center
+     * @return A list of Neighbors in a cube
      */
     public static ArrayList<BlockPos> getNeighborsCube(BlockPos origin)
     {
-        ArrayList<BlockPos> list = new ArrayList<BlockPos>();
+        ArrayList<BlockPos> list = new ArrayList<>();
         list.addAll(getNeighborsXZPlane(origin, false));
         list.addAll(getNeighborsXZPlane(origin.above(), true));
         list.addAll(getNeighborsXZPlane(origin.below(), true));
@@ -54,7 +56,7 @@ public class BlockAlgorithms {
      */
     public static ArrayList<BlockPos> getAdjacentNeighbors(BlockPos origin)
     {
-        ArrayList<BlockPos> list = new ArrayList<BlockPos>();
+        ArrayList<BlockPos> list = new ArrayList<>();
         list.addAll(getNeighborsXZPlane(origin, false));
         list.addAll(getNeighborsXZPlane(origin.above(), true));
         list.addAll(getNeighborsXZPlane(origin.below(), true));
@@ -67,12 +69,12 @@ public class BlockAlgorithms {
 
     /**
      * Will return an array list representing a 2D layer
-     * @param origin
-     * @return
+     * @param origin The origin position
+     * @return A list of block positions
      */
     public static ArrayList<BlockPos> getNeighborsXZPlane(BlockPos origin, boolean includeOrigin)
     {
-        ArrayList<BlockPos> list = new ArrayList<BlockPos>();
+        ArrayList<BlockPos> list = new ArrayList<>();
         list.add(origin.north());
         list.add(origin.north().east());
         list.add(origin.north().west());
@@ -94,7 +96,6 @@ public class BlockAlgorithms {
     /**
      * Gets all blocks in a circle and retuns it in a list
      * NOTE: Something is wrong with this algorithm, the size is too small
-     * @param Origin The center
      * @param radius The radius
      * @param includeOrigin Whether to include the origin
      * @return A list of all the block positions
@@ -102,7 +103,7 @@ public class BlockAlgorithms {
     public static ArrayList<BlockPos> getBlockPosInCircle(BlockPos origin, int radius, boolean includeOrigin)
     {
         ArrayList<BlockPos> positions = new ArrayList<>();
-        boolean shouldWeAddThisPosition = false;
+        boolean shouldWeAddThisPosition;
 
         //Origin position
         int center_x = origin.getX();
@@ -160,7 +161,6 @@ public class BlockAlgorithms {
      */
     public Optional<BlockPos> findNearestBlock(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
     {
-;
         //?
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
 
@@ -341,7 +341,6 @@ public class BlockAlgorithms {
      * @param origin the position
      */
     public static void placeFloraAroundLog(ServerWorld serverWorld, BlockPos origin) {
-        boolean DEBUG_THIS = false;
         VeinBlock vein = BlockRegistry.VEIN.get();
 
         BlockPos[] possiblePositions = {
@@ -410,4 +409,46 @@ public class BlockAlgorithms {
             serverWorld.removeBlock(targetPos, false);
         }
     }
+
+    /**
+     * Generates a list of PlannedBlocks in the shape of a 2D circle.
+     *
+     * @param centerPos The center of the circle
+     * @param diameter The diameter of the circle
+     * @param world The world where the blocks will be placed
+     * @param plannedBlock The type of block that will be placed in the circle
+     * @return A list of PlannedBlocks in the shape of a 2D circle
+     */
+    public static ArrayList<PlannedBlock> generate2DCirclePlan(BlockPos centerPos, int diameter, ServerWorld world, BlockState plannedBlock) {
+        ArrayList<PlannedBlock> circleBlocks = new ArrayList<>();
+        // The radius of the circle is half the diameter
+        int radius = diameter / 2;
+        // Iterate through all blocks in a square that surrounds the circle
+        for (int x = centerPos.getX() - radius; x <= centerPos.getX() + radius; x++) {
+            for (int z = centerPos.getZ() - radius; z <= centerPos.getZ() + radius; z++) {
+                // Calculate the distance between the current block and the center of the circle
+                double distance = Math.sqrt((x - centerPos.getX()) * (x - centerPos.getX()) + (z - centerPos.getZ()) * (z - centerPos.getZ()));
+                // If the distance is less than or equal to the radius, add a PlannedBlock for that block
+                if (distance <= radius) {
+                    BlockPos pos = new BlockPos(x, centerPos.getY(), z);
+                    circleBlocks.add(new PlannedBlock(world, plannedBlock, pos));
+                }
+            }
+        }
+        return circleBlocks;
+    }
+
+
+    public static ArrayList<BlockPos> getPointsOnCircumference(BlockPos origin, int numPoints, int radius) {
+        ArrayList<BlockPos> points = new ArrayList<>();
+        double angleIncrement = (2 * Math.PI) / numPoints;
+        for (int i = 0; i < numPoints; i++) {
+            double angle = i * angleIncrement;
+            int x = (int) (origin.getX() + radius * Math.cos(angle));
+            int z = (int) (origin.getZ() + radius * Math.sin(angle));
+            points.add(new BlockPos(x, origin.getY(), z));
+        }
+        return points;
+    }
+
 }

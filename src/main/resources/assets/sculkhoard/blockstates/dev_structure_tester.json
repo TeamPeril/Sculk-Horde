@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "sculkhoard:block/dev_structure_tester" }
+  }
+}

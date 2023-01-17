@@ -7,6 +7,7 @@ import com.github.sculkhoard.core.TileEntityRegistry;
 import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -34,7 +35,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     private long lastTimeOfAlert = 0;
     private int alertPeriodSeconds = 60;
     //How often should this tile tick in seconds if the summoner is alert
-    private long tickIntervalAlertSeconds = 10;
+    private long tickIntervalAlertSeconds = 30;
     //How often should this tile tick in seconds if the summoner is alert
     private long tickIntervalUnAlertSeconds = 60 * 5;
     //Records the last time this block summoned a mob
@@ -84,7 +85,8 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     @Override
     public void tick()
     {
-        if(this.level != null && !this.level.isClientSide)
+        if(this.level == null) { return;}
+        if(!this.level.isClientSide)
         {
 
             long timeElapsedSinceTick = TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfTick, TimeUnit.NANOSECONDS);
@@ -153,7 +155,11 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
                 }
             }
         }
+        else
+        {
+        }
     }
+
 
     /**
      * Gets a list of all possible spawns, chooses a specified amount of them.

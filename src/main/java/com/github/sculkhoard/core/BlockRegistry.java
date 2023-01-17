@@ -76,6 +76,16 @@ public class BlockRegistry {
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
 
+	//Sculk Dura Matter
+	public static final RegistryObject<Block> CALCITE_ORE =
+			registerBlock("calcite_ore", () -> new Block(AbstractBlock.Properties.of(
+							Material.PLANT, MaterialColor.QUARTZ)
+					.strength(15f, 30f)//Hardness & Resistance
+					.harvestTool(ToolType.PICKAXE)
+					.harvestLevel(3)
+					.sound(SoundType.ANCIENT_DEBRIS)
+			));
+
 	public static final RegistryObject<CrustBlock> CRUST =
 			registerBlock("crust", () -> new CrustBlock());
 
@@ -121,8 +131,8 @@ public class BlockRegistry {
 	public static final RegistryObject<VeinBlock> VEIN =
 			registerBlock("vein", () -> new VeinBlock());
 
-	public static final RegistryObject<SculkBrainBlock> SCULK_BRAIN =
-			registerBlock("sculk_brain", () -> new SculkBrainBlock());
+	public static final RegistryObject<SculkNodeBlock> SCULK_BRAIN =
+			registerBlock("sculk_brain", () -> new SculkNodeBlock());
 
 	public static final RegistryObject<SpreadingBlock> SPREADING_BLOCK =
 			registerBlock("spreading_block", () -> new SpreadingBlock());
@@ -135,4 +145,13 @@ public class BlockRegistry {
 
 	public static final RegistryObject<SculkSummonerBlock> SCULK_SUMMONER_BLOCK =
 			registerBlock("sculk_summoner", () -> new SculkSummonerBlock());
+
+	public static final RegistryObject<SculkLivingRockBlock> SCULK_LIVING_ROCK_BLOCK =
+			registerBlock("sculk_living_rock", () -> new SculkLivingRockBlock());
+
+	public static final RegistryObject<SculkLivingRockRootBlock> SCULK_LIVING_ROCK_ROOT_BLOCK =
+			registerBlock("sculk_living_rock_root", () -> new SculkLivingRockRootBlock());
+
+	public static final RegistryObject<DevStructureTesterBlock> DEV_STRUCTURE_TESTER_BLOCK =
+			registerBlock("dev_structure_tester", () -> new DevStructureTesterBlock());
 }

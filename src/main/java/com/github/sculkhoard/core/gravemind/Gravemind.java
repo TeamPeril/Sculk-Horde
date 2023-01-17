@@ -1,7 +1,6 @@
 package com.github.sculkhoard.core.gravemind;
 
 
-import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -23,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
+import static com.github.sculkhoard.util.BlockAlgorithms.getBlockDistance;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.
@@ -56,6 +56,7 @@ public class Gravemind
 
     //Determines the range which a sculk node can infect land around it
     public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
+    public int sculk_node_limit = 1;
 
     /**
      * Default Constructor <br>
@@ -119,6 +120,7 @@ public class Gravemind
             //The radius that sculk nodes can infect in the mature state
             sculk_node_infect_radius = 50;
             evolution_state = evolution_states.Mature;
+            sculk_node_limit = 2;
         }
     }
 
@@ -192,17 +194,17 @@ public class Gravemind
     public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos)
     {
         //Random Chance to Place Node
-        if(new Random().nextInt(100) < 1)
-        {
-            //If we are too close to another node, do not create one
-            if(SculkHoard.gravemind.isValidPositionForSculkNode(worldIn, targetPos))
-            {
-                worldIn.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
-                getGravemindMemory().addNodeToMemory(targetPos);
-                EntityType.LIGHTNING_BOLT.spawn(worldIn, null, null, targetPos, SpawnReason.SPAWNER, true, true);
-                //if(DEBUG_MODE) System.out.println("New Sculk Node Created at " + targetPos);
-            }
-        }
+        if(new Random().nextInt(100) > 1) { return; }
+
+        //If we are too close to another node, do not create one
+        if(!SculkHoard.gravemind.isValidPositionForSculkNode(worldIn, targetPos)) { return; }
+
+        if(SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() >= SculkHoard.gravemind.sculk_node_limit) { return; }
+
+        worldIn.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
+        getGravemindMemory().addNodeToMemory(targetPos);
+        EntityType.LIGHTNING_BOLT.spawn(worldIn, null, null, targetPos, SpawnReason.SPAWNER, true, true);
+
     }
 
 
@@ -222,7 +224,7 @@ public class Gravemind
         for (NodeEntry entry : getGravemindMemory().getNodeEntries())
         {
             //Get Distance from our potential location to the current index node position
-            int distanceFromPotentialToCurrentNode = (int) BlockAlgorithms.getBlockDistance(positionIn, entry.position);
+            int distanceFromPotentialToCurrentNode = (int) getBlockDistance(positionIn, entry.position);
 
             //if we find a single node that is too close, disapprove of creating a new one
             if (distanceFromPotentialToCurrentNode < MINIMUM_DISTANCE_BETWEEN_NODES)
@@ -288,6 +290,34 @@ public class Gravemind
          * @return An ArrayList of all node entries positions
          */
         public ArrayList<NodeEntry> getNodeEntries() { return nodeEntries; }
+
+
+        /**
+         * Returns a list of known node positions
+         * @return The Closest Node
+         */
+        public NodeEntry getClosestNodeEntry(BlockPos pos) {
+            NodeEntry closestNode = null;
+            double closestDistance = Double.MAX_VALUE;
+            for (NodeEntry node : getNodeEntries())
+            {
+                if (pos.distSqr(node.position) < closestDistance)
+                {
+                    closestNode = node;
+                    closestDistance = pos.distSqr(node.position);
+                }
+            }
+            return closestNode;
+        }
+
+
+        public boolean isInRangeOfNode(BlockPos pos, int distance)
+        {
+            if(getNodeEntries().isEmpty()) {return false;}
+
+            return getBlockDistance(getClosestNodeEntry(pos).position, pos) <= distance;
+
+        }
 
         /**
          * Returns a list of known bee nest positions
@@ -649,7 +679,7 @@ public class Gravemind
                 for(NodeEntry entry : SculkHoard.gravemind.getGravemindMemory().getNodeEntries())
                 {
                     //If entry is closer than our current closest entry
-                    if(BlockAlgorithms.getBlockDistance(position, entry.position) < BlockAlgorithms.getBlockDistance(position, closestEntry.position))
+                    if(getBlockDistance(position, entry.position) < getBlockDistance(position, closestEntry.position))
                     {
                         closestEntry = entry;
                     }
