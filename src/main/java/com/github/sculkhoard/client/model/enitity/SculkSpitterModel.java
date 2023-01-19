@@ -19,6 +19,6 @@ public class SculkSpitterModel extends AnimatedGeoModel<SculkSpitterEntity> {
 
     @Override
     public ResourceLocation getAnimationFileLocation(SculkSpitterEntity animatable) {
-        return null;
+        return new ResourceLocation(SculkHoard.MOD_ID, "animations/sculk_spitter.animation.json");
     }
 }

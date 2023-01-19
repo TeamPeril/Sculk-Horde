@@ -25,7 +25,7 @@ public class BlockAlgorithms {
     public static float getSudoRNGFromPosition(BlockPos position, int min, int max)
     {
         int range = max - min;
-        long seed = (long) position.getX() * position.getY() * position.getZ();
+        long seed = (long) position.getX() * position.getY() * position.getZ() + (position.getX() + position.getY() + position.getZ());
         int rng = (int) (seed % (range + 1.0)); //Get output between 0 and range
         rng += min;
         return rng;

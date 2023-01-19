@@ -46,7 +46,7 @@ public class SculkLivingRockProceduralStructure extends ProceduralStructure
         // The height degradation multiplier is half of the diameter
         int HEIGHT_DEGRADE_MULTIPLIER = (DIAMETER/2);
         // The maximum height is the square of the height degradation multiplier, or the diameter times 2
-        int MAXIMUM_HEIGHT = Math.max(HEIGHT_DEGRADE_MULTIPLIER * HEIGHT_DEGRADE_MULTIPLIER, DIAMETER * 2);
+        int MAXIMUM_HEIGHT = Math.max(HEIGHT_DEGRADE_MULTIPLIER * (DIAMETER), DIAMETER * 2);
         //Generate Circle Base
         ArrayList<PlannedBlock> circleBase = BlockAlgorithms.generate2DCirclePlan(origin, DIAMETER, world, BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
         // Create a new ArrayList to store all the planned pillar blocks

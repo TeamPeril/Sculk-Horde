@@ -21,6 +21,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -165,7 +166,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
                                 .setProjectileOriginOffset(0.8, 0.9, 0.8)
-                                .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 30F, 1),
+                                .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -208,12 +209,18 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
         return 3;
     }
 
-    //Animation Related Functions
-
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {
-        //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-        return PlayState.STOP;
+        if(event.isMoving())
+        {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_spitter.walk", true));
+        }
+        else
+        {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_spitter.idle", true));
+        }
+
+        return PlayState.CONTINUE;
     }
 
     @Override
