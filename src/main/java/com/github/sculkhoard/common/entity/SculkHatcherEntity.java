@@ -292,7 +292,7 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
             else
             {
                 super.tick();
-                if(ticksInCooldown >= tickCooldownForSpawn && thisMob.getTarget() != null)
+                if(ticksInCooldown >= tickCooldownForSpawn && thisMob.getTarget() != null && thisMob.getHealth() > SculkMiteEntity.MAX_HEALTH)
                 {
                     ticksInCooldown = 0;
                     BlockPos spawnPos = new BlockPos(thisMob.position());
