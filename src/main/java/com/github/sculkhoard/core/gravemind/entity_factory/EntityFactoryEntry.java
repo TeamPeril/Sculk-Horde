@@ -42,7 +42,7 @@ public class EntityFactoryEntry {
         return strategicValue;
     }
 
-    public boolean isEntryAppropriate(ReinforcementContext context)
+    public boolean isEntryAppropriate(ReinforcementRequest context)
     {
         if(context != null)
         {

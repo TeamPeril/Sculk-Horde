@@ -3,7 +3,7 @@ package com.github.sculkhoard.common.block;
 import com.github.sculkhoard.common.block.BlockInfestation.SpreadingBlock;
 import com.github.sculkhoard.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhoard.common.tileentity.SculkMassTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
@@ -34,7 +34,6 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 import static com.github.sculkhoard.core.SculkHoard.DEBUG_MODE;
-import static com.github.sculkhoard.core.SculkHoard.entityFactory;
 
 public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -213,8 +212,8 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
         boolean DEBUG_THIS = false;
         SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
         EntityFactory entityFactory = SculkHoard.entityFactory;
-        ReinforcementContext context = new ReinforcementContext(thisBlockPos);
-        context.sender = ReinforcementContext.senderType.SculkMass;
+        ReinforcementRequest context = new ReinforcementRequest(thisBlockPos);
+        context.sender = ReinforcementRequest.senderType.SculkMass;
         context.budget = thisTile.getStoredSculkMass();
 
         //Attempt to call in reinforcements and then update stored sculk mass

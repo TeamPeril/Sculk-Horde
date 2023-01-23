@@ -1,7 +1,7 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.util.EntityAlgorithms;
-import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import net.minecraft.block.Block;
@@ -235,8 +235,8 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
         //if(true) System.out.println(Arrays.toString(possibleLivingEntityTargets.toArray()));
 
         //Give gravemind context to our request to make more informed situations
-        ReinforcementContext context = new ReinforcementContext(bp);
-        context.sender = ReinforcementContext.senderType.SculkCocoon;
+        ReinforcementRequest context = new ReinforcementRequest(bp);
+        context.sender = ReinforcementRequest.senderType.SculkCocoon;
         if(!possibleAggressorTargets.isEmpty())
         {
             context.is_aggressor_nearby = true;

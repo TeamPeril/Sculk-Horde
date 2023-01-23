@@ -4,10 +4,9 @@ import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
-import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -24,6 +23,11 @@ import java.util.function.Predicate;
 
 public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
 {
+    private int behavior_state = 0;
+    private final int STATE_COOLDOWN = 0;
+    private final int STATE_READY_TO_SPAWN = 1;
+    private final int STATE_SPAWNING = 2;
+    AxisAlignedBB searchArea;
     //ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
     private final int ACTIVATION_DISTANCE = 32;
     //possibleLivingEntityTargets - A list of nearby targets which are worth infecting.
@@ -32,16 +36,17 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     private List<LivingEntity> possibleAggressorTargets;
     //Used to track the last time this tile was ticked
     private long lastTimeOfTick = System.nanoTime();
+    private long timeElapsedSinceTick = 0;
     private long lastTimeOfAlert = 0;
     private int alertPeriodSeconds = 60;
     //How often should this tile tick in seconds if the summoner is alert
     private long tickIntervalAlertSeconds = 30;
-    //How often should this tile tick in seconds if the summoner is alert
+    //How often should this tile tick in seconds if the summoner is not alert
     private long tickIntervalUnAlertSeconds = 60 * 5;
     //Records the last time this block summoned a mob
     private long lastTimeOfSummon = 0;
-    //How long this block should wait between summons
-    private long summonCooldownSeconds = 20;
+    private final int MAX_SPAWNED_ENTITIES = 8;
+    ReinforcementRequest[] requests = new ReinforcementRequest[MAX_SPAWNED_ENTITIES];
 
     /**
      * The Constructor that takes in properties
@@ -59,6 +64,8 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     public SculkSummonerTile()
     {
         this(TileEntityRegistry.SCULK_SUMMONER_TILE.get());
+        //Create bounding box to detect targets
+        searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
     }
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
@@ -79,26 +86,93 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
         return (TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfAlert, TimeUnit.NANOSECONDS) <= alertPeriodSeconds);
     }
 
+    /**
+     * Find oldest entry and replace it.
+     * @param request The new request to input
+     */
+    private void addReinforcementToList(ReinforcementRequest request)
+    {
+        if(request == null) {return;}
+
+        int index_oldest = 0;
+        for(int i = 0; i < requests.length; i++)
+        {
+            if(requests[i] == null)
+            {
+                requests[index_oldest] = request;
+                return;
+            }
+            else if(requests[i].creationTime < requests[index_oldest].creationTime)
+            {
+                index_oldest = i;
+            }
+        }
+
+        requests[index_oldest] = request;
+    }
+
+    /**
+     * Check if all entries are alive
+     */
+    private boolean areAllReinforcementsDead()
+    {
+        for(int i = 0; i < requests.length; i++)
+        {
+            if(requests[i] == null || requests[i].spawnedEntity == null) { continue; }
+            else if(requests[i].spawnedEntity.isAlive())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /** ~~~~~~~~ Events ~~~~~~~~ **/
 
     @Override
     public void tick()
     {
-        if(this.level == null) { return;}
-        if(!this.level.isClientSide)
+        if(this.level == null || this.level.isClientSide) { return;}
+        if(SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0) { return; }
+
+        timeElapsedSinceTick = TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfTick, TimeUnit.NANOSECONDS);
+
+        //If ( (currently alert AND enough time has passed) OR (NOT currently alert and enough time has passed) ) AND the cool down for summoning is done
+        if(isCurrentlyAlert() && timeElapsedSinceTick < tickIntervalAlertSeconds) { return; }
+        if(!isCurrentlyAlert() && timeElapsedSinceTick < tickIntervalUnAlertSeconds) { return; }
+
+        lastTimeOfTick = System.nanoTime();
+
+        if(behavior_state == STATE_COOLDOWN)
+        {
+            behavior_state = STATE_READY_TO_SPAWN;
+        }
+        else if(behavior_state == STATE_READY_TO_SPAWN)
+        {
+            if(!areAllReinforcementsDead()) { return; }
+
+            //Create bounding box to detect targets
+            searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+
+            //Get targets inside bounding box.
+            possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
+            EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true);
+
+            possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
+            EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false);
+
+            if (possibleAggressorTargets.size() == 0 && possibleLivingEntityTargets.size() == 0) { return; }
+
+            behavior_state = STATE_SPAWNING;
+        }
+        else if(behavior_state == STATE_SPAWNING)
         {
 
-            long timeElapsedSinceTick = TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfTick, TimeUnit.NANOSECONDS);
-            long timeElapsedSinceSummon = TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfSummon, TimeUnit.NANOSECONDS);
+            //Create MAX_SPAWNED_ENTITIES amount of Reinforcement Requests
+            for (int iterations = 0; iterations < MAX_SPAWNED_ENTITIES; iterations++) {
 
-            //If ( (currently alert AND enough time has passed) OR (NOT currently alert and enough time has passed) ) AND the cool down for summoning is done
-            if(( (isCurrentlyAlert() && timeElapsedSinceTick >= tickIntervalAlertSeconds) || (!isCurrentlyAlert() && timeElapsedSinceTick >= tickIntervalUnAlertSeconds)  )
-                            && timeElapsedSinceSummon >= summonCooldownSeconds)
-            {
-                lastTimeOfTick = System.nanoTime();
                 //Create bounding box to detect targets
-                AxisAlignedBB searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+                searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
 
                 //Get targets inside bounding box.
                 possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
@@ -111,52 +185,35 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
                 BlockPos spawnPosition;
                 ArrayList<BlockPos> spawnPositions = getSpawnPositionsInCube((ServerWorld) this.level, this.getBlockPos(), 5, 1);
                 //If the array is empty, just spawn above block
-                if(spawnPositions.isEmpty())
-                {
+                if (spawnPositions.isEmpty()) {
                     spawnPosition = this.getBlockPos().above();
                 }
                 //Else choose the spawn position
-                else
-                {
+                else {
                     spawnPosition = spawnPositions.get(0);
                 }
 
-
                 //Give gravemind context to our request to make more informed situations
-                ReinforcementContext context = new ReinforcementContext(spawnPosition);
-                context.sender = ReinforcementContext.senderType.SculkCocoon;
+                ReinforcementRequest request = new ReinforcementRequest(spawnPosition);
+                request.sender = ReinforcementRequest.senderType.SculkCocoon;
+                requests[iterations] = request;
 
-                if (!possibleAggressorTargets.isEmpty())
-                {
-                    context.is_aggressor_nearby = true;
+                if (possibleAggressorTargets.size() != 0) {
+                    request.is_aggressor_nearby = true;
                     lastTimeOfAlert = System.nanoTime();
                 }
-                if (!possibleLivingEntityTargets.isEmpty())
-                {
-                    context.is_non_sculk_mob_nearby = true;
+                if (possibleLivingEntityTargets.size() != 0) {
+                    request.is_non_sculk_mob_nearby = true;
                     lastTimeOfAlert = System.nanoTime();
                 }
 
                 //If there is some sort of enemy near by, request reinforcement
-                if (context.is_non_sculk_mob_nearby || context.is_aggressor_nearby)
-                {
+                if (request.is_non_sculk_mob_nearby || request.is_aggressor_nearby) {
                     //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
-                    SculkHoard.entityFactory.requestReinforcementAny(this.level, spawnPosition, false, context);
-
-                    //If the gravemind has viewed
-                    if (context.isRequestViewed)
-                    {
-                        //If our request is approved, keep track
-                        if (context.isRequestApproved)
-                        {
-                            lastTimeOfSummon = System.nanoTime();
-                        }
-                    }
+                    SculkHoard.entityFactory.requestReinforcementAny(this.level, spawnPosition, false, request);
                 }
             }
-        }
-        else
-        {
+            behavior_state = STATE_COOLDOWN;
         }
     }
 

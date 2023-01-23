@@ -86,7 +86,13 @@ public class EntityAlgorithms {
             }
 
             //If not attackable or invulnerable or is dead/dying
-            if(!list.get(i).isAttackable() || list.get(i).isInvulnerable() || list.get(i).isDeadOrDying())
+            if(!list.get(i).isAttackable() || list.get(i).isInvulnerable() || list.get(i).isDeadOrDying() || list.get(i).isSpectator())
+            {
+                isNonTarget = true;
+            }
+
+            //If not attackable or invulnerable or is dead/dying
+            if(list.get(i) instanceof PlayerEntity && ((PlayerEntity) list.get(i)).isCreative())
             {
                 isNonTarget = true;
             }

@@ -5,7 +5,7 @@ import com.github.sculkhoard.common.entity.SculkLivingEntity;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementContext;
+import com.github.sculkhoard.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -124,17 +124,24 @@ public class Gravemind
         }
     }
 
-    public boolean processReinforcementRequest(ReinforcementContext context)
+    public boolean processReinforcementRequest(ReinforcementRequest context)
     {
         context.isRequestViewed = true;
 
         //Auto approve is this reinforcement is requested by a developer or sculk mass
-        if(context.sender == ReinforcementContext.senderType.Developer || context.sender == ReinforcementContext.senderType.SculkMass)
+        if(context.sender == ReinforcementRequest.senderType.Developer || context.sender == ReinforcementRequest.senderType.SculkMass)
         {
             context.isRequestApproved = true;
         }
+
+        if(SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
+        {
+            return false;
+        }
+
+
         //If gravemind is undeveloped, just auto approve all requests
-        else if(evolution_state == evolution_states.Undeveloped)
+        if(evolution_state == evolution_states.Undeveloped)
         {
             context.isRequestApproved = true;
         }
@@ -147,9 +154,11 @@ public class Gravemind
                 context.approvedMobTypes.add(EntityFactory.StrategicValues.Ranged);
                 context.isRequestApproved = true;
             }
-
             //Spawn infector mobs to infect
-            if(context.is_non_sculk_mob_nearby)
+            //NOTE: I turned this into an else if because if both aggressors and passives are present,
+            //it will choose from both combat and infector units. I think its better we prioritize
+            //spawning aggressors if both are present
+            else if(context.is_non_sculk_mob_nearby)
             {
                 context.approvedMobTypes.add(EntityFactory.StrategicValues.Infector);
                 context.isRequestApproved = true;

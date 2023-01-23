@@ -3,6 +3,7 @@ package com.github.sculkhoard.core.gravemind.entity_factory;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.gravemind.Gravemind;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -86,64 +87,70 @@ public class EntityFactory {
      * @param spawnPosition The Position
      * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
      */
-    public void requestReinforcementAny(World world, BlockPos spawnPosition, boolean noCost, ReinforcementContext context)
+    public void requestReinforcementAny(World world, BlockPos spawnPosition, boolean noCost, ReinforcementRequest context)
     {
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
-        if(SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0 && entries.size() > 0 && context.budget != 0)
+
+        if(SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
         {
-            if(DEBUG_THIS) System.out.println("Reinforcement Request Sent to Gravemind.");
-            if(gravemind.processReinforcementRequest(context))
-            {
-                //If approved types are not specified, then choose a random appropriate mob
-                if(context.approvedMobTypes.isEmpty())
+            return;
+        }
+
+        gravemind.processReinforcementRequest(context);
+        if(!context.isRequestApproved) { return;}
+
+        //If approved types are not specified, then choose a random appropriate mob
+        if(context.approvedMobTypes.isEmpty())
+        {
+            ArrayList<EntityFactoryEntry> lottery = new ArrayList<>();
+
+            //Loop through list, collect all appropriate entries
+            for (EntityFactoryEntry entry : entries) {
+                //If valid, spawn the entity
+                if (entry.isEntryAppropriate(context))
                 {
-                    ArrayList<EntityFactoryEntry> lottery = new ArrayList<EntityFactoryEntry>();
-
-                    //Loop through list, collect all appropriate entries
-                    for (EntityFactoryEntry entry : entries) {
-                        //If valid, spawn the entity
-                        if (entry.isEntryAppropriate(context))
-                        {
-                            lottery.add(entry);
-                        }
-                    }
-                    int randomEntryIndex = rng.nextInt(lottery.size());
-                    EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
-                    randomEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
-
-                    if (!noCost)
-                    {
-                        SculkHoard.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(randomEntry.getCost());
-                    }
-
-                }
-                else //If not, look for a mob that fits the requirements
-                {
-                    ArrayList<EntityFactoryEntry> approvedEntries = new ArrayList<>();
-                    //Loop through each entry until we find a valid one
-                    for (EntityFactoryEntry entry : entries) {
-                        //If valid, spawn the entity
-                        if (entry.isEntryAppropriate(context)) {
-                            approvedEntries.add(entry);
-                        }
-                    }
-
-                    //Create Random index
-                    int randomEntryIndex = rng.nextInt(approvedEntries.size());
-                    //Get random entry
-                    EntityFactoryEntry randomApprovedEntry = approvedEntries.get(randomEntryIndex);
-                    //Spawn random entry
-                    randomApprovedEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
-                    //If cost enabled, subtract cost
-                    if (!noCost)
-                    {
-                        SculkHoard.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(randomApprovedEntry.getCost());
-                    }
+                    lottery.add(entry);
                 }
             }
+            int randomEntryIndex = rng.nextInt(lottery.size());
+            EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
+            LivingEntity newEntity = (LivingEntity) randomEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
+            if(newEntity != null) context.spawnedEntity = newEntity;
+
+            if (!noCost)
+            {
+                SculkHoard.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(randomEntry.getCost());
+            }
+
         }
-        else if(DEBUG_THIS) System.out.println("Reinforcement Request did not meet pre-screening requirements. \n" +
+        else //If not, look for a mob that fits the requirements
+        {
+            ArrayList<EntityFactoryEntry> approvedEntries = new ArrayList<>();
+            //Loop through each entry until we find a valid one
+            for (EntityFactoryEntry entry : entries) {
+                //If valid, spawn the entity
+                if (entry.isEntryAppropriate(context)) {
+                    approvedEntries.add(entry);
+                }
+            }
+
+            //Create Random index
+            int randomEntryIndex = rng.nextInt(approvedEntries.size());
+            //Get random entry
+            EntityFactoryEntry randomEntry = approvedEntries.get(randomEntryIndex);
+            //Spawn random entry
+            LivingEntity newEntity = (LivingEntity) randomEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
+            if(newEntity != null) context.spawnedEntity = newEntity;
+            //If cost enabled, subtract cost
+            if (!noCost)
+            {
+                SculkHoard.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(randomEntry.getCost());
+            }
+
+        }
+
+        if(DEBUG_THIS) System.out.println("Reinforcement Request did not meet pre-screening requirements. \n" +
                 "is Sculk Mass > 0? " + (SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0) + "\n" +
                 "is entries.size() > 0? " + (entries.size() > 0) + "\n" +
                 "is context.budget != 0?" + (context.budget != 0));
@@ -155,7 +162,7 @@ public class EntityFactory {
      * @param world The world to spawn it in.
      * @param pos The Position
      */
-    public void requestReinforcementSculkMass(World world, BlockPos pos, ReinforcementContext context)
+    public void requestReinforcementSculkMass(World world, BlockPos pos, ReinforcementRequest context)
     {
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
         if(!(SculkHoard.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0 || entries.size() == 0 || context.budget == 0))
