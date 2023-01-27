@@ -1,7 +1,9 @@
 package com.github.sculkhoard.core.gravemind;
 
 
+import com.github.sculkhoard.common.block.SculkBeeNestBlock;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
+import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
@@ -121,6 +123,36 @@ public class Gravemind
             sculk_node_infect_radius = 50;
             evolution_state = evolution_states.Mature;
             sculk_node_limit = 2;
+        }
+    }
+
+    public void enableAmountOfBeeHives(ServerWorld worldIn, int amount)
+    {
+        int lastEnabledIndex = -1;
+        for (int i = 0; i < getGravemindMemory().getBeeNestEntries().size(); i++)
+        {
+            BeeNestEntry entry = getGravemindMemory().getBeeNestEntries().get(i);
+
+            if(!entry.isEntryValid(worldIn)) { continue; }
+
+            if (!entry.isOccupantsExistingDisabled(worldIn))
+            {
+                entry.disableOccupantsExiting(worldIn);
+                lastEnabledIndex = i;
+            }
+        }
+        int startIndex = lastEnabledIndex + 1;
+        if (startIndex >= getGravemindMemory().getBeeNestEntries().size())
+        {
+            startIndex = 0;
+        }
+        for (int i = startIndex; i < startIndex + amount; i++)
+        {
+            int index = i % getGravemindMemory().getBeeNestEntries().size();
+
+            if(!getGravemindMemory().getBeeNestEntries().get(index).isEntryValid(worldIn)) { continue; }
+
+            getGravemindMemory().getBeeNestEntries().get(index).enableOccupantsExiting(worldIn);
         }
     }
 
@@ -672,6 +704,33 @@ public class Gravemind
         public boolean isEntryValid(ServerWorld worldIn)
         {
             return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get());
+        }
+
+
+        /**
+         * is Hive enabled?
+         * @return
+         */
+        public boolean isOccupantsExistingDisabled(ServerWorld worldIn)
+        {
+            return SculkBeeNestBlock.isNestClosed(worldIn.getBlockState(position));
+        }
+
+        /**
+         * Sets Hive to deny bees leaving
+         */
+        public void disableOccupantsExiting(ServerWorld world)
+        {
+            SculkBeeNestBlock.setNestClosed(world, world.getBlockState(position), position);
+        }
+
+
+        /**
+         * Sets Hive to allow bees leaving
+         */
+        public void enableOccupantsExiting(ServerWorld world)
+        {
+            SculkBeeNestBlock.setNestOpen(world, world.getBlockState(position), position);
         }
 
         /**

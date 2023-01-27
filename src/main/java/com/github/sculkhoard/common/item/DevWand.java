@@ -101,7 +101,6 @@ public class DevWand extends Item implements IForgeItem {
 								"Known Nodes: " + SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
 								"Known Nests: " + SculkHoard.gravemind.getGravemindMemory().getBeeNestEntries().size() + "\n" +
 								"Known Hostiles Amount: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().size() + "\n" +
-								"Known Hostiles List: " + SculkHoard.gravemind.getGravemindMemory().getHostileEntries().toString() + "\n" +
 								"Conversion Queue Size: " + SculkHoard.infestationConversionTable.conversionQueue.size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)

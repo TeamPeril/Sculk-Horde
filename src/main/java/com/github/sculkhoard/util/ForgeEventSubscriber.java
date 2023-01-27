@@ -76,6 +76,8 @@ public class ForgeEventSubscriber {
             {
                 time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
 
+                SculkHoard.gravemind.enableAmountOfBeeHives((ServerWorld) event.world, 20);
+
                 //Verification Processes to ensure our data is accurate
                 SculkHoard.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
                 SculkHoard.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);

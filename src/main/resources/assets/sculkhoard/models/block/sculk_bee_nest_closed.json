@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 16],
 	"textures": {
-		"1": "sculkhoard:block/sculk_bee_nest"
+		"1": "sculkhoard:block/sculk_bee_nest_closed"
 	},
 	"elements": [
 		{

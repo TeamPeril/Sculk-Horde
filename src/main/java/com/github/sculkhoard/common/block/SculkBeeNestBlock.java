@@ -1,15 +1,20 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
+import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BeehiveBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -21,6 +26,9 @@ import javax.annotation.Nullable;
 
 public class SculkBeeNestBlock extends BeehiveBlock {
 
+    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
+    public static final IntegerProperty HONEY_LEVEL = IntegerProperty.create("honey_level", 0, 5);
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
      * MAP_COLOR is the color that will show up on a map to represent this block
@@ -70,6 +78,9 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      */
     public SculkBeeNestBlock(AbstractBlock.Properties prop) {
         super(prop);
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(HONEY_LEVEL, 0)
+                .setValue(CLOSED, true));
     }
 
     /**
@@ -94,6 +105,23 @@ public class SculkBeeNestBlock extends BeehiveBlock {
                 .sound(SoundType.SLIME_BLOCK)
                 .noOcclusion()
                 .noDrops();
+    }
+
+    public static boolean isNestClosed(BlockState blockState)
+    {
+        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
+    }
+
+    public static void setNestClosed(ServerWorld world, BlockState blockState, BlockPos position)
+    {
+        if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
+        world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(true)), 3);
+    }
+
+    public static void setNestOpen(ServerWorld world, BlockState blockState, BlockPos position)
+    {
+        if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
+        world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(false)), 3);
     }
 
     @Override
@@ -126,12 +154,43 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         return newBlockEntity(world);
     }
 
-    @Override
-    public BlockState getStateForPlacement(BlockItemUseContext pContext)
+
+    /**
+     * Determines what the blockstate should be for placement.
+     * @param context
+     * @return
+     */
+    public BlockState getStateForPlacement(BlockItemUseContext context)
     {
-        return this.defaultBlockState();
+        return this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(HONEY_LEVEL, 0)
+                .setValue(CLOSED, true);
+
     }
 
 
+    /**
+     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
+     * blockstate.
+     * @deprecated call via {@link IBlockState#withRotation(Rotation)} whenever possible. Implementing/overriding is
+     * fine.
+     */
+    public BlockState rotate(BlockState pState, Rotation pRotation) {
+        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
+    }
 
+
+    /**
+     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
+     * blockstate.
+     * @deprecated call via {@link IBlockState#withMirror(Mirror)} whenever possible. Implementing/overriding is fine.
+     */
+    public BlockState mirror(BlockState pState, Mirror pMirror) {
+        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    }
+
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(FACING, CLOSED, HONEY_LEVEL);
+    }
 }
