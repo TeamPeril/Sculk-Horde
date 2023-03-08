@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "sculkhoard:block/sculk_bee_nest_cell_mature1"
-  }
-}

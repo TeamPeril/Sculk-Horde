@@ -15,8 +15,8 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 version = '0.5'
-group = 'com.github.sculkhoard' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'sculkhoard'
+group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'sculkhorde'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
@@ -101,7 +101,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'sculkhoard', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'sculkhorde', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 examplemod {
@@ -156,7 +156,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "sculkhoard",
+            "Specification-Title": "sculkhorde",
             "Specification-Vendor": "teamperil",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
