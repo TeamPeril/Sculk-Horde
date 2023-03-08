@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.item;
 
+import com.github.sculkhoard.common.entity.SculkHatcherEntity;
 import com.github.sculkhoard.util.EntityAlgorithms;
 import com.github.sculkhoard.common.entity.SculkMiteEntity;
 import com.github.sculkhoard.core.SculkHoard;
@@ -134,7 +135,7 @@ public class DevWand extends Item implements IForgeItem {
 					//Give Player Effect
 					playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
 					//Create Mob Instance
-					SculkMiteEntity entity = new SculkMiteEntity(worldIn);
+					SculkHatcherEntity entity = new SculkHatcherEntity(worldIn);
 					//Set Mob's Position
 					entity.setPos(targetX, targetY, targetZ);
 					//Spawn instance in world

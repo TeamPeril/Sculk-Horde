@@ -37,6 +37,9 @@ public class ItemRegistry {
 	public static final RegistryObject<Item> CALCITE_CLUMP = ITEMS.register("calcite_clump",
 			() -> new Item(new Item.Properties().tab(SculkHoard.SCULK_GROUP)));
 
+	public static final RegistryObject<DevNodeSpawner> DEVN_NODE_SPAWNER = ITEMS.register("dev_node_spawner",
+			() -> new DevNodeSpawner());
+
 	/** HELPER METHODS **/
 
 	private static void registerSpawnEgg(final RegistryEvent.Register<Item> event, final EntityType<?> entity,

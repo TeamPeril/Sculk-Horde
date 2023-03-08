@@ -1172,7 +1172,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             {
                 //Add entity to hive
                 SculkBeeNestTile beehivetileentity = (SculkBeeNestTile)tileentity;
-                beehivetileentity.addOccupant(SculkBeeHarvesterEntity.this, SculkBeeHarvesterEntity.this.hasNectar());
+                beehivetileentity.addOccupant(SculkBeeHarvesterEntity.this);
             }
 
         }

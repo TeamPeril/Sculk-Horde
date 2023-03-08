@@ -131,7 +131,7 @@ public class BlockRegistry {
 	public static final RegistryObject<VeinBlock> VEIN =
 			registerBlock("vein", () -> new VeinBlock());
 
-	public static final RegistryObject<SculkNodeBlock> SCULK_BRAIN =
+	public static final RegistryObject<SculkNodeBlock> SCULK_NODE_BLOCK =
 			registerBlock("sculk_brain", () -> new SculkNodeBlock());
 
 	public static final RegistryObject<SpreadingBlock> SPREADING_BLOCK =

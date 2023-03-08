@@ -1,5 +1,6 @@
 package com.github.sculkhoard.common.entity.goal;
 
+import com.github.sculkhoard.util.EntityAlgorithms;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -77,6 +78,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     public boolean canUse()
     {
+
         /**
          * I shouldn't have to do this, but im doing this here.
          * I cannot figure out how vanilla handles this.
@@ -85,6 +87,15 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         if(this.target != null && this.target.isDeadOrDying())
         {
             this.target = null;
+        }
+
+        // If our current target is not valid. Set out target to be null.
+        if(this.target != null)
+        {
+            if(EntityAlgorithms.isLivingEntityValidTarget(this.target, targetHostiles, targetPassives, targetInfected))
+            {
+                this.target = null;
+            }
         }
 
         //Despawn the mob if it has no target for too long

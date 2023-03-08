@@ -70,6 +70,7 @@ public class SculkLivingRockRootTile extends TileEntity implements ITickableTile
         {
             //Create Structure
             proceduralStructure = new SculkLivingRockProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            proceduralStructure.generatePlan();
         }
 
         //If currently building, call build tick.

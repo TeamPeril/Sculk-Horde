@@ -15,8 +15,6 @@ public class ProceduralStructure
 
     protected boolean isCurrentlyBuilding = false;
 
-    protected float buildProgress = 0.0f;
-
     public ArrayList<PlannedBlock> plannedBlockQueue; //A list of individual planned blocks to build
 
     protected int currentPlannedBlockQueueIndex = 0;
@@ -34,8 +32,6 @@ public class ProceduralStructure
         childStructuresQueue = new ArrayList<>();
         world = worldIn;
 
-        generatePlan();
-
         /*
         This method sorts the plannedBlockQueue ArrayList by using the Collections.sort() method, with a custom comparator
         function that compares the distance of each block to the origin using the getBlockDistance method provided.
@@ -49,17 +45,12 @@ public class ProceduralStructure
 
     /** ACCESSORS **/
 
-    public float getBuildProgress()
-    {
-        return buildProgress;
-    }
-
     public boolean isCurrentlyBuilding()
     {
         return isCurrentlyBuilding;
     }
 
-    public int getPlannedBlocksThatCanBePlaced()
+    protected int getPlannedBlocksThatCanBePlaced()
     {
         int plannedBlocksThatAreAbleToBePlaced = 0;
 
@@ -77,7 +68,7 @@ public class ProceduralStructure
         return plannedBlocksThatAreAbleToBePlaced;
     }
 
-    public int getPlannedBlocksPlaced()
+    protected int getPlannedBlocksPlaced()
     {
         int plannedBlocksPlaced = 0;
 
@@ -101,7 +92,7 @@ public class ProceduralStructure
      * Counts how many blocks that can be placed, are placed from this
      * procedural structure and all child structures.
      */
-    private void calculateBuildProgress()
+    protected float getBuildProgress()
     {
         int totalPlannedBlocksThatAreAbleToBePlaced = getPlannedBlocksThatCanBePlaced();
         int totalPlannedBlocksPlaced = getPlannedBlocksPlaced();
@@ -115,11 +106,11 @@ public class ProceduralStructure
 
         if(totalPlannedBlocksThatAreAbleToBePlaced == 0)
         {
-            buildProgress = 0;
+            return 1.0F;
         }
         else
         {
-            buildProgress = ((float) totalPlannedBlocksPlaced) / ((float) totalPlannedBlocksThatAreAbleToBePlaced);
+            return ((float) totalPlannedBlocksPlaced) / ((float) totalPlannedBlocksThatAreAbleToBePlaced);
         }
     }
 
@@ -131,9 +122,20 @@ public class ProceduralStructure
      */
     public boolean isStructureComplete()
     {
-        if(buildProgress == 100.0) return true;
+        if(getBuildProgress() < 1.0)
+        {
+            return false;
+        }
 
-        return false;
+        for(ProceduralStructure childStructure : childStructuresQueue)
+        {
+            if(!childStructure.isStructureComplete())
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** EVENTS **/
@@ -150,13 +152,6 @@ public class ProceduralStructure
         {
             entry.generatePlan();
         }
-
-        for(int offset = 1; offset <= 4; offset++)
-        {
-            plannedBlockQueue.add(
-                    new PlannedBlock(world, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get().defaultBlockState(), origin.below(offset))
-            );
-        }
     }
 
     /**
@@ -164,7 +159,7 @@ public class ProceduralStructure
      * Determines if the process will actually start.
      * @return True/False
      */
-    public boolean canStartToBuild()
+    protected boolean canStartToBuild()
     {
         boolean result = true;
 
@@ -172,7 +167,7 @@ public class ProceduralStructure
         {
             result = false;
         }
-        else if(plannedBlockQueue.isEmpty() && childStructuresQueue.isEmpty())
+        else if(plannedBlockQueue.isEmpty())
         {
             result = false;
         }
@@ -185,9 +180,9 @@ public class ProceduralStructure
      * to determine if it should continiue to be built
      * @return True/False
      */
-    public boolean canContinueToBuild()
+    protected boolean canContinueToBuild()
     {
-        return canStartToBuild();
+        return canStartToBuild() && !isStructureComplete();
     }
 
     /**
@@ -195,8 +190,7 @@ public class ProceduralStructure
      */
     public void startBuildProcedure()
     {
-        calculateBuildProgress();
-        if(!isCurrentlyBuilding && canStartToBuild())
+        if(canStartToBuild())
         {
             isCurrentlyBuilding = true;
             currentPlannedBlockQueueIndex = 0;
@@ -208,10 +202,7 @@ public class ProceduralStructure
      */
     public void stopBuildProcedure()
     {
-        if(isCurrentlyBuilding)
-        {
-            isCurrentlyBuilding = false;
-        }
+        isCurrentlyBuilding = false;
     }
 
     /**
@@ -219,23 +210,24 @@ public class ProceduralStructure
      */
     public void buildTick()
     {
-        //Build Child Structures
-        for(ProceduralStructure childStructure : childStructuresQueue)
+        //Do Not Tick if we arent in build mode
+        if(!isCurrentlyBuilding) { return; }
+        if(!canContinueToBuild())
         {
-            childStructure.buildTick();
+            stopBuildProcedure();
+            return;
         }
 
         //Build blocks from main structure
-        if(canContinueToBuild() && currentPlannedBlockQueueIndex < plannedBlockQueue.size())
+        if(currentPlannedBlockQueueIndex < plannedBlockQueue.size())
         {
             PlannedBlock currentPlannedBlock = plannedBlockQueue.get(currentPlannedBlockQueueIndex);
-            currentPlannedBlock.build();
-            calculateBuildProgress();
-            currentPlannedBlockQueueIndex++;
-        }
-        else
-        {
-            stopBuildProcedure();
+            // If it can be placed, place it, then keep track
+            if(currentPlannedBlock.canBePlaced())
+            {
+                currentPlannedBlock.build();
+                currentPlannedBlockQueueIndex++;
+            }
         }
     }
 }

@@ -62,7 +62,7 @@ public class InfestedStoneDormantBlock extends Block implements IForgeBlock {
      *  3 = Diamond<br>
      *  4 = Netherite
      */
-    public static int HARVEST_LEVEL = 3;
+    public static int HARVEST_LEVEL = 2;
 
     /**
      *  All these variables below define the effect given to the player when they step on it.<br>

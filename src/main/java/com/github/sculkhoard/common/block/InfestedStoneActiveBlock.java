@@ -73,7 +73,7 @@ public class InfestedStoneActiveBlock extends SpreadingBlock implements IForgeBl
      *  3 = Diamond<br>
      *  4 = Netherite
      */
-    public static int HARVEST_LEVEL = -1;
+    public static int HARVEST_LEVEL = 2;
 
     /**
      *  validSpreadBlocks is a list of blocks that this block can spread to.<br>

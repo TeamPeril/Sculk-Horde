@@ -72,18 +72,7 @@ public class InfectedDirtBlock extends SpreadingBlock implements IForgeBlock {
      *  3 = Diamond<br>
      *  4 = Netherite
      */
-    public static int HARVEST_LEVEL = -1;
-
-    /**
-     *  DEFAULT_MAX_SPREAD_ATTEMPTS is the max number of spread attempts assigned
-     *  to this block by default.<br>
-     *  This only really applies to the root block because every child of the root
-     *  block will have a smaller amount of spread attempts assigned to it by the
-     *  immediate parent.
-     */
-    public static int DEFAULT_MAX_SPREAD_ATTEMPTS = 100;
-    public static float CHANCE_FOR_SCULK_VEIN = 0.75f;
-    public static final int TIMES_TO_SPREAD_PER_RANDOM_TICK = 10;
+    public static int HARVEST_LEVEL = 2;
 
     /**
      * The Constructor that takes in properties

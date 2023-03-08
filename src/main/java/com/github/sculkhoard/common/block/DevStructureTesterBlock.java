@@ -97,20 +97,6 @@ public class DevStructureTesterBlock extends Block implements IForgeBlock {
     }
 
     /**
-     * Gets called every time the block randomly ticks.
-     * @param blockState The current Blockstate
-     * @param serverWorld The current ServerWorld
-     * @param bp The current Block Position
-     * @param random ???
-     */
-    @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
-    {
-
-    }
-
-
-    /**
      * Determines if a specified mob type can spawn on this block, returning false will
      * prevent any mob from spawning on the block.
      *

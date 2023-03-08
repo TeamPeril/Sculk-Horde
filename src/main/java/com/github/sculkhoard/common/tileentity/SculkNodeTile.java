@@ -1,8 +1,8 @@
 package com.github.sculkhoard.common.tileentity;
 
+import com.github.sculkhoard.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhoard.util.BlockAlgorithms;
 import com.github.sculkhoard.common.block.SculkNodeBlock;
-import com.github.sculkhoard.common.procedural.structures.SculkNodeShellProceduralStructure;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -24,7 +24,7 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
 
     private long tickedAt = System.nanoTime();
 
-    private SculkNodeShellProceduralStructure shellProceduralStructure;
+    private SculkNodeProceduralStructure nodeProceduralStructure;
 
     //The current circle radius, this increments at an interval
     private int infectCircleRadius = 1;
@@ -82,22 +82,23 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
                 long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
 
                 //If the Bee Nest Structure hasnt been initialized yet, do it
-                if(shellProceduralStructure == null)
+                if(nodeProceduralStructure == null)
                 {
                     //Create Structure
-                    shellProceduralStructure = new SculkNodeShellProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+                    nodeProceduralStructure = new SculkNodeProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+                    nodeProceduralStructure.generatePlan();
                 }
 
                 //If currently building, call build tick.
-                if(shellProceduralStructure.isCurrentlyBuilding())
+                if(nodeProceduralStructure.isCurrentlyBuilding())
                 {
-                    shellProceduralStructure.buildTick();
+                    nodeProceduralStructure.buildTick();
                     lastTimeSinceRepair = System.nanoTime();
                 }
                 //If enough time has passed, or we havent built yet, start build
                 else if(repairTimeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1)
                 {
-                    shellProceduralStructure.startBuildProcedure();
+                    nodeProceduralStructure.startBuildProcedure();
                 }
 
 

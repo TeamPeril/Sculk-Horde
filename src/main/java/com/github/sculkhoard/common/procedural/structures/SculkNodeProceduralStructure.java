@@ -9,12 +9,24 @@ import net.minecraft.world.server.ServerWorld;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class SculkNodeShellProceduralStructure extends ProceduralStructure
+public class SculkNodeProceduralStructure extends ProceduralStructure
 {
     private final int RADIUS = 5;
-    public SculkNodeShellProceduralStructure(ServerWorld worldIn, BlockPos originIn)
+    public SculkNodeProceduralStructure(ServerWorld worldIn, BlockPos originIn)
     {
         super(worldIn, originIn);
+    }
+
+    @Override
+    public void buildTick()
+    {
+        super.buildTick();
+
+        //Build Child Structures
+        for(ProceduralStructure childStructure : childStructuresQueue)
+        {
+            childStructure.buildTick();
+        }
     }
 
     public Optional<BlockPos> findLivingRockStructureIfExists(ServerWorld world, BlockPos placementPos)
@@ -84,19 +96,22 @@ public class SculkNodeShellProceduralStructure extends ProceduralStructure
     @Override
     public void generatePlan()
     {
+
         this.plannedBlockQueue.clear();
+
+        childStructuresQueue.add(new SculkNodeCaveProceduralStructure(this.world, this.origin, 35));
 
         for(ProceduralStructure entry : childStructuresQueue)
         {
             entry.generatePlan();
         }
 
-        ArrayList<BlockPos> blockPositionsInCircle = BlockAlgorithms.getBlockPosInCircle(origin, RADIUS, false);
+        ArrayList<BlockPos> blockPositionsInCircle = BlockAlgorithms.getBlockPosInCircle(this.origin, RADIUS, false);
 
         for(BlockPos position : blockPositionsInCircle)
         {
             //I dont know why i have to do -1 for the radius, something is wrong with the math
-            if(BlockAlgorithms.getBlockDistance(origin, position) < RADIUS - 1)
+            if(BlockAlgorithms.getBlockDistance(this.origin, position) < RADIUS - 1)
             {
                 plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_ARACHNOID.get().defaultBlockState(), position));
             }
@@ -106,9 +121,9 @@ public class SculkNodeShellProceduralStructure extends ProceduralStructure
             }
         }
 
-        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(origin, 5, RADIUS*3);
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(origin, 10, RADIUS*6));
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(origin, 20, RADIUS*9));
+        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 5, RADIUS*3);
+        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 10, RADIUS*6));
+        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 20, RADIUS*9));
         for(BlockPos position : surroundingLivingRock)
         {
             plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState(), findLivingRockPlacementPosition(this.world, position)));

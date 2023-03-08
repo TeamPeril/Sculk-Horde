@@ -2,8 +2,8 @@ package com.github.sculkhoard.core.gravemind;
 
 
 import com.github.sculkhoard.common.block.SculkBeeNestBlock;
+import com.github.sculkhoard.common.block.SculkNodeBlock;
 import com.github.sculkhoard.common.entity.SculkLivingEntity;
-import com.github.sculkhoard.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.gravemind.entity_factory.EntityFactory;
@@ -128,6 +128,8 @@ public class Gravemind
 
     public void enableAmountOfBeeHives(ServerWorld worldIn, int amount)
     {
+        if(getGravemindMemory().getBeeNestEntries().size() <= 0) { return; }
+
         int lastEnabledIndex = -1;
         for (int i = 0; i < getGravemindMemory().getBeeNestEntries().size(); i++)
         {
@@ -232,19 +234,15 @@ public class Gravemind
      * @param worldIn The World to place it in
      * @param targetPos The position to place it in
      */
-    public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos)
+    public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos, boolean enableChance)
     {
         //Random Chance to Place Node
-        if(new Random().nextInt(100) > 1) { return; }
+        if(new Random().nextInt(100) > 1 && enableChance) { return; }
 
         //If we are too close to another node, do not create one
         if(!SculkHoard.gravemind.isValidPositionForSculkNode(worldIn, targetPos)) { return; }
 
-        if(SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() >= SculkHoard.gravemind.sculk_node_limit) { return; }
-
-        worldIn.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BRAIN.get().defaultBlockState());
-        getGravemindMemory().addNodeToMemory(targetPos);
-        EntityType.LIGHTNING_BOLT.spawn(worldIn, null, null, targetPos, SpawnReason.SPAWNER, true, true);
+        SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
 
     }
 
@@ -257,7 +255,12 @@ public class Gravemind
      */
     public boolean isValidPositionForSculkNode(ServerWorld worldIn, BlockPos positionIn)
     {
-        if(!worldIn.canSeeSky(positionIn))
+        if(worldIn.canSeeSky(positionIn))
+        {
+            return false;
+        }
+
+        if(SculkHoard.gravemind.getGravemindMemory().getNodeEntries().size() >= SculkHoard.gravemind.sculk_node_limit)
         {
             return false;
         }
@@ -645,7 +648,7 @@ public class Gravemind
          */
         public boolean isEntryValid(ServerWorld worldIn)
         {
-            return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BRAIN.get());
+            return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_NODE_BLOCK.get());
         }
 
         /**

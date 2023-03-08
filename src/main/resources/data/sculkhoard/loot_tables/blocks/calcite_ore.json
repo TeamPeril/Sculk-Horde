@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:calcite_clump"
+          "name": "sculkhoard:calcite_clump"
         }
       ]
     }

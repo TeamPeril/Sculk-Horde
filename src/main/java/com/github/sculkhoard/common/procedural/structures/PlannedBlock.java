@@ -66,10 +66,14 @@ public class PlannedBlock
      */
     public void build()
     {
-        //If we can replace the block at the location
+        //If we 1n replace the block at the location
         if(canBePlaced())
         {
             world.setBlockAndUpdate(targetPos, plannedBlock);
+        }
+        else
+        {
+            //Very Bad
         }
     }
 

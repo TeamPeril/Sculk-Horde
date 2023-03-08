@@ -63,6 +63,60 @@ public class EntityAlgorithms {
         return new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
     }
 
+
+    /**
+     * Determines if an Entity is valid target based on rules
+     * @param e The Given Entity
+     * @return True if Valid, False otherwise
+     */
+    public static boolean isLivingEntityValidTarget(LivingEntity e, boolean targetHostiles, boolean targetPassives, boolean targetInfected)
+    {
+
+        //If sculk living entity, do not attack
+        if(e instanceof SculkLivingEntity)
+        {
+            return false;
+        }
+
+        //Do not attack creepers
+        if(e instanceof CreeperEntity)
+        {
+            return false;
+        }
+
+        //If not attackable or invulnerable or is dead/dying
+        if(!e.isAttackable() || e.isInvulnerable() || e.isDeadOrDying() || e.isSpectator())
+        {
+            return false;
+        }
+
+        //If not attackable or invulnerable or is dead/dying
+        if(e instanceof PlayerEntity && ((PlayerEntity) e).isCreative())
+        {
+            return false;
+        }
+
+        //If we do not attack infected and entity is infected
+        if(!targetInfected && isLivingEntityInfected(e))
+        {
+            return false;
+        }
+
+        //If we do not attack passives and entity is non-hostile
+        if(!targetPassives && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
+        {
+            return false;
+        }
+
+        //If we do not attack hostiles and target is hostile
+        if(!targetHostiles && isLivingEntityHostile(e))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Filters out any mobs that do not fit the filter
      * @param list The list of possible targets
@@ -71,52 +125,10 @@ public class EntityAlgorithms {
     {
         for(int i = 0; i < list.size(); i++)
         {
-            boolean isNonTarget = false;
+            boolean isValidTarget = isLivingEntityValidTarget(list.get(i), targetHostiles, targetPassives, targetInfected);
 
-            //If sculk living entity, do not attack
-            if(list.get(i) instanceof SculkLivingEntity)
-            {
-                isNonTarget = true;
-            }
-
-            //Do not attack creepers
-            if(list.get(i) instanceof CreeperEntity)
-            {
-                isNonTarget = true;
-            }
-
-            //If not attackable or invulnerable or is dead/dying
-            if(!list.get(i).isAttackable() || list.get(i).isInvulnerable() || list.get(i).isDeadOrDying() || list.get(i).isSpectator())
-            {
-                isNonTarget = true;
-            }
-
-            //If not attackable or invulnerable or is dead/dying
-            if(list.get(i) instanceof PlayerEntity && ((PlayerEntity) list.get(i)).isCreative())
-            {
-                isNonTarget = true;
-            }
-
-            //If we do not attack infected and entity is infected
-            if(!targetInfected && isLivingEntityInfected(list.get(i)))
-            {
-                isNonTarget = true;
-            }
-
-            //If we do not attack passives and entity is non-hostile
-            if(!targetPassives && !isLivingEntityHostile(list.get(i))) //NOTE: horde assumes everything is passive until provoked
-            {
-                isNonTarget = true;
-            }
-
-            //If we do not attack hostiles and target is hostile
-            if(!targetHostiles && isLivingEntityHostile(list.get(i)))
-            {
-                isNonTarget = true;
-            }
-
-            //If friendly, filter
-            if(isNonTarget)
+            //If not valid target, filter
+            if(!isValidTarget)
             {
                 list.remove(i); //Remove from list
                 i--; //Go back one index since the new length of the list is one less.

@@ -1,9 +1,7 @@
 package com.github.sculkhoard.common.tileentity;
 
 import com.github.sculkhoard.common.block.SculkBeeNestBlock;
-import com.github.sculkhoard.common.block.SculkBeeNestCellBlock;
 import com.github.sculkhoard.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhoard.common.procedural.structures.PlannedBlock;
 import com.github.sculkhoard.common.procedural.structures.SculkBeeNestProceduralStructure;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
@@ -16,7 +14,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -28,7 +25,6 @@ import net.minecraft.world.server.ServerWorld;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
@@ -47,9 +43,6 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
     protected final int MIN_TICKS_IN_HIVE = 20 * 60 * 30; //30 Minutes
 
-    //Repair routine will restart after an hour
-    private final long repairIntervalInMinutes = 30;
-
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
 
@@ -61,7 +54,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         super(TileEntityRegistry.SCULK_BEE_NEST_TILE.get());
     }
 
-    /** ### Setter Methods ### */
+    /* ### Setter Methods ### */
 
     /**
      * For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think it
@@ -77,17 +70,12 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         super.setChanged();
     }
 
-    /** ### Getter Methods ### */
-
-    public int getOccupantCount() {
-        return this.stored.size();
-    }
-
     public static int getHoneyLevel(BlockState pState) {
         return pState.getValue(SculkBeeNestBlock.HONEY_LEVEL);
     }
 
     public boolean isSedated() {
+        assert this.level != null;
         return CampfireBlock.isSmokeyPos(this.level, this.getBlockPos());
     }
 
@@ -141,19 +129,17 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         List<Entity> releasedEntities = Lists.newArrayList();
 
         // Iterate through the stored occupants and release them
-        this.stored.removeIf((occupant) -> {
-            return this.releaseOccupant(blockState, occupant, releasedEntities, releaseStatus);
-        });
+        this.stored.removeIf((occupant) -> this.releaseOccupant(blockState, occupant, releasedEntities, releaseStatus));
 
         // Return the list of released entities
         return releasedEntities;
     }
 
-    public void addOccupant(Entity entityIn, boolean hasNectar) {
-        this.addOccupantWithPresetTicks(entityIn, hasNectar, 0);
+    public void addOccupant(Entity entityIn) {
+        this.addOccupantWithPresetTicks(entityIn, 0);
     }
 
-    public void addOccupantWithPresetTicks(Entity entityIn, boolean hasNectar, int ticksInHive)
+    public void addOccupantWithPresetTicks(Entity entityIn, int ticksInHive)
     {
         if (this.level == null) { return; }
         if (this.stored.size() >= 10) { return; }
@@ -239,7 +225,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
 
         //PlaySound
-        this.level.playSound((PlayerEntity)null, this.getBlockPos(), SoundEvents.BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, this.getBlockPos(), SoundEvents.BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
         //Create bee
         return this.level.addFreshEntity(entity);
 
@@ -292,7 +278,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         //TODO Fix lazy solution of -1. figure out why this never got triggered normally
         if(getHoneyLevel(this.getBlockState()) >= MAX_HONEY_LEVEL - 1)
         {
-            this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(SculkBeeNestBlock.HONEY_LEVEL, Integer.valueOf(0)));
+            this.level.setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(SculkBeeNestBlock.HONEY_LEVEL, 0));
             SculkHoard.gravemind.getGravemindMemory().addSculkAccumulatedMass(10);
         }
 
@@ -309,9 +295,12 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         {
             //Create Structure
             beeNestStructure = new SculkBeeNestProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            beeNestStructure.generatePlan();
         }
 
         //If currently building, call build tick.
+        //Repair routine will restart after an hour
+        long repairIntervalInMinutes = 30;
         if(beeNestStructure.isCurrentlyBuilding())
         {
             beeNestStructure.buildTick();

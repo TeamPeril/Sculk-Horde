@@ -1,6 +1,7 @@
 package com.github.sculkhoard.common.block;
 
 import com.github.sculkhoard.common.tileentity.SculkNodeTile;
+import com.github.sculkhoard.core.BlockRegistry;
 import com.github.sculkhoard.core.SculkHoard;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.block.Block;
@@ -11,6 +12,7 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -89,6 +91,15 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      */
     public SculkNodeBlock() {
         this(getProperties());
+    }
+
+
+    public static void FindAreaAndPlaceNode(ServerWorld world, BlockPos searchOrigin)
+    {
+        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), 5 + 35, searchOrigin.getZ());
+        world.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
+        SculkHoard.gravemind.getGravemindMemory().addNodeToMemory(newOrigin);
+        EntityType.LIGHTNING_BOLT.spawn(world, null, null, newOrigin, SpawnReason.SPAWNER, true, true);
     }
 
     /**

@@ -31,7 +31,7 @@ public class TileEntityRegistry {
 
     public static RegistryObject<TileEntityType<SculkNodeTile>> SCULK_BRAIN_TILE =
             TILE_ENTITIES.register("sculk_brain_tile", () -> TileEntityType.Builder.of(
-                    SculkNodeTile::new, BlockRegistry.SCULK_BRAIN.get()).build(null));
+                    SculkNodeTile::new, BlockRegistry.SCULK_NODE_BLOCK.get()).build(null));
 
     public static RegistryObject<TileEntityType<SpreadingTile>> SPREADING_BLOCK_TILE =
             TILE_ENTITIES.register("spreading_block_tile", () -> TileEntityType.Builder.of(

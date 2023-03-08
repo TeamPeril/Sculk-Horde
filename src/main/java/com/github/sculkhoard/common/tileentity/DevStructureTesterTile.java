@@ -1,6 +1,8 @@
 package com.github.sculkhoard.common.tileentity;
 
 import com.github.sculkhoard.common.procedural.structures.SculkLivingRockProceduralStructure;
+import com.github.sculkhoard.common.procedural.structures.SculkNodeCaveProceduralStructure;
+import com.github.sculkhoard.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhoard.core.TileEntityRegistry;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -17,12 +19,8 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
 
     private long tickedAt = System.nanoTime();
 
-    private SculkLivingRockProceduralStructure proceduralStructure;
+    private SculkNodeProceduralStructure proceduralStructure;
 
-    //Repair routine will restart after an hour
-    private final long repairIntervalInMinutes = 60;
-    //Keep track of last time since repair so we know when to restart
-    private long lastTimeSinceRepair = -1;
 
     /**
      * The Constructor that takes in properties
@@ -53,34 +51,35 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
     @Override
     public void tick()
     {
+
         if(this.level == null || this.level.isClientSide)
         {
             return;
         }
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-        if(timeElapsed < 0.1) { return;}
+        if(timeElapsed < 10) { return;}
 
         tickedAt = System.nanoTime();
 
-        /** Building Shell Process **/
-        long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+        /** Building Process **/
 
-        //If the Bee Nest Structure hasnt been initialized yet, do it
+        //If the Structure hasnt been initialized yet, do it
         if(proceduralStructure == null)
         {
             //Create Structure
-            proceduralStructure = new SculkLivingRockProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            proceduralStructure = new SculkNodeProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            proceduralStructure.generatePlan();
         }
 
         //If currently building, call build tick.
-        if(proceduralStructure.isCurrentlyBuilding())
+        while(!proceduralStructure.isStructureComplete() && proceduralStructure.isCurrentlyBuilding())
         {
             proceduralStructure.buildTick();
-            lastTimeSinceRepair = System.nanoTime();
         }
-        //If enough time has passed, or we havent built yet, start build
-        else if(repairTimeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1)
+
+        //If structure not complete, start build
+        if(!proceduralStructure.isStructureComplete() && !proceduralStructure.isCurrentlyBuilding())
         {
             proceduralStructure.startBuildProcedure();
         }

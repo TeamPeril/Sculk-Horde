@@ -15,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -92,6 +91,55 @@ public class BlockAlgorithms {
     {
         return (float) Math.sqrt( Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2) + Math.pow(pos2.getZ() - pos1.getZ(), 2));
     }
+    /**
+     * Returns an ArrayList of BlockPos that represent a cube
+     * @param origin the center BlockPos of the cube
+     * @param length the length of all sides of the cube
+     * @param includeOrigin if true, the origin position will be included in the final output
+     * @return an ArrayList of BlockPos that represent a cube
+     */
+    public static ArrayList<BlockPos> getBlockPosInCube(BlockPos origin, int length, boolean includeOrigin) {
+        ArrayList<BlockPos> positions = new ArrayList<>();
+        boolean shouldWeAddThisPosition;
+
+        //Origin position
+        int center_x = origin.getX();
+        int center_y = origin.getY();
+        int center_z = origin.getZ();
+
+        //Initial position is in corner
+        int start_pos_x = center_x - (length/2) - 1;
+        int start_pos_y = center_y - (length/2) - 1;
+        int start_pos_z = center_z - (length/2) - 1;
+
+        //Iterate over y positions
+        for(int y_offset = 0; y_offset < length; y_offset++)
+        {
+            //Iterate over z positions
+            int current_pos_y = start_pos_y + y_offset;
+            for(int z_offset = 0; z_offset < length; z_offset++)
+            {
+                //Iterate over x positions
+                int current_pos_z = start_pos_z + z_offset;
+                for(int x_offset = 0; x_offset < length; x_offset++)
+                {
+                    int current_pos_x = start_pos_x + x_offset;
+                    shouldWeAddThisPosition = true;
+
+                    BlockPos targetPos = new BlockPos(current_pos_x, current_pos_y, current_pos_z);
+
+                    //If we are not including origin and this is the origin, do not include
+                    if(!includeOrigin && targetPos.getX() == origin.getX() && targetPos.getY() == origin.getY() && targetPos.getZ() == origin.getZ())
+                        shouldWeAddThisPosition = false;
+
+                    //If not debugging, function as normal
+                    if(shouldWeAddThisPosition) positions.add(targetPos);
+                }
+            }
+        }
+
+        return positions;
+    }
 
     /**
      * Gets all blocks in a circle and retuns it in a list
@@ -102,6 +150,8 @@ public class BlockAlgorithms {
      */
     public static ArrayList<BlockPos> getBlockPosInCircle(BlockPos origin, int radius, boolean includeOrigin)
     {
+        if(radius <= 0) { throw new IllegalArgumentException("Radius must be greater than 0. Radius given was " + radius + ".");}
+
         ArrayList<BlockPos> positions = new ArrayList<>();
         boolean shouldWeAddThisPosition;
 
@@ -315,10 +365,10 @@ public class BlockAlgorithms {
             SculkBeeNestTile nest = (SculkBeeNestTile) world.getBlockEntity(targetPos);
 
             //Add 10 bees
-            nest.addOccupant(new SculkBeeHarvesterEntity(world), false);
-            nest.addOccupant(new SculkBeeHarvesterEntity(world), false);
-            nest.addOccupant(new SculkBeeInfectorEntity(world), false);
-            nest.addOccupant(new SculkBeeInfectorEntity(world), false);
+            nest.addOccupant(new SculkBeeHarvesterEntity(world));
+            nest.addOccupant(new SculkBeeHarvesterEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
         }
 
     }

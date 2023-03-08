@@ -243,7 +243,7 @@ public class InfestationConversionHandler
             if(dormantVariant.getBlock() == BlockRegistry.INFESTED_LOG_DORMANT.get())
                 BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
-            SculkHoard.gravemind.placeSculkNode(world, targetPos.above());
+            SculkHoard.gravemind.placeSculkNode(world, targetPos.above(), true);
 
             BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
 
