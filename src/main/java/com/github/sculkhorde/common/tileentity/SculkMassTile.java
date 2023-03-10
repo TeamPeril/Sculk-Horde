@@ -1,13 +1,18 @@
 package com.github.sculkhorde.common.tileentity;
 
+import com.github.sculkhorde.common.entity.BlockTraverserEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
 
-public class SculkMassTile extends TileEntity implements IForgeTileEntity {
+public class SculkMassTile extends TileEntity implements ITickableTileEntity {
 
     /**
      * storedSculkMass is the value of sculk mass was this block has.
@@ -72,5 +77,53 @@ public class SculkMassTile extends TileEntity implements IForgeTileEntity {
     public void addStoredSculkMass(int value)
     {
         storedSculkMass += value;
+    }
+
+    @Override
+    public void tick()
+    {
+        // If world is not a server world, return
+        if(level.isClientSide)
+        {
+            return;
+        }
+        // Tick every 5 seconds
+        if(level.getGameTime() % 100 != 0)
+        {
+            return;
+        }
+
+        // If the tile entity at this location is not a sculk mass tile, return
+        if(!(this.level.getBlockEntity(this.getBlockPos()) instanceof SculkMassTile))
+        {
+            return;
+        }
+
+        // Get the tile entity at this location
+        SculkMassTile thisTile = (SculkMassTile) this.level.getBlockEntity(this.getBlockPos());
+
+        EntityFactory entityFactory = SculkHorde.entityFactory;
+        ReinforcementRequest context = new ReinforcementRequest(this.getBlockPos());
+
+        context.sender = ReinforcementRequest.senderType.SculkMass;
+        context.budget = thisTile.getStoredSculkMass();
+
+        //Attempt to call in reinforcements and then update stored sculk mass
+        entityFactory.requestReinforcementSculkMass(level, getBlockPos(), context);
+        if(context.isRequestViewed && context.isRequestApproved)
+        {
+            thisTile.setStoredSculkMass(context.remaining_balance);
+
+            // Spawn Block Traverser
+            BlockTraverserEntity blockTraverserEntity = new BlockTraverserEntity(level);
+            blockTraverserEntity.setPos(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ());
+            level.addFreshEntity(blockTraverserEntity);
+
+            //Destroy if run out of sculk mass
+            if(thisTile.getStoredSculkMass() <= 0)
+            {
+                level.destroyBlock(this.getBlockPos(), false);
+            }
+        }
     }
 }

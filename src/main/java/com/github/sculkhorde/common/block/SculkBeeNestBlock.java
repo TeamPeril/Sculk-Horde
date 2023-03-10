@@ -108,7 +108,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
 
     public static boolean isNestClosed(BlockState blockState)
     {
-        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
+        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && !blockState.getValue(CLOSED);
     }
 
     public static void setNestClosed(ServerWorld world, BlockState blockState, BlockPos position)
@@ -172,7 +172,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     /**
      * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
      * blockstate.
-     * @deprecated call via {@link IBlockState#withRotation(Rotation)} whenever possible. Implementing/overriding is
+     * @deprecated call via IBlockState#withRotation(Rotation) whenever possible. Implementing/overriding is
      * fine.
      */
     public BlockState rotate(BlockState pState, Rotation pRotation) {
@@ -183,7 +183,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     /**
      * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
      * blockstate.
-     * @deprecated call via {@link IBlockState#withMirror(Mirror)} whenever possible. Implementing/overriding is fine.
+     * @deprecated call via IBlockState#withMirror(Mirror) whenever possible. Implementing/overriding is fine.
      */
     public BlockState mirror(BlockState pState, Mirror pMirror) {
         return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));

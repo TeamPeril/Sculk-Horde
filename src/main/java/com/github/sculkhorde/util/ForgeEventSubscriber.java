@@ -63,13 +63,7 @@ public class ForgeEventSubscriber {
 
             //Infestation Related Processes
             //Used by anti sculk serum
-            SculkHorde.infestationConversionTable.proccessConversionToVictimQueue((ServerWorld) event.world);
-            //Used by Sculk Node
-            SculkHorde.infestationConversionTable.processConversionToInfectedQueue((ServerWorld) event.world);
-            //Used by Spreading Tiles
-            SculkHorde.infestationConversionTable.processConversionQueue((ServerWorld) event.world);
-
-
+            SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerWorld) event.world);
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
             if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)

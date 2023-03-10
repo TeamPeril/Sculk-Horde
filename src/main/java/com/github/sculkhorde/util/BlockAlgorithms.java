@@ -209,7 +209,7 @@ public class BlockAlgorithms {
      * @param pDistance The search distance
      * @return The position of the block
      */
-    public Optional<BlockPos> findNearestBlock(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
+    public static Optional<BlockPos> findNearestBlock(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
     {
         //?
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
@@ -444,7 +444,7 @@ public class BlockAlgorithms {
 
     /**
      * Will replace sculk flora with grass.
-     * Gets called in {@link InfestationConversionHandler#proccessConversionToVictimQueue}
+     * Gets called in {@link InfestationConversionHandler#processDeInfectionQueue}
      * @param serverWorld the world
      * @param targetPos the position
      */

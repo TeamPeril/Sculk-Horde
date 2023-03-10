@@ -92,7 +92,7 @@ public class DevConversionWand extends Item implements IForgeItem {
 
 			if(targetPos != null) //If player Looking at Block
 			{
-				if(!worldIn.isClientSide()) SculkHorde.infestationConversionTable.convertToActiveSpreader((ServerWorld) worldIn, targetPos);
+				if(!worldIn.isClientSide()) SculkHorde.infestationConversionTable.infectBlock((ServerWorld) worldIn, targetPos);
 
 				//Set Wand on cool down
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)

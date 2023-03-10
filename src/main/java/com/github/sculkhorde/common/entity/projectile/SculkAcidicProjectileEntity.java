@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ItemRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.world.World;
 
 
@@ -46,4 +47,10 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
 
     /** EVENTS **/
 
+    public void tick() {
+        super.tick();
+        if (this.level.isClientSide) {
+            this.level.addParticle(ParticleTypes.NAUTILUS, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        }
+    }
 }

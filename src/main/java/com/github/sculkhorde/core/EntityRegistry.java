@@ -33,6 +33,7 @@ public class EntityRegistry {
     public static EntityType<SculkBeeInfectorEntity> SCULK_BEE_INFECTOR = buildEntityType(SculkBeeInfectorEntity::new, "sculk_bee_infector", 0.7f, 0.6f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
     public static EntityType<SculkBeeHarvesterEntity> SCULK_BEE_HARVESTER = buildEntityType(SculkBeeHarvesterEntity::new, "sculk_bee_harvester", 0.7f, 0.6f, EntityClassification.CREATURE, b -> b.clientTrackingRange(9));
     public static EntityType<SculkHatcherEntity> SCULK_HATCHER = buildEntityType(SculkHatcherEntity::new, "sculk_hatcher", 0.9f, 1.4f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<BlockTraverserEntity> BLOCK_TRAVERSER = buildEntityType(BlockTraverserEntity::new, "block_traverser", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
 
     /** REGISTRY METHODS **/
 
@@ -55,6 +56,9 @@ public class EntityRegistry {
         event.getRegistry().register(SCULK_BEE_INFECTOR.setRegistryName(SculkHorde.MOD_ID, "sculk_bee_infector"));
         event.getRegistry().register(SCULK_BEE_HARVESTER.setRegistryName(SculkHorde.MOD_ID, "sculk_bee_harvester"));
         event.getRegistry().register(SCULK_HATCHER.setRegistryName(SculkHorde.MOD_ID, "sculk_hatcher"));
+
+        //Misc
+        event.getRegistry().register(BLOCK_TRAVERSER.setRegistryName(SculkHorde.MOD_ID, "block_traverser"));
     }
 
     /** HELPER METHODS **/

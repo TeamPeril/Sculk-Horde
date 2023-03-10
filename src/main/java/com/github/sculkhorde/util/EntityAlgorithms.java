@@ -2,9 +2,12 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.EffectRegistry;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -12,7 +15,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static com.github.sculkhorde.core.SculkHorde.gravemind;
@@ -161,5 +164,21 @@ public class EntityAlgorithms {
     {
         List<LivingEntity> livingEntitiesInRange = serverWorld.getLoadedEntitiesOfClass(LivingEntity.class, boundingBox, (Predicate<? super LivingEntity>) null);
         return livingEntitiesInRange;
+    }
+
+
+    public static List<BlockPos> createPathToBlockPos(ServerWorld world, BlockPos start, BlockPos end, int maxRange, Predicate<BlockState> obstaclePredicate)
+    {
+        // Initialize ArrayList
+        List<BlockPos> path = new ArrayList<>();
+
+        /**
+         * Use A* path finding algorithm to find path between start and end.
+         * Should use obstaclePredicate to determine if a block is an obstacle.
+         * Should use maxRange to determine if a block is too far away.
+         */
+        return null;
+
+
     }
 }

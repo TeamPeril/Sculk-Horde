@@ -1,11 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.block.BlockInfestation.SpreadingBlock;
-import com.github.sculkhorde.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoublePlantBlock;
@@ -234,17 +230,15 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
                 //Set entity to have nectar
                 SculkBeeInfectorEntity.this.setHasNectar(true);
 
-                //Convert Block Under bee to sculk active spreader
+                // Spawn Block Traverser under bee
                 BlockPos spreadPos = SculkBeeInfectorEntity.this.blockPosition().below();
                 ServerWorld world = (ServerWorld) SculkBeeInfectorEntity.this.level;
-                if (SculkHorde.infestationConversionTable.convertToActiveSpreader((ServerWorld) SculkBeeInfectorEntity.this.level, spreadPos))
-                {
-                    SpreadingBlock spreadingBlock = BlockRegistry.SPREADING_BLOCK.get();
-                    if(spreadingBlock.getTileEntity(world, spreadPos) != null && spreadingBlock.getTileEntity(world, spreadPos) instanceof SpreadingTile)
-                    {
-                        spreadingBlock.getTileEntity(world, spreadPos).setMaxSpreadAttempts(20);
-                    }
-                }
+
+                // Spawn Block Traverser
+                BlockTraverserEntity blockTraverserEntity = new BlockTraverserEntity(EntityRegistry.BLOCK_TRAVERSER, world);
+                blockTraverserEntity.setPos(spreadPos.getX(), spreadPos.getY(), spreadPos.getZ());
+                world.addFreshEntity(blockTraverserEntity);
+
             }
 
             //Set pollination to false

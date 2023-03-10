@@ -13,9 +13,13 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -204,6 +208,17 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
         if(tile instanceof SculkNodeTile && !worldIn.isClientSide())
         {
             ((SculkNodeTile)tile).forceLoadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
+        }
+
+        if(worldIn.isClientSide())
+        {
+            // Play Sound that Can be Heard by all players
+            worldIn.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+
+            // Display Text On Player Screens
+            for (PlayerEntity player : worldIn.players()) {
+                player.displayClientMessage(new TranslationTextComponent("message.sculk_horde.node_placed"), true);
+            }
         }
 
     }

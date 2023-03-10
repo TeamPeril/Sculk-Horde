@@ -11,11 +11,10 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class InfestationConversionHandler
 {
-    private ArrayList<SpreadingBlock> entries;
-
     /**
      * This is a queue used to convert blocks in a manner that prevents lag for nodes.
      * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
@@ -26,325 +25,63 @@ public class InfestationConversionHandler
 
     public ArrayList<ConversionRequest> conversionQueue;
 
-
+    public InfestationTable infestationTable;
 
     /**
      * Default Constructor
      */
     public InfestationConversionHandler()
     {
-        entries = new ArrayList<>();
         convertToVictimNodeQueue = new ArrayList<>();
         convertToInfectedNodeQueue = new ArrayList<>();
         conversionQueue = new ArrayList<>();
+        infestationTable = new InfestationTable();
     }
 
-    /**Accessor Methods**/
+    /* Accessor Methods */
 
-    /**
-     * Returns a list of all the entries.
-     * @return
-     */
-    public ArrayList<SpreadingBlock> getEntries()
-    {
-        return entries;
-    }
+    /* Modifier Methods */
 
-    /**
-     * Returns what a victim block should convert into. <br>
-     * This returned block should be a block that actively spreads.
-     * @param victimBlock The block that needs to be converted.
-     * @return The actively spreading block variant.
-     */
-    @Nullable
-    private Block getActiveSpreadingVariant(BlockState victimBlock)
-    {
-        //Loop through each entry until we find the appropriate one
-        for(SpreadingBlock entry : SculkHorde.infestationConversionTable.getEntries())
-        {
-            //If the victim blocks is the same block as the entry
-            if(entry.isValidVictim(victimBlock))
-            {
-                return entry;
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Returns what an active spreading block should convert into. <br>
-     * This returned block should be a block that is the final evolution.
-     * @param activeBlock The block that needs to be converted.
-     * @return The dormant block variant.
-     */
-    @Nullable
-    private BlockState getDormantVariant(Block activeBlock)
-    {
-        //Loop through each entry until we find the appropriate one.s
-        for(SpreadingBlock entry : entries)
-        {
-            //If the victim blocks is the same block as the entry
-            if(entry == activeBlock)
-            {
-                return entry.getDormantVariant();
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Returns what an block should convert back into if sculk is removed. <br>
-     * @param targetBlock The block that needs to be converted.
-     * @return The dormant block variant.
-     */
-    @Nullable
-    private BlockState getVictimVariant(Block targetBlock)
-    {
-        //Loop through each entry until we find the appropriate one.s
-        for(SpreadingBlock entry : entries)
-        {
-            //If the target block is the active or dormant variant
-            if(entry.getBlock() == targetBlock || entry.getDormantVariant().getBlock() == targetBlock)
-            {
-                return entry.getVictimVariant();
-            }
-        }
-        return null;
-    }
-
-    /**Modifier Methods**/
-
-    /**
-     * Adds an entry into the table.
-     * @param active_spreading_block_in This is the block that the victim will turn into.
-     */
-    public void addEntry(SpreadingBlock active_spreading_block_in)
-    {
-        entries.add(active_spreading_block_in);
-    }
-
-    /** Boolean Methods **/
-
-
-    /**
-     * Will check all entries in the infestation conversion table to see if
-     * the given block is considered a victim to any entry.
-     * @param blockStateIn The block to check
-     * @return True if the block can be a victim, false otherwise.
-     */
-    //TODO this can probably be optimized with a dictionary
-    @Nullable
-    public boolean isConsideredVictim(BlockState blockStateIn)
-    {
-        //Loop through each entry until we find the appropriate one
-        for(SpreadingBlock entry : SculkHorde.infestationConversionTable.getEntries())
-        {
-            //If the victim blocks is the same block as the entry
-            if(entry.isValidVictim(blockStateIn))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * Will check all entries in the infestation conversion table to see if
-     * the given block is considered a victim to any entry.
-     * @param blockStateIn The block to check
-     * @return True if the block can be a victim, false otherwise.
-     */
-    //TODO this can probably be optimized with a dictionary
-    @Nullable
-    public boolean isConsideredActiveSpreader(BlockState blockStateIn)
-    {
-        //Loop through each entry until we find the appropriate one
-        for(SpreadingBlock entry : SculkHorde.infestationConversionTable.getEntries())
-        {
-            //System.out.println(entry.toString());
-            //If the victim blocks is the same block as the entry
-            if(blockStateIn.is(entry))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * Will check all entries in the infestation conversion table to see if
-     * the given block is considered a victim to any entry.
-     * @param blockStateIn The block to check
-     * @return True if the block can be a victim, false otherwise.
-     */
-    //TODO this can probably be optimized with a dictionary
-    @Nullable
-    public boolean isConsideredDormantSpreader(BlockState blockStateIn)
-    {
-        //Loop through each entry until we find the appropriate one
-        for(SpreadingBlock entry : SculkHorde.infestationConversionTable.getEntries())
-        {
-            //If the victim blocks is the same block as the entry
-            if(blockStateIn.is(entry.getDormantVariant().getBlock()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /* Boolean Methods */
 
     /** Event Methods **/
 
     /**
-     * Converts a target block into an actively spreading variant
-     * @param world The world the block is in.
-     * @param targetPos The position of the target block.
-     * @return True if converted, false otherwise.
-     */
-    public boolean convertToActiveSpreader(ServerWorld world, BlockPos targetPos)
-    {
-        BlockState targetBlock = world.getBlockState(targetPos);
-        Block activeVariant = getActiveSpreadingVariant(targetBlock);
-        if(activeVariant != null)
-        {
-            world.setBlockAndUpdate(targetPos, activeVariant.defaultBlockState());
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Converts an active spreader into a dormant variant
+     * This Method serves the purpose of converting a victim block into a dormant variant.
+     * This is only a temporary method until I fully design the new infestation system.
      * @param world The world of the block.
      * @param targetPos The position of the block we are trying to convert.
      */
-    public boolean convertToDormant(ServerWorld world, BlockPos targetPos)
+    public boolean infectBlock(ServerWorld world, BlockPos targetPos)
     {
 
-        Block targetBlock = world.getBlockState(targetPos).getBlock();
-        BlockState dormantVariant = getDormantVariant(targetBlock);
+        BlockState targetBlock = world.getBlockState(targetPos);
+        BlockState newBlock = null;
 
-        if(dormantVariant != null)
-        {
-            world.setBlockAndUpdate(targetPos, dormantVariant);
+        newBlock = infestationTable.getInfestedVariant(targetBlock);
 
-            //Given a 50% chance, place down sculk flora on block
-            if (world.random.nextInt(2) <= 0)
-                BlockAlgorithms.placeSculkFlora(targetPos.above(), world);
+        if(newBlock == null) { return false; }
 
-            if(dormantVariant.getBlock() == BlockRegistry.INFESTED_LOG_DORMANT.get())
-                BlockAlgorithms.placeFloraAroundLog(world, targetPos);
+        world.setBlockAndUpdate(targetPos, newBlock);
 
-            SculkHorde.gravemind.placeSculkNode(world, targetPos.above(), true);
+        // Given a 25% chance, place down sculk flora on block
+        if (world.random.nextInt(4) <= 0)
+            BlockAlgorithms.placeSculkFlora(targetPos.above(), world);
 
-            BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
+        // If the block we are placing is an Infested Log, place down sculk flora around it.
+        if(newBlock.getBlock() == BlockRegistry.INFESTED_LOG_DORMANT.get())
+            BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
-            BlockAlgorithms.placeSculkBeeHive(world, targetPos.above());
+        // Chance to place a sculk node above the block
+        SculkHorde.gravemind.placeSculkNode(world, targetPos.above(), true);
 
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+        // Chance to place a vein patch above the block
+        BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
 
-    /**
-     * Only process a specific amount every time this is called. <br>
-     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
-     * @param world The world
-     */
-    public void proccessConversionToVictimQueue(ServerWorld world)
-    {
-        if(!world.isClientSide())
-        {
-            for(int i = 0; i < conversionAmountPerInterval && i < convertToVictimNodeQueue.size(); i++)
-            {
-                BlockAlgorithms.replaceSculkFlora(world, convertToVictimNodeQueue.get(i)); //Remove any flora
-                convertToVictim(world, convertToVictimNodeQueue.get(i)); //convert
-                convertToVictimNodeQueue.remove(i);
-                i--;
-            }
-        }
-    }
+        // Chance to place a sculk bee hive above the block
+        BlockAlgorithms.placeSculkBeeHive(world, targetPos.above());
 
-
-    /**
-     * Only process a specific amount every time this is called. <br>
-     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent} <br>
-     * NOTE: POTENTIAL ISSUE : since conversions are delayed, if the block changes, there can be unintended behavior
-     * @param world The world
-     */
-    public void processConversionQueue(ServerWorld world)
-    {
-        if(!world.isClientSide())
-        {
-            for(int i = 0; i < conversionAmountPerInterval && i < conversionQueue.size(); i++)
-            {
-                if(conversionQueue.get(i).convertToActiveSpreader)
-                {
-                    convertToActiveSpreader(world, conversionQueue.get(i).position); //convert
-                    if(isConsideredActiveSpreader(world.getBlockState(conversionQueue.get(i).position)))
-                    {
-                        SpreadingTile childTile = (SpreadingTile) world.getWorldServer().getBlockEntity(conversionQueue.get(i).position); //Get new block tile entity
-
-                        if(childTile != null)
-                        {
-                            childTile.setMaxSpreadAttempts(conversionQueue.get(i).getAttemptsToAssignChild());
-                        }
-                    }
-                }
-                else if(conversionQueue.get(i).convertToDormantSpreader)
-                {
-                    convertToDormant(world, conversionQueue.get(i).position); //convert
-                }
-                else
-                {
-                    convertToVictim(world, conversionQueue.get(i).position); //convert
-                }
-                conversionQueue.remove(i);
-                i--;
-            }
-        }
-    }
-
-
-    /**
-     * Only process a specific amount every time this is called. <br>
-     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
-     * @param world The world
-     */
-    public void processConversionToInfectedQueue(ServerWorld world)
-    {
-        if(!world.isClientSide())
-        {
-            for(int i = 0; i < conversionAmountPerInterval && i < convertToInfectedNodeQueue.size(); i++)
-            {
-                convertToActiveSpreader(world, convertToInfectedNodeQueue.get(i)); //convert
-                convertToInfectedNodeQueue.remove(i);
-                i--;
-            }
-        }
-    }
-
-
-    //TODO make this better so that you dont have to specify 3 booleans
-    public void addToConversionQueue(BlockPos positionIn, int maxSpreadAttemptsIn, boolean convertToActive, boolean convertToDormant, boolean convertToNormal)
-    {
-        ConversionRequest request = new ConversionRequest(positionIn);
-        request.attemptsToAssignChild = maxSpreadAttemptsIn;
-        if(convertToActive) request.setConvertToActiveSpreader();
-        else if(convertToDormant) request.setConvertToDormantSpreader();
-        else request.setConvertToNormal();
-        conversionQueue.add(request);
+        return true;
     }
 
     /**
@@ -352,10 +89,10 @@ public class InfestationConversionHandler
      * @param world The world of the block.
      * @param targetPos The position of the block we are trying to convert.
      */
-    public boolean convertToVictim(ServerWorld world, BlockPos targetPos)
+    public boolean deinfectBlock(ServerWorld world, BlockPos targetPos)
     {
-        Block targetBlock = world.getBlockState(targetPos).getBlock();
-        BlockState victimVariant = getVictimVariant(targetBlock);
+        BlockState targetBlock = world.getBlockState(targetPos);
+        BlockState victimVariant = infestationTable.getNormalVariant(targetBlock);
 
         if(victimVariant != null)
         {
@@ -365,19 +102,34 @@ public class InfestationConversionHandler
         return false;
     }
 
+    /**
+     * Only process a specific amount every time this is called. <br>
+     * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
+     * @param world The world
+     */
+    public void processDeInfectionQueue(ServerWorld world)
+    {
+        if(!world.isClientSide())
+        {
+            for(int i = 0; i < conversionAmountPerInterval && i < convertToVictimNodeQueue.size(); i++)
+            {
+                BlockAlgorithms.replaceSculkFlora(world, convertToVictimNodeQueue.get(i)); //Remove any flora
+                deinfectBlock(world, convertToVictimNodeQueue.get(i)); //convert
+                convertToVictimNodeQueue.remove(i);
+                i--;
+            }
+        }
+    }
+
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
 
     public class ConversionRequest
     {
         //The target position
         private BlockPos position;
-        //How many spread attempts should child blocks get
-        private int attemptsToAssignChild;
-        //If true, we are convert to an active spreading variant,
-        private boolean convertToActiveSpreader;
-        //If true, we are convert to an active spreading variant,
-        private boolean convertToDormantSpreader;
-        //If true, we are convert to an active spreading variant,
+        //If true, we are convert to an infested variant,
+        private boolean convertToInfested;
+        //If true, we are convert to a normal variant,
         private boolean convertToNormal;
 
         public ConversionRequest(BlockPos positionIn)
@@ -390,29 +142,132 @@ public class InfestationConversionHandler
             return  position;
         }
 
-        public int getAttemptsToAssignChild()
+        public void setConvertToInfested()
         {
-            return  attemptsToAssignChild;
-        }
-
-        public void setAttemptsToAssignChild(int attemptsToAssignChildIn)
-        {
-            attemptsToAssignChild = attemptsToAssignChildIn;
-        }
-
-        public void setConvertToActiveSpreader()
-        {
-            convertToActiveSpreader = true;
-        }
-
-        public void setConvertToDormantSpreader()
-        {
-                convertToDormantSpreader = true;
+            convertToInfested = true;
         }
 
         public void setConvertToNormal()
         {
             convertToNormal = true;
+        }
+    }
+
+    /**
+     * A table that holds all the variants of a block that can be infected.
+     */
+    public class InfestationTable
+    {
+        private List<InfestationTableEntry> entries;
+
+        public InfestationTable()
+        {
+            entries = new ArrayList<>();
+        }
+
+
+        /**
+         * Adds a new entry to the table.
+         * @param normalVariant The normal variant of the block.
+         * @param infectedVariant The infected variant of the block.
+         */
+        public void addEntry(BlockState normalVariant, BlockState infectedVariant)
+        {
+            entries.add(new InfestationTableEntry(normalVariant, infectedVariant));
+        }
+
+        /**
+         * Gets the infected variant of a block.
+         * @param normalVariant The normal variant of the block.
+         * @return The infected variant of the block.
+         */
+        public BlockState getInfestedVariant(BlockState normalVariant)
+        {
+            for(InfestationTableEntry entry : entries)
+            {
+                if(entry.getNormalVariant() == normalVariant)
+                {
+                    return entry.getInfectedVariant();
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Gets the normal variant of a block.
+         * @param infectedVariant The infected variant of the block.
+         * @return The normal variant of the block.
+         */
+        public BlockState getNormalVariant(BlockState infectedVariant)
+        {
+            for(InfestationTableEntry entry : entries)
+            {
+                if(entry.getInfectedVariant() == infectedVariant)
+                {
+                    return entry.getNormalVariant();
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Checks if a block is a normal variant.
+         * @param blockState The block to check.
+         * @return True if the block is a normal variant.
+         */
+        public boolean isNormalVariant(BlockState blockState)
+        {
+            for(InfestationTableEntry entry : entries)
+            {
+                if(entry.getNormalVariant() == blockState)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Checks if a block is an infected variant.
+         * @param blockState The block to check.
+         * @return True if the block is an infected variant.
+         */
+        public boolean isInfectedVariant(BlockState blockState)
+        {
+            for(InfestationTableEntry entry : entries)
+            {
+                if(entry.getInfectedVariant() == blockState)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     *  A single entry in the infestation table.
+     */
+    public class InfestationTableEntry
+    {
+        private BlockState normalVariant;
+        private BlockState infectedVariant;
+
+        // Default constructor
+        public InfestationTableEntry(BlockState normalVariantIn, BlockState infectedVariantIn)
+        {
+            normalVariant = normalVariantIn;
+            infectedVariant = infectedVariantIn;
+        }
+
+        public BlockState getNormalVariant()
+        {
+            return normalVariant;
+        }
+
+        public BlockState getInfectedVariant()
+        {
+            return infectedVariant;
         }
     }
 }

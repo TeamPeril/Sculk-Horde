@@ -33,9 +33,7 @@ public class PlannedBlock
      */
     protected final Predicate<BlockState> VALID_BLOCKS_TO_REPLACE = (validBlocksPredicate) ->
     {
-        if(SculkHorde.infestationConversionTable.isConsideredVictim(validBlocksPredicate)
-        || SculkHorde.infestationConversionTable.isConsideredActiveSpreader(validBlocksPredicate)
-        || SculkHorde.infestationConversionTable.isConsideredDormantSpreader(validBlocksPredicate)
+        if(SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
         || validBlocksPredicate.canBeReplaced(Fluids.WATER))
         {
             return true;

@@ -15,6 +15,8 @@ import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -134,7 +136,14 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
         if(! (raytrace.getEntity() instanceof SculkLivingEntity) && getOwner() != getEntity() )
         {
             raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
+            this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
             this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
+
+            if(getEntity() instanceof LivingEntity)
+            {
+                ((LivingEntity)getEntity()).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
+            }
+
             remove();
         }
     }
@@ -156,7 +165,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
         }
         else
         {
-            this.playSound(SoundEvents.ITEM_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
+            this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         }
         this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
         this.remove();
@@ -182,7 +191,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
 
 
     /**
-     * Handles an entity event fired from {@link net.minecraft.world.level.Level#broadcastEntityEvent}.
+     * Handles an entity event fired from net.minecraft.world.level.Level#broadcastEntityEvent.
      */
     @OnlyIn(Dist.CLIENT)
     public void handleEntityEvent(byte pId) {

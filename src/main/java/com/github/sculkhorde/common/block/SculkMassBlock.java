@@ -1,12 +1,7 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.block.BlockInfestation.SpreadingBlock;
-import com.github.sculkhorde.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.common.tileentity.SculkMassTile;
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -178,12 +173,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 }
 
                 //Replace Block Under sculk mass with infested variant if possible
-                if(SculkHorde.infestationConversionTable.convertToActiveSpreader((ServerWorld) world, originPos.below()))
-                {
-                    SpreadingBlock spreadingBlock = BlockRegistry.SPREADING_BLOCK.get();
-                    if(spreadingBlock.getTileEntity(world, placementPos.below()) != null && spreadingBlock.getTileEntity(world, placementPos.below()) instanceof SpreadingTile)
-                        spreadingBlock.getTileEntity(world, placementPos.below()).setMaxSpreadAttempts(infestedChildBlockMaxSpreadAttempts + totalMassAfterTax);
-                }
+                SculkHorde.infestationConversionTable.infectBlock((ServerWorld) world, originPos.below());
             }
         }
     }
@@ -195,7 +185,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     public boolean isRandomlyTicking(BlockState blockState) {
-        return true;
+        return false;
     }
 
     /**
@@ -209,24 +199,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
-        boolean DEBUG_THIS = false;
-        SculkMassTile thisTile = getTileEntity(serverWorld, thisBlockPos);
-        EntityFactory entityFactory = SculkHorde.entityFactory;
-        ReinforcementRequest context = new ReinforcementRequest(thisBlockPos);
-        context.sender = ReinforcementRequest.senderType.SculkMass;
-        context.budget = thisTile.getStoredSculkMass();
 
-        //Attempt to call in reinforcements and then update stored sculk mass
-        entityFactory.requestReinforcementSculkMass(serverWorld, thisBlockPos, context);
-        if(context.isRequestViewed && context.isRequestApproved)
-        {
-            thisTile.setStoredSculkMass(context.remaining_balance);
-            //Destroy if run out of sculk mass
-            if(thisTile.getStoredSculkMass() <= 0)
-            {
-                serverWorld.destroyBlock(thisBlockPos, false);
-            }
-        }
     }
 
     /**

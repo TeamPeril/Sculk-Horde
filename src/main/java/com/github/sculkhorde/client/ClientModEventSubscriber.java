@@ -40,6 +40,7 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenders(final FMLClientSetupEvent event) {
 
+        // Register Renderers for Entities
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ZOMBIE, SculkZombieRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE, SculkMiteRenderer::new);
@@ -58,6 +59,13 @@ public class ClientModEventSubscriber {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_HATCHER, SculkHatcherRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.BLOCK_TRAVERSER, BlockTraverserRenderer::new);
+
+        // Register renderer for sculk crust partcile
+        event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new));
+
+
+        // Register render layers for blocks
         event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout()));
 
         event.enqueueWork(() -> RenderTypeLookup.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout()));

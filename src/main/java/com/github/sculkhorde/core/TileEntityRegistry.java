@@ -1,6 +1,5 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.block.BlockInfestation.SpreadingTile;
 import com.github.sculkhorde.common.tileentity.*;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -13,18 +12,6 @@ public class TileEntityRegistry {
     public static DeferredRegister<TileEntityType<?>> TILE_ENTITIES =
             DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, SculkHorde.MOD_ID);
 
-    public static RegistryObject<TileEntityType<InfectedDirtTile>> INFECTED_DIRT_TILE =
-            TILE_ENTITIES.register("infected_dirt_tile", () -> TileEntityType.Builder.of(
-                    InfectedDirtTile::new, BlockRegistry.INFECTED_DIRT.get()).build(null));
-
-    public static RegistryObject<TileEntityType<InfestedLogTile>> INFESTED_LOG_TILE =
-            TILE_ENTITIES.register("infested_log_tile", () -> TileEntityType.Builder.of(
-                    InfestedLogTile::new, BlockRegistry.INFESTED_LOG_ACTIVE.get()).build(null));
-
-    public static RegistryObject<TileEntityType<InfestedStoneActiveTile>> INFESTED_STONE_ACTIVE_TILE =
-            TILE_ENTITIES.register("infested_stone_active_tile", () -> TileEntityType.Builder.of(
-                    InfestedStoneActiveTile::new, BlockRegistry.INFESTED_STONE_ACTIVE.get()).build(null));
-
     public static RegistryObject<TileEntityType<SculkMassTile>> SCULK_MASS_TILE =
             TILE_ENTITIES.register("sculk_mass_tile", () -> TileEntityType.Builder.of(
                     SculkMassTile::new, BlockRegistry.SCULK_MASS.get()).build(null));
@@ -32,10 +19,6 @@ public class TileEntityRegistry {
     public static RegistryObject<TileEntityType<SculkNodeTile>> SCULK_BRAIN_TILE =
             TILE_ENTITIES.register("sculk_brain_tile", () -> TileEntityType.Builder.of(
                     SculkNodeTile::new, BlockRegistry.SCULK_NODE_BLOCK.get()).build(null));
-
-    public static RegistryObject<TileEntityType<SpreadingTile>> SPREADING_BLOCK_TILE =
-            TILE_ENTITIES.register("spreading_block_tile", () -> TileEntityType.Builder.of(
-                    SpreadingTile::new, BlockRegistry.SPREADING_BLOCK.get()).build(null));
 
     public static RegistryObject<TileEntityType<SculkBeeNestTile>> SCULK_BEE_NEST_TILE =
             TILE_ENTITIES.register("sculk_bee_nest_tile", () -> TileEntityType.Builder.of(

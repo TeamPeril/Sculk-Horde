@@ -1,5 +1,7 @@
 package com.github.sculkhorde.common.tileentity;
 
+import com.github.sculkhorde.common.entity.BlockTraverserEntity;
+import com.github.sculkhorde.common.entity.SculkHatcherEntity;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
@@ -78,6 +80,17 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
                 ServerWorld thisWorld = (ServerWorld) this.level;
                 BlockPos thisPos = this.worldPosition;
 
+                //Create Mob Instance
+                BlockTraverserEntity entity = new BlockTraverserEntity(thisWorld);
+
+                //Set Mob's Position to random location within 5 blocks of the node
+                entity.setPos(thisPos.getX() + (Math.random() * 10) - 5, thisPos.getY(), thisPos.getZ() + (Math.random() * 10) - 5);
+
+                //Spawn instance in world
+                thisWorld.addFreshEntity(entity);
+
+
+
                 /** Building Shell Process **/
                 long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
 
@@ -104,7 +117,7 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
 
                 /** Infection Routine **/
 
-                infectionTick(thisWorld, thisPos);
+                //infectionTick(thisWorld, thisPos);
             }
         }
     }

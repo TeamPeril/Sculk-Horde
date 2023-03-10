@@ -153,15 +153,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(BlockRegistry.INFECTED_DIRT.get().isValidVictim(blockState))
-        {
-            return false;
-        }
         else if(blockState.is(BlockRegistry.CRUST.get()))
-        {
-            return false;
-        }
-        else if(blockState.is(BlockRegistry.INFECTED_DIRT.get()))
         {
             return false;
         }

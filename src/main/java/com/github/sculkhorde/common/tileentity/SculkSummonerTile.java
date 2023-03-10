@@ -260,7 +260,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
      */
     public boolean isValidSpawnPosition(ServerWorld worldIn, BlockPos pos)
     {
-        return SculkHorde.infestationConversionTable.isConsideredDormantSpreader(worldIn.getBlockState(pos.below()))  &&
+        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(worldIn.getBlockState(pos.below()))  &&
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
             worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 
