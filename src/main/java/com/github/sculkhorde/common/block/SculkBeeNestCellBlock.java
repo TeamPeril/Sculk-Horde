@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,6 +31,7 @@ import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -285,7 +289,20 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
                 worldIn.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.LAVA_AMBIENT, SoundCategory.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
             }
         }
+    }
 
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader A block reader
+     * @param tooltip The tooltip
+     * @param flagIn The flag
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
     }
 }

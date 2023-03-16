@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,13 +14,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
-public class InfestedStoneDormantBlock extends Block implements IForgeBlock {
+public class InfestedStoneBlock extends Block implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -82,7 +91,7 @@ public class InfestedStoneDormantBlock extends Block implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public InfestedStoneDormantBlock(Properties prop) {
+    public InfestedStoneBlock(Properties prop) {
         super(prop);
     }
 
@@ -90,7 +99,7 @@ public class InfestedStoneDormantBlock extends Block implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public InfestedStoneDormantBlock() {
+    public InfestedStoneBlock() {
         this(getProperties());
     }
 
@@ -145,5 +154,22 @@ public class InfestedStoneDormantBlock extends Block implements IForgeBlock {
         if(DEBUG_MODE) System.out.println("Hi I am a Infested Stone :)");
 
         return null; //Just Return null because We Are Not Modifying it
+    }
+
+
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader ???
+     * @param tooltip ???
+     * @param flagIn ???
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
+
     }
 }

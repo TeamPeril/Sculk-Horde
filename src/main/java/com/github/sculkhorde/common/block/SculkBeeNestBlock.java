@@ -6,7 +6,9 @@ import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IntegerProperty;
@@ -15,13 +17,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class SculkBeeNestBlock extends BeehiveBlock {
 
@@ -191,5 +198,21 @@ public class SculkBeeNestBlock extends BeehiveBlock {
 
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING, CLOSED, HONEY_LEVEL);
+    }
+
+
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader A block reader
+     * @param tooltip The tooltip
+     * @param flagIn The flag
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_bee_nest")); //Text that displays if holding shift
     }
 }

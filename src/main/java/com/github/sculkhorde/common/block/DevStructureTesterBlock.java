@@ -6,15 +6,22 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -144,6 +151,22 @@ public class DevStructureTesterBlock extends Block implements IForgeBlock {
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
+    }
+
+
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader A block reader
+     * @param tooltip The tooltip
+     * @param flagIn The flag
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.dev_structure_tester")); //Text that displays if holding shift
     }
 
 }

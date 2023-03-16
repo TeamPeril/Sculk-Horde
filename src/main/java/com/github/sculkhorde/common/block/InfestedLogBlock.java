@@ -17,7 +17,7 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class InfestedLogDormantBlock extends Block implements IForgeBlock {
+public class InfestedLogBlock extends Block implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -66,7 +66,7 @@ public class InfestedLogDormantBlock extends Block implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public InfestedLogDormantBlock(Properties prop) {
+    public InfestedLogBlock(Properties prop) {
         super(prop);
     }
 
@@ -74,7 +74,7 @@ public class InfestedLogDormantBlock extends Block implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public InfestedLogDormantBlock() {
+    public InfestedLogBlock() {
         this(getProperties());
     }
 

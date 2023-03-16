@@ -2,13 +2,20 @@ package com.github.sculkhorde.core;
 
 
 import com.github.sculkhorde.common.item.*;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
 
 public class ItemRegistry {
     //https://www.mr-pineapple.co.uk/tutorials/items
@@ -29,15 +36,26 @@ public class ItemRegistry {
 			() -> new CustomItemProjectile());
 
 	public static final RegistryObject<CustomItemProjectile> SCULK_ACIDIC_PROJECTILE = ITEMS.register("sculk_acidic_projectile",
-			() -> new CustomItemProjectile());
+			() -> new CustomItemProjectile()
+			{
+				@Override
+				public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+					tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_acidic_projectile"));
+				}
+			});
 
 	public static final RegistryObject<SculkResinItem> SCULK_RESIN = ITEMS.register("sculk_resin",
 			() -> new SculkResinItem());
 
 	public static final RegistryObject<Item> CALCITE_CLUMP = ITEMS.register("calcite_clump",
-			() -> new Item(new Item.Properties().tab(SculkHorde.SCULK_GROUP)));
+			() -> new Item(new Item.Properties().tab(SculkHorde.SCULK_GROUP)){
+				@Override
+				public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+					tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.calcite_clump"));
+				}
+			});
 
-	public static final RegistryObject<DevNodeSpawner> DEVN_NODE_SPAWNER = ITEMS.register("dev_node_spawner",
+	public static final RegistryObject<DevNodeSpawner> DEV_NODE_SPAWNER = ITEMS.register("dev_node_spawner",
 			() -> new DevNodeSpawner());
 
 	/** HELPER METHODS **/

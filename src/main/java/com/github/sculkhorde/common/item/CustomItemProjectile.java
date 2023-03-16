@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,8 +12,14 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
+
+import java.util.List;
 
 public class CustomItemProjectile extends Item implements IForgeItem {
 
@@ -82,5 +89,14 @@ public class CustomItemProjectile extends Item implements IForgeItem {
         }
 
         return ActionResult.sidedSuccess(itemstack, pLevel.isClientSide());
+    }
+
+    //This changes the text you see when hovering over an item
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.custom_item_projectile")); //Text that displays if not holding shift
+
     }
 }
