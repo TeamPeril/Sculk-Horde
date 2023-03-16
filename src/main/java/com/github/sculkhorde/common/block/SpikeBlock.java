@@ -47,7 +47,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 3f;
+    public static float HARDNESS = 4f;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>

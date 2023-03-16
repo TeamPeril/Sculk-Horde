@@ -33,8 +33,17 @@ public class PlannedBlock
      */
     protected final Predicate<BlockState> VALID_BLOCKS_TO_REPLACE = (validBlocksPredicate) ->
     {
-        if(SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
-        || validBlocksPredicate.canBeReplaced(Fluids.WATER))
+        // If the block is a normal variant,
+        // or is replaceable by water,
+        // or is an infected variant,
+        // or can be broken by an iron pickaxe
+        if(
+                SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
+                || validBlocksPredicate.canBeReplaced(Fluids.WATER)
+                || SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(validBlocksPredicate)
+                || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F
+                || validBlocksPredicate.getBlock().isAir(validBlocksPredicate, world, targetPos))
+
         {
             return true;
         }

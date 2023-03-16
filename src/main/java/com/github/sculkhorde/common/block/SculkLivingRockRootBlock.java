@@ -34,7 +34,7 @@ public class SculkLivingRockRootBlock extends Block implements IForgeBlock {
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 3f;
+    public static float HARDNESS = 4f;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>
@@ -48,7 +48,7 @@ public class SculkLivingRockRootBlock extends Block implements IForgeBlock {
     /**
      * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
      */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
+    public static ToolType PREFERRED_TOOL = ToolType.PICKAXE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -100,7 +100,7 @@ public class SculkLivingRockRootBlock extends Block implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.GRASS);
+                .sound(SoundType.ANCIENT_DEBRIS);
         return prop;
     }
 

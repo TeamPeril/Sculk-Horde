@@ -43,7 +43,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 0.6f;
+    public static float HARDNESS = 4f;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>

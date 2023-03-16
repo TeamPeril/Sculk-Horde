@@ -31,15 +31,6 @@ public class ProceduralStructure
         childStructuresQueue = new ArrayList<>();
         world = worldIn;
 
-        /*
-        This method sorts the plannedBlockQueue ArrayList by using the Collections.sort() method, with a custom comparator
-        function that compares the distance of each block to the origin using the getBlockDistance method provided.
-        The Float.compare() method is used to compare the two distances, and the sort method will use the returned value
-        to order the elements in the ArrayList in ascending order (i.e. closest to the origin first)
-         */
-        plannedBlockQueue.sort((block1, block2) ->
-                Float.compare(BlockAlgorithms.getBlockDistance(block1.getPosition(), origin),
-                        BlockAlgorithms.getBlockDistance(block2.getPosition(), origin)));
     }
 
     /** ACCESSORS **/
@@ -151,6 +142,8 @@ public class ProceduralStructure
         {
             entry.generatePlan();
         }
+
+        return; //This return is here only so that I can put a debug breakpoint here
     }
 
     /**
@@ -193,6 +186,15 @@ public class ProceduralStructure
         {
             isCurrentlyBuilding = true;
             currentPlannedBlockQueueIndex = 0;
+            /*
+            This method sorts the plannedBlockQueue ArrayList by using the Collections.sort() method, with a custom comparator
+            function that compares the distance of each block to the origin using the getBlockDistance method provided.
+            The Float.compare() method is used to compare the two distances, and the sort method will use the returned value
+            to order the elements in the ArrayList in ascending order (i.e. closest to the origin first)
+             */
+                plannedBlockQueue.sort((block1, block2) ->
+                        Float.compare(BlockAlgorithms.getBlockDistance(block1.getPosition(), origin),
+                                BlockAlgorithms.getBlockDistance(block2.getPosition(), origin)));
         }
     }
 
@@ -225,8 +227,8 @@ public class ProceduralStructure
             if(currentPlannedBlock.canBePlaced())
             {
                 currentPlannedBlock.build();
-                currentPlannedBlockQueueIndex++;
             }
+            currentPlannedBlockQueueIndex++;
         }
     }
 }

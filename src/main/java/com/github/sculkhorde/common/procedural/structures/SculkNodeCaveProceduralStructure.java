@@ -27,13 +27,21 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
          * Fixed Bug
          * Checking if we are currently building here causes this structure
          * not to be built. This is because isCurrentlyBuilding is always false
-         * since building is controlled by The Sculk TreeNode Structure. {@link SculkNodeProceduralStructure#buildTick()}
+         * since building is controlled by The Sculk Node Structure. {@link SculkNodeProceduralStructure#buildTick()}
          */
 
         //Build blocks from main structure
         if(currentPlannedBlockQueueIndex < plannedBlockQueue.size())
         {
             PlannedBlock currentPlannedBlock = plannedBlockQueue.get(currentPlannedBlockQueueIndex);
+
+            // While the block isPlaced(), keep incrementing the index
+            while(currentPlannedBlock.canBePlaced() && currentPlannedBlock.isPlaced())
+            {
+                currentPlannedBlockQueueIndex++;
+                currentPlannedBlock = plannedBlockQueue.get(currentPlannedBlockQueueIndex);
+            }
+
             // If it can be placed, place it, then keep track
             if(currentPlannedBlock.canBePlaced())
             {
@@ -58,6 +66,7 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
         {
             plannedBlockQueue.add(new CaveAirPlannedBlock(this.world, position));
         }
+        return;
     }
 
     /**
@@ -117,14 +126,13 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
             {
                 return false;
             }
-            if(validBlocksPredicate.getBlockState().getHarvestLevel() >= 3) {
-                return false;
+            if(validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F) {
+                return true;
             }
 
             // Otherwise, return true
             return true;
         };
-
 
         /**
          * If able, will place the block in the world.
