@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.EntityRegistry;
 import net.minecraft.block.BlockState;
@@ -235,9 +236,9 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
                 ServerWorld world = (ServerWorld) SculkBeeInfectorEntity.this.level;
 
                 // Spawn Block Traverser
-                BlockTraverserEntity blockTraverserEntity = new BlockTraverserEntity(EntityRegistry.BLOCK_TRAVERSER, world);
-                blockTraverserEntity.setPos(spreadPos.getX(), spreadPos.getY(), spreadPos.getZ());
-                world.addFreshEntity(blockTraverserEntity);
+                CursorLongRangeEntity cursorLongRangeEntity = new CursorLongRangeEntity(EntityRegistry.CURSOR_LONG_RANGE, world);
+                cursorLongRangeEntity.setPos(spreadPos.getX(), spreadPos.getY(), spreadPos.getZ());
+                world.addFreshEntity(cursorLongRangeEntity);
 
             }
 

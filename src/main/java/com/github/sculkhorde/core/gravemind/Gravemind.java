@@ -236,7 +236,7 @@ public class Gravemind
      */
     public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos, boolean enableChance)
     {
-        //Random Chance to Place Node
+        //Random Chance to Place TreeNode
         if(new Random().nextInt(100) > 1 && enableChance) { return; }
 
         //If we are too close to another node, do not create one
@@ -338,7 +338,7 @@ public class Gravemind
 
         /**
          * Returns a list of known node positions
-         * @return The Closest Node
+         * @return The Closest TreeNode
          */
         public NodeEntry getClosestNodeEntry(BlockPos pos) {
             NodeEntry closestNode = null;
@@ -456,7 +456,7 @@ public class Gravemind
                 getNodeEntries().add(new NodeEntry(positionIn));
                 setDirty();
             }
-            else if(DEBUG_MODE) System.out.println("Attempted to Add Node To Memory but failed.");
+            else if(DEBUG_MODE) System.out.println("Attempted to Add TreeNode To Memory but failed.");
         }
 
         /**
@@ -519,7 +519,7 @@ public class Gravemind
                 }
             }
             long endTime = System.nanoTime();
-            if(DEBUG_MODE) System.out.println("Node Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+            if(DEBUG_MODE) System.out.println("TreeNode Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
         }
 
 
@@ -682,7 +682,7 @@ public class Gravemind
     private static class BeeNestEntry
     {
         private final BlockPos position; //The location in the world where the node is
-        private BlockPos parentNodePosition; //The location of the Sculk Node that this Nest belongs to
+        private BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
 
         /**
          * Default Constructor

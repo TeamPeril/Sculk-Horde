@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.tileentity;
 
-import com.github.sculkhorde.common.entity.BlockTraverserEntity;
-import com.github.sculkhorde.common.entity.SculkHatcherEntity;
+import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
+import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
@@ -28,19 +28,12 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
 
     private SculkNodeProceduralStructure nodeProceduralStructure;
 
-    //The current circle radius, this increments at an interval
-    private int infectCircleRadius = 1;
-    //Once we are done spreading, how long should we wait before trying again?
-    private final long spreadRoutineIntervalInMinutes = 60;
-    //The time which this node has finished the spread routine
-    private long finishedInfectionRoutineAt = 0;
-    //Whether we are currently doing the spread routine
-    private boolean currentlySpreading = true;
-
     //Repair routine will restart after an hour
     private final long repairIntervalInMinutes = 60;
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
+
+    private SculkNodeInfectionHandler infectionHandler;
 
     /**
      * The Constructor that takes in properties
@@ -81,13 +74,13 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
                 BlockPos thisPos = this.worldPosition;
 
                 //Create Mob Instance
-                BlockTraverserEntity entity = new BlockTraverserEntity(thisWorld);
+                //CursorLongRangeEntity entity = new CursorLongRangeEntity(thisWorld);
 
                 //Set Mob's Position to random location within 5 blocks of the node
-                entity.setPos(thisPos.getX() + (Math.random() * 10) - 5, thisPos.getY(), thisPos.getZ() + (Math.random() * 10) - 5);
+                //entity.setPos(thisPos.getX(), thisPos.getY(), thisPos.getZ());
 
                 //Spawn instance in world
-                thisWorld.addFreshEntity(entity);
+                //thisWorld.addFreshEntity(entity);
 
 
 
@@ -116,42 +109,18 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
 
 
                 /** Infection Routine **/
-
-                //infectionTick(thisWorld, thisPos);
+                if(infectionHandler == null)
+                {
+                    infectionHandler = new SculkNodeInfectionHandler(this);
+                }
+                else
+                {
+                    infectionHandler.tick();
+                }
             }
         }
     }
 
-
-    /**
-     * Will infect blocks in an increasing sized sphere. Once reaches max radius,
-     * will stop and pause for a specified amount of time, then restart.
-     * @param serverWorld The world
-     * @param bp The block position
-     */
-    public void infectionTick(ServerWorld serverWorld, BlockPos bp)
-    {
-        long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - finishedInfectionRoutineAt, TimeUnit.NANOSECONDS);
-        if(!currentlySpreading && timeElapsed >= spreadRoutineIntervalInMinutes)
-        {
-            currentlySpreading = true;
-        }
-
-        if(currentlySpreading)
-        {
-            //TODO Make a new function that does a sphere-ring hybrid instead of a full circle
-            SculkHorde.infestationConversionTable.convertToInfectedNodeQueue.addAll(
-                    BlockAlgorithms.getBlockPosInCircle(bp, infectCircleRadius, false)
-            );
-            infectCircleRadius++;
-            if(infectCircleRadius > SculkHorde.gravemind.sculk_node_infect_radius)
-            {
-                infectCircleRadius = 1;
-                finishedInfectionRoutineAt = System.nanoTime();
-                currentlySpreading = false;
-            }
-        }
-    }
 
     public static void forceLoadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
 

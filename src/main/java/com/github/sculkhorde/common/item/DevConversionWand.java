@@ -1,5 +1,7 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
+import com.github.sculkhorde.common.entity.infection.CursorShortRangeEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.util.ITooltipFlag;
@@ -92,7 +94,14 @@ public class DevConversionWand extends Item implements IForgeItem {
 
 			if(targetPos != null) //If player Looking at Block
 			{
-				if(!worldIn.isClientSide()) SculkHorde.infestationConversionTable.infectBlock((ServerWorld) worldIn, targetPos);
+				if(!worldIn.isClientSide())
+				{
+					// Spawn a Block Traverser
+					CursorShortRangeEntity cursor = new CursorShortRangeEntity((ServerWorld) worldIn);
+					cursor.setPos(targetPos.getX(), targetPos.getY(), targetPos.getZ());
+					worldIn.addFreshEntity(cursor);
+
+				}
 
 				//Set Wand on cool down
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)

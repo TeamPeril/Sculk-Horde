@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.tileentity;
 
-import com.github.sculkhorde.common.entity.BlockTraverserEntity;
+import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
+import com.github.sculkhorde.common.entity.infection.CursorShortRangeEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.common.extensions.IForgeTileEntity;
 
 public class SculkMassTile extends TileEntity implements ITickableTileEntity {
 
@@ -115,9 +115,11 @@ public class SculkMassTile extends TileEntity implements ITickableTileEntity {
             thisTile.setStoredSculkMass(context.remaining_balance);
 
             // Spawn Block Traverser
-            BlockTraverserEntity blockTraverserEntity = new BlockTraverserEntity(level);
-            blockTraverserEntity.setPos(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ());
-            level.addFreshEntity(blockTraverserEntity);
+            CursorShortRangeEntity cursor = new CursorShortRangeEntity(level);
+            cursor.setPos(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ());
+            cursor.setMaxInfections(thisTile.getStoredSculkMass());
+            cursor.setMaxRange(thisTile.getStoredSculkMass());
+            level.addFreshEntity(cursor);
 
             //Destroy if run out of sculk mass
             if(thisTile.getStoredSculkMass() <= 0)

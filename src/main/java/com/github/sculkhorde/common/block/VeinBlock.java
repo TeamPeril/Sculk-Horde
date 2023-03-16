@@ -15,7 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -104,6 +106,50 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
                 .noCollission();
     }
 
+    @Override
+    public boolean canSurvive(BlockState pState, IWorldReader pLevel, BlockPos pPos)
+    {
+        World worldIn = (World) pLevel;
+        //IF the face it is placed on is not a valid face, return false.
+        //The face depends on the direction of the block
+        BlockState northBlock = worldIn.getBlockState(pPos.north());
+        BlockState eastBlock = worldIn.getBlockState(pPos.east());
+        BlockState southBlock = worldIn.getBlockState(pPos.south());
+        BlockState westBlock = worldIn.getBlockState(pPos.west());
+
+        if(pState.getBlock().is(BlockRegistry.VEIN.get()))
+        {
+            if(pState.getValue(NORTH) == true && isValidFace(worldIn, northBlock, pPos, Direction.SOUTH))
+            {
+                return true;
+            }
+            else if(pState.getValue(EAST) == true && isValidFace(worldIn, eastBlock, pPos, Direction.WEST))
+            {
+                return true;
+            }
+            else if(pState.getValue(SOUTH) == true && isValidFace(worldIn, southBlock, pPos, Direction.NORTH))
+            {
+                return true;
+            }
+            else if(pState.getValue(WEST) == true && isValidFace(worldIn, westBlock, pPos, Direction.EAST))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if(isValidFace(worldIn, northBlock, pPos, Direction.SOUTH)
+                || isValidFace(worldIn, eastBlock, pPos, Direction.WEST)
+                || isValidFace(worldIn, southBlock, pPos, Direction.NORTH)
+                || isValidFace(worldIn, westBlock, pPos, Direction.EAST))
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
     /**
      * Will attempt to place the sculk vein if there is a solid wall.
      * @param worldIn The world to place it in
@@ -111,31 +157,42 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      */
     public void placeBlock(World worldIn, BlockPos blockPosIn)
     {
-        if(worldIn.getBlockState(blockPosIn).isAir())
-        {
-            Block vein = BlockRegistry.VEIN.get();
-            BlockState northBlock = worldIn.getBlockState(blockPosIn.north());
-            BlockState eastBlock = worldIn.getBlockState(blockPosIn.east());
-            BlockState southBlock = worldIn.getBlockState(blockPosIn.south());
-            BlockState westBlock = worldIn.getBlockState(blockPosIn.west());
-
-            if(isValidFace(worldIn, northBlock, blockPosIn, Direction.SOUTH))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(NORTH, true));
-            }
-            else if(isValidFace(worldIn, eastBlock, blockPosIn, Direction.WEST))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(EAST, true));
-            }
-            else if(isValidFace(worldIn, southBlock, blockPosIn, Direction.NORTH))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(SOUTH, true));
-            }
-            else if(isValidFace(worldIn, westBlock, blockPosIn, Direction.EAST))
-            {
-                worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(WEST, true));
-            }
+        // If the block is not air, return
+        if(!worldIn.getBlockState(blockPosIn).isAir()) {
+            return;
         }
+
+        // If the block cannot survive, return
+        if(!canSurvive(worldIn.getBlockState(blockPosIn), worldIn, blockPosIn))
+        {
+            return;
+        }
+
+        // Get the blocks around the block
+        Block vein = BlockRegistry.VEIN.get();
+        BlockState northBlock = worldIn.getBlockState(blockPosIn.north());
+        BlockState eastBlock = worldIn.getBlockState(blockPosIn.east());
+        BlockState southBlock = worldIn.getBlockState(blockPosIn.south());
+        BlockState westBlock = worldIn.getBlockState(blockPosIn.west());
+
+        // If the block is valid, place it
+        if(isValidFace(worldIn, northBlock, blockPosIn, Direction.SOUTH))
+        {
+            worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(NORTH, true));
+        }
+        else if(isValidFace(worldIn, eastBlock, blockPosIn, Direction.WEST))
+        {
+            worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(EAST, true));
+        }
+        else if(isValidFace(worldIn, southBlock, blockPosIn, Direction.NORTH))
+        {
+            worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(SOUTH, true));
+        }
+        else if(isValidFace(worldIn, westBlock, blockPosIn, Direction.EAST))
+        {
+            worldIn.setBlockAndUpdate(blockPosIn, vein.defaultBlockState().setValue(WEST, true));
+        }
+
     }
 
     /**
@@ -169,6 +226,14 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
+        else if(blockState.is(BlockRegistry.SCULK_NODE_BLOCK.get()))
+        {
+            return false;
+        }
+        else if(blockState.is(BlockRegistry.INFESTED_STONE_DORMANT.get()))
+        {
+            return false;
+        }
         return true;
     }
 
@@ -186,24 +251,5 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
         tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.vein")); //Text that displays if holding shift
 
-    }
-
-    /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE) System.out.println("Hi I am a Vine Block :)");
-
-        return null; //Just Return null because We Are Not Modifying it
     }
 }

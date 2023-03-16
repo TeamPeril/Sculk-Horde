@@ -59,7 +59,9 @@ public class ClientModEventSubscriber {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_HATCHER, SculkHatcherRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.BLOCK_TRAVERSER, BlockTraverserRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_LONG_RANGE, CursorLongRangeRenderer::new);
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_SHORT_RANGE, CursorShortRangeRenderer::new);
 
         // Register renderer for sculk crust partcile
         event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new));

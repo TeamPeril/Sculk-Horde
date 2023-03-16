@@ -1,6 +1,8 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.entity.*;
+import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
+import com.github.sculkhorde.common.entity.infection.CursorShortRangeEntity;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import net.minecraft.entity.Entity;
@@ -33,7 +35,8 @@ public class EntityRegistry {
     public static EntityType<SculkBeeInfectorEntity> SCULK_BEE_INFECTOR = buildEntityType(SculkBeeInfectorEntity::new, "sculk_bee_infector", 0.7f, 0.6f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
     public static EntityType<SculkBeeHarvesterEntity> SCULK_BEE_HARVESTER = buildEntityType(SculkBeeHarvesterEntity::new, "sculk_bee_harvester", 0.7f, 0.6f, EntityClassification.CREATURE, b -> b.clientTrackingRange(9));
     public static EntityType<SculkHatcherEntity> SCULK_HATCHER = buildEntityType(SculkHatcherEntity::new, "sculk_hatcher", 0.9f, 1.4f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<BlockTraverserEntity> BLOCK_TRAVERSER = buildEntityType(BlockTraverserEntity::new, "block_traverser", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorLongRangeEntity> CURSOR_LONG_RANGE = buildEntityType(CursorLongRangeEntity::new, "cursor_long_range", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorShortRangeEntity> CURSOR_SHORT_RANGE = buildEntityType(CursorShortRangeEntity::new, "cursor_short_range", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
 
     /** REGISTRY METHODS **/
 
@@ -58,7 +61,8 @@ public class EntityRegistry {
         event.getRegistry().register(SCULK_HATCHER.setRegistryName(SculkHorde.MOD_ID, "sculk_hatcher"));
 
         //Misc
-        event.getRegistry().register(BLOCK_TRAVERSER.setRegistryName(SculkHorde.MOD_ID, "block_traverser"));
+        event.getRegistry().register(CURSOR_LONG_RANGE.setRegistryName(SculkHorde.MOD_ID, "cursor_long_range"));
+        event.getRegistry().register(CURSOR_SHORT_RANGE.setRegistryName(SculkHorde.MOD_ID, "cursor_short_range"));
     }
 
     /** HELPER METHODS **/

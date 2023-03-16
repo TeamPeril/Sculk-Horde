@@ -1,12 +1,12 @@
 package com.github.sculkhorde.client.renderer.entity;
 
-import com.github.sculkhorde.common.entity.BlockTraverserEntity;
+import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 
-public class BlockTraverserRenderer extends EntityRenderer<BlockTraverserEntity> {
-    public BlockTraverserRenderer(EntityRendererManager p_i46179_1_) {
+public class CursorLongRangeRenderer extends EntityRenderer<CursorLongRangeEntity> {
+    public CursorLongRangeRenderer(EntityRendererManager p_i46179_1_) {
         super(p_i46179_1_);
     }
 
@@ -16,7 +16,7 @@ public class BlockTraverserRenderer extends EntityRenderer<BlockTraverserEntity>
      * @param pEntity
      */
     @Override
-    public ResourceLocation getTextureLocation(BlockTraverserEntity pEntity) {
+    public ResourceLocation getTextureLocation(CursorLongRangeEntity pEntity) {
         return null;
     }
 }

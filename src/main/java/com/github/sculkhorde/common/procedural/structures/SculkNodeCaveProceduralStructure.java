@@ -27,7 +27,7 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
          * Fixed Bug
          * Checking if we are currently building here causes this structure
          * not to be built. This is because isCurrentlyBuilding is always false
-         * since building is controlled by The Sculk Node Structure. {@link SculkNodeProceduralStructure#buildTick()}
+         * since building is controlled by The Sculk TreeNode Structure. {@link SculkNodeProceduralStructure#buildTick()}
          */
 
         //Build blocks from main structure

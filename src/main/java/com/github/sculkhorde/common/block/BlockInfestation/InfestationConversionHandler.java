@@ -1,11 +1,14 @@
 package com.github.sculkhorde.common.block.BlockInfestation;
 
+import com.github.sculkhorde.common.block.VeinBlock;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
@@ -60,9 +63,30 @@ public class InfestationConversionHandler
 
         newBlock = infestationTable.getInfestedVariant(targetBlock);
 
+        // Special Condition for Infested Logs because I do not care right now
+        if(targetBlock.is(BlockTags.LOGS))
+        {
+            newBlock = BlockRegistry.INFESTED_LOG_DORMANT.get().defaultBlockState();
+        }
+
+
         if(newBlock == null) { return false; }
 
         world.setBlockAndUpdate(targetPos, newBlock);
+
+        // Update each adjacent block if it is a sculk vein
+        // This is to prevent vein from staying on blocks that it does not belong on.
+        List<BlockPos> adjacentBlockPos = BlockAlgorithms.getAdjacentNeighbors(targetPos);
+        for(BlockPos pos : adjacentBlockPos)
+        {
+            BlockState blockState = world.getBlockState(pos);
+            if(blockState.getBlock() == BlockRegistry.VEIN.get())
+            {
+                if(!blockState.getBlock().canSurvive(blockState, world, pos))
+                    world.destroyBlock(pos, false);
+
+            }
+        }
 
         // Given a 25% chance, place down sculk flora on block
         if (world.random.nextInt(4) <= 0)
@@ -93,6 +117,12 @@ public class InfestationConversionHandler
     {
         BlockState targetBlock = world.getBlockState(targetPos);
         BlockState victimVariant = infestationTable.getNormalVariant(targetBlock);
+
+        // Special Condition for Infested Logs because I do not care right now
+        if(targetBlock.is(BlockRegistry.INFESTED_LOG_DORMANT.get()))
+        {
+            victimVariant = Blocks.AIR.defaultBlockState();
+        }
 
         if(victimVariant != null)
         {
@@ -142,15 +172,6 @@ public class InfestationConversionHandler
             return  position;
         }
 
-        public void setConvertToInfested()
-        {
-            convertToInfested = true;
-        }
-
-        public void setConvertToNormal()
-        {
-            convertToNormal = true;
-        }
     }
 
     /**
@@ -217,6 +238,9 @@ public class InfestationConversionHandler
          */
         public boolean isNormalVariant(BlockState blockState)
         {
+            // Special Condition for Infested Logs because I do not care right now
+            if(blockState.is(BlockTags.LOGS)) { return true;}
+
             for(InfestationTableEntry entry : entries)
             {
                 if(entry.getNormalVariant() == blockState)
@@ -234,6 +258,9 @@ public class InfestationConversionHandler
          */
         public boolean isInfectedVariant(BlockState blockState)
         {
+            // Special Condition for Infested Logs because I do not care right now
+            if(blockState.is(BlockRegistry.INFESTED_LOG_DORMANT.get())) { return true;}
+
             for(InfestationTableEntry entry : entries)
             {
                 if(entry.getInfectedVariant() == blockState)
