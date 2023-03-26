@@ -152,7 +152,7 @@ public class ProceduralStructure
      * Determines if the process will actually start.
      * @return True/False
      */
-    protected boolean canStartToBuild()
+    public boolean canStartToBuild()
     {
         boolean result = true;
 

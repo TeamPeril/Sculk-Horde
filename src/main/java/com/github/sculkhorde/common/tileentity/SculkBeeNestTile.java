@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhorde.common.entity.infection.CursorShortRangeEntity;
 import com.github.sculkhorde.common.procedural.structures.SculkBeeNestProceduralStructure;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
@@ -41,7 +42,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
     //The Maximum amount of honey this block can store
     protected final int MAX_HONEY_LEVEL = 5;
 
-    protected final int MIN_TICKS_IN_HIVE = 20 * 60 * 30; //30 Minutes
+    protected final int MIN_TICKS_IN_HIVE = 20 * 60 * 5; //5 Minutes
 
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
@@ -74,7 +75,9 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         return pState.getValue(SculkBeeNestBlock.HONEY_LEVEL);
     }
 
-    public boolean isSedated() {
+
+    public boolean isSedated()
+    {
         assert this.level != null;
         return CampfireBlock.isSmokeyPos(this.level, this.getBlockPos());
     }
@@ -196,14 +199,23 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
             int currentHoneyLevel = getHoneyLevel(blockStateIn); //Get Current Honey Level
 
+            if(beeNestStructure != null)
+            {
+                beeNestStructure.makeRandomBlockMature();
+            }
+
+            // Spawn Block Traverser
+            CursorShortRangeEntity cursor = new CursorShortRangeEntity(this.level);
+            cursor.setPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+            cursor.setMaxRange(100);
+            cursor.setMaxInfections(100);
+            level.addFreshEntity(cursor);
+
             //If we have not reached max level
             if (currentHoneyLevel < MAX_HONEY_LEVEL)
             {
                 //Increment honey level
                 this.level.setBlockAndUpdate(this.getBlockPos(), blockStateIn.setValue(SculkBeeNestBlock.HONEY_LEVEL, Integer.valueOf(currentHoneyLevel + 1)));
-
-                if(beeNestStructure != null ) beeNestStructure.makeRandomBlockMature();
-
             }
         }
         //Give bee appropriate data on release
@@ -307,7 +319,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
             lastTimeSinceRepair = System.nanoTime();
         }
         //If enough time has passed, or we havent built yet, start build
-        else if(timeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1)
+        else if((timeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1) && beeNestStructure.canStartToBuild())
         {
             beeNestStructure.startBuildProcedure();
         }

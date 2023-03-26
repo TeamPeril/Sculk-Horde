@@ -1,196 +1,34 @@
 {
   "variants": {
-    "facing=east,closed=false,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest",
+    "facing=east,closed=false": {
+      "model": "sculkhorde:block/sculk_nest_open",
       "y": 90
     },
-	"facing=east,closed=false,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest",
+    "facing=east,closed=true": {
+      "model": "sculkhorde:block/sculk_nest_closed",
       "y": 90
     },
-	"facing=east,closed=false,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
+    "facing=north,closed=false": {
+      "model": "sculkhorde:block/sculk_nest_open"
     },
-	"facing=east,closed=false,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
+    "facing=north,closed=true": {
+      "model": "sculkhorde:block/sculk_nest_closed"
     },
-	"facing=east,closed=false,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
+    "facing=south,closed=false": {
+      "model": "sculkhorde:block/sculk_nest_open",
+      "y": 180
     },
-	"facing=east,closed=false,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
+    "facing=south,closed=true": {
+      "model": "sculkhorde:block/sculk_nest_closed",
+      "y": 180
     },
-    "facing=east,closed=true,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
+    "facing=west,closed=false": {
+      "model": "sculkhorde:block/sculk_nest_open",
+      "y": 270
     },
-	"facing=east,closed=true,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=east,closed=true,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=east,closed=true,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=east,closed=true,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=east,closed=true,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-    "facing=north,closed=false,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=north,closed=false,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=north,closed=false,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=north,closed=false,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=north,closed=false,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=north,closed=false,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-    "facing=north,closed=true,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=north,closed=true,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=north,closed=true,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=north,closed=true,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=north,closed=true,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=north,closed=true,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-    "facing=south,closed=false,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=south,closed=false,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=south,closed=false,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=south,closed=false,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=south,closed=false,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=south,closed=false,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-    "facing=south,closed=true,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=south,closed=true,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=south,closed=true,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=south,closed=true,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=south,closed=true,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=south,closed=true,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-    "facing=west,closed=false,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=west,closed=false,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=west,closed=false,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=west,closed=false,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=west,closed=false,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-	"facing=west,closed=false,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest",
-      "y": 90
-    },
-    "facing=west,closed=true,honey_level=0": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=west,closed=true,honey_level=1": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=west,closed=true,honey_level=2": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=west,closed=true,honey_level=3": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=west,closed=true,honey_level=4": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
-    },
-	"facing=west,closed=true,honey_level=5": {
-      "model": "sculkhorde:block/sculk_bee_nest_closed",
-      "y": 90
+    "facing=west,closed=true": {
+      "model": "sculkhorde:block/sculk_nest_closed",
+      "y": 270
     }
   }
 }

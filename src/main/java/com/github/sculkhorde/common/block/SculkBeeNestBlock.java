@@ -115,7 +115,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
 
     public static boolean isNestClosed(BlockState blockState)
     {
-        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && !blockState.getValue(CLOSED);
+        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
     }
 
     public static void setNestClosed(ServerWorld world, BlockState blockState, BlockPos position)
