@@ -204,12 +204,15 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
                 beeNestStructure.makeRandomBlockMature();
             }
 
-            // Spawn Block Traverser
-            CursorShortRangeEntity cursor = new CursorShortRangeEntity(this.level);
-            cursor.setPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
-            cursor.setMaxRange(100);
-            cursor.setMaxInfections(100);
-            level.addFreshEntity(cursor);
+            // Spawn Infector Cursors
+            for(int i = 0; i < getHoneyLevel(blockStateIn); i++)
+            {
+                CursorShortRangeEntity cursor = new CursorShortRangeEntity(this.level);
+                cursor.setPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+                cursor.setMaxRange(100);
+                cursor.setMaxInfections(100);
+                level.addFreshEntity(cursor);
+            }
 
             //If we have not reached max level
             if (currentHoneyLevel < MAX_HONEY_LEVEL)
@@ -296,8 +299,8 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
         /** Structure Building Process **/
         tickTracker++;
-        //Tick Every 10 Seconds
-        if(tickTracker < 20 * 10) { return; }
+        //Tick Every 60 Seconds
+        if(tickTracker < 20 * 60) { return; }
 
         tickTracker = 0;
         long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);

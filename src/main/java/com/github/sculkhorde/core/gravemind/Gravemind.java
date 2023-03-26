@@ -470,7 +470,8 @@ public class Gravemind
                 getBeeNestEntries().add(new BeeNestEntry(positionIn));
                 setDirty();
             }
-            else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
+            // TODO For some reason this continously gets called, find out why
+            //else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
         }
 
         /**

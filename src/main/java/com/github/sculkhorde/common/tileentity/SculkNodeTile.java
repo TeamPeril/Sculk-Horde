@@ -69,46 +69,47 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
         if(this.level != null && !this.level.isClientSide)
         {
             long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-            if(timeElapsed >= tickIntervalSeconds || true)
+
+            // If the time elapsed is less than the tick interval, return
+            if(timeElapsed < tickIntervalSeconds) { return; }
+
+            // Update the tickedAt time
+            tickedAt = System.nanoTime();
+
+            /** Building Shell Process **/
+            long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+
+            //If the structure has not been initialized yet, do it
+            if(nodeProceduralStructure == null)
             {
-                tickedAt = System.nanoTime();
-                ServerWorld thisWorld = (ServerWorld) this.level;
-                BlockPos thisPos = this.worldPosition;
-
-                /** Building Shell Process **/
-                long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
-
-                //If the Bee Nest Structure hasnt been initialized yet, do it
-                if(nodeProceduralStructure == null)
-                {
-                    //Create Structure
-                    nodeProceduralStructure = new SculkNodeProceduralStructure((ServerWorld) this.level, this.getBlockPos());
-                    nodeProceduralStructure.generatePlan();
-                }
-
-                //If currently building, call build tick.
-                if(nodeProceduralStructure.isCurrentlyBuilding())
-                {
-                    nodeProceduralStructure.buildTick();
-                    lastTimeSinceRepair = System.nanoTime();
-                }
-                //If enough time has passed, or we havent built yet, start build
-                else if(repairTimeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1)
-                {
-                    nodeProceduralStructure.startBuildProcedure();
-                }
-
-
-                /** Infection Routine **/
-                if(infectionHandler == null)
-                {
-                    infectionHandler = new SculkNodeInfectionHandler(this);
-                }
-                else
-                {
-                    infectionHandler.tick();
-                }
+                //Create Structure
+                nodeProceduralStructure = new SculkNodeProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+                nodeProceduralStructure.generatePlan();
             }
+
+            //If currently building, call build tick.
+            if(nodeProceduralStructure.isCurrentlyBuilding())
+            {
+                nodeProceduralStructure.buildTick();
+                lastTimeSinceRepair = System.nanoTime();
+            }
+            //If enough time has passed, or we havent built yet, and we can build, start build
+            else if((repairTimeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1) && nodeProceduralStructure.canStartToBuild())
+            {
+                nodeProceduralStructure.startBuildProcedure();
+            }
+
+
+            /** Infection Routine **/
+            if(infectionHandler == null)
+            {
+                infectionHandler = new SculkNodeInfectionHandler(this);
+            }
+            else
+            {
+                infectionHandler.tick();
+            }
+
         }
     }
 
