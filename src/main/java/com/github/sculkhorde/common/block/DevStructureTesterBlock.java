@@ -53,12 +53,12 @@ public class DevStructureTesterBlock extends Block implements IForgeBlock {
      * 6f = cobblestone<br>
      * 1,200f = obsidian
      */
-    public static float BLAST_RESISTANCE = 10f;
+    public static float BLAST_RESISTANCE = 12000f;
 
     /**
      * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
      */
-    public static ToolType PREFERRED_TOOL = ToolType.PICKAXE;
+    public static ToolType PREFERRED_TOOL = ToolType.HOE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -70,9 +70,7 @@ public class DevStructureTesterBlock extends Block implements IForgeBlock {
      *  3 = Diamond<br>
      *  4 = Netherite
      */
-    public static int HARVEST_LEVEL = 3;
-
-    public static final int tickIntervalSeconds = 1;
+    public static int HARVEST_LEVEL = 5;
 
     /**
      * The Constructor that takes in properties

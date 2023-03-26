@@ -1,10 +1,13 @@
 package com.github.sculkhorde.common.tileentity;
 
+import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
+import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.concurrent.TimeUnit;
@@ -17,7 +20,7 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
 
     private long tickedAt = System.nanoTime();
 
-    private SculkNodeProceduralStructure proceduralStructure;
+    private ProceduralStructure proceduralStructure;
 
 
     /**
@@ -56,7 +59,7 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
         }
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-        if(timeElapsed < 10) { return;}
+        //if(timeElapsed < 1) { return;}
 
         tickedAt = System.nanoTime();
 
@@ -66,7 +69,7 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
         if(proceduralStructure == null)
         {
             //Create Structure
-            proceduralStructure = new SculkNodeProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            proceduralStructure = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.level, this.getBlockPos(), 5, 10, Direction.NORTH);
             proceduralStructure.generatePlan();
         }
 

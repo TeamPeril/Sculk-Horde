@@ -84,8 +84,6 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = 3;
 
-    public static final int tickIntervalSeconds = 1;
-
     /**
      * The Constructor that takes in properties
      * @param prop The Properties

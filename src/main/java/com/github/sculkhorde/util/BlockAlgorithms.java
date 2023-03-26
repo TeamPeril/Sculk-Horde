@@ -11,10 +11,13 @@ import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -501,4 +504,7 @@ public class BlockAlgorithms {
         return points;
     }
 
+    public static Vector3d scalarMultiply(Vector3d vector, double t) {
+        return new Vector3d(vector.x + t, vector.y * t, vector.z + t);
+    }
 }

@@ -33,6 +33,8 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
 
+    public static final int tickIntervalSeconds = 1;
+
     private SculkNodeInfectionHandler infectionHandler;
 
     /**
@@ -67,22 +69,11 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
         if(this.level != null && !this.level.isClientSide)
         {
             long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-            if(timeElapsed >= SculkNodeBlock.tickIntervalSeconds)
+            if(timeElapsed >= tickIntervalSeconds || true)
             {
                 tickedAt = System.nanoTime();
                 ServerWorld thisWorld = (ServerWorld) this.level;
                 BlockPos thisPos = this.worldPosition;
-
-                //Create Mob Instance
-                //CursorLongRangeEntity entity = new CursorLongRangeEntity(thisWorld);
-
-                //Set Mob's Position to random location within 5 blocks of the node
-                //entity.setPos(thisPos.getX(), thisPos.getY(), thisPos.getZ());
-
-                //Spawn instance in world
-                //thisWorld.addFreshEntity(entity);
-
-
 
                 /** Building Shell Process **/
                 long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);

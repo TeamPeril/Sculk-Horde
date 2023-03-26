@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
@@ -229,6 +230,30 @@ public class ProceduralStructure
                 currentPlannedBlock.build();
             }
             currentPlannedBlockQueueIndex++;
+        }
+    }
+
+
+    // This class represents a connection point for other structures to connect to
+    public class ConnectionPoint
+    {
+        private BlockPos position;
+        private Direction direction;
+
+        public ConnectionPoint(BlockPos positionIn, Direction directionIn)
+        {
+            position = positionIn;
+            direction = directionIn;
+        }
+
+        public BlockPos getPosition()
+        {
+            return position;
+        }
+
+        public Direction getDirection()
+        {
+            return direction;
         }
     }
 }

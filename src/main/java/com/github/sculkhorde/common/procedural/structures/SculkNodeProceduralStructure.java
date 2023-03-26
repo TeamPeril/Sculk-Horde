@@ -11,7 +11,9 @@ import java.util.Optional;
 
 public class SculkNodeProceduralStructure extends ProceduralStructure
 {
-    private final int RADIUS = 5;
+    private final int SHELL_RADIUS = 5;
+    private final int CAVE_RADIUS = SHELL_RADIUS * 2;
+    private final int HALLWAY_RADIUS = SHELL_RADIUS;
     public SculkNodeProceduralStructure(ServerWorld worldIn, BlockPos originIn)
     {
         super(worldIn, originIn);
@@ -99,19 +101,30 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
 
         this.plannedBlockQueue.clear();
 
-        childStructuresQueue.add(new SculkNodeCaveProceduralStructure(this.world, this.origin, 35));
+        childStructuresQueue.add(new SculkNodeCaveProceduralStructure(this.world, this.origin, 10));
+
+        // Add 4 SculkNodeCaveHallway Procedural Structure going in all 4 directions. Each one starts at the respective
+        // edge of the cave structure depending on the direction. The length should be 64 blocks.
+        /**
+         *  Add 4 SculkNodeCaveHallway Procedural Structure going in all 4 directions.
+         *  Each one starts at the respective edge of the cave structure depending on the direction.
+         *  I.E. The North cave hallway starts at the North-most block of the cave structure and
+         *  goes North 64 blocks.
+         *  The length should be 64 blocks.
+         */
+        //childStructuresQueue.add(new SculkNodeCaveHallwayProceduralStructure(this.world, this.origin.offset(0, 0, -SHELL_RADIUS), this.origin.offset(0, 0, -SHELL_RADIUS - 64), 5));
 
         for(ProceduralStructure entry : childStructuresQueue)
         {
             entry.generatePlan();
         }
 
-        ArrayList<BlockPos> blockPositionsInCircle = BlockAlgorithms.getBlockPosInCircle(this.origin, RADIUS, false);
+        ArrayList<BlockPos> blockPositionsInCircle = BlockAlgorithms.getBlockPosInCircle(this.origin, SHELL_RADIUS, false);
 
         for(BlockPos position : blockPositionsInCircle)
         {
             //I dont know why i have to do -1 for the radius, something is wrong with the math
-            if(BlockAlgorithms.getBlockDistance(this.origin, position) < RADIUS - 1)
+            if(BlockAlgorithms.getBlockDistance(this.origin, position) < SHELL_RADIUS - 1)
             {
                 plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_ARACHNOID.get().defaultBlockState(), position));
             }
@@ -121,9 +134,9 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
             }
         }
 
-        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 5, RADIUS*3);
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 10, RADIUS*6));
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 20, RADIUS*9));
+        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 5, SHELL_RADIUS *3);
+        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 10, SHELL_RADIUS *6));
+        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 20, SHELL_RADIUS *9));
         for(BlockPos position : surroundingLivingRock)
         {
             plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState(), findLivingRockPlacementPosition(this.world, position)));

@@ -6,24 +6,36 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
+import org.apache.logging.log4j.core.jmx.Server;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
-public class SculkNodeCaveProceduralStructure extends ProceduralStructure
+public class SculkNodeCaveHallwayProceduralStructure extends ProceduralStructure
 {
-    private int radius;
+    private int radius = -1;
+    private int length = -1;
+    private Direction direction;
 
-    SculkNodeCaveHallwayProceduralStructure westCave;
-    SculkNodeCaveHallwayProceduralStructure eastCave;
-    SculkNodeCaveHallwayProceduralStructure northCave;
-    SculkNodeCaveHallwayProceduralStructure southCave;
-
-    public SculkNodeCaveProceduralStructure(ServerWorld worldIn, BlockPos originIn, int radiusIn)
+    /**
+     * This is the constructor for the Sculk Node Cave Hallway Structure.
+     * @param worldIn The world that the structure is being built in.
+     * @param originIn The origin of the structure.
+     * @param radiusIn The radius of the structure.
+     * @param length The length of the structure.
+     * @param direction The direction of the structure.
+     */
+    public SculkNodeCaveHallwayProceduralStructure(ServerWorld worldIn, BlockPos originIn, int radiusIn, int length, Direction direction)
     {
         super(worldIn, originIn);
         this.radius = radiusIn;
+        this.length = length;
+        this.direction = direction;
         generatePlan();
     }
 
@@ -56,12 +68,6 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
             }
             currentPlannedBlockQueueIndex++;
         }
-
-        westCave.buildTick();
-        eastCave.buildTick();
-        northCave.buildTick();
-        southCave.buildTick();
-
     }
 
     /**
@@ -73,25 +79,94 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
     {
         this.plannedBlockQueue.clear();
         // is returning empty
-        ArrayList<BlockPos> blockPositionsInCircle = BlockAlgorithms.getBlockPosInCircle(origin, radius, false);
+        ArrayList<BlockPos> plannedBlockPositions = createCaveBlockPositions();
 
-        for(BlockPos position : blockPositionsInCircle)
+        for(BlockPos position : plannedBlockPositions)
         {
+            //Every block of the Outer shell of cylinder is set to stone
             plannedBlockQueue.add(new CaveAirPlannedBlock(this.world, position));
         }
-
-        ConnectionPoint westConnection = new ConnectionPoint(new BlockPos(this.origin.offset(-radius, 0 ,0)), Direction.WEST);
-        ConnectionPoint eastConnection = new ConnectionPoint(new BlockPos(this.origin.offset(radius, 0 ,0)), Direction.EAST);
-        ConnectionPoint northConnection = new ConnectionPoint(new BlockPos(this.origin.offset(0, 0 ,-radius)), Direction.NORTH);
-        ConnectionPoint southConnection = new ConnectionPoint(new BlockPos(this.origin.offset(0, 0 ,radius)), Direction.SOUTH);
-
-        westCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, westConnection.getPosition(), 5, 32, Direction.WEST);
-        eastCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, eastConnection.getPosition(), 5, 32, Direction.EAST);
-        northCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, northConnection.getPosition(), 5, 32, Direction.NORTH);
-        southCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, southConnection.getPosition(), 5, 32, Direction.SOUTH);
-
         return;
     }
+
+    /**
+     * Creates a line of blocks that represent a cylinder
+     * @return An array list of block positions that represent a cylinder
+     */
+    public ArrayList<BlockPos> createCaveBlockPositions() {
+
+        Line3D line;
+        switch (direction) {
+            case NORTH:
+                line = new Line3D(origin, origin.north(length));
+                break;
+            case SOUTH:
+                line = new Line3D(origin, origin.south(length));
+                break;
+            case EAST:
+                line = new Line3D(origin, origin.east(length));
+                break;
+            case WEST:
+                line = new Line3D(origin, origin.west(length));
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid direction: " + direction);
+        }
+
+        return line.getBlockPositionsOnLineWithSphere(radius);
+    }
+
+
+    /**
+     * A custom planned block that wont place blocks if they are exposed to air
+     */
+    private class CaveWallPlannedBlock extends PlannedBlock
+    {
+        /**
+         * Constructor
+         *
+         * @param worldIn The World
+         * @param targetPosIn The Position to spawn it
+         */
+        public CaveWallPlannedBlock(ServerWorld worldIn, BlockPos targetPosIn)
+        {
+            super(worldIn, Blocks.CAVE_AIR.defaultBlockState(), targetPosIn);
+        }
+
+        /**
+         * Outputs if the block we are trying to place, is able to be placed at a location
+         * @return True if able to place, false otherwise.
+         */
+        @Override
+        public boolean canBePlaced()
+        {
+            return CAN_BLOCK_BE_REPLACED.test(world.getBlockState(targetPos));
+        }
+
+        /**
+         * Represents a predicate (boolean-valued function) of one argument. <br>
+         * Determines if a block can be replaced in the building process
+         */
+        protected final Predicate<BlockState> CAN_BLOCK_BE_REPLACED = (validBlocksPredicate) ->
+        {
+            // Otherwise, return true
+            return validBlocksPredicate.isAir();
+        };
+
+        /**
+         * If able, will place the block in the world.
+         */
+        @Override
+        public void build()
+        {
+            //If we 1n replace the block at the location
+            if(canBePlaced())
+            {
+                world.setBlockAndUpdate(targetPos, plannedBlock);
+            }
+        }
+    }
+
 
     /**
      * A custom planned block that wont place blocks if they are exposed to air
