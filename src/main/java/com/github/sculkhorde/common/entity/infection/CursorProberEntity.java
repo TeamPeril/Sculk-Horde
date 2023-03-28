@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -25,21 +26,19 @@ import java.util.concurrent.TimeUnit;
  * Once it has found a block to infect, it will infect it and then move on to the next block.
  * This will continue until it has either reached its max distance or max infections.
  */
-public class CursorShortRangeEntity extends Entity
-{
-    private int MAX_INFECTIONS = 100;
-    private int infections = 0;
-
-    private int MAX_RANGE = 100;
-    private BlockPos origin = BlockPos.ZERO;
+public class CursorProberEntity extends Entity {
+    private int MAX_DISTANCE = 1000;
+    private int distanceTraveled = 0;
 
     private BlockPos target = BlockPos.ZERO;
+    private Direction direction = Direction.DOWN;
 
-    private long MAX_LIFETIME_SECONDS = 30;
+    private long MAX_LIFETIME_SECONDS = 10;
     private long creationTickTime = System.nanoTime();
     private long lastTickTime = 0;
     private long TICK_INVTERVAL_SECONDS = 5;
 
+    public BlockPos lastKnownBlockPos = BlockPos.ZERO;
     public boolean isSuccessful = false;
 
 
@@ -48,10 +47,11 @@ public class CursorShortRangeEntity extends Entity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorShortRangeEntity(World worldIn) {super(EntityRegistry.CURSOR_SHORT_RANGE, worldIn);}
+    public CursorProberEntity(World worldIn) {super(EntityRegistry.CURSOR_LONG_RANGE, worldIn);}
 
-    public CursorShortRangeEntity(EntityType<?> pType, World pLevel) {
+    public CursorProberEntity(EntityType<?> pType, World pLevel) {
         super(pType, pLevel);
+        this.distanceTraveled = 0;
         /**
          * BUG: This is not working properly. The entity is not being removed after 30 seconds.
          * When the entity is spawned, the creationTickTime is not altered in the statement below.
@@ -60,12 +60,13 @@ public class CursorShortRangeEntity extends Entity
         creationTickTime = System.nanoTime();
     }
 
-    public void setMaxInfections(int MAX_INFECTIONS) {
-        this.MAX_INFECTIONS = MAX_INFECTIONS;
+    public void setMAX_DISTANCE(int MAX_DISTANCE) {
+        this.MAX_DISTANCE = MAX_DISTANCE;
     }
 
-    public void setMaxRange(int MAX_RANGE) {
-        this.MAX_RANGE = MAX_RANGE;
+    public void setDirection(Direction direction)
+    {
+        this.direction = direction;
     }
 
     @Override
@@ -74,48 +75,59 @@ public class CursorShortRangeEntity extends Entity
     }
 
     /**
-     * Use Breadth-First Search to find the nearest infectable block within a certain maximum distance.
+     * Use Depth-First Search to find the nearest infectable block within a certain maximum distance.
      * @return the position of the nearest infectable block, or null if none is found
      */
-    private BlockPos findNearestTargetBlock()
-    {
+    private BlockPos findNearestTargetBlockDepthFirstSearch(Direction direction) {
         BlockPos origin = this.blockPosition();
         int nodesVisited = 0;
         // Breadth-First Search
-        Queue<BlockPos> queue = new LinkedList<>();
+        Stack<BlockPos> stack = new Stack<>();
         Set<BlockPos> visited = new HashSet<>();
-        queue.add(origin);
+        stack.push(origin);
         visited.add(origin);
 
-        while (!queue.isEmpty()) {
-            BlockPos currentBlock = queue.poll();
-            if (SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(currentBlock)))
-            {
-                isSuccessful = true;
+        while (!stack.isEmpty())
+        {
+            BlockPos currentBlock = stack.pop();
+            nodesVisited++; // Keep track of how many nodes we've visited
+
+            if (SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(currentBlock))) {
                 return currentBlock;
             }
 
+            // If we've visited too many nodes, return ZERO
+            if (BlockAlgorithms.getBlockDistance(currentBlock, origin) > MAX_DISTANCE) {
+                break;
+            }
 
-            /// Will have bias for specific direction specified in the parameter
+            // Will have bias for specific direction specified in the parameter
             ArrayList<Direction> possibleDirections = new ArrayList<>();
-            possibleDirections.addAll(Arrays.asList(Direction.values()));
-            // Remove any directions that are not solid blocks or if the block distance from the origin is too far
-            possibleDirections.removeIf(dir -> !this.level.getBlockState(currentBlock.relative(dir)).isSolidRender(this.level, currentBlock.relative(dir)) || BlockAlgorithms.getBlockDistance(origin, currentBlock.relative(dir)) > MAX_RANGE);
-            Collections.shuffle(possibleDirections);
 
+            // 25% chance to just add specific direction if it is a solid block
+            if(Math.random() < 0.25 && this.level.getBlockState(currentBlock.relative(direction)).isSolidRender(this.level, currentBlock.relative(direction)))
+            {
+                possibleDirections.add(direction);
+            }
+            else
+            {
+                possibleDirections.addAll(Arrays.asList(Direction.values()));
+                // Remove any directions that are not solid blocks
+                possibleDirections.removeIf(dir -> !this.level.getBlockState(currentBlock.relative(dir)).isSolidRender(this.level, currentBlock.relative(dir)));
+            }
 
             // Add all neighbors to the queue
-            for (Direction dir : possibleDirections)
-            {
+            for (Direction dir : possibleDirections) {
                 BlockPos neighbor = currentBlock.relative(dir);
 
                 // If not visited and is a solid block, add to queue
                 if (!visited.contains(neighbor)) {
-                    queue.add(neighbor);
+                    stack.push(neighbor);
                     visited.add(neighbor);
                 }
             }
         }
+
         this.remove();
         isSuccessful = false;
         return BlockPos.ZERO;
@@ -144,21 +156,10 @@ public class CursorShortRangeEntity extends Entity
             return;
         }
 
-        // Keep track of the origin
-        if(origin == BlockPos.ZERO)
-        {
-            origin = this.blockPosition();
-        }
-
 
         long currentLifeTime = TimeUnit.SECONDS.convert(System.nanoTime() - creationTickTime, TimeUnit.NANOSECONDS);
         // If entity has lived too long, remove it
-        if(currentLifeTime >= MAX_LIFETIME_SECONDS) {
-            this.remove();
-            return;
-        }
-        else if (infections >= MAX_INFECTIONS)
-        {
+        if(currentLifeTime >= MAX_LIFETIME_SECONDS || this.distanceTraveled >= MAX_DISTANCE) {
             this.remove();
             return;
         }
@@ -166,39 +167,56 @@ public class CursorShortRangeEntity extends Entity
         // If we don't have a target, find one
         if(target.equals(BlockPos.ZERO)) {
             // Find nearest target with random direction
-            target = findNearestTargetBlock();
+            target = findNearestTargetBlockDepthFirstSearch(direction);
         }
 
         // Get the neighbors of the current block
-        ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition());
+        ArrayList<BlockPos> neighbors = BlockAlgorithms.getAdjacentNeighbors(blockPosition());
 
         // Find the block that is cloest to target in neighbors
         BlockPos closest = neighbors.get(0);
-        for (BlockPos pos : neighbors) {
+        for (BlockPos pos : neighbors)
+        {
             if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target))
             {
                 closest = pos;
             }
         }
 
+        // If the closest block is air, infect it
+        // This is kind of a bs hack. The problem with spawning this entity in the sculk node, is that when the
+        // node caves spawns, the sculk node is surrounded by air and is unable to infect the blocks around it.
+        // This should allow the probes to build bridges in the air surrounding the node.
+        // Maybe in the future I could just have the probes place down this stuff everywhere they go, only if they are succcessful?
+        if(this.level.getBlockState(this.blockPosition()).isAir())
+        {
+            this.level.setBlockAndUpdate(this.blockPosition(), BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+        }
+
         // If we can't find a target, return;
         if(target.equals(BlockPos.ZERO))
         {
+            this.isSuccessful = false;
             return;
         }
 
         // Move to the closest block
         this.setPos(closest.getX(), closest.getY(), closest.getZ());
 
+        // Keep track of last known position
+        lastKnownBlockPos = this.blockPosition();
+        SculkHorde.infestationConversionTable.infectBlock((ServerWorld) this.level, this.blockPosition());
+        // Keep track of how far we've traveled
+        distanceTraveled++;
+
         // If we've reached the target block, find a new target
         if (this.blockPosition().equals(target)) {
 
-            target = BlockPos.ZERO;
-            // Infect the block and increase the infection count
-            SculkHorde.infestationConversionTable.infectBlock((ServerWorld) this.level, this.blockPosition());
-            infections++;
-
+            isSuccessful = true;
+            remove();
         }
+
+
     }
 
     /**
@@ -221,9 +239,9 @@ public class CursorShortRangeEntity extends Entity
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-
     public void setTarget(BlockPos target) {
         this.target = target;
     }
+
 
 }

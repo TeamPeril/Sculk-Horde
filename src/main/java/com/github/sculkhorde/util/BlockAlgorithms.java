@@ -62,10 +62,10 @@ public class BlockAlgorithms {
         list.addAll(getNeighborsXZPlane(origin, false));
         list.addAll(getNeighborsXZPlane(origin.above(), true));
         list.addAll(getNeighborsXZPlane(origin.below(), true));
-        list.addAll(getNeighborsXZPlane(origin.north(), true));
-        list.addAll(getNeighborsXZPlane(origin.east(), true));
-        list.addAll(getNeighborsXZPlane(origin.south(), true));
-        list.addAll(getNeighborsXZPlane(origin.west(), true));
+        //list.addAll(getNeighborsXZPlane(origin.north(), true));
+        //list.addAll(getNeighborsXZPlane(origin.east(), true));
+        //list.addAll(getNeighborsXZPlane(origin.south(), true));
+        //list.addAll(getNeighborsXZPlane(origin.west(), true));
         return list;
     }
 

@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
-import com.github.sculkhorde.common.entity.infection.CursorShortRangeEntity;
+import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.util.ITooltipFlag;
@@ -97,7 +96,7 @@ public class DevConversionWand extends Item implements IForgeItem {
 				if(!worldIn.isClientSide())
 				{
 					// Spawn a Block Traverser
-					CursorShortRangeEntity cursor = new CursorShortRangeEntity((ServerWorld) worldIn);
+					CursorInfectorEntity cursor = new CursorInfectorEntity((ServerWorld) worldIn);
 					cursor.setPos(targetPos.getX(), targetPos.getY(), targetPos.getZ());
 					worldIn.addFreshEntity(cursor);
 

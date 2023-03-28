@@ -8,8 +8,8 @@ public class InfectionTree {
     private TreeNode root;
     private boolean Active = false;
     private final Direction direction;
-    private CursorLongRangeEntity cursorProbe;
-    private CursorShortRangeEntity cursorInfection;
+    private CursorProberEntity cursorProbe;
+    private CursorInfectorEntity cursorInfection;
     private final ServerWorld world;
     private state currentState = state.IDLE;
     private enum state {
@@ -82,7 +82,7 @@ public class InfectionTree {
      * @param maxDistance The maximum distance the cursor can travel
      */
     public void createProbeCursor(int maxDistance) {
-        cursorProbe = new CursorLongRangeEntity(world);
+        cursorProbe = new CursorProberEntity(world);
         cursorProbe.setMAX_DISTANCE(maxDistance);
         cursorProbe.setDirection(direction);
         cursorProbe.setPos(this.root.blockPos.getX(), this.root.blockPos.getY(), this.root.blockPos.getZ());
@@ -94,7 +94,7 @@ public class InfectionTree {
      * @param maxInfections The maximum number of infections the cursor can perform
      */
     public void createInfectionCursor(int maxInfections) {
-        cursorInfection = new CursorShortRangeEntity(world);
+        cursorInfection = new CursorInfectorEntity(world);
         cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
         cursorInfection.setMaxInfections(maxInfections);
         cursorInfection.setMaxRange(maxInfections);

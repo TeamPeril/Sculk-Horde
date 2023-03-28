@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhorde.common.entity.infection.CursorShortRangeEntity;
+import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.common.procedural.structures.SculkBeeNestProceduralStructure;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
@@ -207,7 +207,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
             // Spawn Infector Cursors
             for(int i = 0; i < getHoneyLevel(blockStateIn); i++)
             {
-                CursorShortRangeEntity cursor = new CursorShortRangeEntity(this.level);
+                CursorInfectorEntity cursor = new CursorInfectorEntity(this.level);
                 cursor.setPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
                 cursor.setMaxRange(100);
                 cursor.setMaxInfections(100);

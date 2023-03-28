@@ -185,7 +185,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     }
 
     protected SoundEvent getAmbientSound() {
-        return null;
+        return SoundEvents.BEE_LOOP;
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {

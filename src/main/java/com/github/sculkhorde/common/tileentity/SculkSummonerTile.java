@@ -42,7 +42,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     //How often should this tile tick in seconds if the summoner is alert
     private long tickIntervalAlertSeconds = 30;
     //How often should this tile tick in seconds if the summoner is not alert
-    private long tickIntervalUnAlertSeconds = 60 * 5;
+    private long tickIntervalUnAlertSeconds = 60;
     //Records the last time this block summoned a mob
     private long lastTimeOfSummon = 0;
     private final int MAX_SPAWNED_ENTITIES = 8;
@@ -234,8 +234,8 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
         Random rng = new Random();
         for(int count = 0; count < amountOfPositions && listOfPossibleSpawns.size() > 0; count++)
         {
-            int randomIndex = rng.nextInt(listOfPossibleSpawns.size()-1);
-            //Get random position between 0 and size of list - 1
+            int randomIndex = rng.nextInt(listOfPossibleSpawns.size());
+            //Get random position between 0 and size of list
             finalList.add(listOfPossibleSpawns.get(randomIndex));
             listOfPossibleSpawns.remove(randomIndex);
         }

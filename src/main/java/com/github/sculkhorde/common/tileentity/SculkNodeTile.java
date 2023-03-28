@@ -1,10 +1,7 @@
 package com.github.sculkhorde.common.tileentity;
 
-import com.github.sculkhorde.common.entity.infection.CursorLongRangeEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.tileentity.ITickableTileEntity;

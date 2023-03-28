@@ -1,12 +1,13 @@
 package com.github.sculkhorde.client.renderer.entity;
 
-import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorBridgerEntity;
+import com.github.sculkhorde.common.entity.infection.CursorProberEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 
-public class CursorShortRangeRenderer extends EntityRenderer<CursorInfectorEntity> {
-    public CursorShortRangeRenderer(EntityRendererManager p_i46179_1_) {
+public class CursorBridgerRenderer extends EntityRenderer<CursorBridgerEntity> {
+    public CursorBridgerRenderer(EntityRendererManager p_i46179_1_) {
         super(p_i46179_1_);
     }
 
@@ -16,7 +17,7 @@ public class CursorShortRangeRenderer extends EntityRenderer<CursorInfectorEntit
      * @param pEntity
      */
     @Override
-    public ResourceLocation getTextureLocation(CursorInfectorEntity pEntity) {
+    public ResourceLocation getTextureLocation(CursorBridgerEntity pEntity) {
         return null;
     }
 }

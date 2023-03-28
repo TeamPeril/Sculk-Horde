@@ -1,7 +1,9 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.SculkMiteAggressorAttackGoal;
+import com.github.sculkhorde.common.entity.goal.SculkZombieAttackGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import net.minecraft.block.BlockState;
@@ -13,6 +15,8 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -22,6 +26,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -29,31 +34,32 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimatable {
 
     /**
-     * In order to create a mob, the following files were created/edited.<br>
+     * In order to create a mob, the following java files were created/edited.<br>
      * Edited core/ EntityRegistry.java<br>
      * Edited util/ ModEventSubscriber.java<br>
      * Edited client/ ClientModEventSubscriber.java<br>
+     * Edited common/world/ModWorldEvents.java (this might not be necessary)<br>
      * Edited common/world/gen/ModEntityGen.java<br>
-     * Added common/entity/ SculkMiteAggressor.java<br>
-     * Added client/model/entity/ SculkMiteAggressorModel.java<br>
-     * Added client/renderer/entity/ SculkMiteAggressorRenderer.java
+     * Added common/entity/ SculkSporeSpewerEntity.java<br>
+     * Added client/model/entity/ SculkSporeSpewerModel.java<br>
+     * Added client/renderer/entity/ SculkSporeSpewerRenderer.java
      */
 
     //The Health
-    public static final float MAX_HEALTH = 5F;
+    public static final float MAX_HEALTH = 40F;
     //The armor of the mob
-    public static final float ARMOR = 2F;
+    public static final float ARMOR = 10F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 2F;
+    public static final float ATTACK_DAMAGE = 0F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 1F;
+    public static final float ATTACK_KNOCKBACK = 0F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 25F;
+    public static final float FOLLOW_RANGE = 0F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.3F;
+    public static final float MOVEMENT_SPEED = 0F;
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -62,7 +68,7 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkMiteAggressorEntity(EntityType<? extends SculkMiteAggressorEntity> type, World worldIn) {
+    public SculkSporeSpewerEntity(EntityType<? extends SculkSporeSpewerEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
@@ -70,7 +76,7 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkMiteAggressorEntity(World worldIn) {super(EntityRegistry.SCULK_MITE_AGGRESSOR, worldIn);}
+    public SculkSporeSpewerEntity(World worldIn) {super(EntityRegistry.SCULK_SPORE_SPEWER, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -88,39 +94,19 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.SILVERFISH_AMBIENT;
+        return SoundEvents.ENDERMITE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.SILVERFISH_HURT;
+        return SoundEvents.ENDERMITE_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.SILVERFISH_DEATH;
+        return SoundEvents.ENDERMITE_DEATH;
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-        this.playSound(SoundEvents.SILVERFISH_STEP, 0.15F, 1.0F);
-    }
-
-    /**
-     * The function that determines if a position is a good spawn location<br>
-     * @param config ???
-     * @param world The world that the mob is trying to spawn in
-     * @param reason An object that indicates why a mob is being spawned
-     * @param pos The Block Position of the potential spawn location
-     * @param random ???
-     * @return Returns a boolean determining if it is a suitable spawn location
-     */
-    public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
-    {
-        // If peaceful, return false
-        if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-            // If not because of chunk generation or natural, return false
-        else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
-            //If block below is not sculk crust, return false
-        else if (world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
-        return true;
+        this.playSound(SoundEvents.ENDERMITE_STEP, 0.15F, 1.0F);
     }
 
     /**
@@ -142,6 +128,7 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
         {
             this.goalSelector.addGoal(priority, targetSelectorPayload[priority]);
         }
+
     }
 
     /**
@@ -156,18 +143,8 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     {
         Goal[] goals =
                 {
-                        //SwimGoal(mob)
-                        new SwimGoal(this),
-                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkMiteAggressorAttackGoal(this, 1.0D, true),
-                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
-                        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                        new WaterAvoidingRandomWalkingGoal(this, 1.0D),
-                        //LookAtGoal(mob, targetType, lookDistance)
-                        new LookAtGoal(this, PigEntity.class, 8.0F),
-                        //LookRandomlyGoal(mob)
-                        new LookRandomlyGoal(this)
+                        // MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
+                        new dieAfterTimeGoal(this),
                 };
         return goals;
     }
@@ -185,20 +162,26 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new HurtByTargetGoal(this).setAlertOthers(),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
-                                .enableDespawnWhenIdle().enableTargetHostiles()
+                        new TargetAttacker(this).setAlertSculkLivingEntities(),
                 };
         return goals;
     }
 
+    @Override
+    public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
 
-    //Animation Stuff below
+    @Override
+    protected int getExperienceReward(PlayerEntity player)
+    {
+        return 10;
+    }
+
+    //Animation Related Functions
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
     {
-        //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-        return PlayState.STOP;
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_spore_spewer.idle", true));
+        return PlayState.CONTINUE;
     }
 
     @Override
@@ -209,5 +192,68 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+
+    //Every tick, spawn a short range cursor
+    @Override
+    public void aiStep()
+    {
+        super.aiStep();
+
+        // Only on the client side, spawn dust particles with a specific color
+        // Have the partciles fly in random directions
+        if (level.isClientSide)
+        {
+            Random random = new Random();
+            for (int i = 0; i < 1; i++)
+            {
+                level.addParticle(ParticleTypes.CRIMSON_SPORE, this.position().x, this.position().y, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+            }
+        }
+
+        Random random = new Random();
+        if (random.nextInt(100) == 0)
+        {
+            // Spawn Block Traverser
+            CursorInfectorEntity cursor = new CursorInfectorEntity(level);
+            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+            cursor.setMaxInfections(20);
+            cursor.setMaxRange(100);
+            level.addFreshEntity(cursor);
+        }
+    }
+
+
+    /**
+     * This is a custom goal that I made to make the mob die after a certain amount of time.
+     * This is useful for mobs that are meant to be temporary, such as the Sculk Spore Spewer.
+     */
+    private class dieAfterTimeGoal extends Goal
+    {
+        private final SculkSporeSpewerEntity entity;
+        private int timeUntilDeath = 0;
+
+        public dieAfterTimeGoal(SculkSporeSpewerEntity entity) {
+            this.entity = entity;
+        }
+
+        @Override
+        public boolean canUse() {
+            return true;
+        }
+
+        @Override
+        public void start() {
+            timeUntilDeath = 20 * 60 * 60; //Die after an hour
+        }
+
+        @Override
+        public void tick() {
+            timeUntilDeath--;
+            if (timeUntilDeath <= 0) {
+                entity.remove();
+            }
+        }
     }
 }
