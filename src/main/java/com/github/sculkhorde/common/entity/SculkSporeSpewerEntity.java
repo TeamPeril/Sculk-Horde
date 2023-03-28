@@ -1,29 +1,20 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.SculkZombieAttackGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -246,7 +237,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
         @Override
         public void start() {
-            timeUntilDeath = 20 * 60 * 60; //Die after an hour
+            timeUntilDeath = 20 * 60 * 15; //Die after 15 Minutes
         }
 
         @Override

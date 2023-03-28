@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = '1.16.5-0.5.1'
+version = '1.16.5-0.5.2'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
