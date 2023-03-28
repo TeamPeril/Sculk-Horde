@@ -1,20 +1,25 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ParticleRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
+
+import java.util.Random;
 
 //Not an actual block, just a parent class
 public class SculkFloraBlock extends BushBlock implements IForgeBlock {
@@ -97,6 +102,21 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     }
 
+    // SPawn particles
+    @Override
+    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+        super.animateTick(stateIn, worldIn, pos, rand);
+
+        if (worldIn.isClientSide)
+        {
+            Random random = new Random();
+            if (random.nextInt(10) == 0)
+            {
+                worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+            }
+        }
+
+    }
 
 
 

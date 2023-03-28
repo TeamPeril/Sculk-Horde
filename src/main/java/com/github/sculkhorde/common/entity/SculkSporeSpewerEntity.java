@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ParticleRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
@@ -208,7 +209,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
             Random random = new Random();
             for (int i = 0; i < 1; i++)
             {
-                level.addParticle(ParticleTypes.CRIMSON_SPORE, this.position().x, this.position().y, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
         }
 

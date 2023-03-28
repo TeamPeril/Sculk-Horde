@@ -143,27 +143,6 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
         }
     }
 
-
-    /**
-     * Called periodically clientside on blocks near the player to show effects (like furnace fire particles). Note that
-     * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless
-     * of whether the block can receive random update ticks
-     */
-    @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState pState, World pLevel, BlockPos pPos, Random pRand) {
-        VoxelShape voxelshape = this.getShape(pState, pLevel, pPos, ISelectionContext.empty());
-        Vector3d vector3d = voxelshape.bounds().getCenter();
-        double d0 = (double)pPos.getX() + vector3d.x;
-        double d1 = (double)pPos.getZ() + vector3d.z;
-
-        for(int i = 0; i < 3; ++i) {
-            if (pRand.nextBoolean()) {
-                pLevel.addParticle(ParticleTypes.MYCELIUM, d0 + pRand.nextDouble() / 5.0D, (double)pPos.getY() + (0.5D - pRand.nextDouble()), d1 + pRand.nextDouble() / 5.0D, 0.0D, 0.0D, 0.0D);
-            }
-        }
-
-    }
-
     /**
      * This is the description the item of the block will display when hovered over.
      * @param stack The item stack

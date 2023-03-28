@@ -8,6 +8,8 @@ import net.minecraft.particles.BasicParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Random;
+
 public class SculkCrustParticle extends SpriteTexturedParticle
 {
 
@@ -20,28 +22,33 @@ public class SculkCrustParticle extends SpriteTexturedParticle
         super(p_i232448_1_, p_i232448_2_, p_i232448_4_, p_i232448_6_, p_i232448_8_, p_i232448_10_, p_i232448_12_);
     }
 
-    @Override
-    public void render(IVertexBuilder pBuffer, ActiveRenderInfo pRenderInfo, float pPartialTicks) {
-
-    }
 
     @Override
     public IParticleRenderType getRenderType() {
-        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
     @OnlyIn(Dist.CLIENT)
     public static class Factory implements IParticleFactory<BasicParticleType> {
+        private final IAnimatedSprite sprite;
 
-        private final IAnimatedSprite animatedSprite;
-
-        public Factory(IAnimatedSprite animatedSprite) {
-            this.animatedSprite = animatedSprite;
+        public Factory(IAnimatedSprite pSprites) {
+            this.sprite = pSprites;
         }
 
-        @Override
-        public Particle createParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            return  new SculkCrustParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
+        public Particle createParticle(BasicParticleType pType, ClientWorld pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
+
+
+            Random random = pLevel.random;
+            double d0 = random.nextGaussian() * (double)1.0E-6F;
+            double d1 = random.nextGaussian() * (double)1.0E-4F;
+            double d2 = random.nextGaussian() * (double)1.0E-6F;
+            SculkCrustParticle particle = new SculkCrustParticle(pLevel, pX, pY, pZ, d0, d1, d2);
+            particle.pickSprite(this.sprite);
+            particle.quadSize *= random.nextFloat() * 0.4F + 0.1F;
+            particle.lifetime = (int)(16.0D / (Math.random() * 0.8D + 0.2D));
+            particle.setLifetime(20 * 10);
+            return particle;
         }
     }
 }

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.entity.Entity;
@@ -151,7 +152,7 @@ public class CursorProberEntity extends Entity {
         {
             for(int i = 0; i < 2; ++i)
             {
-                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
             }
             return;
         }
