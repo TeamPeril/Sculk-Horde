@@ -2,8 +2,10 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -11,11 +13,13 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -24,6 +28,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimatable {
@@ -195,13 +200,14 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level.isClientSide)
+        if (level.isClientSide && isAlive())
         {
             Random random = new Random();
             for (int i = 0; i < 1; i++)
             {
-                level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10);
             }
+            return;
         }
 
         Random random = new Random();
@@ -213,6 +219,16 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
             cursor.setMaxInfections(20);
             cursor.setMaxRange(100);
             level.addFreshEntity(cursor);
+
+            // Any entity within 10 blocks of the spewer will be infected
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) level, this.getBoundingBox().inflate(10));
+            for (LivingEntity entity : entities)
+            {
+                if (entity instanceof LivingEntity && EntityAlgorithms.isLivingEntityInfected(entity) == false && entity instanceof SculkLivingEntity == false)
+                {
+                    entity.addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
+                }
+            }
         }
     }
 
@@ -241,7 +257,13 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
         }
 
         @Override
-        public void tick() {
+        public void tick()
+        {
+            if(level.isClientSide())
+            {
+                return;
+            }
+
             timeUntilDeath--;
             if (timeUntilDeath <= 0) {
                 entity.remove();

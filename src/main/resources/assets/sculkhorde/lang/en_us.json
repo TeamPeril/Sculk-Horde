@@ -2,7 +2,7 @@
   "itemGroup.sculkhorde_tab": "Sculk Hoard",
   "item.sculkhorde.sculk_matter": "Sculk Matter",
   "item.sculkhorde.dev_wand": "Dev Wand",
-  "tooltip.sculkhorde.dev_wand": "Right-click to spawn mite.\nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to add 100 Sculk Mass.",
+  "tooltip.sculkhorde.dev_wand": "Right-click to spawn a spore spewer to start world infection.\nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to add 100 Sculk Mass.",
   "tooltip.sculkhorde.dev_wand.shift": "\u00A75JoeMama",
   "item.sculkhorde.dev_conversion_wand": "Dev Conversion Wand",
   "tooltip.sculkhorde.dev_conversion_wand": "Converts blocks to infected variants.",
@@ -56,6 +56,9 @@
   "entity.sculkhorde.sculk_spitter": "Sculk Spitter",
   "entity.sculkhorde.sculk_mite": "Sculk Mite",
   "entity.sculkhorde.sculk_mite_aggressor": "Sculk Mite Aggressor",
-  "entity.sculkhorde.sculk_hatcher": "Sculk Hatcher"
+  "entity.sculkhorde.sculk_hatcher": "Sculk Hatcher",
+  "entity.sculkhorde.sculk_bee_harvester": "Sculk Bee Harvester",
+  "entity.sculkhorde.sculk_bee_infector": "Sculk Bee Infector",
+  "entity.sculkhorde.sculk_spore_spewer": "Sculk Spore Spewer"
 
 }

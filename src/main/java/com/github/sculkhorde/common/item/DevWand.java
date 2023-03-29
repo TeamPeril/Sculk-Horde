@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.SculkHatcherEntity;
+import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.Minecraft;
@@ -134,7 +135,7 @@ public class DevWand extends Item implements IForgeItem {
 					//Give Player Effect
 					playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
 					//Create Mob Instance
-					SculkHatcherEntity entity = new SculkHatcherEntity(worldIn);
+					SculkSporeSpewerEntity entity = new SculkSporeSpewerEntity(worldIn);
 					//Set Mob's Position
 					entity.setPos(targetX, targetY, targetZ);
 					//Spawn instance in world
