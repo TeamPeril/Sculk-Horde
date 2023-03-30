@@ -224,7 +224,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
-                if (entity instanceof LivingEntity && EntityAlgorithms.isLivingEntityInfected(entity) == false && entity instanceof SculkLivingEntity == false)
+                if (entity instanceof LivingEntity && EntityAlgorithms.isLivingEntityInfected(entity) == false && EntityAlgorithms.isSculkLivingEntity.test(entity) == false)
                 {
                     entity.addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
                 }

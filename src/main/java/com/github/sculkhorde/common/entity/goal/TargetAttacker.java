@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TargetGoal;
@@ -44,7 +45,7 @@ public class TargetAttacker extends TargetGoal {
         LivingEntity livingentity = this.mob.getLastHurtByMob(); //Get the mob that last attacked us
 
         //Do not allow this behavior to execute if what attacked us was a sculk mob
-        if(livingentity instanceof SculkLivingEntity) {return false;}
+        if(EntityAlgorithms.isSculkLivingEntity.test(livingentity)) {return false;}
 
         //if ??? and living entity is not null
         if (i != this.timestamp && livingentity != null)
@@ -80,15 +81,13 @@ public class TargetAttacker extends TargetGoal {
     @Override
     public void start()
     {
-        //if(this.mob.getLastHurtByMob() instanceof SculkLivingEntity) return;
-
         this.mob.setTarget(this.mob.getLastHurtByMob());
         this.targetMob = this.mob.getTarget();
         this.timestamp = this.mob.getLastHurtByMobTimestamp();
         this.unseenMemoryTicks = 60;
 
         /**If a mob isnt already a confirmed hostile, make it one.*/
-        if(!(this.mob.getLastHurtByMob() instanceof SculkLivingEntity)
+        if(EntityAlgorithms.isSculkLivingEntity.test(this.mob.getLastHurtByMob()) == false
                 && this.mob.getLastHurtByMob() != null)
         {
             SculkHorde.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerWorld) this.mob.level);
@@ -125,7 +124,7 @@ public class TargetAttacker extends TargetGoal {
 
                 boolean isAlertingSelf = this.mob == mobentity;
                 boolean hasTargetAlready = mobentity.getTarget() != null;
-                boolean isProtector = mobentity instanceof SculkLivingEntity;
+                boolean isProtector = EntityAlgorithms.isSculkLivingEntity.test(mobentity);
 
                 if(DEBUG_THIS)
                 {

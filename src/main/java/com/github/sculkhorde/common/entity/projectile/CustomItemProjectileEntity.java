@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.projectile;
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -132,20 +133,25 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
     protected void onHitEntity(EntityRayTraceResult raytrace)
     {
         super.onHitEntity(raytrace);
-        //If the entity is not sculk or if the entity it hit was not the owner, do damage.
-        if(! (raytrace.getEntity() instanceof SculkLivingEntity) && getOwner() != getEntity() )
+
+        // If the entity is a sculk or if the entity it hit was the owner, do nothing.
+        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) raytrace.getEntity()) || getOwner() == getEntity())
         {
-            raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
-            this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-            this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
-
-            if(getEntity() instanceof LivingEntity)
-            {
-                ((LivingEntity)getEntity()).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
-            }
-
-            remove();
+            return;
         }
+
+
+        raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
+        this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
+        this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
+
+        if(raytrace.getEntity() instanceof LivingEntity)
+        {
+            ((LivingEntity)raytrace.getEntity()).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
+        }
+
+        remove();
+
     }
 
     /**

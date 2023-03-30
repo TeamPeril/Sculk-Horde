@@ -209,7 +209,7 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
                 {
                         new TargetAttacker(this).setAlertSculkLivingEntities(),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
-                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetPassives()
+                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetPassives().ignoreTargetBelow50PercentHealth()
                 };
         return goals;
     }

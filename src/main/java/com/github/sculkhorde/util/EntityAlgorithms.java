@@ -1,13 +1,11 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
+import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -15,7 +13,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static com.github.sculkhorde.core.SculkHorde.gravemind;
@@ -34,17 +33,16 @@ public class EntityAlgorithms {
 
         if(block.getType() == RayTraceResult.Type.BLOCK)
         {
-            BlockPos blockpos = ((BlockRayTraceResult)block).getBlockPos();
-            return blockpos;
+            return ((BlockRayTraceResult)block).getBlockPos();
         }
         return null;
     }
 
     /**
      * Creates a 3D cube around a given origin. The origin is the centroid.
-     * @param originX
-     * @param originY
-     * @param originZ
+     * @param originX The X coordinate of the origin
+     * @param originY The Y coordinate of the origin
+     * @param originZ The Z coordinate of the origin
      * @return Returns the Bounding Box
      */
     public static AxisAlignedBB getSearchAreaRectangle(double originX, double originY, double originZ, double w, double h, double l)
@@ -64,11 +62,11 @@ public class EntityAlgorithms {
      * @param e The Given Entity
      * @return True if Valid, False otherwise
      */
-    public static boolean isLivingEntityValidTarget(LivingEntity e, boolean targetHostiles, boolean targetPassives, boolean targetInfected)
+    public static boolean isLivingEntityValidTarget(LivingEntity e, boolean targetHostiles, boolean targetPassives, boolean targetInfected, boolean targetBelow50PercentHealth)
     {
 
-        //If sculk living entity, do not attack
-        if(e instanceof SculkLivingEntity)
+        //If passes sculk predicate
+        if(isSculkLivingEntity.test(e))
         {
             return false;
         }
@@ -109,18 +107,41 @@ public class EntityAlgorithms {
             return false;
         }
 
+        //If we do not attack below 50% health and target is below 50% health
+        if(!targetBelow50PercentHealth && e.getHealth() < e.getMaxHealth() / 2)
+        {
+            return false;
+        }
+
         return true;
     }
+
+    /**
+     * Determines if an Entity belongs to the sculk based on rules
+     * @return True if Valid, False otherwise
+     */
+    public static Predicate<LivingEntity> isSculkLivingEntity = (e) ->
+    {
+        return e instanceof SculkMiteEntity
+                || e instanceof SculkMiteAggressorEntity
+                || e instanceof SculkZombieEntity
+                || e instanceof SculkSpitterEntity
+                || e instanceof SculkSporeSpewerEntity
+                || e instanceof SculkBeeHarvesterEntity
+                || e instanceof SculkBeeInfectorEntity
+                || e instanceof SculkHatcherEntity;
+    };
+
 
     /**
      * Filters out any mobs that do not fit the filter
      * @param list The list of possible targets
      */
-    public static void filterOutNonTargets(List<LivingEntity> list, boolean targetHostiles, boolean targetPassives, boolean targetInfected)
+    public static void filterOutNonTargets(List<LivingEntity> list, boolean targetHostiles, boolean targetPassives, boolean targetInfected, boolean targetBelow50PercentHealth)
     {
         for(int i = 0; i < list.size(); i++)
         {
-            boolean isValidTarget = isLivingEntityValidTarget(list.get(i), targetHostiles, targetPassives, targetInfected);
+            boolean isValidTarget = isLivingEntityValidTarget(list.get(i), targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
 
             //If not valid target, filter
             if(!isValidTarget)

@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.DamageSourceRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -11,11 +12,8 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -28,7 +26,6 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -125,22 +122,32 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      * @param entity The entity inside
      */
     public void entityInside(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-        if (entity instanceof LivingEntity &&  !(entity instanceof SculkLivingEntity))
+        // If the entity is not a living entity, don't do anything
+        if (!(entity instanceof LivingEntity) || world.isClientSide)
         {
-            entity.makeStuckInBlock(blockState, new Vector3d((double)0.8F, 0.75D, (double)0.8F));
+            return;
+        }
 
-            if (!world.isClientSide && (entity.xOld != entity.getX() || entity.zOld != entity.getZ()))
+        // If the entity is a sculk, don't do anything
+        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
+        {
+            return;
+        }
+
+        entity.makeStuckInBlock(blockState, new Vector3d((double)0.8F, 0.75D, (double)0.8F));
+
+        if (entity.xOld != entity.getX() || entity.zOld != entity.getZ())
+        {
+            double d0 = Math.abs(entity.getX() - entity.xOld);
+            double d1 = Math.abs(entity.getZ() - entity.zOld);
+            if (d0 >= (double)0.003F || d1 >= (double)0.003F)
             {
-                double d0 = Math.abs(entity.getX() - entity.xOld);
-                double d1 = Math.abs(entity.getZ() - entity.zOld);
-                if (d0 >= (double)0.003F || d1 >= (double)0.003F)
-                {
-                    entity.hurt(DamageSourceRegistry.SCULK_SPIKE, 1.0F);
-                    ((LivingEntity) entity).addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
-                    world.destroyBlock(blockPos, false);
-                }
+                entity.hurt(DamageSourceRegistry.SCULK_SPIKE, 1.0F);
+                ((LivingEntity) entity).addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                world.destroyBlock(blockPos, false);
             }
         }
+
     }
 
     /**

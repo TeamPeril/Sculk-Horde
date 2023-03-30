@@ -23,6 +23,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     private boolean targetHostiles = false; //Should we attack hostiles?
     private boolean targetPassives = false; //Should we target passives?
     private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
+    private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
     boolean despawnWhenIdle = false; //Should we despawn after not having a target for a while?
 
     private final int ticksPerSecond = 20;
@@ -74,6 +75,12 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         return this;
     }
 
+    public NearestLivingEntityTargetGoal ignoreTargetBelow50PercentHealth()
+    {
+        targetBelow50PercentHealth = false;
+        return this;
+    }
+
     /** Functionality **/
 
     public boolean canUse()
@@ -92,7 +99,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         // If our current target is not valid. Set out target to be null.
         if(this.target != null)
         {
-            if(EntityAlgorithms.isLivingEntityValidTarget(this.target, targetHostiles, targetPassives, targetInfected))
+            if(EntityAlgorithms.isLivingEntityValidTarget(this.target, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth))
             {
                 this.target = null;
             }
@@ -141,7 +148,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
                     (Predicate<? super LivingEntity>) null);
 
             //Remove Any Sculk Entities or entities already infected
-            filterOutNonTargets(possibleTargets, targetHostiles, targetPassives, targetInfected);
+            filterOutNonTargets(possibleTargets, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
         }
         else //if targetType is player
         {

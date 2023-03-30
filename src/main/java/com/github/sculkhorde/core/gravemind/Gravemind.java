@@ -8,6 +8,7 @@ import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -482,9 +483,9 @@ public class Gravemind
          */
         public void addHostileToMemory(LivingEntity entityIn, ServerWorld worldIn)
         {
-            if(entityIn == null || entityIn instanceof SculkLivingEntity || entityIn instanceof CreeperEntity)
+            if(entityIn == null || EntityAlgorithms.isSculkLivingEntity.test(entityIn) || entityIn instanceof CreeperEntity)
             {
-                if(DEBUG_MODE) System.out.println("Attempted to Add Hostile To Memory but failed.");
+                //if(DEBUG_MODE) System.out.println("Attempted to Add Hostile To Memory but failed.");
                 return;
             }
 

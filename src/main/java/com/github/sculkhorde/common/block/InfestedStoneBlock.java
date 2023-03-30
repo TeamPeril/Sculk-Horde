@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -126,14 +127,19 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
     @Override
     public void stepOn(World worldIn, BlockPos pos, Entity entity)
     {
-        if(!worldIn.isClientSide())//Only do this on the client
+        if(worldIn.isClientSide() || !(entity instanceof LivingEntity))//Only do this on the client
         {
-            if(entity instanceof LivingEntity && !(entity instanceof SculkLivingEntity))//Only apply to living entities
-            {
-                LivingEntity livingEntity = ((LivingEntity) entity); //Cast
-                livingEntity.addEffect(new EffectInstance(STEP_ON_EFFECT)); //Give effect
-            }
+            return;
         }
+
+        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
+        {
+            return;
+        }
+
+        LivingEntity livingEntity = ((LivingEntity) entity); //Cast
+        livingEntity.addEffect(new EffectInstance(STEP_ON_EFFECT)); //Give effect
+
         super.stepOn(worldIn, pos, entity); //Execute Parent Code
     }
 

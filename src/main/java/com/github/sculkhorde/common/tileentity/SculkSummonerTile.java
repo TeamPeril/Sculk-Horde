@@ -156,10 +156,10 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
 
             //Get targets inside bounding box.
             possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true);
+            EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
 
             possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false);
+            EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
 
             if (possibleAggressorTargets.size() == 0 && possibleLivingEntityTargets.size() == 0) { return; }
 
@@ -176,10 +176,10 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
 
                 //Get targets inside bounding box.
                 possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-                EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true);
+                EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
 
                 possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-                EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false);
+                EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
 
                 //Choose a spawn position
                 BlockPos spawnPosition;

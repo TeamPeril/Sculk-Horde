@@ -96,27 +96,4 @@ public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
                 .noCollission()
                 .instabreak();
     }
-
-    /** Makes entities slow and damages them. I stole this code from the berry bush.<br>
-     * @param blockState The current blockstate
-     * @param world The world this block si in
-     * @param blockPos The position of this block
-     * @param entity The entity inside
-     */
-    public void entityInside(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-        if (entity instanceof LivingEntity &&  !(entity instanceof SculkLivingEntity))
-        {
-            entity.makeStuckInBlock(blockState, new Vector3d((double)0.8F, 0.75D, (double)0.8F));
-
-            if (!world.isClientSide && (entity.xOld != entity.getX() || entity.zOld != entity.getZ()))
-            {
-                double d0 = Math.abs(entity.getX() - entity.xOld);
-                double d1 = Math.abs(entity.getZ() - entity.zOld);
-                if (d0 >= (double)0.003F || d1 >= (double)0.003F)
-                {
-                    //entity.hurt(DamageSourceRegistry.SCULK_SPIKE, 1.0F);
-                }
-            }
-        }
-    }
 }
