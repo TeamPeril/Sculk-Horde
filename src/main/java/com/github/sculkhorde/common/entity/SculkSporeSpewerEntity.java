@@ -200,7 +200,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level.isClientSide && isAlive())
+        if (level.isClientSide)
         {
             Random random = new Random();
             for (int i = 0; i < 1; i++)

@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkFloraBlock;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
@@ -1667,9 +1668,11 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             Vector3d vector3d;
 
             //If there is a valid hive and within 22 blocks of it
-            if (SculkBeeHarvesterEntity.this.isHiveValid() && !SculkBeeHarvesterEntity.this.closerThan(SculkBeeHarvesterEntity.this.hivePos, 22))
+            if (SculkBeeHarvesterEntity.this.isHiveValid() && !SculkBeeHarvesterEntity.this.closerThan(SculkBeeHarvesterEntity.this.hivePos, 9))
             {
+                // Get the vector from the hive to the bee
                 Vector3d vector3d1 = Vector3d.atCenterOf(SculkBeeHarvesterEntity.this.hivePos);
+                // Get the vector from the bee to the hive
                 vector3d = vector3d1.subtract(SculkBeeHarvesterEntity.this.position()).normalize();
             }
             else
@@ -1678,7 +1681,22 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             }
 
             int i = 8;
+
+            /**
+             * Returns a randomly generated position above land within the specified range.
+             *
+             * @param entity the entity for which to generate a random position
+             * @param horizontalRange the horizontal range for generating the random position
+             * @param verticalRange the vertical range for generating the random position
+             * @param referencePos the reference position used to generate the random position
+             * @param avoidWater whether to avoid water when generating the random position
+             * @param walkSpeed the entity's walk speed
+             * @param aboveSolidGround whether to generate the position above solid ground
+             *
+             * @return a randomly generated position above land, or null if none was found
+             */
             Vector3d vector3d2 = RandomPositionGenerator.getAboveLandPos(SculkBeeHarvesterEntity.this, 8, 7, vector3d, ((float)Math.PI / 2F), 2, 1);
+            // If the random position is null, get a random position in the air
             return vector3d2 != null ? vector3d2 : RandomPositionGenerator.getAirPos(SculkBeeHarvesterEntity.this, 8, 4, -2, vector3d, (double)((float)Math.PI / 2F));
         }
     }

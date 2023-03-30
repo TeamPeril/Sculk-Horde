@@ -23,9 +23,9 @@ public class InfectionTree {
     private int failedProbeAttempts = 0;
     private final int MAX_FAILED_PROBE_ATTEMPTS = 10;
     private int currentProbeRange = 10;
-    private final int MAX_PROBE_RANGE = 500;
+    private final int MAX_PROBE_RANGE = 5000;
     private final int MIN_PROBE_RANGE = 10;
-    private final int PROBE_RANGE_INCREMENT = 10;
+    private final int PROBE_RANGE_INCREMENT = 50;
 
     private int currentInfectRange = 10;
     private final int MAX_INFECTOR_RANGE = 50;

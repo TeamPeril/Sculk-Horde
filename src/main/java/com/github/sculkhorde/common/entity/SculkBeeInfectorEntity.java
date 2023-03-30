@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoublePlantBlock;
@@ -173,6 +174,12 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
         return this.factory;
     }
 
+
+    @Override
+    protected boolean isFlowerValid(BlockPos pPos)
+    {
+        return this.level.isLoaded(pPos) & getFlowerPredicate().test(this.level.getBlockState(pPos)) & SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(pPos.below()));
+    }
 
     /**
      * Represents a predicate (boolean-valued function) of one argument. <br>

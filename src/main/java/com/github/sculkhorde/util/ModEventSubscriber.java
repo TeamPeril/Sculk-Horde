@@ -39,7 +39,7 @@ public class ModEventSubscriber {
 
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIRT.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COARSE_DIRT.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_PATH.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
+        //SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_PATH.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_BLOCK.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.STONE.defaultBlockState(), BlockRegistry.INFESTED_STONE_DORMANT.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.STONE.defaultBlockState(), BlockRegistry.INFESTED_STONE_DORMANT.get().defaultBlockState());

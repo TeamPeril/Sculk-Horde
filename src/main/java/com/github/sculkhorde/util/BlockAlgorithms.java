@@ -11,13 +11,11 @@ import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -370,6 +368,12 @@ public class BlockAlgorithms {
             //Add 10 bees
             nest.addOccupant(new SculkBeeHarvesterEntity(world));
             nest.addOccupant(new SculkBeeHarvesterEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addOccupant(new SculkBeeInfectorEntity(world));
             nest.addOccupant(new SculkBeeInfectorEntity(world));
             nest.addOccupant(new SculkBeeInfectorEntity(world));
         }
