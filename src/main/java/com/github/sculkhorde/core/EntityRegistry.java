@@ -40,6 +40,7 @@ public class EntityRegistry {
     public static EntityType<CursorInfectorEntity> CURSOR_SHORT_RANGE = buildEntityType(CursorInfectorEntity::new, "cursor_short_range", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
     public static EntityType<CursorBridgerEntity> CURSOR_BRIDGER = buildEntityType(CursorBridgerEntity::new, "cursor_bridger", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
     public static EntityType<SculkSporeSpewerEntity> SCULK_SPORE_SPEWER = buildEntityType(SculkSporeSpewerEntity::new, "sculk_spore_spewer", 1.0f, 2.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkRavagerEntity> SCULK_RAVAGER = buildEntityType(SculkRavagerEntity::new, "sculk_ravager", 1.95f, 2.2f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
 
     /** REGISTRY METHODS **/
 
@@ -63,6 +64,7 @@ public class EntityRegistry {
         event.getRegistry().register(SCULK_BEE_HARVESTER.setRegistryName(SculkHorde.MOD_ID, "sculk_bee_harvester"));
         event.getRegistry().register(SCULK_HATCHER.setRegistryName(SculkHorde.MOD_ID, "sculk_hatcher"));
         event.getRegistry().register(SCULK_SPORE_SPEWER.setRegistryName(SculkHorde.MOD_ID, "sculk_spore_spewer"));
+        event.getRegistry().register(SCULK_RAVAGER.setRegistryName(SculkHorde.MOD_ID, "sculk_ravager"));
 
         //Misc
         event.getRegistry().register(CURSOR_LONG_RANGE.setRegistryName(SculkHorde.MOD_ID, "cursor_long_range"));

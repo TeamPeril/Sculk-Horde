@@ -67,6 +67,8 @@ public class ClientModEventSubscriber {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_RAVAGER, SculkRavagerRenderer::new);
+
         // Register renderer for sculk crust partcile
         event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new));
 

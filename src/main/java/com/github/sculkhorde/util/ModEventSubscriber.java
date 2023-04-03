@@ -1,6 +1,5 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.client.renderer.entity.SculkSporeSpewerRenderer;
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.SculkHorde;
@@ -28,12 +27,14 @@ public class ModEventSubscriber {
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
         //Add entries to the entity factory (please add them in order, I don't want to sort)
+        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPORE_SPEWER, (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_RAVAGER, (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_HATCHER, (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER, 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE, 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR, 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_MITE, (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPORE_SPEWER, (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature);
+
 
         SculkHorde.infestationConversionTable = new InfestationConversionHandler();
 
@@ -67,6 +68,7 @@ public class ModEventSubscriber {
         register(EntityRegistry.SCULK_BEE_INFECTOR, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeInfectorEntity::passSpawnCondition);
         register(EntityRegistry.SCULK_BEE_HARVESTER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
         register(EntityRegistry.SCULK_SPORE_SPEWER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_RAVAGER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
     }
 
     /* entityAttributes
@@ -82,7 +84,7 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.SCULK_BEE_HARVESTER, SculkBeeHarvesterEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_HATCHER, SculkHatcherEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_RAVAGER, SculkRavagerEntity.createAttributes().build());
     }
-
 }
 

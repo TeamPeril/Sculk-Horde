@@ -64,6 +64,10 @@ public class EntityAlgorithms {
      */
     public static boolean isLivingEntityValidTarget(LivingEntity e, boolean targetHostiles, boolean targetPassives, boolean targetInfected, boolean targetBelow50PercentHealth)
     {
+        if(e == null)
+        {
+            return false;
+        }
 
         //If passes sculk predicate
         if(isSculkLivingEntity.test(e))
@@ -78,7 +82,7 @@ public class EntityAlgorithms {
         }
 
         //If not attackable or invulnerable or is dead/dying
-        if(!e.isAttackable() || e.isInvulnerable() || e.isDeadOrDying() || e.isSpectator())
+        if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
         {
             return false;
         }
@@ -129,7 +133,8 @@ public class EntityAlgorithms {
                 || e instanceof SculkSporeSpewerEntity
                 || e instanceof SculkBeeHarvesterEntity
                 || e instanceof SculkBeeInfectorEntity
-                || e instanceof SculkHatcherEntity;
+                || e instanceof SculkHatcherEntity
+                || e instanceof SculkRavagerEntity;
     };
 
 

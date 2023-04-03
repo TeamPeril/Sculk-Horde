@@ -134,6 +134,14 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
     {
         super.onHitEntity(raytrace);
 
+        // This is a safety check to make sure the entity is a living entity.
+        // Mutant mobs previously caused a crash related to this, though
+        // I'm confident that this is an oversight on my part.
+        if(!(raytrace.getEntity() instanceof LivingEntity))
+        {
+           return;
+        }
+
         // If the entity is a sculk or if the entity it hit was the owner, do nothing.
         if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) raytrace.getEntity()) || getOwner() == getEntity())
         {

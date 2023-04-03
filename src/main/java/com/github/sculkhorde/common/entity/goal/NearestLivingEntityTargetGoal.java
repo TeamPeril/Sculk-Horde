@@ -30,7 +30,6 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     private final int ticksIdleThreshold = 60;
     private int ticksSinceIdle = 0;
     protected final Class<T> targetType;
-    protected final int randomInterval;
     protected LivingEntity target;
     protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
@@ -44,7 +43,6 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     {
         super(mobEntity, mustSee, mustReach);
         this.targetType = (Class<T>) LivingEntity.class;
-        this.randomInterval = 10;
         this.setFlags(EnumSet.of(Flag.TARGET));
         this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
@@ -86,16 +84,6 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     public boolean canUse()
     {
 
-        /**
-         * I shouldn't have to do this, but im doing this here.
-         * I cannot figure out how vanilla handles this.
-         * This targeting system is put together with tape and glue.
-         */
-        if(this.target != null && this.target.isDeadOrDying())
-        {
-            this.target = null;
-        }
-
         // If our current target is not valid. Set out target to be null.
         if(this.target != null)
         {
@@ -117,17 +105,8 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         }
 
         //Have a random chance to not search for a target
-        if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0)
-        {
-            return false;
-        }
-        else
-        {
-            this.findTarget();
-            return this.target != null;
-        }
-
-
+        this.findTarget();
+        return this.target != null;
     }
 
     protected AxisAlignedBB getTargetSearchArea(double range)
@@ -147,7 +126,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
                     this.getTargetSearchArea(this.getFollowDistance()),
                     (Predicate<? super LivingEntity>) null);
 
-            //Remove Any Sculk Entities or entities already infected
+            // Remove Any Sculk Entities or entities already infected
             filterOutNonTargets(possibleTargets, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
         }
         else //if targetType is player

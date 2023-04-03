@@ -214,9 +214,6 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
         return goals;
     }
 
-
-
-
     @Override
     protected int getExperienceReward(PlayerEntity player)
     {
