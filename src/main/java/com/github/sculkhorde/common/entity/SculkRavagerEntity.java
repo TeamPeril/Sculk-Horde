@@ -166,7 +166,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
 
     AnimationController tumorController = new AnimationController(this, "tumor_controller", 0, this::tumorPredicate);
     AnimationController mouthController = new AnimationController(this, "mouth_controller", 0, this::mouthPredicate);
-
+    AnimationFactory factory = new AnimationFactory(this);
     @Override
     public void registerControllers(AnimationData data)
     {
@@ -177,7 +177,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
     @Override
     public AnimationFactory getFactory()
     {
-        return new AnimationFactory(this);
+        return factory;
     }
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
