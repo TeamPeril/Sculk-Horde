@@ -27,8 +27,8 @@ public class ModEventSubscriber {
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
         //Add entries to the entity factory (please add them in order, I don't want to sort)
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPORE_SPEWER, (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_RAVAGER, (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPORE_SPEWER, (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature).setLimit(1);
+        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_RAVAGER, (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature).setLimit(1);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_HATCHER, (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER, 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE, 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);

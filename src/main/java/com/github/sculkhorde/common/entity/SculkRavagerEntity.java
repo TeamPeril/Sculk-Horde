@@ -5,6 +5,7 @@ import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -187,6 +188,27 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
         public AttackGoal()
         {
             super(SculkRavagerEntity.this, 1.0D, true);
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+            {
+                return false;
+            }
+            return super.canUse();
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+            {
+                return false;
+            }
+
+            return super.canContinueToUse();
         }
 
         protected double getAttackReachSqr(LivingEntity pAttackTarget)

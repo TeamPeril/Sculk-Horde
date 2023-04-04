@@ -45,8 +45,8 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     private long tickIntervalUnAlertSeconds = 60;
     //Records the last time this block summoned a mob
     private long lastTimeOfSummon = 0;
-    private final int MAX_SPAWNED_ENTITIES = 8;
-    ReinforcementRequest[] requests = new ReinforcementRequest[MAX_SPAWNED_ENTITIES];
+    private final int MAX_SPAWNED_ENTITIES = 10;
+    ReinforcementRequest request;
 
     /**
      * The Constructor that takes in properties
@@ -87,39 +87,18 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     }
 
     /**
-     * Find oldest entry and replace it.
-     * @param request The new request to input
-     */
-    private void addReinforcementToList(ReinforcementRequest request)
-    {
-        if(request == null) {return;}
-
-        int index_oldest = 0;
-        for(int i = 0; i < requests.length; i++)
-        {
-            if(requests[i] == null)
-            {
-                requests[index_oldest] = request;
-                return;
-            }
-            else if(requests[i].creationTime < requests[index_oldest].creationTime)
-            {
-                index_oldest = i;
-            }
-        }
-
-        requests[index_oldest] = request;
-    }
-
-    /**
      * Check if all entries are alive
      */
     private boolean areAllReinforcementsDead()
     {
-        for(int i = 0; i < requests.length; i++)
+        if(request == null) { return true; }
+
+        // iterate through each request, and for each one, iterate through spawnedEntities and check if they are alive
+        for( LivingEntity entity : request.spawnedEntities )
         {
-            if(requests[i] == null || requests[i].spawnedEntity == null) { continue; }
-            else if(requests[i].spawnedEntity.isAlive())
+            if( entity == null ) { continue; }
+
+            if( entity.isAlive() )
             {
                 return false;
             }
@@ -147,7 +126,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
         {
             behavior_state = STATE_READY_TO_SPAWN;
         }
-        else if(behavior_state == STATE_READY_TO_SPAWN)
+        if(behavior_state == STATE_READY_TO_SPAWN)
         {
             if(!areAllReinforcementsDead()) { return; }
 
@@ -165,54 +144,58 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
 
             behavior_state = STATE_SPAWNING;
         }
-        else if(behavior_state == STATE_SPAWNING)
+        if(behavior_state == STATE_SPAWNING)
         {
 
+            // Create bounding box to detect targets
+            searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+
+            // Get targets inside bounding box.
+            possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
+            EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
+
+            possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
+            EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
+
+            //Choose a spawn position
+            BlockPos spawnPosition;
+            ArrayList<BlockPos> possibleSpawnPositions = getSpawnPositionsInCube((ServerWorld) this.level, this.getBlockPos(), 5, MAX_SPAWNED_ENTITIES);
+
+            BlockPos[] finalizedSpawnPositions = new BlockPos[MAX_SPAWNED_ENTITIES];
+
             //Create MAX_SPAWNED_ENTITIES amount of Reinforcement Requests
-            for (int iterations = 0; iterations < MAX_SPAWNED_ENTITIES; iterations++) {
-
-                //Create bounding box to detect targets
-                searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
-
-                //Get targets inside bounding box.
-                possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-                EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
-
-                possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-                EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
-
-                //Choose a spawn position
-                BlockPos spawnPosition;
-                ArrayList<BlockPos> spawnPositions = getSpawnPositionsInCube((ServerWorld) this.level, this.getBlockPos(), 5, 1);
+            for (int iterations = 0; iterations < possibleSpawnPositions.size(); iterations++)
+            {
                 //If the array is empty, just spawn above block
-                if (spawnPositions.isEmpty()) {
-                    spawnPosition = this.getBlockPos().above();
+                if (possibleSpawnPositions.isEmpty()) {
+                    finalizedSpawnPositions[iterations] = this.getBlockPos().above();
                 }
                 //Else choose the spawn position
-                else {
-                    spawnPosition = spawnPositions.get(0);
-                }
-
-                //Give gravemind context to our request to make more informed situations
-                ReinforcementRequest request = new ReinforcementRequest(spawnPosition);
-                request.sender = ReinforcementRequest.senderType.SculkCocoon;
-                requests[iterations] = request;
-
-                if (possibleAggressorTargets.size() != 0) {
-                    request.is_aggressor_nearby = true;
-                    lastTimeOfAlert = System.nanoTime();
-                }
-                if (possibleLivingEntityTargets.size() != 0) {
-                    request.is_non_sculk_mob_nearby = true;
-                    lastTimeOfAlert = System.nanoTime();
-                }
-
-                //If there is some sort of enemy near by, request reinforcement
-                if (request.is_non_sculk_mob_nearby || request.is_aggressor_nearby) {
-                    //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
-                    SculkHorde.entityFactory.requestReinforcementAny(this.level, spawnPosition, false, request);
+                else
+                {
+                    finalizedSpawnPositions[iterations] = possibleSpawnPositions.get(iterations);
                 }
             }
+
+            //Give gravemind context to our request to make more informed situations
+            ReinforcementRequest request = new ReinforcementRequest(finalizedSpawnPositions);
+            request.sender = ReinforcementRequest.senderType.SculkCocoon;
+
+            if (possibleAggressorTargets.size() != 0) {
+                request.is_aggressor_nearby = true;
+                lastTimeOfAlert = System.nanoTime();
+            }
+            if (possibleLivingEntityTargets.size() != 0) {
+                request.is_non_sculk_mob_nearby = true;
+                lastTimeOfAlert = System.nanoTime();
+            }
+
+            //If there is some sort of enemy near by, request reinforcement
+            if (request.is_non_sculk_mob_nearby || request.is_aggressor_nearby) {
+                //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
+                SculkHorde.entityFactory.requestReinforcementAny(this.level, this.getBlockPos(), false, request);
+            }
+
             behavior_state = STATE_COOLDOWN;
         }
     }

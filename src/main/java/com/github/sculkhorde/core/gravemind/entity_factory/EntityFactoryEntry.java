@@ -15,6 +15,7 @@ public class EntityFactoryEntry {
 
     private int orderCost = 0;
     private EntityType entity = null;
+    private int limit = Integer.MAX_VALUE; // The limit of how many of this entity can be spawned
     public EntityFactory.StrategicValues strategicValue = EntityFactory.StrategicValues.Melee;
     public Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
 
@@ -26,17 +27,50 @@ public class EntityFactoryEntry {
         this.minEvolutionRequired = minEvolution;
     }
 
+    // Getters and Setters
+
+    /**
+     * Sets the cost of spawning this entity
+     * @return cost
+     */
     public int getCost()
     {
         return orderCost;
     }
 
+    /**
+     * Sets the limit of how many of this entity can be spawned
+     * @param limit The limit of how many of this entity can be spawned
+     */
+    public void setLimit(int limit)
+    {
+        this.limit = limit;
+    }
+
+    /**
+     * Returns the limit of how many of this entity can be spawned
+     * @return limit
+     */
+    public int getLimit()
+    {
+        return limit;
+    }
+
+
+    /**
+     * Returns the entity type
+     * @return entity
+     */
     @Nullable
     public EntityType getEntity()
     {
         return entity;
     }
 
+    /**
+     * Returns the strategic value of this entity
+     * @return strategicValue
+     */
     public EntityFactory.StrategicValues getCategory()
     {
         return strategicValue;

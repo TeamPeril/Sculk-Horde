@@ -3,14 +3,13 @@ package com.github.sculkhorde.core.gravemind.entity_factory;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import static com.github.sculkhorde.core.SculkHorde.gravemind;
@@ -26,8 +25,6 @@ import static com.github.sculkhorde.core.SculkHorde.gravemind;
  * This is initialized in the main class
  */
 public class EntityFactory {
-
-    private final boolean DEBUG_THIS = false;
 
     //The List We Store all the entries in
     private static ArrayList<EntityFactoryEntry> entries;
@@ -53,32 +50,11 @@ public class EntityFactory {
      * @param entity The entity to add
      * @param cost The cost of spawning the entity
      */
-    public void addEntry(EntityType entity, int cost, StrategicValues value, Gravemind.evolution_states minEvolution)
+    public EntityFactoryEntry addEntry(EntityType entity, int cost, StrategicValues value, Gravemind.evolution_states minEvolution)
     {
-        entries.add(new EntityFactoryEntry(entity, cost ,value, minEvolution));
-    }
-
-
-    //TODO: Fix this dumb method
-    /**
-     * Given a strategic value, will return all entires that fit the value.
-     * @param value The strategic value to use as a whitelist
-     * @return An array list of all entities that fit the filter
-     */
-    @Nullable
-    public static ArrayList<EntityType> getAllEntriesOfThisCategory(StrategicValues value)
-    {
-        if(entries == null || entries.isEmpty())
-            return null;
-
-        ArrayList<EntityType> list = new ArrayList<EntityType>();
-        for(EntityFactoryEntry entry : entries)
-        {
-            if(entry.getCategory() == value)
-                list.add(entry.getEntity());
-        }
-
-        return list;
+        EntityFactoryEntry entry = new EntityFactoryEntry(entity, cost, value, minEvolution);
+        entries.add(entry);
+        return entry;
     }
 
     /**
@@ -89,6 +65,7 @@ public class EntityFactory {
      */
     public void requestReinforcementAny(World world, BlockPos spawnPosition, boolean noCost, ReinforcementRequest context)
     {
+        boolean DEBUG_THIS = false;
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
 
@@ -98,62 +75,61 @@ public class EntityFactory {
         }
 
         gravemind.processReinforcementRequest(context);
-        if(!context.isRequestApproved) { return;}
+        if(!context.isRequestApproved) { return; }
 
-        //If approved types are not specified, then choose a random appropriate mob
-        if(context.approvedMobTypes.isEmpty())
+
+        ArrayList<EntityFactoryEntry> possibleReinforcements = new ArrayList<>();
+
+        //Loop through list, collect all appropriate entries
+        for (EntityFactoryEntry entry : entries)
         {
-            ArrayList<EntityFactoryEntry> lottery = new ArrayList<>();
+            //If valid, spawn the entity
+            if (entry.isEntryAppropriate(context))
+            {
+                possibleReinforcements.add(entry);
+            }
+        }
 
-            //Loop through list, collect all appropriate entries
-            for (EntityFactoryEntry entry : entries) {
-                //If valid, spawn the entity
-                if (entry.isEntryAppropriate(context))
+        // Create an array of all reinforcements we will spawn using the spawn positions in context.
+        EntityFactoryEntry[] mobsToSpawn = new EntityFactoryEntry[context.positions.length];
+        // Create a hashmap to store how many of a specific mob we have spawned
+        HashMap<EntityType, Integer> mobCount = new HashMap<>();
+
+        // Fill the array with potential reinforcements
+        for (int i = 0; i < context.positions.length; i++)
+        {
+            if(context.positions[i] == null) { continue; } // If the position is null, skip it
+
+
+            EntityFactoryEntry randomEntry = null; // Create a random entry
+            int attemptsToGetEntry = 0; // This is a fail safe to prevent an infinite loop
+
+            while(randomEntry == null && attemptsToGetEntry < 10)
+            {
+                // Get a random entry, and if mobsToSpawn contains less than the limit of that entry, add it to the array
+                int randomEntryIndex = rng.nextInt(possibleReinforcements.size()); // Create Random index
+                randomEntry = possibleReinforcements.get(randomEntryIndex);
+                if (randomEntry.getLimit() > 0 && randomEntry.getLimit() > mobCount.getOrDefault(randomEntry.getEntity(), 0))
                 {
-                    lottery.add(entry);
+                    mobsToSpawn[i] = randomEntry;
+                    mobCount.put(randomEntry.getEntity(), mobCount.getOrDefault(randomEntry.getEntity(), 0) + 1);
                 }
+                attemptsToGetEntry++;
             }
-            int randomEntryIndex = rng.nextInt(lottery.size());
-            EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
-            LivingEntity newEntity = (LivingEntity) randomEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
-            if(newEntity != null) context.spawnedEntity = newEntity;
-
-            if (!noCost)
-            {
-                SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(randomEntry.getCost());
-            }
-
         }
-        else //If not, look for a mob that fits the requirements
+        // Spawn((ServerWorld) world, null, null, context.positions[i], SpawnReason.SPAWNER, true, true);
+        // Spawn every entry in the array
+        for (int i = 0; i < mobsToSpawn.length; i++)
         {
-            ArrayList<EntityFactoryEntry> approvedEntries = new ArrayList<>();
-            //Loop through each entry until we find a valid one
-            for (EntityFactoryEntry entry : entries) {
-                //If valid, spawn the entity
-                if (entry.isEntryAppropriate(context)) {
-                    approvedEntries.add(entry);
-                }
-            }
+            if(mobsToSpawn[i] == null) { continue; }
 
-            //Create Random index
-            int randomEntryIndex = rng.nextInt(approvedEntries.size());
-            //Get random entry
-            EntityFactoryEntry randomEntry = approvedEntries.get(randomEntryIndex);
-            //Spawn random entry
-            LivingEntity newEntity = (LivingEntity) randomEntry.getEntity().spawn((ServerWorld) world, null, null, spawnPosition, SpawnReason.SPAWNER, true, true);
-            if(newEntity != null) context.spawnedEntity = newEntity;
-            //If cost enabled, subtract cost
+            EntityFactoryEntry mob = mobsToSpawn[i];
+            mob.getEntity().spawn((ServerWorld) world, null, null, context.positions[i], SpawnReason.SPAWNER, true, true);
             if (!noCost)
             {
-                SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(randomEntry.getCost());
+                SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(mob.getCost());
             }
-
         }
-
-        if(DEBUG_THIS) System.out.println("Reinforcement Request did not meet pre-screening requirements. \n" +
-                "is Sculk Mass > 0? " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() > 0) + "\n" +
-                "is entries.size() > 0? " + (entries.size() > 0) + "\n" +
-                "is context.budget != 0?" + (context.budget != 0));
     }
 
 
@@ -192,7 +168,6 @@ public class EntityFactory {
                 //Spawn Mob
                 randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
             }
-
         }
     }
 }

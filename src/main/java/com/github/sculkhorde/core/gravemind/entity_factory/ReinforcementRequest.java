@@ -7,49 +7,40 @@ import java.util.ArrayList;
 
 public class ReinforcementRequest {
 
-    /**
-     * budget - The maximum allotted budget. if -1, this means unlimited. <br>
-     * remaining_balance - Only used for scullk mass. <br>
-     * is_player_nearby - Indicates if a player is near the sender. <br>
-     * is_non_sculk_mob_nearby - Indicates if a possible infection target is near the sender. <br>
-     * locationX - The X coordinate of where the reinforcement is being requested. <br>
-     * locationY - The X coordinate of where the reinforcement is being requested.
-     */
-    public int budget = -1;
-    public int remaining_balance = -1;
-    public boolean is_aggressor_nearby;
-    public boolean is_non_sculk_mob_nearby;
-    public BlockPos position;
-    public long creationTime;
 
-    /**
-     * senderType list all possible senders of a reinforcement request. <br>
-     * sender indicates who sent this request.
-     */
-    public enum senderType {Developer, SculkMass, SculkCocoon}
-    public senderType sender;
+    public int budget = -1; // The maximum allotted budget. if -1, this means unlimited.
+    public int remaining_balance = -1; // Only used for scullk mass.
+    public boolean is_aggressor_nearby; // Indicates if a hostile is near by
+    public boolean is_non_sculk_mob_nearby; // Indicates if a possible infection target is near the sender.
+    public BlockPos[] positions; // The positions of where the reinforcements is being requested.
+    public long creationTime; // The time this request was created.
+    public enum senderType {Developer, SculkMass, SculkCocoon} // All possible senders.
+    public senderType sender; // The sender of the request.
+    public boolean isRequestViewed = false; // If the Gravemind has viewed this request.
+    public boolean isRequestApproved = false; // If the reinforcement request is approved.
+    public ArrayList<EntityFactory.StrategicValues>  approvedMobTypes; // All approved mob types to spawn.
+    public LivingEntity[] spawnedEntities; // All entities spawned by this request.
 
-    /**
-     * isRequestViewed - Indicates if the gravemind has viewed this request yet. <br>
-     * isRequestApproved - Indicates if the reinforcement request is approved. <br>
-     * approvedMobTypes - All approved mob types to spawn.
-     */
-    public boolean isRequestViewed = false;
-    public boolean isRequestApproved = false;
-    public ArrayList<EntityFactory.StrategicValues>  approvedMobTypes;
-    public LivingEntity spawnedEntity = null;
 
-    /**
-     * Default Constructor
-     * @param x The x position of where we want the reinforcement
-     * @param y The y position of where we want the reinforcement
-     */
     public ReinforcementRequest(BlockPos blockPosIn)
     {
         is_aggressor_nearby = false;
         is_non_sculk_mob_nearby = false;
         sender = null;
-        position = blockPosIn;
+        positions = new BlockPos[]{blockPosIn};
+        spawnedEntities = new LivingEntity[positions.length];
+        approvedMobTypes = new ArrayList<EntityFactory.StrategicValues>();
+        creationTime = System.nanoTime();
+    }
+
+
+    public ReinforcementRequest(BlockPos[] positions)
+    {
+        is_aggressor_nearby = false;
+        is_non_sculk_mob_nearby = false;
+        sender = null;
+        this.positions = positions;
+        spawnedEntities = new LivingEntity[positions.length];
         approvedMobTypes = new ArrayList<EntityFactory.StrategicValues>();
         creationTime = System.nanoTime();
     }
@@ -59,7 +50,7 @@ public class ReinforcementRequest {
         if(budget != context.budget
         || is_aggressor_nearby != context.is_aggressor_nearby
         || is_non_sculk_mob_nearby != context.is_non_sculk_mob_nearby
-        || position != context.position
+        || !positions.equals(context.positions)
         || sender != context.sender
         || isRequestViewed != context.isRequestViewed
         || isRequestApproved != context.isRequestApproved
@@ -76,7 +67,7 @@ public class ReinforcementRequest {
                 ", remaining_balance=" + remaining_balance +
                 ", is_aggressor_nearby=" + is_aggressor_nearby +
                 ", is_non_sculk_mob_nearby=" + is_non_sculk_mob_nearby +
-                ", position=" + position.toString() +
+                ", positions=" + positions.toString() +
                 ", sender=" + sender +
                 ", isRequestViewed=" + isRequestViewed +
                 ", isRequestApproved=" + isRequestApproved +
