@@ -84,15 +84,6 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     public boolean canUse()
     {
 
-        // If our current target is not valid. Set out target to be null.
-        if(this.target != null)
-        {
-            if(EntityAlgorithms.isLivingEntityValidTarget(this.target, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth))
-            {
-                this.target = null;
-            }
-        }
-
         //Despawn the mob if it has no target for too long
         if(despawnWhenIdle)
         {
@@ -104,9 +95,8 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
             }
         }
 
-        //Have a random chance to not search for a target
-        this.findTarget();
-        return this.target != null;
+        // If the mob is already targeting something valid, don't bother
+        return !EntityAlgorithms.isLivingEntityValidTarget(this.target, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
     }
 
     protected AxisAlignedBB getTargetSearchArea(double range)
@@ -131,13 +121,13 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         }
         else //if targetType is player
         {
-            this.target = this.mob.level.getNearestPlayer(
+            setTarget(this.mob.level.getNearestPlayer(
                     this.targetConditions,
                     this.mob,
                     this.mob.getX(),
                     this.mob.getEyeY(),
                     this.mob.getZ()
-            );
+            ));
         }
 
         //If there is available targets
@@ -154,13 +144,32 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
                     closestLivingEntity = e;
                 }
             }
-            this.target = closestLivingEntity; //Return target
+            setTarget(closestLivingEntity); //Return target
         }
     }
 
-    public void start() {
+    public void start()
+    {
+        this.findTarget();
         this.mob.setTarget(this.target);
         super.start();
+    }
+
+    @Override
+    public void stop()
+    {
+        // I have to comment out these lines of code because there is some weird bug
+        // that when this gets set to null, it causes the look at goal to crash.
+        // NullPointerException at
+        // net.minecraft.entity.ai.controller.LookController.setLookAt(LookController.java:30)
+        //
+        // Has something to do with the attack goal, because the attack goal calls the look at
+        // goal. I don't know why this is happening, but I'm going to leave it commented out
+        // Theoretically I could fix this by adding a null check to attack functions, but
+        // vanilla minecraft doesnt even do this. So wtf why does it only work with vanilla.g
+
+        // this.target = null;
+        // this.mob.setTarget(null);
     }
 
     public void setTarget(@Nullable LivingEntity targetIn) {

@@ -1,12 +1,11 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.SculkZombieEntity;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 
 public class SculkZombieAttackGoal extends MeleeAttackGoal
 {
-
-    private final SculkZombieEntity sculkZombie;
 
     /**
      * The Constructor
@@ -16,9 +15,28 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
      */
     public SculkZombieAttackGoal(SculkZombieEntity mob, double speedModifier, boolean followTargetIfNotSeen) {
         super(mob, speedModifier, followTargetIfNotSeen);
-        this.sculkZombie = mob;
     }
 
+    @Override
+    public boolean canUse()
+    {
+        if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+        {
+            return false;
+        }
+        return super.canUse();
+    }
+
+    @Override
+    public boolean canContinueToUse()
+    {
+        if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+        {
+            return false;
+        }
+
+        return super.canContinueToUse();
+    }
 
     /**
      * Starts the attack Sequence<br>
@@ -29,10 +47,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
      */
     public void start()
     {
-        if(this.sculkZombie.getTarget() != null)
-        {
-            super.start();
-        }
+       super.start();
     }
 
     /**
@@ -53,13 +68,10 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
      */
     public void tick()
     {
-        if(this.sculkZombie.getTarget() == null)
+        if(!canContinueToUse())
         {
-            stop();
+            return;
         }
-        else
-        {
-            super.tick();
-        }
+        super.tick();
     }
 }

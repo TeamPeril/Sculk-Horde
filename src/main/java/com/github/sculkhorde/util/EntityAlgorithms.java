@@ -88,7 +88,7 @@ public class EntityAlgorithms {
         }
 
         //If not attackable or invulnerable or is dead/dying
-        if(e instanceof PlayerEntity && ((PlayerEntity) e).isCreative())
+        if(e instanceof PlayerEntity && (((PlayerEntity) e).isCreative() || ((PlayerEntity) e).isSpectator()))
         {
             return false;
         }
@@ -113,6 +113,46 @@ public class EntityAlgorithms {
 
         //If we do not attack below 50% health and target is below 50% health
         if(!targetBelow50PercentHealth && e.getHealth() < e.getMaxHealth() / 2)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Determines if an Entity is valid target based on rules
+     * @param e The Given Entity
+     * @return True if Valid, False otherwise
+     */
+    public static boolean isTargetStillValid(LivingEntity e)
+    {
+        if(e == null)
+        {
+            return false;
+        }
+
+        //If passes sculk predicate
+        if(isSculkLivingEntity.test(e))
+        {
+            return false;
+        }
+
+        //Do not attack creepers
+        if(e instanceof CreeperEntity)
+        {
+            return false;
+        }
+
+        //If not attackable or invulnerable or is dead/dying
+        if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
+        {
+            return false;
+        }
+
+        //If not attackable or invulnerable or is dead/dying
+        if(e instanceof PlayerEntity && (((PlayerEntity) e).isCreative() || ((PlayerEntity) e).isSpectator()))
         {
             return false;
         }
