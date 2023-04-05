@@ -166,10 +166,11 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         // Has something to do with the attack goal, because the attack goal calls the look at
         // goal. I don't know why this is happening, but I'm going to leave it commented out
         // Theoretically I could fix this by adding a null check to attack functions, but
-        // vanilla minecraft doesnt even do this. So wtf why does it only work with vanilla.g
+        // vanilla minecraft doesnt even do this. So wtf why does it only work with vanilla
 
-        // this.target = null;
-        // this.mob.setTarget(null);
+        // Update, this does not fix the issue
+        this.target = null;
+        this.mob.setTarget(null);
     }
 
     public void setTarget(@Nullable LivingEntity targetIn) {

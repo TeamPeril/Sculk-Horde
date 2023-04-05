@@ -1,8 +1,11 @@
 package com.github.sculkhorde.common.world.gen;
 
+import com.github.sculkhorde.common.entity.SculkMiteEntity;
+import com.github.sculkhorde.core.EntityRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraftforge.common.world.MobSpawnInfoBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
@@ -22,17 +25,17 @@ public class ModEntityGen {
                 SculkZombieEntity.SPAWN_MAX,
                 Biomes.OCEAN,
                 Biomes.COLD_OCEAN);
-
+        */
         addEntityToAllBiomesExceptThese(
                 event,
-                EntityRegistry.SCULK_MITE.get(),
+                EntityRegistry.SCULK_MITE,
                 SculkMiteEntity.SPAWN_WEIGHT,
                 SculkMiteEntity.SPAWN_MIN,
                 SculkMiteEntity.SPAWN_MAX,
                 Biomes.OCEAN,
                 Biomes.COLD_OCEAN);
 
-         */
+
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type,

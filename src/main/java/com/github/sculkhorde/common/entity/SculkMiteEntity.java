@@ -22,6 +22,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -149,10 +150,12 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-            // If not because of chunk generation or natural, return false
-        else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
-            //If block below is not sculk crust, return false
-        else if (world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
+
+        // If the light level is greater than 8, return false
+        if (world.getBrightness(LightType.BLOCK, pos) > 8) return false;
+
+        if (world.getBrightness(LightType.SKY, pos) > 8) return false;
+
         return true;
     }
 

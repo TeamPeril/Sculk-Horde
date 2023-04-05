@@ -45,7 +45,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     private long tickIntervalUnAlertSeconds = 60;
     //Records the last time this block summoned a mob
     private long lastTimeOfSummon = 0;
-    private final int MAX_SPAWNED_ENTITIES = 10;
+    private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
 
     /**

@@ -238,7 +238,7 @@ public class Gravemind
     public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos, boolean enableChance)
     {
         //Random Chance to Place TreeNode
-        if(new Random().nextInt(100) > 1 && enableChance) { return; }
+        if(new Random().nextInt(10000) > 1 && enableChance) { return; }
 
         //If we are too close to another node, do not create one
         if(!SculkHorde.gravemind.isValidPositionForSculkNode(worldIn, targetPos)) { return; }

@@ -216,5 +216,15 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
             float f = SculkRavagerEntity.this.getBbWidth() - 0.1F;
             return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
         }
+
+        @Override
+        public void tick()
+        {
+            if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+            {
+                return;
+            }
+            super.tick();
+        }
     }
 }
