@@ -59,7 +59,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         // If any of the neighbors in the world are air, then this block is not obstructed.
         for(BlockPos neighbor : neighbors)
         {
-            if(this.level.getBlockState(neighbor).isAir())
+            if(!this.level.getBlockState(neighbor).isSolidRender(this.level, neighbor))
             {
                 airCount++;
             }
