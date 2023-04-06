@@ -152,7 +152,8 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
     {
         Goal[] goals =
                 {
-                        new TargetAttacker(this).setAlertAllies(),
+                        // Commented this out because it interferes with the bee's ability to go back into hive.
+                        //new TargetAttacker(this).setAlertAllies(),
                 };
         return goals;
     }
