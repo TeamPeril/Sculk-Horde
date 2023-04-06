@@ -3,6 +3,7 @@ package com.github.sculkhorde.core.gravemind.entity_factory;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -129,7 +130,7 @@ public class EntityFactory {
             if(mobsToSpawn[i] == null) { continue; }
 
             EntityFactoryEntry mob = mobsToSpawn[i];
-            mob.getEntity().spawn((ServerWorld) world, null, null, context.positions[i], SpawnReason.SPAWNER, true, true);
+            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerWorld) world, null, null, context.positions[i], SpawnReason.SPAWNER, true, true);
             if (!noCost)
             {
                 SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(mob.getCost());

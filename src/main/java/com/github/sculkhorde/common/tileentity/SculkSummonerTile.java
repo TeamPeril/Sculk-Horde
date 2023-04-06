@@ -95,12 +95,18 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
      */
     private boolean areAllReinforcementsDead()
     {
-        if(request == null) { return true; }
+        if(request == null)
+        {
+            return true;
+        }
 
         // iterate through each request, and for each one, iterate through spawnedEntities and check if they are alive
         for( LivingEntity entity : request.spawnedEntities )
         {
-            if( entity == null ) { continue; }
+            if( entity == null )
+            {
+                continue;
+            }
 
             if( entity.isAlive() )
             {
@@ -172,7 +178,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
             }
 
             //Give gravemind context to our request to make more informed situations
-            ReinforcementRequest request = new ReinforcementRequest(finalizedSpawnPositions);
+            request = new ReinforcementRequest(finalizedSpawnPositions);
             request.sender = ReinforcementRequest.senderType.SculkCocoon;
 
             if (possibleAggressorTargets.size() != 0) {
