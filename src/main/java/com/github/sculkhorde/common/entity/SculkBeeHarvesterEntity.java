@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkFloraBlock;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
@@ -549,7 +548,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     {
         Goal[] goals =
                 {
-                        new TargetAttacker(this).setAlertSculkLivingEntities(),
+                        new TargetAttacker(this).setAlertAllies(),
                 };
         return goals;
     }

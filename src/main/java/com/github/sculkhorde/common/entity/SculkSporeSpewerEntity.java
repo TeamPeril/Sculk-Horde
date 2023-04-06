@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -31,7 +32,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -57,6 +58,9 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
     public static final float FOLLOW_RANGE = 0F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0F;
+
+    // Controls what types of entities this mob can target
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetPassives();
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -90,20 +94,9 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
-    protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENDERMITE_AMBIENT;
-    }
-
-    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.ENDERMITE_HURT;
-    }
-
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.ENDERMITE_DEATH;
-    }
-
-    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-        this.playSound(SoundEvents.ENDERMITE_STEP, 0.15F, 1.0F);
+    @Override
+    public TargetParameters getTargetParameters() {
+        return TARGET_PARAMETERS;
     }
 
     /**
@@ -159,7 +152,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new TargetAttacker(this).setAlertSculkLivingEntities(),
+                        new TargetAttacker(this).setAlertAllies(),
                 };
         return goals;
     }
@@ -224,12 +217,28 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
-                if (entity instanceof LivingEntity && EntityAlgorithms.isLivingEntityValidTarget(entity,true, true, false, true))
+                if (entity instanceof LivingEntity && ((ISculkSmartEntity)this).getTargetParameters().isEntityValidTarget(this.getTarget()))
                 {
                     entity.addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
                 }
             }
         }
+    }
+
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.ENDERMITE_AMBIENT;
+    }
+
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return SoundEvents.ENDERMITE_HURT;
+    }
+
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.ENDERMITE_DEATH;
+    }
+
+    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
+        this.playSound(SoundEvents.ENDERMITE_STEP, 0.15F, 1.0F);
     }
 
 

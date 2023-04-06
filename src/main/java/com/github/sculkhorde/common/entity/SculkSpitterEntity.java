@@ -1,11 +1,11 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.attack.AcidAttack;
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
-import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
@@ -33,7 +33,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable,ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -59,6 +59,9 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     public static final float FOLLOW_RANGE = 40F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.3F;
+
+    // Controls what types of entities this mob can target
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetHostiles();
 
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
@@ -111,20 +114,9 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
-    protected SoundEvent getAmbientSound() {
-        return SoundEvents.SKELETON_AMBIENT;
-    }
-
-    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.SKELETON_HURT;
-    }
-
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.SKELETON_DEATH;
-    }
-
-    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-        this.playSound(SoundEvents.SKELETON_STEP, 0.15F, 1.0F);
+    @Override
+    public TargetParameters getTargetParameters() {
+        return TARGET_PARAMETERS;
     }
 
     /**
@@ -181,6 +173,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     {
         Goal[] goals =
                 {
+                        new DespawnWhenIdle(this, 120),
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //
@@ -213,9 +206,9 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     {
         Goal[] goals =
                 {
-                        new TargetAttacker(this).setAlertSculkLivingEntities(),
+                        new InvalidateTargetGoal(this),
+                        new TargetAttacker(this).setAlertAllies(),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
-                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetInfected()
                 };
         return goals;
     }
@@ -251,5 +244,21 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.SKELETON_AMBIENT;
+    }
+
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return SoundEvents.SKELETON_HURT;
+    }
+
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.SKELETON_DEATH;
+    }
+
+    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
+        this.playSound(SoundEvents.SKELETON_STEP, 0.15F, 1.0F);
     }
 }

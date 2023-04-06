@@ -151,7 +151,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
     {
         Goal[] goals =
                 {
-                        new TargetAttacker(this).setAlertSculkLivingEntities(),
+                        new TargetAttacker(this).setAlertAllies(),
                 };
         return goals;
     }

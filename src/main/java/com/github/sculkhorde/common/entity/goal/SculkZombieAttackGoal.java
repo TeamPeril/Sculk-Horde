@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkZombieEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -20,7 +21,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canUse()
     {
-        if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+        if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
         {
             return false;
         }
@@ -30,7 +31,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canContinueToUse()
     {
-        if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+        if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
         {
             return false;
         }
@@ -70,6 +71,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     {
         if(!canContinueToUse())
         {
+            stop();
             return;
         }
         super.tick();

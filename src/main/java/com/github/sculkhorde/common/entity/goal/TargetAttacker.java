@@ -29,7 +29,7 @@ public class TargetAttacker extends TargetGoal {
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
-    public TargetAttacker setAlertSculkLivingEntities(Class<?>... pReinforcementTypes) {
+    public TargetAttacker setAlertAllies(Class<?>... pReinforcementTypes) {
         this.alertSameType = true;
         this.toIgnoreAlert = pReinforcementTypes;
         return this;
@@ -86,7 +86,7 @@ public class TargetAttacker extends TargetGoal {
         this.timestamp = this.mob.getLastHurtByMobTimestamp();
         this.unseenMemoryTicks = 60;
 
-        /**If a mob isnt already a confirmed hostile, make it one.*/
+        //If a mob isnt already a confirmed hostile, make it one.
         if(EntityAlgorithms.isSculkLivingEntity.test(this.mob.getLastHurtByMob()) == false
                 && this.mob.getLastHurtByMob() != null)
         {

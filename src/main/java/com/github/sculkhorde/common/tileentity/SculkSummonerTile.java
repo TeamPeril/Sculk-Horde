@@ -1,10 +1,12 @@
 package com.github.sculkhorde.common.tileentity;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -47,6 +49,8 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
     private long lastTimeOfSummon = 0;
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
+    private TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
+    private TargetParameters infectableTargetParameters = new TargetParameters().enableTargetPassives();
 
     /**
      * The Constructor that takes in properties
@@ -135,10 +139,12 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
 
             //Get targets inside bounding box.
             possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
+            //EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
+            possibleAggressorTargets.removeIf(e -> (!(hostileTargetParameters.isEntityValidTarget(e))));
 
             possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
+            //EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
+            possibleLivingEntityTargets.removeIf(e -> (!(infectableTargetParameters.isEntityValidTarget(e))));
 
             if (possibleAggressorTargets.size() == 0 && possibleLivingEntityTargets.size() == 0) { return; }
 
@@ -146,19 +152,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
         }
         if(behavior_state == STATE_SPAWNING)
         {
-
-            // Create bounding box to detect targets
-            searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
-
-            // Get targets inside bounding box.
-            possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
-
-            possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
-
-            //Choose a spawn position
-            BlockPos spawnPosition;
+            //Choose spawn positions
             ArrayList<BlockPos> possibleSpawnPositions = getSpawnPositionsInCube((ServerWorld) this.level, this.getBlockPos(), 5, MAX_SPAWNED_ENTITIES);
 
             BlockPos[] finalizedSpawnPositions = new BlockPos[MAX_SPAWNED_ENTITIES];

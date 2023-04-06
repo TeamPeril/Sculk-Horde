@@ -1,9 +1,12 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.SculkMiteAggressorAttackGoal;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
@@ -29,7 +32,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -54,6 +57,9 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.3F;
+
+    // Controls what types of entities this mob can target
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetHostiles();
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -87,20 +93,9 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
-    protected SoundEvent getAmbientSound() {
-        return SoundEvents.SILVERFISH_AMBIENT;
-    }
-
-    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.SILVERFISH_HURT;
-    }
-
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.SILVERFISH_DEATH;
-    }
-
-    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-        this.playSound(SoundEvents.SILVERFISH_STEP, 0.15F, 1.0F);
+    @Override
+    public TargetParameters getTargetParameters() {
+        return TARGET_PARAMETERS;
     }
 
     /**
@@ -156,6 +151,7 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     {
         Goal[] goals =
                 {
+                        new DespawnWhenIdle(this, 120),
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
@@ -184,10 +180,10 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     {
         Goal[] goals =
                 {
+                        new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
                         new HurtByTargetGoal(this).setAlertOthers(),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
-                                .enableDespawnWhenIdle().enableTargetHostiles()
                 };
         return goals;
     }
@@ -209,5 +205,21 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.SILVERFISH_AMBIENT;
+    }
+
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return SoundEvents.SILVERFISH_HURT;
+    }
+
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.SILVERFISH_DEATH;
+    }
+
+    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
+        this.playSound(SoundEvents.SILVERFISH_STEP, 0.15F, 1.0F);
     }
 }

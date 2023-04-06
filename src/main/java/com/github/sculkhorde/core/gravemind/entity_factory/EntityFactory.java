@@ -90,6 +90,11 @@ public class EntityFactory {
             }
         }
 
+        if(possibleReinforcements.size() == 0)
+        {
+            return;
+        }
+
         // Create an array of all reinforcements we will spawn using the spawn positions in context.
         EntityFactoryEntry[] mobsToSpawn = new EntityFactoryEntry[context.positions.length];
         // Create a hashmap to store how many of a specific mob we have spawned

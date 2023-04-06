@@ -58,109 +58,6 @@ public class EntityAlgorithms {
 
 
     /**
-     * Determines if an Entity is valid target based on rules
-     * @param e The Given Entity
-     * @return True if Valid, False otherwise
-     */
-    public static boolean isLivingEntityValidTarget(LivingEntity e, boolean targetHostiles, boolean targetPassives, boolean targetInfected, boolean targetBelow50PercentHealth)
-    {
-        if(e == null)
-        {
-            return false;
-        }
-
-        //If passes sculk predicate
-        if(isSculkLivingEntity.test(e))
-        {
-            return false;
-        }
-
-        //Do not attack creepers
-        if(e instanceof CreeperEntity)
-        {
-            return false;
-        }
-
-        //If not attackable or invulnerable or is dead/dying
-        if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
-        {
-            return false;
-        }
-
-        //If not attackable or invulnerable or is dead/dying
-        if(e instanceof PlayerEntity && (((PlayerEntity) e).isCreative() || ((PlayerEntity) e).isSpectator()))
-        {
-            return false;
-        }
-
-        //If we do not attack infected and entity is infected
-        if(!targetInfected && isLivingEntityInfected(e))
-        {
-            return false;
-        }
-
-        //If we do not attack passives and entity is non-hostile
-        if(!targetPassives && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
-        {
-            return false;
-        }
-
-        //If we do not attack hostiles and target is hostile
-        if(!targetHostiles && isLivingEntityHostile(e))
-        {
-            return false;
-        }
-
-        //If we do not attack below 50% health and target is below 50% health
-        if(!targetBelow50PercentHealth && e.getHealth() < e.getMaxHealth() / 2)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Determines if an Entity is valid target based on rules
-     * @param e The Given Entity
-     * @return True if Valid, False otherwise
-     */
-    public static boolean isTargetStillValid(LivingEntity e)
-    {
-        if(e == null)
-        {
-            return false;
-        }
-
-        //If passes sculk predicate
-        if(isSculkLivingEntity.test(e))
-        {
-            return false;
-        }
-
-        //Do not attack creepers
-        if(e instanceof CreeperEntity)
-        {
-            return false;
-        }
-
-        //If not attackable or invulnerable or is dead/dying
-        if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
-        {
-            return false;
-        }
-
-        //If not attackable or invulnerable or is dead/dying
-        if(e instanceof PlayerEntity && (((PlayerEntity) e).isCreative() || ((PlayerEntity) e).isSpectator()))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Determines if an Entity belongs to the sculk based on rules
      * @return True if Valid, False otherwise
      */
@@ -178,24 +75,6 @@ public class EntityAlgorithms {
     };
 
 
-    /**
-     * Filters out any mobs that do not fit the filter
-     * @param list The list of possible targets
-     */
-    public static void filterOutNonTargets(List<LivingEntity> list, boolean targetHostiles, boolean targetPassives, boolean targetInfected, boolean targetBelow50PercentHealth)
-    {
-        for(int i = 0; i < list.size(); i++)
-        {
-            boolean isValidTarget = isLivingEntityValidTarget(list.get(i), targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
-
-            //If not valid target, filter
-            if(!isValidTarget)
-            {
-                list.remove(i); //Remove from list
-                i--; //Go back one index since the new length of the list is one less.
-            }
-        }
-    }
 
     /**
      * Determines if an Entity is Infected based on if it has a potion effect

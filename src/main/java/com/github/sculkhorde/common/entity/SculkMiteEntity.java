@@ -1,11 +1,9 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.TargetAttacker;
-import com.github.sculkhorde.common.entity.goal.SculkMiteInfectGoal;
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
@@ -33,7 +31,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -59,6 +57,9 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.3F;
 
+    // Controls what types of entities this mob can target
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetPassives().enableTargetHostiles();
+
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
      * 100 = Zombie<br>
@@ -81,14 +82,15 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     //INFECT_LEVEL The level of the effect
     public static int INFECT_LEVEL = 1;
     //factory The animation factory used for animations
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimationFactory factory = new AnimationFactory(this);
 
     /**
      * The Constructor
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkMiteEntity(EntityType<? extends SculkMiteEntity> type, World worldIn) {
+    public SculkMiteEntity(EntityType<? extends SculkMiteEntity> type, World worldIn)
+    {
         super(type, worldIn);
     }
 
@@ -192,6 +194,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     {
         Goal[] goals =
                 {
+                        new DespawnWhenIdle(this, 60),
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
@@ -220,10 +223,9 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     {
         Goal[] goals =
                 {
-                        //TargetAttacker(mob)
-                        new TargetAttacker(this).setAlertSculkLivingEntities(),
+                        new InvalidateTargetGoal(this),
+                        new TargetAttacker(this).setAlertAllies(),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
-                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetPassives()
                 };
         return goals;
     }
@@ -246,4 +248,10 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable {
     public AnimationFactory getFactory() {
         return this.factory;
     }
+
+    @Override
+    public TargetParameters getTargetParameters() {
+        return TARGET_PARAMETERS;
+    }
+
 }

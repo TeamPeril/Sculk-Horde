@@ -2,10 +2,14 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -36,7 +40,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
+public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, ISculkSmartEntity {
 
 
     /**
@@ -67,6 +71,9 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.75F;
 
+    // Controls what types of entities this mob can target
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetHostiles();
+
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes
@@ -81,6 +88,11 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, 0.4F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, MOVEMENT_SPEED);
+    }
+
+    @Override
+    public TargetParameters getTargetParameters() {
+        return TARGET_PARAMETERS;
     }
 
     /**
@@ -116,6 +128,8 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
     public Goal[] goalSelectorPayload()
     {
         return new Goal[]{
+
+                new DespawnWhenIdle(this, 120),
                 //SwimGoal(mob)
                 new SwimGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
@@ -139,10 +153,20 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
     public Goal[] targetSelectorPayload()
     {
         return new Goal[]{
-                new TargetAttacker(this).setAlertSculkLivingEntities(),
+                new InvalidateTargetGoal(this),
+                new TargetAttacker(this).setAlertAllies(),
                 new NearestLivingEntityTargetGoal<>(this, true, true)
-                        .enableDespawnWhenIdle().enableTargetHostiles().enableTargetPassives().ignoreTargetBelow50PercentHealth()
         };
+    }
+
+
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
     }
 
     @Override
@@ -193,7 +217,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
         @Override
         public boolean canUse()
         {
-            if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
             {
                 return false;
             }
@@ -203,7 +227,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
         @Override
         public boolean canContinueToUse()
         {
-            if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
             {
                 return false;
             }
@@ -220,7 +244,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable {
         @Override
         public void tick()
         {
-            if(!EntityAlgorithms.isTargetStillValid(this.mob.getTarget()))
+            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
             {
                 return;
             }

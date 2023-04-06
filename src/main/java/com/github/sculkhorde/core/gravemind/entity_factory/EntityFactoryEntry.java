@@ -78,16 +78,24 @@ public class EntityFactoryEntry {
 
     public boolean isEntryAppropriate(ReinforcementRequest context)
     {
-        if(context != null)
+        if(context == null)
         {
-            if((context.budget == -1 || context.budget >= orderCost)
-                    && (context.approvedMobTypes.contains(strategicValue) || context.approvedMobTypes.isEmpty())
-                    && SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired))
-                return true;
+            return false;
         }
-        else
-            System.out.println("WARNING context is null");
-        return false;
+        else if(context.budget != -1 && context.budget < orderCost)
+        {
+            return false;
+        }
+        else if(!context.approvedMobTypes.contains(getCategory()) && !context.approvedMobTypes.isEmpty())
+        {
+            return false;
+        }
+        else if(!SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired))
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }

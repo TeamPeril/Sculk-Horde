@@ -1,9 +1,12 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -29,7 +32,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable {
+public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -55,6 +58,9 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.25F;
+
+    // Controls what types of entities this mob can target
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetHostiles();
 
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
@@ -177,6 +183,7 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
     {
         Goal[] goals =
                 {
+                        new DespawnWhenIdle(this, 30),
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
@@ -207,9 +214,9 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
     {
         Goal[] goals =
                 {
-                        new TargetAttacker(this).setAlertSculkLivingEntities(),
+                        new InvalidateTargetGoal(this),
+                        new TargetAttacker(this).setAlertAllies(),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
-                                .enableDespawnWhenIdle().enableTargetHostiles().enableTargetPassives().ignoreTargetBelow50PercentHealth()
                 };
         return goals;
     }
@@ -245,6 +252,11 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
     @Override
     public AnimationFactory getFactory() {
         return this.factory;
+    }
+
+    @Override
+    public TargetParameters getTargetParameters() {
+        return TARGET_PARAMETERS;
     }
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/

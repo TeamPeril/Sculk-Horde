@@ -98,6 +98,7 @@ public class DevWand extends Item implements IForgeItem {
 			{
 				playerIn.displayClientMessage(
 						new StringTextComponent(
+								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
 								"Sculk Accumulated Mass: " + SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() + "\n" +
 								"Known Nodes: " + SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
 								"Known Nests: " + SculkHorde.gravemind.getGravemindMemory().getBeeNestEntries().size() + "\n" +

@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -14,21 +14,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.util.EntityAlgorithms.filterOutNonTargets;
-
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
 
-    //flags to modify behavior
-    private boolean targetHostiles = false; //Should we attack hostiles?
-    private boolean targetPassives = false; //Should we target passives?
-    private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
-    private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
-    boolean despawnWhenIdle = false; //Should we despawn after not having a target for a while?
 
-    private final int ticksPerSecond = 20;
-    private final int ticksIdleThreshold = 60;
-    private int ticksSinceIdle = 0;
     protected final Class<T> targetType;
     protected LivingEntity target;
     protected EntityPredicate targetConditions;
@@ -36,7 +25,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach)
     {
-        this(mobEntity, mustSee, mustReach, (Predicate<LivingEntity>)null);
+        this(mobEntity, mustSee, mustReach, null);
     }
 
     public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
@@ -47,56 +36,14 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
-    /** Options **/
-
-    public NearestLivingEntityTargetGoal enableDespawnWhenIdle()
-    {
-        despawnWhenIdle = true;
-        return this;
-    }
-
-    public NearestLivingEntityTargetGoal enableTargetHostiles()
-    {
-        targetHostiles = true;
-        return this;
-    }
-
-    public NearestLivingEntityTargetGoal enableTargetPassives()
-    {
-        targetPassives = true;
-        return this;
-    }
-
-    public NearestLivingEntityTargetGoal enableTargetInfected()
-    {
-        targetInfected = true;
-        return this;
-    }
-
-    public NearestLivingEntityTargetGoal ignoreTargetBelow50PercentHealth()
-    {
-        targetBelow50PercentHealth = false;
-        return this;
-    }
-
     /** Functionality **/
-
+    @Override
     public boolean canUse()
     {
 
-        //Despawn the mob if it has no target for too long
-        if(despawnWhenIdle)
-        {
-            this.ticksSinceIdle++;
-            //If mob is idle for too long, destroy it
-            if(despawnWhenIdle && ticksSinceIdle >= ticksPerSecond * ticksIdleThreshold)
-            {
-                this.mob.remove();
-            }
-        }
-
+        boolean canWeUse = !((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget());
         // If the mob is already targeting something valid, don't bother
-        return !EntityAlgorithms.isLivingEntityValidTarget(this.target, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
+        return canWeUse;
     }
 
     protected AxisAlignedBB getTargetSearchArea(double range)
@@ -116,8 +63,9 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
                     this.getTargetSearchArea(this.getFollowDistance()),
                     (Predicate<? super LivingEntity>) null);
 
-            // Remove Any Sculk Entities or entities already infected
-            filterOutNonTargets(possibleTargets, targetHostiles, targetPassives, targetInfected, targetBelow50PercentHealth);
+            // Use java removeif function to filter out non targets
+            possibleTargets.removeIf(e -> (!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(e)));
+
         }
         else //if targetType is player
         {
@@ -131,21 +79,23 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         }
 
         //If there is available targets
-        if(possibleTargets.size() > 0)
+        if(possibleTargets.size() <= 0)
         {
-            this.ticksSinceIdle = 0;
-            LivingEntity closestLivingEntity = possibleTargets.get(0);
-
-            //Return nearest Mob
-            for(LivingEntity e : possibleTargets)
-            {
-                if(e.distanceTo(this.mob) < e.distanceTo(closestLivingEntity))
-                {
-                    closestLivingEntity = e;
-                }
-            }
-            setTarget(closestLivingEntity); //Return target
+            return;
         }
+
+        LivingEntity closestLivingEntity = possibleTargets.get(0);
+
+        //Return nearest Mob
+        for(LivingEntity e : possibleTargets)
+        {
+            if(e.distanceTo(this.mob) < e.distanceTo(closestLivingEntity))
+            {
+                closestLivingEntity = e;
+            }
+        }
+        setTarget(closestLivingEntity); //Return target
+
     }
 
     public void start()
@@ -169,8 +119,8 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         // vanilla minecraft doesnt even do this. So wtf why does it only work with vanilla
 
         // Update, this does not fix the issue
-        this.target = null;
-        this.mob.setTarget(null);
+        //this.target = null;
+        //this.mob.setTarget(null);
     }
 
     public void setTarget(@Nullable LivingEntity targetIn) {
