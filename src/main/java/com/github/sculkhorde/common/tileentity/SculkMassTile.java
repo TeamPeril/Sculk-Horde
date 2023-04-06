@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
@@ -114,7 +115,7 @@ public class SculkMassTile extends TileEntity implements ITickableTileEntity {
             thisTile.setStoredSculkMass(context.remaining_balance);
 
             // Spawn Block Traverser
-            CursorInfectorEntity cursor = new CursorInfectorEntity(level);
+            CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ());
             cursor.setMaxInfections(thisTile.getStoredSculkMass());
             cursor.setMaxRange(thisTile.getStoredSculkMass());

@@ -26,23 +26,23 @@ import java.util.concurrent.TimeUnit;
  */
 public class CursorInfectorEntity extends Entity
 {
-    private int MAX_INFECTIONS = 100;
-    private int infections = 0;
+    protected int MAX_INFECTIONS = 100;
+    protected int infections = 0;
 
-    private int MAX_RANGE = 100;
-    private BlockPos origin = BlockPos.ZERO;
+    protected int MAX_RANGE = 100;
+    protected BlockPos origin = BlockPos.ZERO;
 
-    private BlockPos target = BlockPos.ZERO;
+    protected BlockPos target = BlockPos.ZERO;
 
-    private long MAX_LIFETIME_SECONDS = 60;
-    private long creationTickTime = System.nanoTime();
-    private long lastTickTime = 0;
-    private float TICK_INVTERVAL_SECONDS = 0.25F;
+    protected long MAX_LIFETIME_SECONDS = 60;
+    protected long creationTickTime = System.nanoTime();
+    protected long lastTickTime = 0;
+    protected float TICK_INVTERVAL_SECONDS = 0.25F;
 
     public boolean isSuccessful = false;
 
     //Create a hash map to store all visited nodes
-    private HashMap<Long, Boolean> visitedPositons = new HashMap<>();
+    protected HashMap<Long, Boolean> visitedPositons = new HashMap<>();
 
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
@@ -77,7 +77,7 @@ public class CursorInfectorEntity extends Entity
      * Use Breadth-First Search to find the nearest infectable block within a certain maximum distance.
      * @return the position of the nearest infectable block, or null if none is found
      */
-    private BlockPos findNearestTargetBlock()
+    protected BlockPos findNearestTargetBlock()
     {
         BlockPos origin = this.blockPosition();
         // Breadth-First Search
@@ -218,7 +218,7 @@ public class CursorInfectorEntity extends Entity
      * @param pos the block position
      * @return true if the block is considered obstructed
      */
-    private boolean isObstructed(BlockState state, BlockPos pos)
+    protected boolean isObstructed(BlockState state, BlockPos pos)
     {
         if(!state.isSolidRender(this.level, pos))
         {

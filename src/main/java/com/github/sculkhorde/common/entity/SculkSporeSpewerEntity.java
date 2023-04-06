@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
@@ -207,7 +208,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
         if (random.nextInt(100) == 0)
         {
             // Spawn Block Traverser
-            CursorInfectorEntity cursor = new CursorInfectorEntity(level);
+            CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxInfections(20);
             cursor.setMaxRange(100);

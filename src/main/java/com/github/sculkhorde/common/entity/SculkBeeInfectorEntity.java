@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.BlockState;
@@ -243,7 +244,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
                 ServerWorld world = (ServerWorld) SculkBeeInfectorEntity.this.level;
 
                 // Spawn Block Traverser
-                CursorInfectorEntity cursor = new CursorInfectorEntity(world);
+                CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(world);
                 cursor.setPos(spreadPos.getX(), spreadPos.getY(), spreadPos.getZ());
                 cursor.setMaxRange(100);
                 cursor.setMaxInfections(100);

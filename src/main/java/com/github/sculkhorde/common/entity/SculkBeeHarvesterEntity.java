@@ -548,7 +548,8 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     {
         Goal[] goals =
                 {
-                        new TargetAttacker(this).setAlertAllies(),
+                        // Commented this out because it interferes with the bee's ability to go back into hive.
+                        //new TargetAttacker(this).setAlertAllies(),
                 };
         return goals;
     }

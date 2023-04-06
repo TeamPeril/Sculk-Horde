@@ -65,6 +65,8 @@ public class ClientModEventSubscriber {
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_BRIDGER, CursorBridgerRenderer::new);
 
+        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_SURFACE_INFECTOR, CursorShortRangeRenderer::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_RAVAGER, SculkRavagerRenderer::new);
