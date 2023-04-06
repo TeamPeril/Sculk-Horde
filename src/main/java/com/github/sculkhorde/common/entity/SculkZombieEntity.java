@@ -108,6 +108,10 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable,
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    public boolean isIdle() {
+        return getTarget() == null;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;

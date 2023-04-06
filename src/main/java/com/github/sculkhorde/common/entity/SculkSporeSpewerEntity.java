@@ -95,6 +95,10 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    public boolean isIdle() {
+        return false;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;

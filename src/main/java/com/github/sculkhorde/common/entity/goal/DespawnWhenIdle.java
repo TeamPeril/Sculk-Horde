@@ -26,7 +26,7 @@ public class DespawnWhenIdle extends Goal {
     @Override
     public boolean canUse()
     {
-        if(mob.getTarget() != null)
+        if(!mob.isIdle())
         {
             lastTimeSinceNotIdle = System.nanoTime();
         }

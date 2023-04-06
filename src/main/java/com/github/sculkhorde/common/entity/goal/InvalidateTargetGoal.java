@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 
 public class InvalidateTargetGoal extends Goal {
@@ -15,9 +16,9 @@ public class InvalidateTargetGoal extends Goal {
         this.mob = mob;
     }
 
-    public ISculkSmartEntity getMob()
+    public MobEntity getMob()
     {
-        return this.mob;
+        return (MobEntity) this.mob;
     }
 
     /**
@@ -27,15 +28,16 @@ public class InvalidateTargetGoal extends Goal {
     @Override
     public boolean canUse()
     {
-        ISculkSmartEntity mob = getMob();
-        LivingEntity target = mob.getTarget();
+        LivingEntity target = ((MobEntity)this.mob).getTarget();
         TargetParameters targetParameters = mob.getTargetParameters();
-        return !targetParameters.isEntityValidTarget(target);
+        boolean result = !targetParameters.isEntityValidTarget(target);
+        return result;
     }
 
     @Override
     public void start()
     {
-        getMob().setTarget(null);
+        getMob().setTarget((LivingEntity)null);
+        stop();
     }
 }

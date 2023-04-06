@@ -7,9 +7,7 @@ public interface ISculkSmartEntity {
 
     TargetParameters getTargetParameters();
 
-    LivingEntity getTarget();
-
-    void setTarget(LivingEntity target);
+    boolean isIdle();
 
     void remove();
 

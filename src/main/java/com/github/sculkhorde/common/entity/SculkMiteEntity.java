@@ -115,6 +115,10 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, I
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    public boolean isIdle() {
+        return getTarget() == null;
+    }
+
     protected SoundEvent getAmbientSound() {
         return SoundEvents.SILVERFISH_AMBIENT;
     }

@@ -95,6 +95,10 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
         return TARGET_PARAMETERS;
     }
 
+    public boolean isIdle() {
+        return getTarget() == null;
+    }
+
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
