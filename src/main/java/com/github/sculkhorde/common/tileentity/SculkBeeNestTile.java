@@ -123,7 +123,6 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
                 beeentity.setTarget(pPlayer);
                 continue;
             }
-            beeentity.setStayOutOfHiveCountdown(400);
         }
     }
 

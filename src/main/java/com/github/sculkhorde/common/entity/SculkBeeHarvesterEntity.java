@@ -88,9 +88,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     protected static final DataParameter<Integer> DATA_REMAINING_ANGER_TIME = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.INT);
     protected float rollAmount;
     protected float rollAmountO;
-    protected int timeSinceSting;
     protected int ticksWithoutNectarSinceExitingHive;
-    protected int stayOutOfHiveCountdown;
     protected int numCropsGrownSincePollination;
     protected int remainingCooldownBeforeLocatingNewHive = 0;
     protected int remainingCooldownBeforeLocatingNewFlower = 0;
@@ -260,10 +258,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         this.setFlag(8, pHasNectar);
     }
 
-    protected void setHasStung(boolean pHasStung) {
-        this.setFlag(4, pHasStung);
-    }
-
     protected void setRolling(boolean pIsRolling) {
         this.setFlag(2, pIsRolling);
     }
@@ -288,10 +282,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     public void resetTicksWithoutNectarSinceExitingHive() {
         this.ticksWithoutNectarSinceExitingHive = 0;
-    }
-
-    public void setStayOutOfHiveCountdown(int pStayOutOfHiveCountdown) {
-        this.stayOutOfHiveCountdown = pStayOutOfHiveCountdown;
     }
 
     protected void updateRollAmount() {
@@ -342,10 +332,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return this.getFlag(8);
     }
 
-    public boolean hasStung() {
-        return this.getFlag(4);
-    }
-
     protected boolean isRolling() {
         return this.getFlag(2);
     }
@@ -367,19 +353,10 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return this.ticksWithoutNectarSinceExitingHive > 3600;
     }
 
-    protected boolean isHiveNearFire() {
-        if (this.hivePos == null) {
-            return false;
-        } else {
-            TileEntity tileentity = this.level.getBlockEntity(this.hivePos);
-            return tileentity instanceof SculkBeeNestTile && ((SculkBeeNestTile)tileentity).isFireNearby();
-        }
-    }
-
     protected boolean wantsToEnterHive() {
-        if (this.stayOutOfHiveCountdown <= 0 && !this.beePollinateGoal.isPollinating() && !this.hasStung() && this.getTarget() == null) {
+        if (!this.beePollinateGoal.isPollinating() && this.getTarget() == null) {
             boolean flag = this.isTiredOfLookingForNectar() || this.hasNectar();
-            return flag && !this.isHiveNearFire();
+            return flag;
         } else {
             return false;
         }
@@ -407,12 +384,11 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * Called every tick so the entity can update its state as required. For example, zombies and skeletons use this to
      * react to sunlight and start to burn.
      */
-    public void aiStep() {
+    public void aiStep()
+    {
         super.aiStep();
-        if (!this.level.isClientSide) {
-            if (this.stayOutOfHiveCountdown > 0) {
-                --this.stayOutOfHiveCountdown;
-            }
+        if (!this.level.isClientSide)
+        {
 
             if (this.remainingCooldownBeforeLocatingNewHive > 0) {
                 --this.remainingCooldownBeforeLocatingNewHive;
@@ -422,7 +398,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
                 --this.remainingCooldownBeforeLocatingNewFlower;
             }
 
-            boolean flag = !this.hasStung() && this.getTarget() != null && this.getTarget().distanceToSqr(this) < 4.0D;
+            boolean flag = this.getTarget() != null && this.getTarget().distanceToSqr(this) < 4.0D;
             this.setRolling(flag);
             if (this.tickCount % 20 == 0 && !this.isHiveValid()) {
                 this.hivePos = null;
@@ -434,7 +410,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     protected void customServerAiStep()
     {
-        boolean flag = this.hasStung();
         if (this.isInWaterOrBubble()) {
             ++this.underWaterTicks;
         } else {
@@ -443,13 +418,6 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
         if (this.underWaterTicks > 20) {
             this.hurt(DamageSource.DROWN, 1.0F);
-        }
-
-        if (flag) {
-            ++this.timeSinceSting;
-            if (this.timeSinceSting % 5 == 0 && this.random.nextInt(MathHelper.clamp(1200 - this.timeSinceSting, 1, 1200)) == 0) {
-                this.hurt(DamageSource.GENERIC, this.getHealth());
-            }
         }
 
         if (!this.hasNectar()) {
@@ -499,7 +467,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         Goal[] targetSelectorPayload = targetSelectorPayload();
         for(int priority = 0; priority < targetSelectorPayload.length; priority++)
         {
-            this.goalSelector.addGoal(priority, targetSelectorPayload[priority]);
+            this.targetSelector.addGoal(priority, targetSelectorPayload[priority]);
         }
 
     }
@@ -581,9 +549,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         }
 
         pCompound.putBoolean("HasNectar", this.hasNectar());
-        pCompound.putBoolean("HasStung", this.hasStung());
         pCompound.putInt("TicksSincePollination", this.ticksWithoutNectarSinceExitingHive);
-        pCompound.putInt("CannotEnterHiveTicks", this.stayOutOfHiveCountdown);
         pCompound.putInt("CropsGrownSincePollination", this.numCropsGrownSincePollination);
         //this.addPersistentAngerSaveData(pCompound);
     }
@@ -605,9 +571,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
         super.readAdditionalSaveData(pCompound);
         this.setHasNectar(pCompound.getBoolean("HasNectar"));
-        this.setHasStung(pCompound.getBoolean("HasStung"));
         this.ticksWithoutNectarSinceExitingHive = pCompound.getInt("TicksSincePollination");
-        this.stayOutOfHiveCountdown = pCompound.getInt("CannotEnterHiveTicks");
         this.numCropsGrownSincePollination = pCompound.getInt("CropsGrownSincePollination");
         if(!level.isClientSide) //FORGE: allow this entity to be read from nbt on client. (Fixes MC-189565)
         {
@@ -781,7 +745,18 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      */
     private final Predicate<BlockState> VALID_POLLINATION_BLOCKS = (validBlocksPredicate) ->
     {
-        return validBlocksPredicate.getBlock() instanceof SculkFloraBlock;
+        if(validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_SHROOM_CULTURE.get()))
+        {
+            return true;
+        }
+
+        if(validBlocksPredicate.getBlock().is(BlockRegistry.SMALL_SHROOM.get()))
+        {
+            return true;
+        }
+
+        return false;
+
     };
 
     protected Predicate<BlockState> getFlowerPredicate()

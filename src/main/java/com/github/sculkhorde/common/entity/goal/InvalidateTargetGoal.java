@@ -6,6 +6,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 
+import java.util.EnumSet;
+
 public class InvalidateTargetGoal extends Goal {
 
     private final ISculkSmartEntity mob; // We use this to retrieve the mob that is using this goal.
@@ -14,11 +16,17 @@ public class InvalidateTargetGoal extends Goal {
     {
         super();
         this.mob = mob;
+        this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
     public MobEntity getMob()
     {
         return (MobEntity) this.mob;
+    }
+
+    public LivingEntity getTarget()
+    {
+        return getMob().getTarget();
     }
 
     /**
@@ -28,16 +36,26 @@ public class InvalidateTargetGoal extends Goal {
     @Override
     public boolean canUse()
     {
-        LivingEntity target = ((MobEntity)this.mob).getTarget();
+
+        if(getTarget() == null)
+        {
+            return false;
+        }
         TargetParameters targetParameters = mob.getTargetParameters();
-        boolean result = !targetParameters.isEntityValidTarget(target);
+        boolean result = !targetParameters.isEntityValidTarget(getTarget());
         return result;
     }
 
     @Override
     public void start()
     {
-        getMob().setTarget((LivingEntity)null);
-        stop();
+        getMob().setTarget(null);
+        getMob().getTarget();
+    }
+
+    @Override
+    public boolean canContinueToUse()
+    {
+        return false;
     }
 }

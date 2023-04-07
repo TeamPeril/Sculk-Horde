@@ -170,7 +170,7 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
         Goal[] targetSelectorPayload = targetSelectorPayload();
         for(int priority = 0; priority < targetSelectorPayload.length; priority++)
         {
-            this.goalSelector.addGoal(priority, targetSelectorPayload[priority]);
+            this.targetSelector.addGoal(priority, targetSelectorPayload[priority]);
         }
 
     }
