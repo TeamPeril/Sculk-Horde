@@ -99,6 +99,13 @@ public class EntityAlgorithms {
 
     }
 
+    public static boolean isLivingEntitySwimmer(LivingEntity entity)
+    {
+        // The gramemind does not store swimmers, we need to figure if a mob is swimming
+        // by using the entity's ability to swim
+        return entity.canBreatheUnderwater();
+    }
+
     /**
      * Gets all living entities in the given bounding box.
      * @param serverWorld The given world

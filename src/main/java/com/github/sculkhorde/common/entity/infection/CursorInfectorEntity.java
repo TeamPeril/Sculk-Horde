@@ -129,7 +129,7 @@ public class CursorInfectorEntity extends Entity
 
         if(timeElapsed < TICK_INVTERVAL_SECONDS)
         {
-            //return;
+            return;
         }
         lastTickTime = System.nanoTime();
 

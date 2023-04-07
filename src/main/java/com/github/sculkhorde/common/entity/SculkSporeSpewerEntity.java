@@ -65,6 +65,8 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
     private AnimationFactory factory = new AnimationFactory(this);
 
+    CursorSurfaceInfectorEntity cursor;
+
     /**
      * The Constructor
      * @param type The Mob Type
@@ -209,10 +211,10 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
         }
 
         Random random = new Random();
-        if (random.nextInt(100) == 0)
+        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive() ))
         {
             // Spawn Block Traverser
-            CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
+            cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxInfections(20);
             cursor.setMaxRange(100);
@@ -267,7 +269,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
         @Override
         public void start() {
-            timeUntilDeath = 20 * 60 * 15; //Die after 15 Minutes
+            timeUntilDeath = 20 * 60 * 5; //Die after 5 Minutes
         }
 
         @Override

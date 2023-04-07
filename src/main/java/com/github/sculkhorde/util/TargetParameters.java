@@ -11,6 +11,7 @@ public class TargetParameters {
     private boolean targetPassives = false; //Should we target passives?
     private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
     private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
+    private boolean targetSwimmers = false; //Should we target entities that can swim?
 
     public TargetParameters enableTargetHostiles()
     {
@@ -67,6 +68,12 @@ public class TargetParameters {
             return false;
         }
 
+        //If we do not attack swimmers and target is a swimmer
+        if(!targetSwimmers && isLivingEntitySwimmer(e))
+        {
+            return false;
+        }
+
         //If we do not attack below 50% health and target is below 50% health
         return targetBelow50PercentHealth || !(e.getHealth() < e.getMaxHealth() / 2);
     }
@@ -104,8 +111,20 @@ public class TargetParameters {
         return this;
     }
 
+
     public boolean isIgnoringTargetBelow50PercentHealth()
     {
         return targetBelow50PercentHealth;
+    }
+
+    public TargetParameters enableTargetSwimmers()
+    {
+        targetSwimmers = true;
+        return this;
+    }
+
+    public boolean isTargetingSwimmers()
+    {
+        return targetSwimmers;
     }
 }
