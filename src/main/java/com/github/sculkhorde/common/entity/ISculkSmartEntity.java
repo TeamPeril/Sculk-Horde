@@ -8,9 +8,5 @@ public interface ISculkSmartEntity {
     TargetParameters getTargetParameters();
 
     boolean isIdle();
-
-    void remove();
-
-
 }
 

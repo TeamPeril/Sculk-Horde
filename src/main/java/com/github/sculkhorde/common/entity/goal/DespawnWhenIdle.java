@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,6 @@ public class DespawnWhenIdle extends Goal {
     @Override
     public void start()
     {
-        mob.remove();
+        ((MobEntity)mob).remove();
     }
 }
