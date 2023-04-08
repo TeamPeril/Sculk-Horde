@@ -370,12 +370,6 @@ public class BlockAlgorithms {
             nest.addOccupant(new SculkBeeHarvesterEntity(world));
             nest.addOccupant(new SculkBeeInfectorEntity(world));
             nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
         }
 
     }
