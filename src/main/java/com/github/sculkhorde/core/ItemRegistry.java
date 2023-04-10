@@ -29,8 +29,8 @@ public class ItemRegistry {
 	public static final RegistryObject<DevConversionWand> DEV_CONVERSION_WAND = ITEMS.register("dev_conversion_wand",
 			() -> new DevConversionWand());
 
-	public static final RegistryObject<AntiSculkMatter> ANTI_SCULK_MATTER = ITEMS.register("anti_sculk_matter",
-			() -> new AntiSculkMatter());
+	public static final RegistryObject<InfestationPurifier> INFESTATION_PURIFIER = ITEMS.register("infestation_purifier",
+			() -> new InfestationPurifier());
 
 	public static final RegistryObject<CustomItemProjectile> CUSTOM_ITEM_PROJECTILE = ITEMS.register("custom_item_projectile",
 			() -> new CustomItemProjectile());

@@ -1,10 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.entity.*;
-import com.github.sculkhorde.common.entity.infection.CursorBridgerEntity;
-import com.github.sculkhorde.common.entity.infection.CursorProberEntity;
-import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import net.minecraft.entity.Entity;
@@ -41,8 +38,10 @@ public class EntityRegistry {
     public static EntityType<CursorInfectorEntity> CURSOR_SHORT_RANGE = buildEntityType(CursorInfectorEntity::new, "cursor_short_range", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
     public static EntityType<CursorBridgerEntity> CURSOR_BRIDGER = buildEntityType(CursorBridgerEntity::new, "cursor_bridger", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
     public static EntityType<CursorSurfaceInfectorEntity> CURSOR_SURFACE_INFECTOR = buildEntityType(CursorSurfaceInfectorEntity::new, "cursor_surface_infector", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorSurfacePurifierEntity> CURSOR_SURFACE_PURIFIER = buildEntityType(CursorSurfacePurifierEntity::new, "cursor_surface_purifier", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
     public static EntityType<SculkSporeSpewerEntity> SCULK_SPORE_SPEWER = buildEntityType(SculkSporeSpewerEntity::new, "sculk_spore_spewer", 1.0f, 2.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
     public static EntityType<SculkRavagerEntity> SCULK_RAVAGER = buildEntityType(SculkRavagerEntity::new, "sculk_ravager", 1.95f, 2.2f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<InfestationPurifierEntity> INFESTATION_PURIFIER = buildEntityType(InfestationPurifierEntity::new, "infestation_purifier", 1f, 1f, EntityClassification.CREATURE, b -> b.clientTrackingRange(9));
 
     /** REGISTRY METHODS **/
 
@@ -67,12 +66,14 @@ public class EntityRegistry {
         event.getRegistry().register(SCULK_HATCHER.setRegistryName(SculkHorde.MOD_ID, "sculk_hatcher"));
         event.getRegistry().register(SCULK_SPORE_SPEWER.setRegistryName(SculkHorde.MOD_ID, "sculk_spore_spewer"));
         event.getRegistry().register(SCULK_RAVAGER.setRegistryName(SculkHorde.MOD_ID, "sculk_ravager"));
+        event.getRegistry().register(INFESTATION_PURIFIER.setRegistryName(SculkHorde.MOD_ID, "infestation_purifier"));
 
         //Misc
         event.getRegistry().register(CURSOR_LONG_RANGE.setRegistryName(SculkHorde.MOD_ID, "cursor_long_range"));
         event.getRegistry().register(CURSOR_SHORT_RANGE.setRegistryName(SculkHorde.MOD_ID, "cursor_short_range"));
         event.getRegistry().register(CURSOR_BRIDGER.setRegistryName(SculkHorde.MOD_ID, "cursor_bridger"));
         event.getRegistry().register(CURSOR_SURFACE_INFECTOR.setRegistryName(SculkHorde.MOD_ID, "cursor_surface_infector"));
+        event.getRegistry().register(CURSOR_SURFACE_PURIFIER.setRegistryName(SculkHorde.MOD_ID, "cursor_surface_purifier"));
     }
 
     /** HELPER METHODS **/

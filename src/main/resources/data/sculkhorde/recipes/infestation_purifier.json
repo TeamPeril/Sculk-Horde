@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "CRC",
+    "RGR",
+    "CRC"
+  ],
+
+  "key":
+  {
+    "G":
+    {
+      "item": "minecraft:golden_apple"
+    },
+    "C":
+    {
+      "item": "sculkhorde:calcite_clump"
+    },
+    "R":
+    {
+      "item": "sculkhorde:sculk_resin"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:infestation_purifier",
+    "count": 2
+  }
+}

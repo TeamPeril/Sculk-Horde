@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,20 +25,35 @@ import java.util.concurrent.TimeUnit;
  */
 public class CursorInfectorEntity extends Entity
 {
+    enum State
+    {
+        IDLE,
+        SEARCHING,
+        EXPLORING,
+        FINISHED
+    }
+
+    State state = State.IDLE;
+
     protected int MAX_INFECTIONS = 100;
     protected int infections = 0;
-
-    protected int MAX_RANGE = 100;
-    protected BlockPos origin = BlockPos.ZERO;
-
-    protected BlockPos target = BlockPos.ZERO;
-
-    protected long MAX_LIFETIME_SECONDS = 60;
-    protected long creationTickTime = System.nanoTime();
+    protected int MAX_RANGE = 20;
+    protected long MAX_LIFETIME_MILLIS = TimeUnit.MINUTES.toMillis(20);
+    protected long creationTickTime = System.currentTimeMillis();
     protected long lastTickTime = 0;
-    protected float TICK_INVTERVAL_SECONDS = 0.25F;
 
+    protected int searchIterationsPerTick = 20;
+    protected long tickIntervalMilliseconds = 1000;
+
+    protected BlockPos origin = BlockPos.ZERO;
+    protected BlockPos target = BlockPos.ZERO;
+    Queue<BlockPos> queue = new LinkedList<>();
+    Set<BlockPos> visited = new HashSet<>();
     public boolean isSuccessful = false;
+
+
+
+
 
     //Create a hash map to store all visited nodes
     protected HashMap<Long, Boolean> visitedPositons = new HashMap<>();
@@ -57,7 +71,7 @@ public class CursorInfectorEntity extends Entity
          * When the entity is spawned, the creationTickTime is not altered in the statement below.
          * TODO Fix this bug.
          */
-        creationTickTime = System.nanoTime();
+        creationTickTime = System.currentTimeMillis();
     }
 
     public void setMaxInfections(int MAX_INFECTIONS) {
@@ -68,6 +82,18 @@ public class CursorInfectorEntity extends Entity
         this.MAX_RANGE = MAX_RANGE;
     }
 
+    public void setMaxLifeTimeMillis(long MAX_LIFETIME) {
+        this.MAX_LIFETIME_MILLIS = MAX_LIFETIME;
+    }
+
+    public void setSearchIterationsPerTick(int iterations) {
+        this.searchIterationsPerTick = iterations;
+    }
+
+    public void setTickIntervalMilliseconds(long milliseconds) {
+        this.tickIntervalMilliseconds = milliseconds;
+    }
+
     @Override
     protected void defineSynchedData() {
 
@@ -75,37 +101,46 @@ public class CursorInfectorEntity extends Entity
 
     /**
      * Use Breadth-First Search to find the nearest infectable block within a certain maximum distance.
-     * @return the position of the nearest infectable block, or null if none is found
+     * @return true if complete. false if not complete.
      */
-    protected BlockPos findNearestTargetBlock()
+    protected boolean searchTick()
     {
-        BlockPos origin = this.blockPosition();
-        // Breadth-First Search
-        Queue<BlockPos> queue = new LinkedList<>();
-        Set<BlockPos> visited = new HashSet<>();
-        queue.add(origin);
-        visited.add(origin);
+        // Complete 20 times.
+        for (int i = 0; i < searchIterationsPerTick; i++)
+        {
 
-        while (!queue.isEmpty()) {
-            BlockPos currentBlock = queue.poll();
-            if (SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(currentBlock)))
-            {
-                isSuccessful = true;
-                return currentBlock;
+
+            // Breadth-First Search
+
+            if (queue.isEmpty()) {
+                isSuccessful = false;
+                target = BlockPos.ZERO;
+                return true;
             }
 
 
-            /// Will have bias for specific direction specified in the parameter
+            BlockPos currentBlock = queue.poll();
+
+            // If the current block is a target, return it
+            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
+                isSuccessful = true;
+                target = currentBlock;
+                return true;
+            }
+
+
+            // Get all possible directions
             ArrayList<Direction> possibleDirections = new ArrayList<>();
-            possibleDirections.addAll(Arrays.asList(Direction.values()));
-            // Remove any directions that are obstructed
-            possibleDirections.removeIf(dir -> isObstructed(level.getBlockState(currentBlock.relative(dir)), currentBlock.relative(dir)));
+            for (Direction dir : Direction.values()) {
+                if (!isObstructed(level.getBlockState(currentBlock.relative(dir)), currentBlock.relative(dir))) {
+                    possibleDirections.add(dir);
+                }
+            }
             Collections.shuffle(possibleDirections);
 
 
             // Add all neighbors to the queue
-            for (Direction dir : possibleDirections)
-            {
+            for (Direction dir : possibleDirections) {
                 BlockPos neighbor = currentBlock.relative(dir);
 
                 // If not visited and is a solid block, add to queue
@@ -115,101 +150,125 @@ public class CursorInfectorEntity extends Entity
                 }
             }
         }
-        this.remove();
-        isSuccessful = false;
-        return BlockPos.ZERO;
+
+        return false;
     }
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         super.tick();
 
-        float timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - lastTickTime, TimeUnit.NANOSECONDS);
+        float timeElapsedMilliSeconds = System.currentTimeMillis() - lastTickTime;
 
-        if(timeElapsed < TICK_INVTERVAL_SECONDS)
-        {
+        if (timeElapsedMilliSeconds < tickIntervalMilliseconds) {
             return;
         }
-        lastTickTime = System.nanoTime();
+        lastTickTime = System.currentTimeMillis();
+
 
         // Play Particles on Client
-        if (this.level.isClientSide)
-        {
-            for(int i = 0; i < 2; ++i)
-            {
-                this.level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            for (int i = 0; i < 2; ++i) {
+                spawnParticleEffects();
             }
             return;
         }
 
         // Keep track of the origin
-        if(origin == BlockPos.ZERO)
+        if (origin == BlockPos.ZERO)
         {
             origin = this.blockPosition();
         }
 
+        long currentLifeTimeMilliseconds = System.currentTimeMillis() - creationTickTime;
 
-        long currentLifeTime = TimeUnit.SECONDS.convert(System.nanoTime() - creationTickTime, TimeUnit.NANOSECONDS);
+        // Convert to seconds
         // If entity has lived too long, remove it
-        if(currentLifeTime >= MAX_LIFETIME_SECONDS) {
-            this.remove();
-            return;
+        if (currentLifeTimeMilliseconds >= MAX_LIFETIME_MILLIS)
+        {
+            state = State.FINISHED;
         }
         else if (infections >= MAX_INFECTIONS)
         {
-            this.remove();
-            return;
+            state = State.FINISHED;
         }
 
-        // If we don't have a target, find one
-        if(target.equals(BlockPos.ZERO)) {
-            // Find nearest target with random direction
-            target = findNearestTargetBlock();
-        }
-
-        // If we can't find a target, return;
-        if(target.equals(BlockPos.ZERO))
+        if(state == State.IDLE)
         {
-            return;
+            queue.add(this.blockPosition());
+            //queue.addAll(BlockAlgorithms.getAdjacentNeighbors(this.blockPosition()));
+            state = State.SEARCHING;
         }
-
-        // Get the neighbors of the current block
-        ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition());
-        // Remove andy obstructions
-        neighbors.removeIf(blockPos -> isObstructed(level.getBlockState(blockPos), blockPos));
-
-
-        // If there are no non-obstructed neighbors, return
-        if(neighbors.size() == 0)
+        else if (state == State.SEARCHING)
         {
-            return;
-        }
 
-        // Find the block that is closest to target in neighbors
-        BlockPos closest = neighbors.get(0);
-        for (BlockPos pos : neighbors)
-        {
-            if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target))
+            // IF not complete, just return;
+            if(!searchTick())
             {
-                closest = pos;
+                return;
+            }
+
+            // If we can't find a target, finish
+            if (target.equals(BlockPos.ZERO)) {
+                state = State.FINISHED;
+            }
+            else // If we find target, start infecting
+            {
+                state = State.EXPLORING;
             }
         }
-
-
-
-        // Move to the closest block
-        this.setPos(closest.getX(), closest.getY(), closest.getZ());
-        visitedPositons.put(closest.asLong(), true);
-
-        // If we've reached the target block, find a new target
-        if (this.blockPosition().equals(target))
+        else if (state == State.EXPLORING)
         {
-            target = BlockPos.ZERO;
-            // Infect the block and increase the infection count
-            SculkHorde.infestationConversionTable.infectBlock((ServerWorld) this.level, this.blockPosition());
-            infections++;
+            // Get Neighbors of Each Block
+            ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition());
+            // Create a new list to store unobstructed neighbors
+            ArrayList<BlockPos> unobstructedNeighbors = new ArrayList<>();
+            // Check each neighbor for obstructions and add unobstructed neighbors to the new list
+            for (BlockPos neighbor : neighbors)
+            {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
+                    unobstructedNeighbors.add(neighbor);
+                }
+            }
+
+
+            // If there are no non-obstructed neighbors, return
+            if (neighbors.size() == 0) {
+                return;
+            }
+
+            // Find the block that is closest to target in neighbors
+            BlockPos closest = neighbors.get(0);
+            for (BlockPos pos : neighbors)
+            {
+                if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target)) {
+                    closest = pos;
+                }
+            }
+
+
+            // Move to the closest block
+            this.setPos(closest.getX(), closest.getY(), closest.getZ());
+            visitedPositons.put(closest.asLong(), true);
+
+            // If we've reached the target block, find a new target
+            if (this.blockPosition().equals(target))
+            {
+                target = BlockPos.ZERO;
+                // Infect the block and increase the infection count
+                transformBlock(this.blockPosition());
+                infections++;
+                state = State.SEARCHING;
+                visited.clear();
+                queue.clear();
+                queue.add(this.blockPosition());
+            }
         }
+        else if (state == State.FINISHED)
+        {
+            this.remove();
+        }
+
     }
 
     /**
@@ -238,6 +297,31 @@ public class CursorInfectorEntity extends Entity
             return true;
         }
         return false;
+    }
+
+    /**
+     * Returns true if the block is considered a target.
+     * @param state the block state
+     * @param pos the block position
+     * @return true if the block is considered a target
+     */
+    protected boolean isTarget(BlockState state, BlockPos pos)
+    {
+        return SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(state);
+    }
+
+    /**
+     * Transforms the block at the given position.
+     * @param pos the position of the block
+     */
+    protected void transformBlock(BlockPos pos)
+    {
+        SculkHorde.infestationConversionTable.infectBlock((ServerWorld) this.level, pos);
+    }
+
+    protected void spawnParticleEffects()
+    {
+        this.level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
     }
 
     /**

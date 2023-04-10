@@ -32,6 +32,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
 
@@ -65,7 +66,10 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
     private AnimationFactory factory = new AnimationFactory(this);
 
-    CursorSurfaceInfectorEntity cursor;
+    private CursorSurfaceInfectorEntity cursor;
+
+    private long INFECTION_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(20);
+    private long lastInfectionTime = 0;
 
     /**
      * The Constructor
@@ -194,37 +198,37 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
     //Every tick, spawn a short range cursor
     @Override
-    public void aiStep()
-    {
+    public void aiStep() {
         super.aiStep();
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level.isClientSide)
-        {
+        if (level.isClientSide) {
             Random random = new Random();
-            for (int i = 0; i < 1; i++)
-            {
+            for (int i = 0; i < 1; i++) {
                 level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10);
             }
             return;
         }
 
         Random random = new Random();
-        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive() ))
-        {
+        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive())) {
             // Spawn Block Traverser
             cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxInfections(20);
             cursor.setMaxRange(100);
             level.addFreshEntity(cursor);
+        }
 
+        if (System.currentTimeMillis() - lastInfectionTime > INFECTION_INTERVAL_MILLIS)
+        {
+            lastInfectionTime = System.currentTimeMillis();
             // Any entity within 10 blocks of the spewer will be infected
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
-                if (entity instanceof LivingEntity && ((ISculkSmartEntity)this).getTargetParameters().isEntityValidTarget(this.getTarget()))
+                if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity))
                 {
                     entity.addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
                 }

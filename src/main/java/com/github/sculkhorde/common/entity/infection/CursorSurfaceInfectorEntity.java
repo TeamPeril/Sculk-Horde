@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 
@@ -53,22 +54,11 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(pos);
-
-        int airCount = 0;
-        // If any of the neighbors in the world are air, then this block is not obstructed.
-        for(BlockPos neighbor : neighbors)
-        {
-            if(!this.level.getBlockState(neighbor).isSolidRender(this.level, neighbor))
-            {
-                airCount++;
-            }
-        }
-
-        if(airCount <= 0)
+        if(!BlockAlgorithms.isExposedToAir((ServerWorld) this.level, pos))
         {
             return true;
         }
+
 
         return false;
     }

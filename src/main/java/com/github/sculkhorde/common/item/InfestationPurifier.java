@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,10 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -25,13 +21,15 @@ import java.util.List;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
-public class AntiSculkMatter extends Item implements IForgeItem {
+public class InfestationPurifier extends Item implements IForgeItem {
+
+    private InfestationPurifierEntity purifier; // The cursor entity
 
     /**
      * The Constructor that takes in properties
      * @param properties The Properties
      */
-    public AntiSculkMatter(Properties properties) {
+    public InfestationPurifier(Properties properties) {
         super(properties);
     }
 
@@ -39,7 +37,7 @@ public class AntiSculkMatter extends Item implements IForgeItem {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering items in ItemRegistry.java can look cleaner
      */
-    public AntiSculkMatter() {
+    public InfestationPurifier() {
         this(getProperties());
     }
 
@@ -62,7 +60,7 @@ public class AntiSculkMatter extends Item implements IForgeItem {
     public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.anti_sculk_matter")); //Text that displays if not holding shift
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.infestation_purifier")); //Text that displays if not holding shift
 
     }
 
@@ -89,20 +87,19 @@ public class AntiSculkMatter extends Item implements IForgeItem {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
 
         //If Item not on cool down
-        if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
+        if(playerIn.getCooldowns().isOnCooldown(this) || worldIn.isClientSide())
         {
-
-            //Do a ray trace to see what block the player is looking at
-            BlockRayTraceResult blockraytraceresult = getPlayerPOVHitResult(worldIn, playerIn, RayTraceContext.FluidMode.NONE);
-            //If our ray trace hits a block
-            if (blockraytraceresult.getType() == RayTraceResult.Type.BLOCK)
-            {
-                BlockPos origin_pos = blockraytraceresult.getBlockPos();
-                SculkHorde.infestationConversionTable.convertToVictimNodeQueue.addAll(BlockAlgorithms.getBlockPosInCircle(origin_pos, 10, true));
-                playerIn.getCooldowns().addCooldown(this, 20*5); //Cool down for second (20 ticks per second)
-                return ActionResult.sidedSuccess(itemstack, worldIn.isClientSide());
-            }
+            return ActionResult.fail(itemstack);
         }
-        return ActionResult.fail(itemstack);
+
+        //Spawn the Purifier Cursor
+        purifier = new InfestationPurifierEntity(worldIn);
+        purifier.setPos(playerIn.blockPosition().getX(), playerIn.blockPosition().getY(), playerIn.blockPosition().getZ());
+        worldIn.addFreshEntity(purifier);
+
+        // Consume Item
+        itemstack.shrink(1);
+        return ActionResult.sidedSuccess(itemstack, worldIn.isClientSide());
+
     }
 }

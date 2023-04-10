@@ -52,7 +52,6 @@ public class ModEventSubscriber {
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 6);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 200);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 200);
-
         
     }
 
@@ -67,8 +66,9 @@ public class ModEventSubscriber {
         register(EntityRegistry.SCULK_SPITTER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkSpitterEntity::passSpawnCondition);
         register(EntityRegistry.SCULK_BEE_INFECTOR, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeInfectorEntity::passSpawnCondition);
         register(EntityRegistry.SCULK_BEE_HARVESTER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_SPORE_SPEWER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_RAVAGER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_SPORE_SPEWER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_RAVAGER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.INFESTATION_PURIFIER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
     }
 
     /* entityAttributes
@@ -85,6 +85,7 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.SCULK_HATCHER, SculkHatcherEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_RAVAGER, SculkRavagerEntity.createAttributes().build());
+        event.put(EntityRegistry.INFESTATION_PURIFIER, InfestationPurifierEntity.createAttributes().build());
     }
 }
 

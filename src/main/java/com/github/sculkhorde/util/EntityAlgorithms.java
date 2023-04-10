@@ -74,8 +74,6 @@ public class EntityAlgorithms {
                 || e instanceof SculkRavagerEntity;
     };
 
-
-
     /**
      * Determines if an Entity is Infected based on if it has a potion effect
      * @param e The Given Entity

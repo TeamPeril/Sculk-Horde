@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,6 +39,11 @@ public class TargetParameters {
             return false;
         }
 
+        if(e instanceof InfestationPurifierEntity)
+        {
+            return true;
+        }
+
         //If not attackable or invulnerable or is dead/dying
         if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
         {
@@ -74,8 +80,14 @@ public class TargetParameters {
             return false;
         }
 
+        //If we do not attack swimmers and target is a swimmer
+        if(!targetBelow50PercentHealth && (e.getHealth() < e.getMaxHealth() / 2))
+        {
+            return false;
+        }
+
         //If we do not attack below 50% health and target is below 50% health
-        return targetBelow50PercentHealth || !(e.getHealth() < e.getMaxHealth() / 2);
+        return true;
     }
 
     public boolean isTargetingHostiles()
