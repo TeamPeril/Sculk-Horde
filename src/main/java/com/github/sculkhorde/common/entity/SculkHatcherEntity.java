@@ -283,29 +283,20 @@ public class SculkHatcherEntity extends SculkLivingEntity implements IAnimatable
             this.thisMob = mob;
         }
 
-
-        /**
-         * Starts the attack Sequence<br>
-         * We shouldn't have to check if the target is null since
-         * the super class does this. However, something funky is going on that
-         * causes a null pointer exception if we dont check this in tick(). I put
-         * it here aswell just in case.
-         */
-        public void start()
+        @Override
+        public boolean canUse()
         {
-            if(this.thisMob.getTarget() != null)
-            {
-                super.start();
-            }
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            // If the mob is already targeting something valid, don't bother
+            return canWeUse;
         }
 
-        /**
-         * Stops the attack sequence.
-         */
-        public void stop()
+        @Override
+        public boolean canContinueToUse()
         {
-            super.stop();
+            return canUse();
         }
+
 
         /**
          * Gets called every tick the attack is active<br>

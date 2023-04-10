@@ -14,19 +14,19 @@ import java.util.function.Predicate;
 
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
-    protected EntityPredicate targetConditions;
+    //protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
 
     public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach)
     {
-        this(mobEntity, mustSee, mustReach, null);
+        this(mobEntity, false, false, null);
     }
 
     public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
     {
-        super(mobEntity, mustSee, mustReach);
+        super(mobEntity, false, false);
         this.setFlags(EnumSet.of(Flag.TARGET));
-        this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
+        //this.targetConditions = (new EntityPredicate()).range(this.getFollowDistance()).selector(predicate);
     }
 
     /** Functionality **/
@@ -51,9 +51,6 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
                 LivingEntity.class,
                 this.getTargetSearchArea(this.getFollowDistance()),
                         ((ISculkSmartEntity)this.mob).getTargetParameters().isPossibleNewTargetValid);
-
-        // Use java removeif function to filter out non targets
-        //possibleTargets.removeIf(e -> (!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(e)));
 
         //If there is available targets
         if(possibleTargets.size() <= 0)

@@ -10,6 +10,8 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.server.ServerWorld;
 
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -28,6 +30,10 @@ public class TargetParameters
     private long lastTargetSeenTime = System.currentTimeMillis(); //The last time we saw the target
     private long MAX_TARGET_UNSEEN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30); //The max time we can go without seeing the target
     private boolean mustReachTarget = false; //Should we only target entities we can reach?
+    //A hash map which we store a blacklist of mobs we should not attack. Should use UUIDs of mobs to identify
+    private HashMap<UUID, Long> blacklist = new HashMap<>();
+
+
 
 
     public TargetParameters()
@@ -49,7 +55,7 @@ public class TargetParameters
 
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
-        if(e == null)
+        if(e == null || !(e instanceof MobEntity))
         {
             return false;
         }
@@ -79,6 +85,12 @@ public class TargetParameters
 
         //If player is in creative or spectator
         if(e instanceof PlayerEntity && (((PlayerEntity) e).isCreative() || ((PlayerEntity) e).isSpectator()))
+        {
+            return false;
+        }
+
+        // If Blacklisted
+        if(blacklist.containsKey(e.getUUID()))
         {
             return false;
         }
@@ -114,7 +126,9 @@ public class TargetParameters
         }
 
         //If we must reach target and cannot reach target
-        if(mustReachTarget() && !canReach(e))
+        // NOTE: validating existing targets gets called significantly more often.
+        // When we do this, we disable reach check because it lags to all hell.
+        if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
         {
             return false;
         }
@@ -215,5 +229,17 @@ public class TargetParameters
                 return (double)(i * i + j * j) <= 50;
             }
         }
+    }
+
+
+    public void addToBlackList(MobEntity entity)
+    {
+        blacklist.put(entity.getUUID(), System.currentTimeMillis());
+    }
+
+    // Is mob on blacklist
+    public boolean isOnBlackList(MobEntity entity)
+    {
+        return blacklist.containsKey(entity.getUUID());
     }
 }

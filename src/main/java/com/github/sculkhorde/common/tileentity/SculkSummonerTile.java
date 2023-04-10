@@ -144,13 +144,18 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
             searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
 
             //Get targets inside bounding box.
-            possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            //EntityAlgorithms.filterOutNonTargets(possibleAggressorTargets, true, false, true, true);
-            possibleAggressorTargets.removeIf(e -> (!(hostileTargetParameters.isEntityValidTarget(e, false))));
+            possibleAggressorTargets =
+                    this.level.getLoadedEntitiesOfClass(
+                            LivingEntity.class,
+                            searchArea,
+                            hostileTargetParameters.isPossibleNewTargetValid);
 
-            possibleLivingEntityTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) this.level, searchArea);
-            //EntityAlgorithms.filterOutNonTargets(possibleLivingEntityTargets, false, true, false, true);
-            possibleLivingEntityTargets.removeIf(e -> (!(infectableTargetParameters.isEntityValidTarget(e, false))));
+            //Get targets inside bounding box.
+            possibleLivingEntityTargets =
+                    this.level.getLoadedEntitiesOfClass(
+                            LivingEntity.class,
+                            searchArea,
+                            infectableTargetParameters.isPossibleNewTargetValid);
 
             if (possibleAggressorTargets.size() == 0 && possibleLivingEntityTargets.size() == 0) { return; }
 

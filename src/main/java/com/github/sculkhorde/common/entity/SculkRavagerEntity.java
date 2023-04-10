@@ -72,7 +72,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
     public static final float MOVEMENT_SPEED = 0.75F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
 
     /**
      * Determines & registers the attributes of the mob.
@@ -221,38 +221,21 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
         @Override
         public boolean canUse()
         {
-            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
-            {
-                return false;
-            }
-            return super.canUse();
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            // If the mob is already targeting something valid, don't bother
+            return canWeUse;
         }
 
         @Override
         public boolean canContinueToUse()
         {
-            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
-            {
-                return false;
-            }
-
-            return super.canContinueToUse();
+            return canUse();
         }
 
         protected double getAttackReachSqr(LivingEntity pAttackTarget)
         {
             float f = SculkRavagerEntity.this.getBbWidth() - 0.1F;
             return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
-        }
-
-        @Override
-        public void tick()
-        {
-            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
-            {
-                return;
-            }
-            super.tick();
         }
     }
 }

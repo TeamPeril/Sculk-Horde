@@ -1,7 +1,10 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+
+import java.util.EnumSet;
 
 public class SculkMiteAggressorAttackGoal extends MeleeAttackGoal {
 
@@ -15,50 +18,21 @@ public class SculkMiteAggressorAttackGoal extends MeleeAttackGoal {
      */
     public SculkMiteAggressorAttackGoal(SculkMiteAggressorEntity mob, double speedModifier, boolean followTargetIfNotSeen) {
         super(mob, speedModifier, followTargetIfNotSeen);
+        this.setFlags(EnumSet.of(Flag.MOVE));
         this.thisMob = mob;
     }
 
-
-    /**
-     * Starts the attack Sequence<br>
-     * We shouldn't have to check if the target is null since
-     * the super class does this. However, something funky is going on that
-     * causes a null pointer exception if we dont check this in tick(). I put
-     * it here aswell just in case.
-     */
-    public void start()
+    @Override
+    public boolean canUse()
     {
-        if(this.thisMob.getTarget() != null)
-        {
-            super.start();
-        }
+        boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+        // If the mob is already targeting something valid, don't bother
+        return canWeUse;
     }
 
-    /**
-     * Stops the attack sequence.
-     */
-    public void stop()
+    @Override
+    public boolean canContinueToUse()
     {
-        super.stop();
-    }
-
-    /**
-     * Gets called every tick the attack is active<br>
-     * We shouldn't have to check if the target is null since
-     * the super class does this. However, something funky is going on that
-     * causes a null pointer exception if we dont check this here. This is
-     * absolutely some sort of bug that I was unable to figure out. For the
-     * time being (assuming I ever fix this), this will have to do.
-     */
-    public void tick()
-    {
-        if(this.thisMob.getTarget() == null)
-        {
-            stop();
-        }
-        else
-        {
-            super.tick();
-        }
+        return canUse();
     }
 }

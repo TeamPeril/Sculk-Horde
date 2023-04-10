@@ -203,7 +203,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, I
                         //SwimGoal(mob)
                         new SwimGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkMiteInfectGoal(this, 1.0D, false),
+                        new SculkMiteInfectGoal(this, 1.0D, true),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)

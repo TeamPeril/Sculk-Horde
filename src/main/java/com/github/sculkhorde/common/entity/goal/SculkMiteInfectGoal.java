@@ -40,29 +40,6 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
         return canUse();
     }
 
-
-    /**
-     * Starts the attack Sequence<br>
-     * We shouldn't have to check if the target is null since
-     * the super class does this. However, something funky is going on that
-     * causes a null pointer exception if we dont check this in tick(). I put
-     * it here aswell just in case.
-     */
-    @Override
-    public void start()
-    {
-       super.start();
-    }
-
-    /**
-     * Stops the attack sequence.
-     */
-    @Override
-    public void stop()
-    {
-        super.stop();
-    }
-
     /**
      * Gets called every tick the attack is active<br>
      * We shouldn't have to check if the target is null since

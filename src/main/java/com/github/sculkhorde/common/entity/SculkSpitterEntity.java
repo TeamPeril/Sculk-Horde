@@ -61,7 +61,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
 
     /**
      * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
