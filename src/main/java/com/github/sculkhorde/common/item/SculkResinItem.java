@@ -48,7 +48,7 @@ public class SculkResinItem extends Item implements IForgeItem {
     public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 
         super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhoard.sculk_resin")); //Text that displays if not holding shift
+        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_resin")); //Text that displays if not holding shift
 
     }
 }

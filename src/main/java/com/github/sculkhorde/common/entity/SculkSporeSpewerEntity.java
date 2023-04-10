@@ -273,7 +273,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
         @Override
         public void start() {
-            timeUntilDeath = 20 * 60 * 5; //Die after 5 Minutes
+            timeUntilDeath = 20 * 60 * 15; //Die after 15 Minutes
         }
 
         @Override
