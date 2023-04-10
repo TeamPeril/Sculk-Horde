@@ -34,7 +34,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     public boolean canUse()
     {
 
-        boolean canWeUse = !((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget());
+        boolean canWeUse = !((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
         // If the mob is already targeting something valid, don't bother
         return canWeUse;
     }
@@ -50,10 +50,10 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
                 this.mob.level.getLoadedEntitiesOfClass(
                 LivingEntity.class,
                 this.getTargetSearchArea(this.getFollowDistance()),
-                (Predicate<? super LivingEntity>) null);
+                        ((ISculkSmartEntity)this.mob).getTargetParameters().isPossibleNewTargetValid);
 
         // Use java removeif function to filter out non targets
-        possibleTargets.removeIf(e -> (!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(e)));
+        //possibleTargets.removeIf(e -> (!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(e)));
 
         //If there is available targets
         if(possibleTargets.size() <= 0)

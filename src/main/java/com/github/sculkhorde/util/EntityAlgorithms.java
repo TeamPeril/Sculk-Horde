@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.EffectRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.CreeperEntity;
+import net.minecraft.entity.passive.WaterMobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -101,7 +102,7 @@ public class EntityAlgorithms {
     {
         // The gramemind does not store swimmers, we need to figure if a mob is swimming
         // by using the entity's ability to swim
-        return entity.canBreatheUnderwater();
+        return entity instanceof WaterMobEntity;
     }
 
     /**

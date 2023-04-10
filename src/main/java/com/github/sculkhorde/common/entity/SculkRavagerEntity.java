@@ -72,7 +72,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
     public static final float MOVEMENT_SPEED = 0.75F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetHostiles();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
 
     /**
      * Determines & registers the attributes of the mob.
@@ -221,7 +221,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
         @Override
         public boolean canUse()
         {
-            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
+            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
             {
                 return false;
             }
@@ -231,7 +231,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
         @Override
         public boolean canContinueToUse()
         {
-            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
+            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
             {
                 return false;
             }
@@ -248,7 +248,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
         @Override
         public void tick()
         {
-            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
+            if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
             {
                 return;
             }

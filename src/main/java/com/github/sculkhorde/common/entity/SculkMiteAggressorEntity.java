@@ -59,7 +59,7 @@ public class SculkMiteAggressorEntity extends SculkLivingEntity implements IAnim
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetHostiles();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
 
     private AnimationFactory factory = new AnimationFactory(this);
 

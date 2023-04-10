@@ -1,11 +1,14 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
+
+import java.util.EnumSet;
 
 public class SculkMiteInfectGoal extends MeleeAttackGoal {
 
@@ -19,7 +22,22 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
      */
     public SculkMiteInfectGoal(SculkMiteEntity mob, double speedModifier, boolean followTargetIfNotSeen) {
         super(mob, speedModifier, followTargetIfNotSeen);
+        this.setFlags(EnumSet.of(Flag.MOVE));
         this.mob = mob;
+    }
+
+    @Override
+    public boolean canUse()
+    {
+        boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+        // If the mob is already targeting something valid, don't bother
+        return canWeUse;
+    }
+
+    @Override
+    public boolean canContinueToUse()
+    {
+        return canUse();
     }
 
 
@@ -30,17 +48,16 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
      * causes a null pointer exception if we dont check this in tick(). I put
      * it here aswell just in case.
      */
+    @Override
     public void start()
     {
-        if(this.mob.getTarget() != null && EntityAlgorithms.isLivingEntityInfected(this.mob.getTarget()))
-        {
-            super.start();
-        }
+       super.start();
     }
 
     /**
      * Stops the attack sequence.
      */
+    @Override
     public void stop()
     {
         super.stop();
@@ -54,43 +71,35 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
      * absolutely some sort of bug that I was unable to figure out. For the
      * time being (assuming I ever fix this), this will have to do.
      */
+    @Override
     public void tick()
     {
         SculkMiteEntity thisMob = this.mob;
         LivingEntity target = this.mob.getTarget();
-
-        //If entity is null or infected already, do not pursue
-        if(this.mob.getTarget() == null || EntityAlgorithms.isLivingEntityInfected(this.mob.getTarget()))
+        super.tick();
+        //Calcualate distance between this mob and target mob in a 3D space
+        double mobX = thisMob.getX();
+        double mobY = thisMob.getY();
+        double mobZ = thisMob.getZ();
+        double targetX = target.getX();
+        double targetY = target.getY();
+        double targetZ = thisMob.getTarget().getZ();
+        double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
+        //If in infect range & not client side & current mob health is less than or equal to 50% of max health
+        if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
         {
-            stop();
-        }
-        else
-        {
-            super.tick();
-            //Calcualate distance between this mob and target mob in a 3D space
-            double mobX = thisMob.getX();
-            double mobY = thisMob.getY();
-            double mobZ = thisMob.getZ();
-            double targetX = target.getX();
-            double targetY = target.getY();
-            double targetZ = thisMob.getTarget().getZ();
-            double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
-            //If in infect range & not client side & current mob health is less than or equal to 50% of max health
-            if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
+            float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
+            if(targetMobRemainingHealth <= 0.5)
             {
-                float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
-                if(targetMobRemainingHealth <= 0.25)
-                {
-                    target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
+                target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
 
-                    //Kill The Bastard
-                    /**
-                     *  Note:
-                     *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
-                     */
-                    //thisMob.die(DamageSource.GENERIC);
-                    thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
-                }
+                //Kill The Bastard
+                /**
+                 *  Note:
+                 *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
+                 */
+                //thisMob.die(DamageSource.GENERIC);
+                thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
             }
         }
     }

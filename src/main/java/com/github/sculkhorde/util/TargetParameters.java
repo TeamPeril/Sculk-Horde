@@ -2,25 +2,52 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.server.ServerWorld;
+
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static com.github.sculkhorde.util.EntityAlgorithms.*;
 
-public class TargetParameters {
+public class TargetParameters
+{
+    private MobEntity mob;
+
     private boolean targetHostiles = false; //Should we attack hostiles?
     private boolean targetPassives = false; //Should we target passives?
     private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
     private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
     private boolean targetSwimmers = false; //Should we target entities that can swim?
+    private boolean mustSeeTarget = false; //Should we only target entities we can see?
+    private long lastTargetSeenTime = System.currentTimeMillis(); //The last time we saw the target
+    private long MAX_TARGET_UNSEEN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30); //The max time we can go without seeing the target
+    private boolean mustReachTarget = false; //Should we only target entities we can reach?
 
-    public TargetParameters enableTargetHostiles()
+
+    public TargetParameters()
     {
-        targetHostiles = true;
-        return this;
+        this.mob = null;
     }
 
-    public boolean isEntityValidTarget(LivingEntity e)
+    public TargetParameters(MobEntity mob)
+    {
+        this.mob = mob;
+    }
+
+
+    // Predicate to test if valid target
+    public final Predicate<LivingEntity> isPossibleNewTargetValid = (e) -> {
+        return isEntityValidTarget(e, false);
+    };
+
+
+    public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
         if(e == null)
         {
@@ -86,8 +113,20 @@ public class TargetParameters {
             return false;
         }
 
-        //If we do not attack below 50% health and target is below 50% health
+        //If we must reach target and cannot reach target
+        if(mustReachTarget() && !canReach(e))
+        {
+            return false;
+        }
+
+        //Entity is Valid
         return true;
+    }
+
+    public TargetParameters enableTargetHostiles()
+    {
+        targetHostiles = true;
+        return this;
     }
 
     public boolean isTargetingHostiles()
@@ -138,5 +177,43 @@ public class TargetParameters {
     public boolean isTargetingSwimmers()
     {
         return targetSwimmers;
+    }
+
+    public TargetParameters enableMustReachTarget()
+    {
+        if(this.mob == null)
+        {
+            throw new IllegalStateException("Cannot enable must reach target without a mob");
+        }
+        mustReachTarget = true;
+        return this;
+    }
+
+    public boolean mustReachTarget()
+    {
+        return mustReachTarget;
+    }
+
+    private boolean canReach(LivingEntity pTarget)
+    {
+        Path path = this.mob.getNavigation().createPath(pTarget, 0);
+        if (path == null)
+        {
+            return false;
+        }
+        else
+        {
+            PathPoint pathpoint = path.getEndNode();
+            if (pathpoint == null)
+            {
+                return false;
+            }
+            else
+            {
+                int i = pathpoint.x - MathHelper.floor(pTarget.getX());
+                int j = pathpoint.z - MathHelper.floor(pTarget.getZ());
+                return (double)(i * i + j * j) <= 50;
+            }
+        }
     }
 }

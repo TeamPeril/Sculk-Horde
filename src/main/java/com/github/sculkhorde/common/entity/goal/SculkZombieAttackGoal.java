@@ -21,7 +21,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canUse()
     {
-        if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
+        if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
         {
             return false;
         }
@@ -31,7 +31,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canContinueToUse()
     {
-        if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget()))
+        if(!((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true))
         {
             return false;
         }

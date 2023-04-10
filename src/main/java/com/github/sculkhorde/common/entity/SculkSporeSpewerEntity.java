@@ -62,7 +62,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
     public static final float MOVEMENT_SPEED = 0F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters().enableTargetPassives();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives();
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -228,7 +228,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
-                if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity))
+                if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
                 {
                     entity.addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
                 }
@@ -273,7 +273,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
         @Override
         public void start() {
-            timeUntilDeath = 20 * 60 * 15; //Die after 15 Minutes
+            timeUntilDeath = 20 * 60 * 60; //Die after 60 Minutes
         }
 
         @Override

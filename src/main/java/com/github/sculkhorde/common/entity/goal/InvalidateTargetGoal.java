@@ -42,7 +42,7 @@ public class InvalidateTargetGoal extends Goal {
             return false;
         }
         TargetParameters targetParameters = mob.getTargetParameters();
-        boolean result = !targetParameters.isEntityValidTarget(getTarget());
+        boolean result = !targetParameters.isEntityValidTarget(getTarget(), true);
         return result;
     }
 
