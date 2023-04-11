@@ -55,7 +55,12 @@ public class TargetParameters
 
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
-        if(e == null || !(e instanceof MobEntity))
+        if(e == null)
+        {
+            return false;
+        }
+
+        if(!(e instanceof MobEntity) && !(e instanceof PlayerEntity))
         {
             return false;
         }
