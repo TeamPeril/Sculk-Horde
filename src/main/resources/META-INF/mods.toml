@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[38,)"  #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+loaderVersion="[45,)"   #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license="All rights reserved"
@@ -19,7 +19,7 @@ modId="sculkhorde" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 # ${file.jarVersion} will substitute the value of the Implementation-Version as read from the mod's JAR file metadata
 # see the associated build.gradle script for how to populate this completely automatically during a build
-version="1.16.5-0.5.4" #mandatory
+version="1.19.4-0.5.4" #mandatory
  # A display name for the mod
 displayName="Sculk Horde" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
@@ -31,7 +31,7 @@ logoFile="sculkhorde.png" #optional
 # A text field displayed in the mod UI
 credits="Thanks to Team Peril" #optional
 # A text field displayed in the mod UI
-authors="Mikeatron, Zack, Sly" #optional
+authors="Team Peril" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Sculk Horde implements a new end-game era to your game that once activated, will force you to fight against the newly awaked ancient sculk horde in order to survive. This ancient enemy seeks to infect and consume the world in it's entirety.
@@ -43,7 +43,7 @@ Sculk Horde implements a new end-game era to your game that once activated, will
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[38,)" #mandatory
+    versionRange="[45,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -53,6 +53,6 @@ Sculk Horde implements a new end-game era to your game that once activated, will
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.18,1.19)"
+    versionRange="[1.19,1.20)"
     ordering="NONE"
     side="BOTH"
