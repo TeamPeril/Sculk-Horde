@@ -16,11 +16,11 @@ version = '1.16.5-0.5.4'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16) // Mojang ships Java 16 to end users, so your mod should target Java 16.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java 16 to end users, so your mod should target Java 16.
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: '1.18.2'
    
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -104,7 +104,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.104'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.48'
 	implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.83')
 }
 
