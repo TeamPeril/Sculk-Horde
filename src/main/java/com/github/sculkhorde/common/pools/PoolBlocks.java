@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.pools;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.Random;

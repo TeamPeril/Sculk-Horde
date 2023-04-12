@@ -9,15 +9,15 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.DimensionSavedDataManager;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
@@ -96,7 +96,7 @@ public class Gravemind
             if(ServerLifecycleHooks.getCurrentServer() == null)
                 return null;
 
-            DimensionSavedDataManager savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage();
+            DimensionDataStorage savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage();
             gravemindMemory = savedData.computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
         }
         return gravemindMemory;
@@ -127,7 +127,7 @@ public class Gravemind
         }
     }
 
-    public void enableAmountOfBeeHives(ServerWorld worldIn, int amount)
+    public void enableAmountOfBeeHives(ServerLevel worldIn, int amount)
     {
         if(getGravemindMemory().getBeeNestEntries().size() <= 0) { return; }
 
@@ -235,7 +235,7 @@ public class Gravemind
      * @param worldIn The World to place it in
      * @param targetPos The position to place it in
      */
-    public void placeSculkNode(ServerWorld worldIn, BlockPos targetPos, boolean enableChance)
+    public void placeSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
     {
         //Random Chance to Place TreeNode
         if(new Random().nextInt(10000) > 1 && enableChance) { return; }
@@ -254,7 +254,7 @@ public class Gravemind
      * @param positionIn The potential location of a new node
      * @return true if creation of new node is approved, false otherwise.
      */
-    public boolean isValidPositionForSculkNode(ServerWorld worldIn, BlockPos positionIn)
+    public boolean isValidPositionForSculkNode(ServerLevel worldIn, BlockPos positionIn)
     {
         if(worldIn.canSeeSky(positionIn))
         {
@@ -287,10 +287,10 @@ public class Gravemind
      * This class handels all data that gets saved to and loaded from the world. <br>
      * Learned World Data mechanics from: https://www.youtube.com/watch?v=tyTsdCzVz6w
      */
-    public class GravemindMemory extends WorldSavedData
+    public class GravemindMemory extends SavedData
     {
         //The world
-        public ServerWorld world;
+        public ServerLevel world;
 
         //Map<The Name of Mob, IsHostile?>
         public Map<String, HostileEntry> hostileEntries;
@@ -481,9 +481,9 @@ public class Gravemind
          * @param entityIn The Entity
          * @param worldIn The World
          */
-        public void addHostileToMemory(LivingEntity entityIn, ServerWorld worldIn)
+        public void addHostileToMemory(LivingEntity entityIn, ServerLevel worldIn)
         {
-            if(entityIn == null || EntityAlgorithms.isSculkLivingEntity.test(entityIn) || entityIn instanceof CreeperEntity)
+            if(entityIn == null || EntityAlgorithms.isSculkLivingEntity.test(entityIn) || entityIn instanceof Creeper)
             {
                 //if(DEBUG_MODE) System.out.println("Attempted to Add Hostile To Memory but failed.");
                 return;
@@ -507,7 +507,7 @@ public class Gravemind
          * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
          * @param worldIn The World
          */
-        public void validateNodeEntries(ServerWorld worldIn)
+        public void validateNodeEntries(ServerLevel worldIn)
         {
             long startTime = System.nanoTime();
             for(int index = 0; index < nodeEntries.size(); index++)
@@ -532,7 +532,7 @@ public class Gravemind
          * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
          * @param worldIn The World
          */
-        public void validateBeeNestEntries(ServerWorld worldIn)
+        public void validateBeeNestEntries(ServerLevel worldIn)
         {
             long startTime = System.nanoTime();
             for(int index = 0; index < getBeeNestEntries().size(); index++)
@@ -556,10 +556,10 @@ public class Gravemind
          * @param nbt The memory where data is stored
          */
         @Override
-        public void load(CompoundNBT nbt)
+        public void load(CompoundTag nbt)
         {
 
-            CompoundNBT gravemindData = nbt.getCompound("gravemindData");
+            CompoundTag gravemindData = nbt.getCompound("gravemindData");
 
             getNodeEntries().clear();
             getBeeNestEntries().clear();
@@ -591,9 +591,9 @@ public class Gravemind
          * @param nbt The memory where data is stored
          */
         @Override
-        public CompoundNBT save(CompoundNBT nbt)
+        public CompoundTag save(CompoundTag nbt)
         {
-            CompoundNBT gravemindData = new CompoundNBT();
+            CompoundTag gravemindData = new CompoundTag();
 
             nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
 
@@ -648,7 +648,7 @@ public class Gravemind
          * @param worldIn The world to check
          * @return True if in the world at location, false otherwise
          */
-        public boolean isEntryValid(ServerWorld worldIn)
+        public boolean isEntryValid(ServerLevel worldIn)
         {
             return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_NODE_BLOCK.get());
         }
@@ -657,9 +657,9 @@ public class Gravemind
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundNBT deserialize()
+        public CompoundTag deserialize()
         {
-            CompoundNBT nbt = new CompoundNBT();
+            CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
             return nbt;
@@ -669,7 +669,7 @@ public class Gravemind
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static NodeEntry serialize(CompoundNBT nbt)
+        public static NodeEntry serialize(CompoundTag nbt)
         {
             return new NodeEntry(BlockPos.of(nbt.getLong("position")));
         }
@@ -706,7 +706,7 @@ public class Gravemind
          * @param worldIn The world to check
          * @return True if valid, false otherwise.
          */
-        public boolean isEntryValid(ServerWorld worldIn)
+        public boolean isEntryValid(ServerLevel worldIn)
         {
             return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get());
         }
@@ -716,7 +716,7 @@ public class Gravemind
          * is Hive enabled?
          * @return
          */
-        public boolean isOccupantsExistingDisabled(ServerWorld worldIn)
+        public boolean isOccupantsExistingDisabled(ServerLevel worldIn)
         {
             return SculkBeeNestBlock.isNestClosed(worldIn.getBlockState(position));
         }
@@ -724,7 +724,7 @@ public class Gravemind
         /**
          * Sets Hive to deny bees leaving
          */
-        public void disableOccupantsExiting(ServerWorld world)
+        public void disableOccupantsExiting(ServerLevel world)
         {
             SculkBeeNestBlock.setNestClosed(world, world.getBlockState(position), position);
         }
@@ -733,7 +733,7 @@ public class Gravemind
         /**
          * Sets Hive to allow bees leaving
          */
-        public void enableOccupantsExiting(ServerWorld world)
+        public void enableOccupantsExiting(ServerLevel world)
         {
             SculkBeeNestBlock.setNestOpen(world, world.getBlockState(position), position);
         }
@@ -766,9 +766,9 @@ public class Gravemind
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundNBT deserialize()
+        public CompoundTag deserialize()
         {
-            CompoundNBT nbt = new CompoundNBT();
+            CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
             if(parentNodePosition != null) nbt.putLong("parentNodePosition", parentNodePosition.asLong());
             return nbt;
@@ -779,7 +779,7 @@ public class Gravemind
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static BeeNestEntry serialize(CompoundNBT nbt)
+        public static BeeNestEntry serialize(CompoundTag nbt)
         {
             return new BeeNestEntry(BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
         }
@@ -810,9 +810,9 @@ public class Gravemind
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundNBT deserialize()
+        public CompoundTag deserialize()
         {
-            CompoundNBT nbt = new CompoundNBT();
+            CompoundTag nbt = new CompoundTag();
             nbt.putString("identifier", identifier);
             return nbt;
         }
@@ -821,7 +821,7 @@ public class Gravemind
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static HostileEntry serialize(CompoundNBT nbt)
+        public static HostileEntry serialize(CompoundTag nbt)
         {
             return new HostileEntry(nbt.getString("identifier"));
         }

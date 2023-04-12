@@ -2,8 +2,8 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
@@ -31,7 +31,7 @@ public class SculkRavagerModel extends AnimatedGeoModel<SculkRavagerEntity> {
 
         // Rotate the legs based on the movement of the entity
         float walkSpeed = entity.animationSpeed * 0.5F;
-        float swingAngle = MathHelper.cos((float) (customPredicate.getAnimationTick() * 0.5F)) * walkSpeed * 0.5F;
+        float swingAngle = Mth.cos((float) (customPredicate.getAnimationTick() * 0.5F)) * walkSpeed * 0.5F;
 
         getModel(getModelLocation(entity)).getBone("leg0").ifPresent(leg0 -> {
             leg0.setRotationX(swingAngle);

@@ -2,11 +2,11 @@ package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.Level;
 
 
 public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
@@ -20,7 +20,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
      * @param entityIn The Entity we are Shooting
      * @param worldIn The world the projectile will exist in
      */
-    public SculkAcidicProjectileEntity(EntityType<? extends CustomItemProjectileEntity> entityIn, World worldIn) {
+    public SculkAcidicProjectileEntity(EntityType<? extends CustomItemProjectileEntity> entityIn, Level worldIn) {
         super(entityIn, worldIn);
     }
 
@@ -28,7 +28,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
      * Constructor
      * @param worldIn The World to spawn the projectile in
      */
-    public SculkAcidicProjectileEntity(World worldIn,  LivingEntity shooterIn, float damageIn) {
+    public SculkAcidicProjectileEntity(Level worldIn,  LivingEntity shooterIn, float damageIn) {
         this(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY, worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);

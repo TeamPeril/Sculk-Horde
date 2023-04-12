@@ -3,25 +3,25 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.common.tileentity.SculkMassTile;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -29,6 +29,9 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -119,7 +122,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param victimHealth How much health the victim has.
      */
     //@OnlyIn(Dist.DEDICATED_SERVER)
-    public void spawn(World world, BlockPos originPos, float victimHealth)
+    public void spawn(Level world, BlockPos originPos, float victimHealth)
     {
         boolean DEBUG_THIS = false;
         BlockPos placementPos = originPos.above();
@@ -173,7 +176,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 }
 
                 //Replace Block Under sculk mass with infested variant if possible
-                SculkHorde.infestationConversionTable.infectBlock((ServerWorld) world, originPos.below());
+                SculkHorde.infestationConversionTable.infectBlock((ServerLevel) world, originPos.below());
             }
         }
     }
@@ -198,7 +201,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param random ???
      */
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos thisBlockPos, Random random) {
+    public void randomTick(BlockState blockState, ServerLevel serverWorld, BlockPos thisBlockPos, Random random) {
 
     }
 
@@ -208,10 +211,10 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param thisBlockPos The position to check
      * @return The tile entity
      */
-    public SculkMassTile getTileEntity(World world, BlockPos thisBlockPos)
+    public SculkMassTile getTileEntity(Level world, BlockPos thisBlockPos)
     {
         //Get tile entity for this block
-        TileEntity tileEntity = world.getBlockEntity(thisBlockPos);
+        BlockEntity tileEntity = world.getBlockEntity(thisBlockPos);
         SculkMassTile thisTile = null;
         try
         {
@@ -236,11 +239,11 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param stack The stack being used by the player
      * @return The resulting state after the action has been performed
      */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
+    public BlockState getToolModifiedState(BlockState state, Level world, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
     {
         if(DEBUG_MODE)
         {
-            TileEntity tile = world.getBlockEntity(pos);
+            BlockEntity tile = world.getBlockEntity(pos);
             if(tile instanceof SculkMassTile && tile != null)
             {
 
@@ -249,7 +252,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                         pos.getY() + ", " +
                         pos.getZ() + ") " +
                         "getStoredSculkMass: " + ((SculkMassTile) tile).getStoredSculkMass();
-                player.displayClientMessage(new StringTextComponent(debug_text), false);
+                player.displayClientMessage(new TextComponent(debug_text), false);
             }
             else
             {
@@ -270,7 +273,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @return True/False
      */
     @Override
-    protected boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
+    protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
         return !blockState.canBeReplaced(Fluids.WATER);
     }
 
@@ -284,7 +287,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType) {
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType) {
         return false;
     }
 
@@ -296,7 +299,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return TileEntityRegistry.SCULK_MASS_TILE.get().create();
     }
 
@@ -314,7 +317,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * Causes Model to be offset
      * @return
      */
-    public AbstractBlock.OffsetType getOffsetType() {
+    public BlockBehaviour.OffsetType getOffsetType() {
         return OffsetType.NONE;
     }
 
@@ -327,7 +330,7 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param iSelectionContext
      * @return
      */
-    public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext iSelectionContext) {
+    public VoxelShape getShape(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos, CollisionContext iSelectionContext) {
         //Block.box(xOffset, yOffset, zOffset, width, height, length)
         return Block.box(1.0D, 0.0D, 1.0D, 15.0D, 3.0D, 15.0D);
     }

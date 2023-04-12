@@ -8,20 +8,20 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -76,7 +76,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkSporeSpewerEntity(EntityType<? extends SculkSporeSpewerEntity> type, World worldIn) {
+    public SculkSporeSpewerEntity(EntityType<? extends SculkSporeSpewerEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -84,13 +84,13 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSporeSpewerEntity(World worldIn) {super(EntityRegistry.SCULK_SPORE_SPEWER, worldIn);}
+    public SculkSporeSpewerEntity(Level worldIn) {super(EntityRegistry.SCULK_SPORE_SPEWER, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes
      */
-    public static AttributeModifierMap.MutableAttribute createAttributes()
+    public static AttributeSupplier.Builder createAttributes()
     {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
@@ -172,7 +172,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
     public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
 
     @Override
-    protected int getExperienceReward(PlayerEntity player)
+    protected int getExperienceReward(Player player)
     {
         return 10;
     }
@@ -225,12 +225,12 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
         {
             lastInfectionTime = System.currentTimeMillis();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerWorld) level, this.getBoundingBox().inflate(10));
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
                 if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
                 {
-                    entity.addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
+                    entity.addEffect(new MobEffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
                 }
             }
         }

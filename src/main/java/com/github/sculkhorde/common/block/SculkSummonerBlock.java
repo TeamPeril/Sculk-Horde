@@ -1,26 +1,26 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,6 +29,9 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -132,7 +135,7 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
     @Override
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
     {
         return false;
     }
@@ -147,18 +150,18 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
      * @param p_220053_4_
      * @return
      */
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_)
+    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_)
     {
         return Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     }
 
     @Override
-    public AbstractBlock.OffsetType getOffsetType() {
+    public BlockBehaviour.OffsetType getOffsetType() {
         return OffsetType.NONE;
     }
 
     @Override
-    public boolean canBeReplacedByLeaves(BlockState state, IWorldReader world, BlockPos pos) {
+    public boolean canBeReplacedByLeaves(BlockState state, LevelReader world, BlockPos pos) {
         return false;
     }
 
@@ -168,12 +171,12 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
     }
 
     @Override
-    public boolean canBeReplacedByLogs(BlockState state, IWorldReader world, BlockPos pos) {
+    public boolean canBeReplacedByLogs(BlockState state, LevelReader world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean canBeReplaced(BlockState pState, BlockItemUseContext pUseContext) {
+    public boolean canBeReplaced(BlockState pState, BlockPlaceContext pUseContext) {
         return false;
     }
 
@@ -187,7 +190,7 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return TileEntityRegistry.SCULK_SUMMONER_TILE.get().create();
     }
 
@@ -201,10 +204,10 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
 
     }
 

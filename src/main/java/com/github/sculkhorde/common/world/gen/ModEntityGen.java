@@ -2,11 +2,11 @@ package com.github.sculkhorde.common.world.gen;
 
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.MobSpawnInfo;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraftforge.common.world.MobSpawnInfoBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
@@ -39,9 +39,9 @@ public class ModEntityGen {
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type,
-                                                        int weight, int minCount, int maxCount, RegistryKey<Biome>... biomes) {
+                                                        int weight, int minCount, int maxCount, ResourceKey<Biome>... biomes) {
         // Goes through each entry in the biomes and sees if it matches the current biome we are loading
-        boolean isBiomeSelected = Arrays.stream(biomes).map(RegistryKey::location)
+        boolean isBiomeSelected = Arrays.stream(biomes).map(ResourceKey::location)
                 .map(Object::toString).anyMatch(s -> s.equals(event.getName().toString()));
 
         if(!isBiomeSelected) {
@@ -50,9 +50,9 @@ public class ModEntityGen {
     }
 
     private static void addEntityToSpecificBiomes(BiomeLoadingEvent event, EntityType<?> type,
-                                                  int weight, int minCount, int maxCount, RegistryKey<Biome>... biomes) {
+                                                  int weight, int minCount, int maxCount, ResourceKey<Biome>... biomes) {
         // Goes through each entry in the biomes and sees if it matches the current biome we are loading
-        boolean isBiomeSelected = Arrays.stream(biomes).map(RegistryKey::location)
+        boolean isBiomeSelected = Arrays.stream(biomes).map(ResourceKey::location)
                 .map(Object::toString).anyMatch(s -> s.equals(event.getName().toString()));
 
         if(isBiomeSelected) {
@@ -62,7 +62,7 @@ public class ModEntityGen {
 
     private static void addEntityToAllBiomes(MobSpawnInfoBuilder spawns, EntityType<?> type,
                                              int weight, int minCount, int maxCount) {
-        List<MobSpawnInfo.Spawners> base = spawns.getSpawner(type.getCategory());
-        base.add(new MobSpawnInfo.Spawners(type,weight, minCount, maxCount));
+        List<MobSpawnSettings.SpawnerData> base = spawns.getSpawner(type.getCategory());
+        base.add(new MobSpawnSettings.SpawnerData(type,weight, minCount, maxCount));
     }
 }

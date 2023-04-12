@@ -1,6 +1,6 @@
 package com.github.sculkhorde.core;
 
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class DamageSourceRegistry {
     public static final DamageSource SCULK_SPIKE = (new DamageSource("sculkhorde.spike")).bypassArmor();

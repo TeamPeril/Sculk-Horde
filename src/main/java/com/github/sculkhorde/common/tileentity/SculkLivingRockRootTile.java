@@ -2,17 +2,17 @@ package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.common.procedural.structures.SculkLivingRockProceduralStructure;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkLivingRockRootTile extends TileEntity implements ITickableTileEntity
+public class SculkLivingRockRootTile extends BlockEntity implements TickableBlockEntity
 {
     private long tickedAt = System.nanoTime();
 
@@ -27,7 +27,7 @@ public class SculkLivingRockRootTile extends TileEntity implements ITickableTile
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkLivingRockRootTile(TileEntityType<?> type)
+    public SculkLivingRockRootTile(BlockEntityType<?> type)
     {
         super(type);
     }
@@ -69,7 +69,7 @@ public class SculkLivingRockRootTile extends TileEntity implements ITickableTile
         if(proceduralStructure == null)
         {
             //Create Structure
-            proceduralStructure = new SculkLivingRockProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            proceduralStructure = new SculkLivingRockProceduralStructure((ServerLevel) this.level, this.getBlockPos());
             proceduralStructure.generatePlan();
         }
 

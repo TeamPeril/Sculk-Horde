@@ -2,15 +2,15 @@ package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 
 public class SculkLivingRockProceduralStructure extends ProceduralStructure
 {
 
-    public SculkLivingRockProceduralStructure(ServerWorld worldIn, BlockPos originIn)
+    public SculkLivingRockProceduralStructure(ServerLevel worldIn, BlockPos originIn)
     {
         super(worldIn, originIn);
     }

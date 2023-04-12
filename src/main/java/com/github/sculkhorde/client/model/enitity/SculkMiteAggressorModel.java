@@ -2,7 +2,7 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class SculkMiteAggressorModel extends AnimatedGeoModel<SculkMiteAggressorEntity> {

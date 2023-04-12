@@ -2,13 +2,13 @@ package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 import org.apache.logging.log4j.core.jmx.Server;
 
 import java.lang.reflect.Array;
@@ -30,7 +30,7 @@ public class SculkNodeCaveHallwayProceduralStructure extends ProceduralStructure
      * @param length The length of the structure.
      * @param direction The direction of the structure.
      */
-    public SculkNodeCaveHallwayProceduralStructure(ServerWorld worldIn, BlockPos originIn, int radiusIn, int length, Direction direction)
+    public SculkNodeCaveHallwayProceduralStructure(ServerLevel worldIn, BlockPos originIn, int radiusIn, int length, Direction direction)
     {
         super(worldIn, originIn);
         this.radius = radiusIn;
@@ -128,7 +128,7 @@ public class SculkNodeCaveHallwayProceduralStructure extends ProceduralStructure
          * @param worldIn The World
          * @param targetPosIn The Position to spawn it
          */
-        public CaveWallPlannedBlock(ServerWorld worldIn, BlockPos targetPosIn)
+        public CaveWallPlannedBlock(ServerLevel worldIn, BlockPos targetPosIn)
         {
             super(worldIn, Blocks.CAVE_AIR.defaultBlockState(), targetPosIn);
         }
@@ -179,7 +179,7 @@ public class SculkNodeCaveHallwayProceduralStructure extends ProceduralStructure
          * @param worldIn The World
          * @param targetPosIn The Position to spawn it
          */
-        public CaveAirPlannedBlock(ServerWorld worldIn, BlockPos targetPosIn)
+        public CaveAirPlannedBlock(ServerLevel worldIn, BlockPos targetPosIn)
         {
             super(worldIn, Blocks.CAVE_AIR.defaultBlockState(), targetPosIn);
         }

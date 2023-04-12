@@ -1,17 +1,17 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.level.Level;
 
-public class SculkLivingEntity extends MonsterEntity {
+public class SculkLivingEntity extends Monster {
 
-    public static final DataParameter<Integer> STATE = EntityDataManager.defineId(SculkLivingEntity.class,
-            DataSerializers.INT);
+    public static final EntityDataAccessor<Integer> STATE = SynchedEntityData.defineId(SculkLivingEntity.class,
+            EntityDataSerializers.INT);
 
 
     /**
@@ -20,7 +20,7 @@ public class SculkLivingEntity extends MonsterEntity {
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkLivingEntity(EntityType<? extends SculkLivingEntity> type, World worldIn) {
+    public SculkLivingEntity(EntityType<? extends SculkLivingEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 

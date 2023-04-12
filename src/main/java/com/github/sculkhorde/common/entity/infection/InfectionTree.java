@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 public class InfectionTree {
     private TreeNode root;
@@ -10,7 +10,7 @@ public class InfectionTree {
     private final Direction direction;
     private CursorProberEntity cursorProbe;
     private CursorInfectorEntity cursorInfection;
-    private final ServerWorld world;
+    private final ServerLevel world;
     private state currentState = state.IDLE;
     private enum state {
         IDLE,
@@ -39,7 +39,7 @@ public class InfectionTree {
     /**
      * Creates a new binary tree with the given value.
      */
-    public InfectionTree(ServerWorld world, Direction direction, BlockPos rootPos)
+    public InfectionTree(ServerLevel world, Direction direction, BlockPos rootPos)
     {
         this.root = new TreeNode(rootPos);
         this.direction = direction;

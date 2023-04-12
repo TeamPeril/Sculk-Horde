@@ -4,27 +4,27 @@ import com.github.sculkhorde.common.tileentity.SculkNodeTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -34,6 +34,8 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -101,12 +103,12 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
     }
 
 
-    public static void FindAreaAndPlaceNode(ServerWorld world, BlockPos searchOrigin)
+    public static void FindAreaAndPlaceNode(ServerLevel world, BlockPos searchOrigin)
     {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), 5 + 35, searchOrigin.getZ());
         world.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.gravemind.getGravemindMemory().addNodeToMemory(newOrigin);
-        EntityType.LIGHTNING_BOLT.spawn(world, null, null, newOrigin, SpawnReason.SPAWNER, true, true);
+        EntityType.LIGHTNING_BOLT.spawn(world, null, null, newOrigin, MobSpawnType.SPAWNER, true, true);
     }
 
     /**
@@ -118,7 +120,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      * @param itemStack The item stack it was placed from
      */
     @Override
-    public void setPlacedBy(World world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack)
+    public void setPlacedBy(Level world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack)
     {
         super.setPlacedBy(world, bp, blockState, entity, itemStack);
         //If world isnt client side and we are in the overworld
@@ -146,7 +148,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      * @param random ???
      */
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
+    public void randomTick(BlockState blockState, ServerLevel serverWorld, BlockPos bp, Random random)
     {
         SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(1);//Add 1 sculk mass to the hoard
     }
@@ -162,7 +164,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
     {
         return false;
     }
@@ -190,7 +192,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      */
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return TileEntityRegistry.SCULK_BRAIN_TILE.get().create();
     }
 
@@ -206,32 +208,32 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
 
 
     @Override
-    public void onPlace(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
-        TileEntity tile = worldIn.getBlockEntity(pos);
+    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
+        BlockEntity tile = worldIn.getBlockEntity(pos);
         if(tile instanceof SculkNodeTile && !worldIn.isClientSide())
         {
-            ((SculkNodeTile)tile).forceLoadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
+            ((SculkNodeTile)tile).forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
 
         if(worldIn.isClientSide())
         {
             // Play Sound that Can be Heard by all players
-            worldIn.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            worldIn.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             // Display Text On Player Screens
-            for (PlayerEntity player : worldIn.players()) {
-                player.displayClientMessage(new TranslationTextComponent("message.sculk_horde.node_placed"), true);
+            for (Player player : worldIn.players()) {
+                player.displayClientMessage(new TranslatableComponent("message.sculk_horde.node_placed"), true);
             }
         }
 
     }
 
     @Override
-    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving){
-        TileEntity tile = worldIn.getBlockEntity(pos);
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving){
+        BlockEntity tile = worldIn.getBlockEntity(pos);
         if(tile instanceof SculkNodeTile && !worldIn.isClientSide())
         {
-            ((SculkNodeTile)tile).unloadChunksInRadius((ServerWorld) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
+            ((SculkNodeTile)tile).unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
 
         super.onRemove(state, worldIn, pos, newState, isMoving);
@@ -246,10 +248,10 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_brain")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_brain")); //Text that displays if holding shift
     }
 
 }

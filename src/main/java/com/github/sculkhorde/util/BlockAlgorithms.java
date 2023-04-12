@@ -9,11 +9,11 @@ import com.github.sculkhorde.common.procedural.structures.PlannedBlock;
 import com.github.sculkhorde.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -210,10 +210,10 @@ public class BlockAlgorithms {
      * @param pDistance The search distance
      * @return The position of the block
      */
-    public static Optional<BlockPos> findNearestBlock(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
+    public static Optional<BlockPos> findNearestBlock(ServerLevel worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
     {
         //?
-        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
 
         //Search area for block
         for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
@@ -249,7 +249,7 @@ public class BlockAlgorithms {
      * @param pDistance The search distance
      * @return The position of the block
      */
-    public static ArrayList<BlockPos> getBlocksInArea(ServerWorld worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
+    public static ArrayList<BlockPos> getBlocksInArea(ServerLevel worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
     {
         ArrayList<BlockPos> list = new ArrayList<>();
 
@@ -288,7 +288,7 @@ public class BlockAlgorithms {
      * @param pDistance The search distance
      * @return The position of the block
      */
-    public static ArrayList<BlockPos> getBlocksInCube(ServerWorld worldIn, BlockPos origin, Predicate<BlockPos> predicateIn, double pDistance)
+    public static ArrayList<BlockPos> getBlocksInCube(ServerLevel worldIn, BlockPos origin, Predicate<BlockPos> predicateIn, double pDistance)
     {
         ArrayList<BlockPos> list = new ArrayList<>();
 
@@ -324,7 +324,7 @@ public class BlockAlgorithms {
      * @param serverWorld The ServerWorld of the block
      * @return The target Block Position
      */
-    public static BlockPos getRandomNeighbor(ServerWorld serverWorld, BlockPos origin)
+    public static BlockPos getRandomNeighbor(ServerLevel serverWorld, BlockPos origin)
     {
         ArrayList<BlockPos> positions = getNeighborsCube(origin);
         return positions.get(serverWorld.random.nextInt(positions.size()));
@@ -336,7 +336,7 @@ public class BlockAlgorithms {
      * @param targetPos The position to check
      * @return true if any air found, false otherwise
      */
-    public static boolean isExposedToAir(ServerWorld serverWorld, BlockPos targetPos)
+    public static boolean isExposedToAir(ServerLevel serverWorld, BlockPos targetPos)
     {
         ArrayList<BlockPos> list = getAdjacentNeighbors(targetPos);
 
@@ -357,7 +357,7 @@ public class BlockAlgorithms {
      * @param world The World to place it in
      * @param targetPos The position to place it in
      */
-    public static void placeSculkBeeHive(ServerWorld world, BlockPos targetPos)
+    public static void placeSculkBeeHive(ServerLevel world, BlockPos targetPos)
     {
         //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(4000) <= 1 && world.canSeeSky(targetPos))
@@ -379,7 +379,7 @@ public class BlockAlgorithms {
      * @param targetPos The BlockPos to spawn it at
      * @param world The world to spawn it in.
      */
-    public static void placeSculkFlora(BlockPos targetPos, ServerWorld world)
+    public static void placeSculkFlora(BlockPos targetPos, ServerLevel world)
     {
 
         ((SculkFloraBlock) SculkHorde.randomSculkFlora.getRandomEntry()).placeBlockHere(world, targetPos);
@@ -391,7 +391,7 @@ public class BlockAlgorithms {
      * @param serverWorld the world
      * @param origin the position
      */
-    public static void placeFloraAroundLog(ServerWorld serverWorld, BlockPos origin) {
+    public static void placeFloraAroundLog(ServerLevel serverWorld, BlockPos origin) {
         VeinBlock vein = BlockRegistry.VEIN.get();
 
         BlockPos[] possiblePositions = {
@@ -417,7 +417,7 @@ public class BlockAlgorithms {
      * @param serverWorld the world
      * @param origin the block we want to place these above
      */
-    public static void placePatchesOfVeinAbove(ServerWorld serverWorld, BlockPos origin)
+    public static void placePatchesOfVeinAbove(ServerLevel serverWorld, BlockPos origin)
     {
         int OFFSET_MAX = 3;
         int LENGTH_MAX = 5;
@@ -449,7 +449,7 @@ public class BlockAlgorithms {
      * @param serverWorld the world
      * @param targetPos the position
      */
-    public static void replaceSculkFlora(ServerWorld serverWorld, BlockPos targetPos)
+    public static void replaceSculkFlora(ServerLevel serverWorld, BlockPos targetPos)
     {
         if(serverWorld.getBlockState(targetPos).getBlock() instanceof SculkFloraBlock)
         {
@@ -470,7 +470,7 @@ public class BlockAlgorithms {
      * @param plannedBlock The type of block that will be placed in the circle
      * @return A list of PlannedBlocks in the shape of a 2D circle
      */
-    public static ArrayList<PlannedBlock> generate2DCirclePlan(BlockPos centerPos, int diameter, ServerWorld world, BlockState plannedBlock) {
+    public static ArrayList<PlannedBlock> generate2DCirclePlan(BlockPos centerPos, int diameter, ServerLevel world, BlockState plannedBlock) {
         ArrayList<PlannedBlock> circleBlocks = new ArrayList<>();
         // The radius of the circle is half the diameter
         int radius = diameter / 2;
@@ -502,7 +502,7 @@ public class BlockAlgorithms {
         return points;
     }
 
-    public static Vector3d scalarMultiply(Vector3d vector, double t) {
-        return new Vector3d(vector.x + t, vector.y * t, vector.z + t);
+    public static Vec3 scalarMultiply(Vec3 vector, double t) {
+        return new Vec3(vector.x + t, vector.y * t, vector.z + t);
     }
 }

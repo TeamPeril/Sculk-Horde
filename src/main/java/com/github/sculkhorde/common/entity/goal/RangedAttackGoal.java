@@ -2,8 +2,8 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.attack.RangedAttack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 

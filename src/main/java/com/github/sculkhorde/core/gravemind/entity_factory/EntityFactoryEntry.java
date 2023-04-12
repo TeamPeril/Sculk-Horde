@@ -4,7 +4,7 @@ import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 
 import javax.annotation.Nullable;
 

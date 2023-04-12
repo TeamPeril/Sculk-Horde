@@ -4,21 +4,21 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.core.BlockRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -124,7 +126,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      * @return true if light should pass through, false otherwise
      */
     @Override
-    public boolean propagatesSkylightDown(BlockState blockState, IBlockReader blockReader, BlockPos blockPos) {
+    public boolean propagatesSkylightDown(BlockState blockState, BlockGetter blockReader, BlockPos blockPos) {
         return true;
     }
 
@@ -138,7 +140,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
     {
         return false;
     }
@@ -151,7 +153,7 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      * @return
      */
     @Override
-    public boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos)
+    public boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos)
     {
         boolean blockIsValid = false;
         boolean cocoonPosCanBeReplacedByWater = false;
@@ -197,8 +199,8 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      * @param pos Block position in world
      * @param neighbor Block position of neighbor
      */
-    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor){
-        destroy((IWorld) world, pos, this.defaultBlockState());
+    public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor){
+        destroy((LevelAccessor) world, pos, this.defaultBlockState());
     }
 
     /**
@@ -220,10 +222,10 @@ public class CocoonBlock extends SculkFloraBlock implements IForgeBlock {
      * @param random ???
      */
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
+    public void randomTick(BlockState blockState, ServerLevel serverWorld, BlockPos bp, Random random)
     {
         //Create bounding cube to detect targets
-        AxisAlignedBB searchArea = EntityAlgorithms.getSearchAreaRectangle(bp.getX(), bp.getY(), bp.getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+        AABB searchArea = EntityAlgorithms.getSearchAreaRectangle(bp.getX(), bp.getY(), bp.getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
 
         //Get targets inside bounding box.
         possibleAggressorTargets = EntityAlgorithms.getLivingEntitiesInBoundingBox(serverWorld, searchArea);

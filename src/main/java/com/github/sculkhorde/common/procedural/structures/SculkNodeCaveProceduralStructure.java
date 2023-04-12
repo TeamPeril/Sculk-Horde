@@ -2,11 +2,11 @@ package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -20,7 +20,7 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
     SculkNodeCaveHallwayProceduralStructure northCave;
     SculkNodeCaveHallwayProceduralStructure southCave;
 
-    public SculkNodeCaveProceduralStructure(ServerWorld worldIn, BlockPos originIn, int radiusIn)
+    public SculkNodeCaveProceduralStructure(ServerLevel worldIn, BlockPos originIn, int radiusIn)
     {
         super(worldIn, originIn);
         this.radius = radiusIn;
@@ -85,10 +85,10 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
         ConnectionPoint northConnection = new ConnectionPoint(new BlockPos(this.origin.offset(0, 0 ,-radius)), Direction.NORTH);
         ConnectionPoint southConnection = new ConnectionPoint(new BlockPos(this.origin.offset(0, 0 ,radius)), Direction.SOUTH);
 
-        westCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, westConnection.getPosition(), 5, 32, Direction.WEST);
-        eastCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, eastConnection.getPosition(), 5, 32, Direction.EAST);
-        northCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, northConnection.getPosition(), 5, 32, Direction.NORTH);
-        southCave = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.world, southConnection.getPosition(), 5, 32, Direction.SOUTH);
+        westCave = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) this.world, westConnection.getPosition(), 5, 32, Direction.WEST);
+        eastCave = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) this.world, eastConnection.getPosition(), 5, 32, Direction.EAST);
+        northCave = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) this.world, northConnection.getPosition(), 5, 32, Direction.NORTH);
+        southCave = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) this.world, southConnection.getPosition(), 5, 32, Direction.SOUTH);
 
         return;
     }
@@ -104,7 +104,7 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
          * @param worldIn The World
          * @param targetPosIn The Position to spawn it
          */
-        public CaveAirPlannedBlock(ServerWorld worldIn, BlockPos targetPosIn)
+        public CaveAirPlannedBlock(ServerLevel worldIn, BlockPos targetPosIn)
         {
             super(worldIn, Blocks.CAVE_AIR.defaultBlockState(), targetPosIn);
         }

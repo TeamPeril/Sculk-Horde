@@ -2,16 +2,16 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.entity.passive.WaterMobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,13 +28,13 @@ public class EntityAlgorithms {
      * @return the position the player is staring at
      */
     @Nullable
-    public static BlockPos playerTargetBlockPos(PlayerEntity player, boolean isFluid)
+    public static BlockPos playerTargetBlockPos(Player player, boolean isFluid)
     {
-        RayTraceResult block =  player.pick(200.0D, 0.0F, isFluid);
+        HitResult block =  player.pick(200.0D, 0.0F, isFluid);
 
-        if(block.getType() == RayTraceResult.Type.BLOCK)
+        if(block.getType() == HitResult.Type.BLOCK)
         {
-            return ((BlockRayTraceResult)block).getBlockPos();
+            return ((BlockHitResult)block).getBlockPos();
         }
         return null;
     }
@@ -46,7 +46,7 @@ public class EntityAlgorithms {
      * @param originZ The Z coordinate of the origin
      * @return Returns the Bounding Box
      */
-    public static AxisAlignedBB getSearchAreaRectangle(double originX, double originY, double originZ, double w, double h, double l)
+    public static AABB getSearchAreaRectangle(double originX, double originY, double originZ, double w, double h, double l)
     {
         double x1 = originX - w;
         double y1 = originY - h;
@@ -54,7 +54,7 @@ public class EntityAlgorithms {
         double x2 = originX + w;
         double y2 = originY + h;
         double z2 = originZ + l;
-        return new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
+        return new AABB(x1, y1, z1, x2, y2, z2);
     }
 
 
@@ -102,7 +102,7 @@ public class EntityAlgorithms {
     {
         // The gramemind does not store swimmers, we need to figure if a mob is swimming
         // by using the entity's ability to swim
-        return entity instanceof WaterMobEntity;
+        return entity instanceof WaterAnimal;
     }
 
     /**
@@ -111,14 +111,14 @@ public class EntityAlgorithms {
      * @param boundingBox The given bounding box to search for a target
      * @return A list of valid targets
      */
-    public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerWorld serverWorld, AxisAlignedBB boundingBox)
+    public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerLevel serverWorld, AABB boundingBox)
     {
         List<LivingEntity> livingEntitiesInRange = serverWorld.getLoadedEntitiesOfClass(LivingEntity.class, boundingBox, (Predicate<? super LivingEntity>) null);
         return livingEntitiesInRange;
     }
 
 
-    public static List<BlockPos> createPathToBlockPos(ServerWorld world, BlockPos start, BlockPos end, int maxRange, Predicate<BlockState> obstaclePredicate)
+    public static List<BlockPos> createPathToBlockPos(ServerLevel world, BlockPos start, BlockPos end, int maxRange, Predicate<BlockState> obstaclePredicate)
     {
         // Initialize ArrayList
         List<BlockPos> path = new ArrayList<>();

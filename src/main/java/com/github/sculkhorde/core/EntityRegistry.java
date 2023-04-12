@@ -4,9 +4,9 @@ import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,24 +24,24 @@ public class EntityRegistry {
         ENTITY_TYPES.register(eventBus);
     }
 
-    public static EntityType<CustomItemProjectileEntity> CUSTOM_ITEM_PROJECTILE_ENTITY = buildEntityType(CustomItemProjectileEntity::new, "custom_item_projectile", 0.45F, 0.45F, EntityClassification.MISC, b -> b.clientTrackingRange(4).updateInterval(10));
-    public static EntityType<SculkAcidicProjectileEntity> SCULK_ACIDIC_PROJECTILE_ENTITY = buildEntityType(SculkAcidicProjectileEntity::new, "sculk_acidic_projectile", 0.45F, 0.45F, EntityClassification.MISC, b -> b.clientTrackingRange(4).updateInterval(10));
+    public static EntityType<CustomItemProjectileEntity> CUSTOM_ITEM_PROJECTILE_ENTITY = buildEntityType(CustomItemProjectileEntity::new, "custom_item_projectile", 0.45F, 0.45F, MobCategory.MISC, b -> b.clientTrackingRange(4).updateInterval(10));
+    public static EntityType<SculkAcidicProjectileEntity> SCULK_ACIDIC_PROJECTILE_ENTITY = buildEntityType(SculkAcidicProjectileEntity::new, "sculk_acidic_projectile", 0.45F, 0.45F, MobCategory.MISC, b -> b.clientTrackingRange(4).updateInterval(10));
 
-    public static EntityType<SculkZombieEntity> SCULK_ZOMBIE = buildEntityType(SculkZombieEntity::new, "sculk_zombie", 0.6f, 1.95f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkMiteEntity> SCULK_MITE = buildEntityType(SculkMiteEntity::new, "sculk_mite", 0.6f, 0.6f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkMiteAggressorEntity> SCULK_MITE_AGGRESSOR = buildEntityType(SculkMiteAggressorEntity::new, "sculk_mite_aggressor", 0.6f, 0.6f, EntityClassification.MONSTER, b -> b.clientTrackingRange(4));
-    public static EntityType<SculkSpitterEntity> SCULK_SPITTER = buildEntityType(SculkSpitterEntity::new, "sculk_spitter", 0.6f, 1.95f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkBeeInfectorEntity> SCULK_BEE_INFECTOR = buildEntityType(SculkBeeInfectorEntity::new, "sculk_bee_infector", 0.7f, 0.6f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkBeeHarvesterEntity> SCULK_BEE_HARVESTER = buildEntityType(SculkBeeHarvesterEntity::new, "sculk_bee_harvester", 0.7f, 0.6f, EntityClassification.CREATURE, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkHatcherEntity> SCULK_HATCHER = buildEntityType(SculkHatcherEntity::new, "sculk_hatcher", 0.9f, 1.4f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<CursorProberEntity> CURSOR_LONG_RANGE = buildEntityType(CursorProberEntity::new, "cursor_long_range", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
-    public static EntityType<CursorInfectorEntity> CURSOR_SHORT_RANGE = buildEntityType(CursorInfectorEntity::new, "cursor_short_range", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
-    public static EntityType<CursorBridgerEntity> CURSOR_BRIDGER = buildEntityType(CursorBridgerEntity::new, "cursor_bridger", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
-    public static EntityType<CursorSurfaceInfectorEntity> CURSOR_SURFACE_INFECTOR = buildEntityType(CursorSurfaceInfectorEntity::new, "cursor_surface_infector", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
-    public static EntityType<CursorSurfacePurifierEntity> CURSOR_SURFACE_PURIFIER = buildEntityType(CursorSurfacePurifierEntity::new, "cursor_surface_purifier", 1.0f, 1.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkSporeSpewerEntity> SCULK_SPORE_SPEWER = buildEntityType(SculkSporeSpewerEntity::new, "sculk_spore_spewer", 1.0f, 2.0f, EntityClassification.MISC, b -> b.clientTrackingRange(9));
-    public static EntityType<SculkRavagerEntity> SCULK_RAVAGER = buildEntityType(SculkRavagerEntity::new, "sculk_ravager", 1.95f, 2.2f, EntityClassification.MONSTER, b -> b.clientTrackingRange(9));
-    public static EntityType<InfestationPurifierEntity> INFESTATION_PURIFIER = buildEntityType(InfestationPurifierEntity::new, "infestation_purifier", 1f, 1f, EntityClassification.CREATURE, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkZombieEntity> SCULK_ZOMBIE = buildEntityType(SculkZombieEntity::new, "sculk_zombie", 0.6f, 1.95f, MobCategory.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkMiteEntity> SCULK_MITE = buildEntityType(SculkMiteEntity::new, "sculk_mite", 0.6f, 0.6f, MobCategory.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkMiteAggressorEntity> SCULK_MITE_AGGRESSOR = buildEntityType(SculkMiteAggressorEntity::new, "sculk_mite_aggressor", 0.6f, 0.6f, MobCategory.MONSTER, b -> b.clientTrackingRange(4));
+    public static EntityType<SculkSpitterEntity> SCULK_SPITTER = buildEntityType(SculkSpitterEntity::new, "sculk_spitter", 0.6f, 1.95f, MobCategory.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkBeeInfectorEntity> SCULK_BEE_INFECTOR = buildEntityType(SculkBeeInfectorEntity::new, "sculk_bee_infector", 0.7f, 0.6f, MobCategory.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkBeeHarvesterEntity> SCULK_BEE_HARVESTER = buildEntityType(SculkBeeHarvesterEntity::new, "sculk_bee_harvester", 0.7f, 0.6f, MobCategory.CREATURE, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkHatcherEntity> SCULK_HATCHER = buildEntityType(SculkHatcherEntity::new, "sculk_hatcher", 0.9f, 1.4f, MobCategory.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorProberEntity> CURSOR_LONG_RANGE = buildEntityType(CursorProberEntity::new, "cursor_long_range", 1.0f, 1.0f, MobCategory.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorInfectorEntity> CURSOR_SHORT_RANGE = buildEntityType(CursorInfectorEntity::new, "cursor_short_range", 1.0f, 1.0f, MobCategory.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorBridgerEntity> CURSOR_BRIDGER = buildEntityType(CursorBridgerEntity::new, "cursor_bridger", 1.0f, 1.0f, MobCategory.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorSurfaceInfectorEntity> CURSOR_SURFACE_INFECTOR = buildEntityType(CursorSurfaceInfectorEntity::new, "cursor_surface_infector", 1.0f, 1.0f, MobCategory.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<CursorSurfacePurifierEntity> CURSOR_SURFACE_PURIFIER = buildEntityType(CursorSurfacePurifierEntity::new, "cursor_surface_purifier", 1.0f, 1.0f, MobCategory.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkSporeSpewerEntity> SCULK_SPORE_SPEWER = buildEntityType(SculkSporeSpewerEntity::new, "sculk_spore_spewer", 1.0f, 2.0f, MobCategory.MISC, b -> b.clientTrackingRange(9));
+    public static EntityType<SculkRavagerEntity> SCULK_RAVAGER = buildEntityType(SculkRavagerEntity::new, "sculk_ravager", 1.95f, 2.2f, MobCategory.MONSTER, b -> b.clientTrackingRange(9));
+    public static EntityType<InfestationPurifierEntity> INFESTATION_PURIFIER = buildEntityType(InfestationPurifierEntity::new, "infestation_purifier", 1f, 1f, MobCategory.CREATURE, b -> b.clientTrackingRange(9));
 
     /** REGISTRY METHODS **/
 
@@ -90,8 +90,8 @@ public class EntityRegistry {
      * @param builderSpecs   a consumer to add other arguments to the builder before the entity type is built
      * @return an entity type
      **/
-    private static <T extends Entity> EntityType<T> buildEntityType(final EntityType.IFactory<T> factoryIn, final String name, final float width, final float height,
-                                                                    final EntityClassification classification, final Consumer<EntityType.Builder<T>> builderSpecs) {
+    private static <T extends Entity> EntityType<T> buildEntityType(final EntityType.EntityFactory<T> factoryIn, final String name, final float width, final float height,
+                                                                    final MobCategory classification, final Consumer<EntityType.Builder<T>> builderSpecs) {
         EntityType.Builder<T> entityTypeBuilder = EntityType.Builder.of(factoryIn, classification).sized(width, height).clientTrackingRange(8);
         builderSpecs.accept(entityTypeBuilder);
         EntityType<T> entityType = entityTypeBuilder.build(name);

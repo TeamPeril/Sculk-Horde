@@ -7,28 +7,28 @@ import com.github.sculkhorde.common.procedural.structures.SculkBeeNestProcedural
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.google.common.collect.Lists;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.FireBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
+public class SculkBeeNestTile extends BlockEntity implements TickableBlockEntity
 {
     //This is a list of all the bees in the structure
     private final List<SculkBeeNestTile.Bee> stored = Lists.newArrayList();
@@ -106,7 +106,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
     /** ### Functionality Methods ### */
 
-    public void emptyAllLivingFromHive(@Nullable PlayerEntity pPlayer, BlockState pState, SculkBeeNestTile.State pReleaseStatus)
+    public void emptyAllLivingFromHive(@Nullable Player pPlayer, BlockState pState, SculkBeeNestTile.State pReleaseStatus)
     {
         List<Entity> list = this.releaseAllOccupants(pState, pReleaseStatus);
         if (pPlayer != null) { return; }
@@ -148,13 +148,13 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
         entityIn.stopRiding();
         entityIn.ejectPassengers();
-        CompoundNBT compoundnbt = new CompoundNBT();
+        CompoundTag compoundnbt = new CompoundTag();
         entityIn.save(compoundnbt);
         this.stored.add(new SculkBeeNestTile.Bee(compoundnbt, ticksInHive, MIN_TICKS_IN_HIVE));
         this.stored.get(0);
 
         BlockPos blockpos = this.getBlockPos();
-        this.level.playSound(null, blockpos.getX(), blockpos.getY(), blockpos.getZ(), SoundEvents.BEEHIVE_ENTER, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, blockpos.getX(), blockpos.getY(), blockpos.getZ(), SoundEvents.BEEHIVE_ENTER, SoundSource.BLOCKS, 1.0F, 1.0F);
         entityIn.remove();
 
     }
@@ -173,7 +173,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         //IF front of hive is blocked and it is not an emergency, do not release occupant
         if (isEnteranceBlocked && state != SculkBeeNestTile.State.EMERGENCY) { return false; }
 
-        CompoundNBT compoundnbt = entityIn.entityData;
+        CompoundTag compoundnbt = entityIn.entityData;
         compoundnbt.remove("Passengers");
         compoundnbt.remove("Leash");
         compoundnbt.remove("UUID");
@@ -239,7 +239,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
 
 
         //PlaySound
-        this.level.playSound(null, this.getBlockPos(), SoundEvents.BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, this.getBlockPos(), SoundEvents.BEEHIVE_EXIT, SoundSource.BLOCKS, 1.0F, 1.0F);
         //Create bee
         return this.level.addFreshEntity(entity);
 
@@ -284,7 +284,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
             double d0 = blockpos.getX() + 0.5D;
             double d1 = blockpos.getY();
             double d2 = blockpos.getZ() + 0.5D;
-            this.level.playSound(null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            this.level.playSound(null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
 
         /** Check if full of honey**/
@@ -308,7 +308,7 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         if(beeNestStructure == null)
         {
             //Create Structure
-            beeNestStructure = new SculkBeeNestProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+            beeNestStructure = new SculkBeeNestProceduralStructure((ServerLevel) this.level, this.getBlockPos());
             beeNestStructure.generatePlan();
         }
 
@@ -327,34 +327,34 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
         }
     }
 
-    public void load(BlockState p_230337_1_, CompoundNBT p_230337_2_)
+    public void load(BlockState p_230337_1_, CompoundTag p_230337_2_)
     {
         super.load(p_230337_1_, p_230337_2_);
         this.stored.clear();
-        ListNBT listnbt = p_230337_2_.getList("Bees", 10);
+        ListTag listnbt = p_230337_2_.getList("Bees", 10);
 
         for(int i = 0; i < listnbt.size(); ++i)
         {
-            CompoundNBT compoundnbt = listnbt.getCompound(i);
+            CompoundTag compoundnbt = listnbt.getCompound(i);
             SculkBeeNestTile.Bee sculkbeenesttile$bee = new SculkBeeNestTile.Bee(compoundnbt.getCompound("EntityData"), compoundnbt.getInt("TicksInHive"), compoundnbt.getInt("MinOccupationTicks"));
             this.stored.add(sculkbeenesttile$bee);
         }
     }
 
-    public CompoundNBT save(CompoundNBT pCompound)
+    public CompoundTag save(CompoundTag pCompound)
     {
         super.save(pCompound);
         pCompound.put("Bees", this.writeBees());
         return pCompound;
     }
 
-    public ListNBT writeBees()
+    public ListTag writeBees()
     {
-        ListNBT listnbt = new ListNBT();
+        ListTag listnbt = new ListTag();
 
         for(SculkBeeNestTile.Bee sculkbeenesttile$bee : this.stored) {
             sculkbeenesttile$bee.entityData.remove("UUID");
-            CompoundNBT compoundnbt = new CompoundNBT();
+            CompoundTag compoundnbt = new CompoundTag();
             compoundnbt.put("EntityData", sculkbeenesttile$bee.entityData);
             compoundnbt.putInt("TicksInHive", sculkbeenesttile$bee.ticksInHive);
             compoundnbt.putInt("MinOccupationTicks", sculkbeenesttile$bee.minOccupationTicks);
@@ -365,11 +365,11 @@ public class SculkBeeNestTile extends TileEntity implements ITickableTileEntity
     }
 
     static class Bee {
-        private final CompoundNBT entityData;
+        private final CompoundTag entityData;
         private int ticksInHive;
         private final int minOccupationTicks;
 
-        private Bee(CompoundNBT pEntityData, int pTicksInHive, int pMinOccupationTicks) {
+        private Bee(CompoundTag pEntityData, int pTicksInHive, int pMinOccupationTicks) {
             pEntityData.remove("UUID");
             this.entityData = pEntityData;
             this.ticksInHive = pTicksInHive;

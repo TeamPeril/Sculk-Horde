@@ -1,14 +1,14 @@
 package com.github.sculkhorde.common.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -16,6 +16,8 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class InfestedLogBlock extends Block implements IForgeBlock {
 
@@ -102,10 +104,10 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.infested_log")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.infested_log")); //Text that displays if holding shift
 
     }
 }

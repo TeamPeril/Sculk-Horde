@@ -2,24 +2,26 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class CrustBlock extends Block implements IForgeBlock {
 
@@ -75,8 +77,8 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public static int EFFECT_TICKS = 200;
     public static int EFFECT_STRENGTH = 3;
-    public static EffectInstance STEP_ON_EFFECT = new EffectInstance(
-            Effects.DIG_SLOWDOWN,
+    public static MobEffectInstance STEP_ON_EFFECT = new MobEffectInstance(
+            MobEffects.DIG_SLOWDOWN,
             EFFECT_TICKS,
             EFFECT_STRENGTH);
 
@@ -103,7 +105,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return AbstractBlock.Properties.of(MATERIAL, MAP_COLOR)
+        return BlockBehaviour.Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
@@ -117,7 +119,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      * @param entity The entity that stepped on the block
      */
     @Override
-    public void stepOn(World worldIn, BlockPos pos, Entity entity)
+    public void stepOn(Level worldIn, BlockPos pos, Entity entity)
     {
         if(worldIn.isClientSide() || !(entity instanceof LivingEntity))//Only do this on the client
         {
@@ -131,7 +133,7 @@ public class CrustBlock extends Block implements IForgeBlock {
 
 
         LivingEntity livingEntity = ((LivingEntity) entity); //Cast
-        livingEntity.addEffect(new EffectInstance(STEP_ON_EFFECT)); //Give effect
+        livingEntity.addEffect(new MobEffectInstance(STEP_ON_EFFECT)); //Give effect
 
         super.stepOn(worldIn, pos, entity); //Execute Parent Code
     }
@@ -148,7 +150,7 @@ public class CrustBlock extends Block implements IForgeBlock {
      * @param stack The stack being used by the player
      * @return The resulting state after the action has been performed
      */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
+    public BlockState getToolModifiedState(BlockState state, Level world, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
     {
         if(DEBUG_MODE) System.out.println("Hi I am a Crust Block, I don't do Anything :)");
 

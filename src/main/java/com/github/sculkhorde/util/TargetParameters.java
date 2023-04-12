@@ -1,13 +1,13 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.util.Mth;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import static com.github.sculkhorde.util.EntityAlgorithms.*;
 
 public class TargetParameters
 {
-    private MobEntity mob;
+    private Mob mob;
 
     private boolean targetHostiles = false; //Should we attack hostiles?
     private boolean targetPassives = false; //Should we target passives?
@@ -41,7 +41,7 @@ public class TargetParameters
         this.mob = null;
     }
 
-    public TargetParameters(MobEntity mob)
+    public TargetParameters(Mob mob)
     {
         this.mob = mob;
     }
@@ -60,7 +60,7 @@ public class TargetParameters
             return false;
         }
 
-        if(!(e instanceof MobEntity) && !(e instanceof PlayerEntity))
+        if(!(e instanceof Mob) && !(e instanceof Player))
         {
             return false;
         }
@@ -72,7 +72,7 @@ public class TargetParameters
         }
 
         //Do not attack creepers
-        if(e instanceof CreeperEntity)
+        if(e instanceof Creeper)
         {
             return false;
         }
@@ -89,7 +89,7 @@ public class TargetParameters
         }
 
         //If player is in creative or spectator
-        if(e instanceof PlayerEntity && (((PlayerEntity) e).isCreative() || ((PlayerEntity) e).isSpectator()))
+        if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {
             return false;
         }
@@ -222,28 +222,28 @@ public class TargetParameters
         }
         else
         {
-            PathPoint pathpoint = path.getEndNode();
+            Node pathpoint = path.getEndNode();
             if (pathpoint == null)
             {
                 return false;
             }
             else
             {
-                int i = pathpoint.x - MathHelper.floor(pTarget.getX());
-                int j = pathpoint.z - MathHelper.floor(pTarget.getZ());
+                int i = pathpoint.x - Mth.floor(pTarget.getX());
+                int j = pathpoint.z - Mth.floor(pTarget.getZ());
                 return (double)(i * i + j * j) <= 50;
             }
         }
     }
 
 
-    public void addToBlackList(MobEntity entity)
+    public void addToBlackList(Mob entity)
     {
         blacklist.put(entity.getUUID(), System.currentTimeMillis());
     }
 
     // Is mob on blacklist
-    public boolean isOnBlackList(MobEntity entity)
+    public boolean isOnBlackList(Mob entity)
     {
         return blacklist.containsKey(entity.getUUID());
     }

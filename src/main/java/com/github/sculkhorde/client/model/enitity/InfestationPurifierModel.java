@@ -3,7 +3,7 @@ package com.github.sculkhorde.client.model.enitity;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class InfestationPurifierModel extends AnimatedGeoModel<InfestationPurifierEntity> {

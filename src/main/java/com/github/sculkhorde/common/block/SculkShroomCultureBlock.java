@@ -1,10 +1,12 @@
 package com.github.sculkhorde.common.block;
 
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SculkShroomCultureBlock extends SculkFloraBlock implements IForgeBlock {
 

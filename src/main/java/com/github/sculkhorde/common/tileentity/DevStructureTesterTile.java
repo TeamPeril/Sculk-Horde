@@ -4,18 +4,18 @@ import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class DevStructureTesterTile extends TileEntity implements ITickableTileEntity
+public class DevStructureTesterTile extends BlockEntity implements TickableBlockEntity
 {
 
     private long tickedAt = System.nanoTime();
@@ -27,7 +27,7 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public DevStructureTesterTile(TileEntityType<?> type)
+    public DevStructureTesterTile(BlockEntityType<?> type)
     {
         super(type);
     }
@@ -69,7 +69,7 @@ public class DevStructureTesterTile extends TileEntity implements ITickableTileE
         if(proceduralStructure == null)
         {
             //Create Structure
-            proceduralStructure = new SculkNodeCaveHallwayProceduralStructure((ServerWorld) this.level, this.getBlockPos(), 5, 10, Direction.NORTH);
+            proceduralStructure = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) this.level, this.getBlockPos(), 5, 10, Direction.NORTH);
             proceduralStructure.generatePlan();
         }
 

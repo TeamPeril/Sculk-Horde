@@ -1,17 +1,19 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -112,7 +114,7 @@ public class SculkLivingRockRootBlock extends Block implements IForgeBlock {
      */
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return TileEntityRegistry.SCULK_LIVING_ROCK_ROOT_TILE.get().create();
     }
 

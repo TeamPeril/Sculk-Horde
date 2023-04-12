@@ -1,11 +1,11 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 
@@ -15,11 +15,11 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
      *
      * @param worldIn The world to initialize this mob in
      */
-    public CursorSurfaceInfectorEntity(World worldIn) {
+    public CursorSurfaceInfectorEntity(Level worldIn) {
         super(worldIn);
     }
 
-    public CursorSurfaceInfectorEntity(EntityType<?> pType, World pLevel) {
+    public CursorSurfaceInfectorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
     }
 
@@ -54,7 +54,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerWorld) this.level, pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos))
         {
             return true;
         }

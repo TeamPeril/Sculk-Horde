@@ -4,27 +4,27 @@ import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.IPacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ItemParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ITeleporter;
@@ -34,7 +34,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
  * This class is mainly used as a parent class and is used for
  * projectile entities.
  */
-public class CustomItemProjectileEntity extends ProjectileItemEntity {
+public class CustomItemProjectileEntity extends ThrowableItemProjectile {
 
     private float damage = 50f;
 
@@ -45,7 +45,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @param entityIn The Entity we are Shooting
      * @param worldIn The world the projectile will exist in
      */
-    public CustomItemProjectileEntity(EntityType<? extends CustomItemProjectileEntity> entityIn, World worldIn) {
+    public CustomItemProjectileEntity(EntityType<? extends CustomItemProjectileEntity> entityIn, Level worldIn) {
 
         super(entityIn, worldIn);
 
@@ -56,7 +56,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @param worldIn The World
      * @param shooterIn The Entity Shooting the Projectile
      */
-    public CustomItemProjectileEntity(World worldIn, LivingEntity shooterIn, float damageIn) {
+    public CustomItemProjectileEntity(Level worldIn, LivingEntity shooterIn, float damageIn) {
         this(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY, worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
@@ -92,9 +92,9 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @return The Particle Data
      */
     @OnlyIn(Dist.CLIENT)
-    private IParticleData getParticle() {
+    private ParticleOptions getParticle() {
         ItemStack itemstack = this.getItemRaw();
-        return (IParticleData)(itemstack.isEmpty() ? ParticleTypes.NAUTILUS : new ItemParticleData(ParticleTypes.ITEM, itemstack));
+        return (ParticleOptions)(itemstack.isEmpty() ? ParticleTypes.NAUTILUS : new ItemParticleOption(ParticleTypes.ITEM, itemstack));
     }
 
     /**
@@ -102,7 +102,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @return ???
      */
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -118,7 +118,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
         Entity entity = getOwner();
         //If the owner is a player that is dead, remove the projectile.
         //Else, proceed as normal.
-        if (entity instanceof net.minecraft.entity.player.PlayerEntity && !entity.isAlive()) {
+        if (entity instanceof net.minecraft.world.entity.player.Player && !entity.isAlive()) {
             remove();
         } else {
             super.tick();
@@ -130,7 +130,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @param raytrace The resulting raytrace object that contains the context
      */
     @Override
-    protected void onHitEntity(EntityRayTraceResult raytrace)
+    protected void onHitEntity(EntityHitResult raytrace)
     {
         super.onHitEntity(raytrace);
 
@@ -155,7 +155,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
 
         if(raytrace.getEntity() instanceof LivingEntity)
         {
-            ((LivingEntity)raytrace.getEntity()).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
+            ((LivingEntity)raytrace.getEntity()).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
         }
 
         remove();
@@ -168,12 +168,12 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @param raytrace The context
      */
     @Override
-    protected void onHitBlock(BlockRayTraceResult raytrace)
+    protected void onHitBlock(BlockHitResult raytrace)
     {
         super.onHitBlock(raytrace);
-        if (random.nextFloat() < 0.028F && !(getOwner() instanceof PlayerEntity && ((PlayerEntity) getOwner()).isCreative()))
+        if (random.nextFloat() < 0.028F && !(getOwner() instanceof Player && ((Player) getOwner()).isCreative()))
         {
-            final Vector3d vec = raytrace.getLocation();
+            final Vec3 vec = raytrace.getLocation();
             final ItemEntity item = new ItemEntity(this.level, vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
             this.level.addFreshEntity(item);
         }
@@ -193,7 +193,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
      * @return ???
      */
     @Override
-    public Entity changeDimension(ServerWorld serverWorld, ITeleporter iTeleporter)
+    public Entity changeDimension(ServerLevel serverWorld, ITeleporter iTeleporter)
     {
         Entity entity = this.getOwner();
         if (entity != null && entity.level.dimension() != serverWorld.dimension())
@@ -210,7 +210,7 @@ public class CustomItemProjectileEntity extends ProjectileItemEntity {
     @OnlyIn(Dist.CLIENT)
     public void handleEntityEvent(byte pId) {
         if (pId == 3) {
-            IParticleData iparticledata = this.getParticle();
+            ParticleOptions iparticledata = this.getParticle();
 
             for(int i = 0; i < 8; ++i) {
                 this.level.addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);

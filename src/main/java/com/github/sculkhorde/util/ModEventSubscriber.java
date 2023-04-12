@@ -8,9 +8,9 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,7 +18,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import static net.minecraft.entity.EntitySpawnPlacementRegistry.PlacementType;
-import static net.minecraft.entity.EntitySpawnPlacementRegistry.register;
+import staticnet.minecraft.world.entity.SpawnPlacementsy.register;
+
+import net.minecraft.world.entity.SpawnPlacements.Type;
 
 @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventSubscriber {
@@ -60,15 +62,15 @@ public class ModEventSubscriber {
      */
     @SubscribeEvent
     public static void registerEntities(final RegistryEvent.Register<EntityType<?>> event) {
-        register(EntityRegistry.SCULK_ZOMBIE, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkZombieEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_MITE, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_MITE_AGGRESSOR, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkMiteAggressorEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_SPITTER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkSpitterEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_BEE_INFECTOR, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeInfectorEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_BEE_HARVESTER, PlacementType.NO_RESTRICTIONS, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_SPORE_SPEWER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
-        register(EntityRegistry.SCULK_RAVAGER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
-        register(EntityRegistry.INFESTATION_PURIFIER, PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_ZOMBIE, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkZombieEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_MITE, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkMiteEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_MITE_AGGRESSOR, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkMiteAggressorEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_SPITTER, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkSpitterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_BEE_INFECTOR, Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkBeeInfectorEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_BEE_HARVESTER, Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_SPORE_SPEWER, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.SCULK_RAVAGER, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
+        register(EntityRegistry.INFESTATION_PURIFIER, Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SculkBeeHarvesterEntity::passSpawnCondition);
     }
 
     /* entityAttributes

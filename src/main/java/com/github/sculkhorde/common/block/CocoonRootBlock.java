@@ -1,22 +1,24 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import java.util.Random;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -125,7 +127,7 @@ public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
      * @param random ???
      */
     @Override
-    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos bp, Random random)
+    public void randomTick(BlockState blockState, ServerLevel serverWorld, BlockPos bp, Random random)
     {
         grow(serverWorld, bp);
     }
@@ -137,7 +139,7 @@ public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
      * @param bp The BlockPos of the cocoon.
      * @return Returns whether the growth was successful or not.
      */
-    public boolean grow(ServerWorld serverWorld, BlockPos bp)
+    public boolean grow(ServerLevel serverWorld, BlockPos bp)
     {
         if(getGrowthStage(serverWorld, bp) == growthStage.immature)
         {
@@ -155,7 +157,7 @@ public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
      * @param bp The BlockPos of the cocoon
      * @return The current growth state of the cocoon
      */
-    private growthStage getGrowthStage(ServerWorld serverWorld, BlockPos bp)
+    private growthStage getGrowthStage(ServerLevel serverWorld, BlockPos bp)
     {
         Block aboveBlock = serverWorld.getBlockState(bp.above()).getBlock();
         if(aboveBlock.is(BlockRegistry.COCOON.get()))
@@ -174,7 +176,7 @@ public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
     {
         return false;
     }
@@ -187,7 +189,7 @@ public class CocoonRootBlock extends SculkFloraBlock implements IForgeBlock {
      * @return
      */
     @Override
-    public boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos)
+    public boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos)
     {
         boolean DEBUG_THIS = false;
 

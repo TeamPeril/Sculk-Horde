@@ -7,15 +7,15 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -26,12 +26,12 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorSurfacePurifierEntity(World worldIn)
+    public CursorSurfacePurifierEntity(Level worldIn)
     {
         super(EntityRegistry.CURSOR_SURFACE_PURIFIER, worldIn);
     }
 
-    public CursorSurfacePurifierEntity(EntityType<?> pType, World pLevel) {
+    public CursorSurfacePurifierEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
     }
 
@@ -53,7 +53,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
      */
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.infestationConversionTable.deinfectBlock((ServerWorld) this.level, pos);
+        SculkHorde.infestationConversionTable.deinfectBlock((ServerLevel) this.level, pos);
         if(isSculkFlora.test(this.level.getBlockState(pos.above())))
         {
             this.level.setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
@@ -98,7 +98,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerWorld) this.level, pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos))
         {
             return true;
         }

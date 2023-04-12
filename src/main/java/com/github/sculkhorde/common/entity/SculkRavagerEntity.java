@@ -10,17 +10,17 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
-import net.minecraft.entity.monster.RavagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -40,7 +40,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, ISculkSmartEntity {
+public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSmartEntity {
 
 
     /**
@@ -48,7 +48,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkRavagerEntity(EntityType<? extends SculkRavagerEntity> type, World worldIn) {
+    public SculkRavagerEntity(EntityType<? extends SculkRavagerEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -56,7 +56,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkRavagerEntity(World worldIn) {super(EntityRegistry.SCULK_RAVAGER, worldIn);}
+    public SculkRavagerEntity(Level worldIn) {super(EntityRegistry.SCULK_RAVAGER, worldIn);}
 
     //The Health
     public static final float MAX_HEALTH = 50F;
@@ -78,7 +78,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
      * Determines & registers the attributes of the mob.
      * @return The Attributes
      */
-    public static AttributeModifierMap.MutableAttribute createAttributes()
+    public static AttributeSupplier.Builder createAttributes()
     {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 50F)
@@ -135,11 +135,11 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
 
                 new DespawnWhenIdle(this, 120),
                 //SwimGoal(mob)
-                new SwimGoal(this),
+                new FloatGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
                 //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                new WaterAvoidingRandomWalkingGoal(this, 0.4D),
+                new WaterAvoidingRandomStrollGoal(this, 0.4D),
                 // new LookAtGoal(this, LivingEntity.class, 6.0F),
                 // new LookAtGoal(this, MobEntity.class, 8.0F)
         };
@@ -174,7 +174,7 @@ public class SculkRavagerEntity extends RavagerEntity implements IAnimatable, IS
     }
 
     @Override
-    protected int getExperienceReward(PlayerEntity player)
+    protected int getExperienceReward(Player player)
     {
         return 3;
     }

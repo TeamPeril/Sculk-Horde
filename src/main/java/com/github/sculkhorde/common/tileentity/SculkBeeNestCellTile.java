@@ -1,14 +1,14 @@
 package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkBeeNestCellTile extends TileEntity implements ITickableTileEntity {
+public class SculkBeeNestCellTile extends BlockEntity implements TickableBlockEntity {
 
     private boolean isMature = false;
 
@@ -16,7 +16,7 @@ public class SculkBeeNestCellTile extends TileEntity implements ITickableTileEnt
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkBeeNestCellTile(TileEntityType<?> type) {
+    public SculkBeeNestCellTile(BlockEntityType<?> type) {
         super(type);
     }
 

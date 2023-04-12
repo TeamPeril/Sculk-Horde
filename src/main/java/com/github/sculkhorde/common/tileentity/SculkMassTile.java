@@ -6,13 +6,13 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public class SculkMassTile extends TileEntity implements ITickableTileEntity {
+public class SculkMassTile extends BlockEntity implements TickableBlockEntity {
 
     /**
      * storedSculkMass is the value of sculk mass was this block has.
@@ -29,7 +29,7 @@ public class SculkMassTile extends TileEntity implements ITickableTileEntity {
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkMassTile(TileEntityType<?> type) {
+    public SculkMassTile(BlockEntityType<?> type) {
         super(type);
     }
 
@@ -47,7 +47,7 @@ public class SculkMassTile extends TileEntity implements ITickableTileEntity {
      * @param compoundNBT Where NBT data is stored??
      */
     @Override
-    public void load(BlockState blockState, CompoundNBT compoundNBT) {
+    public void load(BlockState blockState, CompoundTag compoundNBT) {
         super.load(blockState, compoundNBT);
         this.storedSculkMass = compoundNBT.getInt(storedSculkMassIdentifier);
     }
@@ -58,7 +58,7 @@ public class SculkMassTile extends TileEntity implements ITickableTileEntity {
      * @return ???
      */
     @Override
-    public CompoundNBT save(CompoundNBT compoundNBT) {
+    public CompoundTag save(CompoundTag compoundNBT) {
         super.save(compoundNBT);
         compoundNBT.putInt(storedSculkMassIdentifier, this.storedSculkMass);
         return compoundNBT;

@@ -3,16 +3,16 @@ package com.github.sculkhorde.common.procedural.structures;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
 import com.github.sculkhorde.core.BlockRegistry;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 
 public class SculkBeeNestProceduralStructure extends ProceduralStructure
 {
 
-    public SculkBeeNestProceduralStructure(ServerWorld worldIn, BlockPos originIn)
+    public SculkBeeNestProceduralStructure(ServerLevel worldIn, BlockPos originIn)
     {
         super(worldIn, originIn);
     }
@@ -123,7 +123,7 @@ public class SculkBeeNestProceduralStructure extends ProceduralStructure
          * @param plannedBlockIn The BlockState
          * @param targetPosIn The Position to spawn it
          */
-        public SculkNestCellPlannedBlock(ServerWorld worldIn, BlockState plannedBlockIn, BlockPos targetPosIn)
+        public SculkNestCellPlannedBlock(ServerLevel worldIn, BlockState plannedBlockIn, BlockPos targetPosIn)
         {
             super(worldIn, plannedBlockIn, targetPosIn);
         }
@@ -134,7 +134,7 @@ public class SculkBeeNestProceduralStructure extends ProceduralStructure
          * @param worldIn The World
          * @param targetPosIn The Position to spawn it
          */
-        public SculkNestCellPlannedBlock(ServerWorld worldIn, BlockPos targetPosIn)
+        public SculkNestCellPlannedBlock(ServerLevel worldIn, BlockPos targetPosIn)
         {
             super(worldIn, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get().defaultBlockState(), targetPosIn);
         }

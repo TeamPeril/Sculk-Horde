@@ -1,15 +1,15 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.common.tileentity.SculkNodeTile;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 public class SculkNodeInfectionHandler {
 
     // The parent tile entity
     private SculkNodeTile parent = null;
-    private ServerWorld world = null;
+    private ServerLevel world = null;
     private BlockPos origin = null;
 
     // The infection trees
@@ -23,7 +23,7 @@ public class SculkNodeInfectionHandler {
 
     public SculkNodeInfectionHandler(SculkNodeTile parent) {
         this.parent = parent;
-        this.world = (ServerWorld) parent.getLevel();
+        this.world = (ServerLevel) parent.getLevel();
         this.origin = parent.getBlockPos();
 
         northInfectionTree = new InfectionTree(world, Direction.NORTH, origin);

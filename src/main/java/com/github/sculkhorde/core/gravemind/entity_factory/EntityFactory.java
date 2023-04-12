@@ -2,12 +2,12 @@ package com.github.sculkhorde.core.gravemind.entity_factory;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class EntityFactory {
      * @param spawnPosition The Position
      * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
      */
-    public void requestReinforcementAny(World world, BlockPos spawnPosition, boolean noCost, ReinforcementRequest context)
+    public void requestReinforcementAny(Level world, BlockPos spawnPosition, boolean noCost, ReinforcementRequest context)
     {
         boolean DEBUG_THIS = false;
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
@@ -130,7 +130,7 @@ public class EntityFactory {
             if(mobsToSpawn[i] == null) { continue; }
 
             EntityFactoryEntry mob = mobsToSpawn[i];
-            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerWorld) world, null, null, context.positions[i], SpawnReason.SPAWNER, true, true);
+            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, null, null, context.positions[i], MobSpawnType.SPAWNER, true, true);
             if (!noCost)
             {
                 SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(mob.getCost());
@@ -144,7 +144,7 @@ public class EntityFactory {
      * @param world The world to spawn it in.
      * @param pos The Position
      */
-    public void requestReinforcementSculkMass(World world, BlockPos pos, ReinforcementRequest context)
+    public void requestReinforcementSculkMass(Level world, BlockPos pos, ReinforcementRequest context)
     {
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
         if(!(SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0 || entries.size() == 0 || context.budget == 0))
@@ -172,7 +172,7 @@ public class EntityFactory {
                 //Set Remaining Balance
                 context.remaining_balance = context.budget - randomEntry.getCost();
                 //Spawn Mob
-                randomEntry.getEntity().spawn((ServerWorld) world, null, null, pos, SpawnReason.SPAWNER, true, true);
+                randomEntry.getEntity().spawn((ServerLevel) world, null, null, pos, MobSpawnType.SPAWNER, true, true);
             }
         }
     }

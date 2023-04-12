@@ -2,23 +2,23 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -28,6 +28,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class InfestedStoneBlock extends Block implements IForgeBlock {
 
@@ -83,8 +85,8 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      */
     public static int EFFECT_TICKS = 200;
     public static int EFFECT_STRENGTH = 3;
-    public static EffectInstance STEP_ON_EFFECT = new EffectInstance(
-            Effects.DIG_SLOWDOWN,
+    public static MobEffectInstance STEP_ON_EFFECT = new MobEffectInstance(
+            MobEffects.DIG_SLOWDOWN,
             EFFECT_TICKS,
             EFFECT_STRENGTH);
 
@@ -125,7 +127,7 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      * @param entity The entity that stepped on the block
      */
     @Override
-    public void stepOn(World worldIn, BlockPos pos, Entity entity)
+    public void stepOn(Level worldIn, BlockPos pos, Entity entity)
     {
         if(worldIn.isClientSide() || !(entity instanceof LivingEntity))//Only do this on the client
         {
@@ -138,7 +140,7 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
         }
 
         LivingEntity livingEntity = ((LivingEntity) entity); //Cast
-        livingEntity.addEffect(new EffectInstance(STEP_ON_EFFECT)); //Give effect
+        livingEntity.addEffect(new MobEffectInstance(STEP_ON_EFFECT)); //Give effect
 
         super.stepOn(worldIn, pos, entity); //Execute Parent Code
     }
@@ -155,7 +157,7 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      * @param stack The stack being used by the player
      * @return The resulting state after the action has been performed
      */
-    public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
+    public BlockState getToolModifiedState(BlockState state, Level world, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
     {
         if(DEBUG_MODE) System.out.println("Hi I am a Infested Stone :)");
 
@@ -172,10 +174,10 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
 
     }
 }

@@ -1,22 +1,22 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.VineBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.VineBlock;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,6 +27,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class VeinBlock extends VineBlock implements IForgeBlock {
 
@@ -107,9 +109,9 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
     }
 
     @Override
-    public boolean canSurvive(BlockState pState, IWorldReader pLevel, BlockPos pPos)
+    public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos)
     {
-        World worldIn = (World) pLevel;
+        Level worldIn = (Level) pLevel;
         //IF the face it is placed on is not a valid face, return false.
         //The face depends on the direction of the block
         BlockState northBlock = worldIn.getBlockState(pPos.north());
@@ -155,7 +157,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      * @param worldIn The world to place it in
      * @param blockPosIn The desired position
      */
-    public void placeBlock(World worldIn, BlockPos blockPosIn)
+    public void placeBlock(Level worldIn, BlockPos blockPosIn)
     {
         // If the block is not air, return
         if(!worldIn.getBlockState(blockPosIn).isAir()) {
@@ -204,7 +206,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      * @param direction The direction of the face
      * @return
      */
-    public boolean isValidFace(World worldIn, BlockState blockState, BlockPos blockPosIn, Direction direction)
+    public boolean isValidFace(Level worldIn, BlockState blockState, BlockPos blockPosIn, Direction direction)
     {
         if(!blockState.isFaceSturdy(worldIn, blockPosIn, direction))
         {
@@ -246,10 +248,10 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.vein")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.vein")); //Text that displays if holding shift
 
     }
 }

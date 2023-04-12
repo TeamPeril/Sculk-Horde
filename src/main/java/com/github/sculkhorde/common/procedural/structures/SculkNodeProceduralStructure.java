@@ -2,9 +2,9 @@ package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.core.BlockRegistry;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -14,7 +14,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
     private final int SHELL_RADIUS = 5;
     private final int CAVE_RADIUS = SHELL_RADIUS * 2;
     private final int HALLWAY_RADIUS = SHELL_RADIUS;
-    public SculkNodeProceduralStructure(ServerWorld worldIn, BlockPos originIn)
+    public SculkNodeProceduralStructure(ServerLevel worldIn, BlockPos originIn)
     {
         super(worldIn, originIn);
     }
@@ -31,7 +31,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
         }
     }
 
-    public Optional<BlockPos> findLivingRockStructureIfExists(ServerWorld world, BlockPos placementPos)
+    public Optional<BlockPos> findLivingRockStructureIfExists(ServerLevel world, BlockPos placementPos)
     {
         if(world.getBlockState(placementPos).getBlock().equals(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
         {
@@ -62,7 +62,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
         return Optional.empty();
     }
 
-    public BlockPos findLivingRockPlacementPosition(ServerWorld world, BlockPos placementPos)
+    public BlockPos findLivingRockPlacementPosition(ServerLevel world, BlockPos placementPos)
     {
         if(findLivingRockStructureIfExists(world, placementPos).isPresent())
             return findLivingRockStructureIfExists(world, placementPos).get();

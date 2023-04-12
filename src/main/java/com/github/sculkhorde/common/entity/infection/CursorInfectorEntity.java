@@ -4,15 +4,15 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.*;
@@ -62,9 +62,9 @@ public class CursorInfectorEntity extends Entity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorInfectorEntity(World worldIn) {super(EntityRegistry.CURSOR_SHORT_RANGE, worldIn);}
+    public CursorInfectorEntity(Level worldIn) {super(EntityRegistry.CURSOR_SHORT_RANGE, worldIn);}
 
-    public CursorInfectorEntity(EntityType<?> pType, World pLevel) {
+    public CursorInfectorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
         /*
          * BUG: This is not working properly. The entity is not being removed after 30 seconds.
@@ -316,7 +316,7 @@ public class CursorInfectorEntity extends Entity
      */
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.infestationConversionTable.infectBlock((ServerWorld) this.level, pos);
+        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level, pos);
     }
 
     protected void spawnParticleEffects()
@@ -330,17 +330,17 @@ public class CursorInfectorEntity extends Entity
      * @param pCompound
      */
     @Override
-    protected void readAdditionalSaveData(CompoundNBT pCompound) {
+    protected void readAdditionalSaveData(CompoundTag pCompound) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT pCompound) {
+    protected void addAdditionalSaveData(CompoundTag pCompound) {
 
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

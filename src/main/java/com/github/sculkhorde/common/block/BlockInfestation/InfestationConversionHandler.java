@@ -6,11 +6,11 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class InfestationConversionHandler
      * @param world The world of the block.
      * @param targetPos The position of the block we are trying to convert.
      */
-    public boolean infectBlock(ServerWorld world, BlockPos targetPos)
+    public boolean infectBlock(ServerLevel world, BlockPos targetPos)
     {
 
         BlockState targetBlock = world.getBlockState(targetPos);
@@ -113,7 +113,7 @@ public class InfestationConversionHandler
      * @param world The world of the block.
      * @param targetPos The position of the block we are trying to convert.
      */
-    public boolean deinfectBlock(ServerWorld world, BlockPos targetPos)
+    public boolean deinfectBlock(ServerLevel world, BlockPos targetPos)
     {
         BlockState targetBlock = world.getBlockState(targetPos);
         BlockState victimVariant = infestationTable.getNormalVariant(targetBlock);
@@ -137,7 +137,7 @@ public class InfestationConversionHandler
      * This gets called in {@link ForgeEventSubscriber#WorldTickEvent}
      * @param world The world
      */
-    public void processDeInfectionQueue(ServerWorld world)
+    public void processDeInfectionQueue(ServerLevel world)
     {
         if(!world.isClientSide())
         {

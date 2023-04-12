@@ -7,43 +7,43 @@ import com.github.sculkhorde.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.google.common.collect.Lists;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.FlyingMovementController;
-import net.minecraft.entity.ai.controller.LookController;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.passive.IFlyingAnimal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.FlyingPathNavigator;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.tags.ITag;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.ai.util.RandomPos;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -61,7 +61,17 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
-public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnimatable, IFlyingAnimal {
+import net.minecraft.world.entity.AgableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Pose;
+
+public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnimatable, FlyingAnimal {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -84,8 +94,8 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     protected AnimationFactory factory = new AnimationFactory(this);
 
-    protected static final DataParameter<Byte> DATA_FLAGS_ID = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.BYTE);
-    protected static final DataParameter<Integer> DATA_REMAINING_ANGER_TIME = EntityDataManager.defineId(SculkBeeHarvesterEntity.class, DataSerializers.INT);
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(SculkBeeHarvesterEntity.class, EntityDataSerializers.BYTE);
+    protected static final EntityDataAccessor<Integer> DATA_REMAINING_ANGER_TIME = SynchedEntityData.defineId(SculkBeeHarvesterEntity.class, EntityDataSerializers.INT);
     protected float rollAmount;
     protected float rollAmountO;
     protected int ticksWithoutNectarSinceExitingHive;
@@ -109,22 +119,22 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkBeeHarvesterEntity(EntityType<? extends SculkBeeHarvesterEntity> type, World worldIn) {
+    public SculkBeeHarvesterEntity(EntityType<? extends SculkBeeHarvesterEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.moveControl = new FlyingMovementController(this, 20, true);
+        this.moveControl = new FlyingMoveControl(this, 20, true);
         this.lookControl = new SculkBeeHarvesterEntity.BeeLookController(this);
-        this.setPathfindingMalus(PathNodeType.DANGER_FIRE, -1.0F);
-        this.setPathfindingMalus(PathNodeType.WATER, -1.0F);
-        this.setPathfindingMalus(PathNodeType.WATER_BORDER, 16.0F);
-        this.setPathfindingMalus(PathNodeType.COCOA, -1.0F);
-        this.setPathfindingMalus(PathNodeType.FENCE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 16.0F);
+        this.setPathfindingMalus(BlockPathTypes.COCOA, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.FENCE, -1.0F);
     }
 
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkBeeHarvesterEntity(World worldIn)
+    public SculkBeeHarvesterEntity(Level worldIn)
     {
         this(EntityRegistry.SCULK_BEE_HARVESTER, worldIn);
     }
@@ -148,7 +158,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * Determines & registers the attributes of the mob.
      * @return The Attributes
      */
-    public static AttributeModifierMap.MutableAttribute createAttributes()
+    public static AttributeSupplier.Builder createAttributes()
     {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
@@ -164,7 +174,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * @return The XP Amount
      */
     @Override
-    protected int getExperienceReward(PlayerEntity player)
+    protected int getExperienceReward(Player player)
     {
         return 3;
     }
@@ -205,21 +215,21 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return this.factory;
     }
 
-    public float getWalkTargetValue(BlockPos pPos, IWorldReader pLevel)
+    public float getWalkTargetValue(BlockPos pPos, LevelReader pLevel)
     {
         return pLevel.getBlockState(pPos).isAir() ? 10.0F : 0.0F;
     }
 
-    protected float getStandingEyeHeight(Pose pPose, EntitySize pSize) {
+    protected float getStandingEyeHeight(Pose pPose, EntityDimensions pSize) {
         return this.isBaby() ? pSize.height * 0.5F : pSize.height * 0.5F;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public Vector3d getLeashOffset() {
-        return new Vector3d(0.0D, (double)(0.5F * this.getEyeHeight()), (double)(this.getBbWidth() * 0.2F));
+    public Vec3 getLeashOffset() {
+        return new Vec3(0.0D, (double)(0.5F * this.getEyeHeight()), (double)(this.getBbWidth() * 0.2F));
     }
 
-    public SculkBeeHarvesterEntity getBreedOffspring(ServerWorld pServerLevel, AgeableEntity pMate) {
+    public SculkBeeHarvesterEntity getBreedOffspring(ServerLevel pServerLevel, AgableMob pMate) {
         return EntityRegistry.SCULK_BEE_HARVESTER.create(pServerLevel);
     }
 
@@ -237,7 +247,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     @OnlyIn(Dist.CLIENT)
     public float getRollAmount(float pPartialTick) {
-        return MathHelper.lerp(pPartialTick, this.rollAmountO, this.rollAmount);
+        return Mth.lerp(pPartialTick, this.rollAmountO, this.rollAmount);
     }
 
     /**----------Modifier Methods----------**/
@@ -304,14 +314,14 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         if (!this.hasHive()) {
             return false;
         } else {
-            TileEntity tileentity = this.level.getBlockEntity(this.hivePos);
+            BlockEntity tileentity = this.level.getBlockEntity(this.hivePos);
             return tileentity instanceof SculkBeeNestTile;
         }
     }
 
     protected boolean doesHiveHaveSpace(BlockPos pHivePos)
     {
-        TileEntity tileentity = this.level.getBlockEntity(pHivePos);
+        BlockEntity tileentity = this.level.getBlockEntity(pHivePos);
         //TileEntity tileentity = .getTileEntity(this.level, pHivePos);
         if (tileentity instanceof SculkBeeNestTile)
         {
@@ -439,12 +449,12 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
      * @param random ???
      * @return Returns a boolean determining if it is a suitable spawn location
      */
-    public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
+    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, Random random)
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
             // If not because of chunk generation or natural, return false
-        else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
+        else if (reason != MobSpawnType.CHUNK_GENERATION && reason != MobSpawnType.NATURAL) return false;
             //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
         else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
         return true;
@@ -497,9 +507,9 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
 
                         //LookRandomlyGoal(mob)
-                        new LookRandomlyGoal(this),
+                        new RandomLookAroundGoal(this),
                         new SculkBeeHarvesterEntity.WanderGoal(),
-                        new SwimGoal(this),
+                        new FloatGoal(this),
                 };
         return goals;
     }
@@ -536,16 +546,16 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
 
     /** ~~~~~~~~ Save Data ~~~~~~~~ **/
 
-    public void addAdditionalSaveData(CompoundNBT pCompound) {
+    public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         if (this.hasHive())
         {
-            pCompound.put("HivePos", NBTUtil.writeBlockPos(this.getHivePos()));
+            pCompound.put("HivePos", NbtUtils.writeBlockPos(this.getHivePos()));
         }
 
         if (this.hasSavedFlowerPos())
         {
-            pCompound.put("FlowerPos", NBTUtil.writeBlockPos(this.getSavedFlowerPos()));
+            pCompound.put("FlowerPos", NbtUtils.writeBlockPos(this.getSavedFlowerPos()));
         }
 
         pCompound.putBoolean("HasNectar", this.hasNectar());
@@ -557,16 +567,16 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readAdditionalSaveData(CompoundNBT pCompound)
+    public void readAdditionalSaveData(CompoundTag pCompound)
     {
         this.hivePos = null;
         if (pCompound.contains("HivePos")) {
-            this.hivePos = NBTUtil.readBlockPos(pCompound.getCompound("HivePos"));
+            this.hivePos = NbtUtils.readBlockPos(pCompound.getCompound("HivePos"));
         }
 
         this.savedFlowerPos = null;
         if (pCompound.contains("FlowerPos")) {
-            this.savedFlowerPos = NBTUtil.readBlockPos(pCompound.getCompound("FlowerPos"));
+            this.savedFlowerPos = NbtUtils.readBlockPos(pCompound.getCompound("FlowerPos"));
         }
 
         super.readAdditionalSaveData(pCompound);
@@ -583,8 +593,8 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**
      * Returns new PathNavigateGround instance
      */
-    protected PathNavigator createNavigation(World pLevel) {
-        FlyingPathNavigator flyingpathnavigator = new FlyingPathNavigator(this, pLevel) {
+    protected PathNavigation createNavigation(Level pLevel) {
+        FlyingPathNavigation flyingpathnavigator = new FlyingPathNavigation(this, pLevel) {
             public boolean isStableDestination(BlockPos pPos) {
                 return !this.level.getBlockState(pPos.below()).isAir();
             }
@@ -634,7 +644,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         }
     }
 
-    protected void jumpInLiquid(ITag<Fluid> pFluidTag) {
+    protected void jumpInLiquid(Tag<Fluid> pFluidTag) {
         this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.01D, 0.0D));
     }
 
@@ -643,15 +653,15 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         return pPos.closerThan(this.blockPosition(), (double)pDistance);
     }
 
-    protected void spawnFluidParticle(World pLevel, double pStartX, double pEndX, double pStartZ, double pEndZ, double pPosY, IParticleData pParticleOption)
+    protected void spawnFluidParticle(Level pLevel, double pStartX, double pEndX, double pStartZ, double pEndZ, double pPosY, ParticleOptions pParticleOption)
     {
-        pLevel.addParticle(pParticleOption, MathHelper.lerp(pLevel.random.nextDouble(), pStartX, pEndX), pPosY, MathHelper.lerp(pLevel.random.nextDouble(), pStartZ, pEndZ), 0.0D, 0.0D, 0.0D);
+        pLevel.addParticle(pParticleOption, Mth.lerp(pLevel.random.nextDouble(), pStartX, pEndX), pPosY, Mth.lerp(pLevel.random.nextDouble(), pStartZ, pEndZ), 0.0D, 0.0D, 0.0D);
     }
 
     protected void pathfindRandomlyTowards(BlockPos pPos)
     {
         //Get the bottom center position of the block
-        Vector3d targetPos = Vector3d.atBottomCenterOf(pPos);
+        Vec3 targetPos = Vec3.atBottomCenterOf(pPos);
 
         int i = 0;
         BlockPos blockpos = this.blockPosition();
@@ -676,7 +686,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             l = i1 / 2;
         }
 
-        Vector3d vector3d1 = RandomPositionGenerator.getAirPosTowards(this, k, l, i, targetPos, (double)((float)Math.PI / 10F));
+        Vec3 vector3d1 = RandomPos.getAirPosTowards(this, k, l, i, targetPos, (double)((float)Math.PI / 10F));
         if (vector3d1 != null) {
             this.navigation.setMaxVisitedNodesMultiplier(0.5F);
             this.navigation.moveTo(vector3d1.x, vector3d1.y, vector3d1.z, 1.0D);
@@ -693,9 +703,9 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
     /**----------CLASSES----------**/
 
 
-    public class BeeLookController extends LookController
+    public class BeeLookController extends LookControl
     {
-        BeeLookController(MobEntity pMob)
+        BeeLookController(Mob pMob)
         {
             super(pMob);
         }
@@ -770,7 +780,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         protected int successfulPollinatingTicks = 0;
         protected int lastSoundPlayedTick = 0;
         protected boolean pollinating;
-        protected Vector3d hoverPos;
+        protected Vec3 hoverPos;
         protected int pollinatingTicks = 0;
 
         /**
@@ -941,7 +951,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             else
             {
                 //Flower Position
-                Vector3d offsetFlowerPos = Vector3d.atBottomCenterOf(SculkBeeHarvesterEntity.this.savedFlowerPos).add(0.0D, (double)0.6F, 0.0D);
+                Vec3 offsetFlowerPos = Vec3.atBottomCenterOf(SculkBeeHarvesterEntity.this.savedFlowerPos).add(0.0D, (double)0.6F, 0.0D);
 
                 //If not close enough to the flower, go there
                 if (offsetFlowerPos.distanceTo(SculkBeeHarvesterEntity.this.position()) > 1.0D)
@@ -981,7 +991,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
                             if (randomChanceOfSuccess)
                             {
                                 //Randomly Offset hover position on x and z axis
-                                this.hoverPos = new Vector3d(
+                                this.hoverPos = new Vec3(
                                         offsetFlowerPos.x() + (double)this.getRandomOffset(),
                                         offsetFlowerPos.y(),
                                         offsetFlowerPos.z() + (double)this.getRandomOffset()
@@ -1056,7 +1066,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
             //The origin of our search
             BlockPos blockpos = SculkBeeHarvesterEntity.this.blockPosition();
             //?
-            BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+            BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
 
             //Search area for block
             for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
@@ -1106,7 +1116,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
                     SculkBeeHarvesterEntity.this.hivePos.closerThan(SculkBeeHarvesterEntity.this.position(), 2.0D))
             {
                 //Get the hive tile entity
-                TileEntity tileentity = SculkBeeHarvesterEntity.this.level.getBlockEntity(SculkBeeHarvesterEntity.this.hivePos);
+                BlockEntity tileentity = SculkBeeHarvesterEntity.this.level.getBlockEntity(SculkBeeHarvesterEntity.this.hivePos);
 
                 //If its the right instance
                 if (tileentity instanceof SculkBeeNestTile)
@@ -1142,7 +1152,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         public void start()
         {
             //Get hive tile entity
-            TileEntity tileentity = SculkBeeHarvesterEntity.this.level.getBlockEntity(SculkBeeHarvesterEntity.this.hivePos);
+            BlockEntity tileentity = SculkBeeHarvesterEntity.this.level.getBlockEntity(SculkBeeHarvesterEntity.this.hivePos);
             //If right instance
             if (tileentity instanceof SculkBeeNestTile)
             {
@@ -1566,7 +1576,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         private List<BlockPos> findNearbyHivesWithSpace()
         {
             List<BlockPos> list = BlockAlgorithms.getBlocksInArea(
-                    (ServerWorld) SculkBeeHarvesterEntity.this.level,
+                    (ServerLevel) SculkBeeHarvesterEntity.this.level,
                     SculkBeeHarvesterEntity.this.blockPosition(),
                     VALID_HIVE_BLOCKS,
                     20
@@ -1625,7 +1635,7 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
         public void start()
         {
 
-            Vector3d vector3d = this.findPos();
+            Vec3 vector3d = this.findPos();
             if (vector3d != null)
             {
                 SculkBeeHarvesterEntity.this.navigation.moveTo(SculkBeeHarvesterEntity.this.navigation.createPath(new BlockPos(vector3d), 1), 1.0D);
@@ -1638,15 +1648,15 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
          * @return
          */
         @Nullable
-        private Vector3d findPos()
+        private Vec3 findPos()
         {
-            Vector3d vector3d;
+            Vec3 vector3d;
 
             //If there is a valid hive and within 22 blocks of it
             if (SculkBeeHarvesterEntity.this.isHiveValid() && !SculkBeeHarvesterEntity.this.closerThan(SculkBeeHarvesterEntity.this.hivePos, 9))
             {
                 // Get the vector from the hive to the bee
-                Vector3d vector3d1 = Vector3d.atCenterOf(SculkBeeHarvesterEntity.this.hivePos);
+                Vec3 vector3d1 = Vec3.atCenterOf(SculkBeeHarvesterEntity.this.hivePos);
                 // Get the vector from the bee to the hive
                 vector3d = vector3d1.subtract(SculkBeeHarvesterEntity.this.position()).normalize();
             }
@@ -1670,9 +1680,9 @@ public class SculkBeeHarvesterEntity extends SculkLivingEntity implements IAnima
              *
              * @return a randomly generated position above land, or null if none was found
              */
-            Vector3d vector3d2 = RandomPositionGenerator.getAboveLandPos(SculkBeeHarvesterEntity.this, 8, 7, vector3d, ((float)Math.PI / 2F), 2, 1);
+            Vec3 vector3d2 = RandomPos.getAboveLandPos(SculkBeeHarvesterEntity.this, 8, 7, vector3d, ((float)Math.PI / 2F), 2, 1);
             // If the random position is null, get a random position in the air
-            return vector3d2 != null ? vector3d2 : RandomPositionGenerator.getAirPos(SculkBeeHarvesterEntity.this, 8, 4, -2, vector3d, (double)((float)Math.PI / 2F));
+            return vector3d2 != null ? vector3d2 : RandomPos.getAirPos(SculkBeeHarvesterEntity.this, 8, 4, -2, vector3d, (double)((float)Math.PI / 2F));
         }
     }
 }

@@ -5,21 +5,21 @@ import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.DoublePlantBlock;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -62,7 +62,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkBeeInfectorEntity(EntityType<? extends SculkBeeInfectorEntity> type, World worldIn) {
+    public SculkBeeInfectorEntity(EntityType<? extends SculkBeeInfectorEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -70,13 +70,13 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkBeeInfectorEntity(World worldIn) {super(EntityRegistry.SCULK_BEE_INFECTOR, worldIn);}
+    public SculkBeeInfectorEntity(Level worldIn) {super(EntityRegistry.SCULK_BEE_INFECTOR, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes
      */
-    public static AttributeModifierMap.MutableAttribute createAttributes()
+    public static AttributeSupplier.Builder createAttributes()
     {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
@@ -133,9 +133,9 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
 
 
                         //LookRandomlyGoal(mob)
-                        new LookRandomlyGoal(this),
+                        new RandomLookAroundGoal(this),
                         new SculkBeeHarvesterEntity.WanderGoal(),
-                        new SwimGoal(this),
+                        new FloatGoal(this),
                 };
         return goals;
     }
@@ -242,7 +242,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
 
                 // Spawn Block Traverser under bee
                 BlockPos spreadPos = SculkBeeInfectorEntity.this.blockPosition().below();
-                ServerWorld world = (ServerWorld) SculkBeeInfectorEntity.this.level;
+                ServerLevel world = (ServerLevel) SculkBeeInfectorEntity.this.level;
 
                 // Spawn Block Traverser
                 CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(world);

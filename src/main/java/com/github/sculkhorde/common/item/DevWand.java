@@ -5,27 +5,29 @@ import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.TooltipFlag;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+
+import net.minecraft.world.item.Item.Properties;
 
 public class DevWand extends Item implements IForgeItem {
 	/* NOTE:
@@ -68,15 +70,15 @@ public class DevWand extends Item implements IForgeItem {
 	//This changes the text you see when hovering over an item
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		
 		super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
 		
 		//If User presses left shift, else
-		if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{
-			tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
+		if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{
+			tooltip.add(new TranslatableComponent("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
 		} else {
-			tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
+			tooltip.add(new TranslatableComponent("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
 		}
 	}
 
@@ -86,7 +88,7 @@ public class DevWand extends Item implements IForgeItem {
 	}
 
 	@Override
-	public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
+	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
@@ -94,10 +96,10 @@ public class DevWand extends Item implements IForgeItem {
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
 		{
 			//If Player is holding shift, just output sculk mass of world
-			if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
 			{
 				playerIn.displayClientMessage(
-						new StringTextComponent(
+						new TextComponent(
 								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
 								"Sculk Accumulated Mass: " + SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() + "\n" +
 								"Known Nodes: " + SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
@@ -106,15 +108,15 @@ public class DevWand extends Item implements IForgeItem {
 								"Conversion Queue Size: " + SculkHorde.infestationConversionTable.conversionQueue.size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-				return ActionResult.pass(itemstack);
+				return InteractionResultHolder.pass(itemstack);
 			}
 			//If player clicks left-alt, set sculk mass to 10k
-			else if(InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
 			{
-				playerIn.displayClientMessage(new StringTextComponent("Adding 100 Sculk Mass"), false);
+				playerIn.displayClientMessage(new TextComponent("Adding 100 Sculk Mass"), false);
 				SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(100);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-				return ActionResult.pass(itemstack);
+				return InteractionResultHolder.pass(itemstack);
 			}
 			else
 			{
@@ -134,7 +136,7 @@ public class DevWand extends Item implements IForgeItem {
 					targetZ = targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
 
 					//Give Player Effect
-					playerIn.addEffect(new EffectInstance(Effects.ABSORPTION, 200, 5));
+					playerIn.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 5));
 					//Create Mob Instance
 					SculkSporeSpewerEntity entity = new SculkSporeSpewerEntity(worldIn);
 					//Set Mob's Position
@@ -145,9 +147,9 @@ public class DevWand extends Item implements IForgeItem {
 					playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				}
 
-				return ActionResult.pass(itemstack);
+				return InteractionResultHolder.pass(itemstack);
 			}
 		}
-		return ActionResult.fail(itemstack);
+		return InteractionResultHolder.fail(itemstack);
 	}
 }

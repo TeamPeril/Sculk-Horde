@@ -4,21 +4,21 @@ import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.DamageSourceRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -26,6 +26,8 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -121,7 +123,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      * @param blockPos The position of this block
      * @param entity The entity inside
      */
-    public void entityInside(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+    public void entityInside(BlockState blockState, Level world, BlockPos blockPos, Entity entity) {
         // If the entity is not a living entity, don't do anything
         if (!(entity instanceof LivingEntity) || world.isClientSide)
         {
@@ -134,7 +136,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
             return;
         }
 
-        entity.makeStuckInBlock(blockState, new Vector3d((double)0.8F, 0.75D, (double)0.8F));
+        entity.makeStuckInBlock(blockState, new Vec3((double)0.8F, 0.75D, (double)0.8F));
 
         if (entity.xOld != entity.getX() || entity.zOld != entity.getZ())
         {
@@ -143,7 +145,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
             if (d0 >= (double)0.003F || d1 >= (double)0.003F)
             {
                 entity.hurt(DamageSourceRegistry.SCULK_SPIKE, 1.0F);
-                ((LivingEntity) entity).addEffect(new EffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
                 world.destroyBlock(blockPos, false);
             }
         }
@@ -159,9 +161,9 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.spike")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.spike")); //Text that displays if holding shift
     }
 }

@@ -1,10 +1,10 @@
 package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.function.Predicate;
 
@@ -12,7 +12,7 @@ public class PlannedBlock
 {
     protected BlockState plannedBlock = null;
     protected BlockPos targetPos;
-    protected ServerWorld world;
+    protected ServerLevel world;
 
     /**
      * Constructor
@@ -20,7 +20,7 @@ public class PlannedBlock
      * @param plannedBlockIn
      * @param targetPosIn
      */
-    public PlannedBlock(ServerWorld worldIn, BlockState plannedBlockIn, BlockPos targetPosIn)
+    public PlannedBlock(ServerLevel worldIn, BlockState plannedBlockIn, BlockPos targetPosIn)
     {
         plannedBlock = plannedBlockIn;
         targetPos = targetPosIn;

@@ -4,11 +4,11 @@ import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.concurrent.TimeUnit;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkNodeTile extends TileEntity implements ITickableTileEntity
+public class SculkNodeTile extends BlockEntity implements TickableBlockEntity
 {
 
     private final int CHUNK_LOAD_RADIUS = 15;
@@ -38,7 +38,7 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkNodeTile(TileEntityType<?> type)
+    public SculkNodeTile(BlockEntityType<?> type)
     {
         super(type);
     }
@@ -80,7 +80,7 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
             if(nodeProceduralStructure == null)
             {
                 //Create Structure
-                nodeProceduralStructure = new SculkNodeProceduralStructure((ServerWorld) this.level, this.getBlockPos());
+                nodeProceduralStructure = new SculkNodeProceduralStructure((ServerLevel) this.level, this.getBlockPos());
                 nodeProceduralStructure.generatePlan();
             }
 
@@ -111,12 +111,12 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
     }
 
 
-    public static void forceLoadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
+    public static void forceLoadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
 
         ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
     }
 
-    public void forceLoadChunksInRadius(ServerWorld world, BlockPos owner, int chunkOriginX, int chunkOriginZ)
+    public void forceLoadChunksInRadius(ServerLevel world, BlockPos owner, int chunkOriginX, int chunkOriginZ)
     {
         /*
         If radius is 3, this is what the area of chunk loading will look like.
@@ -138,12 +138,12 @@ public class SculkNodeTile extends TileEntity implements ITickableTileEntity
         }
     }
 
-    public static void unloadChunk(ServerWorld world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
+    public static void unloadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ, boolean tickingWithoutPlayer) {
 
         ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
     }
 
-    public void unloadChunksInRadius(ServerWorld world, BlockPos owner, int chunkOriginX, int chunkOriginZ)
+    public void unloadChunksInRadius(ServerLevel world, BlockPos owner, int chunkOriginX, int chunkOriginZ)
     {
         /*
         If radius is 3, this is what the area of chunk loading will look like.

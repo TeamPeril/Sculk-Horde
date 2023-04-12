@@ -3,25 +3,33 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import java.util.Random;
 
 //Not an actual block, just a parent class
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
 
@@ -104,7 +112,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     // SPawn particles
     @Override
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand) {
         super.animateTick(stateIn, worldIn, pos, rand);
 
         if (worldIn.isClientSide)
@@ -130,7 +138,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * @return True/False
      */
     @Override
-    protected boolean mayPlaceOn(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
+    protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
         Block[] validBlocks = {BlockRegistry.CRUST.get(), BlockRegistry.INFESTED_STONE_DORMANT.get()};
         for(Block b : validBlocks)
         {
@@ -144,7 +152,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * @param world The world
      * @param targetPos The position
      */
-    public void placeBlockHere(ServerWorld world, BlockPos targetPos)
+    public void placeBlockHere(ServerLevel world, BlockPos targetPos)
     {
         //If block below target is valid and the target can be replaced by water
         if(mayPlaceOn(world.getBlockState(targetPos.below()), world, targetPos.below())
@@ -163,7 +171,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * @param p_220053_4_
      * @return
      */
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
         return Block.box(2.0D, 0.0D, 2.0D, 14.0D, 13.0D, 14.0D);
     }
 
@@ -176,8 +184,8 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * @param pathType ???
      * @return ???
      */
-    public boolean isPathfindable(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, PathType pathType) {
-        return pathType == PathType.AIR && !this.hasCollision ? true : super.isPathfindable(blockState, iBlockReader, blockPos, pathType);
+    public boolean isPathfindable(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos, PathComputationType pathType) {
+        return pathType == PathComputationType.AIR && !this.hasCollision ? true : super.isPathfindable(blockState, iBlockReader, blockPos, pathType);
     }
 
     /**
@@ -187,7 +195,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * @param pos
      * @return
      */
-    public boolean propagatesSkylightDown(BlockState blockState, IBlockReader iBlockReader, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
         return true;
     }
 
@@ -195,12 +203,12 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * Causes Model to be offset
      * @return
      */
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
+    public BlockBehaviour.OffsetType getOffsetType() {
+        return BlockBehaviour.OffsetType.XZ;
     }
 
     @Override
-    public boolean canBeReplacedByLeaves(BlockState state, IWorldReader world, BlockPos pos) {
+    public boolean canBeReplacedByLeaves(BlockState state, LevelReader world, BlockPos pos) {
         return true;
     }
 
@@ -210,12 +218,12 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     }
 
     @Override
-    public boolean canBeReplacedByLogs(BlockState state, IWorldReader world, BlockPos pos) {
+    public boolean canBeReplacedByLogs(BlockState state, LevelReader world, BlockPos pos) {
         return true;
     }
 
     @Override
-    public boolean canBeReplaced(BlockState pState, BlockItemUseContext pUseContext) {
+    public boolean canBeReplaced(BlockState pState, BlockPlaceContext pUseContext) {
         return true;
     }
 }

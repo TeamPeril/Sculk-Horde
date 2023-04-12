@@ -2,27 +2,29 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
+import net.minecraft.world.entity.ai.goal.Goal.Flag;
+
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
     //protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
 
-    public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach)
+    public NearestLivingEntityTargetGoal(Mob mobEntity, boolean mustSee, boolean mustReach)
     {
         this(mobEntity, false, false, null);
     }
 
-    public NearestLivingEntityTargetGoal(MobEntity mobEntity, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
+    public NearestLivingEntityTargetGoal(Mob mobEntity, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> predicate)
     {
         super(mobEntity, false, false);
         this.setFlags(EnumSet.of(Flag.TARGET));
@@ -39,7 +41,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         return canWeUse;
     }
 
-    protected AxisAlignedBB getTargetSearchArea(double range)
+    protected AABB getTargetSearchArea(double range)
     {
         return this.mob.getBoundingBox().inflate(range, 4.0D, range);
     }

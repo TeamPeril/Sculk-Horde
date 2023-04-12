@@ -4,8 +4,8 @@ import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversion
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -23,7 +23,7 @@ public class SculkHorde {
     //The file name in the world data folder.
     public static final String SAVE_DATA_ID = SculkHorde.MOD_ID + "_gravemind_memory";
     //The Creative Tab that all the items appear in
-    public static final ItemGroup SCULK_GROUP = new CreativeTabGroup("sculkhorde_tab");
+    public static final CreativeModeTab SCULK_GROUP = new CreativeTabGroup("sculkhorde_tab");
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
@@ -54,7 +54,7 @@ public class SculkHorde {
     }
 
     //Add Creative Item Tab
-    public static class CreativeTabGroup extends ItemGroup
+    public static class CreativeTabGroup extends CreativeModeTab
     {
         public CreativeTabGroup(String label) {
             super(label);

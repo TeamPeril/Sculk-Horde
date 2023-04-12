@@ -1,13 +1,13 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.*;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -37,7 +37,7 @@ public class BlockRegistry {
     
     //Register Ancient Large Bricks
     public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS =
-			registerBlock("ancient_large_bricks", () -> new Block(AbstractBlock.Properties.of(
+			registerBlock("ancient_large_bricks", () -> new Block(BlockBehaviour.Properties.of(
 					Material.STONE, MaterialColor.TERRACOTTA_BLUE)
     				.strength(15f, 30f)//Hardness & Resistance
     				.harvestTool(ToolType.PICKAXE) //Block Preferred Harvest Tool
@@ -47,7 +47,7 @@ public class BlockRegistry {
 
     //Ancient Large Tile
     public static final RegistryObject<Block> ANCIENT_LARGE_TILE =
-			registerBlock("ancient_large_tile", () -> new Block(AbstractBlock.Properties.of(
+			registerBlock("ancient_large_tile", () -> new Block(BlockBehaviour.Properties.of(
 					CrustBlock.MATERIAL, CrustBlock.MAP_COLOR)
     				.strength(15f, 30f)//Hardness & Resistance
     				.harvestTool(ToolType.PICKAXE) 
@@ -57,7 +57,7 @@ public class BlockRegistry {
 
 	//Sculk Arachnoid
 	public static final RegistryObject<Block> SCULK_ARACHNOID =
-			registerBlock("sculk_arachnoid", () -> new Block(AbstractBlock.Properties.of(
+			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of(
 							Material.PLANT, MaterialColor.QUARTZ)
 					.strength(10f, 6f)//Hardness & Resistance
 					.harvestTool(ToolType.SHOVEL)
@@ -67,7 +67,7 @@ public class BlockRegistry {
 
 	//Sculk Dura Matter
 	public static final RegistryObject<Block> SCULK_DURA_MATTER =
-			registerBlock("sculk_dura_matter", () -> new Block(AbstractBlock.Properties.of(
+			registerBlock("sculk_dura_matter", () -> new Block(BlockBehaviour.Properties.of(
 							Material.PLANT, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.harvestTool(ToolType.PICKAXE)
@@ -77,7 +77,7 @@ public class BlockRegistry {
 
 	//Sculk Dura Matter
 	public static final RegistryObject<Block> CALCITE_ORE =
-			registerBlock("calcite_ore", () -> new Block(AbstractBlock.Properties.of(
+			registerBlock("calcite_ore", () -> new Block(BlockBehaviour.Properties.of(
 							Material.PLANT, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.harvestTool(ToolType.PICKAXE)

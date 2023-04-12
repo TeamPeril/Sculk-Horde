@@ -3,12 +3,14 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.EnumSet;
+
+import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class SculkMiteInfectGoal extends MeleeAttackGoal {
 
@@ -68,7 +70,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
             if(targetMobRemainingHealth <= 0.5)
             {
-                target.addEffect(new EffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
+                target.addEffect(new MobEffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
 
                 //Kill The Bastard
                 /**

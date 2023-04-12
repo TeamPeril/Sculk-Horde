@@ -7,14 +7,14 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +23,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 
-public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
+public class SculkSummonerTile extends BlockEntity implements TickableBlockEntity
 {
     private int behavior_state = 0;
     private final int STATE_COOLDOWN = 0;
     private final int STATE_READY_TO_SPAWN = 1;
     private final int STATE_SPAWNING = 2;
-    AxisAlignedBB searchArea;
+    AABB searchArea;
     //ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
     private final int ACTIVATION_DISTANCE = 32;
     //possibleLivingEntityTargets - A list of nearby targets which are worth infecting.
@@ -56,7 +56,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkSummonerTile(TileEntityType<?> type)
+    public SculkSummonerTile(BlockEntityType<?> type)
     {
         super(type);
     }
@@ -164,7 +164,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
         if(behavior_state == STATE_SPAWNING)
         {
             //Choose spawn positions
-            ArrayList<BlockPos> possibleSpawnPositions = getSpawnPositionsInCube((ServerWorld) this.level, this.getBlockPos(), 5, MAX_SPAWNED_ENTITIES);
+            ArrayList<BlockPos> possibleSpawnPositions = getSpawnPositionsInCube((ServerLevel) this.level, this.getBlockPos(), 5, MAX_SPAWNED_ENTITIES);
 
             BlockPos[] finalizedSpawnPositions = new BlockPos[MAX_SPAWNED_ENTITIES];
 
@@ -214,7 +214,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
      * @param amountOfPositions The amount of positions to get
      * @return A list of the spawn positions
      */
-    public ArrayList<BlockPos> getSpawnPositionsInCube(ServerWorld worldIn, BlockPos origin, int length, int amountOfPositions)
+    public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int length, int amountOfPositions)
     {
         //TODO Can potentially be optimized by not getting all the possible positions
         ArrayList<BlockPos> listOfPossibleSpawns = BlockAlgorithms.getBlocksInCube(worldIn, origin, VALID_SPAWN_BLOCKS, length);
@@ -236,7 +236,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
      */
     private final Predicate<BlockPos> VALID_SPAWN_BLOCKS = (blockPos) ->
     {
-        return isValidSpawnPosition((ServerWorld) this.level, blockPos) ;
+        return isValidSpawnPosition((ServerLevel) this.level, blockPos) ;
     };
 
     /**
@@ -246,7 +246,7 @@ public class SculkSummonerTile extends TileEntity implements ITickableTileEntity
      * @param pos The Position to spawn the entity
      * @return True/False
      */
-    public boolean isValidSpawnPosition(ServerWorld worldIn, BlockPos pos)
+    public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
         return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(worldIn.getBlockState(pos.below()))  &&
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&

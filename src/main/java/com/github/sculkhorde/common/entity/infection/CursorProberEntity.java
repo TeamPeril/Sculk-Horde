@@ -5,15 +5,15 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.fml.network.NetworkHooks;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -48,9 +48,9 @@ public class CursorProberEntity extends Entity {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorProberEntity(World worldIn) {super(EntityRegistry.CURSOR_LONG_RANGE, worldIn);}
+    public CursorProberEntity(Level worldIn) {super(EntityRegistry.CURSOR_LONG_RANGE, worldIn);}
 
-    public CursorProberEntity(EntityType<?> pType, World pLevel) {
+    public CursorProberEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
         this.distanceTraveled = 0;
         /**
@@ -206,7 +206,7 @@ public class CursorProberEntity extends Entity {
 
         // Keep track of last known position
         lastKnownBlockPos = this.blockPosition();
-        SculkHorde.infestationConversionTable.infectBlock((ServerWorld) this.level, this.blockPosition());
+        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level, this.blockPosition());
         // Keep track of how far we've traveled
         distanceTraveled++;
 
@@ -226,17 +226,17 @@ public class CursorProberEntity extends Entity {
      * @param pCompound
      */
     @Override
-    protected void readAdditionalSaveData(CompoundNBT pCompound) {
+    protected void readAdditionalSaveData(CompoundTag pCompound) {
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT pCompound) {
+    protected void addAdditionalSaveData(CompoundTag pCompound) {
 
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

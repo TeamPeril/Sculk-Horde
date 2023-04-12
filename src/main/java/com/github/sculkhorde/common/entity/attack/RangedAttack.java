@@ -3,10 +3,10 @@ package com.github.sculkhorde.common.entity.attack;
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.util.ProjectileHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
 public abstract class RangedAttack {
 
@@ -30,7 +30,7 @@ public abstract class RangedAttack {
         this.damage = damage;
     }
 
-    public abstract CustomItemProjectileEntity getProjectile(World worldIn, LivingEntity shooterIn, float damageIn);
+    public abstract CustomItemProjectileEntity getProjectile(Level worldIn, LivingEntity shooterIn, float damageIn);
 
     public RangedAttack setProjectileOriginOffset(double x, double entityHeightFraction, double z) {
         xOffSetModifier = x;
@@ -61,7 +61,7 @@ public abstract class RangedAttack {
         double d0 = targetEntity.getX() - this.thisMob.getX();
         double d1 = targetEntity.getEyeY() - projectile.getY();
         double d2 = targetEntity.getZ() - this.thisMob.getZ();
-        double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+        double d3 = Mth.sqrt(d0 * d0 + d2 * d2);
         if (d3 > 40.0)
             return;
         double velocity = 1.6;

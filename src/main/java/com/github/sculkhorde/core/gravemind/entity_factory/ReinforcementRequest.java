@@ -1,7 +1,7 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 

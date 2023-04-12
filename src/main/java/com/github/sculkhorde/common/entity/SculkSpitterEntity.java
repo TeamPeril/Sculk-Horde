@@ -6,23 +6,23 @@ import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -32,6 +32,14 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
+
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
 public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable,ISculkSmartEntity {
 
@@ -89,7 +97,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkSpitterEntity(EntityType<? extends SculkSpitterEntity> type, World worldIn) {
+    public SculkSpitterEntity(EntityType<? extends SculkSpitterEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -97,13 +105,13 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSpitterEntity(World worldIn) {super(EntityRegistry.SCULK_SPITTER, worldIn);}
+    public SculkSpitterEntity(Level worldIn) {super(EntityRegistry.SCULK_SPITTER, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes
      */
-    public static AttributeModifierMap.MutableAttribute createAttributes()
+    public static AttributeSupplier.Builder createAttributes()
     {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH)
@@ -132,12 +140,12 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
      * @param random ???
      * @return Returns a boolean determining if it is a suitable spawn location
      */
-    public static boolean passSpawnCondition(EntityType<? extends CreatureEntity> config, IWorld world, SpawnReason reason, BlockPos pos, Random random)
+    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, Random random)
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
         // If not because of chunk generation or natural, return false
-        else if (reason != SpawnReason.CHUNK_GENERATION && reason != SpawnReason.NATURAL) return false;
+        else if (reason != MobSpawnType.CHUNK_GENERATION && reason != MobSpawnType.NATURAL) return false;
         //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
         else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
         return true;
@@ -179,7 +187,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
                 {
                         new DespawnWhenIdle(this, 120),
                         //SwimGoal(mob)
-                        new SwimGoal(this),
+                        new FloatGoal(this),
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
                                 .setProjectileOriginOffset(0.8, 0.9, 0.8)
@@ -187,12 +195,12 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                        new WaterAvoidingRandomWalkingGoal(this, 1.0D),
+                        new WaterAvoidingRandomStrollGoal(this, 1.0D),
                         //new RangedAttackGoal(this, new AcidAttack(this), 20),
                         //LookAtGoal(mob, targetType, lookDistance)
-                        new LookAtGoal(this, PigEntity.class, 8.0F),
+                        new LookAtPlayerGoal(this, Pig.class, 8.0F),
                         //LookRandomlyGoal(mob)
-                        new LookRandomlyGoal(this),
+                        new RandomLookAroundGoal(this),
                         new OpenDoorGoal(this, true)
                 };
         return goals;
@@ -221,7 +229,7 @@ public class SculkSpitterEntity extends SculkLivingEntity implements IAnimatable
 
 
     @Override
-    protected int getExperienceReward(PlayerEntity player)
+    protected int getExperienceReward(Player player)
     {
         return 3;
     }

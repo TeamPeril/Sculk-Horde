@@ -3,28 +3,28 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -33,6 +33,13 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
+
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -107,7 +114,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      * @param builder
      */
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
         builder.add(MATURE);
     }
@@ -118,7 +125,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      * @return
      */
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState().setValue(MATURE, 0);
     }
@@ -169,7 +176,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, IBlockReader world, BlockPos pos, EntitySpawnPlacementRegistry.PlacementType type, EntityType<?> entityType)
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
     {
         return false;
     }
@@ -194,7 +201,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
 
     /** MODIFIERS **/
 
-    public void setMature(World pLevel, BlockState pState, BlockPos pPos)
+    public void setMature(Level pLevel, BlockState pState, BlockPos pPos)
     {
         Random random = new Random();
         /**
@@ -211,7 +218,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
         pLevel.setBlock(pPos, pState.setValue(MATURE, Integer.valueOf(random.nextInt(2) + 1)), 3);
     }
 
-    public void resetMature(World pLevel, BlockState pState, BlockPos pPos)
+    public void resetMature(Level pLevel, BlockState pState, BlockPos pPos)
     {
         /**
          * Sets a block state into this world.Flags are as follows:
@@ -230,7 +237,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
 
     /** EVENTS **/
 
-    public ActionResultType use(BlockState pState, World pLevel, BlockPos pPos, PlayerEntity pPlayer, Hand pHand, BlockRayTraceResult pHit)
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
     {
 
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
@@ -239,7 +246,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
         {
             if (itemstack.getItem() == Items.SHEARS)
             {
-                pLevel.playSound(pPlayer, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+                pLevel.playSound(pPlayer, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 dropResin(pLevel, pPos);
                 itemstack.hurtAndBreak(1, pPlayer, (p_226874_1_) ->
                 {
@@ -248,10 +255,10 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
                 resetMature(pLevel, pState, pPos);
             }
         }
-        return ActionResultType.sidedSuccess(pLevel.isClientSide);
+        return InteractionResult.sidedSuccess(pLevel.isClientSide);
     }
 
-    public static void dropResin(World pLevel, BlockPos pPos) {
+    public static void dropResin(Level pLevel, BlockPos pPos) {
         popResource(pLevel, pPos, new ItemStack(ItemRegistry.SCULK_RESIN.get(), 1));
     }
 
@@ -263,7 +270,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      */
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return TileEntityRegistry.SCULK_BEE_NEST_CELL_TILE.get().create();
     }
 
@@ -273,7 +280,7 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      * of whether the block can receive random update ticks
      */
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pPos, Random randIn) {
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pPos, Random randIn) {
         BlockPos blockpos = pPos.above();
         if (worldIn.getBlockState(blockpos).isAir() && !worldIn.getBlockState(blockpos).isSolidRender(worldIn, blockpos)) {
             if (randIn.nextInt(50) == 0) {
@@ -282,11 +289,11 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
                 double d2 = (double)pPos.getZ() + randIn.nextDouble();
                 //worldIn.addParticle(ParticleTypes.LAVA, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                 worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                worldIn.playLocalSound(d0, d1, d2, SoundEvents.LAVA_POP, SoundCategory.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
+                worldIn.playLocalSound(d0, d1, d2, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
             }
 
             if (randIn.nextInt(100) == 0) {
-                worldIn.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.LAVA_AMBIENT, SoundCategory.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
+                worldIn.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.LAVA_AMBIENT, SoundSource.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
             }
         }
     }
@@ -300,9 +307,9 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
     }
 }

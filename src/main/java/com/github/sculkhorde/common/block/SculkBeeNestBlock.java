@@ -4,24 +4,24 @@ import com.github.sculkhorde.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -30,9 +30,16 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class SculkBeeNestBlock extends BeehiveBlock {
 
-    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
     public static final IntegerProperty HONEY_LEVEL = IntegerProperty.create("honey_level", 0, 5);
     /**
@@ -82,7 +89,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public SculkBeeNestBlock(AbstractBlock.Properties prop) {
+    public SculkBeeNestBlock(BlockBehaviour.Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(HONEY_LEVEL, 0)
@@ -102,9 +109,9 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
      * @return The Properties of the block
      */
-    public static AbstractBlock.Properties getProperties()
+    public static BlockBehaviour.Properties getProperties()
     {
-        return AbstractBlock.Properties.of(MATERIAL, MAP_COLOR)
+        return BlockBehaviour.Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .harvestTool(PREFERRED_TOOL)
                 .harvestLevel(HARVEST_LEVEL)
@@ -118,20 +125,20 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
     }
 
-    public static void setNestClosed(ServerWorld world, BlockState blockState, BlockPos position)
+    public static void setNestClosed(ServerLevel world, BlockState blockState, BlockPos position)
     {
         if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
         world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(true)), 3);
     }
 
-    public static void setNestOpen(ServerWorld world, BlockState blockState, BlockPos position)
+    public static void setNestOpen(ServerLevel world, BlockState blockState, BlockPos position)
     {
         if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
         world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(false)), 3);
     }
 
     @Override
-    public void onPlace(BlockState pState, World pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving)
+    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving)
     {
         super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
 
@@ -143,7 +150,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     }
 
     @Nullable
-    public TileEntity newBlockEntity(IBlockReader p_196283_1_) {
+    public BlockEntity newBlockEntity(BlockGetter p_196283_1_) {
         return new SculkBeeNestTile();
     }
 
@@ -156,7 +163,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      */
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         return newBlockEntity(world);
     }
 
@@ -166,7 +173,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      * @param context
      * @return
      */
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
                 .setValue(FACING, context.getHorizontalDirection().getOpposite())
@@ -196,7 +203,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> pBuilder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING, CLOSED, HONEY_LEVEL);
     }
 
@@ -210,9 +217,9 @@ public class SculkBeeNestBlock extends BeehiveBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader iBlockReader, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslationTextComponent("tooltip.sculkhorde.sculk_bee_nest")); //Text that displays if holding shift
+        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_bee_nest")); //Text that displays if holding shift
     }
 }

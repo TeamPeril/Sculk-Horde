@@ -6,13 +6,13 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -63,18 +63,18 @@ public class ForgeEventSubscriber {
 
             //Infestation Related Processes
             //Used by anti sculk serum
-            SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerWorld) event.world);
+            SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.world);
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
             if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
             {
                 time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
 
-                SculkHorde.gravemind.enableAmountOfBeeHives((ServerWorld) event.world, 20);
+                SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.world, 20);
 
                 //Verification Processes to ensure our data is accurate
-                SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerWorld) event.world);
-                SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerWorld) event.world);
+                SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerLevel) event.world);
+                SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerLevel) event.world);
 
                 //Calculate Current State
                 SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
@@ -102,7 +102,7 @@ public class ForgeEventSubscriber {
     {
         if(!event.getEntity().level.isClientSide() && SculkHorde.gravemind != null && event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            EffectInstance effectInstance = event.getPotionEffect();
+            MobEffectInstance effectInstance = event.getPotionEffect();
 
             //If Sculk Infection, spawn mites and mass.
             assert effectInstance != null;
@@ -115,12 +115,12 @@ public class ForgeEventSubscriber {
                     int infectionDamage = 4;
                     for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
                     {
-                        World entityLevel = entity.level;
+                        Level entityLevel = entity.level;
                         BlockPos entityPosition = entity.blockPosition();
                         float entityHealth = entity.getMaxHealth();
 
                         //Spawn Mite
-                        EntityRegistry.SCULK_MITE.spawn((ServerWorld) event.getEntity().level, null, null, entityPosition, SpawnReason.SPAWNER, true, true);
+                        EntityRegistry.SCULK_MITE.spawn((ServerLevel) event.getEntity().level, null, null, entityPosition, MobSpawnType.SPAWNER, true, true);
 
                         //Spawn Sculk Mass
                         SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();

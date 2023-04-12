@@ -1,19 +1,19 @@
 package com.github.sculkhorde.common.effect;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraftforge.common.extensions.IForgeEffect;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SculkInfectionEffect extends Effect implements IForgeEffect {
+public class SculkInfectionEffect extends MobEffect implements IForgeEffect {
 
     public static int spawnInterval = 20;
     public static int liquidColor = 338997;
-    public static EffectType effectType = EffectType.HARMFUL;
+    public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
 
 
     /**
@@ -21,7 +21,7 @@ public class SculkInfectionEffect extends Effect implements IForgeEffect {
      * @param effectType Determines if harmful or not
      * @param liquidColor The color in some number format
      */
-    protected SculkInfectionEffect(EffectType effectType, int liquidColor) {
+    protected SculkInfectionEffect(MobEffectCategory effectType, int liquidColor) {
         super(effectType, liquidColor);
     }
 

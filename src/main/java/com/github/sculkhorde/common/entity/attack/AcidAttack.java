@@ -2,8 +2,8 @@ package com.github.sculkhorde.common.entity.attack;
 
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public class AcidAttack extends RangedAttack{
 
@@ -17,7 +17,7 @@ public class AcidAttack extends RangedAttack{
      * @param worldIn The world to spawn this projectile in
      * @return
      */
-    public SculkAcidicProjectileEntity getProjectile(World worldIn, LivingEntity shooterIn, float damageIn) {
+    public SculkAcidicProjectileEntity getProjectile(Level worldIn, LivingEntity shooterIn, float damageIn) {
         return new SculkAcidicProjectileEntity(worldIn, shooterIn, damageIn);
 
 

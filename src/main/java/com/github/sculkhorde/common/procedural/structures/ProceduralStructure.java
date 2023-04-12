@@ -1,15 +1,15 @@
 package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 
 public class ProceduralStructure
 {
-    protected ServerWorld world;
+    protected ServerLevel world;
 
     protected BlockPos origin; //This represents the position of the origin
 
@@ -25,7 +25,7 @@ public class ProceduralStructure
      * Default Constructor
      * @param originIn The location of the origin
      */
-    public ProceduralStructure(ServerWorld worldIn, BlockPos originIn)
+    public ProceduralStructure(ServerLevel worldIn, BlockPos originIn)
     {
         origin = originIn;
         plannedBlockQueue = new ArrayList<>();

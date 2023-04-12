@@ -4,26 +4,32 @@ import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+
 public class TargetAttacker extends TargetGoal {
 
-    private static final EntityPredicate HURT_BY_TARGETING = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
+    private static final TargetingConditions HURT_BY_TARGETING = (new TargetingConditions()).allowUnseeable().ignoreInvisibilityTesting();
     private boolean alertSameType;
     /** Store the previous revengeTimer value */
     private int timestamp;
     private final Class<?>[] toIgnoreDamage;
     private Class<?>[] toIgnoreAlert;
 
-    public TargetAttacker(CreatureEntity sourceEntity, Class<?>... p_i50317_2_) {
+    public TargetAttacker(PathfinderMob sourceEntity, Class<?>... p_i50317_2_) {
         super(sourceEntity, true);
         this.toIgnoreDamage = p_i50317_2_;
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
@@ -90,7 +96,7 @@ public class TargetAttacker extends TargetGoal {
         if(EntityAlgorithms.isSculkLivingEntity.test(this.mob.getLastHurtByMob()) == false
                 && this.mob.getLastHurtByMob() != null)
         {
-            SculkHorde.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerWorld) this.mob.level);
+            SculkHorde.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerLevel) this.mob.level);
         }
 
         if (this.alertSameType) {
@@ -104,13 +110,13 @@ public class TargetAttacker extends TargetGoal {
     {
         boolean DEBUG_THIS = false;
         double d0 = this.getFollowDistance();
-        AxisAlignedBB axisalignedbb = AxisAlignedBB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
-        List<MobEntity> list = this.mob.level.getLoadedEntitiesOfClass(SculkLivingEntity.class, axisalignedbb);
+        AABB axisalignedbb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
+        List<Mob> list = this.mob.level.getLoadedEntitiesOfClass(SculkLivingEntity.class, axisalignedbb);
         Iterator iterator = list.iterator();
 
         while(true)
         {
-            MobEntity mobentity;
+            Mob mobentity;
 
             while(true)
             {
@@ -120,7 +126,7 @@ public class TargetAttacker extends TargetGoal {
                     return;
                 }
 
-                mobentity = (MobEntity)iterator.next();//Get Next Mob
+                mobentity = (Mob)iterator.next();//Get Next Mob
 
                 boolean isAlertingSelf = this.mob == mobentity;
                 boolean hasTargetAlready = mobentity.getTarget() != null;
@@ -143,7 +149,7 @@ public class TargetAttacker extends TargetGoal {
         }
     }
 
-    protected void alertOther(MobEntity pMob, LivingEntity pTarget) {
+    protected void alertOther(Mob pMob, LivingEntity pTarget) {
         pMob.setTarget(pTarget);
     }
 }

@@ -3,10 +3,10 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.core.BlockPos;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -29,9 +29,9 @@ public class InvalidateTargetGoal extends Goal {
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
-    public MobEntity getMob()
+    public Mob getMob()
     {
-        return (MobEntity) this.mob;
+        return (Mob) this.mob;
     }
 
     public LivingEntity getTarget()
@@ -86,9 +86,9 @@ public class InvalidateTargetGoal extends Goal {
 
         // If target has not changed, and we reached threshold, and we are still within 15 blocks of last position, invalidate target.
         //BUG FIX: Forgot to check if the target was a MobEntity before casting it.
-        if(getTarget() instanceof MobEntity && !hasTargetChanged() && System.currentTimeMillis() - timeSinceLastTargetChange > UNREACHABLE_TARGET_TIMEOUT && tooCloseToLastPosition())
+        if(getTarget() instanceof Mob && !hasTargetChanged() && System.currentTimeMillis() - timeSinceLastTargetChange > UNREACHABLE_TARGET_TIMEOUT && tooCloseToLastPosition())
         {
-            targetParameters.addToBlackList((MobEntity) getTarget());
+            targetParameters.addToBlackList((Mob) getTarget());
         }
 
         boolean result = !targetParameters.isEntityValidTarget(getTarget(), true);

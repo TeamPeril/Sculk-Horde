@@ -3,9 +3,11 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkZombieEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 import java.util.EnumSet;
+
+import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class SculkZombieAttackGoal extends MeleeAttackGoal
 {
