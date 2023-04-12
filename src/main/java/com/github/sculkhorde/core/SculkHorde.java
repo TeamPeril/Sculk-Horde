@@ -35,7 +35,6 @@ public class SculkHorde {
     {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
-        GeckoLib.initialize();
 
         ItemRegistry.ITEMS.register(bus); //Load Items
         TileEntityRegistry.register(bus); //Load Tile Entities

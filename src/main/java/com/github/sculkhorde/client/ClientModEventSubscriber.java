@@ -18,9 +18,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -38,66 +37,74 @@ public class ClientModEventSubscriber {
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void registerRenders(final FMLClientSetupEvent event) {
+    public static void registerRenders(final EntityRenderersEvent.RegisterRenderers event) {
 
         // Register Renderers for Entities
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ZOMBIE, SculkZombieRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE, SculkMiteRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_MITE_AGGRESSOR, SculkMiteAggressorRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_ZOMBIE, SculkZombieRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_SPITTER, SculkSpitterRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_MITE, SculkMiteRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_BEE_INFECTOR, SculkBeeInfectorRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_MITE_AGGRESSOR, SculkMiteAggressorRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_BEE_HARVESTER, SculkBeeHarvesterRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_SPITTER, SculkSpitterRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY, m -> new ThrownItemRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
+        event.registerEntityRenderer(EntityRegistry.SCULK_BEE_INFECTOR, SculkBeeInfectorRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY, m -> new ThrownItemRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
+        event.registerEntityRenderer(EntityRegistry.SCULK_BEE_HARVESTER, SculkBeeHarvesterRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_HATCHER, SculkHatcherRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY, m -> new ThrownItemRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_LONG_RANGE, CursorLongRangeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY, m -> new ThrownItemRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_SHORT_RANGE, CursorShortRangeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_HATCHER, SculkHatcherRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_BRIDGER, CursorBridgerRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_PROBER, CursorLongRangeRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_SURFACE_INFECTOR, CursorShortRangeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_INFECTOR, CursorShortRangeRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CURSOR_SURFACE_PURIFIER, CursorSurfacePurifierRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_BRIDGER, CursorBridgerRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_SURFACE_INFECTOR, CursorShortRangeRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SCULK_RAVAGER, SculkRavagerRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_SURFACE_PURIFIER, CursorSurfacePurifierRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.INFESTATION_PURIFIER, InfestationPurifierRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerRenderer::new);
 
-        // Register renderer for sculk crust partcile
-        event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new));
+        event.registerEntityRenderer(EntityRegistry.SCULK_RAVAGER, SculkRavagerRenderer::new);
+
+        event.registerEntityRenderer(EntityRegistry.INFESTATION_PURIFIER, InfestationPurifierRenderer::new);
 
 
-        // Register render layers for blocks
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout()));
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout()));
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout()));
+    }
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout()));
+    @SubscribeEvent
+    public static void registerRenderers(final FMLClientSetupEvent event)
+    {
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SHROOM_CULTURE.get(), RenderType.cutout()));
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout());
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent()));
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent()));
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout());
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.cutout()));
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SHROOM_CULTURE.get(), RenderType.cutout());
 
-        event.enqueueWork(() -> ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), RenderType.cutout()));
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent());
 
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent());
+
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.cutout());
+
+       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), RenderType.cutout());
+
+       // Register renderer for sculk crust partcile
+       event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE, SculkCrustParticle.Factory::new));
     }
 
     /**
@@ -107,7 +114,7 @@ public class ClientModEventSubscriber {
      * @param event the particle factory registry event
      **/
     @SubscribeEvent
-    public static void registerFactories(final ParticleFactoryRegisterEvent event)
+    public static void registerFactories(final FMLClientSetupEvent event)
     {
         ParticleEngine particles = Minecraft.getInstance().particleEngine;
 

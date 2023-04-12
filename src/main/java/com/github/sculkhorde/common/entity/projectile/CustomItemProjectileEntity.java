@@ -29,6 +29,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 /**
  * This class is mainly used as a parent class and is used for
@@ -57,7 +58,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      * @param shooterIn The Entity Shooting the Projectile
      */
     public CustomItemProjectileEntity(Level worldIn, LivingEntity shooterIn, float damageIn) {
-        this(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY, worldIn);
+        this(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY.get(), worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
         this.setDamage(damageIn);

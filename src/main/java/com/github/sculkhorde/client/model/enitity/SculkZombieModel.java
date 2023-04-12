@@ -2,23 +2,30 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkZombieEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkZombieModel extends AnimatedGeoModel<SculkZombieEntity> {
-    @Override
-    public ResourceLocation getModelLocation(SculkZombieEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "geo/sculk_zombie.geo.json");
+public class SculkZombieModel extends DefaultedEntityGeoModel<SculkZombieEntity> {
+
+
+    /**
+     * Create a new instance of this model class.<br>
+     * The asset path should be the truncated relative path from the base folder.<br>
+     * E.G.
+     * <pre>{@code
+     * 	new ResourceLocation("myMod", "animals/red_fish")
+     * }</pre>
+     *
+     */
+    public SculkZombieModel() {
+        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_zombie"));
     }
 
+    // We want our model to render using the translucent render type
     @Override
-    public ResourceLocation getTextureLocation(SculkZombieEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/sculk_zombie.png");
+    public RenderType getRenderType(SculkZombieEntity animatable, ResourceLocation texture) {
+        return RenderType.entityTranslucent(getTextureResource(animatable));
     }
 
-    @Override
-    public ResourceLocation getAnimationFileLocation(SculkZombieEntity animatable)
-    {
-        return new ResourceLocation(SculkHorde.MOD_ID, "animations/sculk_zombie.animation.json");
-    }
 }

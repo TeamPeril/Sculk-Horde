@@ -1,37 +1,23 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.TargetParameters;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-
-import java.util.Random;
-
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.PathfinderMob;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -40,7 +26,7 @@ import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
-public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
+public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -70,25 +56,7 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable,
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
 
-    /**
-     * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
-     * 100 = Zombie<br>
-     * 12 = Sheep<br>
-     * 10 = Enderman<br>
-     * 8 = Cow<br>
-     * 5 = Witch<br>
-     */
-    public static int SPAWN_WEIGHT = 100;
-    /**
-     * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
-     * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
-     * SPAWN_Y_MAX determines the Maximum height this mob can spawn<br>
-     * factory The animation factory used for animations
-     */
-    public static int SPAWN_MIN = 1;
-    public static int SPAWN_MAX = 3;
-    public static int SPAWN_Y_MAX = 15;
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -98,13 +66,6 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable,
     public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, Level worldIn) {
         super(type, worldIn);
     }
-
-    /**
-     * An Easier Constructor where you do not have to specify the Mob Type
-     * @param worldIn  The world to initialize this mob in
-     */
-    public SculkZombieEntity(Level worldIn) {super(EntityRegistry.SCULK_ZOMBIE, worldIn);}
-
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes
@@ -127,26 +88,6 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable,
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
-    }
-
-    /**
-     * The function that determines if a position is a good spawn location<br>
-     * @param config ???
-     * @param world The world that the mob is trying to spawn in
-     * @param reason An object that indicates why a mob is being spawned
-     * @param pos The Block Position of the potential spawn location
-     * @param random ???
-     * @return Returns a boolean determining if it is a suitable spawn location
-     */
-    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, Random random)
-    {
-        // If peaceful, return false
-        if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-        // If not because of chunk generation or natural, return false
-        else if (reason != MobSpawnType.CHUNK_GENERATION && reason != MobSpawnType.NATURAL) return false;
-        //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
-        else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
-        return true;
     }
 
     /**
@@ -223,41 +164,17 @@ public class SculkZombieEntity extends SculkLivingEntity implements IAnimatable,
         return goals;
     }
 
-
-
-
     @Override
-    protected int getExperienceReward(Player player)
-    {
-        return 3;
-    }
-
-    //Animation Related Functions
-
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
-    {
-        //event.getController().setAnimation();
-        if(event.isMoving())
-        {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_zombie.walk", true));
-        }
-        else
-        {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_zombie.idle", true));
-        }
-
-        return PlayState.CONTINUE;
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
+
 
     protected SoundEvent getAmbientSound() {
         return SoundEvents.DROWNED_AMBIENT;
