@@ -132,14 +132,14 @@ public class SculkSummonerTile extends BlockEntity
 
             //Get targets inside bounding box.
             possibleAggressorTargets =
-                    this.level.getLoadedEntitiesOfClass(
+                    this.level.getEntitiesOfClass(
                             LivingEntity.class,
                             searchArea,
                             hostileTargetParameters.isPossibleNewTargetValid);
 
             //Get targets inside bounding box.
             possibleLivingEntityTargets =
-                    this.level.getLoadedEntitiesOfClass(
+                    this.level.getEntitiesOfClass(
                             LivingEntity.class,
                             searchArea,
                             infectableTargetParameters.isPossibleNewTargetValid);

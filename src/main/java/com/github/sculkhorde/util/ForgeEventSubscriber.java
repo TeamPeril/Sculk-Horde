@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,11 +15,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.PotionEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
@@ -36,10 +37,10 @@ public class ForgeEventSubscriber {
      * @param event The load event
      */
     @SubscribeEvent
-    public static void onWorldLoad(WorldEvent.Load event)
+    public static void onWorldLoad(LevelEvent.Load event)
     {
         //Initalize Gravemind
-        if(!event.getWorld().isClientSide() && event.getWorld().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!event.getLevel().isClientSide() && event.getLevel().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
             time_save_point = 0; //Used to track time passage.
@@ -52,29 +53,29 @@ public class ForgeEventSubscriber {
      * @param event The event with all the details
      */
     @SubscribeEvent
-    public static void WorldTickEvent(TickEvent.WorldTickEvent event)
+    public static void WorldTickEvent(TickEvent.LevelTickEvent event)
     {
 
         //Make sure this only gets ran on the server, gravemind has been initalized, and were in the overworld
-        if(!event.world.isClientSide() && SculkHorde.gravemind != null && event.world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!event.level.isClientSide() && SculkHorde.gravemind != null && event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             int ticks_per_second = 20; //Unit is ticks
             int seconds_between_intervals = 60*5; //Unit is Seconds
 
             //Infestation Related Processes
             //Used by anti sculk serum
-            SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.world);
+            SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
 
             //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
-            if (event.world.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
+            if (event.level.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
             {
-                time_save_point = event.world.getGameTime();//Set to current time so we can recalculate time passage
+                time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
 
-                SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.world, 20);
+                SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
 
                 //Verification Processes to ensure our data is accurate
-                SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerLevel) event.world);
-                SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerLevel) event.world);
+                SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerLevel) event.level);
+                SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerLevel) event.level);
 
                 //Calculate Current State
                 SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
@@ -98,18 +99,18 @@ public class ForgeEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void onPotionExpireEvent(PotionEvent.PotionExpiryEvent event)
+    public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
         if(!event.getEntity().level.isClientSide() && SculkHorde.gravemind != null && event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            MobEffectInstance effectInstance = event.getPotionEffect();
+            MobEffectInstance effectInstance = event.getEffectInstance();
 
             //If Sculk Infection, spawn mites and mass.
             assert effectInstance != null;
             if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
             {
-                LivingEntity entity = event.getEntityLiving();
-                if(entity != null)
+                LivingEntity entity = event.getEntity();
+                if(entity != null && entity instanceof LivingEntity)
                 {
                     //Spawn Effect Level + 1 number of mites
                     int infectionDamage = 4;
@@ -120,13 +121,13 @@ public class ForgeEventSubscriber {
                         float entityHealth = entity.getMaxHealth();
 
                         //Spawn Mite
-                        EntityRegistry.SCULK_MITE.spawn((ServerLevel) event.getEntity().level, null, null, entityPosition, MobSpawnType.SPAWNER, true, true);
+                        EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, entityPosition, MobSpawnType.SPAWNER);
 
                         //Spawn Sculk Mass
                         SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
                         sculkMass.spawn(entityLevel, entityPosition, entityHealth);
                         //Do infectionDamage to victim per mite
-                        entity.hurt(DamageSource.GENERIC, infectionDamage);
+                        entity.hurt(entity.damageSources().magic(), infectionDamage);
                     }
                 }
             }

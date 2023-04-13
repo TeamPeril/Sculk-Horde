@@ -97,7 +97,7 @@ public class EntityFactoryEntry {
             return false;
         }
         // These sculk spore spewers get spammed to hell if they spawn in sculk masses
-        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == EntityRegistry.SCULK_SPORE_SPEWER)
+        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == EntityRegistry.SCULK_SPORE_SPEWER.get())
         {
             return false;
         }

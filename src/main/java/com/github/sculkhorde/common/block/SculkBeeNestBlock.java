@@ -125,33 +125,15 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     }
 
     @Override
-    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving)
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving)
     {
-        super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
+        super.onPlace(state, level, pos, oldState, isMoving);
 
         //If world isnt client side and we are in the overworld
-        if(!pLevel.isClientSide() && pLevel.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!level.isClientSide() && level.dimension() == Level.OVERWORLD)
         {
-            SculkHorde.gravemind.getGravemindMemory().addBeeNestToMemory(pPos);
+            SculkHorde.gravemind.getGravemindMemory().addBeeNestToMemory(pos);
         }
-    }
-
-    @Nullable
-    public BlockEntity newBlockEntity(BlockGetter p_196283_1_) {
-        return new SculkBeeNestTile();
-    }
-
-
-    /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return newBlockEntity(world);
     }
 
 

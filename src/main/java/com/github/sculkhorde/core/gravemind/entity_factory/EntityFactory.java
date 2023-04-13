@@ -130,7 +130,7 @@ public class EntityFactory {
             if(mobsToSpawn[i] == null) { continue; }
 
             EntityFactoryEntry mob = mobsToSpawn[i];
-            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, null, null, context.positions[i], MobSpawnType.SPAWNER, true, true);
+            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, context.positions[i], MobSpawnType.SPAWNER);
             if (!noCost)
             {
                 SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(mob.getCost());
@@ -172,7 +172,7 @@ public class EntityFactory {
                 //Set Remaining Balance
                 context.remaining_balance = context.budget - randomEntry.getCost();
                 //Spawn Mob
-                randomEntry.getEntity().spawn((ServerLevel) world, null, null, pos, MobSpawnType.SPAWNER, true, true);
+                randomEntry.getEntity().spawn((ServerLevel) world, pos, MobSpawnType.SPAWNER);
             }
         }
     }

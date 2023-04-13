@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.projectile;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +18,6 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -97,11 +97,11 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
     }
 
     /**
-     * Needed for spawning. Got it from https://github.com/skyjay1/GreekFantasy/blob/master/src/main/java/greekfantasy/entity/misc/DiscusEntity.java
-     * @return ???
+     * Needed for spawning.
+     * @return The Packet
      */
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

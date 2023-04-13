@@ -20,7 +20,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 
 public class TargetAttacker extends TargetGoal {
 
-    private static final TargetingConditions HURT_BY_TARGETING = (new TargetingConditions()).allowUnseeable().ignoreInvisibilityTesting();
+    private static final TargetingConditions HURT_BY_TARGETING = (TargetingConditions.forCombat()).ignoreInvisibilityTesting();
     private boolean alertSameType;
     /** Store the previous revengeTimer value */
     private int timestamp;
@@ -109,7 +109,7 @@ public class TargetAttacker extends TargetGoal {
         boolean DEBUG_THIS = false;
         double d0 = this.getFollowDistance();
         AABB axisalignedbb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
-        List<Mob> list = this.mob.level.getLoadedEntitiesOfClass(SculkLivingEntity.class, axisalignedbb);
+        List<Mob> list = this.mob.level.getEntitiesOfClass(Mob.class, axisalignedbb);
         Iterator iterator = list.iterator();
 
         while(true)

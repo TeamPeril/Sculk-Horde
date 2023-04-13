@@ -3,22 +3,20 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -70,8 +68,8 @@ public class Gravemind
     {
         evolution_state = evolution_states.Undeveloped;
         entityFactory = SculkHorde.entityFactory;
-
-        gravemindMemory = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
+        //TODO: PORT
+        //gravemindMemory = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(GravemindMemory::load, GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
         calulateCurrentState();
     }
 
@@ -91,15 +89,16 @@ public class Gravemind
     @Nullable
     public GravemindMemory getGravemindMemory()
     {
-        if(gravemindMemory == null)
+        if(this.gravemindMemory == null)
         {
             if(ServerLifecycleHooks.getCurrentServer() == null)
                 return null;
 
             DimensionDataStorage savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage();
-            gravemindMemory = savedData.computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
+            //TODO: PORT
+            //this.gravemindMemory = savedData.computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
         }
-        return gravemindMemory;
+        return this.gravemindMemory;
     }
 
     /**
@@ -108,6 +107,8 @@ public class Gravemind
      */
     public void calulateCurrentState()
     {
+        if(getGravemindMemory() == null) { return; }
+
         //This is how much mass is needed to go from undeveloped to immature
         int MASS_GOAL_FOR_IMMATURE = 500;
         //This is how much mass is needed to go from immature to mature
@@ -312,10 +313,11 @@ public class Gravemind
          */
         public GravemindMemory()
         {
-            super(SculkHorde.SAVE_DATA_ID);
+            //super(SculkHorde.SAVE_DATA_ID);
             nodeEntries = new ArrayList<>();
             beeNestEntries = new ArrayList<>();
             hostileEntries = new HashMap<>();
+            this.setDirty();
         }
 
         /** Accessors **/
@@ -492,9 +494,10 @@ public class Gravemind
             String identifier = entityIn.getType().toString();
             if(!identifier.isEmpty())
             {
-                GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
-                memory.getHostileEntries().putIfAbsent(identifier, new HostileEntry(identifier));
-                memory.setDirty();
+                //TODO: PORT
+                //GravemindMemory memory = worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
+                //memory.getHostileEntries().putIfAbsent(identifier, new HostileEntry(identifier));
+                //memory.setDirty();
             }
         }
 
@@ -517,7 +520,8 @@ public class Gravemind
                 {
                     getGravemindMemory().getNodeEntries().remove(index);
                     index--;
-                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID).setDirty();
+                    //TODO: PORT
+                    //worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID).setDirty();
                 }
             }
             long endTime = System.nanoTime();
@@ -543,7 +547,8 @@ public class Gravemind
                 {
                     getBeeNestEntries().remove(index);
                     index--;
-                    worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID).setDirty();
+                    //TODO: PORT
+                    //worldIn.getDataStorage().computeIfAbsent(GravemindMemory::new, SculkHorde.SAVE_DATA_ID).setDirty();
                 }
             }
             long endTime = System.nanoTime();
@@ -555,8 +560,7 @@ public class Gravemind
          * We extract data from the memory and store it in variables.
          * @param nbt The memory where data is stored
          */
-        @Override
-        public void load(CompoundTag nbt)
+        public GravemindMemory load(CompoundTag nbt)
         {
 
             CompoundTag gravemindData = nbt.getCompound("gravemindData");
@@ -576,12 +580,15 @@ public class Gravemind
             }
 
             for (int i = 0; gravemindData.contains("hostile_entry" + i); i++) {
+                //TODO: PORT
                 //getHostileEntries().add(BeeNestEntry.serialize(gravemindData.getCompound("hostile_entry" + i)));
                 HostileEntry hostileEntry = HostileEntry.serialize(gravemindData.getCompound("hostile_entry" + i));
                 getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
             }
 
             System.out.print("");
+
+            return this;
 
         }
 
@@ -650,7 +657,7 @@ public class Gravemind
          */
         public boolean isEntryValid(ServerLevel worldIn)
         {
-            return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_NODE_BLOCK.get());
+            return worldIn.getBlockState(position).getBlock().equals(BlockRegistry.SCULK_NODE_BLOCK.get());
         }
 
         /**
@@ -708,7 +715,7 @@ public class Gravemind
          */
         public boolean isEntryValid(ServerLevel worldIn)
         {
-            return worldIn.getBlockState(position).getBlock().is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get());
+            return worldIn.getBlockState(position).getBlock().equals(BlockRegistry.SCULK_BEE_NEST_BLOCK.get());
         }
 
 

@@ -157,32 +157,6 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
         return false;
     }
 
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param state The current state
-     * @param world The current world
-     * @param pos Block position in world
-     * @param type The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
-    {
-        return false;
-    }
-
-    /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
-     */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-
     /** ACCESSORS **/
 
     public boolean isMature(BlockState pState)
@@ -254,24 +228,12 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
     }
 
     /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public BlockEntity createBlockEntity(BlockState state, BlockGetter world) {
-        return TileEntityRegistry.SCULK_BEE_NEST_CELL_TILE.get().create();
-    }
-
-    /**
      * Called periodically clientside on blocks near the player to show effects (like furnace fire particles). Note that
      * this method is unrelated to {@see randomTick} and {@see #needsRandomTick}, and will always be called regardless
      * of whether the block can receive random update ticks
      */
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pPos, Random randIn) {
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pPos, RandomSource randIn) {
         BlockPos blockpos = pPos.above();
         if (worldIn.getBlockState(blockpos).isAir() && !worldIn.getBlockState(blockpos).isSolidRender(worldIn, blockpos)) {
             if (randIn.nextInt(50) == 0) {

@@ -41,8 +41,9 @@ public class PlannedBlock
                 SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
                 || validBlocksPredicate.canBeReplaced(Fluids.WATER)
                 || SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(validBlocksPredicate)
-                || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F
-                || validBlocksPredicate.getBlock().isAir(validBlocksPredicate, world, targetPos))
+                || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F)
+        //TODO PORT
+                //|| validBlocksPredicate.getBlock().isAir(validBlocksPredicate, world, targetPos))
 
         {
             return true;

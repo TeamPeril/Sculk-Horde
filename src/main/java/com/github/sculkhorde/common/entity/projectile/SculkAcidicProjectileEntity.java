@@ -29,7 +29,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
      * @param worldIn The World to spawn the projectile in
      */
     public SculkAcidicProjectileEntity(Level worldIn,  LivingEntity shooterIn, float damageIn) {
-        this(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY, worldIn);
+        this(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY.get(), worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
         this.setDamage(damageIn);

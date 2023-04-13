@@ -7,16 +7,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraftforge.common.world.MobSpawnInfoBuilder;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class ModEntityGen {
-
+    /*
     public static void onEntitySpawn(final BiomeLoadingEvent event) {
-        /*
+
         addEntityToAllBiomesExceptThese(
                 event,
                 EntityRegistry.SCULK_ZOMBIE.get(),
@@ -25,7 +23,7 @@ public class ModEntityGen {
                 SculkZombieEntity.SPAWN_MAX,
                 Biomes.OCEAN,
                 Biomes.COLD_OCEAN);
-        */
+
         addEntityToAllBiomesExceptThese(
                 event,
                 EntityRegistry.SCULK_MITE,
@@ -65,4 +63,5 @@ public class ModEntityGen {
         List<MobSpawnSettings.SpawnerData> base = spawns.getSpawner(type.getCategory());
         base.add(new MobSpawnSettings.SpawnerData(type,weight, minCount, maxCount));
     }
+    */
 }

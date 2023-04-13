@@ -110,25 +110,10 @@ public class EntityAlgorithms {
      * @param boundingBox The given bounding box to search for a target
      * @return A list of valid targets
      */
-    public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerLevel serverWorld, AABB boundingBox)
+    public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox)
     {
-        List<LivingEntity> livingEntitiesInRange = serverWorld.getLoadedEntitiesOfClass(LivingEntity.class, boundingBox, (Predicate<? super LivingEntity>) null);
+        List<LivingEntity> livingEntitiesInRange = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, (Predicate<? super LivingEntity>) null);
         return livingEntitiesInRange;
-    }
-
-
-    public static List<BlockPos> createPathToBlockPos(ServerLevel world, BlockPos start, BlockPos end, int maxRange, Predicate<BlockState> obstaclePredicate)
-    {
-        // Initialize ArrayList
-        List<BlockPos> path = new ArrayList<>();
-
-        /**
-         * Use A* path finding algorithm to find path between start and end.
-         * Should use obstaclePredicate to determine if a block is an obstacle.
-         * Should use maxRange to determine if a block is too far away.
-         */
-        return null;
-
 
     }
 }

@@ -78,7 +78,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
                  *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
                  */
                 //thisMob.die(DamageSource.GENERIC);
-                thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
+                thisMob.hurt(thisMob.damageSources().generic(), thisMob.getHealth());
             }
         }
     }

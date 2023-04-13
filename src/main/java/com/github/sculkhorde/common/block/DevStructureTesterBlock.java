@@ -122,29 +122,6 @@ public class DevStructureTesterBlock extends Block implements IForgeBlock {
     }
 
     /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return TileEntityRegistry.DEV_STRUCTURE_TESTER_TILE.get().create();
-    }
-
-    /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
-     */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-
-    /**
      * This is the description the item of the block will display when hovered over.
      * @param stack The item stack
      * @param iBlockReader A block reader

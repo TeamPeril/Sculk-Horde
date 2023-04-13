@@ -365,11 +365,12 @@ public class BlockAlgorithms {
             world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
             SculkBeeNestTile nest = (SculkBeeNestTile) world.getBlockEntity(targetPos);
 
-            //Add 10 bees
-            nest.addOccupant(new SculkBeeHarvesterEntity(world));
-            nest.addOccupant(new SculkBeeHarvesterEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
-            nest.addOccupant(new SculkBeeInfectorEntity(world));
+            //Add bees
+            //TODO: PORT
+            //nest.addOccupant(new SculkBeeHarvesterEntity(world));
+            //nest.addOccupant(new SculkBeeHarvesterEntity(world));
+            //nest.addOccupant(new SculkBeeInfectorEntity(world));
+            //nest.addOccupant(new SculkBeeInfectorEntity(world));
         }
 
     }
