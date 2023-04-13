@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.tileentity.SculkBeeNestTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.block.*;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
@@ -18,14 +17,11 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -69,11 +65,6 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     public static float BLAST_RESISTANCE = 0.5f;
 
     /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.HOE;
-
-    /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
      *
      *  -1 = All<br>
@@ -113,11 +104,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     {
         return BlockBehaviour.Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
-                .sound(SoundType.SLIME_BLOCK)
-                .noOcclusion()
-                .noDrops();
+                .sound(SoundType.SLIME_BLOCK);
     }
 
     public static boolean isNestClosed(BlockState blockState)
@@ -220,6 +207,6 @@ public class SculkBeeNestBlock extends BeehiveBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_bee_nest")); //Text that displays if holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.sculk_bee_nest")); //Text that displays if holding shift
     }
 }

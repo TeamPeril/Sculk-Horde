@@ -103,12 +103,6 @@ public class BlockRegistry {
 	public static final RegistryObject<SculkShroomCultureBlock> SCULK_SHROOM_CULTURE =
 			registerBlock("sculk_shroom_culture", () -> new SculkShroomCultureBlock());
 
-	public static final RegistryObject<CocoonRootBlock> COCOON_ROOT =
-			registerBlock("cocoon_root", () -> new CocoonRootBlock());
-
-	public static final RegistryObject<CocoonBlock> COCOON =
-			registerBlock("cocoon", () -> new CocoonBlock());
-
 	public static final RegistryObject<SculkMassBlock> SCULK_MASS =
 			registerBlock("sculk_mass", () -> new SculkMassBlock());
 

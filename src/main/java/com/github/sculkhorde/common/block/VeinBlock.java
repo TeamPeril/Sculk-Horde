@@ -8,19 +8,15 @@ import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
@@ -57,11 +53,6 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.6f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.HOE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -101,8 +92,6 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.VINE)
                 .noOcclusion()
                 .noCollission();
@@ -119,7 +108,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         BlockState southBlock = worldIn.getBlockState(pPos.south());
         BlockState westBlock = worldIn.getBlockState(pPos.west());
 
-        if(pState.getBlock().is(BlockRegistry.VEIN.get()))
+        if(pState.getBlock().equals(BlockRegistry.VEIN.get()))
         {
             if(pState.getValue(NORTH) == true && isValidFace(worldIn, northBlock, pPos, Direction.SOUTH))
             {
@@ -251,7 +240,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.vein")); //Text that displays if holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.vein")); //Text that displays if holding shift
 
     }
 }

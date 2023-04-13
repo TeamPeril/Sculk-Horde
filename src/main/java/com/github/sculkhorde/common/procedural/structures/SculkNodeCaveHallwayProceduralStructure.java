@@ -1,19 +1,13 @@
 package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.server.level.ServerLevel;
-import org.apache.logging.log4j.core.jmx.Server;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class SculkNodeCaveHallwayProceduralStructure extends ProceduralStructure
@@ -201,20 +195,20 @@ public class SculkNodeCaveHallwayProceduralStructure extends ProceduralStructure
         protected final Predicate<BlockState> CAN_BLOCK_BE_REPLACED = (validBlocksPredicate) ->
         {
             // Explicit Deny List. We put this first as it has higher priority.
-            if(validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_NODE_BLOCK.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_DURA_MATTER.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_ARACHNOID.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_SUMMONER_BLOCK.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.GRASS.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.GRASS_SHORT.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.CALCITE_ORE.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SMALL_SHROOM.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.VEIN.get())
-                    || validBlocksPredicate.getBlock().is(BlockRegistry.SCULK_SHROOM_CULTURE.get())
+            if(validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_NODE_BLOCK.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_DURA_MATTER.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_ARACHNOID.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_SUMMONER_BLOCK.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.GRASS.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.GRASS_SHORT.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.CALCITE_ORE.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SMALL_SHROOM.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.VEIN.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_SHROOM_CULTURE.get())
             )
             {
                 return false;

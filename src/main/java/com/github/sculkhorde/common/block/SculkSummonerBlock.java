@@ -18,20 +18,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -61,11 +55,6 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.5f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -107,39 +96,11 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
     {
         Properties prop = Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
+                .noLootTable()
                 .noOcclusion()
                 .sound(SoundType.SLIME_BLOCK);
         return prop;
     }
-
-    /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
-     */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param state The current state
-     * @param world The current world
-     * @param pos Block position in world
-     * @param type The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    @Override
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
-    {
-        return false;
-    }
-
 
     /**
      * Determines Block Hitbox <br>
@@ -183,19 +144,6 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
     /** ~~~~~~~~ Events ~~~~~~~~ **/
 
     /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return TileEntityRegistry.SCULK_SUMMONER_TILE.get().create();
-    }
-
-
-    /**
      * This is the description the item of the block will display when hovered over.
      * @param stack The item stack
      * @param iBlockReader A block reader
@@ -207,7 +155,7 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
 
     }
 

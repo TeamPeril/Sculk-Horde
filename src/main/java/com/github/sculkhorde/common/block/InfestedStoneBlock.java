@@ -1,37 +1,22 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-
-public class InfestedStoneBlock extends Block implements IForgeBlock {
+public class InfestedStoneBlock extends CrustBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -58,11 +43,6 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 6f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.PICKAXE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -115,55 +95,9 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
+                .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE);
     }
-
-    /**
-     * Gives LivingEntities an effect if they step on this block
-     * @param worldIn The world
-     * @param pos The Block Position
-     * @param entity The entity that stepped on the block
-     */
-    @Override
-    public void stepOn(Level worldIn, BlockPos pos, Entity entity)
-    {
-        if(worldIn.isClientSide() || !(entity instanceof LivingEntity))//Only do this on the client
-        {
-            return;
-        }
-
-        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
-        {
-            return;
-        }
-
-        LivingEntity livingEntity = ((LivingEntity) entity); //Cast
-        livingEntity.addEffect(new MobEffectInstance(STEP_ON_EFFECT)); //Give effect
-
-        super.stepOn(worldIn, pos, entity); //Execute Parent Code
-    }
-
-    /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, Level world, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE) System.out.println("Hi I am a Infested Stone :)");
-
-        return null; //Just Return null because We Are Not Modifying it
-    }
-
 
     /**
      * This is the description the item of the block will display when hovered over.
@@ -177,7 +111,7 @@ public class InfestedStoneBlock extends Block implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
 
     }
 }

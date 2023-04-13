@@ -2,12 +2,11 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
-import net.minecraft.block.*;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -16,7 +15,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import java.util.Random;
@@ -60,11 +58,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     public static float BLAST_RESISTANCE = 6f;
 
     /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.HOE;
-
-    /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
      *
      *  -1 = All<br>
@@ -102,8 +95,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.GRASS)
                 .noCollission()
                 .instabreak();
@@ -112,7 +103,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     // SPawn particles
     @Override
-    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand) {
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, RandomSource rand) {
         super.animateTick(stateIn, worldIn, pos, rand);
 
         if (worldIn.isClientSide)

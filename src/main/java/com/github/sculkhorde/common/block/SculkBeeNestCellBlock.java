@@ -22,12 +22,10 @@ import net.minecraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
@@ -72,11 +70,6 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 10f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -150,8 +143,6 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
     {
         Properties prop = Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.GRASS);
         return prop;
     }
@@ -270,13 +261,13 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
      */
     @Nullable
     @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
+    public BlockEntity createBlockEntity(BlockState state, BlockGetter world) {
         return TileEntityRegistry.SCULK_BEE_NEST_CELL_TILE.get().create();
     }
 
     /**
      * Called periodically clientside on blocks near the player to show effects (like furnace fire particles). Note that
-     * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless
+     * this method is unrelated to {@see randomTick} and {@see #needsRandomTick}, and will always be called regardless
      * of whether the block can receive random update ticks
      */
     @OnlyIn(Dist.CLIENT)
@@ -310,6 +301,6 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
     }
 }

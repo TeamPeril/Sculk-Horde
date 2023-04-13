@@ -9,8 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-
 public class SculkMassTile extends BlockEntity {
 
     /**
@@ -26,16 +24,14 @@ public class SculkMassTile extends BlockEntity {
 
     /**
      * The Constructor that takes in properties
-     * @param type The Tile Entity Type
      */
     public SculkMassTile(BlockPos pos, BlockState state) {
         super(TileEntityRegistry.SCULK_MASS_TILE.get(), pos, state);
     }
 
     /**
-     * ???
-     * @param blockState The blocks current blockstate
-     * @param compoundNBT Where NBT data is stored??
+     * Called when loading block entity from world.
+     * @param compoundNBT Where NBT data is stored.
      */
     @Override
     public void load(CompoundTag compoundNBT) {

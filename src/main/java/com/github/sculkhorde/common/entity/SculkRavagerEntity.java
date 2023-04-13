@@ -173,12 +173,6 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         super.onRemovedFromWorld();
     }
 
-    @Override
-    protected int getExperienceReward(Player player)
-    {
-        return 3;
-    }
-
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
     // Add our animations

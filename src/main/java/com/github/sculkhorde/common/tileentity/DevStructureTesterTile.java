@@ -24,7 +24,8 @@ public class DevStructureTesterTile extends BlockEntity
 
     /**
      * The Constructor that takes in properties
-     * @param type The Tile Entity Type
+     * @param blockPos The Position
+     * @param blockState The Properties
      */
     public DevStructureTesterTile(BlockPos blockPos, BlockState blockState)
     {

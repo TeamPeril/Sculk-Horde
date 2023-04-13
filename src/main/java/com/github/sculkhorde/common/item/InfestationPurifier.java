@@ -11,17 +11,12 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
 
 import java.util.List;
-
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-
-import net.minecraft.world.item.Item.Properties;
 
 public class InfestationPurifier extends Item implements IForgeItem {
 
@@ -51,7 +46,6 @@ public class InfestationPurifier extends Item implements IForgeItem {
     public static Properties getProperties()
     {
         return new Item.Properties()
-                .tab(SculkHorde.SCULK_GROUP)
                 .durability(1)
                 .rarity(Rarity.EPIC);
     }
@@ -62,7 +56,7 @@ public class InfestationPurifier extends Item implements IForgeItem {
     public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.infestation_purifier")); //Text that displays if not holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.infestation_purifier")); //Text that displays if not holding shift
 
     }
 
@@ -83,8 +77,6 @@ public class InfestationPurifier extends Item implements IForgeItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
     {
-        boolean DEBUG_THIS = DEBUG_MODE && false;
-
         //Get the item the player is holding
         ItemStack itemstack = playerIn.getItemInHand(handIn);
 

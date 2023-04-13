@@ -1,6 +1,4 @@
 package com.github.sculkhorde.common.entity.goal;
-
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.attack.RangedAttack;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -173,7 +171,7 @@ public class RangedAttackGoal extends Goal {
         LivingEntity targetEntity = this.entity.getTarget();
 
         double distanceToTargetSq = this.entity.distanceToSqr(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
-        boolean inLineOfSight = this.entity.getSensing().canSee(targetEntity);
+        boolean inLineOfSight = this.entity.getSensing().hasLineOfSight(targetEntity);
 
         //If target is in light
         if (inLineOfSight != this.seeTime > 0)

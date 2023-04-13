@@ -4,12 +4,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraftforge.common.extensions.IForgeEffect;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SculkInfectionEffect extends MobEffect implements IForgeEffect {
+public class SculkInfectionEffect extends MobEffect {
 
     public static int spawnInterval = 20;
     public static int liquidColor = 338997;

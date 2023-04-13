@@ -97,7 +97,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
     }
 
     /**
-     * Don't know why we need this. Got it from https://github.com/skyjay1/GreekFantasy/blob/master/src/main/java/greekfantasy/entity/misc/DiscusEntity.java
+     * Needed for spawning. Got it from https://github.com/skyjay1/GreekFantasy/blob/master/src/main/java/greekfantasy/entity/misc/DiscusEntity.java
      * @return ???
      */
     @Override

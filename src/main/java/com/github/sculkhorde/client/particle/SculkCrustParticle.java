@@ -1,10 +1,9 @@
 package com.github.sculkhorde.client.particle;
 
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -39,7 +38,7 @@ public class SculkCrustParticle extends TextureSheetParticle
         public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
 
 
-            Random random = pLevel.random;
+            RandomSource random = pLevel.random;
             double d0 = random.nextGaussian() * (double)1.0E-6F;
             double d1 = random.nextGaussian() * (double)1.0E-4F;
             double d2 = random.nextGaussian() * (double)1.0E-6F;

@@ -17,8 +17,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -26,8 +24,6 @@ import net.minecraftforge.common.extensions.IForgeItem;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
-
-import net.minecraft.world.item.Item.Properties;
 
 public class DevWand extends Item implements IForgeItem {
 	/* NOTE:
@@ -60,8 +56,6 @@ public class DevWand extends Item implements IForgeItem {
 	public static Properties getProperties()
 	{
 		return new Item.Properties()
-				.tab(SculkHorde.SCULK_GROUP)
-				.durability(5)
 				.rarity(Rarity.EPIC)
 				.fireResistant();
 
@@ -76,9 +70,9 @@ public class DevWand extends Item implements IForgeItem {
 		
 		//If User presses left shift, else
 		if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{
-			tooltip.add(new TranslatableComponent("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
+			tooltip.add(Component.literal("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
 		} else {
-			tooltip.add(new TranslatableComponent("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
+			tooltip.add(Component.literal("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
 		}
 	}
 
@@ -99,7 +93,7 @@ public class DevWand extends Item implements IForgeItem {
 			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
 			{
 				playerIn.displayClientMessage(
-						new TextComponent(
+						Component.literal(
 								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
 								"Sculk Accumulated Mass: " + SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() + "\n" +
 								"Known Nodes: " + SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
@@ -113,7 +107,7 @@ public class DevWand extends Item implements IForgeItem {
 			//If player clicks left-alt, set sculk mass to 10k
 			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
 			{
-				playerIn.displayClientMessage(new TextComponent("Adding 100 Sculk Mass"), false);
+				playerIn.displayClientMessage(Component.literal("Adding 100 Sculk Mass"), false);
 				SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(100);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return InteractionResultHolder.pass(itemstack);

@@ -4,7 +4,6 @@ import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;

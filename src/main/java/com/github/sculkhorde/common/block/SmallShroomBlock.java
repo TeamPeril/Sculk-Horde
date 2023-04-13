@@ -1,20 +1,8 @@
 package com.github.sculkhorde.common.block;
-
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
-import net.minecraft.block.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-
 public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
 
     /*
@@ -49,11 +37,6 @@ public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.5f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.HOE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -92,8 +75,6 @@ public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.SLIME_BLOCK)
                 .noCollission()
                 .instabreak();

@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import net.minecraft.entity.EntityPredicate;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -11,9 +10,6 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
-
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
-
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
     //protected EntityPredicate targetConditions;

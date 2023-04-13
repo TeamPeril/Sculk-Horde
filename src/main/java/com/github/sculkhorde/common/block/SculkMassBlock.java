@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.common.tileentity.SculkMassTile;
 import com.github.sculkhorde.core.TileEntityRegistry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,21 +19,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.OffsetType;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-
 public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
 
     /**
@@ -60,11 +55,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.5f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.HOE;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -106,11 +96,8 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.SLIME_BLOCK)
-                .noOcclusion()
-                .noDrops();
+                .noOcclusion();
     }
 
     /**
@@ -192,20 +179,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     }
 
     /**
-     * Gets called every time the block randomly ticks.
-     * Will Attempt to call in reiforcements depending on how much sculk mass
-     * was absored.
-     * @param blockState The current Blockstate
-     * @param serverWorld The current ServerWorld
-     * @param thisBlockPos The current Block Position
-     * @param random ???
-     */
-    @Override
-    public void randomTick(BlockState blockState, ServerLevel serverWorld, BlockPos thisBlockPos, Random random) {
-
-    }
-
-    /**
      * Just returns the tile entity
      * @param world The world to check
      * @param thisBlockPos The position to check
@@ -228,42 +201,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     }
 
     /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, Level world, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE)
-        {
-            BlockEntity tile = world.getBlockEntity(pos);
-            if(tile instanceof SculkMassTile && tile != null)
-            {
-
-                String debug_text = "Block at (" +
-                        pos.getX() + ", " +
-                        pos.getY() + ", " +
-                        pos.getZ() + ") " +
-                        "getStoredSculkMass: " + ((SculkMassTile) tile).getStoredSculkMass();
-                player.displayClientMessage(new TextComponent(debug_text), false);
-            }
-            else
-            {
-                System.out.println("Error accessing tile entity");
-            }
-        }
-
-        return null; //Just Return null because We Are Not Modifying it
-    }
-
-    /**
      * Determines what block the spike can be placed on <br>
      * Goes through a list of valid blocks and checks if the
      * given block is in that list.<br>
@@ -276,43 +213,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
         return !blockState.canBeReplaced(Fluids.WATER);
     }
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param state The current state
-     * @param world The current world
-     * @param pos Block position in world
-     * @param type The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType) {
-        return false;
-    }
-
-    /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return TileEntityRegistry.SCULK_MASS_TILE.get().create();
-    }
-
-    /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
-     */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
     /**
      * Causes Model to be offset
      * @return

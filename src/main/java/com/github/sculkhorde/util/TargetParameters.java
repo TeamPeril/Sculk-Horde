@@ -8,7 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.util.Mth;
-import net.minecraft.world.server.ServerWorld;
 
 import java.util.HashMap;
 import java.util.UUID;

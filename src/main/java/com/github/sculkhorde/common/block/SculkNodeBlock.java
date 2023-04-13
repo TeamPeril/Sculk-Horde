@@ -21,21 +21,17 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -68,11 +64,6 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 10f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -108,7 +99,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), 5 + 35, searchOrigin.getZ());
         world.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.gravemind.getGravemindMemory().addNodeToMemory(newOrigin);
-        EntityType.LIGHTNING_BOLT.spawn(world, null, null, newOrigin, MobSpawnType.SPAWNER, true, true);
+        EntityType.LIGHTNING_BOLT.spawn(world, newOrigin, MobSpawnType.SPAWNER);
     }
 
     /**
@@ -141,35 +132,6 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
     }
 
     /**
-     * Gets called every time the block randomly ticks.
-     * @param blockState The current Blockstate
-     * @param serverWorld The current ServerWorld
-     * @param bp The current Block Position
-     * @param random ???
-     */
-    @Override
-    public void randomTick(BlockState blockState, ServerLevel serverWorld, BlockPos bp, Random random)
-    {
-        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(1);//Add 1 sculk mass to the hoard
-    }
-
-
-    /**
-     * Determines if a specified mob type can spawn on this block, returning false will
-     * prevent any mob from spawning on the block.
-     *
-     * @param state The current state
-     * @param world The current world
-     * @param pos Block position in world
-     * @param type The Mob Category Type
-     * @return True to allow a mob of the specified category to spawn, false to prevent it.
-     */
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
-    {
-        return false;
-    }
-
-    /**
      * Determines the properties of a block.<br>
      * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
      * @return The Properties of the block
@@ -178,34 +140,9 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
     {
         Properties prop = Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
                 .sound(SoundType.GRASS);
         return prop;
     }
-
-    /**
-     * A function called by forge to create the tile entity.
-     * @param state The current blockstate
-     * @param world The world the block is in
-     * @return Returns the tile entity.
-     */
-    @Nullable
-    @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return TileEntityRegistry.SCULK_BRAIN_TILE.get().create();
-    }
-
-    /**
-     * Returns If true we have a tile entity
-     * @param state The current block state
-     * @return True
-     */
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
 
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
@@ -222,7 +159,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
 
             // Display Text On Player Screens
             for (Player player : worldIn.players()) {
-                player.displayClientMessage(new TranslatableComponent("message.sculk_horde.node_placed"), true);
+                player.displayClientMessage(Component.literal("message.sculk_horde.node_placed"), true);
             }
         }
 
@@ -251,7 +188,7 @@ public class SculkNodeBlock extends Block implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_brain")); //Text that displays if holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.sculk_brain")); //Text that displays if holding shift
     }
 
 }

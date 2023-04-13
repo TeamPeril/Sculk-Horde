@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,15 +12,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
 
 import java.util.List;
-
-import net.minecraft.world.item.Item.Properties;
 
 public class CustomItemProjectile extends Item implements IForgeItem {
 
@@ -52,8 +48,7 @@ public class CustomItemProjectile extends Item implements IForgeItem {
      */
     public static Properties getProperties()
     {
-        return new Properties()
-                .tab(SculkHorde.SCULK_GROUP);
+        return new Properties();
     }
 
     @Override
@@ -77,16 +72,16 @@ public class CustomItemProjectile extends Item implements IForgeItem {
      */
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        pLevel.playSound((Player)null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+        pLevel.playSound((Player)null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F);
         if (!pLevel.isClientSide) {
             CustomItemProjectileEntity projectile = new CustomItemProjectileEntity(pLevel, pPlayer, 5f);
             projectile.setItem(itemstack);
-            projectile.shootFromRotation(pPlayer, pPlayer.xRot, pPlayer.yRot, 0.0F, 1.5F, 1.0F);
+            projectile.shootFromRotation(pPlayer, pPlayer.getXRot(), pPlayer.getYRot(), 0.0F, 1.5F, 1.0F);
             pLevel.addFreshEntity(projectile);
         }
 
         pPlayer.awardStat(Stats.ITEM_USED.get(this));
-        if (!pPlayer.abilities.instabuild) {
+        if (!pPlayer.isCreative()) {
             itemstack.shrink(1);
         }
 
@@ -98,7 +93,7 @@ public class CustomItemProjectile extends Item implements IForgeItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.custom_item_projectile")); //Text that displays if not holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.custom_item_projectile")); //Text that displays if not holding shift
 
     }
 }

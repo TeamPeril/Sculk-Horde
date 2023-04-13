@@ -1,27 +1,13 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class CrustBlock extends Block implements IForgeBlock {
 
@@ -50,11 +36,6 @@ public class CrustBlock extends Block implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.6f;
-
-    /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.SHOVEL;
 
     /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
@@ -107,53 +88,7 @@ public class CrustBlock extends Block implements IForgeBlock {
     {
         return BlockBehaviour.Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
+                .requiresCorrectToolForDrops()
                 .sound(SoundType.GRASS);
-    }
-
-    /**
-     * Gives LivingEntities an effect if they step on this block
-     * @param worldIn The world
-     * @param pos The Block Position
-     * @param entity The entity that stepped on the block
-     */
-    @Override
-    public void stepOn(Level worldIn, BlockPos pos, Entity entity)
-    {
-        if(worldIn.isClientSide() || !(entity instanceof LivingEntity))//Only do this on the client
-        {
-            return;
-        }
-
-        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
-        {
-            return;
-        }
-
-
-        LivingEntity livingEntity = ((LivingEntity) entity); //Cast
-        livingEntity.addEffect(new MobEffectInstance(STEP_ON_EFFECT)); //Give effect
-
-        super.stepOn(worldIn, pos, entity); //Execute Parent Code
-    }
-
-    /**
-     * Returns the state that this block should transform into when right clicked by a tool.
-     * For example: Used to determine if an axe can strip, a shovel can path, or a hoe can till.
-     * Return null if vanilla behavior should be disabled.
-     *
-     * @param state The current state
-     * @param world The world
-     * @param pos The block position in world
-     * @param player The player clicking the block
-     * @param stack The stack being used by the player
-     * @return The resulting state after the action has been performed
-     */
-    public BlockState getToolModifiedState(BlockState state, Level world, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
-    {
-        if(DEBUG_MODE) System.out.println("Hi I am a Crust Block, I don't do Anything :)");
-
-        return null; //Just Return null because We Are Not Modifying it
     }
 }

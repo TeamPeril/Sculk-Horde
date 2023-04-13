@@ -1,18 +1,15 @@
 package com.github.sculkhorde.common.block.BlockInfestation;
 
-import com.github.sculkhorde.common.block.VeinBlock;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
-import net.minecraft.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
