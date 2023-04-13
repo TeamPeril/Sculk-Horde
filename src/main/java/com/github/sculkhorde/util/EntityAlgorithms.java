@@ -92,6 +92,11 @@ public class EntityAlgorithms {
      */
     public static boolean isLivingEntityHostile(LivingEntity entity)
     {
+        //TODO - This is a temporary solution.
+        if(gravemind.getGravemindMemory() == null)
+        {
+            return true;
+        }
 
         return gravemind.getGravemindMemory().getHostileEntries().get(entity.getType().toString()) != null;
 
@@ -112,7 +117,13 @@ public class EntityAlgorithms {
      */
     public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox)
     {
-        List<LivingEntity> livingEntitiesInRange = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, (Predicate<? super LivingEntity>) null);
+        //TODO - This is a temporary solution.
+        List<LivingEntity> livingEntitiesInRange = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
+            @Override
+            public boolean test(LivingEntity livingEntity) {
+                return true;
+            }
+        });
         return livingEntitiesInRange;
 
     }
