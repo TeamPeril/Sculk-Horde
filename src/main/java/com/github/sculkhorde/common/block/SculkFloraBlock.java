@@ -111,7 +111,8 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
             Random random = new Random();
             if (random.nextInt(10) == 0)
             {
-                worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                //TODO PORT
+                //worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
         }
 
@@ -138,20 +139,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
         return false;
     }
 
-    /**
-     * Used to place down block in the world.
-     * @param world The world
-     * @param targetPos The position
-     */
-    public void placeBlockHere(ServerLevel world, BlockPos targetPos)
-    {
-        //If block below target is valid and the target can be replaced by water
-        if(mayPlaceOn(world.getBlockState(targetPos.below()), world, targetPos.below())
-        && world.getBlockState(targetPos).isAir())
-        {
-            world.setBlockAndUpdate(targetPos, this.defaultBlockState());
-        }
-    }
 
     /**
      * Determines Block Hitbox <br>

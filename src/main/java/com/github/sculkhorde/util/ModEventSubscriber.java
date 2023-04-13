@@ -46,6 +46,8 @@ public class ModEventSubscriber {
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 6);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 200);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 200);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 6);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 6);
         
     }
 

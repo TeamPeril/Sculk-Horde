@@ -138,9 +138,9 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 int totalMassAfterTax = totalMassPreTax - totalMassTax;
 
                 //Pay Mass Tax to the Sculk Hoard
-                SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(totalMassTax);
-
-                if(DEBUG_MODE && DEBUG_THIS)
+                // SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(totalMassTax);
+                // TODO PORT
+                if(DEBUG_MODE && DEBUG_THIS && false)
                 {
                     System.out.println(
                             "\n" + "totalMassPreTax: " + totalMassPreTax + "\n"

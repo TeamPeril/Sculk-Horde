@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.sculk_spore_spewer.idle": {
+		"misc.idle": {
 			"loop": true,
 			"animation_length": 6,
 			"bones": {

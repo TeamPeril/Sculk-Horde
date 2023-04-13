@@ -382,9 +382,14 @@ public class BlockAlgorithms {
      */
     public static void placeSculkFlora(BlockPos targetPos, ServerLevel world)
     {
+        BlockState blockState = SculkHorde.randomSculkFlora.getRandomEntry().defaultBlockState();
 
-        ((SculkFloraBlock) SculkHorde.randomSculkFlora.getRandomEntry()).placeBlockHere(world, targetPos);
-
+        //If block below target is valid and the target can be replaced by water
+        if(blockState.canSurvive(world, targetPos)
+                && world.getBlockState(targetPos).isAir())
+        {
+            world.setBlockAndUpdate(targetPos, blockState);
+        }
     }
 
     /**

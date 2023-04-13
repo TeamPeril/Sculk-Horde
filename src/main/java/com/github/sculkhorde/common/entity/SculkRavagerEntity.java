@@ -169,7 +169,8 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
      */
     @Override
     public void onRemovedFromWorld() {
-        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        //TODO PORT
+        //SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
 

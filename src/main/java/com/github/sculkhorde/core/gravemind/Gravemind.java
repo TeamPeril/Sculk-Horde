@@ -107,6 +107,7 @@ public class Gravemind
      */
     public void calulateCurrentState()
     {
+        //TODO This is a temporary fix for the bug where the gravemind is not loaded in
         if(getGravemindMemory() == null) { return; }
 
         //This is how much mass is needed to go from undeveloped to immature
@@ -130,6 +131,8 @@ public class Gravemind
 
     public void enableAmountOfBeeHives(ServerLevel worldIn, int amount)
     {
+        //TODO This is a temporary fix for the bug where the gravemind is not loaded in
+        if(getGravemindMemory() == null) { return; }
         if(getGravemindMemory().getBeeNestEntries().size() <= 0) { return; }
 
         int lastEnabledIndex = -1;
