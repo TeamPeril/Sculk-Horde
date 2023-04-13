@@ -47,11 +47,10 @@ public class SculkCrustParticle extends TextureSheetParticle
         return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static class Factory implements ParticleProvider<SimpleParticleType> {
+    public static class Provider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprite;
 
-        public Factory(SpriteSet pSprites) {
+        public Provider(SpriteSet pSprites) {
             this.sprite = pSprites;
         }
 

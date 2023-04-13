@@ -129,8 +129,10 @@ public class RangedAttackGoal extends Goal {
      *
      * NOTE: I SHOULD NOT NEED TO CHECK IF THE ENTITY IS DEAD
      */
-    public boolean canUse() {
-        return this.entity != null && this.entity.getTarget().isDeadOrDying() == false;
+    public boolean canUse()
+    {
+        if(this.entity.getTarget() == null) {return false;}
+        return !this.entity.getTarget().isAlive() == false;
     }
 
     /**

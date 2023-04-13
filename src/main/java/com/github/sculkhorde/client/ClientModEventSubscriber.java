@@ -1,17 +1,12 @@
 package com.github.sculkhorde.client;
 
-import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.entity.*;
-import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.world.entity.Entity;
@@ -83,26 +78,8 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenderers(final FMLClientSetupEvent event)
     {
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SHROOM_CULTURE.get(), RenderType.cutout());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.cutout());
-
-       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), RenderType.cutout());
-
        // Register renderer for sculk crust partcile
-       event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new));
+       //event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new));
     }
 
     /**
@@ -116,7 +93,7 @@ public class ClientModEventSubscriber {
     {
         ParticleEngine particles = Minecraft.getInstance().particleEngine;
 
-        particles.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new);
+        //particles.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new);
         
     }
 }

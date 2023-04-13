@@ -95,7 +95,7 @@ public class TargetAttacker extends TargetGoal {
                 && this.mob.getLastHurtByMob() != null)
         {
             //TODO PORT THIS TO THE NEW MEMORY SYSTEM
-            //SculkHorde.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerLevel) this.mob.level);
+            SculkHorde.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerLevel) this.mob.level);
         }
 
         if (this.alertSameType) {

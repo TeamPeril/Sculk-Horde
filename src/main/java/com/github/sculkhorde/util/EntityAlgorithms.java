@@ -93,10 +93,10 @@ public class EntityAlgorithms {
     public static boolean isLivingEntityHostile(LivingEntity entity)
     {
         //TODO - This is a temporary solution.
-        if(gravemind.getGravemindMemory() == null)
+        /*if(gravemind.getGravemindMemory() == null)
         {
             return true;
-        }
+        }*/
 
         return gravemind.getGravemindMemory().getHostileEntries().get(entity.getType().toString()) != null;
 

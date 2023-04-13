@@ -1,5 +1,7 @@
 {
   "parent": "block/cross",
+  "ambientocclusion": false,
+  "render_type": "minecraft:cutout",
   "textures": {
     "cross": "sculkhorde:block/sculk_shroom_culture"
   }

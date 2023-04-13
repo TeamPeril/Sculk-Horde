@@ -6,11 +6,9 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -73,10 +71,9 @@ public class ForgeEventSubscriber {
 
                 SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
 
-                //TODO This is a temporary fix for the bug where the gravemind is not loaded in
                 //Verification Processes to ensure our data is accurate
-                //SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerLevel) event.level);
-                //SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerLevel) event.level);
+                SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerLevel) event.level);
+                SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerLevel) event.level);
 
                 //Calculate Current State
                 SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
@@ -84,18 +81,15 @@ public class ForgeEventSubscriber {
 
                 //Check How much Mass Was Generated over this period
                 if(DEBUG_MODE && false) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
-                //TODO This is a temporary fix for the bug where the gravemind is not loaded in
-                //sculkMassCheck = SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass();
+                sculkMassCheck = SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass();
 
-                //TODO This is a temporary fix for the bug where the gravemind is not loaded in
-                if(DEBUG_MODE && false) System.out.println(
+                if(DEBUG_MODE) System.out.println(
                         "\n Known Nodes: " + SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size()
                         + "\n Known Nests: " + SculkHorde.gravemind.getGravemindMemory().getBeeNestEntries().size()
                         + "\n Known Hostiles: " + SculkHorde.gravemind.getGravemindMemory().getHostileEntries().size() + "\n"
 
                 );
-                //TODO This is a temporary fix for the bug where the gravemind is not loaded in
-                if(DEBUG_MODE && false) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
             }
         }
 
