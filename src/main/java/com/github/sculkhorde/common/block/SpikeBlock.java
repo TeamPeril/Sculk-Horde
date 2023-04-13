@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.DamageSourceRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -16,12 +15,10 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
@@ -65,11 +62,6 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
     public static float BLAST_RESISTANCE = 6f;
 
     /**
-     * PREFERRED_TOOL determines what type of tool will break the block the fastest and be able to drop the block if possible
-     */
-    public static ToolType PREFERRED_TOOL = ToolType.PICKAXE;
-
-    /**
      *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
      *
      *  -1 = All<br>
@@ -110,8 +102,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .harvestTool(PREFERRED_TOOL)
-                .harvestLevel(HARVEST_LEVEL)
+                .requiresCorrectToolForDrops()
                 .sound(SoundType.SLIME_BLOCK)
                 .noCollission()
                 .air();
@@ -164,6 +155,6 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(new TranslatableComponent("tooltip.sculkhorde.spike")); //Text that displays if holding shift
+        tooltip.add(Component.literal("tooltip.sculkhorde.spike")); //Text that displays if holding shift
     }
 }

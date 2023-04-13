@@ -2,23 +2,19 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkHatcherEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkHatcherModel extends AnimatedGeoModel<SculkHatcherEntity> {
-    @Override
-    public ResourceLocation getModelLocation(SculkHatcherEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "geo/sculk_hatcher.geo.json");
+public class SculkHatcherModel extends DefaultedEntityGeoModel<SculkHatcherEntity> {
+
+    public SculkHatcherModel() {
+        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_hatcher"));
     }
 
+    // We want our model to render using the translucent render type
     @Override
-    public ResourceLocation getTextureLocation(SculkHatcherEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/sculk_hatcher.png");
-    }
-
-    @Override
-    public ResourceLocation getAnimationFileLocation(SculkHatcherEntity animatable)
-    {
-        return new ResourceLocation(SculkHorde.MOD_ID, "animations/sculk_hatcher.animation.json");
+    public RenderType getRenderType(SculkHatcherEntity animatable, ResourceLocation texture) {
+        return RenderType.entityTranslucent(getTextureResource(animatable));
     }
 }

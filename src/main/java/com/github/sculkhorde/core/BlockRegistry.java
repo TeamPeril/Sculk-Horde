@@ -8,10 +8,9 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -19,7 +18,7 @@ public class BlockRegistry {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
 
     //Method to Register Blocks & Register them as items
-	private static <T extends Block>RegistryObject<T> registerBlock(String name, Supplier<T> block)
+	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
 	{
 		RegistryObject<T> toReturn = BLOCKS.register(name, block);
 		registerBlockItem(name, toReturn);
@@ -30,7 +29,7 @@ public class BlockRegistry {
 	private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block)
 	{
 		ItemRegistry.ITEMS.register(name, () -> new BlockItem(block.get(),
-				new Item.Properties().tab(SculkHorde.SCULK_GROUP)));
+				new Item.Properties()));
 	}
 
     //NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
@@ -40,8 +39,7 @@ public class BlockRegistry {
 			registerBlock("ancient_large_bricks", () -> new Block(BlockBehaviour.Properties.of(
 					Material.STONE, MaterialColor.TERRACOTTA_BLUE)
     				.strength(15f, 30f)//Hardness & Resistance
-    				.harvestTool(ToolType.PICKAXE) //Block Preferred Harvest Tool
-    				.harvestLevel(3) //-1 = All Levels; 0 = Wood; 1 = Stone & Gold; 2 = Iron; 3 = Diamond; 4 = Netherite
+					.requiresCorrectToolForDrops()
     				.sound(SoundType.ANCIENT_DEBRIS)
     				));
 
@@ -50,8 +48,7 @@ public class BlockRegistry {
 			registerBlock("ancient_large_tile", () -> new Block(BlockBehaviour.Properties.of(
 					CrustBlock.MATERIAL, CrustBlock.MAP_COLOR)
     				.strength(15f, 30f)//Hardness & Resistance
-    				.harvestTool(ToolType.PICKAXE) 
-    				.harvestLevel(3)
+    				.requiresCorrectToolForDrops()
     				.sound(SoundType.ANCIENT_DEBRIS)
     				));
 
@@ -60,8 +57,7 @@ public class BlockRegistry {
 			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of(
 							Material.PLANT, MaterialColor.QUARTZ)
 					.strength(10f, 6f)//Hardness & Resistance
-					.harvestTool(ToolType.SHOVEL)
-					.harvestLevel(3)
+					.requiresCorrectToolForDrops()
 					.sound(SoundType.HONEY_BLOCK)
 			));
 
@@ -70,8 +66,7 @@ public class BlockRegistry {
 			registerBlock("sculk_dura_matter", () -> new Block(BlockBehaviour.Properties.of(
 							Material.PLANT, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
-					.harvestTool(ToolType.PICKAXE)
-					.harvestLevel(3)
+					.requiresCorrectToolForDrops()
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
 
@@ -80,8 +75,7 @@ public class BlockRegistry {
 			registerBlock("calcite_ore", () -> new Block(BlockBehaviour.Properties.of(
 							Material.PLANT, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
-					.harvestTool(ToolType.PICKAXE)
-					.harvestLevel(3)
+					.requiresCorrectToolForDrops()
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
 

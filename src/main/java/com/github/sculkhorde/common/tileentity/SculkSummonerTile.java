@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.tileentity;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -8,10 +7,9 @@ import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 
-public class SculkSummonerTile extends BlockEntity implements TickableBlockEntity
+public class SculkSummonerTile extends BlockEntity
 {
     private int behavior_state = 0;
     private final int STATE_COOLDOWN = 0;
@@ -54,22 +52,12 @@ public class SculkSummonerTile extends BlockEntity implements TickableBlockEntit
 
     /**
      * The Constructor that takes in properties
-     * @param type The Tile Entity Type
      */
-    public SculkSummonerTile(BlockEntityType<?> type)
+    public SculkSummonerTile(BlockPos blockPos, BlockState blockState)
     {
-        super(type);
-    }
-
-    /**
-     * A simpler constructor that does not take in entity type.<br>
-     * I made this so that registering tile entities can look cleaner
-     */
-    public SculkSummonerTile()
-    {
-        this(TileEntityRegistry.SCULK_SUMMONER_TILE.get());
-        //Create bounding box to detect targets
+        super(TileEntityRegistry.SCULK_SUMMONER_TILE.get(), blockPos, blockState);
         searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+
     }
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
@@ -118,7 +106,6 @@ public class SculkSummonerTile extends BlockEntity implements TickableBlockEntit
 
     /** ~~~~~~~~ Events ~~~~~~~~ **/
 
-    @Override
     public void tick()
     {
         if(this.level == null || this.level.isClientSide) { return;}
@@ -204,7 +191,6 @@ public class SculkSummonerTile extends BlockEntity implements TickableBlockEntit
             behavior_state = STATE_COOLDOWN;
         }
     }
-
 
     /**
      * Gets a list of all possible spawns, chooses a specified amount of them.

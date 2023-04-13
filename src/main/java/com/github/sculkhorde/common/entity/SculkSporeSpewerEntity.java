@@ -8,6 +8,8 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,19 +24,17 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
+public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -64,7 +64,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives();
 
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private CursorSurfaceInfectorEntity cursor;
 
@@ -84,7 +84,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSporeSpewerEntity(Level worldIn) {super(EntityRegistry.SCULK_SPORE_SPEWER, worldIn);}
+    public SculkSporeSpewerEntity(Level worldIn) {super(EntityRegistry.SCULK_SPORE_SPEWER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -171,28 +171,17 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
     @Override
     public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
 
-    @Override
-    protected int getExperienceReward(Player player)
-    {
-        return 10;
-    }
-
     //Animation Related Functions
 
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
-    {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_spore_spewer.idle", true));
-        return PlayState.CONTINUE;
+    // Add our animations
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
 
@@ -286,7 +275,7 @@ public class SculkSporeSpewerEntity extends SculkLivingEntity implements IAnimat
 
             timeUntilDeath--;
             if (timeUntilDeath <= 0) {
-                entity.remove();
+                entity.remove(Entity.RemovalReason.DISCARDED);
             }
         }
     }

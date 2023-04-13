@@ -3,17 +3,13 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.item.*;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 
@@ -21,7 +17,7 @@ public class ItemRegistry {
     //https://www.mr-pineapple.co.uk/tutorials/items
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SculkHorde.MOD_ID);
     
-    public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties().tab(SculkHorde.SCULK_GROUP)));
+    public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand", 
     		() -> new DevWand());
@@ -40,7 +36,7 @@ public class ItemRegistry {
 			{
 				@Override
 				public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-					tooltip.add(new TranslatableComponent("tooltip.sculkhorde.sculk_acidic_projectile"));
+					tooltip.add(Component.literal("tooltip.sculkhorde.sculk_acidic_projectile"));
 				}
 			});
 
@@ -48,21 +44,14 @@ public class ItemRegistry {
 			() -> new SculkResinItem());
 
 	public static final RegistryObject<Item> CALCITE_CLUMP = ITEMS.register("calcite_clump",
-			() -> new Item(new Item.Properties().tab(SculkHorde.SCULK_GROUP)){
+			() -> new Item(new Item.Properties()){
 				@Override
 				public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-					tooltip.add(new TranslatableComponent("tooltip.sculkhorde.calcite_clump"));
+					tooltip.add(Component.literal("tooltip.sculkhorde.calcite_clump"));
 				}
 			});
 
 	public static final RegistryObject<DevNodeSpawner> DEV_NODE_SPAWNER = ITEMS.register("dev_node_spawner",
 			() -> new DevNodeSpawner());
 
-	/** HELPER METHODS **/
-
-	private static void registerSpawnEgg(final RegistryEvent.Register<Item> event, final EntityType<?> entity,
-										 final String entityName, final int colorBase, final int colorSpots) {
-		event.getRegistry().register(new SpawnEggItem(entity, colorBase, colorSpots, new Item.Properties().tab(SculkHorde.SCULK_GROUP))
-				.setRegistryName(SculkHorde.MOD_ID, entityName + "_spawn_egg"));
-	}
 }

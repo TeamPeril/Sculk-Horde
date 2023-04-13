@@ -2,8 +2,8 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.TargetParameters;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.EntityType;
@@ -11,7 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,13 +21,11 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.server.ServerWorld;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Random;
 
@@ -39,7 +36,7 @@ import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
-public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, ISculkSmartEntity {
+public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -90,7 +87,7 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, I
     //INFECT_LEVEL The level of the effect
     public static int INFECT_LEVEL = 1;
     //factory The animation factory used for animations
-    private final AnimationFactory factory = new AnimationFactory(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -101,12 +98,6 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, I
     {
         super(type, worldIn);
     }
-
-    /**
-     * An Easier Constructor where you do not have to specify the Mob Type
-     * @param worldIn  The world to initialize this mob in
-     */
-    public SculkMiteEntity(Level worldIn) {super(EntityRegistry.SCULK_MITE, worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -245,20 +236,15 @@ public class SculkMiteEntity extends SculkLivingEntity implements IAnimatable, I
 
     //Animation Stuff below
 
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
-    {
-        //event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-        return PlayState.STOP;
+    // Add our animations
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     @Override

@@ -3,14 +3,14 @@ package com.github.sculkhorde.core;
 import com.github.sculkhorde.common.tileentity.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class TileEntityRegistry {
 
     public static DeferredRegister<BlockEntityType<?>> TILE_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, SculkHorde.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, SculkHorde.MOD_ID);
 
     public static RegistryObject<BlockEntityType<SculkMassTile>> SCULK_MASS_TILE =
             TILE_ENTITIES.register("sculk_mass_tile", () -> BlockEntityType.Builder.of(

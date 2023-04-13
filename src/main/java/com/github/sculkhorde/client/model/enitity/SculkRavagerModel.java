@@ -3,27 +3,16 @@ package com.github.sculkhorde.client.model.enitity;
 import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkRavagerModel extends AnimatedGeoModel<SculkRavagerEntity> {
-    @Override
-    public ResourceLocation getModelLocation(SculkRavagerEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "geo/sculk_ravager.geo.json");
-    }
+public class SculkRavagerModel extends DefaultedEntityGeoModel<SculkRavagerEntity> {
 
-    @Override
-    public ResourceLocation getTextureLocation(SculkRavagerEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/sculk_ravager.png");
-    }
-
-    @Override
-    public ResourceLocation getAnimationFileLocation(SculkRavagerEntity animatable)
+    public SculkRavagerModel()
     {
-        return new ResourceLocation(SculkHorde.MOD_ID, "animations/sculk_ravager.animation.json");
+        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_ravager"));
     }
 
+    /*
     @Override
     public void setLivingAnimations(SculkRavagerEntity entity, Integer uniqueID, AnimationEvent customPredicate)
     {
@@ -47,6 +36,8 @@ public class SculkRavagerModel extends AnimatedGeoModel<SculkRavagerEntity> {
         });
 
     }
+
+     */
 
 
 }

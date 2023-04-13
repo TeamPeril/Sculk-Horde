@@ -1,36 +1,18 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.TargetAttacker;
-import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.function.Predicate;
-
-public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements IAnimatable {
+public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements GeoEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -44,18 +26,12 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
 
     //The Health
     public static final float MAX_HEALTH = 20F;
-    //The armor of the mob
-    public static final float ARMOR = 4F;
-    //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 3F;
-    //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how fast this mob moves
     public static final float MOVEMENT_SPEED = 0.5F;
 
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -70,7 +46,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkBeeInfectorEntity(Level worldIn) {super(EntityRegistry.SCULK_BEE_INFECTOR, worldIn);}
+    public SculkBeeInfectorEntity(Level worldIn) {super(EntityRegistry.SCULK_BEE_INFECTOR.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -119,23 +95,10 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
      */
     public Goal[] goalSelectorPayload()
     {
-        beePollinateGoal = new InfectFlowersGoal();
-        goToHiveGoal = new FindBeehiveGoal();
-        goToKnownFlowerGoal = new FindFlowerGoal();
 
         Goal[] goals =
                 {
-                        new UpdateBeehiveGoal(),
-                        new EnterBeehiveGoal(),
-                        beePollinateGoal,
-                        goToHiveGoal,
-                        goToKnownFlowerGoal,
 
-
-                        //LookRandomlyGoal(mob)
-                        new RandomLookAroundGoal(this),
-                        new SculkBeeHarvesterEntity.WanderGoal(),
-                        new FloatGoal(this),
                 };
         return goals;
     }
@@ -160,107 +123,19 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
-    {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.sculk_bee.flying", true));
-        return PlayState.CONTINUE;
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
 
     @Override
-    protected boolean isFlowerValid(BlockPos pPos)
-    {
-        return this.level.isLoaded(pPos) & getFlowerPredicate().test(this.level.getBlockState(pPos)) & SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(pPos.below()));
+    public boolean isFlying() {
+        return true;
     }
-
-    /**
-     * Represents a predicate (boolean-valued function) of one argument. <br>
-     * Currently determines if a block is a valid flower.
-     */
-    private final Predicate<BlockState> VALID_INFECTABLE_BLOCKS = (validBlocksPredicate) ->
-    {
-        if (validBlocksPredicate.is(BlockTags.TALL_FLOWERS))
-        {
-            if (validBlocksPredicate.is(Blocks.SUNFLOWER))
-            {
-                return validBlocksPredicate.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        else
-        {
-            return validBlocksPredicate.is(BlockTags.SMALL_FLOWERS) || validBlocksPredicate.is(Blocks.GRASS);
-        }
-    };
-
-    /**
-     * Determines what flowers the bee can infect
-     * @return The predicate
-     */
-    @Override
-    protected Predicate<BlockState> getFlowerPredicate()
-    {
-        return VALID_INFECTABLE_BLOCKS;
-    }
-
-    /** CLASSES **/
-
-    private class InfectFlowersGoal extends SculkBeeHarvesterEntity.PollinateGoal
-    {
-        /**
-         * Constructor
-         */
-        InfectFlowersGoal()
-        {
-            super();
-        }
-
-        /**
-         * Reset the task's internal state. Called when this task is interrupted by another one
-         */
-        @Override
-        public void stop()
-        {
-            //If entity has pollinated for enough time
-            if (this.hasPollinatedLongEnough())
-            {
-                //Set entity to have nectar
-                SculkBeeInfectorEntity.this.setHasNectar(true);
-
-                // Spawn Block Traverser under bee
-                BlockPos spreadPos = SculkBeeInfectorEntity.this.blockPosition().below();
-                ServerLevel world = (ServerLevel) SculkBeeInfectorEntity.this.level;
-
-                // Spawn Block Traverser
-                CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(world);
-                cursor.setPos(spreadPos.getX(), spreadPos.getY(), spreadPos.getZ());
-                cursor.setMaxRange(100);
-                cursor.setMaxInfections(100);
-                world.addFreshEntity(cursor);
-
-            }
-
-            //Set pollination to false
-            this.pollinating = false;
-            //Stop navigation
-            SculkBeeInfectorEntity.this.navigation.stop();
-            //reset cooldown
-            SculkBeeInfectorEntity.this.remainingCooldownBeforeLocatingNewFlower = 200;
-        }
-
-    } //END POLLINATE GOAL
 
 }

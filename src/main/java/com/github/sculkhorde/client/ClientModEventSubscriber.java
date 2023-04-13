@@ -43,39 +43,37 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_ZOMBIE, SculkZombieRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_MITE.get(), SculkMiteRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_MITE, SculkMiteRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), SculkMiteAggressorRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_MITE_AGGRESSOR, SculkMiteAggressorRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_SPITTER.get(), SculkSpitterRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_SPITTER, SculkSpitterRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_BEE_INFECTOR.get(), SculkBeeInfectorRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_BEE_INFECTOR, SculkBeeInfectorRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_BEE_HARVESTER.get(), SculkBeeHarvesterRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_BEE_HARVESTER, SculkBeeHarvesterRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY, m -> new ThrownItemRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
+        event.registerEntityRenderer(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY, m -> new ThrownItemRenderer<CustomItemProjectileEntity>(m, Minecraft.getInstance().getItemRenderer()));
+        event.registerEntityRenderer(EntityRegistry.SCULK_HATCHER.get(), SculkHatcherRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_HATCHER, SculkHatcherRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_PROBER.get(), CursorProberRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.CURSOR_PROBER, CursorLongRangeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_INFECTOR.get(), CursorInfectorRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.CURSOR_INFECTOR, CursorShortRangeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_BRIDGER.get(), CursorBridgerRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.CURSOR_BRIDGER, CursorBridgerRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_SURFACE_INFECTOR.get(), CursorInfectorRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.CURSOR_SURFACE_INFECTOR, CursorShortRangeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CURSOR_SURFACE_PURIFIER.get(), CursorSurfacePurifierRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.CURSOR_SURFACE_PURIFIER, CursorSurfacePurifierRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_SPORE_SPEWER.get(), SculkSporeSpewerRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_SPORE_SPEWER, SculkSporeSpewerRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SCULK_RAVAGER.get(), SculkRavagerRenderer::new);
 
-        event.registerEntityRenderer(EntityRegistry.SCULK_RAVAGER, SculkRavagerRenderer::new);
-
-        event.registerEntityRenderer(EntityRegistry.INFESTATION_PURIFIER, InfestationPurifierRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.INFESTATION_PURIFIER.get(), InfestationPurifierRenderer::new);
 
 
 
@@ -85,26 +83,26 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenderers(final FMLClientSetupEvent event)
     {
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SPIKE.get(), RenderType.cutout());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SMALL_SHROOM.get(), RenderType.cutout());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS.get(), RenderType.cutout());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GRASS_SHORT.get(), RenderType.cutout());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SHROOM_CULTURE.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SHROOM_CULTURE.get(), RenderType.cutout());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON.get(), RenderType.translucent());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.COCOON_ROOT.get(), RenderType.translucent());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.VEIN.get(), RenderType.cutout());
 
-       ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), RenderType.cutout());
+       //ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), RenderType.cutout());
 
        // Register renderer for sculk crust partcile
-       event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE, SculkCrustParticle.Factory::new));
+       event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Factory::new));
     }
 
     /**

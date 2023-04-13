@@ -2,18 +2,14 @@ package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +39,7 @@ public class CursorBridgerEntity extends Entity {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorBridgerEntity(Level worldIn) {super(EntityRegistry.CURSOR_LONG_RANGE, worldIn);}
+    public CursorBridgerEntity(Level worldIn) {super(EntityRegistry.CURSOR_BRIDGER.get(), worldIn);}
 
     public CursorBridgerEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -98,7 +94,7 @@ public class CursorBridgerEntity extends Entity {
         long currentLifeTime = TimeUnit.SECONDS.convert(System.nanoTime() - creationTickTime, TimeUnit.NANOSECONDS);
         // If entity has lived too long, remove it
         if(currentLifeTime >= MAX_LIFETIME_SECONDS || this.distanceTraveled >= MAX_DISTANCE) {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
             return;
         }
 
@@ -151,10 +147,13 @@ public class CursorBridgerEntity extends Entity {
 
     }
 
+    /*
     @Override
     public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+     */
 
 
 

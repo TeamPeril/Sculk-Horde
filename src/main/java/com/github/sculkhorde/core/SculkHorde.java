@@ -1,16 +1,20 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
+import com.github.sculkhorde.common.item.ModCreativeModeTab;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+import com.mojang.logging.LogUtils;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib.GeckoLib;
+import org.slf4j.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
@@ -23,19 +27,19 @@ public class SculkHorde {
     //The file name in the world data folder.
     public static final String SAVE_DATA_ID = SculkHorde.MOD_ID + "_gravemind_memory";
     //The Creative Tab that all the items appear in
-    public static final CreativeModeTab SCULK_GROUP = new CreativeTabGroup("sculkhorde_tab");
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
     public static InfestationConversionHandler infestationConversionTable;
     public static PoolBlocks randomSculkFlora;
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
     public SculkHorde()
     {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
-
+        GeckoLib.initialize();
         ItemRegistry.ITEMS.register(bus); //Load Items
         TileEntityRegistry.register(bus); //Load Tile Entities
         BlockRegistry.BLOCKS.register(bus); //Load Blocks
@@ -45,6 +49,8 @@ public class SculkHorde {
         EffectRegistry.EFFECTS.register(bus); //Load Effects
         ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
 
+        bus.addListener(this::addCreative);
+
         //If dev environment
         if(!FMLEnvironment.production)
         {
@@ -52,16 +58,14 @@ public class SculkHorde {
         }
     }
 
-    //Add Creative Item Tab
-    public static class CreativeTabGroup extends CreativeModeTab
-    {
-        public CreativeTabGroup(String label) {
-            super(label);
-        }
-        @Override
-        public ItemStack makeIcon() {
-            return new ItemStack(ItemRegistry.SCULK_MATTER.get());
+    private void addCreative(CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == ModCreativeModeTab.CREATIVE_TAB) {
+            event.accept(ItemRegistry.SCULK_MATTER);
         }
     }
+
+
+
+
 
 }

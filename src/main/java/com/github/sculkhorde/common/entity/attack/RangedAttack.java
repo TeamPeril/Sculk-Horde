@@ -1,27 +1,27 @@
 package com.github.sculkhorde.common.entity.attack;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.util.ProjectileHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
 public abstract class RangedAttack {
 
-    public SculkLivingEntity thisMob; //The mob calling this attack
+    public Mob thisMob; //The mob calling this attack
     public double xOffSetModifier = 2;
     public double entityHeightFraction = 0.5;
     public double zOffSetModifier = 2;
     public float damage = 1;
     public double accuracy = 0.95;
 
-    public RangedAttack(SculkLivingEntity parentEntity) {
+    public RangedAttack(Mob parentEntity) {
         this.thisMob = parentEntity;
     }
 
-    public RangedAttack(SculkLivingEntity parentEntity, double xOffSetModifier, double entityHeightFraction,
+    public RangedAttack(Mob parentEntity, double xOffSetModifier, double entityHeightFraction,
                                 double zOffSetModifier, float damage) {
         this.thisMob = parentEntity;
         this.xOffSetModifier = xOffSetModifier;
@@ -61,7 +61,7 @@ public abstract class RangedAttack {
         double d0 = targetEntity.getX() - this.thisMob.getX();
         double d1 = targetEntity.getEyeY() - projectile.getY();
         double d2 = targetEntity.getZ() - this.thisMob.getZ();
-        double d3 = Mth.sqrt(d0 * d0 + d2 * d2);
+        double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
         if (d3 > 40.0)
             return;
         double velocity = 1.6;

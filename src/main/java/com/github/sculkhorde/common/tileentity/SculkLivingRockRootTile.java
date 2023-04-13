@@ -2,17 +2,17 @@ package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.common.procedural.structures.SculkLivingRockProceduralStructure;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkLivingRockRootTile extends BlockEntity implements TickableBlockEntity
+public class SculkLivingRockRootTile extends BlockEntity
 {
     private long tickedAt = System.nanoTime();
 
@@ -27,18 +27,9 @@ public class SculkLivingRockRootTile extends BlockEntity implements TickableBloc
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkLivingRockRootTile(BlockEntityType<?> type)
+    public SculkLivingRockRootTile(BlockPos blockPos, BlockState blockState)
     {
-        super(type);
-    }
-
-    /**
-     * A simpler constructor that does not take in entity type.<br>
-     * I made this so that registering tile entities can look cleaner
-     */
-    public SculkLivingRockRootTile() {
-
-        this(TileEntityRegistry.SCULK_LIVING_ROCK_ROOT_TILE.get());
+        super(TileEntityRegistry.SCULK_LIVING_ROCK_ROOT_TILE.get(), blockPos, blockState);
     }
 
     /** Accessors **/
@@ -49,7 +40,6 @@ public class SculkLivingRockRootTile extends BlockEntity implements TickableBloc
 
     /** Events **/
 
-    @Override
     public void tick()
     {
         if(this.level == null || this.level.isClientSide)

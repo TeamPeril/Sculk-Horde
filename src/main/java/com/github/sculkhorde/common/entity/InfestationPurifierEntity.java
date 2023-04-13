@@ -4,30 +4,24 @@ import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.util.*;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,7 +33,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 
-public class InfestationPurifierEntity extends PathfinderMob implements IAnimatable {
+public class InfestationPurifierEntity extends PathfinderMob implements GeoEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -64,7 +58,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0F;
 
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private int MAX_TARGET_FIND_FAILS = 16;
     private int targetFindFails = 0;
@@ -88,7 +82,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public InfestationPurifierEntity(Level worldIn) {super(EntityRegistry.INFESTATION_PURIFIER, worldIn);}
+    public InfestationPurifierEntity(Level worldIn) {super(EntityRegistry.INFESTATION_PURIFIER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -169,28 +163,15 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
     @Override
     public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
 
+    // Add our animations
     @Override
-    protected int getExperienceReward(Player player)
-    {
-        return 10;
-    }
-
-    //Animation Related Functions
-
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
-    {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.infestation_purifier.idle", true));
-        return PlayState.CONTINUE;
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
 
@@ -210,7 +191,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
         // If targetFindFails is greater than MAX_TARGET_FIND_FAILS, then die and drop item
         if(targetFindFails >= MAX_TARGET_FIND_FAILS)
         {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
             this.spawnAtLocation(new ItemStack(ItemRegistry.INFESTATION_PURIFIER.get()));
         }
 
@@ -334,7 +315,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (!this.level.isClientSide) {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
             this.spawnAtLocation(new ItemStack(ItemRegistry.INFESTATION_PURIFIER.get()));
         }
         return InteractionResult.SUCCESS;

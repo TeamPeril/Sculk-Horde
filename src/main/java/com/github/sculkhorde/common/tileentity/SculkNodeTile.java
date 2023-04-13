@@ -4,11 +4,11 @@ import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.concurrent.TimeUnit;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkNodeTile extends BlockEntity implements TickableBlockEntity
+public class SculkNodeTile extends BlockEntity
 {
 
     private final int CHUNK_LOAD_RADIUS = 15;
@@ -34,23 +34,10 @@ public class SculkNodeTile extends BlockEntity implements TickableBlockEntity
 
     private SculkNodeInfectionHandler infectionHandler;
 
-    /**
-     * The Constructor that takes in properties
-     * @param type The Tile Entity Type
-     */
-    public SculkNodeTile(BlockEntityType<?> type)
-    {
-        super(type);
+    public SculkNodeTile(BlockPos blockPos, BlockState blockState) {
+        super(TileEntityRegistry.SCULK_BRAIN_TILE.get(), blockPos, blockState);
     }
 
-    /**
-     * A simpler constructor that does not take in entity type.<br>
-     * I made this so that registering tile entities can look cleaner
-     */
-    public SculkNodeTile() {
-
-        this(TileEntityRegistry.SCULK_BRAIN_TILE.get());
-    }
 
     /** Accessors **/
 
@@ -59,8 +46,6 @@ public class SculkNodeTile extends BlockEntity implements TickableBlockEntity
 
 
     /** Events **/
-
-    @Override
     public void tick()
     {
         if(this.level != null && !this.level.isClientSide)

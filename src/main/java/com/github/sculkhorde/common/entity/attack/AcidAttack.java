@@ -1,13 +1,13 @@
 package com.github.sculkhorde.common.entity.attack;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
 public class AcidAttack extends RangedAttack{
 
-    public AcidAttack(SculkLivingEntity thisMob) {
+    public AcidAttack(Mob thisMob) {
         super(thisMob);
     }
 

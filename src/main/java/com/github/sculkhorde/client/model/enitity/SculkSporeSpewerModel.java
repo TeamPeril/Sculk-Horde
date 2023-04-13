@@ -2,23 +2,19 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.example.entity.ParasiteEntity;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkSporeSpewerModel extends AnimatedGeoModel<SculkSporeSpewerEntity> {
-    @Override
-    public ResourceLocation getModelLocation(SculkSporeSpewerEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "geo/sculk_spore_spewer.geo.json");
+public class SculkSporeSpewerModel extends DefaultedEntityGeoModel<SculkSporeSpewerEntity> {
+    public SculkSporeSpewerModel() {
+        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_spore_spewer"));
     }
 
+    // We want our model to render using the translucent render type
     @Override
-    public ResourceLocation getTextureLocation(SculkSporeSpewerEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/sculk_spore_spewer.png");
-    }
-
-    @Override
-    public ResourceLocation getAnimationFileLocation(SculkSporeSpewerEntity animatable)
-    {
-        return new ResourceLocation(SculkHorde.MOD_ID, "animations/sculk_spore_spewer.animation.json");
+    public RenderType getRenderType(SculkSporeSpewerEntity animatable, ResourceLocation texture) {
+        return RenderType.entityTranslucent(getTextureResource(animatable));
     }
 }

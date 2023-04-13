@@ -9,15 +9,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fml.network.NetworkHooks;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +43,7 @@ public class CursorProberEntity extends Entity {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorProberEntity(Level worldIn) {super(EntityRegistry.CURSOR_LONG_RANGE, worldIn);}
+    public CursorProberEntity(Level worldIn) {super(EntityRegistry.CURSOR_PROBER.get(), worldIn);}
 
     public CursorProberEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -129,7 +124,7 @@ public class CursorProberEntity extends Entity {
             }
         }
 
-        this.remove();
+        this.remove(RemovalReason.DISCARDED);
         isSuccessful = false;
         return BlockPos.ZERO;
     }
@@ -161,7 +156,7 @@ public class CursorProberEntity extends Entity {
         long currentLifeTime = TimeUnit.SECONDS.convert(System.nanoTime() - creationTickTime, TimeUnit.NANOSECONDS);
         // If entity has lived too long, remove it
         if(currentLifeTime >= MAX_LIFETIME_SECONDS || this.distanceTraveled >= MAX_DISTANCE) {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
             return;
         }
 
@@ -214,7 +209,7 @@ public class CursorProberEntity extends Entity {
         if (this.blockPosition().equals(target)) {
 
             isSuccessful = true;
-            remove();
+            remove(RemovalReason.DISCARDED);
         }
 
 
@@ -235,10 +230,13 @@ public class CursorProberEntity extends Entity {
 
     }
 
+    /*
     @Override
     public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+     */
 
     public void setTarget(BlockPos target) {
         this.target = target;

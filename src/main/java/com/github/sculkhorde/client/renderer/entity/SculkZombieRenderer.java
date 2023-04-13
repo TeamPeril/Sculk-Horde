@@ -10,7 +10,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class SculkZombieRenderer extends GeoEntityRenderer<SculkZombieEntity> {
 
 
-    public SculkZombieRenderer(EntityRendererProvider.Context renderManager, GeoModel<SculkZombieEntity> model) {
+    public SculkZombieRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new SculkZombieModel());
     }
 }

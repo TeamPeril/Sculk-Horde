@@ -1,23 +1,17 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.common.block.SculkFloraBlock;
-import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import java.util.ArrayList;
 import java.util.function.Predicate;
 
 public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
@@ -28,7 +22,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
      */
     public CursorSurfacePurifierEntity(Level worldIn)
     {
-        super(EntityRegistry.CURSOR_SURFACE_PURIFIER, worldIn);
+        super(EntityRegistry.CURSOR_SURFACE_PURIFIER.get(), worldIn);
     }
 
     public CursorSurfacePurifierEntity(EntityType<?> pType, Level pLevel) {

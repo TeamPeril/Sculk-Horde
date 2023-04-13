@@ -3,13 +3,14 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.common.entity.attack.RangedAttack;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
 public class RangedAttackGoal extends Goal {
 
-    private final SculkLivingEntity entity; //The Entity Calling this function
+    private final Mob entity; //The Entity Calling this function
     private double moveSpeedAmp = 1; //Movement Speed
     private int attackCooldown; //Chase Speed
     private int visibleTicksDelay = 3;
@@ -35,8 +36,8 @@ public class RangedAttackGoal extends Goal {
      * @param maxAttackDistanceIn The max distance to target we can use ranged attack
      * @param state ???
      */
-    public RangedAttackGoal(SculkLivingEntity mob, RangedAttack attack, double moveSpeedAmpIn,
-                                  int attackCooldownIn, int visibleTicksDelay, int strafeTicksThreshold, float maxAttackDistanceIn, int state) {
+    public RangedAttackGoal(Mob mob, RangedAttack attack, double moveSpeedAmpIn,
+                            int attackCooldownIn, int visibleTicksDelay, int strafeTicksThreshold, float maxAttackDistanceIn, int state) {
         this.entity = mob;
         this.moveSpeedAmp = moveSpeedAmpIn;
         this.attackCooldown = attackCooldownIn;
@@ -49,7 +50,7 @@ public class RangedAttackGoal extends Goal {
     }
 
     // use defaults
-    public RangedAttackGoal(SculkLivingEntity mob, RangedAttack attack, int attackCooldownIn) {
+    public RangedAttackGoal(Mob mob, RangedAttack attack, int attackCooldownIn) {
         this.entity = mob;
         this.attackCooldown = attackCooldownIn;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
@@ -131,7 +132,7 @@ public class RangedAttackGoal extends Goal {
      * NOTE: I SHOULD NOT NEED TO CHECK IF THE ENTITY IS DEAD
      */
     public boolean canUse() {
-        return this.entity.getTarget() != null && this.entity.getTarget().isDeadOrDying() == false;
+        return this.entity != null && this.entity.getTarget().isDeadOrDying() == false;
     }
 
     /**

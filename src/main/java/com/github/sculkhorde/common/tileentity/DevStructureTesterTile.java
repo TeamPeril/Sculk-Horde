@@ -2,20 +2,19 @@ package com.github.sculkhorde.common.tileentity;
 
 import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
-import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class DevStructureTesterTile extends BlockEntity implements TickableBlockEntity
+public class DevStructureTesterTile extends BlockEntity
 {
 
     private long tickedAt = System.nanoTime();
@@ -27,18 +26,9 @@ public class DevStructureTesterTile extends BlockEntity implements TickableBlock
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public DevStructureTesterTile(BlockEntityType<?> type)
+    public DevStructureTesterTile(BlockPos blockPos, BlockState blockState)
     {
-        super(type);
-    }
-
-    /**
-     * A simpler constructor that does not take in entity type.<br>
-     * I made this so that registering tile entities can look cleaner
-     */
-    public DevStructureTesterTile() {
-
-        this(TileEntityRegistry.DEV_STRUCTURE_TESTER_TILE.get());
+        super(TileEntityRegistry.DEV_STRUCTURE_TESTER_TILE.get(), blockPos, blockState);
     }
 
     /** Accessors **/
@@ -49,7 +39,6 @@ public class DevStructureTesterTile extends BlockEntity implements TickableBlock
 
     /** Events **/
 
-    @Override
     public void tick()
     {
 

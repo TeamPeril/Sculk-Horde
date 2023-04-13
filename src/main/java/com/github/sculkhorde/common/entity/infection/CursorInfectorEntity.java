@@ -8,12 +8,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +60,7 @@ public class CursorInfectorEntity extends Entity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorInfectorEntity(Level worldIn) {super(EntityRegistry.CURSOR_SHORT_RANGE, worldIn);}
+    public CursorInfectorEntity(Level worldIn) {super(EntityRegistry.CURSOR_INFECTOR.get(), worldIn);}
 
     public CursorInfectorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -266,7 +264,7 @@ public class CursorInfectorEntity extends Entity
         }
         else if (state == State.FINISHED)
         {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
         }
 
     }
@@ -339,10 +337,13 @@ public class CursorInfectorEntity extends Entity
 
     }
 
+    /*
     @Override
     public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+     */
 
 
     public void setTarget(BlockPos target) {

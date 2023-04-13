@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.entity.projectile;
 
-import com.github.sculkhorde.common.entity.SculkLivingEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -28,7 +27,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ITeleporter;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.network.NetworkHooks;
 
 /**
@@ -120,7 +118,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         //If the owner is a player that is dead, remove the projectile.
         //Else, proceed as normal.
         if (entity instanceof net.minecraft.world.entity.player.Player && !entity.isAlive()) {
-            remove();
+            remove(RemovalReason.DISCARDED);
         } else {
             super.tick();
         }
@@ -144,13 +142,13 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         }
 
         // If the entity is a sculk or if the entity it hit was the owner, do nothing.
-        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) raytrace.getEntity()) || getOwner() == getEntity())
+        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) raytrace.getEntity()) || getOwner() == raytrace.getEntity())
         {
             return;
         }
 
 
-        raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
+        raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
 
@@ -159,7 +157,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
             ((LivingEntity)raytrace.getEntity()).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
         }
 
-        remove();
+        remove(RemovalReason.DISCARDED);
 
     }
 
@@ -183,7 +181,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
             this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         }
         this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
-        this.remove();
+        this.remove(RemovalReason.DISCARDED);
     }
 
     /**

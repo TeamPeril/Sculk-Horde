@@ -1,18 +1,17 @@
 package com.github.sculkhorde.common.tileentity;
 
-import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public class SculkMassTile extends BlockEntity implements TickableBlockEntity {
+public class SculkMassTile extends BlockEntity {
 
     /**
      * storedSculkMass is the value of sculk mass was this block has.
@@ -29,16 +28,8 @@ public class SculkMassTile extends BlockEntity implements TickableBlockEntity {
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkMassTile(BlockEntityType<?> type) {
-        super(type);
-    }
-
-    /**
-     * A simpler constructor that does not take in entity type.<br>
-     * I made this so that registering tile entities can look cleaner
-     */
-    public SculkMassTile() {
-        this(TileEntityRegistry.SCULK_MASS_TILE.get());
+    public SculkMassTile(BlockPos pos, BlockState state) {
+        super(TileEntityRegistry.SCULK_MASS_TILE.get(), pos, state);
     }
 
     /**
@@ -47,8 +38,8 @@ public class SculkMassTile extends BlockEntity implements TickableBlockEntity {
      * @param compoundNBT Where NBT data is stored??
      */
     @Override
-    public void load(BlockState blockState, CompoundTag compoundNBT) {
-        super.load(blockState, compoundNBT);
+    public void load(CompoundTag compoundNBT) {
+        super.load(compoundNBT);
         this.storedSculkMass = compoundNBT.getInt(storedSculkMassIdentifier);
     }
 
@@ -58,10 +49,10 @@ public class SculkMassTile extends BlockEntity implements TickableBlockEntity {
      * @return ???
      */
     @Override
-    public CompoundTag save(CompoundTag compoundNBT) {
-        super.save(compoundNBT);
+    public void saveAdditional(CompoundTag compoundNBT) {
+
         compoundNBT.putInt(storedSculkMassIdentifier, this.storedSculkMass);
-        return compoundNBT;
+        super.saveAdditional(compoundNBT);
     }
 
     public int getStoredSculkMass()
@@ -79,7 +70,6 @@ public class SculkMassTile extends BlockEntity implements TickableBlockEntity {
         storedSculkMass += value;
     }
 
-    @Override
     public void tick()
     {
         // If world is not a server world, return

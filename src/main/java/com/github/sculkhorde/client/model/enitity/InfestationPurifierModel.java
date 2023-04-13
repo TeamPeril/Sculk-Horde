@@ -1,25 +1,21 @@
 package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.example.entity.ParasiteEntity;
+import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class InfestationPurifierModel extends AnimatedGeoModel<InfestationPurifierEntity> {
-    @Override
-    public ResourceLocation getModelLocation(InfestationPurifierEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "geo/infestation_purifier.geo.json");
+public class InfestationPurifierModel extends DefaultedEntityGeoModel<InfestationPurifierEntity> {
+    public InfestationPurifierModel() {
+        super(new ResourceLocation(GeckoLib.MOD_ID, "parasite"));
     }
 
+    // We want our model to render using the translucent render type
     @Override
-    public ResourceLocation getTextureLocation(InfestationPurifierEntity object) {
-        return new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/infestation_purifier.png");
-    }
-
-    @Override
-    public ResourceLocation getAnimationFileLocation(InfestationPurifierEntity animatable)
-    {
-        return new ResourceLocation(SculkHorde.MOD_ID, "animations/infestation_purifier.animation.json");
+    public RenderType getRenderType(InfestationPurifierEntity animatable, ResourceLocation texture) {
+        return RenderType.entityTranslucent(getTextureResource(animatable));
     }
 }

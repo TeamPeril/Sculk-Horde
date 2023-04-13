@@ -21,13 +21,11 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * In order to create a mob, the following java files were created/edited.<br>
@@ -40,7 +38,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSmartEntity {
+public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmartEntity {
 
 
     /**
@@ -56,7 +54,7 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkRavagerEntity(Level worldIn) {super(EntityRegistry.SCULK_RAVAGER, worldIn);}
+    public SculkRavagerEntity(Level worldIn) {super(EntityRegistry.SCULK_RAVAGER.get(), worldIn);}
 
     //The Health
     public static final float MAX_HEALTH = 50F;
@@ -73,6 +71,8 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * Determines & registers the attributes of the mob.
@@ -181,32 +181,16 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
-    private <E extends IAnimatable> PlayState tumorPredicate(AnimationEvent<E> event)
-    {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.ravager.tumors_idle", true));
-        return PlayState.CONTINUE;
-    }
-
-    private <E extends IAnimatable> PlayState mouthPredicate(AnimationEvent<E> event)
-    {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.ravager.mouth_idle", true));
-        return PlayState.CONTINUE;
-    }
-
-    AnimationController tumorController = new AnimationController(this, "tumor_controller", 0, this::tumorPredicate);
-    AnimationController mouthController = new AnimationController(this, "mouth_controller", 0, this::mouthPredicate);
-    AnimationFactory factory = new AnimationFactory(this);
+    // Add our animations
     @Override
-    public void registerControllers(AnimationData data)
-    {
-        data.addAnimationController(tumorController);
-        data.addAnimationController(mouthController);
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        controllers.add(DefaultAnimations.genericAttackAnimation(this, DefaultAnimations.ATTACK_STRIKE));
     }
 
     @Override
-    public AnimationFactory getFactory()
-    {
-        return factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
