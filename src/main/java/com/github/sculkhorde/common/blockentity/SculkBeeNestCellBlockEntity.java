@@ -18,7 +18,7 @@ public class SculkBeeNestCellBlockEntity extends BlockEntity {
      */
     public SculkBeeNestCellBlockEntity(BlockPos pos, BlockState state)
     {
-        super(BlockEntityRegistry.SCULK_BEE_NEST_CELL_TILE.get(), pos, state);
+        super(BlockEntityRegistry.SCULK_BEE_NEST_CELL_BLOCK_ENTITY.get(), pos, state);
     }
 
     /** Accessors **/

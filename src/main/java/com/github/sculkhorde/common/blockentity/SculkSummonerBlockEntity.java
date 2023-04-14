@@ -69,7 +69,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
      */
     public SculkSummonerBlockEntity(BlockPos blockPos, BlockState blockState)
     {
-        super(BlockEntityRegistry.SCULK_SUMMONER_TILE.get(), blockPos, blockState);
+        super(BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), blockPos, blockState);
         searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
 
     }

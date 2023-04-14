@@ -1,17 +1,27 @@
 package com.github.sculkhorde.common.block;
 
-import net.minecraft.world.level.block.Block;
+import com.github.sculkhorde.common.blockentity.SculkLivingRockRootBlockEntity;
+import com.github.sculkhorde.core.BlockEntityRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
+import javax.annotation.Nullable;
+
 /**
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkLivingRockRootBlock extends Block implements IForgeBlock {
+public class SculkLivingRockRootBlock extends BaseEntityBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -89,5 +99,23 @@ public class SculkLivingRockRootBlock extends Block implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
         return prop;
+    }
+
+    // Block Entity Stuff
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), SculkLivingRockRootBlockEntity::tick);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new SculkLivingRockRootBlockEntity(blockPos, state);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.MODEL;
     }
 }

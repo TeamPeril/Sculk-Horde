@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ItemRegistry;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
@@ -247,5 +248,10 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
         return new SculkBeeNestCellBlockEntity(blockPos, state);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.MODEL;
     }
 }

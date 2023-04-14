@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.procedural.structures.SculkLivingRockProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkLivingRockRootTile extends BlockEntity
+public class SculkLivingRockRootBlockEntity extends BlockEntity
 {
     private long tickedAt = System.nanoTime();
 
@@ -27,9 +28,9 @@ public class SculkLivingRockRootTile extends BlockEntity
      * The Constructor that takes in properties
      * @param type The Tile Entity Type
      */
-    public SculkLivingRockRootTile(BlockPos blockPos, BlockState blockState)
+    public SculkLivingRockRootBlockEntity(BlockPos blockPos, BlockState blockState)
     {
-        super(BlockEntityRegistry.SCULK_LIVING_ROCK_ROOT_TILE.get(), blockPos, blockState);
+        super(BlockEntityRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     /** Accessors **/
@@ -40,39 +41,34 @@ public class SculkLivingRockRootTile extends BlockEntity
 
     /** Events **/
 
-    public void tick()
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkLivingRockRootBlockEntity blockEntity)
     {
-        if(this.level == null || this.level.isClientSide)
-        {
-            return;
-        }
-
-        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
         if(timeElapsed < 0.1) { return;}
 
-        tickedAt = System.nanoTime();
+        blockEntity.tickedAt = System.nanoTime();
 
         /** Building Shell Process **/
-        long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+        long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
 
         //If the Bee Nest Structure hasnt been initialized yet, do it
-        if(proceduralStructure == null)
+        if(blockEntity.proceduralStructure == null)
         {
             //Create Structure
-            proceduralStructure = new SculkLivingRockProceduralStructure((ServerLevel) this.level, this.getBlockPos());
-            proceduralStructure.generatePlan();
+            blockEntity.proceduralStructure = new SculkLivingRockProceduralStructure((ServerLevel) level, blockPos);
+            blockEntity.proceduralStructure.generatePlan();
         }
 
         //If currently building, call build tick.
-        if(proceduralStructure.isCurrentlyBuilding())
+        if(blockEntity.proceduralStructure.isCurrentlyBuilding())
         {
-            proceduralStructure.buildTick();
-            lastTimeSinceRepair = System.nanoTime();
+            blockEntity.proceduralStructure.buildTick();
+            blockEntity.lastTimeSinceRepair = System.nanoTime();
         }
         //If enough time has passed, or we havent built yet, start build
-        else if(repairTimeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1)
+        else if(repairTimeElapsed >= blockEntity.repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1)
         {
-            proceduralStructure.startBuildProcedure();
+            blockEntity.proceduralStructure.startBuildProcedure();
         }
     }
 }

@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class DevStructureTesterTile extends BlockEntity
+public class DevStructureTesterBlockEntity extends BlockEntity
 {
 
     private long tickedAt = System.nanoTime();
@@ -27,9 +28,9 @@ public class DevStructureTesterTile extends BlockEntity
      * @param blockPos The Position
      * @param blockState The Properties
      */
-    public DevStructureTesterTile(BlockPos blockPos, BlockState blockState)
+    public DevStructureTesterBlockEntity(BlockPos blockPos, BlockState blockState)
     {
-        super(BlockEntityRegistry.DEV_STRUCTURE_TESTER_TILE.get(), blockPos, blockState);
+        super(BlockEntityRegistry.DEV_STRUCTURE_TESTER_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     /** Accessors **/
@@ -40,42 +41,34 @@ public class DevStructureTesterTile extends BlockEntity
 
     /** Events **/
 
-    public void tick()
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, DevStructureTesterBlockEntity blockEntity)
     {
 
-        if(this.level == null || this.level.isClientSide)
-        {
-            return;
-        }
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+        if(timeElapsed < 1) { return;}
 
-        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
-        //if(timeElapsed < 1) { return;}
-
-        tickedAt = System.nanoTime();
+        blockEntity.tickedAt = System.nanoTime();
 
         /** Building Process **/
 
         //If the Structure hasnt been initialized yet, do it
-        if(proceduralStructure == null)
+        if(blockEntity.proceduralStructure == null)
         {
             //Create Structure
-            proceduralStructure = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) this.level, this.getBlockPos(), 5, 10, Direction.NORTH);
-            proceduralStructure.generatePlan();
+            blockEntity.proceduralStructure = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) level, blockPos, 5, 10, Direction.NORTH);
+            blockEntity.proceduralStructure.generatePlan();
         }
 
         //If currently building, call build tick.
-        if(!proceduralStructure.isStructureComplete() && proceduralStructure.isCurrentlyBuilding())
+        if(!blockEntity.proceduralStructure.isStructureComplete() && blockEntity.proceduralStructure.isCurrentlyBuilding())
         {
-            proceduralStructure.buildTick();
+            blockEntity.proceduralStructure.buildTick();
         }
 
         //If structure not complete, start build
-        if(!proceduralStructure.isStructureComplete() && !proceduralStructure.isCurrentlyBuilding())
+        if(!blockEntity.proceduralStructure.isStructureComplete() && !blockEntity.proceduralStructure.isCurrentlyBuilding())
         {
-            proceduralStructure.startBuildProcedure();
+            blockEntity.proceduralStructure.startBuildProcedure();
         }
-
-
     }
-
 }

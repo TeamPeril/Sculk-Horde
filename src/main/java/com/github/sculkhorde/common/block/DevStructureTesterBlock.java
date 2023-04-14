@@ -1,6 +1,13 @@
 package com.github.sculkhorde.common.block;
 
-import net.minecraft.world.level.block.Block;
+import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
+import com.github.sculkhorde.core.BlockEntityRegistry;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
@@ -23,7 +30,7 @@ import java.util.List;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class DevStructureTesterBlock extends Block implements IForgeBlock {
+public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -132,6 +139,24 @@ public class DevStructureTesterBlock extends Block implements IForgeBlock {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.literal("tooltip.sculkhorde.dev_structure_tester")); //Text that displays if holding shift
+    }
+
+    // Block Entity Related
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.DEV_STRUCTURE_TESTER_BLOCK_ENTITY.get(), DevStructureTesterBlockEntity::tick);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new DevStructureTesterBlockEntity(blockPos, state);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.MODEL;
     }
 
 }

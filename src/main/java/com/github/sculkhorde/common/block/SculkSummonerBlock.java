@@ -149,7 +149,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_TILE.get(), SculkSummonerBlockEntity::spawnReinforcementsTick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::spawnReinforcementsTick);
     }
 
     @org.jetbrains.annotations.Nullable
