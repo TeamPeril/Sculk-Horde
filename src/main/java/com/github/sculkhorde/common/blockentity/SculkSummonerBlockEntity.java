@@ -6,15 +6,27 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TargetParameters;
+import com.mojang.serialization.Dynamic;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.tags.GameEventTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.BlockPositionSource;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 
-public class SculkSummonerBlockEntity extends BlockEntity
+public class SculkSummonerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig
 {
     private int behavior_state = 0;
     private final int STATE_COOLDOWN = 0;
@@ -51,6 +63,8 @@ public class SculkSummonerBlockEntity extends BlockEntity
     private TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
     private TargetParameters infectableTargetParameters = new TargetParameters().enableTargetPassives();
 
+    private VibrationListener listener = new VibrationListener(new BlockPositionSource(this.worldPosition), 8, this);
+
     /**
      * The Constructor that takes in properties
      */
@@ -78,6 +92,7 @@ public class SculkSummonerBlockEntity extends BlockEntity
     {
         return (TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfAlert, TimeUnit.NANOSECONDS) <= alertPeriodSeconds);
     }
+
 
     /**
      * Check if all entries are alive
@@ -238,5 +253,49 @@ public class SculkSummonerBlockEntity extends BlockEntity
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
             worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 
+    }
+
+    // Save & Load Code
+
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
+
+        if (nbt.contains("listener", 10))
+        {
+            VibrationListener.codec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222864_) -> {
+                this.listener = p_222864_;
+            });
+        }
+
+    }
+
+    protected void saveAdditional(CompoundTag nbt)
+    {
+        super.saveAdditional(nbt);
+        VibrationListener.codec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+            nbt.put("listener", p_222871_);
+        });
+    }
+
+    // Vibration Code
+
+    public TagKey<GameEvent> getListenableEvents() {
+        return GameEventTags.SHRIEKER_CAN_LISTEN;
+    }
+
+    public void onSignalReceive(ServerLevel level, GameEventListener gameEventListener, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float strenth) {
+        this.spawnReinforcementsTick(level, blockPos, getBlockState(), this);
+    }
+    
+    public VibrationListener getListener() {
+        return this.listener;
+    }
+
+    public boolean shouldListen(ServerLevel p_222856_, GameEventListener p_222857_, BlockPos p_222858_, GameEvent p_222859_, GameEvent.Context p_222860_) {
+        return true;
+    }
+
+    public void onSignalSchedule() {
+        this.setChanged();
     }
 }

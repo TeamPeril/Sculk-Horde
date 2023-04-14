@@ -2,9 +2,9 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
@@ -13,7 +13,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -111,7 +110,7 @@ public class EntityAlgorithms {
 
     /**
      * Gets all living entities in the given bounding box.
-     * @param serverWorld The given world
+     * @param serverLevel The given world
      * @param boundingBox The given bounding box to search for a target
      * @return A list of valid targets
      */

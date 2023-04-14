@@ -215,4 +215,8 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
             return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
         }
     }
+
+    public boolean dampensVibrations() {
+        return true;
+    }
 }

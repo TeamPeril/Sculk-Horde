@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
@@ -250,6 +251,20 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
+    }
+
+    public boolean dampensVibrations() {
+        return true;
+    }
+
+
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
     }
 
 }

@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.attack.AcidAttack;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
@@ -204,5 +205,19 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
         this.playSound(SoundEvents.SKELETON_STEP, 0.15F, 1.0F);
+    }
+
+    public boolean dampensVibrations() {
+        return true;
+    }
+
+
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
     }
 }

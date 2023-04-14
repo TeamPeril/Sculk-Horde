@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Monster;
@@ -320,5 +321,19 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 }
             }
         }
+    }
+
+    public boolean dampensVibrations() {
+        return true;
+    }
+
+
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
     }
 }

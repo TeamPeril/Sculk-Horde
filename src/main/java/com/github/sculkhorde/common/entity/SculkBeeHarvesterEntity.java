@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -144,7 +145,17 @@ public class SculkBeeHarvesterEntity extends Bee implements GeoEntity, FlyingAni
     @Override
     public void checkDespawn() {}
 
+    public boolean dampensVibrations() {
+        return true;
+    }
 
-    /**----------CLASSES----------**/
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
+    }
 
 }

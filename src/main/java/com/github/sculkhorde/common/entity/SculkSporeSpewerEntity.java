@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.Entity;
@@ -281,5 +282,19 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 entity.remove(Entity.RemovalReason.DISCARDED);
             }
         }
+    }
+
+    public boolean dampensVibrations() {
+        return true;
+    }
+
+
+    /**
+     * If a sculk living entity despawns, refund it's current health to the sculk hoard
+     */
+    @Override
+    public void onRemovedFromWorld() {
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        super.onRemovedFromWorld();
     }
 }

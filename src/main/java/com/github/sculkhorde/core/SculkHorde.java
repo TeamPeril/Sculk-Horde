@@ -33,7 +33,7 @@ public class SculkHorde {
     public static Gravemind gravemind;
     public static InfestationConversionHandler infestationConversionTable;
     public static PoolBlocks randomSculkFlora;
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
     public SculkHorde()
