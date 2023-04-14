@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-public class SculkMassTile extends BlockEntity {
+public class SculkMassBlockEntity extends BlockEntity {
 
     /**
      * storedSculkMass is the value of sculk mass was this block has.
@@ -26,7 +26,7 @@ public class SculkMassTile extends BlockEntity {
     /**
      * The Constructor that takes in properties
      */
-    public SculkMassTile(BlockPos pos, BlockState state) {
+    public SculkMassBlockEntity(BlockPos pos, BlockState state) {
         super(TileEntityRegistry.SCULK_MASS_TILE.get(), pos, state);
     }
 
@@ -67,7 +67,7 @@ public class SculkMassTile extends BlockEntity {
         storedSculkMass += value;
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassTile blockEntity)
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassBlockEntity blockEntity)
     {
         // If world is not a server world, return
         if(level.isClientSide)
@@ -81,7 +81,7 @@ public class SculkMassTile extends BlockEntity {
         }
 
         // If the tile entity at this location is not a sculk mass tile, return
-        if(!(blockEntity instanceof SculkMassTile))
+        if(!(blockEntity instanceof SculkMassBlockEntity))
         {
             return;
         }

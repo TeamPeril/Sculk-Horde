@@ -12,13 +12,13 @@ public class TileEntityRegistry {
     public static DeferredRegister<BlockEntityType<?>> TILE_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, SculkHorde.MOD_ID);
 
-    public static RegistryObject<BlockEntityType<SculkMassTile>> SCULK_MASS_TILE =
+    public static RegistryObject<BlockEntityType<SculkMassBlockEntity>> SCULK_MASS_TILE =
             TILE_ENTITIES.register("sculk_mass_tile", () -> BlockEntityType.Builder.of(
-                    SculkMassTile::new, BlockRegistry.SCULK_MASS.get()).build(null));
+                    SculkMassBlockEntity::new, BlockRegistry.SCULK_MASS.get()).build(null));
 
-    public static RegistryObject<BlockEntityType<SculkNodeTile>> SCULK_BRAIN_TILE =
-            TILE_ENTITIES.register("sculk_brain_tile", () -> BlockEntityType.Builder.of(
-                    SculkNodeTile::new, BlockRegistry.SCULK_NODE_BLOCK.get()).build(null));
+    public static RegistryObject<BlockEntityType<SculkNodeBlockEntity>> SCULK_NODE_BLOCK_ENTITY =
+            TILE_ENTITIES.register("sculk_node_block_entity", () -> BlockEntityType.Builder.of(
+                    SculkNodeBlockEntity::new, BlockRegistry.SCULK_NODE_BLOCK.get()).build(null));
 
     public static RegistryObject<BlockEntityType<SculkBeeNestTile>> SCULK_BEE_NEST_TILE =
             TILE_ENTITIES.register("sculk_bee_nest_tile", () -> BlockEntityType.Builder.of(

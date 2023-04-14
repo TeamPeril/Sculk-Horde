@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.procedural.structures;
 
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.BlockPos;
@@ -41,9 +42,9 @@ public class PlannedBlock
                 SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
                 || validBlocksPredicate.canBeReplaced(Fluids.WATER)
                 || SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(validBlocksPredicate)
-                || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F)
-        //TODO PORT
-                //|| validBlocksPredicate.getBlock().isAir(validBlocksPredicate, world, targetPos))
+                || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F
+                || validBlocksPredicate.getBlock().equals(Blocks.AIR)
+                || validBlocksPredicate.getBlock().equals(Blocks.CAVE_AIR))
 
         {
             return true;

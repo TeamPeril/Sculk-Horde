@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.common.blockentity.SculkNodeTile;
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 public class SculkNodeInfectionHandler {
 
     // The parent tile entity
-    private SculkNodeTile parent = null;
+    private SculkNodeBlockEntity parent = null;
     private ServerLevel world = null;
     private BlockPos origin = null;
 
@@ -21,7 +21,7 @@ public class SculkNodeInfectionHandler {
     private InfectionTree downInfectionTree;
 
 
-    public SculkNodeInfectionHandler(SculkNodeTile parent) {
+    public SculkNodeInfectionHandler(SculkNodeBlockEntity parent) {
         this.parent = parent;
         this.world = (ServerLevel) parent.getLevel();
         this.origin = parent.getBlockPos();

@@ -153,7 +153,6 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
         }
     }
 
-
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {

@@ -1,14 +1,12 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.common.blockentity.SculkMassTile;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
@@ -26,7 +24,6 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
 
     /**
@@ -111,7 +108,7 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
         BlockPos placementPos = originPos.above();
         int MAX_ATTEMPTS = 64;
         int attempts = 0;
-        SculkMassTile thisTile;
+        SculkMassBlockEntity thisTile;
 
         //Try and find solid ground to place this block on
         while(world.getBlockState(placementPos.below()).canBeReplaced(Fluids.WATER) && attempts <= MAX_ATTEMPTS)
@@ -159,13 +156,13 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
      * @param thisBlockPos The position to check
      * @return The tile entity
      */
-    public SculkMassTile getTileEntity(Level world, BlockPos thisBlockPos)
+    public SculkMassBlockEntity getTileEntity(Level world, BlockPos thisBlockPos)
     {
         //Get tile entity for this block
-        SculkMassTile thisTile = null;
+        SculkMassBlockEntity thisTile = null;
         try
         {
-            thisTile = (SculkMassTile) world.getBlockEntity(thisBlockPos);
+            thisTile = (SculkMassBlockEntity) world.getBlockEntity(thisBlockPos);
         }
         catch (Exception e)
         {
@@ -212,14 +209,14 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, TileEntityRegistry.SCULK_MASS_TILE.get(), SculkMassTile::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, TileEntityRegistry.SCULK_MASS_TILE.get(), SculkMassBlockEntity::tick);
     }
 
 
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
-        return new SculkMassTile(blockPos, state);
+        return new SculkMassBlockEntity(blockPos, state);
     }
 
     @Override

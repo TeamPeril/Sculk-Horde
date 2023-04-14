@@ -4,6 +4,9 @@ import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkNodeTile extends BlockEntity
+public class SculkNodeBlockEntity extends BlockEntity
 {
 
     private final int CHUNK_LOAD_RADIUS = 15;
@@ -33,9 +36,12 @@ public class SculkNodeTile extends BlockEntity
 
     private SculkNodeInfectionHandler infectionHandler;
 
-    public SculkNodeTile(BlockPos blockPos, BlockState blockState) {
-        super(TileEntityRegistry.SCULK_BRAIN_TILE.get(), blockPos, blockState);
+    public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
+        super(TileEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
+
+    private long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
+    private long lastHeartBeat = System.currentTimeMillis();
 
 
     /** Accessors **/
@@ -45,53 +51,58 @@ public class SculkNodeTile extends BlockEntity
 
 
     /** Events **/
-    public void tick()
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
-        if(this.level != null && !this.level.isClientSide)
+        if(level.isClientSide)
         {
-            long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - tickedAt, TimeUnit.NANOSECONDS);
+            if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
+            {
+                blockEntity.lastHeartBeat = System.currentTimeMillis();
+                level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);
+            }
+            return;
+        }
+            long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
             // If the time elapsed is less than the tick interval, return
             if(timeElapsed < tickIntervalSeconds) { return; }
 
             // Update the tickedAt time
-            tickedAt = System.nanoTime();
+            blockEntity.tickedAt = System.nanoTime();
 
             /** Building Shell Process **/
-            long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+            long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
 
             //If the structure has not been initialized yet, do it
-            if(nodeProceduralStructure == null)
+            if(blockEntity.nodeProceduralStructure == null)
             {
                 //Create Structure
-                nodeProceduralStructure = new SculkNodeProceduralStructure((ServerLevel) this.level, this.getBlockPos());
-                nodeProceduralStructure.generatePlan();
+                blockEntity.nodeProceduralStructure = new SculkNodeProceduralStructure((ServerLevel) level, blockPos);
+                blockEntity.nodeProceduralStructure.generatePlan();
             }
 
             //If currently building, call build tick.
-            if(nodeProceduralStructure.isCurrentlyBuilding())
+            if(blockEntity.nodeProceduralStructure.isCurrentlyBuilding())
             {
-                nodeProceduralStructure.buildTick();
-                lastTimeSinceRepair = System.nanoTime();
+                blockEntity.nodeProceduralStructure.buildTick();
+                blockEntity.lastTimeSinceRepair = System.nanoTime();
             }
             //If enough time has passed, or we havent built yet, and we can build, start build
-            else if((repairTimeElapsed >= repairIntervalInMinutes || lastTimeSinceRepair == -1) && nodeProceduralStructure.canStartToBuild())
+            else if((repairTimeElapsed >= blockEntity.repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1) && blockEntity.nodeProceduralStructure.canStartToBuild())
             {
-                nodeProceduralStructure.startBuildProcedure();
+                blockEntity.nodeProceduralStructure.startBuildProcedure();
             }
 
 
             /** Infection Routine **/
-            if(infectionHandler == null)
+            if(blockEntity.infectionHandler == null)
             {
-                infectionHandler = new SculkNodeInfectionHandler(this);
+                blockEntity.infectionHandler = new SculkNodeInfectionHandler(blockEntity);
             }
             else
             {
-                infectionHandler.tick();
+                blockEntity.infectionHandler.tick();
             }
-
-        }
     }
 
 

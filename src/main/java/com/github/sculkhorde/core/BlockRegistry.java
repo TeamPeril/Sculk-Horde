@@ -110,7 +110,7 @@ public class BlockRegistry {
 			registerBlock("vein", () -> new VeinBlock());
 
 	public static final RegistryObject<SculkNodeBlock> SCULK_NODE_BLOCK =
-			registerBlock("sculk_brain", () -> new SculkNodeBlock());
+			registerBlock("sculk_node", () -> new SculkNodeBlock());
 
 	public static final RegistryObject<SculkBeeNestBlock> SCULK_BEE_NEST_BLOCK =
 			registerBlock("sculk_bee_nest", () -> new SculkBeeNestBlock());
