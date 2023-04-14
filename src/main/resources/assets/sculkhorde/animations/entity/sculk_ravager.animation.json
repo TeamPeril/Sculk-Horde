@@ -1,73 +1,85 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.ravager.tumors_idle": {
+		"misc.idle": {
 			"loop": true,
-			"animation_length": 9.96,
 			"bones": {
-				"tumor_head_top": {
-					"scale": {
-						"0.0": {
-							"vector": [1, 1, 1]
-						},
-						"5.0": {
-							"vector": [0.8, 0.8, 0.8],
-							"easing": "easeInOutSine"
-						},
-						"9.96": {
-							"vector": [1, 1, 1],
-							"easing": "easeInOutSine"
-						}
+				"mouth": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 150 +25) * 1", 0, 0]
 					}
 				},
-				"tumor_head_front": {
-					"scale": {
-						"0.0": {
-							"vector": [1, 1, 1]
-						},
-						"5.0": {
-							"vector": [0.8, 0.8, 0.8],
-							"easing": "easeInOutSine"
-						},
-						"9.96": {
-							"vector": [1, 1, 1],
-							"easing": "easeInOutSine"
-						}
+				"body": {
+					"position": {
+						"vector": [0, "Math.cos(query.anim_time * 100) * 0.5 -0.5 ", 0]
 					}
 				},
-				"tumor_body_east": {
-					"scale": {
-						"0.0": {
-							"vector": [1, 1, 1]
-						},
-						"5.0": {
-							"vector": [0.8, 0.8, 0.8],
-							"easing": "easeInOutSine"
-						},
-						"9.96": {
-							"vector": [1, 1, 1],
-							"easing": "easeInOutSine"
-						}
+				"head": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 100 -50) * -5", 0, 0]
+					},
+					"position": {
+						"vector": [0, "Math.cos(query.anim_time * 100) * 0.5 -0.5 ", 0]
+					}
+				},
+				"leg0": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 150 +25) * 1", 0, 0]
+					}
+				},
+				"leg1": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 150 +25) * -1", 0, 0]
+					}
+				},
+				"leg2": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 150 +25) * -1", 0, 0]
+					}
+				},
+				"leg3": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 150 +25) * 1", 0, 0]
 					}
 				}
 			}
 		},
-		"misc.idle": {
-			"animation_length": 2,
+		"move.walk": {
+			"loop": true,
 			"bones": {
 				"mouth": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"1.0": {
-							"vector": [20, 0, 0],
-							"easing": "easeInOutBack"
-						},
-						"2.0": {
-							"vector": [0, 0, 0],
-							"easing": "easeInBack"
-						}
+						"vector": ["Math.cos(query.anim_time * 400 -50) * -10", 0, 0]
+					}
+				},
+				"body": {
+					"position": {
+						"vector": [0, "Math.cos(query.anim_time * 100) * 0.5 -0.5 ", 0]
+					}
+				},
+				"head": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 400 -50) * -5", 0, 0]
+					}
+				},
+				"leg0": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 400 + 25) * 15", 0, 0]
+					}
+				},
+				"leg1": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 400 + 25) * -15", 0, 0]
+					}
+				},
+				"leg2": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 400 + 25) * -15", 0, 0]
+					}
+				},
+				"leg3": {
+					"rotation": {
+						"vector": ["Math.cos(query.anim_time * 400 + 25) * 15", 0, 0]
 					}
 				}
 			}
