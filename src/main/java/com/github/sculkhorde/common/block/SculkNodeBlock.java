@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.TileEntityRegistry;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -194,7 +194,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, TileEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), SculkNodeBlockEntity::tick);
+        return createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), SculkNodeBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable

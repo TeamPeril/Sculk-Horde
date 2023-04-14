@@ -7,13 +7,13 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class TileEntityRegistry {
+public class BlockEntityRegistry {
 
     public static DeferredRegister<BlockEntityType<?>> TILE_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, SculkHorde.MOD_ID);
 
-    public static RegistryObject<BlockEntityType<SculkMassBlockEntity>> SCULK_MASS_TILE =
-            TILE_ENTITIES.register("sculk_mass_tile", () -> BlockEntityType.Builder.of(
+    public static RegistryObject<BlockEntityType<SculkMassBlockEntity>> SCULK_MASS_BLOCK_ENTITY =
+            TILE_ENTITIES.register("sculk_mass_block_entity", () -> BlockEntityType.Builder.of(
                     SculkMassBlockEntity::new, BlockRegistry.SCULK_MASS.get()).build(null));
 
     public static RegistryObject<BlockEntityType<SculkNodeBlockEntity>> SCULK_NODE_BLOCK_ENTITY =
@@ -24,9 +24,9 @@ public class TileEntityRegistry {
             TILE_ENTITIES.register("sculk_bee_nest_tile", () -> BlockEntityType.Builder.of(
                     SculkBeeNestTile::new, BlockRegistry.SCULK_BEE_NEST_BLOCK.get()).build(null));
 
-    public static RegistryObject<BlockEntityType<SculkBeeNestCellTile>> SCULK_BEE_NEST_CELL_TILE =
+    public static RegistryObject<BlockEntityType<SculkBeeNestCellBlockEntity>> SCULK_BEE_NEST_CELL_TILE =
             TILE_ENTITIES.register("sculk_bee_nest_cell_tile", () -> BlockEntityType.Builder.of(
-                    SculkBeeNestCellTile::new, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get()).build(null));
+                    SculkBeeNestCellBlockEntity::new, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get()).build(null));
 
     public static RegistryObject<BlockEntityType<SculkSummonerBlockEntity>> SCULK_SUMMONER_TILE =
             TILE_ENTITIES.register("sculk_summoner_tile", () -> BlockEntityType.Builder.of(

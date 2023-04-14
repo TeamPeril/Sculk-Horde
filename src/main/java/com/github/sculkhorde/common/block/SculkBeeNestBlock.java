@@ -1,7 +1,13 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.SculkBeeNestTile;
+import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
@@ -33,9 +39,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SculkBeeNestBlock extends BeehiveBlock {
 
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
-    public static final IntegerProperty HONEY_LEVEL = IntegerProperty.create("honey_level", 0, 5);
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
      * MAP_COLOR is the color that will show up on a map to represent this block
@@ -82,7 +86,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(HONEY_LEVEL, 0)
-                .setValue(CLOSED, true));
+                .setValue(CLOSED, false));
     }
 
     /**
@@ -145,7 +149,7 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         return this.defaultBlockState()
                 .setValue(FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(HONEY_LEVEL, 0)
-                .setValue(CLOSED, true);
+                .setValue(CLOSED, false);
 
     }
 
@@ -189,4 +193,18 @@ public class SculkBeeNestBlock extends BeehiveBlock {
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.literal("tooltip.sculkhorde.sculk_bee_nest")); //Text that displays if holding shift
     }
+
+    // Block Entity Related
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_BEE_NEST_TILE.get(), SculkBeeNestTile::serverTick);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new SculkSummonerBlockEntity(blockPos, state);
+    }
+
 }

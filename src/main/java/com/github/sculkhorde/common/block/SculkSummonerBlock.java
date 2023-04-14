@@ -1,16 +1,14 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
-import com.github.sculkhorde.core.TileEntityRegistry;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.gameevent.GameEventListener;
@@ -138,12 +136,6 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     }
 
-
-    @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, TileEntityRegistry.SCULK_SUMMONER_TILE.get(), SculkSummonerBlockEntity::spawnReinforcementsTick);
-    }
-
     @Nullable
     public <T extends BlockEntity> GameEventListener getListener(ServerLevel p_222165_, T p_222166_) {
         if (p_222166_ instanceof SculkSummonerBlockEntity blockEntity) {
@@ -151,6 +143,13 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
         } else {
             return null;
         }
+    }
+
+    // Block Entity Related
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_TILE.get(), SculkSummonerBlockEntity::spawnReinforcementsTick);
     }
 
     @org.jetbrains.annotations.Nullable

@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
-import com.github.sculkhorde.core.TileEntityRegistry;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
@@ -29,7 +29,7 @@ public class DevStructureTesterTile extends BlockEntity
      */
     public DevStructureTesterTile(BlockPos blockPos, BlockState blockState)
     {
-        super(TileEntityRegistry.DEV_STRUCTURE_TESTER_TILE.get(), blockPos, blockState);
+        super(BlockEntityRegistry.DEV_STRUCTURE_TESTER_TILE.get(), blockPos, blockState);
     }
 
     /** Accessors **/

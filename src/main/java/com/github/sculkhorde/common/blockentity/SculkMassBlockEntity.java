@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.core.BlockPos;
@@ -27,7 +27,7 @@ public class SculkMassBlockEntity extends BlockEntity {
      * The Constructor that takes in properties
      */
     public SculkMassBlockEntity(BlockPos pos, BlockState state) {
-        super(TileEntityRegistry.SCULK_MASS_TILE.get(), pos, state);
+        super(BlockEntityRegistry.SCULK_MASS_BLOCK_ENTITY.get(), pos, state);
     }
 
     /**

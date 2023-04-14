@@ -2,8 +2,8 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
@@ -37,7 +37,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     private SculkNodeInfectionHandler infectionHandler;
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(TileEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
+        super(BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     private long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);

@@ -6,8 +6,6 @@ import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.mojang.logging.LogUtils;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -42,7 +40,7 @@ public class SculkHorde {
         bus.register(this);
         GeckoLib.initialize();
         ItemRegistry.ITEMS.register(bus); //Load Items
-        TileEntityRegistry.register(bus); //Load Tile Entities
+        BlockEntityRegistry.register(bus); //Load Tile Entities
         BlockRegistry.BLOCKS.register(bus); //Load Blocks
         EntityRegistry.register(bus); //Load Entities (this may not be necessary anymore)
         bus.register(EntityRegistry.class); //Load Entities

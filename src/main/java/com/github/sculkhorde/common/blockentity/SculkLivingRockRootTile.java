@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.procedural.structures.SculkLivingRockProceduralStructure;
-import com.github.sculkhorde.core.TileEntityRegistry;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +29,7 @@ public class SculkLivingRockRootTile extends BlockEntity
      */
     public SculkLivingRockRootTile(BlockPos blockPos, BlockState blockState)
     {
-        super(TileEntityRegistry.SCULK_LIVING_ROCK_ROOT_TILE.get(), blockPos, blockState);
+        super(BlockEntityRegistry.SCULK_LIVING_ROCK_ROOT_TILE.get(), blockPos, blockState);
     }
 
     /** Accessors **/

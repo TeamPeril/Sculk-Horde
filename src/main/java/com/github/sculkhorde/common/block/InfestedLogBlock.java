@@ -80,7 +80,7 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
     {
         return Properties.of(MATERIAL, MAP_COLOR)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .sound(SoundType.GRASS);
+                .sound(SoundType.WOOD);
     }
 
 

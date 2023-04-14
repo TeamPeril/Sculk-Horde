@@ -1,16 +1,14 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ItemRegistry;
-import com.github.sculkhorde.core.ParticleRegistry;
-import com.github.sculkhorde.core.TileEntityRegistry;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +16,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
@@ -32,8 +29,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -43,7 +38,7 @@ import net.minecraft.world.InteractionResult;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
+public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -218,39 +213,18 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
                     p_226874_1_.broadcastBreakEvent(pHand);
                 });
                 resetMature(pLevel, pState, pPos);
+
+                return InteractionResult.sidedSuccess(pLevel.isClientSide);
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+        return InteractionResult.FAIL;
     }
 
     public static void dropResin(Level pLevel, BlockPos pPos) {
         popResource(pLevel, pPos, new ItemStack(ItemRegistry.SCULK_RESIN.get(), 1));
     }
 
-    /**
-     * Called periodically clientside on blocks near the player to show effects (like furnace fire particles). Note that
-     * this method is unrelated to {@see randomTick} and {@see #needsRandomTick}, and will always be called regardless
-     * of whether the block can receive random update ticks
-     */
-    @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pPos, RandomSource randIn) {
-        BlockPos blockpos = pPos.above();
-        if (worldIn.getBlockState(blockpos).isAir() && !worldIn.getBlockState(blockpos).isSolidRender(worldIn, blockpos)) {
-            if (randIn.nextInt(50) == 0) {
-                double d0 = (double)pPos.getX() + randIn.nextDouble();
-                double d1 = (double)pPos.getY() + 1.0D;
-                double d2 = (double)pPos.getZ() + randIn.nextDouble();
-                //worldIn.addParticle(ParticleTypes.LAVA, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                worldIn.playLocalSound(d0, d1, d2, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
-            }
-
-            if (randIn.nextInt(100) == 0) {
-                worldIn.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.LAVA_AMBIENT, SoundSource.BLOCKS, 0.2F + randIn.nextFloat() * 0.2F, 0.9F + randIn.nextFloat() * 0.15F, false);
-            }
-        }
-    }
-
+    /** TOOLTIPS **/
     /**
      * This is the description the item of the block will display when hovered over.
      * @param stack The item stack
@@ -264,5 +238,14 @@ public class SculkBeeNestCellBlock extends Block implements IForgeBlock {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.literal("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
+    }
+
+    // Block Entity Related
+
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new SculkBeeNestCellBlockEntity(blockPos, state);
     }
 }
