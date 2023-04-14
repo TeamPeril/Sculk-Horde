@@ -238,7 +238,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.literal("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
     }
 
     // Block Entity Related

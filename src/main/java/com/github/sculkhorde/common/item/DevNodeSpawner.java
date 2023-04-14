@@ -69,7 +69,7 @@ public class DevNodeSpawner extends Item implements IForgeItem {
 	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
 		super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-		tooltip.add(Component.literal("tooltip.sculkhorde.dev_node_spawner")); //Text that displays if not holding shift
+		tooltip.add(Component.translatable("tooltip.sculkhorde.dev_node_spawner")); //Text that displays if not holding shift
 
 	}
 }

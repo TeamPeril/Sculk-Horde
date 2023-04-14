@@ -111,7 +111,7 @@ public class InfestedStoneBlock extends CrustBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.literal("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.infested_stone")); //Text that displays if holding shift
 
     }
 }

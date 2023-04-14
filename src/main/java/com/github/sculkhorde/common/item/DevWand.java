@@ -70,9 +70,9 @@ public class DevWand extends Item implements IForgeItem {
 		
 		//If User presses left shift, else
 		if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{
-			tooltip.add(Component.literal("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
+			tooltip.add(Component.translatable("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
 		} else {
-			tooltip.add(Component.literal("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
+			tooltip.add(Component.translatable("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
 		}
 	}
 

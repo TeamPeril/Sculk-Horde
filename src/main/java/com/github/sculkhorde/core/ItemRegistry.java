@@ -36,7 +36,7 @@ public class ItemRegistry {
 			{
 				@Override
 				public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-					tooltip.add(Component.literal("tooltip.sculkhorde.sculk_acidic_projectile"));
+					tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_acidic_projectile"));
 				}
 			});
 
@@ -47,7 +47,7 @@ public class ItemRegistry {
 			() -> new Item(new Item.Properties()){
 				@Override
 				public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-					tooltip.add(Component.literal("tooltip.sculkhorde.calcite_clump"));
+					tooltip.add(Component.translatable("tooltip.sculkhorde.calcite_clump"));
 				}
 			});
 

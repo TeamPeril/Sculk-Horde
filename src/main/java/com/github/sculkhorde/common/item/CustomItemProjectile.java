@@ -93,7 +93,7 @@ public class CustomItemProjectile extends Item implements IForgeItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
-        tooltip.add(Component.literal("tooltip.sculkhorde.custom_item_projectile")); //Text that displays if not holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.custom_item_projectile")); //Text that displays if not holding shift
 
     }
 }

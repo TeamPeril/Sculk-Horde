@@ -1,8 +1,114 @@
 {
-  "parent": "block/cross",
-  "ambientocclusion": false,
-  "render_type": "minecraft:cutout",
-  "textures": {
-    "cross": "sculkhorde:block/small_shroom"
-  }
+	"credit": "Made with Blockbench",
+	"texture_size": [48, 48],
+	"render_type": "minecraft:cutout",
+	"textures": {
+		"1": "sculkhorde:block/small_shroom",
+		"particle": "sculkhorde:block/small_shroom"
+	},
+	"elements": [
+		{
+			"name": "stem",
+			"from": [7, 0, 7],
+			"to": [9, 5, 9],
+			"faces": {
+				"north": {"uv": [0.66667, 0.66667, 1.33333, 2.33333], "texture": "#1"},
+				"east": {"uv": [0, 0.66667, 0.66667, 2.33333], "texture": "#1"},
+				"south": {"uv": [2, 0.66667, 2.66667, 2.33333], "texture": "#1"},
+				"west": {"uv": [1.33333, 0.66667, 2, 2.33333], "texture": "#1"},
+				"up": {"uv": [1.33333, 0.66667, 0.66667, 0], "texture": "#1"},
+				"down": {"uv": [2, 0, 1.33333, 0.66667], "texture": "#1"}
+			}
+		},
+		{
+			"name": "head",
+			"from": [3, 5, 3],
+			"to": [13, 7, 13],
+			"faces": {
+				"north": {"uv": [3.33333, 3.33333, 6.66667, 4], "texture": "#1"},
+				"east": {"uv": [0, 3.33333, 3.33333, 4], "texture": "#1"},
+				"south": {"uv": [10, 3.33333, 13.33333, 4], "texture": "#1"},
+				"west": {"uv": [6.66667, 3.33333, 10, 4], "texture": "#1"},
+				"up": {"uv": [6.66667, 3.33333, 3.33333, 0], "texture": "#1"},
+				"down": {"uv": [10, 0, 6.66667, 3.33333], "texture": "#1"}
+			}
+		},
+		{
+			"name": "west_flap",
+			"from": [3, 0, 3],
+			"to": [3, 5, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2.5, 8]},
+			"faces": {
+				"north": {"uv": [3.33333, 9.33333, 3.33333, 11], "texture": "#1"},
+				"east": {"uv": [3.33333, 9.33333, 0, 11], "texture": "#1"},
+				"south": {"uv": [6.66667, 9.33333, 6.66667, 11], "texture": "#1"},
+				"west": {"uv": [3.33333, 9.33333, 0, 11], "texture": "#1"},
+				"up": {"uv": [3.33333, 9.33333, 3.33333, 6], "texture": "#1"},
+				"down": {"uv": [3.33333, 6, 3.33333, 9.33333], "texture": "#1"}
+			}
+		},
+		{
+			"name": "south_flap",
+			"from": [3, 0, 13],
+			"to": [13, 5, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2.5, 13]},
+			"faces": {
+				"north": {"uv": [3.33333, 7.66667, 0, 9.33333], "texture": "#1"},
+				"east": {"uv": [3.33333, 7.66667, 3.33333, 9.33333], "texture": "#1"},
+				"south": {"uv": [3.33333, 7.66667, 0, 9.33333], "texture": "#1"},
+				"west": {"uv": [0, 7.66667, 0, 9.33333], "texture": "#1"},
+				"up": {"uv": [0, 7.66667, 3.33333, 7.66667], "texture": "#1"},
+				"down": {"uv": [3.33333, 7.66667, 6.66667, 7.66667], "texture": "#1"}
+			}
+		},
+		{
+			"name": "east_flap",
+			"from": [13, 0, 3],
+			"to": [13, 5, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2.5, 8]},
+			"faces": {
+				"north": {"uv": [3.33333, 6, 3.33333, 7.66667], "texture": "#1"},
+				"east": {"uv": [0, 6, 3.33333, 7.66667], "texture": "#1"},
+				"south": {"uv": [6.66667, 6, 6.66667, 7.66667], "texture": "#1"},
+				"west": {"uv": [0, 6, 3.33333, 7.66667], "texture": "#1"},
+				"up": {"uv": [3.33333, 6, 3.33333, 2.66667], "texture": "#1"},
+				"down": {"uv": [3.33333, 2.66667, 3.33333, 6], "texture": "#1"}
+			}
+		},
+		{
+			"name": "north_flap",
+			"from": [3, 0, 3],
+			"to": [13, 5, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 2.5, 8]},
+			"faces": {
+				"north": {"uv": [0, 4.33333, 3.33333, 6], "texture": "#1"},
+				"east": {"uv": [0, 4.33333, 0, 6], "texture": "#1"},
+				"south": {"uv": [0, 4.33333, 3.33333, 6], "texture": "#1"},
+				"west": {"uv": [3.33333, 4.33333, 3.33333, 6], "texture": "#1"},
+				"up": {"uv": [3.33333, 4.33333, 0, 4.33333], "texture": "#1"},
+				"down": {"uv": [6.66667, 4.33333, 3.33333, 4.33333], "texture": "#1"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"translation": [0, 6.75, 0]
+		},
+		"firstperson_lefthand": {
+			"translation": [0, 7, 0]
+		}
+	},
+	"groups": [
+		{
+			"name": "block",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2, 3, 4, 5]
+		}
+	]
 }

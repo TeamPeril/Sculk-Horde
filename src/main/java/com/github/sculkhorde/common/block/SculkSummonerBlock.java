@@ -132,7 +132,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.literal("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
 
     }
 
