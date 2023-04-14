@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "sculk_summoner",
+	"parent": "block/block",
 	"ambientocclusion": false,
 	"render_type": "minecraft:cutout",
 	"texture_size": [64, 64],

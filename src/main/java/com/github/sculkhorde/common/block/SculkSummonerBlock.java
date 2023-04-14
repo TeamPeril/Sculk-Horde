@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.Block;
@@ -143,5 +144,10 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
         return new SculkSummonerBlockEntity(blockPos, state);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.MODEL;
     }
 }

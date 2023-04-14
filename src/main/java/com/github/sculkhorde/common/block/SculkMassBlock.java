@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.common.blockentity.SculkMassTile;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -221,4 +222,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
         return new SculkMassTile(blockPos, state);
     }
 
+    @Override
+    public RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.MODEL;
+    }
 }
