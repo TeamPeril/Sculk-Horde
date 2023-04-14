@@ -1,16 +1,14 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.tileentity.SculkNodeTile;
+import com.github.sculkhorde.common.blockentity.SculkNodeTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
@@ -31,7 +29,6 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 
 /**

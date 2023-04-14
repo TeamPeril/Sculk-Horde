@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -61,30 +62,6 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
                 .add(Attributes.FLYING_SPEED, 1.5F);
     }
 
-
-
-    /**
-     * Registers Goals with the entity. The goals determine how an AI behaves ingame.
-     * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
-     * You can manually add in goals in this function, however, I made an automatic system for this.
-     */
-    @Override
-    public void registerGoals() {
-
-        Goal[] goalSelectorPayload = goalSelectorPayload();
-        for(int priority = 0; priority < goalSelectorPayload.length; priority++)
-        {
-            this.goalSelector.addGoal(priority, goalSelectorPayload[priority]);
-        }
-
-        Goal[] targetSelectorPayload = targetSelectorPayload();
-        for(int priority = 0; priority < targetSelectorPayload.length; priority++)
-        {
-            this.targetSelector.addGoal(priority, targetSelectorPayload[priority]);
-        }
-
-    }
-
     /**
      * Prepares an array of goals to give to registerGoals() for the goalSelector.<br>
      * The purpose was to make registering goals simpler by automatically determining priority
@@ -125,6 +102,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericFlyController(this));
     }
 
     @Override

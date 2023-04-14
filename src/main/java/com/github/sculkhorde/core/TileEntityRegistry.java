@@ -1,6 +1,6 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.tileentity.*;
+import com.github.sculkhorde.common.blockentity.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -28,9 +28,9 @@ public class TileEntityRegistry {
             TILE_ENTITIES.register("sculk_bee_nest_cell_tile", () -> BlockEntityType.Builder.of(
                     SculkBeeNestCellTile::new, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get()).build(null));
 
-    public static RegistryObject<BlockEntityType<SculkSummonerTile>> SCULK_SUMMONER_TILE =
+    public static RegistryObject<BlockEntityType<SculkSummonerBlockEntity>> SCULK_SUMMONER_TILE =
             TILE_ENTITIES.register("sculk_summoner_tile", () -> BlockEntityType.Builder.of(
-                    SculkSummonerTile::new, BlockRegistry.SCULK_SUMMONER_BLOCK.get()).build(null));
+                    SculkSummonerBlockEntity::new, BlockRegistry.SCULK_SUMMONER_BLOCK.get()).build(null));
 
     public static RegistryObject<BlockEntityType<SculkLivingRockRootTile>> SCULK_LIVING_ROCK_ROOT_TILE =
             TILE_ENTITIES.register("sculk_living_rock_root_tile", () -> BlockEntityType.Builder.of(

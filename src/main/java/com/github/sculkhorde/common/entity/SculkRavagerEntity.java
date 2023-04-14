@@ -169,8 +169,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
      */
     @Override
     public void onRemovedFromWorld() {
-        //TODO PORT
-        //SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
 
@@ -179,8 +178,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
-        controllers.add(DefaultAnimations.genericAttackAnimation(this, DefaultAnimations.ATTACK_STRIKE));
+        controllers.add(DefaultAnimations.genericIdleController(this));
     }
 
     @Override

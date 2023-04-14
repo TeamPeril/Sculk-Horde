@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.sculk_spitter.idle": {
+		"misc.idle": {
 			"loop": true,
 			"animation_length": 4.16,
 			"bones": {
@@ -78,7 +78,7 @@
 				}
 			}
 		},
-		"animation.sculk_spitter.walk": {
+		"move.walk": {
 			"loop": true,
 			"animation_length": 1.28,
 			"bones": {

@@ -1,20 +1,19 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.common.tileentity.SculkMassTile;
+import com.github.sculkhorde.common.blockentity.SculkMassTile;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -25,10 +24,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
+public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -69,7 +67,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public static int HARVEST_LEVEL = -1;
     public static final float SCULK_HOARD_MASS_TAX = (float) (1.0 / 3.0);
     public static double HEALTH_ABSORB_MULTIPLIER = 3;
-    public static int infestedChildBlockMaxSpreadAttempts = 10;
 
     /**
      * The Constructor that takes in properties
@@ -108,10 +105,8 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param originPos The position to spawn the mob
      * @param victimHealth How much health the victim has.
      */
-    //@OnlyIn(Dist.DEDICATED_SERVER)
     public void spawn(Level world, BlockPos originPos, float victimHealth)
     {
-        boolean DEBUG_THIS = false;
         BlockPos placementPos = originPos.above();
         int MAX_ATTEMPTS = 64;
         int attempts = 0;
@@ -135,32 +130,11 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
                 //Calcualate the total mass collected
                 int totalMassPreTax = (int) (victimHealth * HEALTH_ABSORB_MULTIPLIER);
                 int totalMassTax = (int) (totalMassPreTax * SCULK_HOARD_MASS_TAX);
-                int totalMassAfterTax = totalMassPreTax - totalMassTax;
+                int totalRemainingMass = totalMassPreTax - totalMassTax;
+                thisTile.setStoredSculkMass(totalRemainingMass);
 
                 //Pay Mass Tax to the Sculk Hoard
-                // SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(totalMassTax);
-                // TODO PORT
-                if(DEBUG_MODE && DEBUG_THIS && false)
-                {
-                    System.out.println(
-                            "\n" + "totalMassPreTax: " + totalMassPreTax + "\n"
-                            + "totalMassTax: " + totalMassTax + "\n"
-                            + "totalMassAfterTax: " + totalMassAfterTax + "\n"
-                            + "Global Sculk Mass: " + SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass()
-                    );
-                }
-
-                //Keep track in this tile the total sculk mass we collected
-                //BUG: thisTile can be null, not sure why
-                if(thisTile != null) thisTile.addStoredSculkMass(totalMassAfterTax);
-                else
-                {
-                    System.out.println("Attempted to Access NULL tile at "
-                            + placementPos
-                            + "which is of blockstate "
-                            + world.getBlockState(placementPos)
-                    );
-                }
+                SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(totalMassTax);
 
                 //Replace Block Under sculk mass with infested variant if possible
                 SculkHorde.infestationConversionTable.infectBlock((ServerLevel) world, originPos.below());
@@ -187,7 +161,6 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
     public SculkMassTile getTileEntity(Level world, BlockPos thisBlockPos)
     {
         //Get tile entity for this block
-        BlockEntity tileEntity = world.getBlockEntity(thisBlockPos);
         SculkMassTile thisTile = null;
         try
         {
@@ -209,17 +182,17 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param pos The Position
      * @return True/False
      */
-    @Override
+    //TODO PORT
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
         return !blockState.canBeReplaced(Fluids.WATER);
     }
-    /**
-     * Causes Model to be offset
-     * @return
-     */
-    public BlockBehaviour.OffsetType getOffsetType() {
-        return OffsetType.NONE;
+
+    @Override
+    public boolean propagatesSkylightDown(BlockState p_49928_, BlockGetter p_49929_, BlockPos p_49930_) {
+        return true;
     }
+
+
 
     /**
      * Determines Block Hitbox <br>
@@ -230,9 +203,22 @@ public class SculkMassBlock extends SculkFloraBlock implements IForgeBlock {
      * @param iSelectionContext
      * @return
      */
+    @Override
     public VoxelShape getShape(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos, CollisionContext iSelectionContext) {
         //Block.box(xOffset, yOffset, zOffset, width, height, length)
         return Block.box(1.0D, 0.0D, 1.0D, 15.0D, 3.0D, 15.0D);
+    }
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, TileEntityRegistry.SCULK_MASS_TILE.get(), SculkMassTile::tick);
+    }
+
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new SculkMassTile(blockPos, state);
     }
 
 }

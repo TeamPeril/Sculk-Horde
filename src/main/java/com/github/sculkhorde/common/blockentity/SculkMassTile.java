@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.tileentity;
+package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.SculkHorde;
@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.TileEntityRegistry;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -66,7 +67,7 @@ public class SculkMassTile extends BlockEntity {
         storedSculkMass += value;
     }
 
-    public void tick()
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassTile blockEntity)
     {
         // If world is not a server world, return
         if(level.isClientSide)
@@ -80,38 +81,38 @@ public class SculkMassTile extends BlockEntity {
         }
 
         // If the tile entity at this location is not a sculk mass tile, return
-        if(!(this.level.getBlockEntity(this.getBlockPos()) instanceof SculkMassTile))
+        if(!(blockEntity instanceof SculkMassTile))
         {
             return;
         }
 
-        // Get the tile entity at this location
-        SculkMassTile thisTile = (SculkMassTile) this.level.getBlockEntity(this.getBlockPos());
+        //Destroy if run out of sculk mass
+        if(blockEntity.getStoredSculkMass() <= 0)
+        {
+            level.destroyBlock(blockPos, false);
+        }
+
 
         EntityFactory entityFactory = SculkHorde.entityFactory;
-        ReinforcementRequest context = new ReinforcementRequest(this.getBlockPos());
+        ReinforcementRequest context = new ReinforcementRequest(blockPos);
 
         context.sender = ReinforcementRequest.senderType.SculkMass;
-        context.budget = thisTile.getStoredSculkMass();
+        context.budget = blockEntity.getStoredSculkMass();
 
         //Attempt to call in reinforcements and then update stored sculk mass
-        entityFactory.requestReinforcementSculkMass(level, getBlockPos(), context);
+        entityFactory.requestReinforcementSculkMass(level, blockPos, context);
         if(context.isRequestViewed && context.isRequestApproved)
         {
-            thisTile.setStoredSculkMass(context.remaining_balance);
+            blockEntity.setStoredSculkMass(context.remaining_balance);
 
             // Spawn Block Traverser
             CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
-            cursor.setPos(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ());
-            cursor.setMaxInfections(thisTile.getStoredSculkMass());
-            cursor.setMaxRange(thisTile.getStoredSculkMass());
+            cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            cursor.setMaxInfections(blockEntity.getStoredSculkMass());
+            cursor.setMaxRange(blockEntity.getStoredSculkMass()/4);
             level.addFreshEntity(cursor);
-
-            //Destroy if run out of sculk mass
-            if(thisTile.getStoredSculkMass() <= 0)
-            {
-                level.destroyBlock(this.getBlockPos(), false);
-            }
         }
     }
+
+
 }

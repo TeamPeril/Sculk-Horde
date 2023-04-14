@@ -3,10 +3,8 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.block.SculkFloraBlock;
 import com.github.sculkhorde.common.block.VeinBlock;
-import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
 import com.github.sculkhorde.common.procedural.structures.PlannedBlock;
-import com.github.sculkhorde.common.tileentity.SculkBeeNestTile;
+import com.github.sculkhorde.common.blockentity.SculkBeeNestTile;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.level.block.state.BlockState;
@@ -342,7 +340,7 @@ public class BlockAlgorithms {
 
         for(BlockPos position : list)
         {
-            if(serverWorld.getBlockState(position).isAir())
+            if(!serverWorld.getBlockState(position).isSolidRender(serverWorld, position))
             {
                 return true;
             }
@@ -363,7 +361,7 @@ public class BlockAlgorithms {
         if(new Random().nextInt(4000) <= 1 && world.canSeeSky(targetPos))
         {
             world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
-            SculkBeeNestTile nest = (SculkBeeNestTile) world.getBlockEntity(targetPos);
+            //SculkBeeNestTile nest = (SculkBeeNestTile) world.getBlockEntity(targetPos);
 
             //Add bees
             //TODO: PORT

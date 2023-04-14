@@ -8,6 +8,7 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -60,7 +61,32 @@ public class SculkHorde {
 
     private void addCreative(CreativeModeTabEvent.BuildContents event) {
         if (event.getTab() == ModCreativeModeTab.CREATIVE_TAB) {
+            event.accept(ItemRegistry.DEV_WAND);
+            event.accept(ItemRegistry.DEV_NODE_SPAWNER);
+            event.accept(ItemRegistry.INFESTATION_PURIFIER);
+            event.accept(ItemRegistry.SCULK_ACIDIC_PROJECTILE);
+            event.accept(ItemRegistry.SCULK_RESIN);
+            event.accept(ItemRegistry.CALCITE_CLUMP);
             event.accept(ItemRegistry.SCULK_MATTER);
+            event.accept(BlockRegistry.CALCITE_ORE);
+            event.accept(BlockRegistry.CRUST);
+            event.accept(Blocks.SCULK);
+            event.accept(BlockRegistry.SCULK_NODE_BLOCK);
+            event.accept(BlockRegistry.SCULK_ARACHNOID);
+            event.accept(BlockRegistry.SCULK_DURA_MATTER);
+            event.accept(BlockRegistry.SCULK_BEE_NEST_BLOCK);
+            event.accept(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK);
+            event.accept(BlockRegistry.SCULK_SUMMONER_BLOCK);
+            event.accept(Blocks.SCULK_CATALYST);
+            event.accept(Blocks.SCULK_SHRIEKER);
+            event.accept(Blocks.SCULK_SENSOR);
+            event.accept(BlockRegistry.SCULK_MASS);
+            event.accept(BlockRegistry.GRASS);
+            event.accept(BlockRegistry.GRASS_SHORT);
+            event.accept(BlockRegistry.SCULK_SHROOM_CULTURE);
+            event.accept(BlockRegistry.SMALL_SHROOM);
+            event.accept(BlockRegistry.SPIKE);
+            event.accept(BlockRegistry.VEIN);
         }
     }
 

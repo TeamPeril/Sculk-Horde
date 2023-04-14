@@ -10,7 +10,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class InfestationPurifierModel extends DefaultedEntityGeoModel<InfestationPurifierEntity> {
     public InfestationPurifierModel() {
-        super(new ResourceLocation(GeckoLib.MOD_ID, "parasite"));
+        super(new ResourceLocation(SculkHorde.MOD_ID, "infestation_purifier"));
     }
 
     // We want our model to render using the translucent render type

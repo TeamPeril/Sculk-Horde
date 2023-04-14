@@ -1,11 +1,10 @@
-package com.github.sculkhorde.common.tileentity;
+package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;

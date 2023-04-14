@@ -1,17 +1,17 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.TileEntityRegistry;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
@@ -19,7 +19,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -27,7 +26,7 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
+public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
 
     /**
@@ -116,31 +115,6 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
         return Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     }
 
-    @Override
-    public BlockBehaviour.OffsetType getOffsetType() {
-        return OffsetType.NONE;
-    }
-
-    @Override
-    public boolean canBeReplacedByLeaves(BlockState state, LevelReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeReplaced(BlockState pState, Fluid pFluid) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeReplacedByLogs(BlockState state, LevelReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeReplaced(BlockState pState, BlockPlaceContext pUseContext) {
-        return false;
-    }
-
     /** ~~~~~~~~ Events ~~~~~~~~ **/
 
     /**
@@ -159,5 +133,15 @@ public class SculkSummonerBlock extends SculkFloraBlock implements IForgeBlock {
 
     }
 
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, TileEntityRegistry.SCULK_SUMMONER_TILE.get(), SculkSummonerBlockEntity::spawnReinforcementsTick);
+    }
 
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new SculkSummonerBlockEntity(blockPos, state);
+    }
 }

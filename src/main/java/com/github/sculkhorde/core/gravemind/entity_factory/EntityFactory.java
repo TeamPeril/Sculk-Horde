@@ -146,35 +146,50 @@ public class EntityFactory {
      */
     public void requestReinforcementSculkMass(Level world, BlockPos pos, ReinforcementRequest context)
     {
-        //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
-        if(!(SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0 || entries.size() == 0 || context.budget == 0))
+        if(gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
         {
-            //Spawn Random Mob If appropriate
+            return;
+        }
 
-            context.isRequestViewed = true;
-            context.isRequestApproved = true;
+        if(entries.size() == 0)
+        {
+            return;
+        }
 
-            ArrayList<EntityFactoryEntry> lottery = new ArrayList<>();
+        if(context.budget == 0)
+        {
+            return;
+        }
 
-            //Loop through list, collect all appropriate entries
-            for (EntityFactoryEntry entry : entries) {
-                //If valid, spawn the entity
-                if (entry.isEntryAppropriate(context))
-                {
-                    lottery.add(entry);
-                }
-            }
+        //Spawn Random Mob If appropriate
 
-            if(!lottery.isEmpty())
+        gravemind.processReinforcementRequest(context);
+        if(!context.isRequestApproved)
+        {
+            return;
+        }
+
+        ArrayList<EntityFactoryEntry> lottery = new ArrayList<>();
+
+        //Loop through list, collect all appropriate entries
+        for (EntityFactoryEntry entry : entries) {
+            //If valid, spawn the entity
+            if (entry.isEntryAppropriate(context))
             {
-                int randomEntryIndex = rng.nextInt(lottery.size());
-                EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
-                //Set Remaining Balance
-                context.remaining_balance = context.budget - randomEntry.getCost();
-                //Spawn Mob
-                randomEntry.getEntity().spawn((ServerLevel) world, pos, MobSpawnType.SPAWNER);
+                lottery.add(entry);
             }
         }
+
+        if(!lottery.isEmpty())
+        {
+            int randomEntryIndex = rng.nextInt(lottery.size());
+            EntityFactoryEntry randomEntry = lottery.get(randomEntryIndex);
+            //Set Remaining Balance
+            context.remaining_balance = context.budget - randomEntry.getCost();
+            //Spawn Mob
+            randomEntry.getEntity().spawn((ServerLevel) world, pos, MobSpawnType.SPAWNER);
+            }
+
     }
 }
 

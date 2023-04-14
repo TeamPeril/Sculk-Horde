@@ -32,22 +32,23 @@ public class ModEventSubscriber {
 
         SculkHorde.infestationConversionTable = new InfestationConversionHandler();
 
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIRT.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COARSE_DIRT.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIRT.defaultBlockState(), Blocks.SCULK.defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COARSE_DIRT.defaultBlockState(), Blocks.SCULK.defaultBlockState());
         //SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_PATH.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_BLOCK.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.SCULK.defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.STONE.defaultBlockState(), BlockRegistry.INFESTED_STONE_DORMANT.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.STONE.defaultBlockState(), BlockRegistry.INFESTED_STONE_DORMANT.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), 1);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 1);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 4);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 6);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 6);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 200);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 200);
-        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 6);
-        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 6);
+
         
     }
 

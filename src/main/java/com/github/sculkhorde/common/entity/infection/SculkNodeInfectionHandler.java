@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.common.tileentity.SculkNodeTile;
+import com.github.sculkhorde.common.blockentity.SculkNodeTile;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

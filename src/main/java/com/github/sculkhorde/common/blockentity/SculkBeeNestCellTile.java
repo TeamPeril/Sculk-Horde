@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.tileentity;
+package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.core.TileEntityRegistry;
 import net.minecraft.core.BlockPos;

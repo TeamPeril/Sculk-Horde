@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.tileentity;
+package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.procedural.structures.SculkLivingRockProceduralStructure;
 import com.github.sculkhorde.core.TileEntityRegistry;

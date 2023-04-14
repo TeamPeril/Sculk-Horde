@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.material.Fluid;
@@ -131,7 +132,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      */
     @Override
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
-        Block[] validBlocks = {BlockRegistry.CRUST.get(), BlockRegistry.INFESTED_STONE_DORMANT.get()};
+        Block[] validBlocks = {BlockRegistry.CRUST.get(), Blocks.SCULK, BlockRegistry.INFESTED_STONE_DORMANT.get()};
         for(Block b : validBlocks)
         {
             if(blockState.getBlock() == b) return true;

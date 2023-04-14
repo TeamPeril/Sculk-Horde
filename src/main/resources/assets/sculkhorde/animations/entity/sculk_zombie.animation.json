@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.sculk_zombie.idle": {
+		"misc.idle": {
 			"loop": true,
 			"animation_length": 3.12,
 			"bones": {
@@ -64,7 +64,7 @@
 				}
 			}
 		},
-		"animation.sculk_zombie.walk": {
+		"move.walk": {
 			"loop": true,
 			"animation_length": 1.28,
 			"bones": {

@@ -206,8 +206,10 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             // Spawn Block Traverser
             cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
-            cursor.setMaxInfections(20);
+            cursor.setMaxInfections(100);
             cursor.setMaxRange(100);
+            cursor.setTickIntervalMilliseconds(500);
+            cursor.setSearchIterationsPerTick(10);
             level.addFreshEntity(cursor);
         }
 

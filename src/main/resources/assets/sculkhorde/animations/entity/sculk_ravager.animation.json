@@ -52,7 +52,7 @@
 				}
 			}
 		},
-		"animation.ravager.mouth_idle": {
+		"misc.idle": {
 			"animation_length": 2,
 			"bones": {
 				"mouth": {

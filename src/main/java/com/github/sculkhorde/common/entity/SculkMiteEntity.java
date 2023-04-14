@@ -239,7 +239,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        //controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 
     @Override
