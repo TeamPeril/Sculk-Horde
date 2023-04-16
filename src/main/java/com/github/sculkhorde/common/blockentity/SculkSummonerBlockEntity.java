@@ -217,7 +217,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int length, int amountOfPositions)
     {
         //TODO Can potentially be optimized by not getting all the possible positions
-        ArrayList<BlockPos> listOfPossibleSpawns = BlockAlgorithms.getBlocksInCube(worldIn, origin, VALID_SPAWN_BLOCKS, length);
+        ArrayList<BlockPos> listOfPossibleSpawns = getSpawnPositions(worldIn, origin, VALID_SPAWN_BLOCKS, length);
         ArrayList<BlockPos> finalList = new ArrayList<>();
         Random rng = new Random();
         for(int count = 0; count < amountOfPositions && listOfPossibleSpawns.size() > 0; count++)
@@ -252,6 +252,44 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
             worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 
+    }
+
+    /**
+     * Finds the location of the nearest block given a BlockPos predicate.
+     * @param worldIn The world
+     * @param origin The origin of the search location
+     * @param predicateIn The predicate that determines if a block is the one were searching for
+     * @param pDistance The search distance
+     * @return The position of the block
+     */
+    public static ArrayList<BlockPos> getSpawnPositions(ServerLevel worldIn, BlockPos origin, Predicate<BlockPos> predicateIn, double pDistance)
+    {
+        ArrayList<BlockPos> list = new ArrayList<>();
+
+        //Search area for block
+        for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
+        {
+            for(int j = 0; (double)j < pDistance; ++j)
+            {
+                for(int k = 0; k <= j; k = k > 0 ? -k : 1 - k)
+                {
+                    for(int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l)
+                    {
+                        //blockpos$mutable.setWithOffset(origin, k, i - 1, l);
+                        BlockPos temp = new BlockPos(origin.getX() + k, origin.getY() + i-1, origin.getZ() + l);
+
+                        //If the block is close enough and is the right blockstate
+                        if (origin.closerThan(temp, pDistance)
+                                && predicateIn.test(temp))
+                        {
+                            list.add(temp); //add position
+                        }
+                    }
+                }
+            }
+        }
+        //else return empty
+        return list;
     }
 
     // Save & Load Code

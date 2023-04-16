@@ -96,12 +96,12 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     }
 
 
-    public static void FindAreaAndPlaceNode(ServerLevel world, BlockPos searchOrigin)
+    public static void FindAreaAndPlaceNode(ServerLevel level, BlockPos searchOrigin)
     {
-        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), 5 + 35, searchOrigin.getZ());
-        world.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
+        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), level.getMinBuildHeight() + 35, searchOrigin.getZ());
+        level.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
         Gravemind.getGravemindMemory().addNodeToMemory(newOrigin);
-        EntityType.LIGHTNING_BOLT.spawn(world, newOrigin, MobSpawnType.SPAWNER);
+        EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.block.SculkFloraBlock;
 import com.github.sculkhorde.common.block.VeinBlock;
+import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.procedural.structures.PlannedBlock;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
@@ -194,125 +195,86 @@ public class BlockAlgorithms {
                 }
             }
         }
-
         return positions;
     }
 
 
     /**
-     * Finds the location of the nearest block given a predicate.
-     * @param worldIn The world
-     * @param origin The origin of the search location
-     * @param predicateIn The predicate that determines if a block is the one were searching for
-     * @param pDistance The search distance
-     * @return The position of the block
-     */
-    public static Optional<BlockPos> findNearestBlock(ServerLevel worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
-    {
-        //?
-        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-
-        //Search area for block
-        for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
-        {
-            for(int j = 0; (double)j < pDistance; ++j)
-            {
-                for(int k = 0; k <= j; k = k > 0 ? -k : 1 - k)
-                {
-                    for(int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l)
-                    {
-                        blockpos$mutable.setWithOffset(origin, k, i - 1, l);
-
-                        //If the block is close enough and is the right blockstate
-                        if (origin.closerThan(blockpos$mutable, pDistance)
-                                && predicateIn.test(worldIn.getBlockState(blockpos$mutable)))
-                        {
-                            return Optional.of(blockpos$mutable); //Return position
-                        }
-                    }
-                }
-            }
-        }
-        //else return empty
-        return Optional.empty();
-    }
-
-
-    /**
      * Finds the location of the nearest block given a block state predicate.
-     * @param worldIn The world
+     * @param level The world
      * @param origin The origin of the search location
-     * @param predicateIn The predicate that determines if a block is the one were searching for
-     * @param pDistance The search distance
+     * @param predicate The predicate that determines if a block is the one were searching for
+     * @param distance The search distance
      * @return The position of the block
      */
-    public static ArrayList<BlockPos> getBlocksInArea(ServerLevel worldIn, BlockPos origin, Predicate<BlockState> predicateIn, double pDistance)
+    public static ArrayList<BlockPos> getBlocksInArea(ServerLevel level, BlockPos origin, Predicate<BlockState> predicate, int distance)
     {
         ArrayList<BlockPos> list = new ArrayList<>();
 
-        //Search area for block
-        for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
-        {
-            for(int j = 0; (double)j < pDistance; ++j)
-            {
-                for(int k = 0; k <= j; k = k > 0 ? -k : 1 - k)
-                {
-                    for(int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l)
-                    {
-                        //blockpos$mutable.setWithOffset(origin, k, i - 1, l);
-                        BlockPos temp = new BlockPos(origin.getX() + k, origin.getY() + i-1, origin.getZ() + l);
+        BlockPos blockPos = origin;
 
-                        //If the block is close enough and is the right blockstate
-                        if (origin.closerThan(temp, pDistance)
-                                && predicateIn.test(worldIn.getBlockState(temp)))
-                        {
-                            list.add(temp); //add position
-                        }
+        // Define the bounds of the cube
+        int minX = blockPos.getX() - distance;
+        int minY = blockPos.getY() - distance;
+        int minZ = blockPos.getZ() - distance;
+        int maxX = blockPos.getX() + distance;
+        int maxY = blockPos.getY() + distance;
+        int maxZ = blockPos.getZ() + distance;
+
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    mutableBlockPos.set(x, y, z);
+                    if (level.getBlockState(mutableBlockPos).is(Blocks.AIR)) {
+                        continue;
+                    }
+                    if (predicate.test(level.getBlockState(mutableBlockPos))) {
+                        list.add(mutableBlockPos.immutable());
                     }
                 }
             }
         }
-        //else return empty
         return list;
     }
 
 
     /**
      * Finds the location of the nearest block given a BlockPos predicate.
-     * @param worldIn The world
+     * @param level The world
      * @param origin The origin of the search location
-     * @param predicateIn The predicate that determines if a block is the one were searching for
-     * @param pDistance The search distance
+     * @param predicate The predicate that determines if a block is the one were searching for
+     * @param distance The search distance
      * @return The position of the block
      */
-    public static ArrayList<BlockPos> getBlocksInCube(ServerLevel worldIn, BlockPos origin, Predicate<BlockPos> predicateIn, double pDistance)
-    {
-        ArrayList<BlockPos> list = new ArrayList<>();
+    public static Optional<BlockPos> findBlockInCube(ServerLevel level, BlockPos origin, Predicate<BlockState> predicate, int distance) {
+        BlockPos blockPos = origin;
 
-        //Search area for block
-        for(int i = 0; (double)i <= pDistance; i = i > 0 ? -i : 1 - i)
-        {
-            for(int j = 0; (double)j < pDistance; ++j)
-            {
-                for(int k = 0; k <= j; k = k > 0 ? -k : 1 - k)
-                {
-                    for(int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l)
-                    {
-                        //blockpos$mutable.setWithOffset(origin, k, i - 1, l);
-                        BlockPos temp = new BlockPos(origin.getX() + k, origin.getY() + i-1, origin.getZ() + l);
+        // Define the bounds of the cube
+        int minX = blockPos.getX() - distance;
+        int minY = blockPos.getY() - distance;
+        int minZ = blockPos.getZ() - distance;
+        int maxX = blockPos.getX() + distance;
+        int maxY = blockPos.getY() + distance;
+        int maxZ = blockPos.getZ() + distance;
 
-                        //If the block is close enough and is the right blockstate
-                        if (origin.closerThan(temp, pDistance)
-                                && predicateIn.test(temp))
-                        {
-                            list.add(temp); //add position
-                        }
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    mutableBlockPos.set(x, y, z);
+                    if (level.getBlockState(mutableBlockPos).is(Blocks.AIR)) {
+                        continue;
+                    }
+                    if (predicate.test(level.getBlockState(mutableBlockPos))) {
+                        return Optional.of(mutableBlockPos.immutable());
                     }
                 }
             }
         }
-        //else return empty
-        return list;
+        return Optional.empty();
     }
 
     /**
@@ -360,14 +322,13 @@ public class BlockAlgorithms {
         if(new Random().nextInt(4000) <= 1 && world.canSeeSky(targetPos))
         {
             world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
-            //SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
+            SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
 
             //Add bees
-            //TODO: PORT
-            //nest.addOccupant(new SculkBeeHarvesterEntity(world));
-            //nest.addOccupant(new SculkBeeHarvesterEntity(world));
-            //nest.addOccupant(new SculkBeeInfectorEntity(world));
-            //nest.addOccupant(new SculkBeeInfectorEntity(world));
+            nest.addFreshInfectorOccupant();
+            nest.addFreshInfectorOccupant();
+            nest.addFreshHarvesterOccupant();
+            nest.addFreshHarvesterOccupant();
         }
 
     }

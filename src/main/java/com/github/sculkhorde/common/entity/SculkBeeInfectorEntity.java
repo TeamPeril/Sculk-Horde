@@ -1,18 +1,30 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraftforge.common.Tags;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.function.Predicate;
 
 public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements GeoEntity {
 
@@ -63,40 +75,35 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
                 .add(Attributes.FLYING_SPEED, 1.5F);
     }
 
-    /**
-     * Prepares an array of goals to give to registerGoals() for the goalSelector.<br>
-     * The purpose was to make registering goals simpler by automatically determining priority
-     * based on the order of the items in the array. First element is of priority 0, which
-     * represents highest priority. Priority value then increases by 1, making each element
-     * less of a priority than the last.
-     * @return Returns an array of goals ordered from highest to lowest piority
-     */
-    public Goal[] goalSelectorPayload()
-    {
+    private final Predicate<BlockState> IS_VALID_FLOWER = (blockState) -> {
+        if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
+            return false;
+        } else if (blockState.is(BlockTags.FLOWERS)) {
+            if (blockState.is(Blocks.SUNFLOWER)) {
+                return blockState.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    };
 
-        Goal[] goals =
-                {
-
-                };
-        return goals;
+    @Override
+    public Predicate<BlockState> getIsFlowerValidPredicate() {
+        return this.IS_VALID_FLOWER;
     }
 
-    /**
-     * Prepares an array of goals to give to registerGoals() for the targetSelector.<br>
-     * The purpose was to make registering goals simpler by automatically determining priority
-     * based on the order of the items in the array. First element is of priority 0, which
-     * represents highest priority. Priority value then increases by 1, making each element
-     * less of a priority than the last.
-     * @return Returns an array of goals ordered from highest to lowest piority
-     */
-    public Goal[] targetSelectorPayload()
+    @Override
+    protected void executeCodeOnPollination()
     {
-        Goal[] goals =
-                {
-                        // Commented this out because it interferes with the bee's ability to go back into hive.
-                        //new TargetAttacker(this).setAlertAllies(),
-                };
-        return goals;
+        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
+        cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+        cursor.setMaxInfections(100);
+        cursor.setMaxRange(100);
+        cursor.setTickIntervalMilliseconds(500);
+        cursor.setSearchIterationsPerTick(10);
+        level.addFreshEntity(cursor);
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
