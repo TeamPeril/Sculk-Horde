@@ -468,7 +468,6 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     }
 
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new SculkBeeHarvesterEntity.BeeAttackGoal(this, (double)1.4F, true));
         this.goalSelector.addGoal(1, new SculkBeeHarvesterEntity.BeeEnterHiveGoal());
         this.beePollinateGoal = new SculkBeeHarvesterEntity.BeePollinateGoal();
         this.goalSelector.addGoal(4, this.beePollinateGoal);
@@ -480,7 +479,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         this.goalSelector.addGoal(7, new SculkBeeHarvesterEntity.BeeGrowCropGoal());
         this.goalSelector.addGoal(8, new SculkBeeHarvesterEntity.BeeWanderGoal());
         this.goalSelector.addGoal(9, new FloatGoal(this));
-        this.targetSelector.addGoal(1, (new SculkBeeHarvesterEntity.BeeHurtByOtherGoal(this)).setAlertOthers(new Class[0]));
+        //this.targetSelector.addGoal(1, (new SculkBeeHarvesterEntity.BeeHurtByOtherGoal(this)).setAlertOthers(new Class[0]));
     }
 
 

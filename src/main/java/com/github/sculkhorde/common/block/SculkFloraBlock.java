@@ -2,6 +2,8 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Material;
@@ -132,12 +134,8 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      */
     @Override
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
-        Block[] validBlocks = {BlockRegistry.CRUST.get(), Blocks.SCULK, BlockRegistry.INFESTED_STONE_DORMANT.get()};
-        for(Block b : validBlocks)
-        {
-            if(blockState.getBlock() == b) return true;
-        }
-        return false;
+
+        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(blockState);
     }
 
 

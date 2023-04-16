@@ -55,7 +55,7 @@ public class BlockRegistry {
 	//Sculk Arachnoid
 	public static final RegistryObject<Block> SCULK_ARACHNOID =
 			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of(
-							Material.PLANT, MaterialColor.QUARTZ)
+							Material.STONE, MaterialColor.QUARTZ)
 					.strength(10f, 6f)//Hardness & Resistance
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.HONEY_BLOCK)
@@ -64,7 +64,7 @@ public class BlockRegistry {
 	//Sculk Dura Matter
 	public static final RegistryObject<Block> SCULK_DURA_MATTER =
 			registerBlock("sculk_dura_matter", () -> new Block(BlockBehaviour.Properties.of(
-							Material.PLANT, MaterialColor.QUARTZ)
+							Material.STONE, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.ANCIENT_DEBRIS)
@@ -73,7 +73,7 @@ public class BlockRegistry {
 	//Sculk Dura Matter
 	public static final RegistryObject<Block> CALCITE_ORE =
 			registerBlock("calcite_ore", () -> new Block(BlockBehaviour.Properties.of(
-							Material.PLANT, MaterialColor.QUARTZ)
+							Material.STONE, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.ANCIENT_DEBRIS)
@@ -87,6 +87,22 @@ public class BlockRegistry {
 
 	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG_DORMANT =
 			registerBlock("infested_log", () -> new InfestedLogBlock());
+
+	public static final RegistryObject<Block> INFESTED_SAND =
+			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of(
+							Material.SAND, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.SAND)
+			));
+
+	public static final RegistryObject<Block> INFESTED_DEEPSLATE =
+			registerBlock("infested_deepslate", () -> new Block(BlockBehaviour.Properties.of(
+							Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.DEEPSLATE)
+			));
 
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
