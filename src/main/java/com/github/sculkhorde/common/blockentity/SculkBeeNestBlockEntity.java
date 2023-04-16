@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -164,7 +165,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
                 this.level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(entity, this.getBlockState()));
 
                 //Give Sculk Horde Mass
-                SculkHorde.gravemind.gravemindMemory.addSculkAccumulatedMass(5);
+                Gravemind.getGravemindMemory().addSculkAccumulatedMass(5);
 
                 //Summon Surface Infestor
                 CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);

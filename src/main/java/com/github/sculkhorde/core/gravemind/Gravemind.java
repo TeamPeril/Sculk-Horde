@@ -8,12 +8,11 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -43,7 +42,7 @@ public class Gravemind
     //This controls the reinforcement system.
     public static EntityFactory entityFactory;
 
-    public static GravemindMemory gravemindMemory;
+    private static GravemindMemory gravemindMemory;
 
 
 
@@ -67,6 +66,7 @@ public class Gravemind
     {
         evolution_state = evolution_states.Undeveloped;
         entityFactory = SculkHorde.entityFactory;
+        gravemindMemory = new GravemindMemory();
         gravemindMemory = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(GravemindMemory::load, GravemindMemory::new, SculkHorde.SAVE_DATA_ID);
         calulateCurrentState();
     }
@@ -87,7 +87,12 @@ public class Gravemind
     @Nullable
     public static GravemindMemory getGravemindMemory()
     {
-        return gravemindMemory;
+        return Gravemind.gravemindMemory;
+    }
+
+    public static void setGravemindMemory(GravemindMemory gravemindMemory)
+    {
+        Gravemind.gravemindMemory = gravemindMemory;
     }
 
     /**
@@ -158,7 +163,7 @@ public class Gravemind
             context.isRequestApproved = true;
         }
 
-        if(SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0)
+        if(getGravemindMemory().getSculkAccumulatedMass() <= 0)
         {
             return false;
         }
@@ -279,19 +284,19 @@ public class Gravemind
     public static class GravemindMemory extends SavedData
     {
         //The world
-        public static ServerLevel world;
+        public ServerLevel world;
 
         //Map<The Name of Mob, IsHostile?>
-        public static Map<String, HostileEntry> hostileEntries;
+        public Map<String, HostileEntry> hostileEntries;
 
         //List of all known positions of nodes.
-        private static ArrayList<NodeEntry> nodeEntries;
+        private ArrayList<NodeEntry> nodeEntries;
 
         //List of all known positions of bee nests
-        private static ArrayList<BeeNestEntry> beeNestEntries;
+        private ArrayList<BeeNestEntry> beeNestEntries;
 
         // the amount of mass that the sculk hoard has accumulated.
-        private static int sculkAccumulatedMass = 0;
+        private int sculkAccumulatedMass = 0;
 
         // used to write/read nbt data to/from the world.
         private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -299,7 +304,7 @@ public class Gravemind
         /**
          * Default Constructor
          */
-        public GravemindMemory()
+        private GravemindMemory()
         {
             //super(SculkHorde.SAVE_DATA_ID);
             nodeEntries = new ArrayList<>();
@@ -323,7 +328,7 @@ public class Gravemind
          * Returns a list of known node positions
          * @return An ArrayList of all node entries positions
          */
-        public static ArrayList<NodeEntry> getNodeEntries() { return nodeEntries; }
+        public ArrayList<NodeEntry> getNodeEntries() { return nodeEntries; }
 
 
         /**
@@ -357,13 +362,13 @@ public class Gravemind
          * Returns a list of known bee nest positions
          * @return An ArrayList of all know bee nest positions
          */
-        public static ArrayList<BeeNestEntry> getBeeNestEntries() { return beeNestEntries; }
+        public ArrayList<BeeNestEntry> getBeeNestEntries() { return beeNestEntries; }
 
         /**
          * Returns the map of known hostiles
          * @return An HashMap with all known hostile entities
          */
-        public static Map<String, HostileEntry> getHostileEntries() { return hostileEntries; }
+        public Map<String, HostileEntry> getHostileEntries() { return hostileEntries; }
 
         /**
          * Will check the positons of all entries to see
@@ -546,31 +551,30 @@ public class Gravemind
         public static GravemindMemory load(CompoundTag nbt)
         {
 
-            GravemindMemory memory = new GravemindMemory();
             CompoundTag gravemindData = nbt.getCompound("gravemindData");
 
-            getNodeEntries().clear();
-            getBeeNestEntries().clear();
-            getHostileEntries().clear();
+            getGravemindMemory().getNodeEntries().clear();
+            getGravemindMemory().getBeeNestEntries().clear();
+            getGravemindMemory().getHostileEntries().clear();
 
-            GravemindMemory.sculkAccumulatedMass = nbt.getInt(sculkAccumulatedMassIdentifier);
+            getGravemindMemory().setSculkAccumulatedMass(nbt.getInt(sculkAccumulatedMassIdentifier));
 
             for (int i = 0; gravemindData.contains("node_entry" + i); i++) {
-                getNodeEntries().add(NodeEntry.serialize(gravemindData.getCompound("node_entry" + i)));
+                getGravemindMemory().getNodeEntries().add(NodeEntry.serialize(gravemindData.getCompound("node_entry" + i)));
             }
 
             for (int i = 0; gravemindData.contains("bee_nest_entry" + i); i++) {
-                getBeeNestEntries().add(BeeNestEntry.serialize(gravemindData.getCompound("bee_nest_entry" + i)));
+                getGravemindMemory().getBeeNestEntries().add(BeeNestEntry.serialize(gravemindData.getCompound("bee_nest_entry" + i)));
             }
 
             for (int i = 0; gravemindData.contains("hostile_entry" + i); i++) {
                 HostileEntry hostileEntry = HostileEntry.serialize(gravemindData.getCompound("hostile_entry" + i));
-                getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
+                getGravemindMemory().getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
             }
 
             System.out.print("");
 
-            return memory;
+            return Gravemind.getGravemindMemory();
 
         }
 

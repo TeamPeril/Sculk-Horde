@@ -190,7 +190,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_brain")); //Text that displays if holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_node")); //Text that displays if holding shift
     }
 
     @Nullable
