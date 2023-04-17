@@ -1,29 +1,37 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.common.block.SculkSummonerBlock;
 import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -33,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 
-public class SculkSummonerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig
+public class SculkSummonerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig, GeoBlockEntity
 {
     private int behavior_state = 0;
     private final int STATE_COOLDOWN = 0;
@@ -55,8 +63,6 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     private long tickIntervalAlertSeconds = 30;
     //How often should this tile tick in seconds if the summoner is not alert
     private long tickIntervalUnAlertSeconds = 60;
-    //Records the last time this block summoned a mob
-    private long lastTimeOfSummon = 0;
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
     private TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
@@ -76,6 +82,24 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
+    private boolean isOnCoolDown()
+    {
+        return (behavior_state == STATE_COOLDOWN);
+    }
+
+    private boolean isReadyToSpawn()
+    {
+        return (behavior_state == STATE_READY_TO_SPAWN);
+    }
+
+    private boolean isSpawning()
+    {
+        return (behavior_state == STATE_SPAWNING);
+    }
+
+    public static int getState(BlockState blockState) {
+        return blockState.getValue(SculkSummonerBlock.STATE);
+    }
 
     /** ~~~~~~~~ Modifiers ~~~~~~~~  **/
 
@@ -119,11 +143,12 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
         return true;
     }
 
+
     /** ~~~~~~~~ Events ~~~~~~~~ **/
     public static void spawnReinforcementsTick(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity)
     {
         if(level == null || level.isClientSide) { return;}
-        if(SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() <= 0) { return; }
+
 
         blockEntity.timeElapsedSinceTick = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.lastTimeOfTick, TimeUnit.NANOSECONDS);
 
@@ -136,8 +161,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
         if(blockEntity.behavior_state == blockEntity.STATE_COOLDOWN)
         {
             blockEntity.behavior_state = blockEntity.STATE_READY_TO_SPAWN;
+            level.setBlockAndUpdate(blockPos, blockState.setValue(SculkSummonerBlock.STATE, 1));
         }
-        if(blockEntity.behavior_state == blockEntity.STATE_READY_TO_SPAWN)
+        else if(blockEntity.behavior_state == blockEntity.STATE_READY_TO_SPAWN)
         {
             if(!blockEntity.areAllReinforcementsDead()) { return; }
 
@@ -162,7 +188,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
 
             blockEntity.behavior_state = blockEntity.STATE_SPAWNING;
         }
-        if(blockEntity.behavior_state == blockEntity.STATE_SPAWNING)
+        else if(blockEntity.behavior_state == blockEntity.STATE_SPAWNING)
         {
             //Choose spawn positions
             ArrayList<BlockPos> possibleSpawnPositions = blockEntity.getSpawnPositionsInCube((ServerLevel) level, blockEntity.getBlockPos(), 5, blockEntity.MAX_SPAWNED_ENTITIES);
@@ -203,6 +229,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
             }
 
             blockEntity.behavior_state = blockEntity.STATE_COOLDOWN;
+            level.setBlockAndUpdate(blockPos, blockState.setValue(SculkSummonerBlock.STATE, 0));
         }
     }
 
@@ -334,5 +361,41 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
 
     public void onSignalSchedule() {
         this.setChanged();
+    }
+
+
+    /* ANIMATION */
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // We statically instantiate our RawAnimations for efficiency, consistency, and error-proofing
+    private static final RawAnimation SCULK_SUMMONER_COOLDOWN_ANIMATION = RawAnimation.begin().thenPlayAndHold("cooldown");
+    private static final RawAnimation SCULK_SUMMONER_READY_ANIMATION = RawAnimation.begin().thenPlay("powerup").thenLoop("idle");
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, state ->
+        {
+                BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
+                if(blockState.is(BlockRegistry.SCULK_SUMMONER_BLOCK.get()))
+                {
+                    if(state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.STATE) == 0)
+                    {
+                        return state.setAndContinue(SCULK_SUMMONER_COOLDOWN_ANIMATION);
+                    }
+                    else
+                    {
+                        return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
+                    }
+                }
+                return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
+
+        }
+        ));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 }

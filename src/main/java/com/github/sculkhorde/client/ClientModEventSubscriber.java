@@ -1,9 +1,8 @@
 package com.github.sculkhorde.client;
 
+import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
 import com.github.sculkhorde.client.renderer.entity.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ParticleRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
@@ -17,6 +16,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import software.bernie.example.client.renderer.block.FertilizerBlockRenderer;
 
 import java.util.Map;
 
@@ -69,6 +69,8 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(EntityRegistry.SCULK_RAVAGER.get(), SculkRavagerRenderer::new);
 
         event.registerEntityRenderer(EntityRegistry.INFESTATION_PURIFIER.get(), InfestationPurifierRenderer::new);
+
+        event.registerBlockEntityRenderer(BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), context -> new SculkSummonerBlockRenderer());
 
 
 

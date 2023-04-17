@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -11,6 +12,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
@@ -70,13 +75,17 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
-
+    // 0 = Cooldown
+    // 1 = ReadyToSpawn
+    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 1);
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
      */
     public SculkSummonerBlock(Properties prop) {
         super(prop);
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(STATE, 0));
     }
 
     /**
@@ -102,6 +111,23 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
                 .noOcclusion()
                 .sound(SoundType.SLIME_BLOCK);
         return prop;
+    }
+
+
+    /**
+     * Determines what the blockstate should be for placement.
+     * @param context
+     * @return
+     */
+    public BlockState getStateForPlacement(BlockPlaceContext context)
+    {
+        return this.defaultBlockState()
+                .setValue(STATE, 0);
+
+    }
+
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(STATE);
     }
 
     /**
@@ -158,8 +184,10 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
         return new SculkSummonerBlockEntity(blockPos, state);
     }
 
+    /* Animation */
+
     @Override
-    public RenderShape getRenderShape(BlockState blockState) {
-        return RenderShape.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 }
