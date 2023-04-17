@@ -26,7 +26,7 @@ import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
-public class VeinBlock extends VineBlock implements IForgeBlock {
+public class TendrilsBlock extends VineBlock implements IForgeBlock {
 
     /**
      * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
@@ -71,7 +71,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public VeinBlock(Properties prop) {
+    public TendrilsBlock(Properties prop) {
         super(prop);
     }
 
@@ -79,7 +79,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public VeinBlock() {
+    public TendrilsBlock() {
         this(getProperties());
     }
 
@@ -108,7 +108,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         BlockState southBlock = worldIn.getBlockState(pPos.south());
         BlockState westBlock = worldIn.getBlockState(pPos.west());
 
-        if(pState.getBlock().equals(BlockRegistry.VEIN.get()))
+        if(pState.getBlock().equals(BlockRegistry.TENDRILS.get()))
         {
             if(pState.getValue(NORTH) == true && isValidFace(worldIn, northBlock, pPos, Direction.SOUTH))
             {
@@ -160,7 +160,7 @@ public class VeinBlock extends VineBlock implements IForgeBlock {
         }
 
         // Get the blocks around the block
-        Block vein = BlockRegistry.VEIN.get();
+        Block vein = BlockRegistry.TENDRILS.get();
         BlockState northBlock = worldIn.getBlockState(blockPosIn.north());
         BlockState eastBlock = worldIn.getBlockState(blockPosIn.east());
         BlockState southBlock = worldIn.getBlockState(blockPosIn.south());

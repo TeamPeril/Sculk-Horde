@@ -138,7 +138,7 @@ public class SculkNodeCaveProceduralStructure extends ProceduralStructure
                     || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get())
                     || validBlocksPredicate.getBlock().equals(BlockRegistry.CALCITE_ORE.get())
                     || validBlocksPredicate.getBlock().equals(BlockRegistry.SMALL_SHROOM.get())
-                    || validBlocksPredicate.getBlock().equals(BlockRegistry.VEIN.get())
+                    || validBlocksPredicate.getBlock().equals(BlockRegistry.TENDRILS.get())
                     || validBlocksPredicate.getBlock().equals(BlockRegistry.SCULK_SHROOM_CULTURE.get())
             )
             {

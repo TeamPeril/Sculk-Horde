@@ -2,13 +2,11 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.block.SculkFloraBlock;
-import com.github.sculkhorde.common.block.VeinBlock;
+import com.github.sculkhorde.common.block.TendrilsBlock;
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.procedural.structures.PlannedBlock;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
@@ -358,7 +356,7 @@ public class BlockAlgorithms {
      * @param origin the position
      */
     public static void placeFloraAroundLog(ServerLevel serverWorld, BlockPos origin) {
-        VeinBlock vein = BlockRegistry.VEIN.get();
+        TendrilsBlock vein = BlockRegistry.TENDRILS.get();
 
         BlockPos[] possiblePositions = {
                 origin.north(),
@@ -392,7 +390,7 @@ public class BlockAlgorithms {
         Random rng = new Random();
         int offset = rng.nextInt(OFFSET_MAX);
         int length = rng.nextInt(LENGTH_MAX - LENGTH_MIN) + LENGTH_MIN;
-        VeinBlock vein = BlockRegistry.VEIN.get();
+        TendrilsBlock vein = BlockRegistry.TENDRILS.get();
 
         //Attempt to place sculk vein in a straight line above origin
         BlockPos indexPos = origin.above(offset);
@@ -421,7 +419,7 @@ public class BlockAlgorithms {
         {
             serverWorld.setBlockAndUpdate(targetPos, Blocks.GRASS.defaultBlockState());
         }
-        else if(serverWorld.getBlockState(targetPos).getBlock() instanceof VeinBlock)
+        else if(serverWorld.getBlockState(targetPos).getBlock() instanceof TendrilsBlock)
         {
             serverWorld.removeBlock(targetPos, false);
         }

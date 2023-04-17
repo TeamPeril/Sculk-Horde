@@ -2,8 +2,8 @@
     "ambientocclusion": false,
     "render_type": "minecraft:cutout",
     "textures": {
-        "particle": "sculkhorde:block/vein",
-        "vine": "sculkhorde:block/vein"
+        "particle": "sculkhorde:block/tendrils",
+        "vine": "sculkhorde:block/tendrils"
     },
     "elements": [
         {   "from": [ 0, 0, 0.8 ],

@@ -5,7 +5,7 @@
         "up": "true"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "x": 270,
         "uvlock": true
       }
@@ -19,7 +19,7 @@
         "east": "false"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "x": 270,
         "uvlock": true
       }
@@ -29,7 +29,7 @@
         "north": "true"
       },
       "apply": {
-        "model": "sculkhorde:block/vein"
+        "model": "sculkhorde:block/tendrils"
       }
     },
     {
@@ -41,7 +41,7 @@
         "east": "false"
       },
       "apply": {
-        "model": "sculkhorde:block/vein"
+        "model": "sculkhorde:block/tendrils"
       }
     },
     {
@@ -49,7 +49,7 @@
         "west": "true"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "y": 270,
         "uvlock": true
       }
@@ -63,7 +63,7 @@
         "east": "false"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "y": 270,
         "uvlock": true
       }
@@ -73,7 +73,7 @@
         "south": "true"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "y": 180,
         "uvlock": true
       }
@@ -87,7 +87,7 @@
         "east": "false"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "y": 180,
         "uvlock": true
       }
@@ -97,7 +97,7 @@
         "east": "true"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "y": 90,
         "uvlock": true
       }
@@ -111,7 +111,7 @@
         "east": "false"
       },
       "apply": {
-        "model": "sculkhorde:block/vein",
+        "model": "sculkhorde:block/tendrils",
         "y": 90,
         "uvlock": true
       }

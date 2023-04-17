@@ -122,8 +122,8 @@ public class BlockRegistry {
 	public static final RegistryObject<SculkMassBlock> SCULK_MASS =
 			registerBlock("sculk_mass", () -> new SculkMassBlock());
 
-	public static final RegistryObject<VeinBlock> VEIN =
-			registerBlock("vein", () -> new VeinBlock());
+	public static final RegistryObject<TendrilsBlock> TENDRILS =
+			registerBlock("tendrils", () -> new TendrilsBlock());
 
 	public static final RegistryObject<SculkNodeBlock> SCULK_NODE_BLOCK =
 			registerBlock("sculk_node", () -> new SculkNodeBlock());

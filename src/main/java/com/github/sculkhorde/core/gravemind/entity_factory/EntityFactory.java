@@ -2,10 +2,14 @@ package com.github.sculkhorde.core.gravemind.entity_factory;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
@@ -131,6 +135,8 @@ public class EntityFactory {
 
             EntityFactoryEntry mob = mobsToSpawn[i];
             context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, context.positions[i], MobSpawnType.SPAWNER);
+            ((ServerLevel)world).sendParticles(ParticleTypes.SCULK_SOUL, context.positions[i].getX() + 0.5D, context.positions[i].getY() + 1.15D, context.positions[i].getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+            ((ServerLevel)world).playSound((Player)null, context.positions[i], SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
             if (!noCost)
             {
                 SculkHorde.gravemind.getGravemindMemory().subtractSculkAccumulatedMass(mob.getCost());
@@ -188,8 +194,9 @@ public class EntityFactory {
             context.remaining_balance = context.budget - randomEntry.getCost();
             //Spawn Mob
             randomEntry.getEntity().spawn((ServerLevel) world, pos, MobSpawnType.SPAWNER);
-            }
-
+            ((ServerLevel)world).sendParticles(ParticleTypes.SCULK_SOUL, pos.getX() + 0.5D, pos.getY() + 1.15D, pos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+            ((ServerLevel)world).playSound((Player)null, pos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
+        }
     }
 }
 

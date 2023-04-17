@@ -4,6 +4,10 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.tags.BlockTags;
@@ -70,6 +74,8 @@ public class InfestationConversionHandler
         if(newBlock == null) { return false; }
 
         world.setBlockAndUpdate(targetPos, newBlock);
+        world.sendParticles(ParticleTypes.SCULK_CHARGE_POP, targetPos.getX() + 0.5D, targetPos.getY() + 1.15D, targetPos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+        world.playSound((Player)null, targetPos, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
 
         // Update each adjacent block if it is a sculk vein
         // This is to prevent vein from staying on blocks that it does not belong on.
@@ -77,7 +83,7 @@ public class InfestationConversionHandler
         for(BlockPos pos : adjacentBlockPos)
         {
             BlockState blockState = world.getBlockState(pos);
-            if(blockState.getBlock() == BlockRegistry.VEIN.get())
+            if(blockState.getBlock() == BlockRegistry.TENDRILS.get())
             {
                 if(!blockState.getBlock().canSurvive(blockState, world, pos))
                     world.destroyBlock(pos, false);

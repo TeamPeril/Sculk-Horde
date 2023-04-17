@@ -9,15 +9,19 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
@@ -82,6 +86,15 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     {
         super(BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), blockPos, blockState);
         searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+        
+        if(blockState.getValue(SculkSummonerBlock.STATE) == 0)
+        {
+            behavior_state = STATE_COOLDOWN;
+        }
+        else
+        {
+            behavior_state = STATE_READY_TO_SPAWN;
+        }
 
     }
 
@@ -195,6 +208,8 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
         }
         else if(blockEntity.behavior_state == blockEntity.STATE_SPAWNING)
         {
+            ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, blockPos.getX() + 0.5D, blockPos.getY() + 1.15D, blockPos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+            ((ServerLevel)level).playSound((Player)null, blockPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
             //Choose spawn positions
             ArrayList<BlockPos> possibleSpawnPositions = blockEntity.getSpawnPositionsInCube((ServerLevel) level, blockEntity.getBlockPos(), 5, blockEntity.MAX_SPAWNED_ENTITIES);
 

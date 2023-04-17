@@ -87,7 +87,7 @@ public class SculkHorde {
             event.accept(BlockRegistry.SCULK_SHROOM_CULTURE);
             event.accept(BlockRegistry.SMALL_SHROOM);
             event.accept(BlockRegistry.SPIKE);
-            event.accept(BlockRegistry.VEIN);
+            event.accept(BlockRegistry.TENDRILS);
         }
     }
 
