@@ -14,10 +14,14 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
@@ -26,6 +30,7 @@ import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -344,7 +349,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     // Vibration Code
 
     public TagKey<GameEvent> getListenableEvents() {
-        return GameEventTags.SHRIEKER_CAN_LISTEN;
+        return GameEventTags.VIBRATIONS;
     }
 
     public void onSignalReceive(ServerLevel level, GameEventListener gameEventListener, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float strenth) {
