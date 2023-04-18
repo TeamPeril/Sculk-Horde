@@ -1,40 +1,24 @@
-<h2><span style="font-family: 'andale mono', monospace; font-size: 36px;"><strong>The Sculk Horde (Early In Development)</strong></span></h2>
-<p>The Sculk Horde implements a new end-game event to your game that once activated, will force you to fight against the newly awaked ancient Sculk Horde in order to survive. The Sculk Horde seeks to infest your world and assimilate any living entity in order to grow,&nbsp; become more intelligent, and become stronger. Its your duty to eliminate the Sculk Horde at all costs before it becomes too late.</p>
-
-Download Here
-
-https://www.curseforge.com/minecraft/mc-mods/sculk-horde
-
-Video Demo
-
-[https://twitter.com/peril_team/status/1562491905669095431](https://twitter.com/peril_team/status/1562491905669095431)
-
+<span style="font-family: 'andale mono', monospace; font-size: 36px;"><strong><img src="https://www.bisecthosting.com/partners/custom-banners/ffec4be2-5ca6-4797-b13a-3d94f2bfc1cd.webp" alt="" /></strong></span>
+<h1><span style="font-family: 'andale mono', monospace; font-size: 36px;"><strong>The Sculk Horde </strong></span></h1>
+<p>The Sculk Horde unleashes an ultimate end-game challenge that will push you to your limits. Once triggered, the ancient Sculk Horde awakens from its slumber, hungering for the assimilation of all life forms in your world. This highly intelligent and adaptive horde will stop at nothing to grow stronger and more powerful, making it your sworn duty to eradicate them before they consume everything in their path. Are you ready to take on this perilous mission and emerge victorious?</p>
 <p>&nbsp;</p>
-<h3>Features</h3>
+<h1>Features</h1>
 <p>&nbsp;</p>
-<h4>The Sculk Ecosystem</h4>
-<p>The Sculk Ecosystem is a direct result of the Sculk Horde spreading into biomes. This conversion is not permanent and can be reversed. The Sculk Ecosystem is a perfect environment for the Sculk Horde to thrive. The ecosystem is rich with Sculk flora and creatures that play a role in keeping the Sculk Horde thriving.</p>
+<h2>The Sculk Ecosystem</h2>
+<p>The Sculk Ecosystem is a relentless force of nature, an insatiable devourer of life itself. Yet, even in the face of such destruction, there is hope. The Sculk corruption can be fought and defeated, and the land reclaimed. In this world, tainted by the Sculk infection, the Sculk Horde thrives, their twisted presence felt in every shadow and corner, fed by the abundant life in our realm. Here, the Horde has all the tools it needs to not just survive, but to flourish and dominate. The Sculk Ecosystem is a testament to the sheer adaptability and ferocity of the Horde, a perfect symbiosis of predator and prey.</p>
 <p>&nbsp;</p>
-
-![Sculk Ecosystem](https://www.dropbox.com/s/fpmn1506lg4e67o/2022-08-24_11.53.37.png?raw=true "Sculk Ecosystem")
-
+<p><img src="https://www.dropbox.com/s/7u7yv1neh5b43f4/ecosystem.png?dl=1" alt="The Sculk Ecosystem" width="900" height="477" /></p>
 <p>&nbsp;</p>
-<h4>Sculk Infested Mobs</h4>
-<p>In the earlier stages of the Sculk Horde , the Gravemind will conjure Sculk infested mob variants to use to defend and attack. However, in later stages the Gravemind will use hybrid designs of its own</p>
+<h2>Sculk Infested Mobs</h2>
+<p>In the early stages of the Sculk Horde, the Gravemind summons Sculk-infused mobs, skillfully wielding them in defense and attack. But in the advanced phases of the Horde's evolution, the Gravemind takes matters into its own hands, crafting hybrid monstrosities of unparalleled power and cunning.</p>
 <p>&nbsp;</p>
-
-![Sculk Infected Mobs](https://www.dropbox.com/s/4gkfqydj5yzrfwu/sculk%20mobs.png?raw=true "Sculk Infected Mobs")
-
+<p><img src="https://www.dropbox.com/s/7ozbjrd5t2orhnc/mob-showcase.png?dl=1" alt="Sculk Infected Mobs" width="898" height="338" /></p>
 <p>&nbsp;</p>
-<h4>The Evolution System</h4>
-<p>As the Sculk Horde accumulates mass from entities, the Sculk Horde evolves after reaching specific Sculk Mass goals. As the horde evolves, it becomes more adaptive, stronger, and intelligent. With different evolution states comes different mobs that the Sculk Horde will use.</p>
+<h2>The Evolution System</h2>
+<p>Behold the Sculk Horde, a formidable force that grows in power as it absorbs entities into its ranks. As it reaches certain thresholds of Sculk Mass, the Horde evolves, becoming more adaptive, stronger, and smarter. Each evolution brings forth a new breed of creature that the Horde can unleash upon its foes, making it a force to be reckoned with.</p>
 <p>&nbsp;</p>
-
-![Sculk Evolution](https://www.dropbox.com/s/gc80ob4jt8fuxyv/Evolution.png?raw=true "Sculk Evolution")
-
-<p>&nbsp;</p>
-<h4>The Gravemind System</h4>
-<p>The Gravemind is the omnipresent entity that controls and coordinates the Sculk Horde . The Gravemind only comes into existence in the second stage of evolution of the Sculk Horde . The Gravemind will attempt to strategically use its resources to spread the horde and counter attackers. The Gravemind is able to remember various interactions between the Horde and mobs and use this information to determine how much of a threat a mob is. The Horde will adapt uniquely to mobs based on this memory system which can result in the Horde attacking specific mobs on sight.</p>
-<p>&nbsp;</p>
-<h4>&nbsp;</h4>
-<p>&nbsp;</p>
+<h2>The Gravemind System</h2>
+<p>The Sculk Horde is but a mere extension of the Gravemind, an omnipotent entity that only emerges in the second stage of the Horde's evolution. With a strategic mind unmatched by any other, the Gravemind orchestrates the Horde's every move, tirelessly plotting to expand its reach and thwart all who would dare to challenge it. Armed with a memory system that stores every encounter with other beings, the Gravemind can effortlessly assess the level of danger posed by any potential threat and adapt the Horde's tactics accordingly. Its ability to learn and evolve makes the Horde a formidable and unpredictable force, capable of unleashing devastating attacks on its enemies at a moment's notice.</p>
+<p><br /><img src="https://www.dropbox.com/s/jcdnkm3i5ogqndq/sculk_brain_node.png?dl=1" alt="The Sculk Brain Node" width="862" height="457" /></p>
+<h2>Screenshots</h2>
+<p><img src="https://www.dropbox.com/s/3tqksmtu8s12rgg/screenshots.png?dl=1" alt="" width="860" height="790" /></p>
