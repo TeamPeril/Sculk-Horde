@@ -33,16 +33,21 @@ public class BlockAlgorithms {
      * Will return an array list that represents a 3x3x3 cube of all block
      * positions with the origin being the centroid. Does not include origin
      * in this list.
-     * @param origin The Center
      * @return A list of Neighbors in a cube
      */
-    public static ArrayList<BlockPos> getNeighborsCube(BlockPos origin)
-    {
-        ArrayList<BlockPos> list = new ArrayList<>();
-        list.addAll(getNeighborsXZPlane(origin, false));
-        list.addAll(getNeighborsXZPlane(origin.above(), true));
-        list.addAll(getNeighborsXZPlane(origin.below(), true));
-        return list;
+    public static ArrayList<BlockPos> getNeighborsCube(BlockPos pos, boolean includeOrigin) {
+        ArrayList<BlockPos> neighbors = new ArrayList<>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                for (int k = -1; k <= 1; k++) {
+                    if (i == 0 && j == 0 && k == 0 && !includeOrigin) {
+                        continue;
+                    }
+                    neighbors.add(pos.offset(i, j, k));
+                }
+            }
+        }
+        return neighbors;
     }
 
 
@@ -275,18 +280,6 @@ public class BlockAlgorithms {
             }
         }
         return Optional.empty();
-    }
-
-    /**
-     * Chooses a random neighbor position
-     * @param origin The origin Block Position
-     * @param serverWorld The ServerWorld of the block
-     * @return The target Block Position
-     */
-    public static BlockPos getRandomNeighbor(ServerLevel serverWorld, BlockPos origin)
-    {
-        ArrayList<BlockPos> positions = getNeighborsCube(origin);
-        return positions.get(serverWorld.random.nextInt(positions.size()));
     }
 
     /**

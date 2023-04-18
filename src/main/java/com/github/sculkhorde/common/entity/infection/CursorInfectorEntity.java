@@ -128,18 +128,12 @@ public class CursorInfectorEntity extends Entity
 
 
             // Get all possible directions
-            ArrayList<Direction> possibleDirections = new ArrayList<>();
-            for (Direction dir : Direction.values()) {
-                if (!isObstructed(level.getBlockState(currentBlock.relative(dir)), currentBlock.relative(dir))) {
-                    possibleDirections.add(dir);
-                }
-            }
-            Collections.shuffle(possibleDirections);
+            ArrayList<BlockPos> possiblePaths = BlockAlgorithms.getNeighborsCube(currentBlock, false);
+            Collections.shuffle(possiblePaths);
 
 
             // Add all neighbors to the queue
-            for (Direction dir : possibleDirections) {
-                BlockPos neighbor = currentBlock.relative(dir);
+            for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
                 if (!visited.contains(neighbor)) {
@@ -218,7 +212,7 @@ public class CursorInfectorEntity extends Entity
         else if (state == State.EXPLORING)
         {
             // Get Neighbors of Each Block
-            ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition());
+            ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition(), false);
             // Create a new list to store unobstructed neighbors
             ArrayList<BlockPos> unobstructedNeighbors = new ArrayList<>();
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list

@@ -78,7 +78,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     // 0 = Cooldown
     // 1 = ReadyToSpawn
-    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 1);
+    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -176,7 +176,9 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::spawnReinforcementsTick);
+        return !level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+            ((SculkSummonerBlockEntity) entity).getListener().tick(level1);
+        }) : null;
     }
 
     @org.jetbrains.annotations.Nullable
