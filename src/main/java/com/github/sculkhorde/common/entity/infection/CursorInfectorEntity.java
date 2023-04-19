@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -36,7 +37,7 @@ public class CursorInfectorEntity extends Entity
     protected int MAX_INFECTIONS = 100;
     protected int infections = 0;
     protected int MAX_RANGE = 20;
-    protected long MAX_LIFETIME_MILLIS = TimeUnit.MINUTES.toMillis(20);
+    protected long MAX_LIFETIME_MILLIS = TimeUnit.SECONDS.toMillis(60);
     protected long creationTickTime = System.currentTimeMillis();
     protected long lastTickTime = 0;
 
@@ -136,7 +137,7 @@ public class CursorInfectorEntity extends Entity
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
-                if (!visited.contains(neighbor)) {
+                if (!visited.contains(neighbor) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     queue.add(neighbor);
                     visited.add(neighbor);
                 }
@@ -314,7 +315,7 @@ public class CursorInfectorEntity extends Entity
     protected void spawnParticleEffects()
     {
         //TODO PORT
-        //this.level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+        this.level.addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
     }
 
     /**

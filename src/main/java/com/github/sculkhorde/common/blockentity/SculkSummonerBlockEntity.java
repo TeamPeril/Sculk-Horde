@@ -81,6 +81,8 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     {
         super(BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), blockPos, blockState);
         searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
+        possibleLivingEntityTargets = new ArrayList<>();
+        possibleAggressorTargets = new ArrayList<>();
     }
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
@@ -365,7 +367,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
 
     @Override
     public TagKey<GameEvent> getListenableEvents() {
-        return GameEventTags.WARDEN_CAN_LISTEN;
+        return GameEventTags.SHRIEKER_CAN_LISTEN;
     }
 
     @Override
