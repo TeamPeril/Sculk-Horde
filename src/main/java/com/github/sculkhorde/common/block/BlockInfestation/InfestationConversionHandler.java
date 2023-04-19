@@ -8,6 +8,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.tags.BlockTags;
@@ -119,7 +120,7 @@ public class InfestationConversionHandler
     public boolean deinfectBlock(ServerLevel world, BlockPos targetPos)
     {
         BlockState targetBlock = world.getBlockState(targetPos);
-        BlockState victimVariant = infestationTable.getNormalVariant(targetBlock);
+        BlockState victimVariant = infestationTable.getNormalVariant(targetBlock).defaultBlockState();
 
         // Special Condition for Infested Logs because I do not care right now
         if(targetBlock.is(BlockRegistry.INFESTED_LOG_DORMANT.get()))
@@ -195,7 +196,7 @@ public class InfestationConversionHandler
          * @param normalVariant The normal variant of the block.
          * @param infectedVariant The infected variant of the block.
          */
-        public void addEntry(BlockState normalVariant, BlockState infectedVariant)
+        public void addEntry(Block normalVariant, BlockState infectedVariant)
         {
             entries.add(new InfestationTableEntry(normalVariant, infectedVariant));
         }
@@ -209,7 +210,7 @@ public class InfestationConversionHandler
         {
             for(InfestationTableEntry entry : entries)
             {
-                if(entry.getNormalVariant() == normalVariant)
+                if(entry.getNormalVariant() == normalVariant.getBlock())
                 {
                     return entry.getInfectedVariant();
                 }
@@ -222,7 +223,7 @@ public class InfestationConversionHandler
          * @param infectedVariant The infected variant of the block.
          * @return The normal variant of the block.
          */
-        public BlockState getNormalVariant(BlockState infectedVariant)
+        public Block getNormalVariant(BlockState infectedVariant)
         {
             for(InfestationTableEntry entry : entries)
             {
@@ -246,7 +247,7 @@ public class InfestationConversionHandler
 
             for(InfestationTableEntry entry : entries)
             {
-                if(entry.getNormalVariant() == blockState)
+                if(entry.getNormalVariant() == blockState.getBlock())
                 {
                     return true;
                 }
@@ -280,17 +281,17 @@ public class InfestationConversionHandler
      */
     public class InfestationTableEntry
     {
-        private BlockState normalVariant;
+        private Block normalVariant;
         private BlockState infectedVariant;
 
         // Default constructor
-        public InfestationTableEntry(BlockState normalVariantIn, BlockState infectedVariantIn)
+        public InfestationTableEntry(Block normalVariantIn, BlockState infectedVariantIn)
         {
             normalVariant = normalVariantIn;
             infectedVariant = infectedVariantIn;
         }
 
-        public BlockState getNormalVariant()
+        public Block getNormalVariant()
         {
             return normalVariant;
         }

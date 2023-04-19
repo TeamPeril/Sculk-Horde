@@ -84,7 +84,12 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
             } else {
                 return true;
             }
-        } else {
+        }
+        else if(blockState.is(Blocks.GRASS) || blockState.is(Blocks.TALL_GRASS) || blockState.is(Blocks.FERN))
+        {
+            return true;
+        }
+        else {
             return false;
         }
     };
