@@ -68,7 +68,7 @@ public class InfestationConversionHandler
         // Special Condition for Infested Logs because I do not care right now
         if(targetBlock.is(BlockTags.LOGS))
         {
-            newBlock = BlockRegistry.INFESTED_LOG_DORMANT.get().defaultBlockState();
+            newBlock = BlockRegistry.INFESTED_LOG.get().defaultBlockState();
         }
 
 
@@ -97,7 +97,7 @@ public class InfestationConversionHandler
             BlockAlgorithms.placeSculkFlora(targetPos.above(), world);
 
         // If the block we are placing is an Infested Log, place down sculk flora around it.
-        if(newBlock.getBlock() == BlockRegistry.INFESTED_LOG_DORMANT.get())
+        if(newBlock.getBlock() == BlockRegistry.INFESTED_LOG.get())
             BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
         // Chance to place a sculk node above the block
@@ -123,7 +123,7 @@ public class InfestationConversionHandler
         BlockState victimVariant = infestationTable.getNormalVariant(targetBlock).defaultBlockState();
 
         // Special Condition for Infested Logs because I do not care right now
-        if(targetBlock.is(BlockRegistry.INFESTED_LOG_DORMANT.get()))
+        if(targetBlock.is(BlockRegistry.INFESTED_LOG.get()))
         {
             victimVariant = Blocks.AIR.defaultBlockState();
         }
@@ -263,7 +263,7 @@ public class InfestationConversionHandler
         public boolean isInfectedVariant(BlockState blockState)
         {
             // Special Condition for Infested Logs because I do not care right now
-            if(blockState.is(BlockRegistry.INFESTED_LOG_DORMANT.get())) { return true;}
+            if(blockState.is(BlockRegistry.INFESTED_LOG.get())) { return true;}
 
             for(InfestationTableEntry entry : entries)
             {

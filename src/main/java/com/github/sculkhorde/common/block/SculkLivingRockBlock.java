@@ -22,7 +22,7 @@ public class SculkLivingRockBlock extends Block implements IForgeBlock {
      * MAP_COLOR is the color that will show up on a map to represent this block
      */
     public static Material MATERIAL = Material.STONE;
-    public static MaterialColor MAP_COLOR = CrustBlock.MAP_COLOR;
+    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_BLUE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>

@@ -148,26 +148,6 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     }
 
     /**
-     * The function that determines if a position is a good spawn location<br>
-     * @param config ???
-     * @param world The world that the mob is trying to spawn in
-     * @param reason An object that indicates why a mob is being spawned
-     * @param pos The Block Position of the potential spawn location
-     * @param random ???
-     * @return Returns a boolean determining if it is a suitable spawn location
-     */
-    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, Random random)
-    {
-        // If peaceful, return false
-        if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-        // If not because of chunk generation or natural, return false
-        else if (reason != MobSpawnType.CHUNK_GENERATION && reason != MobSpawnType.NATURAL) return false;
-        //If above SPAWN_Y_MAX and the block below is not sculk crust, return false
-        else if (pos.getY() > SPAWN_Y_MAX && world.getBlockState(pos.below()).getBlock() != BlockRegistry.CRUST.get()) return false;
-        return true;
-    }
-
-    /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
      * You can manually add in goals in this function, however, I made an automatic system for this.

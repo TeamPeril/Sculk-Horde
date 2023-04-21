@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.VineBlock;
@@ -21,10 +22,6 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class TendrilsBlock extends VineBlock implements IForgeBlock {
 
@@ -201,7 +198,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.CRUST.get()))
+        else if(blockState.is(Blocks.SCULK))
         {
             return false;
         }
@@ -221,7 +218,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.INFESTED_STONE_DORMANT.get()))
+        else if(blockState.is(BlockRegistry.INFESTED_STONE.get()))
         {
             return false;
         }
@@ -240,7 +237,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.vein")); //Text that displays if holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.tendrils")); //Text that displays if holding shift
 
     }
 }

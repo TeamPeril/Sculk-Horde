@@ -46,7 +46,7 @@ public class BlockRegistry {
     //Ancient Large Tile
     public static final RegistryObject<Block> ANCIENT_LARGE_TILE =
 			registerBlock("ancient_large_tile", () -> new Block(BlockBehaviour.Properties.of(
-					CrustBlock.MATERIAL, CrustBlock.MAP_COLOR)
+					Material.STONE, MaterialColor.TERRACOTTA_BLUE)
     				.strength(15f, 30f)//Hardness & Resistance
     				.requiresCorrectToolForDrops()
     				.sound(SoundType.ANCIENT_DEBRIS)
@@ -79,18 +79,20 @@ public class BlockRegistry {
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
 
-	public static final RegistryObject<CrustBlock> CRUST =
-			registerBlock("crust", () -> new CrustBlock());
+	public static final RegistryObject<Block> INFESTED_STONE =
+			registerBlock("infested_stone", () -> new Block(BlockBehaviour.Properties.of(
+							Material.STONE, MaterialColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.ANCIENT_DEBRIS)
+			));
 
-	public static final RegistryObject<InfestedStoneBlock> INFESTED_STONE_DORMANT =
-			registerBlock("infested_stone", () -> new InfestedStoneBlock());
-
-	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG_DORMANT =
+	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
 			registerBlock("infested_log", () -> new InfestedLogBlock());
 
 	public static final RegistryObject<Block> INFESTED_SAND =
 			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of(
-							Material.SAND, MaterialColor.TERRACOTTA_BLUE)
+							Material.SAND, MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.SAND)

@@ -46,7 +46,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
      * MAP_COLOR is the color that will show up on a map to represent this block
      */
     public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = CrustBlock.MAP_COLOR;
+    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_WHITE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
