@@ -14,10 +14,15 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import software.bernie.example.entity.DynamicExampleEntity;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -165,9 +170,49 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         return goals;
     }
 
+    private static final RawAnimation BREATHING_ANIMATION = RawAnimation.begin().thenPlay("breathing");
+    private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs_idle");
+    private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs_walking");
+    private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenLoop("arms_idle");
+    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms_attack");
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        controllers.add(
+                new AnimationController<>(this, "Legs", 20, this::poseLegs),
+                new AnimationController<>(this, "Body", 20, this::poseBody),
+                new AnimationController<>(this, "Arms", 20, this::poseArms)
+        );
+    }
+
+    // Create the animation handler for the body segment
+    protected PlayState poseLegs(AnimationState<SculkZombieEntity> state)
+    {
+        if(state.isMoving())
+        {
+            state.setAnimation(LEGS_WALK_ANIMATION);
+        }
+        else
+        {
+            state.setAnimation(LEGS_IDLE_ANIMATION);
+        }
+
+        return PlayState.CONTINUE;
+    }
+
+    // Create the animation handler for the body segment
+    protected PlayState poseBody(AnimationState<SculkZombieEntity> state)
+    {
+        state.setAnimation(BREATHING_ANIMATION);
+        return PlayState.CONTINUE;
+    }
+
+    // Create the animation handler for the body segment
+    protected PlayState poseArms(AnimationState<SculkZombieEntity> state)
+    {
+
+        state.setAnimation(ARMS_IDLE_ANIMATION);
+        return PlayState.CONTINUE;
     }
 
     @Override
