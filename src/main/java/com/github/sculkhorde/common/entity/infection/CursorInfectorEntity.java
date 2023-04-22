@@ -37,7 +37,7 @@ public class CursorInfectorEntity extends Entity
     protected int MAX_INFECTIONS = 100;
     protected int infections = 0;
     protected int MAX_RANGE = 20;
-    protected long MAX_LIFETIME_MILLIS = TimeUnit.SECONDS.toMillis(60);
+    protected long MAX_LIFETIME_MILLIS = TimeUnit.SECONDS.toMillis(60 * 5);
     protected long creationTickTime = System.currentTimeMillis();
     protected long lastTickTime = 0;
 
