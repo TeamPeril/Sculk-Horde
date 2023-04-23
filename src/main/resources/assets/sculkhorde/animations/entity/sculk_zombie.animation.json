@@ -121,6 +121,42 @@
 					}
 				}
 			}
+		},
+		"arms.attack": {
+			"animation_length": 0.08,
+			"override_previous_animation": true,
+			"bones": {
+				"rightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.04": {
+							"vector": [-40, 0, 0],
+							"easing": "easeOutSine"
+						},
+						"0.08": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"leftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.04": {
+							"vector": [-40, 0, 0],
+							"easing": "easeOutSine"
+						},
+						"0.08": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				}
+			}
 		}
 	}
 }

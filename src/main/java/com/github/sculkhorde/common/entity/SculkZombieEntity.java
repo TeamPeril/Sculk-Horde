@@ -176,17 +176,18 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
     private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
     private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
+    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "Legs", 5, this::poseLegs),
-                new AnimationController<>(this, "Body", 20, this::poseBody),
-                new AnimationController<>(this, "Arms", 20, this::poseArms)
+                new AnimationController<>(this, "Body", 5, this::poseBody),
+                new AnimationController<>(this, "Arms", 5, this::poseArms)
         );
     }
 
-    // Create the animation handler for the body segment
+    // Create the animation handler for the leg segment
     protected PlayState poseLegs(AnimationState<SculkZombieEntity> state)
     {
         if(state.isMoving())
@@ -217,11 +218,14 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         return PlayState.CONTINUE;
     }
 
-    // Create the animation handler for the body segment
+    // Create the animation handler for the arm segment
     protected PlayState poseArms(AnimationState<SculkZombieEntity> state)
     {
-
-        if(state.isMoving())
+        if(state.getAnimatable().swinging)
+        {
+            state.setAnimation(ARMS_ATTACK_ANIMATION);
+        }
+        else if(state.isMoving())
         {
             state.setAnimation(ARMS_WALK_ANIMATION);
         }
@@ -229,6 +233,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         {
             state.setAnimation(ARMS_IDLE_ANIMATION);
         }
+
 
         return PlayState.CONTINUE;
     }
