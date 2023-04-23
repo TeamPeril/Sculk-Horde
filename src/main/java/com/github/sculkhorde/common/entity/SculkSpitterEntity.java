@@ -24,6 +24,10 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -180,10 +184,70 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         return goals;
     }
 
-    // Add our animations
+    // ANIMATIONS
+
+    private static final RawAnimation BODY_IDLE_ANIMATION = RawAnimation.begin().thenPlay("body.idle");
+    private static final RawAnimation BODY_WALK_ANIMATION = RawAnimation.begin().thenPlay("body.walk");
+    private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs.idle");
+    private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
+    private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
+    private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
+    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        controllers.add(
+                new AnimationController<>(this, "Legs", 5, this::poseLegs),
+                new AnimationController<>(this, "Body", 5, this::poseBody),
+                new AnimationController<>(this, "Arms", 5, this::poseArms)
+        );
+    }
+
+    // Create the animation handler for the leg segment
+    protected PlayState poseLegs(AnimationState<SculkSpitterEntity> state)
+    {
+        if(state.isMoving())
+        {
+            state.setAnimation(LEGS_WALK_ANIMATION);
+        }
+        else
+        {
+            //state.setAnimation(LEGS_IDLE_ANIMATION);
+            state.setAnimation(LEGS_IDLE_ANIMATION);
+        }
+        return PlayState.CONTINUE;
+    }
+
+    // Create the animation handler for the body segment
+    protected PlayState poseBody(AnimationState<SculkSpitterEntity> state)
+    {
+        if(state.isMoving())
+        {
+            state.setAnimation(BODY_WALK_ANIMATION);
+        }
+        else
+        {
+            state.setAnimation(BODY_IDLE_ANIMATION);
+        }
+        return PlayState.CONTINUE;
+    }
+
+    // Create the animation handler for the arm segment
+    protected PlayState poseArms(AnimationState<SculkSpitterEntity> state)
+    {
+        if(state.getAnimatable().swinging)
+        {
+            state.setAnimation(ARMS_ATTACK_ANIMATION);
+        }
+        else if(state.isMoving())
+        {
+            state.setAnimation(ARMS_WALK_ANIMATION);
+        }
+        else
+        {
+            state.setAnimation(ARMS_IDLE_ANIMATION);
+        }
+        return PlayState.CONTINUE;
     }
 
     @Override

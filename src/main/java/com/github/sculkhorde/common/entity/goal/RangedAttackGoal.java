@@ -148,6 +148,7 @@ public class RangedAttackGoal extends Goal {
     public void start() {
         super.start();
         this.entity.setAggressive(true);
+        this.entity.swinging = true;
     }
 
     /**
@@ -162,6 +163,7 @@ public class RangedAttackGoal extends Goal {
         this.seeTime = 0;
         this.attackTime = -1;
         this.entity.stopUsingItem();
+        this.entity.swinging = false;
     }
 
     /**
