@@ -139,7 +139,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
                 //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                new WaterAvoidingRandomStrollGoal(this, 0.4D),
+                new WaterAvoidingRandomStrollGoal(this, 0.7D),
                 // new LookAtGoal(this, LivingEntity.class, 6.0F),
                 // new LookAtGoal(this, MobEntity.class, 8.0F)
         };
