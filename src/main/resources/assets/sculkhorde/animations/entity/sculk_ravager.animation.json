@@ -83,6 +83,42 @@
 					}
 				}
 			}
+		},
+		"head.attack": {
+			"animation_length": 0.72,
+			"override_previous_animation": true,
+			"bones": {
+				"neck": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.24": {
+							"vector": [0, 0, -5],
+							"easing": "easeOutSine"
+						},
+						"0.72": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.24": {
+							"vector": [20, 0, 0],
+							"easing": "easeOutSine"
+						},
+						"0.72": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				}
+			}
 		}
 	}
 }
