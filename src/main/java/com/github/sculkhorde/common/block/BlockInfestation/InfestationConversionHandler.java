@@ -59,6 +59,7 @@ public class InfestationConversionHandler
      */
     public boolean infectBlock(ServerLevel world, BlockPos targetPos)
     {
+        if(world == null) return false;
 
         BlockState targetBlock = world.getBlockState(targetPos);
         BlockState newBlock = null;
@@ -125,8 +126,21 @@ public class InfestationConversionHandler
      */
     public boolean deinfectBlock(ServerLevel world, BlockPos targetPos)
     {
+        if(world == null)
+        {
+            return false;
+        }
+
         BlockState targetBlock = world.getBlockState(targetPos);
-        BlockState victimVariant = infestationTable.getNormalVariant(targetBlock).defaultBlockState();
+        Block victimBlock = infestationTable.getNormalVariant(targetBlock);
+
+        if(victimBlock == null)
+        {
+            SculkHorde.LOGGER.error("Error Deinfecting Block: " + targetBlock.getBlock().toString());
+            return false;
+        }
+
+        BlockState victimVariant = victimBlock.defaultBlockState();
 
         // Special Condition for Infested Logs because I do not care right now
         if(targetBlock.is(BlockRegistry.INFESTED_LOG.get()))
@@ -253,7 +267,7 @@ public class InfestationConversionHandler
 
             for(InfestationTableEntry entry : entries)
             {
-                if(entry.getNormalVariant() == blockState.getBlock())
+                if(entry.getNormalVariant() == blockState.getBlock() && entry.getNormalVariant() != null)
                 {
                     return true;
                 }
@@ -273,7 +287,7 @@ public class InfestationConversionHandler
 
             for(InfestationTableEntry entry : entries)
             {
-                if(entry.getInfectedVariant() == blockState)
+                if(entry.getInfectedVariant() == blockState && entry.getInfectedVariant() != null)
                 {
                     return true;
                 }

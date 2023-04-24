@@ -17,15 +17,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BeehiveBlock;
-import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
@@ -34,7 +29,6 @@ import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -52,9 +46,6 @@ import java.util.function.Predicate;
 
 public class SculkSummonerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig, GeoBlockEntity
 {
-    private final int STATE_COOLDOWN = 0;
-    private final int STATE_READY_TO_SPAWN = 1;
-    private final int STATE_SPAWNING = 2;
     AABB searchArea;
     //ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
     private final int ACTIVATION_DISTANCE = 32;
@@ -65,11 +56,11 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     //Used to track the last time this tile was ticked
     private long lastTimeOfSpawn = System.currentTimeMillis();
     private long timeElapsedSinceSpawn = 0;
-    private long spawningCoolDownMilis = TimeUnit.SECONDS.toMillis(20);
+    private final long spawningCoolDownMilis = TimeUnit.SECONDS.toMillis(20);
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
-    private TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
-    private TargetParameters infectableTargetParameters = new TargetParameters().enableTargetPassives();
+    private final TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
+    private final TargetParameters infectableTargetParameters = new TargetParameters().enableTargetPassives();
 
     // Vibration Code
     private VibrationListener listener = new VibrationListener(new BlockPositionSource(this.worldPosition), 8, this);
@@ -87,9 +78,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
-    private int STATE_COOLDOWN_VALUE = 0;
-    private int STATE_READY_TO_SPAWN_VALUE = 1;
-    private int STATE_SPAWNING_VALUE = 2;
+    private final int STATE_COOLDOWN_VALUE = 0;
+    private final int STATE_READY_TO_SPAWN_VALUE = 1;
+    private final int STATE_SPAWNING_VALUE = 2;
 
     private boolean isOnCooldown()
     {
@@ -137,7 +128,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
      */
     public boolean hasSpawningCoolDownEnded()
     {
-        return (TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeOfSpawn, TimeUnit.MILLISECONDS) <= spawningCoolDownMilis);
+        return (timeElapsedSinceSpawn >= spawningCoolDownMilis);
     }
 
 
@@ -173,16 +164,20 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     {
         if(level == null || level.isClientSide) { return;}
 
+        blockEntity.timeElapsedSinceSpawn = System.currentTimeMillis() - blockEntity.lastTimeOfSpawn;
+
         if(blockEntity.isOnCooldown())
         {
-            blockEntity.timeElapsedSinceSpawn = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.lastTimeOfSpawn, TimeUnit.NANOSECONDS);
-
-            if(blockEntity.timeElapsedSinceSpawn < blockEntity.spawningCoolDownMilis)
+            if(blockEntity.hasSpawningCoolDownEnded())
+            {
+                blockEntity.setReadyToSpawn();
+            }
+            else
             {
                 return;
             }
 
-            blockEntity.setReadyToSpawn();
+
         }
 
         else if(blockEntity.isReadyToSpawn())
@@ -238,11 +233,11 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
 
             if (blockEntity.possibleAggressorTargets.size() != 0) {
                 blockEntity.request.is_aggressor_nearby = true;
-                blockEntity.lastTimeOfSpawn = System.nanoTime();
+                blockEntity.lastTimeOfSpawn = System.currentTimeMillis();
             }
             if (blockEntity.possibleLivingEntityTargets.size() != 0) {
                 blockEntity.request.is_non_sculk_mob_nearby = true;
-                blockEntity.lastTimeOfSpawn = System.nanoTime();
+                blockEntity.lastTimeOfSpawn = System.currentTimeMillis();
             }
 
             //If there is some sort of enemy near by, request reinforcement

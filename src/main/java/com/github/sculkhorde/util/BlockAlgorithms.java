@@ -11,6 +11,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
 
@@ -352,7 +353,7 @@ public class BlockAlgorithms {
 
         //If block below target is valid and the target can be replaced by water
         if(blockState.canSurvive(world, targetPos)
-                && world.getBlockState(targetPos).isAir())
+                && world.getBlockState(targetPos).canBeReplaced(Fluids.WATER))
         {
             world.setBlockAndUpdate(targetPos, blockState);
         }

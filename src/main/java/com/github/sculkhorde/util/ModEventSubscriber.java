@@ -50,9 +50,9 @@ public class ModEventSubscriber {
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SAND, BlockRegistry.INFESTED_SAND.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), 1);
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
-        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 2);
+        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), 2);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 3);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 4);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 6);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 6);
