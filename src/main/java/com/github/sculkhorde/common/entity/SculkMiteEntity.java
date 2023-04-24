@@ -4,38 +4,35 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Random;
-
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
 public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -66,19 +63,6 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
 
-    /**
-     * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
-     * 100 = Zombie<br>
-     * 12 = Sheep<br>
-     * 10 = Enderman<br>
-     * 8 = Cow<br>
-     * 5 = Witch<br>
-     */
-    public static int SPAWN_WEIGHT = 50;
-    //SPAWN_MIN determines the minimum amount of this mob that will spawn in a group
-    public static int SPAWN_MIN = 1;
-    //SPAWN_MAX determines the maximum amount of this mob that will spawn in a group
-    public static int SPAWN_MAX = 5;
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked
@@ -152,7 +136,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
      * @param random ???
      * @return Returns a boolean determining if it is a suitable spawn location
      */
-    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, Random random)
+    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random)
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
@@ -161,6 +145,13 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
         if (world.getBrightness(LightLayer.BLOCK, pos) > 8) return false;
 
         if (world.getBrightness(LightLayer.SKY, pos) > 8) return false;
+
+        if(pos.getY() > 50) return false;
+
+        if(!world.getBiome(pos).is(Biomes.DEEP_DARK))
+        {
+            return false;
+        }
 
         return true;
     }

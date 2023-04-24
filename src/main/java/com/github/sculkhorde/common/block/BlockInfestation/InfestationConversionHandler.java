@@ -94,7 +94,13 @@ public class InfestationConversionHandler
 
         // Given a 25% chance, place down sculk flora on block
         if (world.random.nextInt(4) <= 0)
-            BlockAlgorithms.placeSculkFlora(targetPos.above(), world);
+        {
+            BlockAlgorithms.tryPlaceSculkFlora(targetPos.above(), world);
+        }
+        else if(world.random.nextInt(1000) <= 0)
+        {
+            BlockAlgorithms.tryPlaceLivingRockRoot(targetPos.above(), world);
+        }
 
         // If the block we are placing is an Infested Log, place down sculk flora around it.
         if(newBlock.getBlock() == BlockRegistry.INFESTED_LOG.get())

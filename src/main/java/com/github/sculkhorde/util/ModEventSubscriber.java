@@ -8,7 +8,10 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -56,7 +59,11 @@ public class ModEventSubscriber {
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 200);
         SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 200);
 
-        
+        event.enqueueWork(() -> {
+            SpawnPlacements.register(EntityRegistry.SCULK_MITE.get(),
+                    SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    SculkMiteEntity::passSpawnCondition);
+        });
     }
 
     /* entityAttributes

@@ -7,6 +7,7 @@ import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.procedural.structures.PlannedBlock;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
@@ -327,11 +328,25 @@ public class BlockAlgorithms {
     }
 
     /**
+     * Checks if near sculk node, if true, spawns structure.
+     * @param targetPos The BlockPos to spawn it at
+     * @param world The world to spawn it in.
+     */
+    public static void tryPlaceLivingRockRoot(BlockPos targetPos, ServerLevel world)
+    {
+        //If block below target is valid and the target can be replaced by water
+        if(Gravemind.getGravemindMemory().isInRangeOfNode(targetPos, 100) && world.getBlockState(targetPos).isAir())
+        {
+            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState());
+        }
+    }
+
+    /**
      * A Jank solution to spawning flora. Given a random chance, spawn flora.
      * @param targetPos The BlockPos to spawn it at
      * @param world The world to spawn it in.
      */
-    public static void placeSculkFlora(BlockPos targetPos, ServerLevel world)
+    public static void tryPlaceSculkFlora(BlockPos targetPos, ServerLevel world)
     {
         BlockState blockState = SculkHorde.randomSculkFlora.getRandomEntry().defaultBlockState();
 
