@@ -3,42 +3,20 @@ package com.github.sculkhorde.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
+
+import java.util.Random;
 
 public class SculkCrustParticle extends TextureSheetParticle
 {
     protected SculkCrustParticle(ClientLevel clientLevel, double x, double y, double z, double xDirection, double yDirection, double zDirection) {
         super(clientLevel, x, y, z, xDirection, yDirection, zDirection);
-        this.setSize(0.02f, 0.02f);
-        this.quadSize *= this.random.nextFloat() * 0.6f + 0.2f;
-        this.xd = xDirection * (double) 0.2f + (Math.random() * 2.0 - 1.0) * (double) 0.02f;
-        this.yd = yDirection * (double) 0.2f + (Math.random() * 2.0 - 1.0) * (double) 0.02f;
-        this.zd = zDirection * (double) 0.2f + (Math.random() * 2.0 - 1.0) * (double) 0.02f;
-        this.lifetime = (int) (20.0 / (Math.random() * 0.8 + 0.2));
     }
 
-    @Override
-    public void tick() {
-        this.xo = this.x;
-        this.yo = this.y;
-        this.zo = this.z;
-        if (this.lifetime-- <= 0) {
-            this.remove();
-            return;
-        }
-        this.yd += 0.002;
-        if (this.level != null) {
-            this.move(this.xd, this.yd, this.zd);
-        }
-        this.xd *= 0.85f;
-        this.yd *= 0.85f;
-        this.zd *= 0.85f;
+    protected SculkCrustParticle(ClientLevel clientLevel, double x, double y, double z) {
+        super(clientLevel, x, y, z);
     }
 
-    @Override
-    public float getQuadSize(float tickDelta) {
-        float f = ((float) this.age + tickDelta) / (float) this.lifetime;
-        return this.quadSize * (1.0f - f * f * 0.5f);
-    }
 
     @Override
     public ParticleRenderType getRenderType() {
@@ -54,8 +32,15 @@ public class SculkCrustParticle extends TextureSheetParticle
 
         @Override
         public Particle createParticle(SimpleParticleType defaultParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i) {
+            RandomSource random = clientWorld.random;
+            double d0 = random.nextGaussian() * (double)1.0E-6F;
+            double d1 = random.nextGaussian() * (double)1.0E-4F;
+            double d2 = random.nextGaussian() * (double)1.0E-6F;
             SculkCrustParticle particle = new SculkCrustParticle(clientWorld, d, e, f, g, h, i);
             particle.pickSprite(this.spriteProvider);
+            particle.quadSize *= random.nextFloat() * 0.4F + 0.1F;
+            particle.lifetime = (int)(16.0D / (Math.random() * 0.8D + 0.2D));
+            particle.setLifetime(20 * 10);
             return particle;
         }
     }

@@ -115,21 +115,18 @@ public class ForgeEventSubscriber {
                 {
                     //Spawn Effect Level + 1 number of mites
                     int infectionDamage = 4;
-                    for(int i = 0; i < effectInstance.getAmplifier() + 1; i++)
-                    {
-                        Level entityLevel = entity.level;
-                        BlockPos entityPosition = entity.blockPosition();
-                        float entityHealth = entity.getMaxHealth();
+                    Level entityLevel = entity.level;
+                    BlockPos entityPosition = entity.blockPosition();
+                    float entityHealth = entity.getMaxHealth();
 
-                        //Spawn Mite
-                        EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, entityPosition, MobSpawnType.SPAWNER);
+                    //Spawn Mite
+                    EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, entityPosition, MobSpawnType.SPAWNER);
 
-                        //Spawn Sculk Mass
-                        SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
-                        sculkMass.spawn(entityLevel, entityPosition, entityHealth);
-                        //Do infectionDamage to victim per mite
-                        entity.hurt(entity.damageSources().magic(), infectionDamage);
-                    }
+                    //Spawn Sculk Mass
+                    SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
+                    sculkMass.spawn(entityLevel, entityPosition, entityHealth);
+                    //Do infectionDamage to victim per mite
+                    entity.hurt(entity.damageSources().magic(), infectionDamage);
                 }
             }
         }

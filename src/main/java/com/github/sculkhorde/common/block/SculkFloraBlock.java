@@ -114,8 +114,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
             Random random = new Random();
             if (random.nextInt(10) == 0)
             {
-                //TODO PORT
-                //worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
         }
 
