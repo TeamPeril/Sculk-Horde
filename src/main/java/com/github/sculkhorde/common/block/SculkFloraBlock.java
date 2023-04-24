@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Material;
@@ -200,5 +201,10 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     @Override
     public boolean canBeReplaced(BlockState pState, BlockPlaceContext pUseContext) {
         return true;
+    }
+
+    @Override
+    public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
+        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(levelReader.getBlockState(blockPos.below()));
     }
 }

@@ -104,8 +104,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.SLIME_BLOCK)
-                .noCollission()
-                .air();
+                .noCollission();
     }
 
     /** Makes entities slow and damages them. I stole this code from the berry bush.<br>

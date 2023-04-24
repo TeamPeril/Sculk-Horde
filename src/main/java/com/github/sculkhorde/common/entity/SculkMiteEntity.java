@@ -248,14 +248,4 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
         return true;
     }
 
-
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
-    @Override
-    public void onRemovedFromWorld() {
-        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
-    }
-
 }

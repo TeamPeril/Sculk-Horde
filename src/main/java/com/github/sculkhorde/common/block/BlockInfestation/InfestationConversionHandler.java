@@ -131,7 +131,7 @@ public class InfestationConversionHandler
         // Special Condition for Infested Logs because I do not care right now
         if(targetBlock.is(BlockRegistry.INFESTED_LOG.get()))
         {
-            victimVariant = Blocks.AIR.defaultBlockState();
+            victimVariant = Blocks.OAK_LOG.defaultBlockState();
         }
 
         if(victimVariant != null)
