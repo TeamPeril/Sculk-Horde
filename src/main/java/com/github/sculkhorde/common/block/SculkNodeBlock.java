@@ -102,6 +102,11 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         level.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
         Gravemind.getGravemindMemory().addNodeToMemory(newOrigin);
         EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
+
+        //Send message to all players that node has spawned
+        level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
+        // Play sound for each player
+        level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.HOSTILE, 1.0F, 1.0F));
     }
 
     /**
@@ -174,7 +179,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         {
             ((SculkNodeBlockEntity)tile).unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
-
+        Gravemind.getGravemindMemory().resetTicksSinceSculkNodeDestruction();
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

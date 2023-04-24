@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
@@ -194,7 +195,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             Random random = new Random();
             for (int i = 0; i < 1; i++) {
                 //TODO PORT
-                //level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10);
+                level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10, (random.nextDouble() - 0.5) * 10);
             }
             return;
         }

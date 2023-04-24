@@ -48,18 +48,19 @@ public class DevNodeSpawner extends Item implements IForgeItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
+	public InteractionResultHolder<ItemStack> use(Level level, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 		//If item is not on cool down
-		if(playerIn.getCooldowns().isOnCooldown(this) || worldIn.isClientSide())
+		if(playerIn.getCooldowns().isOnCooldown(this) || level.isClientSide())
 		{
 			return InteractionResultHolder.fail(itemstack);
 		}
 
 
-		SculkHorde.gravemind.placeSculkNode((ServerLevel) worldIn, playerIn.blockPosition(), false);
+		SculkHorde.gravemind.placeSculkNode((ServerLevel) level, playerIn.blockPosition(), false);
+		level.players().forEach(player -> player.displayClientMessage(Component.literal("Admin Attempting to Spawn Node."), true));
 		return InteractionResultHolder.pass(itemstack);
 	}
 

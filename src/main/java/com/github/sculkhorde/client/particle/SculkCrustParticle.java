@@ -1,26 +1,19 @@
 package com.github.sculkhorde.client.particle;
 
-import net.minecraft.client.particle.*;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.util.RandomSource;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.util.Random;
 
 public class SculkCrustParticle extends TextureSheetParticle
 {
-    private final double xStart;
-    private final double yStart;
-    private final double zStart;
-
-
     protected SculkCrustParticle(ClientLevel clientLevel, double x, double y, double z, double xDirection, double yDirection, double zDirection) {
         super(clientLevel, x, y, z, xDirection, yDirection, zDirection);
-        this.xStart = this.x;
-        this.yStart = this.y;
-        this.zStart = this.z;
+        this.setSize(0.02f, 0.02f);
+        this.quadSize *= this.random.nextFloat() * 0.6f + 0.2f;
+        this.xd = xDirection * (double) 0.2f + (Math.random() * 2.0 - 1.0) * (double) 0.02f;
+        this.yd = yDirection * (double) 0.2f + (Math.random() * 2.0 - 1.0) * (double) 0.02f;
+        this.zd = zDirection * (double) 0.2f + (Math.random() * 2.0 - 1.0) * (double) 0.02f;
+        this.lifetime = (int) (20.0 / (Math.random() * 0.8 + 0.2));
     }
 
     @Override
@@ -28,19 +21,24 @@ public class SculkCrustParticle extends TextureSheetParticle
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
-        if (this.age++ >= this.lifetime) {
+        if (this.lifetime-- <= 0) {
             this.remove();
-        } else {
-            float f = (float)this.age / (float)this.lifetime;
-            float f1 = -f + f * f * 2.0F;
-            float f2 = 1.0F - f1;
-            this.x = this.xStart + this.xd * (double)f2;
-            this.y = this.yStart + this.yd * (double)f2 + (double)(1.0F - f);
-            this.z = this.zStart + this.zd * (double)f2;
-            this.setPos(this.x, this.y, this.z); // FORGE: update the particle's bounding box
+            return;
         }
+        this.yd += 0.002;
+        if (this.level != null) {
+            this.move(this.xd, this.yd, this.zd);
+        }
+        this.xd *= 0.85f;
+        this.yd *= 0.85f;
+        this.zd *= 0.85f;
     }
 
+    @Override
+    public float getQuadSize(float tickDelta) {
+        float f = ((float) this.age + tickDelta) / (float) this.lifetime;
+        return this.quadSize * (1.0f - f * f * 0.5f);
+    }
 
     @Override
     public ParticleRenderType getRenderType() {
@@ -48,28 +46,16 @@ public class SculkCrustParticle extends TextureSheetParticle
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {
-        private final SpriteSet sprite;
+        private final SpriteSet spriteProvider;
 
-        public Provider(SpriteSet pSprites) {
-            this.sprite = pSprites;
+        public Provider(SpriteSet spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed)
-        {
-            SculkCrustParticle particle = new SculkCrustParticle(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
-            particle.pickSprite(this.sprite);
-
-            /*
-            RandomSource random = pLevel.random;
-            double d0 = random.nextGaussian() * (double)1.0E-6F;
-            double d1 = random.nextGaussian() * (double)1.0E-4F;
-            double d2 = random.nextGaussian() * (double)1.0E-6F;
-            SculkCrustParticle particle = new SculkCrustParticle(pLevel, pX, pY, pZ, d0, d1, d2);
-            particle.pickSprite(this.sprite);
-            particle.quadSize *= random.nextFloat() * 0.4F + 0.1F;
-            particle.lifetime = (int)(16.0D / (Math.random() * 0.8D + 0.2D));
-            particle.setLifetime(20 * 10);
-            */
+        @Override
+        public Particle createParticle(SimpleParticleType defaultParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i) {
+            SculkCrustParticle particle = new SculkCrustParticle(clientWorld, d, e, f, g, h, i);
+            particle.pickSprite(this.spriteProvider);
             return particle;
         }
     }

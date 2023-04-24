@@ -19,6 +19,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
 @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -57,16 +59,16 @@ public class ForgeEventSubscriber {
         //Make sure this only gets ran on the server, gravemind has been initalized, and were in the overworld
         if(!event.level.isClientSide() && SculkHorde.gravemind != null && event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            int ticks_per_second = 20; //Unit is ticks
-            int seconds_between_intervals = 60*5; //Unit is Seconds
+            Gravemind.getGravemindMemory().incrementTicksSinceSculkNodeDestruction();
 
             //Infestation Related Processes
             //Used by anti sculk serum
             SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
 
-            //Every 'seconds_between_intervals' amount of seconds, do gravemind stuff.
-            if (event.level.getGameTime() - time_save_point > seconds_between_intervals * ticks_per_second)
+
+            if (event.level.getGameTime() - time_save_point > TickUnits.convertMinutesToTicks(5))
             {
+
                 time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
 
                 SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
@@ -77,10 +79,12 @@ public class ForgeEventSubscriber {
 
                 //Calculate Current State
                 SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
-                if(DEBUG_MODE && false) System.out.println("Gravemind Evolution State: " + SculkHorde.gravemind.getEvolutionState().toString());
+                if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + SculkHorde.gravemind.getEvolutionState().toString());
+
+                if(DEBUG_MODE) System.out.println("Able to Spawn Node?: " + (Gravemind.getGravemindMemory().isSculkNodeCooldownOver()));
 
                 //Check How much Mass Was Generated over this period
-                if(DEBUG_MODE && false) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
                 sculkMassCheck = SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass();
 
                 if(DEBUG_MODE) System.out.println(

@@ -8,9 +8,13 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -44,8 +48,6 @@ public class Gravemind
 
     private static GravemindMemory gravemindMemory;
 
-
-
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
     private static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
@@ -56,6 +58,8 @@ public class Gravemind
     //Determines the range which a sculk node can infect land around it
     public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
     public int sculk_node_limit = 1;
+
+    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(1);
 
     /**
      * Default Constructor <br>
@@ -78,7 +82,7 @@ public class Gravemind
 
 
 
-    /** Accessors **/
+    // Accessors
 
     /**
      * Get the memory object that stores all the data
@@ -90,11 +94,6 @@ public class Gravemind
         return Gravemind.gravemindMemory;
     }
 
-    public static void setGravemindMemory(GravemindMemory gravemindMemory)
-    {
-        Gravemind.gravemindMemory = gravemindMemory;
-    }
-
     /**
      * Used to figure out what state the gravemind is in. Called periodically. <br>
      * Useful for when world is loaded in because we dont store the state.
@@ -103,7 +102,7 @@ public class Gravemind
     {
 
         //This is how much mass is needed to go from undeveloped to immature
-        int MASS_GOAL_FOR_IMMATURE = 500;
+        int MASS_GOAL_FOR_IMMATURE = 5000;
         //This is how much mass is needed to go from immature to mature
         int MASS_GOAL_FOR_MATURE = 100000000;
         if(getGravemindMemory().getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
@@ -153,7 +152,7 @@ public class Gravemind
         }
     }
 
-    public boolean processReinforcementRequest(ReinforcementRequest context)
+    public void processReinforcementRequest(ReinforcementRequest context)
     {
         context.isRequestViewed = true;
 
@@ -165,7 +164,7 @@ public class Gravemind
 
         if(getGravemindMemory().getSculkAccumulatedMass() <= 0)
         {
-            return false;
+            return;
         }
 
 
@@ -196,7 +195,6 @@ public class Gravemind
         //TODO: Add functionality for mature state
 
 
-        return context.isRequestApproved;
     }
 
     /**
@@ -223,7 +221,6 @@ public class Gravemind
         return false;
     }
 
-
     /**
      * Will only place sculk nodes if sky is visible
      * @param worldIn The World to place it in
@@ -231,13 +228,28 @@ public class Gravemind
      */
     public void placeSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
     {
+        final int SPAWN_NODE_COST = 3000;
+        final int SPAWN_NODE_BUFFER = 1000;
+
         //Random Chance to Place TreeNode
-        if(new Random().nextInt(10000) > 1 && enableChance) { return; }
+        if(new Random().nextInt(1000) > 1 && enableChance) { return; }
+
+        if(!Gravemind.getGravemindMemory().isSculkNodeCooldownOver())
+        {
+            return;
+        }
 
         //If we are too close to another node, do not create one
         if(!SculkHorde.gravemind.isValidPositionForSculkNode(worldIn, targetPos)) { return; }
 
+
+        if(Gravemind.getGravemindMemory().getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
+        {
+            return;
+        }
+
         SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
+        Gravemind.getGravemindMemory().subtractSculkAccumulatedMass(SPAWN_NODE_COST);
 
     }
 
@@ -255,7 +267,7 @@ public class Gravemind
             return false;
         }
 
-        if(SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
+        if(getGravemindMemory().getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
         {
             return false;
         }
@@ -284,7 +296,7 @@ public class Gravemind
     public static class GravemindMemory extends SavedData
     {
         //The world
-        public ServerLevel world;
+        public ServerLevel level;
 
         //Map<The Name of Mob, IsHostile?>
         public Map<String, HostileEntry> hostileEntries;
@@ -297,22 +309,57 @@ public class Gravemind
 
         // the amount of mass that the sculk hoard has accumulated.
         private int sculkAccumulatedMass = 0;
-
         // used to write/read nbt data to/from the world.
         private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
+
+
+        private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+        private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
 
         /**
          * Default Constructor
          */
         private GravemindMemory()
         {
-            //super(SculkHorde.SAVE_DATA_ID);
+            level = ServerLifecycleHooks.getCurrentServer().overworld();
             nodeEntries = new ArrayList<>();
             beeNestEntries = new ArrayList<>();
             hostileEntries = new HashMap<>();
         }
 
         /** Accessors **/
+
+        public boolean isSculkNodeCooldownOver()
+        {
+            return ticksSinceSculkNodeDestruction >= Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+        }
+
+        public int getTicksSinceSculkNodeDestruction() {
+            setDirty();
+            return ticksSinceSculkNodeDestruction;
+        }
+
+        public void setTicksSinceSculkNodeDestruction(int ticksSinceSculkNodeDestruction) {
+            this.ticksSinceSculkNodeDestruction = ticksSinceSculkNodeDestruction;
+            setDirty();
+        }
+
+        public void incrementTicksSinceSculkNodeDestruction() {
+            this.ticksSinceSculkNodeDestruction++;
+            setDirty();
+        }
+
+        public void resetTicksSinceSculkNodeDestruction()
+        {
+            //Send message to all players that node has spawned
+            level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed!"), true));
+            // Play sound for each player
+            level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
+
+
+            this.ticksSinceSculkNodeDestruction = 0;
+            setDirty();
+        }
 
         /**
          * Gets how much Sculk mass the Sculk horde has.
@@ -508,6 +555,7 @@ public class Gravemind
                 //TODO: Figure out if not being in the overworld can mess this up
                 if(!getNodeEntries().get(index).isEntryValid(worldIn))
                 {
+                    getGravemindMemory().resetTicksSinceSculkNodeDestruction();
                     getGravemindMemory().getNodeEntries().remove(index);
                     index--;
                     getGravemindMemory().setDirty();
@@ -558,6 +606,7 @@ public class Gravemind
             getGravemindMemory().getHostileEntries().clear();
 
             getGravemindMemory().setSculkAccumulatedMass(nbt.getInt(sculkAccumulatedMassIdentifier));
+            getGravemindMemory().setTicksSinceSculkNodeDestruction(nbt.getInt(ticksSinceSculkNodeDestructionIdentifier));
 
             for (int i = 0; gravemindData.contains("node_entry" + i); i++) {
                 getGravemindMemory().getNodeEntries().add(NodeEntry.serialize(gravemindData.getCompound("node_entry" + i)));
@@ -589,6 +638,7 @@ public class Gravemind
             CompoundTag gravemindData = new CompoundTag();
 
             nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
+            nbt.putInt(ticksSinceSculkNodeDestructionIdentifier, ticksSinceSculkNodeDestruction);
 
             for(ListIterator<NodeEntry> iterator = getNodeEntries().listIterator(); iterator.hasNext();)
             {

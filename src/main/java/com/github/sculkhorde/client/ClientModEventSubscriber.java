@@ -1,5 +1,6 @@
 package com.github.sculkhorde.client;
 
+import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
 import com.github.sculkhorde.client.renderer.entity.*;
 import com.github.sculkhorde.core.*;
@@ -8,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -82,7 +84,11 @@ public class ClientModEventSubscriber {
     {
        // Register renderer for sculk crust partcile
        //event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new));
+        Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
     }
+
+
+
 
     /**
      * Used to register custom particle renders.
