@@ -4,15 +4,18 @@ import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.common.procedural.structures.SculkBeeNestProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -33,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SculkBeeNestBlockEntity extends BlockEntity
 {
@@ -50,6 +54,15 @@ public class SculkBeeNestBlockEntity extends BlockEntity
     private final List<BeeData> stored = Lists.newArrayList();
     @Nullable
     private BlockPos savedFlowerPos;
+
+    //The procedural structure that will be built
+    private SculkBeeNestProceduralStructure beeNestStructure;
+
+    //Used for ticking this block at an interval
+    private int tickTracker = 0;
+
+    //Keep track of last time since repair so we know when to restart
+    private long lastTimeSinceRepair = -1;
 
     public SculkBeeNestBlockEntity(BlockPos p_155134_, BlockState p_155135_) {
         super(BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get(), p_155134_, p_155135_);
@@ -299,14 +312,45 @@ public class SculkBeeNestBlockEntity extends BlockEntity
 
     }
 
-    public static void serverTick(Level p_155145_, BlockPos p_155146_, BlockState p_155147_, SculkBeeNestBlockEntity p_155148_)
+    public static void serverTick(Level level, BlockPos blockPos, BlockState p_155147_, SculkBeeNestBlockEntity blockEntity)
     {
-        tickOccupants(p_155145_, p_155146_, p_155147_, p_155148_.stored, p_155148_.savedFlowerPos);
-        if (!p_155148_.stored.isEmpty() && p_155145_.getRandom().nextDouble() < 0.005D) {
-            double d0 = (double)p_155146_.getX() + 0.5D;
-            double d1 = (double)p_155146_.getY();
-            double d2 = (double)p_155146_.getZ() + 0.5D;
-            p_155145_.playSound((Player)null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundSource.BLOCKS, 1.0F, 1.0F);
+        tickOccupants(level, blockPos, p_155147_, blockEntity.stored, blockEntity.savedFlowerPos);
+        if (!blockEntity.stored.isEmpty() && level.getRandom().nextDouble() < 0.005D) {
+            double d0 = (double)blockPos.getX() + 0.5D;
+            double d1 = (double)blockPos.getY();
+            double d2 = (double)blockPos.getZ() + 0.5D;
+            level.playSound((Player)null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+
+        /** Structure Building Process **/
+        blockEntity.tickTracker++;
+
+        //Tick Every Minute
+        if(blockEntity.tickTracker < TickUnits.convertMinutesToTicks(1)) { return; }
+
+        blockEntity.tickTracker = 0;
+        long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+
+        //If the Bee Nest Structure hasnt been initialized yet, do it
+        if(blockEntity.beeNestStructure == null)
+        {
+            //Create Structure
+            blockEntity.beeNestStructure = new SculkBeeNestProceduralStructure((ServerLevel) level, blockPos);
+            blockEntity.beeNestStructure.generatePlan();
+        }
+
+        //If currently building, call build tick.
+        //Repair routine will restart after an hour
+        long repairIntervalInMinutes = 30;
+        if(blockEntity.beeNestStructure.isCurrentlyBuilding())
+        {
+            blockEntity.beeNestStructure.buildTick();
+            blockEntity.lastTimeSinceRepair = System.nanoTime();
+        }
+        //If enough time has passed, or we havent built yet, start build
+        else if((timeElapsed >= repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1) && blockEntity.beeNestStructure.canStartToBuild())
+        {
+            blockEntity.beeNestStructure.startBuildProcedure();
         }
     }
 
