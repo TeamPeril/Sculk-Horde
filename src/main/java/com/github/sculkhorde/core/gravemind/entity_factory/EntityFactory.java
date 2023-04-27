@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
@@ -60,6 +61,20 @@ public class EntityFactory {
         EntityFactoryEntry entry = new EntityFactoryEntry(entity, cost, value, minEvolution);
         entries.add(entry);
         return entry;
+    }
+
+
+    public static EntityFactoryEntry getRandomEntry(Predicate<EntityFactoryEntry> predicate)
+    {
+        ArrayList<EntityFactoryEntry> possibleEntries = new ArrayList<>();
+        for(EntityFactoryEntry entry : entries)
+        {
+            if(predicate.test(entry))
+            {
+                possibleEntries.add(entry);
+            }
+        }
+        return possibleEntries.get(rng.nextInt(possibleEntries.size()));
     }
 
     /**

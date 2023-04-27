@@ -55,6 +55,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
 
+        event.registerEntityRenderer(EntityRegistry.PURIFICATION_FLASK_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
+
         event.registerEntityRenderer(EntityRegistry.SCULK_HATCHER.get(), SculkHatcherRenderer::new);
 
         event.registerEntityRenderer(EntityRegistry.CURSOR_PROBER.get(), CursorProberRenderer::new);

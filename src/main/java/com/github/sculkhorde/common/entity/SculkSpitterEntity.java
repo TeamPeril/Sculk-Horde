@@ -104,6 +104,18 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         return getTarget() == null;
     }
 
+    private boolean isParticipatingInRaid = false;
+
+    @Override
+    public boolean isParticipatingInRaid() {
+        return isParticipatingInRaid;
+    }
+
+    @Override
+    public void setParticipatingInRaid(boolean isParticipatingInRaidIn) {
+        isParticipatingInRaid = isParticipatingInRaidIn;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
@@ -151,6 +163,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new RangedAttackGoal(this, new AcidAttack(this)
                                 .setProjectileOriginOffset(0.8, 0.9, 0.8)
                                 .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
+                        new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)

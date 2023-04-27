@@ -84,6 +84,18 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         return getTarget() == null;
     }
 
+    private boolean isParticipatingInRaid = false;
+
+    @Override
+    public boolean isParticipatingInRaid() {
+        return isParticipatingInRaid;
+    }
+
+    @Override
+    public void setParticipatingInRaid(boolean isParticipatingInRaidIn) {
+        isParticipatingInRaid = isParticipatingInRaidIn;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
@@ -128,6 +140,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkZombieAttackGoal(this, 1.0D, true),
+                        new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
@@ -93,7 +94,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
     @OnlyIn(Dist.CLIENT)
     private ParticleOptions getParticle() {
         ItemStack itemstack = this.getItemRaw();
-        return (ParticleOptions)(itemstack.isEmpty() ? ParticleTypes.NAUTILUS : new ItemParticleOption(ParticleTypes.ITEM, itemstack));
+        return new ItemParticleOption(ParticleTypes.ITEM, itemstack);
     }
 
     /**

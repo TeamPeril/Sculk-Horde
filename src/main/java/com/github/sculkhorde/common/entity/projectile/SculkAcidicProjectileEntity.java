@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ParticleRegistry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -50,7 +51,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     public void tick() {
         super.tick();
         if (this.level.isClientSide) {
-            this.level.addParticle(ParticleTypes.NAUTILUS, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 }

@@ -1,18 +1,16 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +45,6 @@ public class CursorInfectorEntity extends Entity
     protected BlockPos origin = BlockPos.ZERO;
     protected BlockPos target = BlockPos.ZERO;
     Queue<BlockPos> queue = new LinkedList<>();
-    Set<BlockPos> visited = new HashSet<>();
     public boolean isSuccessful = false;
 
 
@@ -137,9 +134,9 @@ public class CursorInfectorEntity extends Entity
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
-                if (!visited.contains(neighbor) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     queue.add(neighbor);
-                    visited.add(neighbor);
+                    visitedPositons.put(neighbor.asLong(), true);
                 }
             }
         }
@@ -208,6 +205,7 @@ public class CursorInfectorEntity extends Entity
             else // If we find target, start infecting
             {
                 state = State.EXPLORING;
+                visitedPositons.clear();
             }
         }
         else if (state == State.EXPLORING)
@@ -252,7 +250,7 @@ public class CursorInfectorEntity extends Entity
                 transformBlock(this.blockPosition());
                 infections++;
                 state = State.SEARCHING;
-                visited.clear();
+                visitedPositons.clear();
                 queue.clear();
                 queue.add(this.blockPosition());
             }

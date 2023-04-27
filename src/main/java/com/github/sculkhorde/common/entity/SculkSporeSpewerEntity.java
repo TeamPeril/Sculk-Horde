@@ -104,6 +104,18 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         return false;
     }
 
+    private boolean isParticipatingInRaid = false;
+
+    @Override
+    public boolean isParticipatingInRaid() {
+        return isParticipatingInRaid;
+    }
+
+    @Override
+    public void setParticipatingInRaid(boolean isParticipatingInRaidIn) {
+        isParticipatingInRaid = isParticipatingInRaidIn;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;

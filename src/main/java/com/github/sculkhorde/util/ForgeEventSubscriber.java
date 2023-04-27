@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -64,6 +65,8 @@ public class ForgeEventSubscriber {
             //Infestation Related Processes
             //Used by anti sculk serum
             SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
+
+            RaidHandler.raidTick(); //Tick the raid handler
 
 
             if (event.level.getGameTime() - time_save_point > TickUnits.convertMinutesToTicks(5))

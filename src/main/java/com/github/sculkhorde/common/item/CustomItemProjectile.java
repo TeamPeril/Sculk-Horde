@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -48,17 +49,32 @@ public class CustomItemProjectile extends Item implements IForgeItem {
      */
     public static Properties getProperties()
     {
-        return new Properties();
+        return new Properties().stacksTo(16);
     }
 
-    @Override
-    public UseAnim getUseAnimation(final ItemStack stack) {
-        return UseAnim.BOW;
+    public float getPower()
+    {
+        return 1.5f;
     }
 
-    @Override
-    public int getUseDuration(final ItemStack stack) {
-        return 72000;
+    public float getInaccuracy()
+    {
+        return 0.0f;
+    }
+
+    public float getPitchOffset()
+    {
+        return 0.0f;
+    }
+
+    public float getDamage()
+    {
+        return 5f;
+    }
+
+    public CustomItemProjectileEntity getCustomItemProjectileEntity(Level level, Player player)
+    {
+        return new CustomItemProjectileEntity(level, player, getDamage());
     }
 
     /** MODIFIERS **/
@@ -74,9 +90,9 @@ public class CustomItemProjectile extends Item implements IForgeItem {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         pLevel.playSound((Player)null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F);
         if (!pLevel.isClientSide) {
-            CustomItemProjectileEntity projectile = new CustomItemProjectileEntity(pLevel, pPlayer, 5f);
+            CustomItemProjectileEntity projectile = getCustomItemProjectileEntity(pLevel, pPlayer);
             projectile.setItem(itemstack);
-            projectile.shootFromRotation(pPlayer, pPlayer.getXRot(), pPlayer.getYRot(), 0.0F, 1.5F, 1.0F);
+            projectile.shootFromRotation(pPlayer, pPlayer.getXRot(), pPlayer.getYRot(), getPitchOffset(), getPower(), getInaccuracy());
             pLevel.addFreshEntity(projectile);
         }
 

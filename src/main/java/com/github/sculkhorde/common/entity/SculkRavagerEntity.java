@@ -2,10 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
-import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
-import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -91,6 +88,18 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 .add(Attributes.KNOCKBACK_RESISTANCE, MOVEMENT_SPEED);
     }
 
+    private boolean isParticipatingInRaid = false;
+
+    @Override
+    public boolean isParticipatingInRaid() {
+        return isParticipatingInRaid;
+    }
+
+    @Override
+    public void setParticipatingInRaid(boolean isParticipatingInRaidIn) {
+        isParticipatingInRaid = isParticipatingInRaidIn;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
@@ -139,6 +148,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 new FloatGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
+                new PathFindToRaidLocation<>(this),
                 //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                 new WaterAvoidingRandomStrollGoal(this, 0.7D),
                 // new LookAtGoal(this, LivingEntity.class, 6.0F),

@@ -1,9 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
-import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.SculkMiteAggressorAttackGoal;
+import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.monster.Monster;
@@ -91,6 +88,18 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
         return getTarget() == null;
     }
 
+    private boolean isParticipatingInRaid = false;
+
+    @Override
+    public boolean isParticipatingInRaid() {
+        return isParticipatingInRaid;
+    }
+
+    @Override
+    public void setParticipatingInRaid(boolean isParticipatingInRaidIn) {
+        isParticipatingInRaid = isParticipatingInRaidIn;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
@@ -134,6 +143,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkMiteAggressorAttackGoal(this, 1.0D, true),
+                        new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)

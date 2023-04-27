@@ -59,10 +59,12 @@ public class SculkHorde {
 
     private void addCreative(CreativeModeTabEvent.BuildContents event) {
         if (event.getTab() == ModCreativeModeTab.CREATIVE_TAB) {
-            event.accept(ItemRegistry.DEV_WAND);
-            event.accept(ItemRegistry.DEV_NODE_SPAWNER);
-            event.accept(ItemRegistry.DEV_CONVERSION_WAND);
+            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_WAND);
+            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_NODE_SPAWNER);
+            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_CONVERSION_WAND);
+            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_RAID_WAND);
             event.accept(ItemRegistry.INFESTATION_PURIFIER);
+            event.accept(ItemRegistry.PURIFICATION_FLASK_ITEM);
             event.accept(ItemRegistry.SCULK_ACIDIC_PROJECTILE);
             event.accept(ItemRegistry.SCULK_RESIN);
             event.accept(ItemRegistry.CALCITE_CLUMP);

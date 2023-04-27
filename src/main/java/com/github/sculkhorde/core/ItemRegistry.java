@@ -19,17 +19,17 @@ public class ItemRegistry {
     
     public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties()));
 
-    public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand", 
-    		() -> new DevWand());
+    public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand",
+			DevWand::new);
 
 	public static final RegistryObject<DevConversionWand> DEV_CONVERSION_WAND = ITEMS.register("dev_conversion_wand",
-			() -> new DevConversionWand());
+			DevConversionWand::new);
 
 	public static final RegistryObject<InfestationPurifier> INFESTATION_PURIFIER = ITEMS.register("infestation_purifier",
-			() -> new InfestationPurifier());
+			InfestationPurifier::new);
 
 	public static final RegistryObject<CustomItemProjectile> CUSTOM_ITEM_PROJECTILE = ITEMS.register("custom_item_projectile",
-			() -> new CustomItemProjectile());
+			CustomItemProjectile::new);
 
 	public static final RegistryObject<CustomItemProjectile> SCULK_ACIDIC_PROJECTILE = ITEMS.register("sculk_acidic_projectile",
 			() -> new CustomItemProjectile()
@@ -40,8 +40,11 @@ public class ItemRegistry {
 				}
 			});
 
+	public static final RegistryObject<CustomItemProjectile> PURIFICATION_FLASK_ITEM = ITEMS.register("purification_flask_item",
+			PurificationFlaskItem::new);
+
 	public static final RegistryObject<SculkResinItem> SCULK_RESIN = ITEMS.register("sculk_resin",
-			() -> new SculkResinItem());
+			SculkResinItem::new);
 
 	public static final RegistryObject<Item> CALCITE_CLUMP = ITEMS.register("calcite_clump",
 			() -> new Item(new Item.Properties()){
@@ -53,5 +56,8 @@ public class ItemRegistry {
 
 	public static final RegistryObject<DevNodeSpawner> DEV_NODE_SPAWNER = ITEMS.register("dev_node_spawner",
 			() -> new DevNodeSpawner());
+
+	public static final RegistryObject<DevRaidWand> DEV_RAID_WAND = ITEMS.register("dev_raid_wand",
+			DevRaidWand::new);
 
 }
