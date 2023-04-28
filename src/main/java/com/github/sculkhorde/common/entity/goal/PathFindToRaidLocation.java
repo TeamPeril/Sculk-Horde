@@ -37,10 +37,15 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
     {
         if (!getPathFinderMob().isPathFinding())
         {
+            /*
             Vec3 vec3 = DefaultRandomPos.getPosTowards(getPathFinderMob(), 15, 4, RaidHandler.getRaidLocationVec3(), (double)((float)Math.PI / 2F));
             if (vec3 != null) {
                 getPathFinderMob().getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.0D);
             }
+
+             */
+
+            getPathFinderMob().getNavigation().moveTo(RaidHandler.getRaidLocationVec3().x, RaidHandler.getRaidLocationVec3().y, RaidHandler.getRaidLocationVec3().z, 1.0D);
         }
     }
 }

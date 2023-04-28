@@ -85,8 +85,6 @@ public class DevRaidWand extends Item implements IForgeItem {
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
 		{
 			RaidHandler.createRaid((ServerLevel) worldIn, playerIn.blockPosition(), 100);
-
-			playerIn.displayClientMessage(Component.literal("Starting Raid at: " + RaidHandler.getRaidLocation()), false);
 			playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 
 			return InteractionResultHolder.pass(itemstack);

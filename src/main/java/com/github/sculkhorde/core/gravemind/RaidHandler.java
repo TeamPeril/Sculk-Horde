@@ -7,8 +7,12 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockSearcher;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
@@ -182,6 +186,8 @@ public class RaidHandler {
 
     private static void initializingRaidTick()
     {
+
+
         populateRaidParticipants();
 
         raidParticipants.forEach((raidParticipant) -> {
@@ -192,6 +198,11 @@ public class RaidHandler {
 
         if(blockSearcher == null)
         {
+            //Send message to all players
+            level.players().forEach((player) -> {
+                player.displayClientMessage(Component.literal("Initializing Raid at: " + RaidHandler.getRaidLocation()), false);
+            });
+
             blockSearcher = new BlockSearcher(level, getRaidLocation());
             blockSearcher.setMaxDistance(MAX_SEARCH_DISTANCE);
             blockSearcher.setTargetBlockPredicate(isTarget);
@@ -205,11 +216,13 @@ public class RaidHandler {
             raidParticipants.forEach((raidParticipant) -> {
                 ((Mob)raidParticipant).setPos(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY() + 1, blockSearcher.currentPosition.getZ());
                 level.addFreshEntity((Entity) raidParticipant);
+                ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertHoursToTicks(1), 0));
             });
 
-            //Spawn Firework
-            FireworkRocketEntity firework = new FireworkRocketEntity(level, blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY() + 5, blockSearcher.currentPosition.getZ(), new ItemStack(Items.FIREWORK_ROCKET));
-            level.addFreshEntity(firework);
+            //Send message to all players
+            level.players().forEach((player) -> {
+                player.displayClientMessage(Component.literal("Spawning mobs at: " + blockSearcher.currentPosition), false);
+            });
 
             setRaidState(RaidState.ACTIVE);
             blockSearcher = null;
@@ -218,6 +231,11 @@ public class RaidHandler {
         {
             setRaidState(RaidState.INACTIVE);
             blockSearcher = null;
+
+            //Send message to all players
+            level.players().forEach((player) -> {
+                player.displayClientMessage(Component.literal("Raid Failed to Initialize"), false);
+            });
         }
 
 
@@ -228,6 +246,10 @@ public class RaidHandler {
         if(areRaidParticipantsDead())
         {
             setRaidState(RaidState.COMPLETE);
+            //Send message to all players
+            level.players().forEach((player) -> {
+                player.displayClientMessage(Component.literal("All Raiders Dead"), false);
+            });
         }
     }
 
@@ -238,7 +260,7 @@ public class RaidHandler {
 
     private static Predicate<EntityFactoryEntry> isValidRaidParticipant() {
         return (entityFactoryEntry) -> {
-            return entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Melee || entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Ranged;
+            return true;
         };
     }
 
