@@ -56,7 +56,7 @@ public class BlockRegistry {
 	//Sculk Arachnoid
 	public static final RegistryObject<Block> SCULK_ARACHNOID =
 			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of(
-							Material.STONE, MaterialColor.QUARTZ)
+							Material.STONE, MaterialColor.COLOR_LIGHT_BLUE)
 					.strength(10f, 6f)//Hardness & Resistance
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.HONEY_BLOCK)

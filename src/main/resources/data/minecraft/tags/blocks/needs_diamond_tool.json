@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "sculkhorde:infested_stone",
+    "sculkhorde:infested_andesite",
+    "sculkhorde:infested_diorite",
+    "sculkhorde:infested_granite",
+    "sculkhorde:infested_deepslate",
+    "sculkhorde:infested_sand",
+    "sculkhorde:infested_sandstone",
+    "sculkhorde:infested_log",
+    "sculkhorde:calcite_ore",
+    "sculkhorde:sculk_arachnoid",
+    "sculkhorde:sculk_dura_matter",
+    "sculkhorde:sculk_living_rock",
+    "sculkhorde:sculk_living_rock_root"
+  ]
+}
