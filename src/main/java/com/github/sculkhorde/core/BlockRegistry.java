@@ -1,6 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.*;
+import net.minecraft.world.level.block.SculkBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -104,6 +105,38 @@ public class BlockRegistry {
 					.strength(15f, 30f)//Hardness & Resistance
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.DEEPSLATE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_SANDSTONE =
+			registerBlock("infested_sandstone", () -> new Block(BlockBehaviour.Properties.of(
+						Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_DIORITE =
+			registerBlock("infested_diorite", () -> new Block(BlockBehaviour.Properties.of(
+							Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_GRANITE =
+			registerBlock("infested_granite", () -> new Block(BlockBehaviour.Properties.of(
+							Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_ANDESITE =
+			registerBlock("infested_andesite", () -> new Block(BlockBehaviour.Properties.of(
+							Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
 			));
 
 	public static final RegistryObject<SpikeBlock> SPIKE =

@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -198,7 +199,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(blockState.is(Blocks.SCULK))
+        else if(SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(blockState))
         {
             return false;
         }

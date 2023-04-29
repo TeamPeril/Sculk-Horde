@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:stone"
+          "name": "sculkhorde:infested_stone"
         }
       ]
     }

@@ -70,9 +70,13 @@ public class SculkHorde {
             event.accept(ItemRegistry.CALCITE_CLUMP);
             event.accept(ItemRegistry.SCULK_MATTER);
             event.accept(Blocks.SCULK);
-            event.accept(BlockRegistry.INFESTED_SAND);
             event.accept(BlockRegistry.INFESTED_LOG);
+            event.accept(BlockRegistry.INFESTED_SAND);
+            event.accept(BlockRegistry.INFESTED_SANDSTONE);
             event.accept(BlockRegistry.INFESTED_STONE);
+            event.accept(BlockRegistry.INFESTED_ANDESITE);
+            event.accept(BlockRegistry.INFESTED_DIORITE);
+            event.accept(BlockRegistry.INFESTED_GRANITE);
             event.accept(BlockRegistry.INFESTED_DEEPSLATE);
             event.accept(BlockRegistry.SCULK_NODE_BLOCK);
             event.accept(BlockRegistry.SCULK_ARACHNOID);

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -26,7 +27,7 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
     }
 
     public boolean canUse() {
-        return getPathFinderMob().getTarget() == null && !getPathFinderMob().isVehicle() && getSculkSmartEntity().canParticipatingInRaid();
+        return getPathFinderMob().getTarget() == null && !getPathFinderMob().isVehicle() && getSculkSmartEntity().canParticipatingInRaid() && !isInRadius();
     }
 
     public boolean canContinueToUse() {
@@ -47,5 +48,9 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
 
             getPathFinderMob().getNavigation().moveTo(RaidHandler.getRaidLocationVec3().x, RaidHandler.getRaidLocationVec3().y, RaidHandler.getRaidLocationVec3().z, 1.0D);
         }
+    }
+
+    private boolean isInRadius() {
+        return BlockAlgorithms.getBlockDistance(getPathFinderMob().blockPosition(), RaidHandler.getRaidLocation()) <= RaidHandler.getRaidRadius()/8;
     }
 }

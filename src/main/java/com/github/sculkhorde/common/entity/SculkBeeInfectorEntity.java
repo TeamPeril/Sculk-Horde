@@ -1,23 +1,22 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraftforge.common.Tags;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -75,35 +74,40 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
                 .add(Attributes.FLYING_SPEED, 1.5F);
     }
 
-    private final Predicate<BlockState> IS_VALID_FLOWER = (blockState) -> {
-        if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
-            return false;
-        } else if (blockState.is(BlockTags.FLOWERS)) {
-            if (blockState.is(Blocks.SUNFLOWER)) {
-                return blockState.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
-            } else {
-                return true;
-            }
-        }
-        else if(blockState.is(Blocks.GRASS) || blockState.is(Blocks.TALL_GRASS) || blockState.is(Blocks.FERN))
+    private final Predicate<BlockPos> IS_VALID_FLOWER = (blockPos) -> {
+        BlockState blockState = level.getBlockState(blockPos);
+        if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED))
         {
-            return true;
-        }
-        else {
             return false;
         }
+
+        if(!SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(level.getBlockState(blockPos)))
+        {
+            return false;
+        }
+
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level, blockPos))
+        {
+            return false;
+        }
+        return true;
+
     };
 
     @Override
-    public Predicate<BlockState> getIsFlowerValidPredicate() {
+    public Predicate<BlockPos> getIsFlowerValidPredicate() {
         return this.IS_VALID_FLOWER;
+    }
+
+    public double getArrivalThreshold() {
+        return 3D;
     }
 
     @Override
     protected void executeCodeOnPollination()
     {
         CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
-        cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+        cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
         cursor.setMaxInfections(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);

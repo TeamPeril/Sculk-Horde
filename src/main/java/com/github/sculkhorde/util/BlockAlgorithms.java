@@ -282,6 +282,44 @@ public class BlockAlgorithms {
         return Optional.empty();
     }
 
+
+    /**
+     * Finds the location of the nearest block given a BlockPos predicate.
+     * @param level The world
+     * @param origin The origin of the search location
+     * @param predicate The predicate that determines if a block is the one were searching for
+     * @param distance The search distance
+     * @return The position of the block
+     */
+    public static Optional<BlockPos> findBlockInCubeBlockPosPredicate(ServerLevel level, BlockPos origin, Predicate<BlockPos> predicate, int distance) {
+        BlockPos blockPos = origin;
+
+        // Define the bounds of the cube
+        int minX = blockPos.getX() - distance;
+        int minY = blockPos.getY() - distance;
+        int minZ = blockPos.getZ() - distance;
+        int maxX = blockPos.getX() + distance;
+        int maxY = blockPos.getY() + distance;
+        int maxZ = blockPos.getZ() + distance;
+
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    mutableBlockPos.set(x, y, z);
+                    if (level.getBlockState(mutableBlockPos).is(Blocks.AIR)) {
+                        continue;
+                    }
+                    if (predicate.test(mutableBlockPos)) {
+                        return Optional.of(mutableBlockPos.immutable());
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     /**
      * Checks immediate blocks to see if any of them are air
      * @param serverWorld The world
@@ -309,10 +347,10 @@ public class BlockAlgorithms {
      * @param world The World to place it in
      * @param targetPos The position to place it in
      */
-    public static void placeSculkBeeHive(ServerLevel world, BlockPos targetPos)
+    public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos)
     {
         //Given random chance and the target location can see the sky, create a sculk hive
-        if(new Random().nextInt(4000) <= 1 && world.canSeeSky(targetPos))
+        if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
         {
             world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
             SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
@@ -351,7 +389,9 @@ public class BlockAlgorithms {
 
         //If block below target is valid and the target can be replaced by water
         if(blockState.canSurvive(world, targetPos)
-                && world.getBlockState(targetPos).canBeReplaced(Fluids.WATER))
+                && world.getBlockState(targetPos).canBeReplaced(Fluids.WATER)
+                && !world.getBlockState(targetPos).is(Blocks.WATER)
+                && !world.getBlockState(targetPos).is(Blocks.LAVA))
         {
             world.setBlockAndUpdate(targetPos, blockState);
         }

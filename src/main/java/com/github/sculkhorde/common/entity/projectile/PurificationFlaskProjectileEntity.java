@@ -101,11 +101,6 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
 
-        if(raytrace.getEntity() instanceof LivingEntity)
-        {
-            ((LivingEntity)raytrace.getEntity()).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
-        }
-
         remove(RemovalReason.DISCARDED);
 
     }
@@ -120,7 +115,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     {
 
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-        this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
+        //this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
         this.remove(RemovalReason.DISCARDED);
 
         ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(raytrace.getBlockPos(), 3, true);

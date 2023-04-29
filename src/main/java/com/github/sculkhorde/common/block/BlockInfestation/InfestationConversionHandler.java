@@ -114,7 +114,7 @@ public class InfestationConversionHandler
         BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
 
         // Chance to place a sculk bee hive above the block
-        BlockAlgorithms.placeSculkBeeHive(world, targetPos.above());
+        BlockAlgorithms.tryPlaceSculkBeeHive(world, targetPos.above());
 
         return true;
     }

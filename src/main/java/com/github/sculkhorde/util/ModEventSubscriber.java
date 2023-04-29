@@ -48,6 +48,10 @@ public class ModEventSubscriber {
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DEEPSLATE, BlockRegistry.INFESTED_DEEPSLATE.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COBBLED_DEEPSLATE, BlockRegistry.INFESTED_DEEPSLATE.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SAND, BlockRegistry.INFESTED_SAND.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SANDSTONE, BlockRegistry.INFESTED_SANDSTONE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIORITE, BlockRegistry.INFESTED_DIORITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRANITE, BlockRegistry.INFESTED_GRANITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ANDESITE, BlockRegistry.INFESTED_ANDESITE.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
