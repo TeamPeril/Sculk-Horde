@@ -29,9 +29,9 @@ public class ModEventSubscriber {
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_HATCHER.get(), (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_VINDICATOR.get(), (int) SculkVindicatorEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
-
 
         SculkHorde.infestationConversionTable = new InfestationConversionHandler();
 
@@ -85,6 +85,7 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.SCULK_SPORE_SPEWER.get(), SculkSporeSpewerEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_RAVAGER.get(), SculkRavagerEntity.createAttributes().build());
         event.put(EntityRegistry.INFESTATION_PURIFIER.get(), InfestationPurifierEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_VINDICATOR.get(), SculkVindicatorEntity.createAttributes().build());
     }
 }
 

@@ -77,6 +77,7 @@ public class ClientModEventSubscriber {
 
         event.registerBlockEntityRenderer(BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), context -> new SculkSummonerBlockRenderer());
 
+        event.registerEntityRenderer(EntityRegistry.SCULK_VINDICATOR.get(), SculkVindicatorRenderer::new);
 
 
 

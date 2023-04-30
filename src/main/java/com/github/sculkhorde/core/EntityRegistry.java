@@ -41,6 +41,7 @@ public class EntityRegistry {
     public static final RegistryObject<EntityType<SculkBeeInfectorEntity>> SCULK_BEE_INFECTOR = registerMob("sculk_bee_infector", SculkBeeInfectorEntity::new, 0.6f, 0.6f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkBeeHarvesterEntity>> SCULK_BEE_HARVESTER = registerMob("sculk_bee_harvester", SculkBeeHarvesterEntity::new, 0.6f, 0.6f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkHatcherEntity>> SCULK_HATCHER = registerMob("sculk_hatcher", SculkHatcherEntity::new, 0.9f, 1.4f, 0x000000, 0x000000);
+    public static final RegistryObject<EntityType<SculkVindicatorEntity>> SCULK_VINDICATOR = registerMob("sculk_vindicator", SculkVindicatorEntity::new, 0.6f, 1.95f, 0x000000, 0x000000);
 
     public static final RegistryObject<EntityType<SculkSporeSpewerEntity>> SCULK_SPORE_SPEWER = registerMob("sculk_spore_spewer", SculkSporeSpewerEntity::new, 1f, 2f, 0x000000, 0x000000);
 
