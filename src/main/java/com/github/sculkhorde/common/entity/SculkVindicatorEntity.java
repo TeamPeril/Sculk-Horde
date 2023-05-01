@@ -53,7 +53,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.23F;
+    public static final float MOVEMENT_SPEED = 0.30F;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
@@ -80,7 +80,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                 .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
-                .add(Attributes.MOVEMENT_SPEED, 3.0F);
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
     public boolean isIdle() {
@@ -175,18 +175,19 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
         return goals;
     }
 
-    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
-    private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenPlay("move.run");
-    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenPlay("move.walk");
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
+    private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenLoop("move.run");
+    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
     private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
-    private final AnimationController WALK_RUN_IDLE_CONTROLLER = DefaultAnimations.genericWalkRunIdleController(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         LIVING_CONTROLLER.setTransitionLength(5);
         controllers.add(
                 LIVING_CONTROLLER,
-                new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle)
+                new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),
+                DefaultAnimations.genericAttackAnimation(this, ATTACK_ANIMATION)
         );
     }
 
@@ -217,15 +218,15 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
 
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.DROWNED_AMBIENT;
+        return SoundEvents.PILLAGER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.DROWNED_HURT;
+        return SoundEvents.PILLAGER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.DROWNED_DEATH;
+        return SoundEvents.PILLAGER_DEATH;
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {

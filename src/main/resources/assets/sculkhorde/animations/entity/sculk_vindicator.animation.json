@@ -442,6 +442,16 @@
 							"easing": "easeInSine"
 						}
 					}
+				},
+				"head": {
+					"rotation": {
+						"vector": [15, 0, 0]
+					}
+				},
+				"upperbody": {
+					"rotation": {
+						"vector": [15, 0, 0]
+					}
 				}
 			}
 		},
@@ -772,6 +782,25 @@
 			"loop": true,
 			"animation_length": 0.96,
 			"bones": {
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [60, 0, 0]
+						},
+						"0.24": {
+							"vector": [50, 0, 0]
+						},
+						"0.48": {
+							"vector": [60, 0, 0]
+						},
+						"0.72": {
+							"vector": [50, 0, 0]
+						},
+						"0.96": {
+							"vector": [60, 0, 0]
+						}
+					}
+				},
 				"RightLeg": {
 					"rotation": {
 						"0.0": {
@@ -862,6 +891,11 @@
 							"vector": [0, 0, 0],
 							"easing": "easeInSine"
 						}
+					}
+				},
+				"upperbody": {
+					"rotation": {
+						"vector": [15, 0, 0]
 					}
 				}
 			}
@@ -1044,6 +1078,92 @@
 				"upperbody": {
 					"rotation": {
 						"vector": [15, 0, 0]
+					}
+				}
+			}
+		},
+		"attack": {
+			"animation_length": 0.36,
+			"override_previous_animation": true,
+			"bones": {
+				"head": {
+					"rotation": {
+						"vector": [37.5, 0, 0]
+					}
+				},
+				"claw_ne": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2": {
+							"vector": [14.33501, 4.46375, -16.93839],
+							"easing": "easeOutSine"
+						},
+						"0.32": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"claw_nw": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2": {
+							"vector": [15, 0, 15],
+							"easing": "easeOutSine"
+						},
+						"0.32": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"claw_sw": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2": {
+							"vector": [15, 0, 15],
+							"easing": "easeOutSine"
+						},
+						"0.32": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"claw_se": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.2": {
+							"vector": [-90.00068, -17.50026, -105.00064],
+							"easing": "easeOutSine"
+						},
+						"0.32": {
+							"vector": [0, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"RightArm": {
+					"rotation": {
+						"vector": [15, 0, 15]
+					}
+				},
+				"LeftArm": {
+					"rotation": {
+						"vector": [15, 0, -15]
+					}
+				},
+				"upperbody": {
+					"rotation": {
+						"vector": [17.5, 0, 0]
 					}
 				}
 			}
