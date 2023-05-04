@@ -1,11 +1,9 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
-import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -66,24 +64,6 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().ignoreTargetBelow50PercentHealth().enableMustReachTarget();
-
-    /**
-     * SPAWN_WEIGHT determines how likely a mob is to spawn. Bigger number = greater chance<br>
-     * 100 = Zombie<br>
-     * 12 = Sheep<br>
-     * 10 = Enderman<br>
-     * 8 = Cow<br>
-     * 5 = Witch<br>
-     */
-    public static int SPAWN_WEIGHT = 100;
-    /**
-     * SPAWN_MIN determines the minimum amount of this mob that will spawn in a group<br>
-     * SPAWN_MAX determines the maximum amount of this mob that will spawn in a group<br>
-     * SPAWN_Y_MAX determines the Maximum height this mob can spawn<br>
-     */
-    public static int SPAWN_MIN = 1;
-    public static int SPAWN_MAX = 3;
-    public static int SPAWN_Y_MAX = 80;
 
     //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -177,6 +157,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkHatcherAttackGoal(this, 1.0D, true),
+                        new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -357,7 +338,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
      */
     @Override
     public void onRemovedFromWorld() {
-        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
 }

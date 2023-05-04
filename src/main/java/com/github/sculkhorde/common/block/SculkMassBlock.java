@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -132,7 +133,7 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
                 thisTile.setStoredSculkMass(totalRemainingMass);
 
                 //Pay Mass Tax to the Sculk Hoard
-                SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(totalMassTax);
+                SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);
 
                 //Replace Block Under sculk mass with infested variant if possible
                 SculkHorde.infestationConversionTable.infectBlock((ServerLevel) world, originPos.below());

@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
@@ -19,8 +20,6 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
@@ -43,6 +42,7 @@ public class ForgeEventSubscriber {
         //Initalize Gravemind
         if(!event.getLevel().isClientSide() && event.getLevel().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
+            SculkHorde.savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID); //Initialize Saved Data
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
@@ -60,7 +60,7 @@ public class ForgeEventSubscriber {
         //Make sure this only gets ran on the server, gravemind has been initalized, and were in the overworld
         if(!event.level.isClientSide() && SculkHorde.gravemind != null && event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            Gravemind.getGravemindMemory().incrementTicksSinceSculkNodeDestruction();
+            SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
 
             //Infestation Related Processes
             //Used by anti sculk serum
@@ -77,26 +77,26 @@ public class ForgeEventSubscriber {
                 SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
 
                 //Verification Processes to ensure our data is accurate
-                SculkHorde.gravemind.getGravemindMemory().validateNodeEntries((ServerLevel) event.level);
-                SculkHorde.gravemind.getGravemindMemory().validateBeeNestEntries((ServerLevel) event.level);
+                SculkHorde.savedData.validateNodeEntries((ServerLevel) event.level);
+                SculkHorde.savedData.validateBeeNestEntries((ServerLevel) event.level);
 
                 //Calculate Current State
                 SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
                 if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + SculkHorde.gravemind.getEvolutionState().toString());
 
-                if(DEBUG_MODE) System.out.println("Able to Spawn Node?: " + (Gravemind.getGravemindMemory().isSculkNodeCooldownOver()));
+                if(DEBUG_MODE) System.out.println("Able to Spawn Node?: " + (SculkHorde.savedData.isSculkNodeCooldownOver()));
 
                 //Check How much Mass Was Generated over this period
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
-                sculkMassCheck = SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass();
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
+                sculkMassCheck = SculkHorde.savedData.getSculkAccumulatedMass();
 
                 if(DEBUG_MODE) System.out.println(
-                        "\n Known Nodes: " + SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size()
-                        + "\n Known Nests: " + SculkHorde.gravemind.getGravemindMemory().getBeeNestEntries().size()
-                        + "\n Known Hostiles: " + SculkHorde.gravemind.getGravemindMemory().getHostileEntries().size() + "\n"
+                        "\n Known Nodes: " + SculkHorde.savedData.getNodeEntries().size()
+                        + "\n Known Nests: " + SculkHorde.savedData.getBeeNestEntries().size()
+                        + "\n Known Hostiles: " + SculkHorde.savedData.getHostileEntries().size() + "\n"
 
                 );
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() - sculkMassCheck));
+                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
             }
         }
 

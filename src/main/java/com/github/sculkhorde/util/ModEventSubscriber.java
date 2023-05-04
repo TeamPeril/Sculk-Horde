@@ -36,10 +36,6 @@ public class ModEventSubscriber {
         SculkHorde.infestationConversionTable = new InfestationConversionHandler();
 
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIRT, Blocks.SCULK.defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SNOW_BLOCK, Blocks.SCULK.defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MOSS_BLOCK, Blocks.SCULK.defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PACKED_MUD, Blocks.SCULK.defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MUD, Blocks.SCULK.defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COARSE_DIRT, Blocks.SCULK.defaultBlockState());
         //SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_PATH.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_BLOCK, Blocks.SCULK.defaultBlockState());
@@ -52,6 +48,7 @@ public class ModEventSubscriber {
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIORITE, BlockRegistry.INFESTED_DIORITE.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRANITE, BlockRegistry.INFESTED_GRANITE.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ANDESITE, BlockRegistry.INFESTED_ANDESITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TUFF, BlockRegistry.INFESTED_TUFF.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);

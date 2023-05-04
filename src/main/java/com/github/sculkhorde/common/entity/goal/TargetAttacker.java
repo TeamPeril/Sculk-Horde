@@ -1,12 +1,12 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -94,7 +94,7 @@ public class TargetAttacker extends TargetGoal {
         if(EntityAlgorithms.isSculkLivingEntity.test(this.mob.getLastHurtByMob()) == false
                 && this.mob.getLastHurtByMob() != null)
         {
-            SculkHorde.gravemind.getGravemindMemory().addHostileToMemory(mob.getLastHurtByMob(), (ServerLevel) this.mob.level);
+            SculkHorde.savedData.addHostileToMemory(mob.getLastHurtByMob());
         }
 
         if (this.alertSameType) {

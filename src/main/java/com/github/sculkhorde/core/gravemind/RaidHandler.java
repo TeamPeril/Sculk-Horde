@@ -1,8 +1,6 @@
 package com.github.sculkhorde.core.gravemind;
 
-import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -15,44 +13,40 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.function.Predicate;
 
 public class RaidHandler {
 
-    //The world
+    // Raid Variables
     private static ServerLevel level;
-
     private static BlockPos raidLocation = BlockPos.ZERO;
-
     private static boolean isRaidActive = false;
-
     private static int raidRadius = 150;
-
-    private static int raidPartySize = 50;
-
     private static ArrayList<ISculkSmartEntity> raidParticipants;
-
     private enum RaidState {
         INACTIVE,
-        INITIALIZING,
-        ACTIVE,
+        INITIALIZING_RAID,
+        INITIALIZING_WAVE,
+        ACTIVE_WAVE,
         COMPLETE
     }
-
     private static RaidState raidState = RaidState.INACTIVE;
 
-    private static BlockSearcher blockSearcher;
+    // Waves
+    private static EntityFactory.StrategicValues[] currentWavePattern;
+    private static int MAX_WAVES = 5;
+    private static int currentWave = 0;
+    private static int remainingWaveParticipants = 0;
 
+    // Block Searcher
+    private static BlockSearcher blockSearcher;
     private static Predicate<BlockPos> isObstructed = (blockPos) -> {
             return !level.getBlockState(blockPos).isSolidRender(level, blockPos);
     };
-
     private static Predicate<BlockPos> isTarget = (blockPos) -> {
         if(level.getBlockState(blockPos.above()).isAir() && BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (raidRadius * 0.75) )
         {
@@ -69,7 +63,12 @@ public class RaidHandler {
         setLevel(level);
         setRaidLocation(raidLocation);
         setRaidRadius(raidRadius);
-        setRaidState(RaidState.INITIALIZING);
+        setRaidState(RaidState.INITIALIZING_RAID);
+    }
+
+    public static void createWave()
+    {
+        currentWavePattern = getWavePattern();
     }
 
     // Accessors & Modifiers
@@ -99,7 +98,7 @@ public class RaidHandler {
      * @return the raid state
      */
     public static boolean isRaidActive() {
-        return raidState == RaidState.ACTIVE;
+        return raidState == RaidState.ACTIVE_WAVE;
     }
 
     /**
@@ -141,21 +140,23 @@ public class RaidHandler {
     }
 
     /**
-     * Gets the number of raid participants
-     * @return the number of raid participants
-     */
-    public static int getRaidPartySize() {
-        return raidPartySize;
-    }
-
-    /**
      * Checks if all raid participants are alive
      * @return true if all raid participants are alive, false otherwise
      */
     public static boolean areRaidParticipantsDead() {
-        return raidParticipants.stream().allMatch((raidParticipant) -> {
-            return !((Mob) raidParticipant).isAlive();
-        });
+        return remainingWaveParticipants <= 0;
+    }
+
+    private static void updateRemainingWaveParticipantsAmount()
+    {
+        remainingWaveParticipants = 0;
+        for(ISculkSmartEntity entity : raidParticipants)
+        {
+            if(((Mob) entity).isAlive())
+            {
+                remainingWaveParticipants++;
+            }
+        }
     }
 
     // Events
@@ -167,11 +168,14 @@ public class RaidHandler {
             case INACTIVE:
                 inactiveRaidTick();
                 break;
-            case INITIALIZING:
+            case INITIALIZING_RAID:
                 initializingRaidTick();
                 break;
-            case ACTIVE:
-                activeRaidTick();
+            case INITIALIZING_WAVE:
+                initializingWaveTick();
+                break;
+            case ACTIVE_WAVE:
+                activeWaveTick();
                 break;
             case COMPLETE:
                 completeRaidTick();
@@ -186,14 +190,6 @@ public class RaidHandler {
 
     private static void initializingRaidTick()
     {
-
-
-        populateRaidParticipants();
-
-        raidParticipants.forEach((raidParticipant) -> {
-            raidParticipant.setParticipatingInRaid(true);
-        });
-
         int MAX_SEARCH_DISTANCE = getRaidRadius();
 
         if(blockSearcher == null)
@@ -213,19 +209,7 @@ public class RaidHandler {
 
         if(blockSearcher.isFinished && blockSearcher.isSuccessful)
         {
-            raidParticipants.forEach((raidParticipant) -> {
-                ((Mob)raidParticipant).setPos(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY() + 1, blockSearcher.currentPosition.getZ());
-                level.addFreshEntity((Entity) raidParticipant);
-                ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertHoursToTicks(1), 0));
-            });
-
-            //Send message to all players
-            level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("Spawning mobs at: " + blockSearcher.currentPosition), false);
-            });
-
-            setRaidState(RaidState.ACTIVE);
-            blockSearcher = null;
+            setRaidState(RaidState.INITIALIZING_WAVE);
         }
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
@@ -241,41 +225,91 @@ public class RaidHandler {
 
     }
 
-    private static void activeRaidTick()
+    private static void initializingWaveTick()
     {
-        if(areRaidParticipantsDead())
+
+        createWave();
+        populateRaidParticipants();
+
+        level.players().forEach((player) ->
+        {
+            player.displayClientMessage(Component.literal("Starting Wave " + currentWave + "."), false);
+        });
+
+        raidParticipants.forEach((raidParticipant) ->
+        {
+            raidParticipant.setParticipatingInRaid(true);
+            ((Mob)raidParticipant).setPos(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY() + 1, blockSearcher.currentPosition.getZ());
+            level.addFreshEntity((Entity) raidParticipant);
+            ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertHoursToTicks(1), 0));
+        });
+
+
+
+        //Send message to all players
+        level.players().forEach((player) -> {
+            player.displayClientMessage(Component.literal("Spawning mobs at: " + blockSearcher.currentPosition), false);
+        });
+
+        setRaidState(RaidState.ACTIVE_WAVE);
+    }
+
+    private static void activeWaveTick()
+    {
+        updateRemainingWaveParticipantsAmount();
+        if(!areRaidParticipantsDead())
+        {
+            return;
+        }
+
+        if(currentWave == MAX_WAVES)
         {
             setRaidState(RaidState.COMPLETE);
             //Send message to all players
             level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("All Raiders Dead"), false);
+                player.displayClientMessage(Component.literal("Completed Final Wave."), false);
             });
+            return;
         }
+        currentWave++;
+        //Send message to all players
+        level.players().forEach((player) -> {
+            player.displayClientMessage(Component.literal("Wave " + (currentWave - 1) + " complete."), false);
+        });
+
+        setRaidState(RaidState.INITIALIZING_WAVE);
+
     }
 
     private static void completeRaidTick()
     {
+        blockSearcher = null; // Reset blockSearcher since were done using it to spawn mobs
+        currentWave = 0;
         setRaidState(RaidState.INACTIVE);
     }
 
-    private static Predicate<EntityFactoryEntry> isValidRaidParticipant() {
+    private static Predicate<EntityFactoryEntry> isValidRaidParticipant(EntityFactory.StrategicValues strategicValue)
+    {
         return (entityFactoryEntry) -> {
-            return true;
+            return entityFactoryEntry.getCategory() == strategicValue;
         };
+    }
+
+    public static EntityFactory.StrategicValues[] getWavePattern()
+    {
+        EntityFactory.StrategicValues[][] possibleWavePatterns = {DefaultRaidWavePatterns.FIVE_RANGED_FIVE_MELEE, DefaultRaidWavePatterns.TEN_RANGED, DefaultRaidWavePatterns.TEN_MELEE};
+        Random random = new Random();
+        return possibleWavePatterns[random.nextInt(possibleWavePatterns.length)];
     }
 
     private static void populateRaidParticipants()
     {
         raidParticipants = new ArrayList<>();
 
-        for(int i = 0; i < getRaidPartySize(); i++)
+        for(int i = 0; i < getWavePattern().length; i++)
         {
-            raidParticipants.add((ISculkSmartEntity) EntityFactory.getRandomEntry(isValidRaidParticipant()).getEntity().create(level));
+            EntityFactoryEntry randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
+            raidParticipants.add((ISculkSmartEntity) randomEntry.getEntity().create(level));
         }
     }
-
-
-
-
-
 }

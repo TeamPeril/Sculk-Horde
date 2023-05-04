@@ -5,7 +5,7 @@ import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +16,6 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -180,7 +179,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
      */
     @Override
     public void onRemovedFromWorld() {
-        SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass((int) this.getHealth());
+        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
 

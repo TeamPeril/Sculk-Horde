@@ -6,8 +6,10 @@ import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -99,7 +102,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
         raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-        this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
+        ((ServerLevel)level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
 
         remove(RemovalReason.DISCARDED);
 

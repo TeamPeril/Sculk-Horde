@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.common.entity.SculkHatcherEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.TooltipFlag;
@@ -95,10 +95,10 @@ public class DevWand extends Item implements IForgeItem {
 				playerIn.displayClientMessage(
 						Component.literal(
 								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
-								"Sculk Accumulated Mass: " + SculkHorde.gravemind.getGravemindMemory().getSculkAccumulatedMass() + "\n" +
-								"Known Nodes: " + SculkHorde.gravemind.getGravemindMemory().getNodeEntries().size() + "\n" +
-								"Known Nests: " + SculkHorde.gravemind.getGravemindMemory().getBeeNestEntries().size() + "\n" +
-								"Known Hostiles Amount: " + SculkHorde.gravemind.getGravemindMemory().getHostileEntries().size() + "\n" +
+								"Sculk Accumulated Mass: " + SculkHorde.savedData.getSculkAccumulatedMass() + "\n" +
+								"Known Nodes: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
+								"Known Nests: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
+								"Known Hostiles Amount: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
 								"Conversion Queue Size: " + SculkHorde.infestationConversionTable.conversionQueue.size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
@@ -108,7 +108,7 @@ public class DevWand extends Item implements IForgeItem {
 			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
 			{
 				playerIn.displayClientMessage(Component.literal("Adding 100 Sculk Mass"), false);
-				SculkHorde.gravemind.getGravemindMemory().addSculkAccumulatedMass(100);
+				SculkHorde.savedData.addSculkAccumulatedMass(100);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return InteractionResultHolder.pass(itemstack);
 			}

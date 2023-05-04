@@ -3,7 +3,8 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -100,7 +101,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), level.getMinBuildHeight() + 35, searchOrigin.getZ());
         level.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
-        Gravemind.getGravemindMemory().addNodeToMemory(newOrigin);
+        SculkHorde.savedData.addNodeToMemory(newOrigin);
         EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
 
         //Send message to all players that node has spawned
@@ -124,7 +125,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         //If world isnt client side and we are in the overworld
         if(!world.isClientSide() && world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            Gravemind.getGravemindMemory().addNodeToMemory(bp);
+            SculkHorde.savedData.addNodeToMemory(bp);
         }
     }
 
@@ -179,7 +180,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         {
             ((SculkNodeBlockEntity)tile).unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
         }
-        Gravemind.getGravemindMemory().resetTicksSinceSculkNodeDestruction();
+        SculkHorde.savedData.resetTicksSinceSculkNodeDestruction();
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

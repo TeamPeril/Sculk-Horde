@@ -7,7 +7,7 @@ import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.procedural.structures.PlannedBlock;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -372,7 +372,7 @@ public class BlockAlgorithms {
     public static void tryPlaceLivingRockRoot(BlockPos targetPos, ServerLevel world)
     {
         //If block below target is valid and the target can be replaced by water
-        if(Gravemind.getGravemindMemory().isInRangeOfNode(targetPos, 100) && world.getBlockState(targetPos).isAir())
+        if(SculkHorde.savedData.isInRangeOfNode(targetPos, 100) && world.getBlockState(targetPos).isAir())
         {
             world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState());
         }

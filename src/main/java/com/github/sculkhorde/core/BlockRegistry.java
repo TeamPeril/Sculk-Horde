@@ -1,6 +1,10 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.*;
+import com.mojang.datafixers.types.templates.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.SculkBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
@@ -139,6 +143,14 @@ public class BlockRegistry {
 					.sound(SoundType.STONE)
 			));
 
+	public static final RegistryObject<Block> INFESTED_TUFF =
+			registerBlock("infested_tuff", () -> new Block(BlockBehaviour.Properties.of(
+							Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
 
@@ -180,4 +192,29 @@ public class BlockRegistry {
 
 	public static final RegistryObject<DevStructureTesterBlock> DEV_STRUCTURE_TESTER_BLOCK =
 			registerBlock("dev_structure_tester", () -> new DevStructureTesterBlock());
+
+	public static class Tags
+	{
+		public static final TagKey<Block> SCULK_RAID_TARGET_HIGH_PRIORITY = create("sculk_raid_target/high_priority");
+		public static final TagKey<Block> SCULK_RAID_TARGET_MEDIUM_PRIORITY = create("sculk_raid_target/medium_priority");
+		public static final TagKey<Block> SCULK_RAID_TARGET_LOW_PRIORITY = create("sculk_raid_target/low_priority");
+
+		// Helper Function
+		private static TagKey<Block> create(String location)
+		{
+			return BlockTags.create(new ResourceLocation(SculkHorde.MOD_ID, location));
+		}
+
+		// Helper Function
+		private static TagKey<Block> createForge(String location)
+		{
+			return BlockTags.create(new ResourceLocation("forge", location));
+		}
+
+		// Helper Function
+		private static TagKey<Block> createMinecraft(String location)
+		{
+			return BlockTags.create(new ResourceLocation(location));
+		}
+	}
 }

@@ -2,9 +2,10 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
@@ -15,8 +16,6 @@ import net.minecraft.server.level.ServerLevel;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
-
-import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 public class EntityAlgorithms {
     /**
@@ -70,7 +69,8 @@ public class EntityAlgorithms {
                 || e instanceof SculkBeeHarvesterEntity
                 || e instanceof SculkBeeInfectorEntity
                 || e instanceof SculkHatcherEntity
-                || e instanceof SculkRavagerEntity;
+                || e instanceof SculkRavagerEntity
+                || e instanceof SculkVindicatorEntity;
     };
 
     /**
@@ -91,7 +91,7 @@ public class EntityAlgorithms {
      */
     public static boolean isLivingEntityHostile(LivingEntity entity)
     {
-        return gravemind.getGravemindMemory().getHostileEntries().get(entity.getType().toString()) != null;
+        return SculkHorde.savedData.getHostileEntries().get(entity.getType().toString()) != null;
     }
 
     public static boolean isLivingEntitySwimmer(LivingEntity entity)

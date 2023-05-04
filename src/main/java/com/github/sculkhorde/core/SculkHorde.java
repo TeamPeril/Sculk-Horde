@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversion
 import com.github.sculkhorde.common.item.ModCreativeModeTab;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.block.Blocks;
@@ -29,6 +30,7 @@ public class SculkHorde {
     public static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
+    public static ModSavedData savedData;
     public static InfestationConversionHandler infestationConversionTable;
     public static PoolBlocks randomSculkFlora;
     public static final Logger LOGGER = LogUtils.getLogger();
