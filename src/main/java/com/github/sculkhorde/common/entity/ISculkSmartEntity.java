@@ -8,9 +8,9 @@ import net.minecraft.world.entity.Mob;
 public interface ISculkSmartEntity {
 
     default boolean canParticipatingInRaid() {
-        return RaidHandler.isRaidActive() && BlockAlgorithms.getBlockDistance(((Mob)this).blockPosition(), RaidHandler.getRaidLocation()) <= RaidHandler.getRaidRadius() * 2;
+        return RaidHandler.isRaidActive() && BlockAlgorithms.getBlockDistance(((Mob) this).blockPosition(), RaidHandler.getRaidLocation()) <= RaidHandler.getRaidRadius() * 2;
     }
-    
+
     boolean isParticipatingInRaid();
 
     void setParticipatingInRaid(boolean isParticipatingInRaidIn);

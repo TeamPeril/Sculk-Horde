@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.TooltipFlag;
@@ -99,6 +98,8 @@ public class DevWand extends Item implements IForgeItem {
 								"Known Nodes: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
 								"Known Nests: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
 								"Known Hostiles Amount: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
+								"Known Priority Targets Amount: " + SculkHorde.savedData.getPriorityBlockEntries().size() + "\n" +
+								"Known Death Area Reports Amount: " + SculkHorde.savedData.getDeathAreaEntries().size() + "\n" +
 								"Conversion Queue Size: " + SculkHorde.infestationConversionTable.conversionQueue.size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)

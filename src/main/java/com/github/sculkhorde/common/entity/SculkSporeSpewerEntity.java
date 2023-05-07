@@ -6,7 +6,6 @@ import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.core.BlockPos;
@@ -101,6 +100,9 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    @Override
+    public void checkDespawn() {}
+
     public boolean isIdle() {
         return false;
     }
@@ -179,10 +181,6 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 };
         return goals;
     }
-
-    @Override
-    public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
-
     //Animation Related Functions
 
     // Add our animations

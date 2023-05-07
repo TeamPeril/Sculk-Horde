@@ -5,7 +5,6 @@ import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -87,8 +86,10 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 .add(Attributes.KNOCKBACK_RESISTANCE, MOVEMENT_SPEED);
     }
 
-    private boolean isParticipatingInRaid = false;
+    @Override
+    public void checkDespawn() {}
 
+    private boolean isParticipatingInRaid = false;
     @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;

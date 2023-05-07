@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockSearcher;
+import com.github.sculkhorde.util.ChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -13,6 +14,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ public class RaidHandler {
     private static BlockPos raidLocation = BlockPos.ZERO;
     private static boolean isRaidActive = false;
     private static int raidRadius = 150;
+    private static int MAX_RAID_RADIUS = 300;
+    private static int MIN_RAID_RADIUS = 50;
     private static ArrayList<ISculkSmartEntity> raidParticipants;
     private enum RaidState {
         INACTIVE,
@@ -44,18 +48,40 @@ public class RaidHandler {
 
     // Block Searcher
     private static BlockSearcher blockSearcher;
-    private static Predicate<BlockPos> isObstructed = (blockPos) -> {
-            return !level.getBlockState(blockPos).isSolidRender(level, blockPos);
-    };
-    private static Predicate<BlockPos> isTarget = (blockPos) -> {
-        if(level.getBlockState(blockPos.above()).isAir() && BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (raidRadius * 0.75) )
+    private static Predicate<BlockPos> isObstructed = (blockPos) ->
+    {
+        // If block isnt solid, its obstructed
+        if(!level.getBlockState(blockPos).isSolidRender(level, blockPos))
         {
             return true;
         }
-        else
+
+        // If block above is not
+        if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above()).is(Blocks.WATER) || level.getBlockState(blockPos.above()).is(Blocks.LAVA))
         {
-            return false;
+            return true;
         }
+
+        if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above(1)).is(Blocks.WATER) || level.getBlockState(blockPos.above(1)).is(Blocks.LAVA))
+        {
+            return true;
+        }
+
+        if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above(2)).is(Blocks.WATER) || level.getBlockState(blockPos.above(2)).is(Blocks.LAVA))
+        {
+            return true;
+        }
+
+        return false;
+    };
+    private static Predicate<BlockPos> isTarget = (blockPos) -> {
+        if( BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (raidRadius * 0.75) )
+        {
+            return true;
+        }
+
+        return false;
+
     };
 
     public static void createRaid(ServerLevel level, BlockPos raidLocation, int raidRadius)
@@ -203,6 +229,8 @@ public class RaidHandler {
             blockSearcher.setMaxDistance(MAX_SEARCH_DISTANCE);
             blockSearcher.setTargetBlockPredicate(isTarget);
             blockSearcher.setObstructionPredicate(isObstructed);
+
+            ChunkLoaderHelper.forceLoadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
         }
 
         blockSearcher.tick();
@@ -285,6 +313,7 @@ public class RaidHandler {
     {
         blockSearcher = null; // Reset blockSearcher since were done using it to spawn mobs
         currentWave = 0;
+        ChunkLoaderHelper.unloadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
         setRaidState(RaidState.INACTIVE);
     }
 

@@ -5,7 +5,6 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
@@ -98,6 +97,9 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
+
+    @Override
+    public void checkDespawn() {}
 
     public boolean isIdle() {
         return getTarget() == null;

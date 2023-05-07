@@ -7,7 +7,6 @@ import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity
 import com.github.sculkhorde.common.procedural.structures.SculkBeeNestProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;

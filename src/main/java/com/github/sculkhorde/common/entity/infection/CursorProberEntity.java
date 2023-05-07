@@ -37,8 +37,6 @@ public class CursorProberEntity extends Entity {
     public BlockPos lastKnownBlockPos = BlockPos.ZERO;
     public boolean isSuccessful = false;
 
-
-
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in

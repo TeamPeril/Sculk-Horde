@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -84,6 +83,9 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     public boolean isIdle() {
         return getTarget() == null;
     }
+
+    @Override
+    public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;
 

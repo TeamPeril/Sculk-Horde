@@ -4,7 +4,6 @@ import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;

@@ -2,13 +2,13 @@ package com.github.sculkhorde.core.gravemind;
 
 
 import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 
@@ -32,13 +32,10 @@ public class Gravemind
 
     //This controls the reinforcement system.
     public static EntityFactory entityFactory;
-
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
     private static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
-
     private final int SCULK_NODE_INFECT_RADIUS_UNDEVELOPED = 10;
-
 
     //Determines the range which a sculk node can infect land around it
     public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;

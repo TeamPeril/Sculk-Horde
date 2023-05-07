@@ -1,8 +1,7 @@
-package com.github.sculkhorde.core.gravemind;
+package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -12,14 +11,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
@@ -30,22 +27,25 @@ import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
  * Learned World Data mechanics from: https://www.youtube.com/watch?v=tyTsdCzVz6w
  */
 public class ModSavedData extends SavedData {
-    private static final Map<String, HostileEntry> hostileEntries = new HashMap<>();
+
     //The world
     private final ServerLevel level;
-
-    //List of all known positions of nodes.
+    // List of all known positions of nodes.
     private final ArrayList<NodeEntry> nodeEntries = new ArrayList<>();
-
-    //List of all known positions of bee nests
+    // List of all known positions of bee nests
     private final ArrayList<BeeNestEntry> beeNestEntries = new ArrayList<>();
+    // List of all known hostile entity types
+    private static final Map<String, HostileEntry> hostileEntries = new HashMap<>();
+    // List of all known priority blocks
+    private static final ArrayList<PriorityBlockEntry> priorityBlockEntries = new ArrayList<>();
+    // List of areas where sculk mobs have died.
+    private static final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
 
     // the amount of mass that the sculk hoard has accumulated.
     private int sculkAccumulatedMass = 0;
     // used to write/read nbt data to/from the world.
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
-
-
+    // The amount of ticks since sculk node destruction
     private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
 
@@ -111,6 +111,36 @@ public class ModSavedData extends SavedData {
     }
 
     /**
+     * Adds to the sculk accumulated mass
+     *
+     * @param amount The amount you want to add
+     */
+    public void addSculkAccumulatedMass(int amount) {
+        setDirty();
+        sculkAccumulatedMass += amount;
+    }
+
+    /**
+     * Subtracts from the Sculk Accumulate Mass
+     *
+     * @param amount The amount to substract
+     */
+    public void subtractSculkAccumulatedMass(int amount) {
+        setDirty();
+        sculkAccumulatedMass -= amount;
+    }
+
+    /**
+     * Sets the value of sculk accumulate mass.
+     *
+     * @param amount The amount to set it to.
+     */
+    public void setSculkAccumulatedMass(int amount) {
+        setDirty();
+        sculkAccumulatedMass = amount;
+    }
+
+    /**
      * Returns a list of known node positions
      *
      * @return An ArrayList of all node entries positions
@@ -119,6 +149,34 @@ public class ModSavedData extends SavedData {
         return nodeEntries;
     }
 
+
+    /**
+     * Adds a position to the list if it does not already exist
+     *
+     * @param positionIn The Posoition to add
+     */
+    public void addNodeToMemory(BlockPos positionIn) {
+        if (!isNodePositionInMemory(positionIn) && getNodeEntries() != null) {
+            getNodeEntries().add(new NodeEntry(positionIn));
+            setDirty();
+        } else if (DEBUG_MODE) System.out.println("Attempted to Add TreeNode To Memory but failed.");
+    }
+
+    /**
+     * Will check the positons of all entries to see
+     * if they match the parameter.
+     *
+     * @param position The position to cross reference
+     * @return true if in memory, false otherwise
+     */
+    public boolean isNodePositionInMemory(BlockPos position) {
+        for (NodeEntry entry : getNodeEntries()) {
+            if (entry.position.equals(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns a list of known node positions
@@ -147,6 +205,28 @@ public class ModSavedData extends SavedData {
 
     }
 
+
+    /**
+     * Will verify all enties to see if they exist in the world.
+     * If not, they will be removed. <br>
+     * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
+     */
+    public void validateNodeEntries() {
+        long startTime = System.nanoTime();
+        for (int index = 0; index < nodeEntries.size(); index++) {
+            //TODO: Figure out if not being in the overworld can mess this up
+            if (!getNodeEntries().get(index).isEntryValid(level)) {
+                resetTicksSinceSculkNodeDestruction();
+                getNodeEntries().remove(index);
+                index--;
+                setDirty();
+            }
+        }
+        long endTime = System.nanoTime();
+        if (DEBUG_MODE)
+            System.out.println("Node Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+    }
+
     /**
      * Returns a list of known bee nest positions
      *
@@ -154,15 +234,6 @@ public class ModSavedData extends SavedData {
      */
     public ArrayList<BeeNestEntry> getBeeNestEntries() {
         return beeNestEntries;
-    }
-
-    /**
-     * Returns the map of known hostiles
-     *
-     * @return An HashMap with all known hostile entities
-     */
-    public Map<String, HostileEntry> getHostileEntries() {
-        return hostileEntries;
     }
 
     /**
@@ -182,65 +253,25 @@ public class ModSavedData extends SavedData {
     }
 
     /**
-     * Will check the positons of all entries to see
-     * if they match the parameter.
-     *
-     * @param position The position to cross reference
-     * @return true if in memory, false otherwise
+     * Will verify all enties to see if they exist in the world.
+     * Will also reasses the parentNode for each one.
+     * If not, they will be removed. <br>
+     * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
      */
-    public boolean isNodePositionInMemory(BlockPos position) {
-        for (NodeEntry entry : getNodeEntries()) {
-            if (entry.position.equals(position)) {
-                return true;
+    public void validateBeeNestEntries() {
+        long startTime = System.nanoTime();
+        for (int index = 0; index < getBeeNestEntries().size(); index++) {
+            getBeeNestEntries().get(index).setParentNodeToClosest();
+            //TODO: Figure out if not being in the overworld can mess this up
+            if (!getBeeNestEntries().get(index).isEntryValid(level)) {
+                getBeeNestEntries().remove(index);
+                index--;
+                setDirty();
             }
         }
-        return false;
-    }
-
-    // ######## Modifiers ########
-
-
-    /**
-     * Adds to the sculk accumulated mass
-     *
-     * @param amount The amount you want to add
-     */
-    public void addSculkAccumulatedMass(int amount) {
-        setDirty();
-        sculkAccumulatedMass += amount;
-    }
-
-
-    /**
-     * Subtracts from the Sculk Accumulate Mass
-     *
-     * @param amount The amount to substract
-     */
-    public void subtractSculkAccumulatedMass(int amount) {
-        setDirty();
-        sculkAccumulatedMass -= amount;
-    }
-
-    /**
-     * Sets the value of sculk accumulate mass.
-     *
-     * @param amount The amount to set it to.
-     */
-    public void setSculkAccumulatedMass(int amount) {
-        setDirty();
-        sculkAccumulatedMass = amount;
-    }
-
-    /**
-     * Adds a position to the list if it does not already exist
-     *
-     * @param positionIn The Posoition to add
-     */
-    public void addNodeToMemory(BlockPos positionIn) {
-        if (!isNodePositionInMemory(positionIn) && getNodeEntries() != null) {
-            getNodeEntries().add(new NodeEntry(positionIn));
-            setDirty();
-        } else if (DEBUG_MODE) System.out.println("Attempted to Add TreeNode To Memory but failed.");
+        long endTime = System.nanoTime();
+        if (DEBUG_MODE)
+            System.out.println("Bee Nest Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
     }
 
     /**
@@ -255,6 +286,15 @@ public class ModSavedData extends SavedData {
         }
         // TODO For some reason this continously gets called, find out why
         //else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
+    }
+
+    /**
+     * Returns the map of known hostiles
+     *
+     * @return An HashMap with all known hostile entities
+     */
+    public Map<String, HostileEntry> getHostileEntries() {
+        return hostileEntries;
     }
 
     /**
@@ -276,55 +316,204 @@ public class ModSavedData extends SavedData {
         }
     }
 
-
-    // ######## Events #########
-
-    /**
-     * Will verify all enties to see if they exist in the world.
-     * If not, they will be removed. <br>
-     * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
-     *
-     * @param worldIn The World
-     */
-    public void validateNodeEntries(ServerLevel worldIn) {
-        long startTime = System.nanoTime();
-        for (int index = 0; index < nodeEntries.size(); index++) {
-            //TODO: Figure out if not being in the overworld can mess this up
-            if (!getNodeEntries().get(index).isEntryValid(worldIn)) {
-                resetTicksSinceSculkNodeDestruction();
-                getNodeEntries().remove(index);
-                index--;
-                setDirty();
-            }
-        }
-        long endTime = System.nanoTime();
-        if (DEBUG_MODE)
-            System.out.println("TreeNode Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+    public ArrayList<PriorityBlockEntry> getPriorityBlockEntries() {
+        return priorityBlockEntries;
     }
 
+    public void addPriorityBlockToMemory(BlockPos positionIn) {
 
-    /**
-     * Will verify all enties to see if they exist in the world.
-     * Will also reasses the parentNode for each one.
-     * If not, they will be removed. <br>
-     * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
-     *
-     * @param worldIn The World
-     */
-    public void validateBeeNestEntries(ServerLevel worldIn) {
-        long startTime = System.nanoTime();
-        for (int index = 0; index < getBeeNestEntries().size(); index++) {
-            getBeeNestEntries().get(index).setParentNodeToClosest();
-            //TODO: Figure out if not being in the overworld can mess this up
-            if (!getBeeNestEntries().get(index).isEntryValid(worldIn)) {
-                getBeeNestEntries().remove(index);
-                index--;
-                setDirty();
+        // If the list is null, dont even try
+        if (getPriorityBlockEntries() == null)
+        {
+            return;
+        }
+
+        // If the block is already in the list, dont add it again
+        for (PriorityBlockEntry entry : getPriorityBlockEntries())
+        {
+            if (entry.position == positionIn)
+            {
+                return;
             }
         }
-        long endTime = System.nanoTime();
-        if (DEBUG_MODE)
-            System.out.println("Bee Nest Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+
+        int priority;
+
+        // Determine the priority of the block
+        if(level.getBlockState(positionIn).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        {
+            priority = 2;
+        }
+        else if(level.getBlockState(positionIn).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        {
+            priority = 1;
+        }
+        else if (level.getBlockState(positionIn).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+        {
+            priority = 0;
+        }
+        else
+        {
+            SculkHorde.LOGGER.warn("Attempted to add a block to the priority list that was not a priority block");
+            return;
+        }
+
+        getPriorityBlockEntries().add(new PriorityBlockEntry(positionIn, priority));
+        setDirty();
+
+    }
+
+    public void removePriorityBlockFromMemory(BlockPos positionIn)
+    {
+        // If the list is null, dont even try
+        if (getPriorityBlockEntries() == null)
+        {
+            return;
+        }
+
+        for(int i = 0; i < getPriorityBlockEntries().size(); i++)
+        {
+            if(getPriorityBlockEntries().get(i).position == positionIn)
+            {
+                getPriorityBlockEntries().remove(i);
+                setDirty();
+                return;
+            }
+        }
+        setDirty();
+    }
+
+    public void validatePriorityBlockEntries()
+    {
+        long startTime = System.currentTimeMillis();
+        for (int index = 0; index < getPriorityBlockEntries().size(); index++)
+        {
+            if (!getPriorityBlockEntries().get(index).isEntryValid(level))
+            {
+                getPriorityBlockEntries().remove(index);
+                index--;
+                setDirty();
+                SculkHorde.LOGGER.info("Priority Block Entry at " + getPriorityBlockEntries().get(index).position + " is invalid. Removing from memory.");
+            }
+        }
+
+        long endTime = System.currentTimeMillis();
+        SculkHorde.LOGGER.info("Priority Block Validation Took " + (endTime - startTime) + " milliseconds");
+    }
+
+    public ArrayList<DeathAreaEntry> getDeathAreaEntries() {
+        return deathAreaEntries;
+    }
+
+    public void addDeathAreaToMemory(BlockPos positionIn)
+    {
+        if(getDeathAreaEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to add a death area to memory but the list was null");
+            return;
+        }
+
+        // If already exists in memory, dont add it again
+        for(int i = 0; i < getDeathAreaEntries().size(); i++)
+        {
+            if(getDeathAreaEntries().get(i).position == positionIn)
+            {
+                return;
+            }
+        }
+
+        SculkHorde.LOGGER.info("Adding Death Area at " + positionIn + " to memory");
+        getDeathAreaEntries().add(new DeathAreaEntry(positionIn));
+        setDirty();
+    }
+
+    public void removeDeathAreaFromMemory(BlockPos positionIn)
+    {
+        if(getDeathAreaEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to remove a death area from memory but the list was null");
+            return;
+        }
+
+        for(int i = 0; i < getDeathAreaEntries().size(); i++)
+        {
+            if(getDeathAreaEntries().get(i).position == positionIn)
+            {
+                getDeathAreaEntries().remove(i);
+                setDirty();
+                return;
+            }
+        }
+        setDirty();
+    }
+
+    private Optional<DeathAreaEntry> getDeathAreaWithinRange(BlockPos positionIn, int range)
+    {
+        if(getDeathAreaEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to get a death area from memory but the list was null");
+            return Optional.empty();
+        }
+
+        for(int i = 0; i < getDeathAreaEntries().size(); i++)
+        {
+            if(getDeathAreaEntries().get(i).position.closerThan(positionIn, range))
+            {
+                return Optional.of(getDeathAreaEntries().get(i));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<DeathAreaEntry> getDeathAreaWithHighestDeaths()
+    {
+        if(getDeathAreaEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to get a death area from memory but the list was null");
+            return Optional.empty();
+        }
+
+        int highestDeathCount = 0;
+        DeathAreaEntry highestDeathArea = null;
+
+        for(int i = 0; i < getDeathAreaEntries().size(); i++)
+        {
+            if(getDeathAreaEntries().get(i).deathCount > highestDeathCount)
+            {
+                highestDeathCount = getDeathAreaEntries().get(i).deathCount;
+                highestDeathArea = getDeathAreaEntries().get(i);
+            }
+        }
+
+        if(highestDeathArea == null)
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(highestDeathArea);
+    }
+
+    /**
+     * This method gets called every time a sculk mob dies.
+     * We check if the death happened in a death area.
+     * If it did, we iterate the death count of that area.
+     * If it did not, we create a new death area.
+     *
+     * @param deathPosition The position where the player died
+     */
+    public void reportDeath(BlockPos deathPosition)
+    {
+        // If a death area already exist close to this location, iterate the death count
+        Optional<DeathAreaEntry> deathArea = getDeathAreaWithinRange(deathPosition, 100);
+        if(deathArea.isPresent())
+        {
+            deathArea.get().iterateDeathCount();
+            setDirty();
+            return;
+        }
+
+        // If the death area does not exist, create a new one
+        addDeathAreaToMemory(deathPosition);
     }
 
     /**
@@ -336,6 +525,8 @@ public class ModSavedData extends SavedData {
     public static ModSavedData load(CompoundTag nbt) {
 
         CompoundTag gravemindData = nbt.getCompound("gravemindData");
+
+        SculkHorde.savedData = new ModSavedData();
 
         SculkHorde.savedData.getNodeEntries().clear();
         SculkHorde.savedData.getBeeNestEntries().clear();
@@ -355,6 +546,14 @@ public class ModSavedData extends SavedData {
         for (int i = 0; gravemindData.contains("hostile_entry" + i); i++) {
             HostileEntry hostileEntry = HostileEntry.serialize(gravemindData.getCompound("hostile_entry" + i));
             SculkHorde.savedData.getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
+        }
+
+        for (int i = 0; gravemindData.contains("priority_block_entry" + i); i++) {
+            SculkHorde.savedData.getPriorityBlockEntries().add(PriorityBlockEntry.serialize(gravemindData.getCompound("priority_block_entry" + i)));
+        }
+
+        for (int i = 0; gravemindData.contains("death_area_entry" + i); i++) {
+            SculkHorde.savedData.getDeathAreaEntries().add(DeathAreaEntry.serialize(gravemindData.getCompound("death_area_entry" + i)));
         }
 
         System.out.print("");
@@ -390,17 +589,91 @@ public class ModSavedData extends SavedData {
             hostileIndex++;
         }
 
+        for (ListIterator<PriorityBlockEntry> iterator = getPriorityBlockEntries().listIterator(); iterator.hasNext(); ) {
+            gravemindData.put("priority_block_entry" + iterator.nextIndex(), iterator.next().deserialize());
+        }
+
+        for (ListIterator<DeathAreaEntry> iterator = getDeathAreaEntries().listIterator(); iterator.hasNext(); ) {
+            gravemindData.put("death_area_entry" + iterator.nextIndex(), iterator.next().deserialize());
+        }
+
         nbt.put("gravemindData", gravemindData);
         return nbt;
     }
 
+    public static class PriorityBlockEntry
+    {
+        private final BlockPos position;
+        private final int priority;
+
+        public PriorityBlockEntry(BlockPos positionIn, int priorityIn)
+        {
+            position = positionIn;
+            priority = priorityIn;
+        }
+
+        public BlockPos getPosition()
+        {
+            return position;
+        }
+
+        public int getPriority()
+        {
+            return priority;
+        }
+
+        public boolean isEntryValid(ServerLevel level)
+        {
+            BlockState blockState = level.getBlockState(position);
+
+            if (blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY) && priority == 2)
+            {
+                return true;
+            }
+            else if (blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && priority == 1)
+            {
+                return true;
+            }
+            else if (blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY) && priority == 0)
+            {
+                return true;
+            }
+
+            return false;
+
+        }
+
+
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
+        public CompoundTag deserialize()
+        {
+            CompoundTag nbt = new CompoundTag();
+            nbt.putLong("position", position.asLong());
+            nbt.putLong("priority", priority);
+            return nbt;
+        }
+
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
+        public static PriorityBlockEntry serialize(CompoundTag nbt)
+        {
+            return new PriorityBlockEntry(BlockPos.of(nbt.getLong("position")), nbt.getInt("priority"));
+        }
+
+
+    }
 
     /**
      * This class is a representation of the actual
      * Sculk Nodes in the world that the horde has access
      * to. It allows the gravemind to keep track of all.
      */
-    static class NodeEntry
+    public static class NodeEntry
     {
         private final BlockPos position; //The Location in the world where the node is
         private long lastTimeWasActive; //The Last Time A node was active and working
@@ -470,7 +743,7 @@ public class ModSavedData extends SavedData {
      * Bee Nests in the world that the horde has access
      * to. It allows the gravemind to keep track of all.
      */
-    static class BeeNestEntry
+    public static class BeeNestEntry
     {
         private final BlockPos position; //The location in the world where the node is
         private BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
@@ -614,5 +887,63 @@ public class ModSavedData extends SavedData {
             return new HostileEntry(nbt.getString("identifier"));
         }
 
+    }
+
+    public static class DeathAreaEntry
+    {
+        private final BlockPos position; // The Location of the Death Area
+        private int deathCount; // The number of deaths that have occurred in this area
+
+        public DeathAreaEntry(BlockPos positionIn)
+        {
+            position = positionIn;
+            deathCount = 1;
+        }
+
+        public DeathAreaEntry(BlockPos positionIn, int deathCountIn)
+        {
+            position = positionIn;
+            deathCount = deathCountIn;
+        }
+
+        public void setDeathCount(int deathCountIn)
+        {
+            deathCount = deathCountIn;
+        }
+
+        public int getDeathCount()
+        {
+            return deathCount;
+        }
+
+        public void iterateDeathCount()
+        {
+            deathCount++;
+        }
+
+        public BlockPos getPosition()
+        {
+            return position;
+        }
+
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
+        public CompoundTag deserialize()
+        {
+            CompoundTag nbt = new CompoundTag();
+            nbt.putLong("position", position.asLong());
+            nbt.putInt("deathCount", deathCount);
+            return nbt;
+        }
+
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
+        public static DeathAreaEntry serialize(CompoundTag nbt) {
+            return new DeathAreaEntry(BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
+        }
     }
 }

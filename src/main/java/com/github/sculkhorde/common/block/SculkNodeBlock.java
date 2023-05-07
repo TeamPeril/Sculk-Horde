@@ -4,7 +4,7 @@ import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
+import com.github.sculkhorde.util.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -67,18 +67,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 10f;
-
-    /**
-     *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
-     *
-     *  -1 = All<br>
-     *  0 = Wood<br>
-     *  1 = Stone<br>
-     *  2 = Iron<br>
-     *  3 = Diamond<br>
-     *  4 = Netherite
-     */
-    public static int HARVEST_LEVEL = 3;
 
     /**
      * The Constructor that takes in properties
@@ -154,12 +142,8 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        if(tile instanceof SculkNodeBlockEntity && !worldIn.isClientSide())
-        {
-            ((SculkNodeBlockEntity)tile).forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
-        }
 
+        ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, 15);
         if(worldIn.isClientSide())
         {
             // Play Sound that Can be Heard by all players
@@ -174,12 +158,9 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving){
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        if(tile instanceof SculkNodeBlockEntity && !worldIn.isClientSide())
-        {
-            ((SculkNodeBlockEntity)tile).unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z);
-        }
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
+    {
+        ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, 15);
         SculkHorde.savedData.resetTicksSinceSculkNodeDestruction();
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }

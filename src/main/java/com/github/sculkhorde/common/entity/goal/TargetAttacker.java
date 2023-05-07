@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -89,13 +88,6 @@ public class TargetAttacker extends TargetGoal {
         this.targetMob = this.mob.getTarget();
         this.timestamp = this.mob.getLastHurtByMobTimestamp();
         this.unseenMemoryTicks = 60;
-
-        //If a mob isnt already a confirmed hostile, make it one.
-        if(EntityAlgorithms.isSculkLivingEntity.test(this.mob.getLastHurtByMob()) == false
-                && this.mob.getLastHurtByMob() != null)
-        {
-            SculkHorde.savedData.addHostileToMemory(mob.getLastHurtByMob());
-        }
 
         if (this.alertSameType) {
             this.alertSculkLivingEntities();

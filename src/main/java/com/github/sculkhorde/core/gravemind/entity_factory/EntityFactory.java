@@ -2,7 +2,6 @@ package com.github.sculkhorde.core.gravemind.entity_factory;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

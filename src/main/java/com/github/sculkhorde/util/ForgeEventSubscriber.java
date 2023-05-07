@@ -6,8 +6,9 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -15,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -44,6 +46,7 @@ public class ForgeEventSubscriber {
         {
             SculkHorde.savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID); //Initialize Saved Data
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
+            SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
         }
@@ -66,7 +69,9 @@ public class ForgeEventSubscriber {
             //Used by anti sculk serum
             SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
 
-            RaidHandler.raidTick(); //Tick the raid handler
+            RaidHandler.raidTick(); // Tick the raid handler
+
+            SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
 
 
             if (event.level.getGameTime() - time_save_point > TickUnits.convertMinutesToTicks(5))
@@ -77,8 +82,9 @@ public class ForgeEventSubscriber {
                 SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
 
                 //Verification Processes to ensure our data is accurate
-                SculkHorde.savedData.validateNodeEntries((ServerLevel) event.level);
-                SculkHorde.savedData.validateBeeNestEntries((ServerLevel) event.level);
+                SculkHorde.savedData.validateNodeEntries();
+                SculkHorde.savedData.validateBeeNestEntries();
+                SculkHorde.savedData.validatePriorityBlockEntries();
 
                 //Calculate Current State
                 SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
@@ -100,6 +106,22 @@ public class ForgeEventSubscriber {
             }
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onLivingEntityDeathEvent(LivingDeathEvent event)
+    {
+        if(event.getEntity().level.isClientSide())
+        {
+            return;
+        }
+
+        if(EntityAlgorithms.isSculkLivingEntity.test(event.getEntity()))
+        {
+            SculkHorde.savedData.reportDeath(event.getEntity().blockPosition());
+            SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
+
+        }
     }
 
     @SubscribeEvent

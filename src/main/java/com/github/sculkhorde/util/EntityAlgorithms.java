@@ -3,7 +3,6 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;

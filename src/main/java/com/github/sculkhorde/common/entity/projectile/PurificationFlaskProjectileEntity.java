@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
+import com.github.sculkhorde.common.item.PurificationFlaskItem;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -31,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 
 
 public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntity {
-
-    private float damage = 50f;
 
     /** CONSTRUCTORS **/
 
@@ -99,8 +98,6 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             return;
         }
 
-
-        raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         ((ServerLevel)level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
 

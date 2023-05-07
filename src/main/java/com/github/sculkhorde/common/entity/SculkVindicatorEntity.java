@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -81,6 +80,9 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
+
+    @Override
+    public void checkDespawn() {}
 
     public boolean isIdle() {
         return getTarget() == null;

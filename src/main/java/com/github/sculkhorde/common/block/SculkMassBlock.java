@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.gravemind.ModSavedData;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;

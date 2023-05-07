@@ -94,6 +94,9 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    @Override
+    public void checkDespawn() {}
+
     public boolean isIdle() {
         return getTarget() == null;
     }
