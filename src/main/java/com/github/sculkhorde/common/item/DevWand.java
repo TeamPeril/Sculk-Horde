@@ -95,12 +95,12 @@ public class DevWand extends Item implements IForgeItem {
 						Component.literal(
 								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
 								"Sculk Accumulated Mass: " + SculkHorde.savedData.getSculkAccumulatedMass() + "\n" +
-								"Known Nodes: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
-								"Known Nests: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
-								"Known Hostiles Amount: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
-								"Known Priority Targets Amount: " + SculkHorde.savedData.getPriorityBlockEntries().size() + "\n" +
-								"Known Death Area Reports Amount: " + SculkHorde.savedData.getDeathAreaEntries().size() + "\n" +
-								"Conversion Queue Size: " + SculkHorde.infestationConversionTable.conversionQueue.size() + "\n"
+								"Nodes Count: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
+								"Nests Count: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
+								"Hostiles Count: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
+								"Priority Targets Count: " + SculkHorde.savedData.getPriorityBlockEntries().size() + "\n" +
+								"Death Area Reports Count: " + SculkHorde.savedData.getDeathAreaEntries().size() + "\n" +
+								"Areas of Interest Count: " + SculkHorde.savedData.getAreasOfInterestEntries().size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return InteractionResultHolder.pass(itemstack);
@@ -108,15 +108,14 @@ public class DevWand extends Item implements IForgeItem {
 			//If player clicks left-alt, set sculk mass to 10k
 			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
 			{
-				playerIn.displayClientMessage(Component.literal("Adding 100 Sculk Mass"), false);
-				SculkHorde.savedData.addSculkAccumulatedMass(100);
+				playerIn.displayClientMessage(Component.literal("Adding 1000 Sculk Mass"), false);
+				SculkHorde.savedData.addSculkAccumulatedMass(1000);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
+				SculkHorde.gravemind.calulateCurrentState();
 				return InteractionResultHolder.pass(itemstack);
 			}
 			else
 			{
-
-
 				//Ray trace to see what block the player is looking at
 				BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
 

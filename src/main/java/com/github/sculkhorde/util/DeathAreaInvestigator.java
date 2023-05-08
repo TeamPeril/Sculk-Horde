@@ -3,6 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -47,6 +48,11 @@ public class DeathAreaInvestigator {
 
     public void idleTick()
     {
+        if(SculkHorde.gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
+        {
+            return;
+        }
+
         if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.isRaidActive())
         {
             ticksSinceLastSearch = 0;
@@ -81,27 +87,27 @@ public class DeathAreaInvestigator {
         {
             ticksSinceLastSuccessfulFind = 0;
             setState(State.FINISHED);
-            RaidHandler.createRaid(level, searchEntry.get().getPosition(), 100);
+            if(RaidHandler.canRaidStart())
+            {
+                RaidHandler.createRaid(level, searchEntry.get().getPosition(), 100);
+            }
             //Send message to all players
-            level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("Located Important Blocks at " + searchEntry.get().getPosition()), false);
-            });
+            SculkHorde.LOGGER.info("Located Important Blocks at " + searchEntry.get().getPosition());
+            // Add to Area of Interest Memory
+            SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getPosition());
         }
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
             setState(State.FINISHED);
             blockSearcher = null;
-            //Send message to all players
-            level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("Unable to Locate Important Blocks at " + searchEntry.get().getPosition()), false);
-            });
+            SculkHorde.LOGGER.info("Unable to Locate Important Blocks at " + searchEntry.get().getPosition());
         }
     }
 
     public void finishedTick()
     {
-        ticksSinceLastSearch = 0;
         SculkHorde.savedData.removeDeathAreaFromMemory(searchEntry.get().getPosition());
+        ticksSinceLastSearch = 0;
         setState(State.IDLE);
         blockSearcher = null;
         searchEntry = Optional.empty();

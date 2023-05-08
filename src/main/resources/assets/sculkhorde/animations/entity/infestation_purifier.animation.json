@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"misc.idle": {
+		"misc.living": {
 			"loop": true,
 			"animation_length": 1,
 			"bones": {

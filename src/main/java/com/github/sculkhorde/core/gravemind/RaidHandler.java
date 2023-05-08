@@ -1,6 +1,9 @@
 package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
+import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -21,15 +24,17 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import static com.github.sculkhorde.core.SculkHorde.gravemind;
+
 public class RaidHandler {
 
     // Raid Variables
     private static ServerLevel level;
     private static BlockPos raidLocation = BlockPos.ZERO;
-    private static boolean isRaidActive = false;
     private static int raidRadius = 150;
     private static int MAX_RAID_RADIUS = 300;
     private static int MIN_RAID_RADIUS = 50;
+    public static int TICKS_BETWEEN_RAIDS = TickUnits.convertHoursToTicks(2);
     private static ArrayList<ISculkSmartEntity> raidParticipants;
     private enum RaidState {
         INACTIVE,
@@ -45,6 +50,11 @@ public class RaidHandler {
     private static int MAX_WAVES = 5;
     private static int currentWave = 0;
     private static int remainingWaveParticipants = 0;
+
+    // Targets
+    private static ArrayList<BlockPos> high_priority_targets;
+    private static ArrayList<BlockPos> medium_priority_targets;
+    private static ArrayList<BlockPos> low_priority_targets;
 
     // Block Searcher
     private static BlockSearcher blockSearcher;
@@ -119,26 +129,32 @@ public class RaidHandler {
         raidLocation = raidLocationIn;
     }
 
+    public static boolean canRaidStart()
+    {
+        if(gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
+        {
+            return false;
+        }
+
+        if(RaidHandler.raidState != RaidState.INACTIVE)
+        {
+            return false;
+        }
+
+        if(!SculkHorde.savedData.isRaidCooldownOver())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Gets the raid state
      * @return the raid state
      */
     public static boolean isRaidActive() {
         return raidState == RaidState.ACTIVE_WAVE;
-    }
-
-    /**
-     * Sets the raid to active
-     */
-    public static void setRaidActive() {
-        isRaidActive = true;
-    }
-
-    /**
-     * Sets the raid to inactive
-     */
-    public static void setRaidInactive() {
-        isRaidActive = false;
     }
 
     /**
@@ -211,11 +227,12 @@ public class RaidHandler {
 
     private static void inactiveRaidTick()
     {
-
+        SculkHorde.savedData.incrementTicksSinceLastRaid();
     }
 
     private static void initializingRaidTick()
     {
+        SculkHorde.savedData.setTicksSinceLastRaid(0);
         int MAX_SEARCH_DISTANCE = getRaidRadius();
 
         if(blockSearcher == null)
@@ -231,6 +248,7 @@ public class RaidHandler {
             blockSearcher.setObstructionPredicate(isObstructed);
 
             ChunkLoaderHelper.forceLoadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
+
         }
 
         blockSearcher.tick();
@@ -238,16 +256,19 @@ public class RaidHandler {
         if(blockSearcher.isFinished && blockSearcher.isSuccessful)
         {
             setRaidState(RaidState.INITIALIZING_WAVE);
+
+            // Summon Sculk Spore Spewer at location
+            SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(EntityRegistry.SCULK_SPORE_SPEWER.get(), level);
+            sporeSpewer.setPos(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY(), blockSearcher.currentPosition.getZ());
+            level.addFreshEntity(sporeSpewer);
         }
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
             setRaidState(RaidState.INACTIVE);
             blockSearcher = null;
 
-            //Send message to all players
-            level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("Raid Failed to Initialize"), false);
-            });
+
+            SculkHorde.LOGGER.debug("Raid Failed to Initialize");
         }
 
 
@@ -261,7 +282,11 @@ public class RaidHandler {
 
         level.players().forEach((player) ->
         {
-            player.displayClientMessage(Component.literal("Starting Wave " + currentWave + "."), false);
+            // If player is close
+            if(player.distanceToSqr(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY(), blockSearcher.currentPosition.getZ()) < raidRadius*2)
+            {
+                player.displayClientMessage(Component.literal("Starting Wave " + currentWave + "."), false);
+            }
         });
 
         raidParticipants.forEach((raidParticipant) ->
@@ -273,11 +298,7 @@ public class RaidHandler {
         });
 
 
-
-        //Send message to all players
-        level.players().forEach((player) -> {
-            player.displayClientMessage(Component.literal("Spawning mobs at: " + blockSearcher.currentPosition), false);
-        });
+        SculkHorde.LOGGER.debug("Spawning mobs at: " + blockSearcher.currentPosition);
 
         setRaidState(RaidState.ACTIVE_WAVE);
     }
@@ -295,14 +316,22 @@ public class RaidHandler {
             setRaidState(RaidState.COMPLETE);
             //Send message to all players
             level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("Completed Final Wave."), false);
+                // If player is close
+                if(player.distanceToSqr(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY(), blockSearcher.currentPosition.getZ()) < raidRadius*2)
+                {
+                    player.displayClientMessage(Component.literal("Completed Final Wave."), false);
+                }
             });
             return;
         }
         currentWave++;
         //Send message to all players
         level.players().forEach((player) -> {
-            player.displayClientMessage(Component.literal("Wave " + (currentWave - 1) + " complete."), false);
+            // If player is close
+            if(player.distanceToSqr(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY(), blockSearcher.currentPosition.getZ()) < raidRadius*2)
+            {
+                player.displayClientMessage(Component.literal("Wave " + (currentWave) + " complete."), false);
+            }
         });
 
         setRaidState(RaidState.INITIALIZING_WAVE);

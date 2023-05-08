@@ -166,7 +166,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        controllers.add(DefaultAnimations.genericLivingController(this));
     }
 
     @Override
