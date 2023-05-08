@@ -36,13 +36,13 @@ public class ModSavedData extends SavedData {
     // List of all known positions of bee nests
     private final ArrayList<BeeNestEntry> beeNestEntries = new ArrayList<>();
     // List of all known hostile entity types
-    private static final Map<String, HostileEntry> hostileEntries = new HashMap<>();
+    private final Map<String, HostileEntry> hostileEntries = new HashMap<>();
     // List of all known priority blocks
-    private static final ArrayList<PriorityBlockEntry> priorityBlockEntries = new ArrayList<>();
+    private final ArrayList<PriorityBlockEntry> priorityBlockEntries = new ArrayList<>();
     // List of areas where sculk mobs have died.
-    private static final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
+    private final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
     // List of areas of interests
-    private static final ArrayList<AreaofInterestEntry> areasOfInterestEntries = new ArrayList<>();
+    private final ArrayList<AreaofInterestEntry> areasOfInterestEntries = new ArrayList<>();
 
     // the amount of mass that the sculk hoard has accumulated.
     private int sculkAccumulatedMass = 0;
