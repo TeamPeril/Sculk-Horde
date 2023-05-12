@@ -53,7 +53,7 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.isRaidActive())
+        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !SculkHorde.raidHandler.isRaidActive())
         {
             ticksSinceLastSearch = 0;
             searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();
@@ -67,7 +67,7 @@ public class DeathAreaInvestigator {
     public void initializeTick()
     {
         blockSearcher = new BlockSearcher(level, searchEntry.get().getPosition());
-        blockSearcher.setMaxDistance(100);
+        blockSearcher.setMaxDistance(25);
         blockSearcher.setObstructionPredicate((pos) -> {
             return level.getBlockState(pos).isAir();
         });
@@ -87,12 +87,8 @@ public class DeathAreaInvestigator {
         {
             ticksSinceLastSuccessfulFind = 0;
             setState(State.FINISHED);
-            if(RaidHandler.canRaidStart())
-            {
-                RaidHandler.createRaid(level, searchEntry.get().getPosition(), 100);
-            }
             //Send message to all players
-            SculkHorde.LOGGER.info("Located Important Blocks at " + searchEntry.get().getPosition());
+            SculkHorde.LOGGER.info("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition());
             // Add to Area of Interest Memory
             SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getPosition());
         }
@@ -100,7 +96,7 @@ public class DeathAreaInvestigator {
         {
             setState(State.FINISHED);
             blockSearcher = null;
-            SculkHorde.LOGGER.info("Unable to Locate Important Blocks at " + searchEntry.get().getPosition());
+            SculkHorde.LOGGER.info("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition());
         }
     }
 

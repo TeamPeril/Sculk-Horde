@@ -10,7 +10,8 @@ public class BlockSearcher
 {
     private ServerLevel level;
     private BlockPos origin;
-    protected BlockPos target = BlockPos.ZERO;
+    public int MAX_TARGETS = 1;
+    public ArrayList<BlockPos> foundTargets = new ArrayList<>();
     private int MAX_DISTANCE;
     private Predicate<BlockPos> isObstructed;
     private Predicate<BlockPos> isValidTargetBlock;
@@ -25,7 +26,6 @@ public class BlockSearcher
     {
         IDLE,
         SEARCHING,
-        EXPLORING,
         FINISHED
     }
 
@@ -45,6 +45,12 @@ public class BlockSearcher
         return this;
     }
 
+    public BlockSearcher setMaxTargets(int maxTargets)
+    {
+        this.MAX_TARGETS = maxTargets;
+        return this;
+    }
+
     public BlockSearcher setObstructionPredicate(Predicate<BlockPos> isObstructed)
     {
         this.isObstructed = isObstructed;
@@ -57,39 +63,35 @@ public class BlockSearcher
         return this;
     }
 
-    protected boolean searchTick()
+    protected void searchTick()
     {
         // Complete 20 times.
         for (int i = 0; i < searchIterationsPerTick; i++)
         {
-
-
-            // Breadth-First Search
-
-            if (stack.isEmpty()) {
-                isSuccessful = false;
-                target = BlockPos.ZERO;
-                return true;
+            if (stack.isEmpty())
+            {
+                state = State.FINISHED;
+                return;
             }
-
+            else if(foundTargets.size() >= MAX_TARGETS)
+            {
+                state = State.FINISHED;
+                return;
+            }
 
             BlockPos currentBlock = stack.pop();
 
-            // If the current block is a target, return it
+            // If the current block is a target, return true
             if (isValidTargetBlock.test(currentBlock)) {
-                isSuccessful = true;
-                target = currentBlock;
-                return true;
+                foundTargets.add(currentBlock);
             }
-
 
             // Get all possible directions
             ArrayList<BlockPos> possiblePaths = BlockAlgorithms.getNeighborsCube(currentBlock, false);
 
-
             // Add all neighbors to the queue
-            for (BlockPos neighbor : possiblePaths) {
-
+            for (BlockPos neighbor : possiblePaths)
+            {
                 // If not visited and is a solid block, add to queue
                 if (visitedPositons.getOrDefault(neighbor.asLong(), false))
                 {
@@ -108,80 +110,41 @@ public class BlockSearcher
                 visitedPositons.put(neighbor.asLong(), true);
             }
         }
+    }
 
-        return false;
+    public void idleTick()
+    {
+        stack.add(currentPosition);
+        //queue.addAll(BlockAlgorithms.getAdjacentNeighbors(this.blockPosition()));
+        state = State.SEARCHING;
+    }
+
+    public void finishedTick()
+    {
+        if(foundTargets.size() > 0)
+        {
+            isSuccessful = true;
+        }
+        else
+        {
+            isSuccessful = false;
+        }
+        isFinished = true;
     }
 
     public void tick()
     {
-        if(state == State.IDLE)
+        switch (state)
         {
-            stack.add(currentPosition);
-            //queue.addAll(BlockAlgorithms.getAdjacentNeighbors(this.blockPosition()));
-            state = State.SEARCHING;
-        }
-        else if (state == State.SEARCHING)
-        {
-
-            // IF not complete, just return;
-            if(!searchTick())
-            {
-                return;
-            }
-
-            // If we can't find a target, finish
-            if (target.equals(BlockPos.ZERO)) {
-                state = State.FINISHED;
-            }
-            else // If we find target, start infecting
-            {
-                state = State.EXPLORING;
-                visitedPositons.clear();
-            }
-        }
-        else if (state == State.EXPLORING)
-        {
-            // Get Neighbors of Each Block
-            ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(currentPosition, false);
-            // Create a new list to store unobstructed neighbors
-            ArrayList<BlockPos> unobstructedNeighbors = new ArrayList<>();
-            // Check each neighbor for obstructions and add unobstructed neighbors to the new list
-            for (BlockPos neighbor : neighbors)
-            {
-                if (!isObstructed.test(neighbor)) {
-                    unobstructedNeighbors.add(neighbor);
-                }
-            }
-
-
-            // If there are no non-obstructed neighbors, return
-            if (neighbors.size() == 0) {
-                return;
-            }
-
-            // Find the block that is closest to target in neighbors
-            BlockPos closest = neighbors.get(0);
-            for (BlockPos pos : neighbors)
-            {
-                if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target)) {
-                    closest = pos;
-                }
-            }
-
-
-            // Move to the closest block
-            currentPosition = closest;
-            visitedPositons.put(closest.asLong(), true);
-
-            // If we've reached the target block, conclude
-            if (currentPosition.equals(target))
-            {
-                state = State.FINISHED;
-            }
-        }
-        else if (state == State.FINISHED)
-        {
-            isFinished = true;
+            case IDLE:
+                idleTick();
+                break;
+            case SEARCHING:
+                searchTick();
+                break;
+            case FINISHED:
+                finishedTick();
+                break;
         }
     }
 }

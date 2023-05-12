@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.entity.PathfinderMob;
@@ -26,8 +27,21 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
         return (ISculkSmartEntity) this.mob;
     }
 
-    public boolean canUse() {
-        return getPathFinderMob().getTarget() == null && !getPathFinderMob().isVehicle() && getSculkSmartEntity().canParticipatingInRaid() && !isInRadius();
+    public boolean canUse()
+    {
+        if(getPathFinderMob().isVehicle())
+        {
+            return false;
+        }
+        else if(!getSculkSmartEntity().canParticipatingInRaid())
+        {
+            return false;
+        }
+        else if(isInRadius())
+        {
+            return false;
+        }
+         return true;
     }
 
     public boolean canContinueToUse() {
@@ -38,19 +52,11 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
     {
         if (!getPathFinderMob().isPathFinding())
         {
-            /*
-            Vec3 vec3 = DefaultRandomPos.getPosTowards(getPathFinderMob(), 15, 4, RaidHandler.getRaidLocationVec3(), (double)((float)Math.PI / 2F));
-            if (vec3 != null) {
-                getPathFinderMob().getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.0D);
-            }
-
-             */
-
-            getPathFinderMob().getNavigation().moveTo(RaidHandler.getRaidLocationVec3().x, RaidHandler.getRaidLocationVec3().y, RaidHandler.getRaidLocationVec3().z, 1.0D);
+            getPathFinderMob().getNavigation().moveTo(SculkHorde.raidHandler.getObjectiveLocationVec3().x, SculkHorde.raidHandler.getObjectiveLocationVec3().y, SculkHorde.raidHandler.getObjectiveLocationVec3().z, 1.0D);
         }
     }
 
     private boolean isInRadius() {
-        return BlockAlgorithms.getBlockDistance(getPathFinderMob().blockPosition(), RaidHandler.getRaidLocation()) <= RaidHandler.getRaidRadius()/8;
+        return SculkHorde.raidHandler.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 10);
     }
 }

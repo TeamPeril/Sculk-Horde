@@ -145,7 +145,6 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkVindicatorAttackGoal(this, 1.0F, false),
-                        new DestroyPriorityBlockGoal(this, 1.0F, 3),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),

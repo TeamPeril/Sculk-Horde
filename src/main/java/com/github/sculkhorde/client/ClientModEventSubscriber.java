@@ -79,6 +79,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(EntityRegistry.SCULK_VINDICATOR.get(), SculkVindicatorRenderer::new);
 
+        event.registerEntityRenderer(EntityRegistry.SCULK_CREEPER.get(), SculkCreeperRenderer::new);
+
 
 
     }

@@ -69,7 +69,8 @@ public class EntityAlgorithms {
                 || e instanceof SculkBeeInfectorEntity
                 || e instanceof SculkHatcherEntity
                 || e instanceof SculkRavagerEntity
-                || e instanceof SculkVindicatorEntity;
+                || e instanceof SculkVindicatorEntity
+                || e instanceof SculkCreeperEntity;
     };
 
     /**

@@ -84,6 +84,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     {
         super.onHitEntity(raytrace);
 
+        if(level.isClientSide) {return;}
+
         // This is a safety check to make sure the entity is a living entity.
         // Mutant mobs previously caused a crash related to this, though
         // I'm confident that this is an oversight on my part.

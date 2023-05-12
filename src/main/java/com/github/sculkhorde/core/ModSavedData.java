@@ -175,7 +175,7 @@ public class ModSavedData extends SavedData {
      **/
 
     public boolean isRaidCooldownOver() {
-        return ticksSinceLastRaid >= RaidHandler.TICKS_BETWEEN_RAIDS;
+        return getTicksSinceLastRaid() >= RaidHandler.TICKS_BETWEEN_RAIDS;
     }
 
     public int getTicksSinceLastRaid() {
@@ -599,6 +599,26 @@ public class ModSavedData extends SavedData {
             if(getDeathAreaEntries().get(i).position == positionIn)
             {
                 getDeathAreaEntries().remove(i);
+                setDirty();
+                return;
+            }
+        }
+        setDirty();
+    }
+
+    public void removeAreaOfInterestFromMemory(BlockPos positionIn)
+    {
+        if(getAreasOfInterestEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to remove an area of interest from memory but the list was null");
+            return;
+        }
+
+        for(int i = 0; i < getAreasOfInterestEntries().size(); i++)
+        {
+            if(getAreasOfInterestEntries().get(i).position == positionIn)
+            {
+                getAreasOfInterestEntries().remove(i);
                 setDirty();
                 return;
             }

@@ -2,8 +2,10 @@ package com.github.sculkhorde.common.entity.goal;
 
 import javax.annotation.Nullable;
 
+import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -30,10 +32,14 @@ public class DestroyPriorityBlockGoal extends MoveToBlockGoal {
     private final Mob removerMob;
     private int ticksSinceReachedGoal;
     private static final int WAIT_AFTER_BLOCK_FOUND = 20;
+    private int distanceRequired;
+    private int ticksRequiredToBreakBlock;
 
-    public DestroyPriorityBlockGoal(PathfinderMob pathfinderMob, double p_25842_, int p_25843_) {
+    public DestroyPriorityBlockGoal(PathfinderMob pathfinderMob, double p_25842_, int p_25843_, int distanceRequired, int ticksRequiredToBreakBlock) {
         super(pathfinderMob, p_25842_, 24, p_25843_);
         this.removerMob = pathfinderMob;
+        this.distanceRequired = distanceRequired;
+        this.ticksRequiredToBreakBlock = ticksRequiredToBreakBlock;
     }
 
     public boolean canUse() {
@@ -58,7 +64,6 @@ public class DestroyPriorityBlockGoal extends MoveToBlockGoal {
 
     public void start() {
         super.start();
-        this.ticksSinceReachedGoal = 0;
     }
 
     public void playDestroyProgressSound(LevelAccessor level, BlockPos blockPos) {
@@ -79,9 +84,18 @@ public class DestroyPriorityBlockGoal extends MoveToBlockGoal {
             return;
         }
 
-        if(!blockpos1.closerThan(blockpos, 2.5))
+        if(!blockpos1.closerThan(blockpos, distanceRequired))
         {
+            ticksSinceReachedGoal = 0;
             return;
+        }
+        ticksSinceReachedGoal++;
+
+        if(this.removerMob instanceof SculkCreeperEntity)
+        {
+            SculkCreeperEntity sculkCreeperEntity = (SculkCreeperEntity)this.removerMob;
+            sculkCreeperEntity.setSwellDir(1);
+            sculkCreeperEntity.explodeSculkCreeper();
         }
 
 
@@ -102,8 +116,10 @@ public class DestroyPriorityBlockGoal extends MoveToBlockGoal {
             }
         }
 
-        if (this.ticksSinceReachedGoal > 60) {
+        if (this.ticksSinceReachedGoal > ticksRequiredToBreakBlock)
+        {
             level.removeBlock(blockpos1, true);
+
             if (!level.isClientSide) {
                 for(int i = 0; i < 20; ++i) {
                     double d3 = randomsource.nextGaussian() * 0.02D;
@@ -115,10 +131,6 @@ public class DestroyPriorityBlockGoal extends MoveToBlockGoal {
                 this.playBreakSound(level, blockpos1);
             }
         }
-
-        ++this.ticksSinceReachedGoal;
-
-
     }
 
     @Nullable

@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversion
 import com.github.sculkhorde.common.item.ModCreativeModeTab;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.mojang.logging.LogUtils;
@@ -34,6 +35,7 @@ public class SculkHorde {
     public static InfestationConversionHandler infestationConversionTable;
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
+    public static RaidHandler raidHandler;
     public static final Logger LOGGER = LogUtils.getLogger();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).

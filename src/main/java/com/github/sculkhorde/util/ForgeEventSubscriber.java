@@ -47,6 +47,7 @@ public class ForgeEventSubscriber {
             SculkHorde.savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID); //Initialize Saved Data
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
             SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
+            SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
         }
@@ -69,7 +70,7 @@ public class ForgeEventSubscriber {
             //Used by anti sculk serum
             SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
 
-            RaidHandler.raidTick(); // Tick the raid handler
+            SculkHorde.raidHandler.raidTick(); // Tick the raid handler
 
             SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
 
