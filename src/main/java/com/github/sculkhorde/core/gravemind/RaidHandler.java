@@ -512,5 +512,11 @@ public class RaidHandler {
             EntityFactoryEntry randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
             raidParticipants.add((ISculkSmartEntity) randomEntry.getEntity().create(level));
         }
+
+        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
     }
 }

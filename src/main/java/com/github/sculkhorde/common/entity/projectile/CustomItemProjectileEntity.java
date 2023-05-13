@@ -91,10 +91,9 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      * Used to determine what partciles this entity should create when it hits a wall.
      * @return The Particle Data
      */
-    @OnlyIn(Dist.CLIENT)
-    private ParticleOptions getParticle() {
-        ItemStack itemstack = this.getItemRaw();
-        return new ItemParticleOption(ParticleTypes.ITEM, itemstack);
+    protected ParticleOptions getParticle()
+    {
+        return new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(getDefaultItem()));
     }
 
     /**
@@ -151,7 +150,6 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
 
         raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-        this.level.broadcastEntityEvent(this, (byte)3); //Create particle event (from SnowballEntity.java)
 
         if(raytrace.getEntity() instanceof LivingEntity)
         {
@@ -181,7 +179,6 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         {
             this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         }
-        this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
         this.remove(RemovalReason.DISCARDED);
     }
 

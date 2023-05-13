@@ -5,15 +5,11 @@ import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.util.TargetParameters;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -85,7 +81,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
     private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenLoop("move.run");
     private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
-    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
+    private static final RawAnimation SWELL_ANIMATION = RawAnimation.begin().thenPlay("attack");
+    private static final RawAnimation DESWELL_ANIMATION = RawAnimation.begin().thenPlay("unattack");
     private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
 
     @Override
@@ -118,10 +115,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     {
         if(this.getSwellDir() > 0)
         {
-            state.setAnimation(ATTACK_ANIMATION);
+            state.setAnimation(SWELL_ANIMATION);
         }
-
-
+        else if(this.getSwellDir() < 0)
+        {
+            state.setAnimation(DESWELL_ANIMATION);
+        }
         return PlayState.CONTINUE;
     }
 

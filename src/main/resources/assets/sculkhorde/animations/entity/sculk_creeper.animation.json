@@ -276,6 +276,46 @@
 					}
 				}
 			}
+		},
+		"unattack": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 1.24,
+			"override_previous_animation": true,
+			"bones": {
+				"tumor1": {
+					"scale": {
+						"0.0": {
+							"vector": [2, 2, 2],
+							"easing": "easeInSine"
+						},
+						"1.2": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"tumor2": {
+					"scale": {
+						"0.0": {
+							"vector": [2, 2, 2],
+							"easing": "easeInSine"
+						},
+						"1.2": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"head_tumor": {
+					"scale": {
+						"0.0": {
+							"vector": [2, 2, 2],
+							"easing": "easeInSine"
+						},
+						"1.2": {
+							"vector": [1, 1, 1]
+						}
+					}
+				}
+			}
 		}
 	}
 }
