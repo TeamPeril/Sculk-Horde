@@ -73,6 +73,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     protected int TELEPORT_COOLDOWN = TickUnits.convertSecondsToTicks(8);
     protected int ticksSinceLastTeleport = 0;
 
+    protected int SPECIAL_ATTACK_COOLDOWN = TickUnits.convertSecondsToTicks(5);
+    protected int ticksSinceLastSpecialAttack = 0;
+
     // Data
     private static final EntityDataAccessor<Boolean> DATA_ANGRY = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
 
