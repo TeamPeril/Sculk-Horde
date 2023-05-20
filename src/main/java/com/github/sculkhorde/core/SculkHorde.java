@@ -52,6 +52,7 @@ public class SculkHorde {
 
         EffectRegistry.EFFECTS.register(bus); //Load Effects
         ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
+        SoundRegistry.SOUND_EVENTS.register(bus); //Load Sounds
 
         bus.addListener(this::addCreative);
 

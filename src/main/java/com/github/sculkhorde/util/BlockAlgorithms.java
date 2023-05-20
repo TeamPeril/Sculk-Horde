@@ -94,6 +94,31 @@ public class BlockAlgorithms {
     {
         return (float) Math.sqrt( Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getY() - pos1.getY(), 2) + Math.pow(pos2.getZ() - pos1.getZ(), 2));
     }
+
+    public static float getBlockDistanceXZ(BlockPos pos1, BlockPos pos2)
+    {
+        return (float) Math.sqrt( Math.pow(pos2.getX() - pos1.getX(), 2) + Math.pow(pos2.getZ() - pos1.getZ(), 2));
+    }
+
+    public static BlockPos getCentroid(ArrayList<BlockPos> positions)
+    {
+        if(positions.size() == 0) return new BlockPos(0, 0, 0); //Return origin if no positions (should never happen
+
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        for(BlockPos pos : positions)
+        {
+            x += pos.getX();
+            y += pos.getY();
+            z += pos.getZ();
+        }
+        x /= positions.size();
+        y /= positions.size();
+        z /= positions.size();
+        return new BlockPos(x, y, z);
+    }
+
     /**
      * Returns an ArrayList of BlockPos that represent a cube
      * @param origin the center BlockPos of the cube

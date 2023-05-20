@@ -2,9 +2,7 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -14,6 +12,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -21,7 +20,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.Random;
 import java.util.function.Predicate;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
@@ -29,13 +31,17 @@ import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 public class RaidHandler {
 
+    public static int COOLDOWN_BETWEEN_RAIDS = TickUnits.convertMinutesToTicks(1); // TODO INCREASE COOLDOWN
+    protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(1);
+    protected int waveDuration = 0;
+
     // Raid Variables
-    private ServerLevel level;
-    private BlockPos raidLocation = BlockPos.ZERO;
-    private BlockPos objectiveLocation = BlockPos.ZERO;
-    private int raidRadius = 150;
-    public static int TICKS_BETWEEN_RAIDS = TickUnits.convertMinutesToTicks(1); // TODO INCREASE COOLDOWN
-    private ArrayList<ISculkSmartEntity> raidParticipants = new ArrayList<>();
+    protected ServerLevel level;
+    protected BlockPos raidLocation = BlockPos.ZERO;
+    protected BlockPos objectiveLocation = BlockPos.ZERO;
+    protected BlockPos raidCenter = BlockPos.ZERO;
+    protected int raidRadius = 150;
+    protected ArrayList<ISculkSmartEntity> waveParticipants = new ArrayList<>();
     public enum RaidState {
         INACTIVE,
         INVESTIGATING_LOCATION,
@@ -45,13 +51,15 @@ public class RaidHandler {
         COMPLETE,
         FAILED
     }
-    private static RaidState raidState = RaidState.INACTIVE;
+    private RaidState raidState = RaidState.INACTIVE;
 
     // Waves
     private EntityFactory.StrategicValues[] currentWavePattern;
-    private int maxWaves = 5;
+    private int maxWaves = 2;
     private int currentWave = 0;
     private int remainingWaveParticipants = 0;
+
+    protected ModSavedData.AreaofInterestEntry areaOfInterestEntry;
 
     // Targets
     private static ArrayList<BlockPos> high_priority_targets = new ArrayList();
@@ -63,11 +71,10 @@ public class RaidHandler {
     private Predicate<BlockPos> isSpawnObstructed = (blockPos) ->
     {
         // If block isnt solid, its obstructed
-        if(!level.getBlockState(blockPos).isSolidRender(level, blockPos))
+        if(level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(Blocks.WATER) || level.getBlockState(blockPos).is(Blocks.LAVA))
         {
             return true;
         }
-
         // If block above is not
         if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above()).is(Blocks.WATER) || level.getBlockState(blockPos.above()).is(Blocks.LAVA))
         {
@@ -125,8 +132,6 @@ public class RaidHandler {
 
     public boolean canRaidStart()
     {
-        //if(DEBUG_MODE) return true; //TODO REMOVE
-
         if(gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
         {
             return false;
@@ -181,20 +186,40 @@ public class RaidHandler {
      * Checks if all raid participants are alive
      * @return true if all raid participants are alive, false otherwise
      */
-    public boolean areRaidParticipantsDead() {
+    public boolean areWaveParticipantsDead() {
         return remainingWaveParticipants <= 0;
     }
 
     private void updateRemainingWaveParticipantsAmount()
     {
         remainingWaveParticipants = 0;
-        for(ISculkSmartEntity entity : raidParticipants)
+        for(ISculkSmartEntity entity : waveParticipants)
         {
             if(((Mob) entity).isAlive())
             {
                 remainingWaveParticipants++;
             }
         }
+    }
+
+    /**
+     * Just removes them from the waveParticipantsList. Does not kill them.
+     * Will also removing the glowing effect.
+     */
+    protected void removeWaveParticipantsFromList()
+    {
+        for(ISculkSmartEntity entity : waveParticipants)
+        {
+            if(((Mob) entity).isAlive())
+            {
+                ((Mob) entity).removeAllEffects();
+            }
+            else
+            {
+                ((Mob) entity).discard();
+            }
+        }
+        waveParticipants.clear();
     }
 
     public BlockPos getObjectiveLocation()
@@ -233,15 +258,33 @@ public class RaidHandler {
         return objective;
     }
 
+    public Optional<BlockPos> getNextObjectiveLocation()
+    {
+        Optional<BlockPos> objective = Optional.empty();
+        if(!high_priority_targets.isEmpty())
+        {
+            objective = Optional.of(high_priority_targets.get(0));
+        }
+        else if(!medium_priority_targets.isEmpty())
+        {
+            objective = Optional.of(medium_priority_targets.get(0));
+        }
+        else if(!low_priority_targets.isEmpty())
+        {
+            objective = Optional.of(low_priority_targets.get(0));
+        }
+        return objective;
+    }
+
     public void reset()
     {
-        SculkHorde.savedData.removeAreaOfInterestFromMemory(raidLocation);
+        SculkHorde.savedData.removeAreaOfInterestFromMemory(areaOfInterestEntry.getPosition());
         ChunkLoaderHelper.unloadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
         blockSearcher = null;
         setRaidState(RaidState.INACTIVE);
         setRaidLocation(BlockPos.ZERO);
         setObjectiveLocation(BlockPos.ZERO);
-        raidParticipants.clear();
+        waveParticipants.clear();
         remainingWaveParticipants = 0;
         currentWave = 0;
     }
@@ -295,9 +338,12 @@ public class RaidHandler {
         // Initialize Block Searcher
         if(blockSearcher == null)
         {
-            //SculkHorde.savedData.
-            blockSearcher = new BlockSearcher(level, SculkHorde.savedData.getAreasOfInterestEntries().get(0).getPosition());
+            areaOfInterestEntry = SculkHorde.savedData.getAreasOfInterestEntries().get(0);
+            blockSearcher = new BlockSearcher(level, areaOfInterestEntry.getPosition());
             blockSearcher.setMaxDistance(getRaidRadius());
+            blockSearcher.setDebugMode(DEBUG_MODE);
+            blockSearcher.searchIterationsPerTick = 100;
+            blockSearcher.ignoreBlocksNearTargets = true;
 
             blockSearcher.setTargetBlockPredicate(new Predicate<BlockPos>()
             {
@@ -314,7 +360,15 @@ public class RaidHandler {
                 @Override
                 public boolean test(BlockPos blockPos)
                 {
-                    return level.getBlockState(blockPos).is(Blocks.AIR);
+                    if(level.getBlockState(blockPos).is(Blocks.AIR))
+                    {
+                        return true;
+                    }
+                    if(!BlockAlgorithms.isExposedToAir(level, blockPos))
+                    {
+                        return true;
+                    }
+                    return false;
                 }
             });
 
@@ -350,8 +404,38 @@ public class RaidHandler {
                 }
             }
 
+            // Sort the targets by distance to origin
+            high_priority_targets.sort(new Comparator<BlockPos>()
+            {
+                @Override
+                public int compare(BlockPos blockPos, BlockPos t1)
+                {
+                    return (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation()));
+                }
+            });
+
+            // Sort the targets by distance to origin
+            medium_priority_targets.sort(new Comparator<BlockPos>()
+            {
+                @Override
+                public int compare(BlockPos blockPos, BlockPos t1)
+                {
+                    return (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation()));
+                }
+            });
+
+            // Sort the targets by distance to origin
+            low_priority_targets.sort(new Comparator<BlockPos>()
+            {
+                @Override
+                public int compare(BlockPos blockPos, BlockPos t1)
+                {
+                    return (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation()));
+                }
+            });
+
             maxWaves = high_priority_targets.size() + medium_priority_targets.size() + low_priority_targets.size();
-            setRaidLocation(SculkHorde.savedData.getAreasOfInterestEntries().get(0).getPosition());
+            setRaidLocation(areaOfInterestEntry.getPosition());
             SculkHorde.LOGGER.debug("RaidHandler | Found " + maxWaves + " objective targets.");
             setRaidState(RaidState.INITIALIZING_RAID);
         }
@@ -370,35 +454,55 @@ public class RaidHandler {
 
         if(blockSearcher == null)
         {
-            SculkHorde.LOGGER.debug("RaidHandler | Initializing Raid at: " + getRaidLocation());
-            //Send message to all players
-            level.players().forEach((player) -> {
-                player.displayClientMessage(Component.literal("RaidHandler | Initializing Raid at: " + getRaidLocation()), false);
-            });
+
+            // Send message to all players
+
+            // Calculate centroid of all targets
+            ArrayList<BlockPos> allTargets = new ArrayList<>();
+            allTargets.addAll(high_priority_targets);
+            allTargets.addAll(medium_priority_targets);
+            allTargets.addAll(low_priority_targets);
+
+            //
+            if(allTargets.size() == 0)
+            {
+                setRaidState(RaidState.FAILED);
+                return;
+            }
+            raidCenter = BlockAlgorithms.getCentroid(allTargets);
+            allTargets.clear();
 
             blockSearcher = new BlockSearcher(level, getRaidLocation());
             blockSearcher.setMaxDistance(MAX_SEARCH_DISTANCE);
             blockSearcher.setTargetBlockPredicate(isSpawnTarget);
             blockSearcher.setObstructionPredicate(isSpawnObstructed);
             blockSearcher.setMaxTargets(1);
+            blockSearcher.setPositionToMoveAwayFrom(raidCenter);
+            blockSearcher.setDebugMode(DEBUG_MODE);
 
+
+            // Load chunks
             ChunkLoaderHelper.forceLoadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
 
         }
 
+        // Tick the Block Searcher
         blockSearcher.tick();
 
+        // If Completed, and was successful
         if(blockSearcher.isFinished && blockSearcher.isSuccessful)
         {
             setRaidState(RaidState.INITIALIZING_WAVE);
-
-            // Summon Sculk Spore Spewer at location
-            SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(EntityRegistry.SCULK_SPORE_SPEWER.get(), level);
-            BlockPos spawnLocation = blockSearcher.foundTargets.get(0);
-            sporeSpewer.setPos(spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ());
-            level.addFreshEntity(sporeSpewer);
             SculkHorde.LOGGER.debug("RaidHandler | Found Spawn Location. Initializing Raid.");
+
+            level.players().forEach((player) -> {
+                if(BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= raidRadius * 4 || SculkHorde.DEBUG_MODE)
+                {
+                    player.displayClientMessage(Component.literal("Sculk Raid Commencing at: " + getRaidLocation()), false);
+                }
+            });
         }
+        // If Completed, and was not successful
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
             setRaidState(RaidState.FAILED);
@@ -408,7 +512,7 @@ public class RaidHandler {
 
     private void initializingWaveTick()
     {
-
+        waveDuration = 0;
         currentWavePattern = getWavePattern();
         Optional<BlockPos> objectiveOptional = popObjectiveLocation();
         if(objectiveOptional.isPresent())
@@ -425,7 +529,7 @@ public class RaidHandler {
         level.players().forEach((player) ->
         {
             // If player is close
-            if(player.distanceToSqr(raidLocation.getX(), raidLocation.getY(), raidLocation.getZ()) < raidRadius*2 || SculkHorde.DEBUG_MODE)
+            if(BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= raidRadius * 4 || SculkHorde.DEBUG_MODE)
             {
                 player.displayClientMessage(Component.literal("RaidHandler | Starting Wave " + currentWave + " out of " + maxWaves + "."), false);
             }
@@ -433,7 +537,7 @@ public class RaidHandler {
 
         BlockPos spawnLocation = blockSearcher.foundTargets.get(0);
 
-        raidParticipants.forEach((raidParticipant) ->
+        waveParticipants.forEach((raidParticipant) ->
         {
             raidParticipant.setParticipatingInRaid(true);
             ((Mob)raidParticipant).setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
@@ -441,44 +545,71 @@ public class RaidHandler {
             ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertHoursToTicks(1), 0));
         });
 
+        // Play sound for each player
+        level.players().forEach(player ->
+        {
+            if (BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= raidRadius * 4 || SculkHorde.DEBUG_MODE)
+            {
+                level.playSound(null, player.blockPosition(), SoundRegistry.RAID_START_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+            }
+        });
 
         SculkHorde.LOGGER.debug("RaidHandler | Spawning mobs at: " + blockSearcher.currentPosition);
         setRaidState(RaidState.ACTIVE_WAVE);
     }
 
-    private void activeWaveTick()
+    /**
+     * If on last wave, end raid. Otherwise, go to next wave.
+     */
+    protected void endWave()
     {
-        updateRemainingWaveParticipantsAmount();
-        if(!areRaidParticipantsDead())
-        {
-            return;
-        }
-
+        // If we are on last wave, end raid
         if(currentWave == maxWaves)
         {
             setRaidState(RaidState.COMPLETE);
             //Send message to all players
             level.players().forEach((player) -> {
                 // If player is close
-                if(player.distanceToSqr(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY(), blockSearcher.currentPosition.getZ()) < raidRadius*2 || SculkHorde.DEBUG_MODE)
+                if(BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= raidRadius * 4 || SculkHorde.DEBUG_MODE)
                 {
                     player.displayClientMessage(Component.literal("RaidHandler | Completed Final Wave."), false);
                 }
             });
             return;
         }
+
+        // Otherwise, go to next wave
         currentWave++;
+
         //Send message to all players
         level.players().forEach((player) -> {
-            // If player is close
-            if(player.distanceToSqr(blockSearcher.currentPosition.getX(), blockSearcher.currentPosition.getY(), blockSearcher.currentPosition.getZ()) < raidRadius*2 || SculkHorde.DEBUG_MODE)
+            // If player in range
+            if(BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= raidRadius * 4 || SculkHorde.DEBUG_MODE)
             {
                 player.displayClientMessage(Component.literal("RaidHandler | Wave " + (currentWave-1) + " complete."), false);
             }
         });
 
         setRaidState(RaidState.INITIALIZING_WAVE);
+    }
 
+    protected void activeWaveTick()
+    {
+        updateRemainingWaveParticipantsAmount();
+        waveDuration++;
+
+        // If wave has been going on for too long, end it
+        if(waveDuration >= MAX_WAVE_DURATION)
+        {
+            endWave();
+            removeWaveParticipantsFromList();
+        }
+
+        // End Wave if all participants are dead
+        if(areWaveParticipantsDead())
+        {
+            endWave();
+        }
     }
 
     private void completeRaidTick()
@@ -510,13 +641,15 @@ public class RaidHandler {
         for(int i = 0; i < getWavePattern().length; i++)
         {
             EntityFactoryEntry randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
-            raidParticipants.add((ISculkSmartEntity) randomEntry.getEntity().create(level));
+            waveParticipants.add((ISculkSmartEntity) randomEntry.getEntity().create(level));
+            SculkHorde.savedData.subtractSculkAccumulatedMass(randomEntry.getCost());
         }
 
-        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        raidParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        SculkHorde.savedData.subtractSculkAccumulatedMass(20 * 5);
+        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
+        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
     }
 }

@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:crafting_table",
+    "minecraft:beacon",
     "minecraft:white_bed",
     "minecraft:orange_bed",
     "minecraft:magenta_bed",
@@ -24,8 +24,6 @@
     "minecraft:jungle_door",
     "minecraft:acacia_door",
     "minecraft:dark_oak_door",
-    "minecraft:iron_door",
-    "minecraft:torch",
-    "minecraft:lantern"
+    "minecraft:iron_door"
   ]
 }

@@ -2,6 +2,7 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.entity.*;
+import com.github.sculkhorde.common.entity.specialeffects.EnderBubbleAttackEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
@@ -85,6 +86,7 @@ public class ModEventSubscriber {
         event.put(EntityRegistry.INFESTATION_PURIFIER.get(), InfestationPurifierEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_VINDICATOR.get(), SculkVindicatorEntity.createAttributes().build());
         event.put(EntityRegistry.SCULK_CREEPER.get(), SculkCreeperEntity.createAttributes().build());
+        event.put(EntityRegistry.SCULK_ENDERMAN.get(), SculkEndermanEntity.createAttributes().build());
     }
 }
 

@@ -81,6 +81,10 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(EntityRegistry.SCULK_CREEPER.get(), SculkCreeperRenderer::new);
 
+        event.registerEntityRenderer(EntityRegistry.SCULK_ENDERMAN.get(), SculkEndermanRenderer::new);
+
+        event.registerEntityRenderer(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
+
 
 
     }

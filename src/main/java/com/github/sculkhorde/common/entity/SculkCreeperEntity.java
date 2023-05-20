@@ -1,10 +1,8 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.DestroyPriorityBlockGoal;
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
-import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
-import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Cat;
@@ -35,18 +33,21 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     }
     @Override
     protected void registerGoals() {
+        this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(3)));
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SwellGoal(this));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Ocelot.class, 6.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Cat.class, 6.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
-        this.goalSelector.addGoal(5, new DestroyPriorityBlockGoal(this, 1.0F, 3, 7, 5));
+        this.goalSelector.addGoal(5, new BlowUpPriorityBlockGoal(this, 1.0F, 3, 4, 5));
         this.goalSelector.addGoal(6, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.targetSelector.addGoal(1, new NearestLivingEntityTargetGoal<>(this, true, true));
         this.targetSelector.addGoal(2, new TargetAttacker(this).setAlertAllies());
     }
 
+    @Override
+    public void checkDespawn() {}
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -65,7 +66,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     @Override
     public boolean isIdle() {
-        return false;
+        return getTarget() == null;
     }
 
     public void explodeSculkCreeper()

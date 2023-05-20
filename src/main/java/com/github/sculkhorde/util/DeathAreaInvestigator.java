@@ -88,7 +88,7 @@ public class DeathAreaInvestigator {
             ticksSinceLastSuccessfulFind = 0;
             setState(State.FINISHED);
             //Send message to all players
-            SculkHorde.LOGGER.info("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition());
+            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition());
             // Add to Area of Interest Memory
             SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getPosition());
         }
@@ -96,7 +96,7 @@ public class DeathAreaInvestigator {
         {
             setState(State.FINISHED);
             blockSearcher = null;
-            SculkHorde.LOGGER.info("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition());
+            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition());
         }
     }
 

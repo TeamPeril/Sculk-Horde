@@ -31,6 +31,7 @@ public class TargetParameters
     private boolean mustReachTarget = false; //Should we only target entities we can reach?
     //A hash map which we store a blacklist of mobs we should not attack. Should use UUIDs of mobs to identify
     private HashMap<UUID, Long> blacklist = new HashMap<>();
+    private boolean canBlackListMobs = true; //Should we blacklist mobs?
 
 
 
@@ -94,7 +95,7 @@ public class TargetParameters
         }
 
         // If Blacklisted
-        if(blacklist.containsKey(e.getUUID()))
+        if(isOnBlackList((Mob) e))
         {
             return false;
         }
@@ -139,6 +140,18 @@ public class TargetParameters
 
         //Entity is Valid
         return true;
+    }
+
+    public TargetParameters enableBlackListMobs()
+    {
+        canBlackListMobs = true;
+        return this;
+    }
+
+    public TargetParameters disableBlackListMobs()
+    {
+        canBlackListMobs = false;
+        return this;
     }
 
     public TargetParameters enableTargetHostiles()

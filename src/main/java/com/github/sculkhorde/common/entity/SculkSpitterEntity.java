@@ -166,7 +166,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                                 .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
+                        //new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                         new WaterAvoidingRandomStrollGoal(this, 1.0D),
                         //new RangedAttackGoal(this, new AcidAttack(this), 20),

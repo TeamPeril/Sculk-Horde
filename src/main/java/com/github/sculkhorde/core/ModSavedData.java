@@ -52,7 +52,7 @@ public class ModSavedData extends SavedData {
     private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
     // The amount of ticks since last raid
-    private int ticksSinceLastRaid = RaidHandler.TICKS_BETWEEN_RAIDS;
+    private int ticksSinceLastRaid = RaidHandler.COOLDOWN_BETWEEN_RAIDS;
     private static final String ticksSinceLastRaidIdentifier = "ticksSinceLastRaid";
 
     /**
@@ -175,7 +175,7 @@ public class ModSavedData extends SavedData {
      **/
 
     public boolean isRaidCooldownOver() {
-        return getTicksSinceLastRaid() >= RaidHandler.TICKS_BETWEEN_RAIDS;
+        return getTicksSinceLastRaid() >= RaidHandler.COOLDOWN_BETWEEN_RAIDS;
     }
 
     public int getTicksSinceLastRaid() {

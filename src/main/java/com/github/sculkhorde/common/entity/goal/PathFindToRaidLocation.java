@@ -2,16 +2,14 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.RaidHandler;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.phys.Vec3;
 
 public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
 
     private final T mob;
+
+    private boolean hasReachedLocationOnce = false;
 
     public PathFindToRaidLocation(T mobIn) {
         this.mob = mobIn;
@@ -29,7 +27,11 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
 
     public boolean canUse()
     {
-        if(getPathFinderMob().isVehicle())
+        if(hasReachedLocationOnce)
+        {
+            return false;
+        }
+        else if(getPathFinderMob().isVehicle())
         {
             return false;
         }
@@ -37,7 +39,7 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
         {
             return false;
         }
-        else if(isInRadius())
+        else if(isCloseEnoughToObjective())
         {
             return false;
         }
@@ -56,7 +58,13 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
         }
     }
 
-    private boolean isInRadius() {
-        return SculkHorde.raidHandler.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 10);
+    private boolean isCloseEnoughToObjective()
+    {
+        if(SculkHorde.raidHandler.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
+        {
+            hasReachedLocationOnce = true;
+            return true;
+        }
+        return false;
     }
 }

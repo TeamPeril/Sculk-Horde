@@ -136,7 +136,7 @@ public class InfestationConversionHandler
 
         if(victimBlock == null)
         {
-            SculkHorde.LOGGER.error("Error Deinfecting Block: " + targetBlock.getBlock().toString());
+            //SculkHorde.LOGGER.error("Error Deinfecting Block: " + targetBlock.getBlock().toString());
             return false;
         }
 

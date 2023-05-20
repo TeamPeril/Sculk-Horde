@@ -1,0 +1,9 @@
+{
+  "raid_start_sound": {
+    "subtitle": "sounds.sculkhorde.raid_start_sound",
+    "sounds": [
+      "sculkhorde:raid_start_sound"
+    ]
+
+  }
+}

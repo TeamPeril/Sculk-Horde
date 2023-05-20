@@ -98,8 +98,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
-
-
     }
 
     /**
