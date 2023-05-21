@@ -524,7 +524,9 @@ public class RaidHandler {
             setRaidState(RaidState.FAILED);
         }
 
-        populateRaidParticipants();
+        BlockPos spawnLocation = blockSearcher.foundTargets.get(0);
+
+        populateRaidParticipants(spawnLocation);
 
         level.players().forEach((player) ->
         {
@@ -535,7 +537,7 @@ public class RaidHandler {
             }
         });
 
-        BlockPos spawnLocation = blockSearcher.foundTargets.get(0);
+
 
         waveParticipants.forEach((raidParticipant) ->
         {
@@ -636,20 +638,12 @@ public class RaidHandler {
         return possibleWavePatterns[random.nextInt(possibleWavePatterns.length)];
     }
 
-    private void populateRaidParticipants()
+    private void populateRaidParticipants(BlockPos spawnLocation)
     {
         for(int i = 0; i < getWavePattern().length; i++)
         {
             EntityFactoryEntry randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
-            waveParticipants.add((ISculkSmartEntity) randomEntry.getEntity().create(level));
-            SculkHorde.savedData.subtractSculkAccumulatedMass(randomEntry.getCost());
+            waveParticipants.add((ISculkSmartEntity) randomEntry.createEntity(level, spawnLocation));
         }
-
-        SculkHorde.savedData.subtractSculkAccumulatedMass(20 * 5);
-        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
-        waveParticipants.add((ISculkSmartEntity) EntityRegistry.SCULK_CREEPER.get().create(level));
     }
 }

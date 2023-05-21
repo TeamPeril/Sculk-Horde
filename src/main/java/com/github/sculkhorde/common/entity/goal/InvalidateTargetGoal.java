@@ -86,7 +86,7 @@ public class InvalidateTargetGoal extends Goal {
 
         // If target has not changed, and we reached threshold, and we are still within 15 blocks of last position, invalidate target.
         //BUG FIX: Forgot to check if the target was a MobEntity before casting it.
-        if(getTarget() instanceof Mob && !hasTargetChanged() && System.currentTimeMillis() - timeSinceLastTargetChange > UNREACHABLE_TARGET_TIMEOUT && tooCloseToLastPosition())
+        if(targetParameters.canBlackListMobs() && getTarget() instanceof Mob && !hasTargetChanged() && System.currentTimeMillis() - timeSinceLastTargetChange > UNREACHABLE_TARGET_TIMEOUT && tooCloseToLastPosition())
         {
             targetParameters.addToBlackList((Mob) getTarget());
         }

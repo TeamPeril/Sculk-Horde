@@ -70,7 +70,8 @@ public class EntityAlgorithms {
                 || e instanceof SculkHatcherEntity
                 || e instanceof SculkRavagerEntity
                 || e instanceof SculkVindicatorEntity
-                || e instanceof SculkCreeperEntity;
+                || e instanceof SculkCreeperEntity
+                || e instanceof SculkEndermanEntity;
     };
 
     /**

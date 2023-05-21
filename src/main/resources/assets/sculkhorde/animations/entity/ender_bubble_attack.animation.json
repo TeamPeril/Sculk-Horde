@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"misc.living": {
+		"misc.idle": {
 			"animation_length": 12.72,
 			"bones": {
 				"outercube": {

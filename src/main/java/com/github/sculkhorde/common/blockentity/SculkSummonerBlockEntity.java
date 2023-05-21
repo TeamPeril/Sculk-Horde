@@ -243,7 +243,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
             //If there is some sort of enemy near by, request reinforcement
             if (blockEntity.request.is_non_sculk_mob_nearby || blockEntity.request.is_aggressor_nearby) {
                 //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
-                SculkHorde.entityFactory.requestReinforcementAny(level, blockPos, false, blockEntity.request);
+                SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level, blockPos, false, blockEntity.request);
             }
 
             blockEntity.setToCooldown();

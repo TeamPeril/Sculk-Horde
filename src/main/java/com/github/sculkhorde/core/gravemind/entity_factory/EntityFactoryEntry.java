@@ -4,7 +4,11 @@ import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 
 import javax.annotation.Nullable;
 
@@ -78,6 +82,20 @@ public class EntityFactoryEntry {
         return strategicValue;
     }
 
+    public boolean isEntryAppropriateMinimalCheck()
+    {
+        if(getCost() > SculkHorde.savedData.getSculkAccumulatedMass())
+        {
+            return false;
+        }
+        else if(!SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean isEntryAppropriate(ReinforcementRequest context)
     {
         if(context == null)
@@ -105,4 +123,28 @@ public class EntityFactoryEntry {
         return true;
     }
 
+    /**
+     * Will spawn entity and subtract the cost of spawning it.
+     * @param level The level to spawn the entity in
+     * @param pos The position to spawn the entity at
+     */
+    public Mob spawnEntity(ServerLevel level, BlockPos pos)
+    {
+        SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
+        return (Mob) getEntity().spawn(level, pos, MobSpawnType.EVENT);
+    }
+
+    /**
+     * Will create entity and subtract the cost of spawning it.
+     * @param level The level to spawn the entity in
+     * @param pos The position to spawn the entity at
+     * @return The entity that was created
+     */
+    public Mob createEntity(ServerLevel level, BlockPos pos)
+    {
+        SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
+        Mob mob = (Mob) getEntity().create(level);
+        mob.setPos(pos.getX(), pos.getY(), pos.getZ());
+        return mob;
+    }
 }

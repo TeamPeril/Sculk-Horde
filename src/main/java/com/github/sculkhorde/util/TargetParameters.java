@@ -154,6 +154,11 @@ public class TargetParameters
         return this;
     }
 
+    public boolean canBlackListMobs()
+    {
+        return canBlackListMobs;
+    }
+
     public TargetParameters enableTargetHostiles()
     {
         targetHostiles = true;

@@ -54,13 +54,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
 
     //The Health
-    public static final float MAX_HEALTH = 40F;
+    public static final float MAX_HEALTH = 100F;
     //The armor of the mob
-    public static final float ARMOR = 4F;
+    public static final float ARMOR = 20F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
     public static final float ATTACK_DAMAGE = 7F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 1F;
+    public static final float ATTACK_KNOCKBACK = 3F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
@@ -70,6 +70,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
 
     // Timing Variables
+    public boolean canTeleport = true;
     protected int TELEPORT_COOLDOWN = TickUnits.convertSecondsToTicks(8);
     protected int ticksSinceLastTeleport = 0;
 
@@ -108,6 +109,18 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     }
 
     // Accessors and Modifiers
+
+    public boolean isSpecialAttackReady() {
+        return ticksSinceLastSpecialAttack >= SPECIAL_ATTACK_COOLDOWN;
+    }
+
+    public void incrementSpecialAttackCooldown() {
+        ticksSinceLastSpecialAttack++;
+    }
+
+    public void resetSpecialAttackCooldown() {
+        ticksSinceLastSpecialAttack = 0;
+    }
 
     public boolean isIdle() {
         return getTarget() == null;
@@ -181,6 +194,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                         new DespawnWhenIdle(this, 120),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new MeleeAttackGoal(this, 1.0D, true),
                         new PathFindToRaidLocation<>(this),
@@ -240,6 +254,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     protected void customServerAiStep()
     {
         ticksSinceLastTeleport++;
+        incrementSpecialAttackCooldown();
         if ((getTarget() == null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN) || (getTarget() != null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN/8))
         {
             ticksSinceLastTeleport = 0;
@@ -261,16 +276,17 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected boolean teleport()
     {
-        if (!this.level.isClientSide() && this.isAlive())
+        if (this.level.isClientSide() || !this.isAlive() || !canTeleport)
         {
-            double teleportDistance = 64.0D;
-            double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * teleportDistance;
-            double d1 = this.getY() + (double)(this.random.nextInt(64) - 32);
-            double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * teleportDistance;
-            return this.teleport(d0, d1, d2);
-        } else {
             return false;
         }
+
+        double teleportDistance = 64.0D;
+        double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * teleportDistance;
+        double d1 = this.getY() + (double)(this.random.nextInt(64) - 32);
+        double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * teleportDistance;
+        return this.teleport(d0, d1, d2);
+
     }
 
     /**
@@ -278,7 +294,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      * @param entity The entity to teleport towards
      * @return Returns true if the teleport was successful
      */
-    boolean teleportTowards(Entity entity) {
+    protected boolean teleportTowards(Entity entity)
+    {
+        if(!canTeleport)
+        {
+            return false;
+        }
+
         Vec3 vec3 = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
         vec3 = vec3.normalize();
         double teleportDistance = 8.0D;
@@ -295,8 +317,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      * @param z The z position
      * @return Returns true if the teleport was successful
      */
-    private boolean teleport(double x, double y, double z)
+    protected boolean teleport(double x, double y, double z)
     {
+        if(!canTeleport)
+        {
+            return false;
+        }
+
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
         while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).getMaterial().blocksMotion())

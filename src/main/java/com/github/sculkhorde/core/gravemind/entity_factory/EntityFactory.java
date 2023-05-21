@@ -69,7 +69,7 @@ public class EntityFactory {
         ArrayList<EntityFactoryEntry> possibleEntries = new ArrayList<>();
         for(EntityFactoryEntry entry : entries)
         {
-            if(predicate.test(entry))
+            if(predicate.test(entry) && entry.isEntryAppropriateMinimalCheck())
             {
                 possibleEntries.add(entry);
             }
@@ -77,13 +77,14 @@ public class EntityFactory {
         return possibleEntries.get(rng.nextInt(possibleEntries.size()));
     }
 
+
     /**
      * Will spawn a reinforcement based on the budget given. Prioritizes spawning the highest costing reinforcement.
      * @param world The world to spawn it in.
      * @param spawnPosition The Position
      * @param noCost Whether it will subtract the cost from the Global Sculk Mass Amount
      */
-    public void requestReinforcementAny(Level world, BlockPos spawnPosition, boolean noCost, ReinforcementRequest context)
+    public void createReinforcementRequestFromSummoner(Level world, BlockPos spawnPosition, boolean noCost, ReinforcementRequest context)
     {
         boolean DEBUG_THIS = false;
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");

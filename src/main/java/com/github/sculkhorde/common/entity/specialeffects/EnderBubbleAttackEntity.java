@@ -1,5 +1,7 @@
 package com.github.sculkhorde.common.entity.specialeffects;
 
+import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -13,7 +15,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,15 +27,29 @@ import java.util.List;
  */
 public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoEntity {
 
-    public static int LIFE_TIME = TickUnits.convertSecondsToTicks(30);
+    public static int LIFE_TIME = -1;
     public int currentLifeTicks = 0;
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
 
+    public EnderBubbleAttackEntity( Level level) {
+        super(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), level);
+    }
+
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level, LivingEntity sourceEntity) {
         super(entityType, level, sourceEntity);
+    }
+
+    public EnderBubbleAttackEntity( Level level, LivingEntity sourceEntity) {
+        super(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), level, sourceEntity);
+    }
+
+    public EnderBubbleAttackEntity enableDeleteAfterTime(int ticks)
+    {
+        LIFE_TIME = ticks;
+        return this;
     }
 
     @Override
@@ -46,7 +61,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         currentLifeTicks++;
 
         // If the entity is alive for more than LIFE_TIME, discard it
-        if(currentLifeTicks >= LIFE_TIME) this.discard();
+        if(currentLifeTicks >= LIFE_TIME && LIFE_TIME != -1) this.discard();
 
         //playSound(SoundEvents.GENERIC_EXPLODE);
 
@@ -54,7 +69,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         List<LivingEntity> hitList = getEntitiesNearbyCube(LivingEntity.class, 3);
         for (LivingEntity entity : hitList)
         {
-            if (entity == sourceEntity)
+            if (entity == sourceEntity || EntityAlgorithms.isSculkLivingEntity.test(entity))
             {
                 continue;
             }
@@ -79,7 +94,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericLivingController(this));
+        controllers.add(DefaultAnimations.genericIdleController(this));
     }
 
     @Override
