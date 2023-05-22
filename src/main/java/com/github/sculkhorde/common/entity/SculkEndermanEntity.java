@@ -165,72 +165,27 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     @Override
     public void registerGoals() {
 
-        Goal[] goalSelectorPayload = goalSelectorPayload();
-        for(int priority = 0; priority < goalSelectorPayload.length; priority++)
-        {
-            this.goalSelector.addGoal(priority, goalSelectorPayload[priority]);
-        }
+        this.goalSelector.addGoal(0, new DespawnWhenIdle(this, 120));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
+        this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
+        this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
+        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
-        Goal[] targetSelectorPayload = targetSelectorPayload();
-        for(int priority = 0; priority < targetSelectorPayload.length; priority++)
-        {
-            this.targetSelector.addGoal(priority, targetSelectorPayload[priority]);
-        }
-
+        this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
+        this.targetSelector.addGoal(1, new TargetAttacker(this));
+        this.targetSelector.addGoal(2, new NearestLivingEntityTargetGoal<>(this, true, true));
     }
 
-    /**
-     * Prepares an array of goals to give to registerGoals() for the goalSelector.<br>
-     * The purpose was to make registering goals simpler by automatically determining priority
-     * based on the order of the items in the array. First element is of priority 0, which
-     * represents highest priority. Priority value then increases by 1, making each element
-     * less of a priority than the last.
-     * @return Returns an array of goals ordered from highest to lowest piority
-     */
-    public Goal[] goalSelectorPayload()
-    {
-        Goal[] goals =
-                {
-                        new DespawnWhenIdle(this, 120),
-                        //SwimGoal(mob)
-                        new FloatGoal(this),
-                        new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)),
-                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new MeleeAttackGoal(this, 1.0D, true),
-                        new PathFindToRaidLocation<>(this),
-                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
-                        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                        new WaterAvoidingRandomStrollGoal(this, 1.0D),
-                        //new RangedAttackGoal(this, new AcidAttack(this), 20),
-                        //LookAtGoal(mob, targetType, lookDistance)
-                        new LookAtPlayerGoal(this, Pig.class, 8.0F),
-                        //LookRandomlyGoal(mob)
-                        new RandomLookAroundGoal(this),
-                        new OpenDoorGoal(this, true)
-                };
-        return goals;
-    }
-
-    /**
-     * Prepares an array of goals to give to registerGoals() for the targetSelector.<br>
-     * The purpose was to make registering goals simpler by automatically determining priority
-     * based on the order of the items in the array. First element is of priority 0, which
-     * represents highest priority. Priority value then increases by 1, making each element
-     * less of a priority than the last.
-     * @return Returns an array of goals ordered from highest to lowest piority
-     */
-    public Goal[] targetSelectorPayload()
-    {
-        Goal[] goals =
-                {
-                        new InvalidateTargetGoal(this),
-                        //HurtByTargetGoal(mob)
-                        new TargetAttacker(this).setAlertAllies(),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
-
-                };
-        return goals;
+    @Override
+    public boolean hurt(DamageSource damageSource, float amount) {
+        if(damageSource.getEntity() != null)
+        {
+            teleportAwayFromEntity(damageSource.getEntity());
+        }
+        return super.hurt(damageSource, amount);
     }
 
     /**
@@ -307,6 +262,27 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * teleportDistance;
         double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3.y * teleportDistance;
         double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * teleportDistance;
+        return this.teleport(d1, d2, d3);
+    }
+
+    /**
+     * Teleports the entity away from the given entity
+     * @param entity The entity to teleport away from
+     * @return Returns true if the teleport was successful
+     */
+    public boolean teleportAwayFromEntity(Entity entity)
+    {
+        if(!canTeleport)
+        {
+            return false;
+        }
+
+        Vec3 vec3 = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
+        vec3 = vec3.normalize();
+        double teleportDistance = 8.0D;
+        double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D + vec3.x * teleportDistance;
+        double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) + vec3.y * teleportDistance;
+        double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D + vec3.z * teleportDistance;
         return this.teleport(d1, d2, d3);
     }
 

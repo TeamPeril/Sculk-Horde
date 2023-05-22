@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoEntity {
 
-    public static int LIFE_TIME = -1;
+    public static int LIFE_TIME = TickUnits.convertSecondsToTicks(10);
     public int currentLifeTicks = 0;
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level) {

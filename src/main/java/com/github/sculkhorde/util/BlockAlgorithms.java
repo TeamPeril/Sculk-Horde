@@ -270,6 +270,47 @@ public class BlockAlgorithms {
 
 
     /**
+     * Finds the location of the nearest block given a block state predicate.
+     * @param level The world
+     * @param origin The origin of the search location
+     * @param predicate The predicate that determines if a block is the one were searching for
+     * @param distance The search distance
+     * @return The position of the block
+     */
+    public static ArrayList<BlockPos> getBlocksInAreaWithBlockPosPredicate(ServerLevel level, BlockPos origin, Predicate<BlockPos> predicate, int distance)
+    {
+        ArrayList<BlockPos> list = new ArrayList<>();
+
+        BlockPos blockPos = origin;
+
+        // Define the bounds of the cube
+        int minX = blockPos.getX() - distance;
+        int minY = blockPos.getY() - distance;
+        int minZ = blockPos.getZ() - distance;
+        int maxX = blockPos.getX() + distance;
+        int maxY = blockPos.getY() + distance;
+        int maxZ = blockPos.getZ() + distance;
+
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    mutableBlockPos.set(x, y, z);
+                    if (level.getBlockState(mutableBlockPos).is(Blocks.AIR)) {
+                        continue;
+                    }
+                    if (predicate.test(mutableBlockPos)) {
+                        list.add(mutableBlockPos.immutable());
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+
+    /**
      * Finds the location of the nearest block given a BlockPos predicate.
      * @param level The world
      * @param origin The origin of the search location
