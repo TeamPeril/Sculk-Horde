@@ -87,7 +87,7 @@ public class InfestationPurifier extends Item implements IForgeItem {
 
         //Spawn the Purifier Cursor
         purifier = new InfestationPurifierEntity(worldIn);
-        purifier.setPos(playerIn.blockPosition().getX(), playerIn.blockPosition().getY(), playerIn.blockPosition().getZ());
+        purifier.setPos(playerIn.position().x(), playerIn.position().y(), playerIn.position().z());
         worldIn.addFreshEntity(purifier);
 
         // Consume Item
