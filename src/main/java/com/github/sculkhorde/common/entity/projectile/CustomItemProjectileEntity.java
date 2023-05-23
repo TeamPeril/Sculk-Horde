@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
-import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;

@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

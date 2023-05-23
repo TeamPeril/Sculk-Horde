@@ -1,12 +1,10 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.EnumSet;
 

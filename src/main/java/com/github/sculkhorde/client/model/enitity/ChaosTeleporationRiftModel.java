@@ -1,20 +1,19 @@
 package com.github.sculkhorde.client.model.enitity;
 
-import com.github.sculkhorde.common.entity.SculkSpitterEntity;
+import com.github.sculkhorde.common.entity.specialeffects.ChaosTeleporationRiftEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkSpitterModel extends DefaultedEntityGeoModel<SculkSpitterEntity>
-{
-    public SculkSpitterModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_spitter"));
+public class ChaosTeleporationRiftModel extends DefaultedEntityGeoModel<ChaosTeleporationRiftEntity> {
+    public ChaosTeleporationRiftModel() {
+        super(new ResourceLocation(SculkHorde.MOD_ID, "chaos_teleporation_rift"));
     }
 
     // We want our model to render using the translucent render type
     @Override
-    public RenderType getRenderType(SculkSpitterEntity animatable, ResourceLocation texture) {
+    public RenderType getRenderType(ChaosTeleporationRiftEntity animatable, ResourceLocation texture) {
         return RenderType.entityTranslucent(getTextureResource(animatable));
     }
 }

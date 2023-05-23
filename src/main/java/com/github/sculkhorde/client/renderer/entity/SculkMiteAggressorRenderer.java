@@ -5,8 +5,6 @@ import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-import javax.annotation.Nullable;
-
 public class SculkMiteAggressorRenderer extends GeoEntityRenderer<SculkMiteAggressorEntity> {
 
 

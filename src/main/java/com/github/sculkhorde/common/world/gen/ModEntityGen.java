@@ -1,16 +1,5 @@
 package com.github.sculkhorde.common.world.gen;
 
-import com.github.sculkhorde.common.entity.SculkMiteEntity;
-import com.github.sculkhorde.core.EntityRegistry;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.biome.MobSpawnSettings;
-
-import java.util.Arrays;
-import java.util.List;
-
 public class ModEntityGen {
     /*
     public static void onEntitySpawn(final BiomeLoadingEvent event) {

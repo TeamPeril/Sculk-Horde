@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.attack.AcidAttack;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
@@ -31,7 +30,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;

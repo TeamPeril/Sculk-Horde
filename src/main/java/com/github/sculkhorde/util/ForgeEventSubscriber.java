@@ -8,7 +8,6 @@ import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;

@@ -1,12 +1,10 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;

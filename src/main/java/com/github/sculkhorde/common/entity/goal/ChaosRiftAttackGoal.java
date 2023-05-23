@@ -9,22 +9,22 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Predicate;
 
-public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
+public class ChaosRiftAttackGoal extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
     protected int ticksElapsed = executionCooldown;
 
-    public SummonUnitsFromRiftAttackGoal(PathfinderMob mob, int durationInTicks) {
+    public ChaosRiftAttackGoal(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -76,18 +76,6 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
         return true;
     };
 
-    private Predicate<EntityFactoryEntry> isValidReinforcement()
-    {
-        return (entityFactoryEntry) ->
-        {
-            if(entityFactoryEntry.getEntity() == EntityRegistry.SCULK_CREEPER.get() || entityFactoryEntry.getEntity() == EntityRegistry.SCULK_RAVAGER.get())
-            {
-                return false;
-            }
-
-            return entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Melee || entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Ranged;
-        };
-    }
 
     @Override
     public void start()
@@ -100,21 +88,16 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
         getSculkEnderman().canTeleport = false;
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level, mob.blockPosition(), isValidSpawn, 5);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level, mob.blockPosition(), isValidSpawn, 10);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
         // Spawn 10 units
-        for(int i = 0; i < 10 && i < possibleSpawns.size(); i++)
+        for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            Optional<EntityFactoryEntry> entry =  SculkHorde.entityFactory.getRandomEntry(isValidReinforcement());
-
-            if(entry.isPresent())
-            {
-                entry.get().spawnEntity((ServerLevel) mob.level, spawnPos.above());
-            }
+            EntityRegistry.CHAOS_TELEPORATION_RIFT.get().spawn( (ServerLevel) mob.level, spawnPos.above().above(), MobSpawnType.REINFORCEMENT);
         }
 
     }

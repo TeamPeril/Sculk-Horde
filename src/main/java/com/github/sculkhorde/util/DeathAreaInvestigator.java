@@ -4,9 +4,6 @@ import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.core.gravemind.RaidHandler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.Optional;

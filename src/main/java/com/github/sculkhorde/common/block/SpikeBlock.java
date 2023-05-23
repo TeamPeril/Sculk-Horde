@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.DamageSourceRegistry;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;

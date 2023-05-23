@@ -5,8 +5,6 @@ import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 
-import java.util.Random;
-
 public class SculkCrustParticle extends TextureSheetParticle
 {
     protected SculkCrustParticle(ClientLevel clientLevel, double x, double y, double z, double xDirection, double yDirection, double zDirection) {

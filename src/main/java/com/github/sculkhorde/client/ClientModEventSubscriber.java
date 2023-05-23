@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,7 +18,6 @@ import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import software.bernie.example.client.renderer.block.FertilizerBlockRenderer;
 
 import java.util.Map;
 
@@ -84,6 +82,8 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(EntityRegistry.SCULK_ENDERMAN.get(), SculkEndermanRenderer::new);
 
         event.registerEntityRenderer(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
+
+        event.registerEntityRenderer(EntityRegistry.CHAOS_TELEPORATION_RIFT.get(), ChaosTeleporationRiftRenderer::new);
 
 
 

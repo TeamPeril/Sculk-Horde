@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;

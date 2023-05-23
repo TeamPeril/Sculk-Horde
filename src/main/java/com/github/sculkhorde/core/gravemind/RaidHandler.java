@@ -1,7 +1,6 @@
 package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
@@ -31,8 +30,8 @@ import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 public class RaidHandler {
 
-    public static int COOLDOWN_BETWEEN_RAIDS = TickUnits.convertMinutesToTicks(1); // TODO INCREASE COOLDOWN
-    protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(1);
+    public static int COOLDOWN_BETWEEN_RAIDS = TickUnits.convertMinutesToTicks(5); // TODO INCREASE COOLDOWN
+    protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
     protected int waveDuration = 0;
 
     // Raid Variables
@@ -642,8 +641,21 @@ public class RaidHandler {
     {
         for(int i = 0; i < getWavePattern().length; i++)
         {
-            EntityFactoryEntry randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
-            waveParticipants.add((ISculkSmartEntity) randomEntry.createEntity(level, spawnLocation));
+            Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
+            if(randomEntry.isEmpty())
+            {
+                SculkHorde.LOGGER.debug("RaidHandler | Unable to find valid entity for raid.");
+                setRaidState(RaidState.FAILED);
+                return;
+            }
+            waveParticipants.add((ISculkSmartEntity) randomEntry.get().createEntity(level, spawnLocation));
+        }
+
+        if(currentWave == 0)
+        {
+            Mob boss = EntityRegistry.SCULK_ENDERMAN.get().create(level);
+            boss.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
+            waveParticipants.add((ISculkSmartEntity) boss);
         }
     }
 }

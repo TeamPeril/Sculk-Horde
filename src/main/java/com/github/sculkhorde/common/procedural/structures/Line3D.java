@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.procedural.structures;
 
-import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;

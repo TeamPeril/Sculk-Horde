@@ -1,7 +1,5 @@
 package com.github.sculkhorde.core;
 
-import net.minecraft.world.damagesource.DamageSource;
-
 public class DamageSourceRegistry {
 
     //TODO PORT

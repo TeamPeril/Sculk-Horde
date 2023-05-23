@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;

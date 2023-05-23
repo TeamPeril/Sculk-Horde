@@ -7,8 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import java.util.ArrayList;
-
 public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     /**
      * An Easier Constructor where you do not have to specify the Mob Type

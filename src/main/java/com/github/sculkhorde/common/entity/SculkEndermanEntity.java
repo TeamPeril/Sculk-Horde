@@ -7,23 +7,23 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -38,8 +38,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.Optional;
 
 public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -77,6 +75,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     protected int SPECIAL_ATTACK_COOLDOWN = TickUnits.convertSecondsToTicks(5);
     protected int ticksSinceLastSpecialAttack = 0;
 
+    protected ServerBossEvent bossEvent;
+
     // Data
     private static final EntityDataAccessor<Boolean> DATA_ANGRY = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -92,6 +92,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         super(type, worldIn);
         this.setMaxUpStep(1.0F);
         this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.bossEvent = this.createBossEvent();
     }
     /**
      * Determines & registers the attributes of the mob.
@@ -169,6 +170,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(2, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
@@ -208,6 +210,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected void customServerAiStep()
     {
+        this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+
         ticksSinceLastTeleport++;
         incrementSpecialAttackCooldown();
         if ((getTarget() == null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN) || (getTarget() != null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN/8))
@@ -335,6 +339,23 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         {
             return false;
         }
+    }
+
+    protected ServerBossEvent createBossEvent() {
+        ServerBossEvent event = new ServerBossEvent(Component.literal("SCULK_ENDERMAN"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        return event;
+    }
+
+    @Override
+    public void startSeenByPlayer(ServerPlayer player) {
+        super.startSeenByPlayer(player);
+        this.bossEvent.addPlayer(player);
+    }
+
+    @Override
+    public void stopSeenByPlayer(ServerPlayer player) {
+        super.stopSeenByPlayer(player);
+        this.bossEvent.removePlayer(player);
     }
 
     // ###### Data Code ########

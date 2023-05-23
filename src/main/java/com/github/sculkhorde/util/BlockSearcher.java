@@ -7,7 +7,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.decoration.ArmorStand;
 
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Predicate;
 
 public class BlockSearcher

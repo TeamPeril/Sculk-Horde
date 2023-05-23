@@ -1,11 +1,9 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.*;
-import com.mojang.datafixers.types.templates.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.SculkBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;

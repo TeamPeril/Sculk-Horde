@@ -2,7 +2,6 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.entity.*;
-import com.github.sculkhorde.common.entity.specialeffects.EnderBubbleAttackEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
@@ -10,7 +9,6 @@ import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;

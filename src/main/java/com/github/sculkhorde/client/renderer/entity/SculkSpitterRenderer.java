@@ -5,8 +5,6 @@ import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-import javax.annotation.Nullable;
-
 public class SculkSpitterRenderer extends GeoEntityRenderer<SculkSpitterEntity> {
 
     public SculkSpitterRenderer(EntityRendererProvider.Context renderManager)

@@ -1,12 +1,8 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ParticleRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.Gravemind;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.material.Fluid;
@@ -18,7 +14,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import java.util.Random;

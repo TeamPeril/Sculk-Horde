@@ -4,7 +4,6 @@ import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.example.entity.ParasiteEntity;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SculkSporeSpewerModel extends DefaultedEntityGeoModel<SculkSporeSpewerEntity> {

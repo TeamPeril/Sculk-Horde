@@ -2,19 +2,20 @@ package com.github.sculkhorde.core.gravemind.entity_factory;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -64,8 +65,10 @@ public class EntityFactory {
     }
 
 
-    public static EntityFactoryEntry getRandomEntry(Predicate<EntityFactoryEntry> predicate)
+    public static Optional<EntityFactoryEntry> getRandomEntry(Predicate<EntityFactoryEntry> predicate)
     {
+        Optional<EntityFactoryEntry> output = Optional.empty();
+
         ArrayList<EntityFactoryEntry> possibleEntries = new ArrayList<>();
         for(EntityFactoryEntry entry : entries)
         {
@@ -74,7 +77,13 @@ public class EntityFactory {
                 possibleEntries.add(entry);
             }
         }
-        return possibleEntries.get(rng.nextInt(possibleEntries.size()));
+
+        if(possibleEntries.size() > 0)
+        {
+            output = Optional.of(possibleEntries.get(rng.nextInt(possibleEntries.size())));
+        }
+
+        return output;
     }
 
 

@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
@@ -11,7 +10,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.concurrent.TimeUnit;
 

@@ -2,7 +2,6 @@ package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.common.entity.infection.CursorProberEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 

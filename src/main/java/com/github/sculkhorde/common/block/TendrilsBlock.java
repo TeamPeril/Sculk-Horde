@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.VineBlock;

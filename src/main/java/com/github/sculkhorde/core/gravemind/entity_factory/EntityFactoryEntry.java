@@ -1,6 +1,5 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
