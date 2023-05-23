@@ -94,6 +94,11 @@ public class TargetParameters
             return false;
         }
 
+        if(e instanceof Player)
+        {
+            return true;
+        }
+
         // If Blacklisted
         if(isOnBlackList((Mob) e))
         {
