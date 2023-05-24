@@ -10,6 +10,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Fox;
@@ -110,7 +112,9 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
                     SoundEvent soundevent = entity instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;
                     level.playSound((Player)null, d0, d1, d2, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
                     entity.playSound(soundevent, 1.0F, 1.0F);
-                    entity.hurt(this.damageSources().magic(), 1.0F);
+                    entity.hurt(this.damageSources().magic(), 2.0F);
+                    // Give entity darkness potion effect
+                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, TickUnits.convertSecondsToTicks(5), 0));
                     break;
                 }
             }

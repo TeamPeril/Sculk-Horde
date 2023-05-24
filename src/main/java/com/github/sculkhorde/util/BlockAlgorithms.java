@@ -578,8 +578,53 @@ public class BlockAlgorithms {
         return points;
     }
 
-    public static Vec3 scalarMultiply(Vec3 vector, double t) {
-        return new Vec3(vector.x + t, vector.y * t, vector.z + t);
+    public static boolean isAreaFlat(ServerLevel level, BlockPos centerPos, int radius) {
+        int totalBlocks = 0;
+        int flatBlocks = 0;
+
+        int startX = centerPos.getX() - radius;
+        int startZ = centerPos.getZ() - radius;
+
+        for (int x = startX; x <= centerPos.getX() + radius; x++) {
+            for (int z = startZ; z <= centerPos.getZ() + radius; z++) {
+                BlockPos currentPos = new BlockPos(x, centerPos.getY(), z);
+                if (level.isLoaded(currentPos))
+                {
+                    totalBlocks++;
+                    if (isBlockFlat(level, currentPos)) {
+                        flatBlocks++;
+                    }
+                }
+            }
+        }
+
+        // Calculate the flatness ratio
+        double flatnessRatio = (double) flatBlocks / totalBlocks;
+        // You can adjust the threshold value as needed
+        double flatnessThreshold = 0.9;
+
+        return flatnessRatio >= flatnessThreshold;
+    }
+
+    private static boolean isBlockFlat(ServerLevel level, BlockPos pos) {
+
+        // If block is not solid, but block below is, then it is flat
+        if(!level.getBlockState(pos).getMaterial().isSolid() && level.getBlockState(pos.below()).getMaterial().isSolid())
+        {
+            return true;
+        }
+        // If block is solid, with space above, then it is flat
+        else if(level.getBlockState(pos).getMaterial().isSolid() && !level.getBlockState(pos.above()).getMaterial().isSolid())
+        {
+            return true;
+        }
+        // If block and block above are solid, but above that isnt, then it is flat.
+        else if(level.getBlockState(pos).getMaterial().isSolid() && level.getBlockState(pos.above()).getMaterial().isSolid() && !level.getBlockState(pos.above().above()).getMaterial().isSolid())
+        {
+            return true;
+        }
+
+        return false;
     }
 
 

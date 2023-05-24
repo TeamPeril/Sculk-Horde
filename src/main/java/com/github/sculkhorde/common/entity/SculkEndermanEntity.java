@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -77,8 +78,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     protected ServerBossEvent bossEvent;
 
+    protected boolean isInvestigatingPossibleRaidLocation = false;
+
     // Data
-    private static final EntityDataAccessor<Boolean> DATA_ANGRY = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> DATA_ANGRY = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
 
     // Animation
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -94,6 +97,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
     }
+
+    public SculkEndermanEntity(Level level, BlockPos pos)
+    {
+        this(EntityRegistry.SCULK_ENDERMAN.get(), level);
+        this.setPos(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes
@@ -139,6 +149,15 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         isParticipatingInRaid = isParticipatingInRaidIn;
     }
 
+    public boolean isInvestigatingPossibleRaidLocation() {
+        return isInvestigatingPossibleRaidLocation;
+    }
+
+    public void setInvestigatingPossibleRaidLocation(boolean value)
+    {
+        isInvestigatingPossibleRaidLocation = value;
+    }
+
     @Override
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
@@ -166,27 +185,28 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     @Override
     public void registerGoals() {
 
-        this.goalSelector.addGoal(0, new DespawnWhenIdle(this, 120));
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
-        this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
+        //this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
         this.targetSelector.addGoal(1, new TargetAttacker(this));
-        this.targetSelector.addGoal(2, new NearestLivingEntityTargetGoal<>(this, true, true));
+        this.targetSelector.addGoal(2, new NearestLivingEntityTargetGoal<>(this, false, false));
     }
 
     @Override
-    public boolean hurt(DamageSource damageSource, float amount) {
+    public boolean hurt(DamageSource damageSource, float amount)
+    {
         if(damageSource.getEntity() != null)
         {
             teleportAwayFromEntity(damageSource.getEntity());
         }
+        entityData.set(DATA_ANGRY, true);
         return super.hurt(damageSource, amount);
     }
 
@@ -210,6 +230,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected void customServerAiStep()
     {
+        super.customServerAiStep();
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
 
         ticksSinceLastTeleport++;
@@ -217,16 +238,33 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         if ((getTarget() == null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN) || (getTarget() != null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN/8))
         {
             ticksSinceLastTeleport = 0;
-            if(getTarget() == null)
+            if(getTarget() == null && !isInvestigatingPossibleRaidLocation)
             {
                 this.teleport();
             }
-            else
+            else if(getTarget() != null)
             {
                 teleportTowards(getTarget());
             }
         }
-        super.customServerAiStep();
+
+        // If angry, dont check for looking players
+        if(entityData.get(DATA_ANGRY))
+        {
+            return;
+        }
+
+        // Check to see if any players are looking at the entity
+        for (Player player : this.level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(64.0D, 64.0D, 64.0D)))
+        {
+            if (isLookingAtMe(player))
+            {
+                // Set angry
+                entityData.set(DATA_ANGRY, true);
+            }
+        }
+
+
     }
 
     /**
@@ -342,7 +380,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     }
 
     protected ServerBossEvent createBossEvent() {
-        ServerBossEvent event = new ServerBossEvent(Component.literal("SCULK_ENDERMAN"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        ServerBossEvent event = new ServerBossEvent(Component.literal("Sculk Enderman"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         return event;
     }
 

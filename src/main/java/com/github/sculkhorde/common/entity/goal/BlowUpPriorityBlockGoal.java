@@ -26,11 +26,8 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     protected final TagKey<Block> blockWithTagToRemove = BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY;
     protected final SculkCreeperEntity removerMob;
     protected int ticksSinceReachedGoal;
-    protected static final int WAIT_AFTER_BLOCK_FOUND = 20;
     protected int distanceRequired;
     protected int ticksRequiredToBreakBlock;
-    protected int COOLDOWN_BETWEEN_BLOCK_SEARCH = TickUnits.convertSecondsToTicks(5);
-    protected int ticksSinceLastSearch = COOLDOWN_BETWEEN_BLOCK_SEARCH;
 
     public BlowUpPriorityBlockGoal(SculkCreeperEntity sculkCreeperEntity, double p_25842_, int p_25843_, int distanceRequired, int ticksRequiredToBreakBlock) {
         super(sculkCreeperEntity, p_25842_, 24, p_25843_);
@@ -41,12 +38,8 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     public boolean canUse()
     {
-        ticksSinceLastSearch++;
-        if(ticksSinceLastSearch >= COOLDOWN_BETWEEN_BLOCK_SEARCH)
-        {
-            findNearestBlock();
-            ticksSinceLastSearch = 0;
-        }
+
+        findNearestBlock();
 
         if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level, this.removerMob))
         {
