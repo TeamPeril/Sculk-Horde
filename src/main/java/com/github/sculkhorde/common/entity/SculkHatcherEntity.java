@@ -163,7 +163,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                        new WaterAvoidingRandomStrollGoal(this, 1.0D),
+                        new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
                         //new RangedAttackGoal(this, new AcidAttack(this), 20),
                         //LookAtGoal(mob, targetType, lookDistance)
                         new LookAtPlayerGoal(this, Pig.class, 8.0F),

@@ -149,7 +149,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
-                        new WaterAvoidingRandomStrollGoal(this, 0.8F),
+                        new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
 
                 };
         return goals;
