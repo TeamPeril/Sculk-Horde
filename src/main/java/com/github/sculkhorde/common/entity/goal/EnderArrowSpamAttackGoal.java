@@ -68,8 +68,6 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
         return elapsedAttackDuration < maxAttackDuration;
     }
 
-
-
     @Override
     public void start()
     {

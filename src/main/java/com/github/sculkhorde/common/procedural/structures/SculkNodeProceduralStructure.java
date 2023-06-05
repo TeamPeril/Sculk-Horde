@@ -101,18 +101,8 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
 
         this.plannedBlockQueue.clear();
 
-        childStructuresQueue.add(new SculkNodeCaveProceduralStructure(this.world, this.origin, 10));
-
-        // Add 4 SculkNodeCaveHallway Procedural Structure going in all 4 directions. Each one starts at the respective
-        // edge of the cave structure depending on the direction. The length should be 64 blocks.
-        /**
-         *  Add 4 SculkNodeCaveHallway Procedural Structure going in all 4 directions.
-         *  Each one starts at the respective edge of the cave structure depending on the direction.
-         *  I.E. The North cave hallway starts at the North-most block of the cave structure and
-         *  goes North 64 blocks.
-         *  The length should be 64 blocks.
-         */
-        //childStructuresQueue.add(new SculkNodeCaveHallwayProceduralStructure(this.world, this.origin.offset(0, 0, -SHELL_RADIUS), this.origin.offset(0, 0, -SHELL_RADIUS - 64), 5));
+        // Causes Lag, Disabled. Going to replace.
+        //childStructuresQueue.add(new SculkNodeCaveProceduralStructure(this.world, this.origin, 10));
 
         for(ProceduralStructure entry : childStructuresQueue)
         {

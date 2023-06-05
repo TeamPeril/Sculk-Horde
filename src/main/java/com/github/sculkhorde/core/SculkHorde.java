@@ -75,15 +75,6 @@ public class SculkHorde {
             event.accept(ItemRegistry.SCULK_RESIN);
             event.accept(ItemRegistry.CALCITE_CLUMP);
             event.accept(ItemRegistry.SCULK_MATTER);
-            event.accept(Blocks.SCULK);
-            event.accept(BlockRegistry.INFESTED_LOG);
-            event.accept(BlockRegistry.INFESTED_SAND);
-            event.accept(BlockRegistry.INFESTED_SANDSTONE);
-            event.accept(BlockRegistry.INFESTED_STONE);
-            event.accept(BlockRegistry.INFESTED_ANDESITE);
-            event.accept(BlockRegistry.INFESTED_DIORITE);
-            event.accept(BlockRegistry.INFESTED_GRANITE);
-            event.accept(BlockRegistry.INFESTED_DEEPSLATE);
             event.accept(BlockRegistry.SCULK_NODE_BLOCK);
             event.accept(BlockRegistry.SCULK_ARACHNOID);
             event.accept(BlockRegistry.SCULK_DURA_MATTER);
@@ -103,6 +94,27 @@ public class SculkHorde {
             event.accept(BlockRegistry.SMALL_SHROOM);
             event.accept(BlockRegistry.SPIKE);
             event.accept(BlockRegistry.TENDRILS);
+            event.accept(Blocks.SCULK);
+            event.accept(BlockRegistry.INFESTED_LOG);
+            event.accept(BlockRegistry.INFESTED_SAND);
+            event.accept(BlockRegistry.INFESTED_RED_SAND);
+            event.accept(BlockRegistry.INFESTED_SANDSTONE);
+            event.accept(BlockRegistry.INFESTED_RED_SANDSTONE);
+            event.accept(BlockRegistry.INFESTED_GRAVEL);
+            event.accept(BlockRegistry.INFESTED_STONE);
+            event.accept(BlockRegistry.INFESTED_COBBLESTONE);
+            event.accept(BlockRegistry.INFESTED_DEEPSLATE);
+            event.accept(BlockRegistry.INFESTED_COBBLED_DEEPSLATE);
+            event.accept(BlockRegistry.INFESTED_ANDESITE);
+            event.accept(BlockRegistry.INFESTED_DIORITE);
+            event.accept(BlockRegistry.INFESTED_GRANITE);
+            event.accept(BlockRegistry.INFESTED_TUFF);
+            event.accept(BlockRegistry.INFESTED_CALCITE);
+            event.accept(BlockRegistry.INFESTED_TERRACOTTA);
+            event.accept(BlockRegistry.INFESTED_SNOW);
+            event.accept(BlockRegistry.INFESTED_MOSS);
+
+
         }
     }
 
