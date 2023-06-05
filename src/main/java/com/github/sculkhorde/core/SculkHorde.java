@@ -99,7 +99,6 @@ public class SculkHorde {
             event.accept(BlockRegistry.INFESTED_SAND);
             event.accept(BlockRegistry.INFESTED_RED_SAND);
             event.accept(BlockRegistry.INFESTED_SANDSTONE);
-            event.accept(BlockRegistry.INFESTED_RED_SANDSTONE);
             event.accept(BlockRegistry.INFESTED_GRAVEL);
             event.accept(BlockRegistry.INFESTED_STONE);
             event.accept(BlockRegistry.INFESTED_COBBLESTONE);
