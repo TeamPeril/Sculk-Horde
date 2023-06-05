@@ -5,8 +5,8 @@
   ],
   "spawners": {
     "type": "sculkhorde:sculk_mite",
-    "weight": 50,
+    "weight": 10,
     "minCount": 1,
-    "maxCount": 5
+    "maxCount": 3
   }
 }

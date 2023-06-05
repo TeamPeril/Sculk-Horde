@@ -1,5 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -42,39 +44,49 @@ public class TargetAttacker extends TargetGoal {
      * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
      * method as well.
      */
-    public boolean canUse() {
-        int i = this.mob.getLastHurtByMobTimestamp(); //Get the timestamp of when we were last attacked
-        LivingEntity livingentity = this.mob.getLastHurtByMob(); //Get the mob that last attacked us
+    public boolean canUse()
+    {
+        int lastHurtByMobTimestamp = this.mob.getLastHurtByMobTimestamp(); //Get the timestamp of when we were last attacked
+        ISculkSmartEntity sculkSmartEntity = (ISculkSmartEntity) this.mob;
 
-        //Do not allow this behavior to execute if what attacked us was a sculk mob
-        if(EntityAlgorithms.isSculkLivingEntity.test(livingentity)) {return false;}
+        LivingEntity attacker = this.mob.getLastHurtByMob(); //Get the mob that last attacked us
 
-        //if ??? and living entity is not null
-        if (i != this.timestamp && livingentity != null)
+        // If Null, return false
+        if(attacker == null) { return false; }
+
+        // If the attacker is not new, return false
+        if(lastHurtByMobTimestamp == this.timestamp) { return false; }
+
+        //If we are told to ignore damage.
+        for(Class<?> oclass : this.toIgnoreDamage)
         {
-            //If the thing that attacked us was the player and universal anger is enabled.
-            if (livingentity.getType() == EntityType.PLAYER && this.mob.level.getGameRules().getBoolean(GameRules.RULE_UNIVERSAL_ANGER))
+            if (oclass.isAssignableFrom(attacker.getClass()))
             {
                 return false;
             }
-            else
-            {
-                //If we are told to ignore damage.
-                for(Class<?> oclass : this.toIgnoreDamage)
-                {
-                    if (oclass.isAssignableFrom(livingentity.getClass()))
-                    {
-                        return false;
-                    }
-                }
+        }
 
-                return this.canAttack(livingentity, HURT_BY_TARGETING);
-            }
-        }
-        else
+
+        // If the attacker is a mob
+        if(attacker instanceof Mob)
         {
-            return false;
+            //Get the mob that last attacked us
+            Mob attackerMob = (Mob) attacker;
+
+            // Remove mob from blacklist if it attacked us
+            if(((ISculkSmartEntity) this.mob).getTargetParameters().isOnBlackList(attackerMob))
+            {
+                ((ISculkSmartEntity) this.mob).getTargetParameters().removeFromBlackList(attackerMob);
+            }
+
+            SculkHorde.savedData.addHostileToMemory(attackerMob);
         }
+
+        //Do not allow this behavior to execute if target is not valid
+        if(!sculkSmartEntity.getTargetParameters().isEntityValidTarget(attacker, false)) {return false;}
+
+        return this.canAttack(attacker, HURT_BY_TARGETING);
+
     }
 
     /**

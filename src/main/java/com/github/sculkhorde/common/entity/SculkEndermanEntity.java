@@ -96,6 +96,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.setMaxUpStep(1.0F);
         this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
+        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
     public SculkEndermanEntity(Level level, BlockPos pos)
@@ -187,6 +188,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(2, new EnderArrowSpamAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));

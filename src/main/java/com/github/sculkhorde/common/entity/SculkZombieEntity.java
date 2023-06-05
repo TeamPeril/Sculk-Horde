@@ -16,6 +16,7 @@ import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -64,6 +65,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
      */
     public SculkZombieEntity(EntityType<? extends SculkZombieEntity> type, Level worldIn) {
         super(type, worldIn);
+        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
     /**
      * Determines & registers the attributes of the mob.

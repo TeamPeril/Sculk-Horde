@@ -1,6 +1,7 @@
 package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.common.entity.SculkEndermanEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
@@ -716,6 +717,14 @@ public class RaidHandler {
                 return;
             }
             waveParticipants.add((ISculkSmartEntity) randomEntry.get().createEntity(level, spawnLocation));
+        }
+
+        // Add 5 Creepers
+        for(int i = 0; i < 6; i++)
+        {
+            SculkCreeperEntity creeper = EntityRegistry.SCULK_CREEPER.get().create(level);
+            creeper.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
+            waveParticipants.add(creeper);
         }
 
         if(currentWave == maxWaves)

@@ -16,6 +16,7 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -44,6 +45,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
      */
     public SculkRavagerEntity(EntityType<? extends SculkRavagerEntity> type, Level worldIn) {
         super(type, worldIn);
+        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**

@@ -19,6 +19,7 @@ import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -74,6 +75,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
      */
     public SculkHatcherEntity(EntityType<? extends SculkHatcherEntity> type, Level worldIn) {
         super(type, worldIn);
+        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**

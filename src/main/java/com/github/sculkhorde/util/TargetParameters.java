@@ -264,6 +264,11 @@ public class TargetParameters
         blacklist.put(entity.getUUID(), System.currentTimeMillis());
     }
 
+    public void removeFromBlackList(Mob entity)
+    {
+        blacklist.remove(entity.getUUID());
+    }
+
     // Is mob on blacklist
     public boolean isOnBlackList(Mob entity)
     {

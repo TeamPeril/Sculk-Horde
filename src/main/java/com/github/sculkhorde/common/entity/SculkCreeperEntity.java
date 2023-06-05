@@ -9,6 +9,7 @@ import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -30,6 +31,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public SculkCreeperEntity(EntityType<? extends Creeper> entityType, Level level) {
         super(entityType, level);
+        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
     @Override
     protected void registerGoals() {

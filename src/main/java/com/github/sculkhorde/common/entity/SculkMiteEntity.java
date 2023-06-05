@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -77,6 +79,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     public SculkMiteEntity(EntityType<? extends SculkMiteEntity> type, Level worldIn)
     {
         super(type, worldIn);
+        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**
@@ -147,6 +150,11 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
         if(pos.getY() > 50) return false;
 
         if(!world.getBiome(pos).is(Biomes.DEEP_DARK))
+        {
+            return false;
+        }
+
+        if(!SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(world.getBlockState(pos.below())))
         {
             return false;
         }
