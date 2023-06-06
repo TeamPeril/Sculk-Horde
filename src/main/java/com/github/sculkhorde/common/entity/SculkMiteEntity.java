@@ -154,11 +154,6 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
             return false;
         }
 
-        if(!SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(world.getBlockState(pos.below())))
-        {
-            return false;
-        }
-
         return true;
     }
 

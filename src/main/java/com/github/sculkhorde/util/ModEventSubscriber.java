@@ -69,7 +69,7 @@ public class ModEventSubscriber {
 
         event.enqueueWork(() -> {
             SpawnPlacements.register(EntityRegistry.SCULK_MITE.get(),
-                    SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     SculkMiteEntity::passSpawnCondition);
         });
     }

@@ -19,8 +19,8 @@ public class SculkMassBlockEntity extends BlockEntity {
      * storedSculkMassIdentifier is the string used to identify storedSculkMass
      * in CompoundNBT. It allows us to read/write to it.<br>
      */
-    private int storedSculkMass = 0;
-    private String storedSculkMassIdentifier = "storedSculkMass";
+    protected int storedSculkMass = 0;
+    protected String storedSculkMassIdentifier = "storedSculkMass";
 
 
     /**
@@ -74,8 +74,8 @@ public class SculkMassBlockEntity extends BlockEntity {
         {
             return;
         }
-        // Tick every 5 seconds
-        if(level.getGameTime() % 100 != 0)
+        // Tick every 10 seconds
+        if(level.getGameTime() % 2000 != 0)
         {
             return;
         }
@@ -92,7 +92,6 @@ public class SculkMassBlockEntity extends BlockEntity {
             level.destroyBlock(blockPos, false);
         }
 
-
         EntityFactory entityFactory = SculkHorde.entityFactory;
         ReinforcementRequest context = new ReinforcementRequest(blockPos);
 
@@ -108,11 +107,9 @@ public class SculkMassBlockEntity extends BlockEntity {
             // Spawn Block Traverser
             CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            cursor.setMaxInfections(blockEntity.getStoredSculkMass());
-            cursor.setMaxRange(blockEntity.getStoredSculkMass()/4);
+            cursor.setMaxInfections(blockEntity.getStoredSculkMass() * 10);
+            cursor.setMaxRange(blockEntity.getStoredSculkMass());
             level.addFreshEntity(cursor);
         }
     }
-
-
 }
