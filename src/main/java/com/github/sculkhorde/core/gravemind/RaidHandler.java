@@ -393,6 +393,7 @@ public class RaidHandler {
             blockSearcher.searchIterationsPerTick = 100;
             blockSearcher.ignoreBlocksNearTargets = true;
 
+            // What is the target?
             blockSearcher.setTargetBlockPredicate(new Predicate<BlockPos>()
             {
                 @Override
@@ -403,11 +404,17 @@ public class RaidHandler {
                 }
             });
 
+            // What is obstructed?
             blockSearcher.setObstructionPredicate(new Predicate<BlockPos>()
             {
                 @Override
                 public boolean test(BlockPos blockPos)
                 {
+                    if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 50))
+                    {
+                        return true;
+                    }
+
                     if(level.getBlockState(blockPos).is(Blocks.AIR))
                     {
                         return true;

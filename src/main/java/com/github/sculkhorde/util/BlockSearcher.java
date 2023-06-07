@@ -39,9 +39,6 @@ public class BlockSearcher
     public BlockPos currentPosition;
     protected BlockPos positionToMoveAwayFrom;
 
-
-
-
     enum State
     {
         IDLE,
@@ -224,5 +221,23 @@ public class BlockSearcher
                 finishedTick();
                 break;
         }
+    }
+
+    /**
+     * Returns true if any of the targets are closer than the given distance
+     * @param position The position to check
+     * @param distance The distance to check
+     * @return True if any of the targets are closer than the given distance
+     */
+    public boolean isAnyTargetCloserThan(BlockPos position, int distance)
+    {
+        for(BlockPos target : foundTargets)
+        {
+            if(target.closerThan(position, distance))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
