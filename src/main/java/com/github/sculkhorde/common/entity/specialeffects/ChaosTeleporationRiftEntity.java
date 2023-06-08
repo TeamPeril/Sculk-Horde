@@ -50,7 +50,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
 
     public ChaosTeleporationRiftEntity(Level level)
     {
-        super(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), level);
+        super(EntityRegistry.CHAOS_TELEPORATION_RIFT.get(), level);
     }
 
     public ChaosTeleporationRiftEntity(EntityType<?> entityType, Level level, LivingEntity sourceEntity) {
@@ -58,7 +58,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
     }
 
     public ChaosTeleporationRiftEntity( Level level, LivingEntity sourceEntity) {
-        super(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), level, sourceEntity);
+        super(EntityRegistry.CHAOS_TELEPORATION_RIFT.get(), level, sourceEntity);
     }
 
     public ChaosTeleporationRiftEntity enableDeleteAfterTime(int ticks)
@@ -154,7 +154,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(
-                new AnimationController<>(this, "base_animation", 5, this::pose)
+                new AnimationController<>(this, "base_animation", 0, this::pose)
         );
     }
 
