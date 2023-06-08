@@ -19,7 +19,7 @@ modId="sculkhorde" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 # ${file.jarVersion} will substitute the value of the Implementation-Version as read from the mod's JAR file metadata
 # see the associated build.gradle script for how to populate this completely automatically during a build
-version="1.19.4-0.6.1" #mandatory
+version="1.19.4-0.6.2" #mandatory
  # A display name for the mod
 displayName="Sculk Horde" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
@@ -51,7 +51,7 @@ Sculk Horde implements a new end-game era to your game that once activated, will
 [[dependencies.sculkhorde]] #optional
     modId="geckolib" #mandatory
     mandatory=true #mandatory
-    versionRange="[4.1.3,)" #mandatory
+    versionRange="[4.2,)" #mandatory
     ordering="NONE"
     side="BOTH"
 # Here's another dependency
