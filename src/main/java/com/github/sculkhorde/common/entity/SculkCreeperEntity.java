@@ -73,10 +73,10 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public void explodeSculkCreeper()
     {
-        if (!this.level.isClientSide)
+        if (!this.level().isClientSide)
         {
             this.dead = true;
-            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
             this.discard();
         }
     }
@@ -90,9 +90,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        LIVING_CONTROLLER.setTransitionLength(5);
         controllers.add(
-                LIVING_CONTROLLER,
+                LIVING_CONTROLLER.transitionLength(5),
                 new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),
                 new AnimationController<>(this, "attack_cycle", 5, this::poseAttackCycle)
         );

@@ -10,11 +10,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
@@ -25,14 +24,6 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import javax.annotation.Nullable;
 
 public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_CYAN;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -89,7 +80,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.of()
+                .mapColor(MapColor.CLAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.SLIME_BLOCK)
                 .noOcclusion();

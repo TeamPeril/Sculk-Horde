@@ -4,14 +4,13 @@ import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
@@ -33,13 +32,6 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      *      edit ClientModEventSubscriber.java to tell Minecraft
      *      to render this like a cutout.
      */
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.STONE;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_WHITE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -99,7 +91,8 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.of()
+                .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.SLIME_BLOCK)

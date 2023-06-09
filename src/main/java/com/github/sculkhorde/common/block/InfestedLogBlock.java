@@ -1,9 +1,8 @@
 package com.github.sculkhorde.common.block;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
@@ -16,14 +15,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class InfestedLogBlock extends Block implements IForgeBlock {
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.STONE;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_WHITE;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -78,11 +69,10 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.copy(Blocks.OAK_LOG)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.WOOD);
     }
-
 
     /**
      * This is the description the item of the block will display when hovered over.

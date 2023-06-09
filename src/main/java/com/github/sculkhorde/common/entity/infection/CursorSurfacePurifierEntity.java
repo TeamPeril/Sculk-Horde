@@ -47,10 +47,10 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
      */
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.infestationConversionTable.deinfectBlock((ServerLevel) this.level, pos);
-        if(isSculkFlora.test(this.level.getBlockState(pos.above())))
+        SculkHorde.infestationConversionTable.deinfectBlock((ServerLevel) this.level(), pos);
+        if(isSculkFlora.test(this.level().getBlockState(pos.above())))
         {
-            this.level.setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
+            this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
         }
     }
 
@@ -58,7 +58,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
     protected void spawnParticleEffects()
     {
 
-        this.level.addParticle(ParticleTypes.COMPOSTER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.COMPOSTER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
 
     }
 
@@ -71,7 +71,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(!state.isSolidRender(this.level, pos))
+        if(!state.isSolidRender(this.level(), pos))
         {
             return true;
         }
@@ -92,7 +92,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos))
         {
             return true;
         }

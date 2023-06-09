@@ -31,7 +31,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(!state.isSolidRender(this.level, pos))
+        if(!state.isSolidRender(this.level(), pos))
         {
             return true;
         }
@@ -52,7 +52,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos))
         {
             return true;
         }

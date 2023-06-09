@@ -41,7 +41,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
         findNearestBlock();
 
-        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level, this.removerMob))
+        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level(), this.removerMob))
         {
             return false;
         }
@@ -74,7 +74,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     public void tick() {
         super.tick();
-        Level level = this.removerMob.level;
+        Level level = this.removerMob.level();
         BlockPos mobPosition = this.removerMob.blockPosition();
         BlockPos blockPosition = this.blockPos;
         RandomSource randomsource = this.removerMob.getRandom();

@@ -5,18 +5,14 @@ import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -33,14 +29,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
-
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.VEGETABLE;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_BLUE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -103,7 +91,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+        Properties prop = Properties.copy(Blocks.SCULK_SHRIEKER)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .noOcclusion()
@@ -174,7 +162,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
         return !level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
-            ((SculkSummonerBlockEntity) entity).getListener().tick(level1);
+            VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
         }) : null;
     }
 

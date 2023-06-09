@@ -84,7 +84,7 @@ public class CursorProberEntity extends Entity {
             BlockPos currentBlock = stack.pop();
             nodesVisited++; // Keep track of how many nodes we've visited
 
-            if (SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(currentBlock))) {
+            if (SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level().getBlockState(currentBlock))) {
                 return currentBlock;
             }
 
@@ -97,7 +97,7 @@ public class CursorProberEntity extends Entity {
             ArrayList<Direction> possibleDirections = new ArrayList<>();
 
             // 25% chance to just add specific direction if it is a solid block
-            if(Math.random() < 0.25 && this.level.getBlockState(currentBlock.relative(direction)).isSolidRender(this.level, currentBlock.relative(direction)))
+            if(Math.random() < 0.25 && this.level().getBlockState(currentBlock.relative(direction)).isSolidRender(this.level(), currentBlock.relative(direction)))
             {
                 possibleDirections.add(direction);
             }
@@ -105,7 +105,7 @@ public class CursorProberEntity extends Entity {
             {
                 possibleDirections.addAll(Arrays.asList(Direction.values()));
                 // Remove any directions that are not solid blocks
-                possibleDirections.removeIf(dir -> !this.level.getBlockState(currentBlock.relative(dir)).isSolidRender(this.level, currentBlock.relative(dir)));
+                possibleDirections.removeIf(dir -> !this.level().getBlockState(currentBlock.relative(dir)).isSolidRender(this.level(), currentBlock.relative(dir)));
             }
 
             // Add all neighbors to the queue
@@ -139,7 +139,7 @@ public class CursorProberEntity extends Entity {
         lastTickTime = System.nanoTime();
 
         // Play Particles on Client
-        if (this.level.isClientSide)
+        if (this.level().isClientSide)
         {
             for(int i = 0; i < 2; ++i)
             {
@@ -181,9 +181,9 @@ public class CursorProberEntity extends Entity {
         // node caves spawns, the sculk node is surrounded by air and is unable to infect the blocks around it.
         // This should allow the probes to build bridges in the air surrounding the node.
         // Maybe in the future I could just have the probes place down this stuff everywhere they go, only if they are succcessful?
-        if(this.level.getBlockState(this.blockPosition()).isAir())
+        if(this.level().getBlockState(this.blockPosition()).isAir())
         {
-            this.level.setBlockAndUpdate(this.blockPosition(), BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+            this.level().setBlockAndUpdate(this.blockPosition(), BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
         }
 
         // If we can't find a target, return;
@@ -198,7 +198,7 @@ public class CursorProberEntity extends Entity {
 
         // Keep track of last known position
         lastKnownBlockPos = this.blockPosition();
-        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level, this.blockPosition());
+        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level(), this.blockPosition());
         // Keep track of how far we've traveled
         distanceTraveled++;
 

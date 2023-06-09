@@ -63,7 +63,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
         double targetZ = thisMob.getTarget().getZ();
         double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
         //If in infect range & not client side & current mob health is less than or equal to 50% of max health
-        if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
+        if(distance <= thisMob.INFECT_RANGE && !(this.mob.level().isClientSide))
         {
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
             if(targetMobRemainingHealth <= 0.5)

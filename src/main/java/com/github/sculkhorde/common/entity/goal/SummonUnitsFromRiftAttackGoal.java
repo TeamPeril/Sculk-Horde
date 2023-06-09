@@ -61,15 +61,15 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
 
         // If air or water or lava, return false
-        if(mob.level.getBlockState(pos).isAir() || mob.level.getBlockState(pos).getFluidState().isSource())
+        if(mob.level().getBlockState(pos).isAir() || mob.level().getBlockState(pos).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level().getBlockState(pos.above()).canBeReplaced() || mob.level().getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level().getBlockState(pos.above().above()).canBeReplaced() || mob.level().getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -100,7 +100,7 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
         getSculkEnderman().canTeleport = false;
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level, mob.blockPosition(), isValidSpawn, 5);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
@@ -113,7 +113,7 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
 
             if(entry.isPresent())
             {
-                entry.get().spawnEntity((ServerLevel) mob.level, spawnPos.above());
+                entry.get().spawnEntity((ServerLevel) mob.level(), spawnPos.above());
             }
         }
 

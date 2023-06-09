@@ -202,10 +202,10 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level.isClientSide) {
+        if (level().isClientSide) {
             Random random = new Random();
             for (int i = 0; i < 1; i++) {
-                level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level().addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
             return;
         }
@@ -213,20 +213,20 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         Random random = new Random();
         if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive())) {
             // Spawn Block Traverser
-            cursor = new CursorSurfaceInfectorEntity(level);
+            cursor = new CursorSurfaceInfectorEntity(level());
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxInfections(100);
             cursor.setMaxRange(100);
             cursor.setTickIntervalMilliseconds(10);
             cursor.setSearchIterationsPerTick(1);
-            level.addFreshEntity(cursor);
+            level().addFreshEntity(cursor);
         }
 
         if (System.currentTimeMillis() - lastInfectionTime > INFECTION_INTERVAL_MILLIS)
         {
             lastInfectionTime = System.currentTimeMillis();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
                 if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
@@ -280,7 +280,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         @Override
         public void tick()
         {
-            if(level.isClientSide())
+            if(level().isClientSide())
             {
                 return;
             }

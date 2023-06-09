@@ -21,12 +21,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
+import net.minecraft.world.level.gameevent.PositionSource;
+import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -44,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 
-public class SculkSummonerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig, GeoBlockEntity
+public class SculkSummonerBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem, GeoBlockEntity
 {
     AABB searchArea;
     //ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
@@ -63,7 +66,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     private final TargetParameters infectableTargetParameters = new TargetParameters().enableTargetPassives();
 
     // Vibration Code
-    private VibrationListener listener = new VibrationListener(new BlockPositionSource(this.worldPosition), 8, this);
+    private final VibrationSystem.User vibrationUser = new VibrationUser(this);
+    private VibrationSystem.Data vibrationData = new VibrationSystem.Data();
+    private final VibrationSystem.Listener vibrationListener = new VibrationSystem.Listener(this);
 
     /**
      * The Constructor that takes in properties
@@ -341,10 +346,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     public void load(CompoundTag nbt) {
         super.load(nbt);
 
-        if (nbt.contains("listener", 10))
-        {
-            VibrationListener.codec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222864_) -> {
-                this.listener = p_222864_;
+        if (nbt.contains("listener", 10)) {
+            VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+                this.vibrationData = data;
             });
         }
 
@@ -353,44 +357,73 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     protected void saveAdditional(CompoundTag nbt)
     {
         super.saveAdditional(nbt);
-        VibrationListener.codec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+        VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
     }
 
     /** ~~~~~~~~ Vibration Events ~~~~~~~~  **/
-
-    @Override
-    public TagKey<GameEvent> getListenableEvents() {
-        return GameEventTags.SHRIEKER_CAN_LISTEN;
+    public VibrationSystem.Listener getListener() {
+        return this.vibrationListener;
     }
 
-    @Override
-    public void onSignalReceive(ServerLevel level, GameEventListener gameEventListener, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float strenth) {
-        this.spawnReinforcementsTick(level, blockPos, getBlockState(), this);
-        if(!isOnCooldown())
+    public VibrationSystem.Data getVibrationData() {
+        return this.vibrationData;
+    }
+
+    public VibrationSystem.User getVibrationUser() {
+        return this.vibrationUser;
+    }
+
+    /**
+     * The listener for the sculk summoner block entity.
+     */
+    class VibrationUser implements VibrationSystem.User
+    {
+        private static final int LISTENER_RADIUS = 8;
+        private final PositionSource positionSource = new BlockPositionSource(SculkSummonerBlockEntity.this.worldPosition);
+        private SculkSummonerBlockEntity summoner;
+
+        public VibrationUser(SculkSummonerBlockEntity summoner) {
+            this.summoner = summoner;
+        }
+
+
+        public int getListenerRadius() {
+            return 8;
+        }
+
+        public PositionSource getPositionSource() {
+            return this.positionSource;
+        }
+
+        public TagKey<GameEvent> getListenableEvents() {
+            return GameEventTags.SHRIEKER_CAN_LISTEN;
+        }
+
+        public boolean canReceiveVibration(ServerLevel p_281256_, BlockPos p_281528_, GameEvent p_282632_, GameEvent.Context p_282914_) {
+            return !SculkSummonerBlockEntity.this.getBlockState().getValue(SculkShriekerBlock.SHRIEKING) && SculkShriekerBlockEntity.tryGetPlayer(p_282914_.sourceEntity()) != null;
+        }
+
+        public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            level.levelEvent(3007, this.worldPosition, 0);
-            level.gameEvent(GameEvent.SHRIEK, this.worldPosition, GameEvent.Context.of(entity));
+            spawnReinforcementsTick(level, blockPos, getBlockState(), summoner);
+            if(!isOnCooldown())
+            {
+                level.levelEvent(3007, worldPosition, 0);
+                level.gameEvent(GameEvent.SHRIEK, worldPosition, GameEvent.Context.of(entity));
+            }
+        }
+
+        public void onDataChanged()
+        {
+            setChanged();
+        }
+
+        public boolean requiresAdjacentChunksToBeTicking() {
+            return true;
         }
     }
-
-
-    public VibrationListener getListener() {
-        return this.listener;
-    }
-
-    @Override
-    public boolean shouldListen(ServerLevel p_222856_, GameEventListener p_222857_, BlockPos p_222858_, GameEvent p_222859_, GameEvent.Context p_222860_) {
-        // Return true if we are in the ready to spawn state
-        return true;
-    }
-
-    @Override
-    public void onSignalSchedule() {
-        this.setChanged();
-    }
-
 
     /** ~~~~~~~~ Animation Events ~~~~~~~~  **/
 
@@ -426,4 +459,5 @@ public class SculkSummonerBlockEntity extends BlockEntity implements VibrationLi
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
+
 }

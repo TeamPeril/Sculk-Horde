@@ -217,9 +217,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public void aiStep()
     {
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level.addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+                this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
 
@@ -257,7 +257,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         }
 
         // Check to see if any players are looking at the entity
-        for (Player player : this.level.getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(64.0D, 64.0D, 64.0D)))
+        for (Player player : this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(64.0D, 64.0D, 64.0D)))
         {
             if (isLookingAtMe(player))
             {
@@ -275,7 +275,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected boolean teleport()
     {
-        if (this.level.isClientSide() || !this.isAlive() || !canTeleport)
+        if (this.level().isClientSide() || !this.isAlive() || !canTeleport)
         {
             return false;
         }
@@ -346,13 +346,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).getMaterial().blocksMotion())
+        while(blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion())
         {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
-        BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
-        boolean isMotionBlockFlag = blockstate.getMaterial().blocksMotion();
+        BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
+        boolean isMotionBlockFlag = false; blockstate.blocksMotion();
         boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
         if (isMotionBlockFlag && !isWaterFlag)
         {
@@ -365,10 +365,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             boolean ifCanRandomTeleport = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
             if (ifCanRandomTeleport)
             {
-                this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (!this.isSilent())
                 {
-                    this.level.playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+                    this.level().playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 }
             }
@@ -425,13 +425,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        LIVING_CONTROLLER.setTransitionLength(5);
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
+    {
         controllers.add(
-                LIVING_CONTROLLER
-                //new AnimationController<>(this, "Legs", 5, this::poseLegs),
-                //new AnimationController<>(this, "Body", 5, this::poseBody),
-                //new AnimationController<>(this, "Arms", 5, this::poseArms)
+                LIVING_CONTROLLER.transitionLength(5)
         );
     }
 

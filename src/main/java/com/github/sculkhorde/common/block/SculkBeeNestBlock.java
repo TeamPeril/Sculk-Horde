@@ -11,8 +11,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
@@ -37,13 +35,6 @@ public class SculkBeeNestBlock extends BaseEntityBlock
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
     public static final IntegerProperty HONEY_LEVEL = BlockStateProperties.LEVEL_HONEY;
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_CYAN;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -101,7 +92,7 @@ public class SculkBeeNestBlock extends BaseEntityBlock
      */
     public static BlockBehaviour.Properties getProperties()
     {
-        return BlockBehaviour.Properties.of(MATERIAL, MAP_COLOR)
+        return BlockBehaviour.Properties.copy(Blocks.BEE_NEST)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.SLIME_BLOCK);
     }

@@ -71,18 +71,18 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     }
 
     private final Predicate<BlockPos> IS_VALID_FLOWER = (blockPos) -> {
-        BlockState blockState = level.getBlockState(blockPos);
+        BlockState blockState = level().getBlockState(blockPos);
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED))
         {
             return false;
         }
 
-        if(!SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(level.getBlockState(blockPos)))
+        if(!SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(level().getBlockState(blockPos)))
         {
             return false;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level, blockPos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level(), blockPos))
         {
             return false;
         }
@@ -102,13 +102,13 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     @Override
     protected void executeCodeOnPollination()
     {
-        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
+        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
         cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
         cursor.setMaxInfections(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);
         cursor.setSearchIterationsPerTick(10);
-        level.addFreshEntity(cursor);
+        level().addFreshEntity(cursor);
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/

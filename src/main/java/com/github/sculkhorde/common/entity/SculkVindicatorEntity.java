@@ -186,9 +186,8 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        LIVING_CONTROLLER.setTransitionLength(5);
         controllers.add(
-                LIVING_CONTROLLER,
+                LIVING_CONTROLLER.transitionLength(5),
                 new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),
                 DefaultAnimations.genericAttackAnimation(this, ATTACK_ANIMATION)
         );

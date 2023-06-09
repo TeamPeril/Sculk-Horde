@@ -181,7 +181,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level.isClientSide)
+        if (level().isClientSide)
         {
             return;
         }
@@ -244,57 +244,57 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
             if((cursor1 == null || !cursor1.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor1 = new CursorSurfacePurifierEntity(level);
+                cursor1 = new CursorSurfacePurifierEntity(level());
                 cursor1.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor1.setMaxInfections(100);
                 cursor1.setMaxRange(100);
                 cursor1.setSearchIterationsPerTick(2);
                 cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
                 cursor1.setTickIntervalMilliseconds(150);
-                level.addFreshEntity(cursor1);
+                level().addFreshEntity(cursor1);
             }
 
             if((cursor2 == null || !cursor2.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor2 = new CursorSurfacePurifierEntity(level);
+                cursor2 = new CursorSurfacePurifierEntity(level());
                 cursor2.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor2.setMaxInfections(100);
                 cursor2.setMaxRange(100);
                 cursor2.setSearchIterationsPerTick(2);
                 cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
                 cursor2.setTickIntervalMilliseconds(150);
-                level.addFreshEntity(cursor2);
+                level().addFreshEntity(cursor2);
             }
 
             if((cursor3 == null || !cursor3.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor3 = new CursorSurfacePurifierEntity(level);
+                cursor3 = new CursorSurfacePurifierEntity(level());
                 cursor3.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor3.setMaxInfections(100);
                 cursor3.setMaxRange(100);
                 cursor3.setSearchIterationsPerTick(2);
                 cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
                 cursor3.setTickIntervalMilliseconds(150);
-                level.addFreshEntity(cursor3);
+                level().addFreshEntity(cursor3);
             }
 
             if((cursor4 == null || !cursor4.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor4 = new CursorSurfacePurifierEntity(level);
+                cursor4 = new CursorSurfacePurifierEntity(level());
                 cursor4.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor4.setMaxInfections(100);
                 cursor4.setMaxRange(100);
                 cursor4.setSearchIterationsPerTick(2);
                 cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
                 cursor4.setTickIntervalMilliseconds(150);
-                level.addFreshEntity(cursor4);
+                level().addFreshEntity(cursor4);
             }
 
             // Any sculk entity within 10 blocks of the spewer will be set on fire
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
                 if (entity instanceof LivingEntity && EntityAlgorithms.isSculkLivingEntity.test(entity))
@@ -312,7 +312,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     //If entity is rightclicked, drop item
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             this.remove(RemovalReason.DISCARDED);
             this.spawnAtLocation(new ItemStack(ItemRegistry.INFESTATION_PURIFIER.get()));
         }

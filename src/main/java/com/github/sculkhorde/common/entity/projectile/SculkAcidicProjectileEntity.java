@@ -62,13 +62,13 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     protected void onHitEntity(EntityHitResult raytrace) {
         super.onHitEntity(raytrace);
-        this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
     }
 
     @Override
     protected void onHitBlock(BlockHitResult raytrace) {
         super.onHitBlock(raytrace);
-        this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
     }
 
     /** EVENTS **/
@@ -78,8 +78,8 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
-            this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level().isClientSide) {
+            this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 }

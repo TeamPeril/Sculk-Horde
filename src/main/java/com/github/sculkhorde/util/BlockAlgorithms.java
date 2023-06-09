@@ -606,20 +606,24 @@ public class BlockAlgorithms {
         return flatnessRatio >= flatnessThreshold;
     }
 
+    public static boolean isSolid(BlockState state) {
+        return !state.canBeReplaced();
+    }
+
     private static boolean isBlockFlat(ServerLevel level, BlockPos pos) {
 
         // If block is not solid, but block below is, then it is flat
-        if(!level.getBlockState(pos).getMaterial().isSolid() && level.getBlockState(pos.below()).getMaterial().isSolid())
+        if(!isSolid(level.getBlockState(pos)) && isSolid(level.getBlockState(pos.below())))
         {
             return true;
         }
         // If block is solid, with space above, then it is flat
-        else if(level.getBlockState(pos).getMaterial().isSolid() && !level.getBlockState(pos.above()).getMaterial().isSolid())
+        else if(isSolid(level.getBlockState(pos)) && !isSolid(level.getBlockState(pos.above())))
         {
             return true;
         }
         // If block and block above are solid, but above that isnt, then it is flat.
-        else if(level.getBlockState(pos).getMaterial().isSolid() && level.getBlockState(pos.above()).getMaterial().isSolid() && !level.getBlockState(pos.above().above()).getMaterial().isSolid())
+        else if(isSolid(level.getBlockState(pos)) && isSolid(level.getBlockState(pos.above())) && !isSolid(level.getBlockState(pos.above().above())))
         {
             return true;
         }

@@ -109,11 +109,11 @@ public abstract class SpecialEffectEntity extends Entity
     }
 
     public <T extends Entity> List<T> getEntitiesNearby(Class<T> entityClass, double r) {
-        return level.getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this && distanceTo(e) <= r + e.getBbWidth() / 2f);
+        return level().getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this && distanceTo(e) <= r + e.getBbWidth() / 2f);
     }
 
     public <T extends Entity> List<T> getEntitiesNearbyCube(Class<T> entityClass, double r) {
-        return level.getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this);
+        return level().getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this);
     }
 
     public boolean raytraceCheckEntity(Entity entity) {
@@ -122,7 +122,7 @@ public abstract class SpecialEffectEntity extends Entity
         for (int i = 0; i < numChecks; i++) {
             float increment = entity.getBbHeight() / (numChecks + 1);
             Vec3 to = entity.position().add(0, increment * (i + 1), 0);
-            BlockHitResult result = level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            BlockHitResult result = level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             if (result.getType() != HitResult.Type.BLOCK)
             {
                 return true;

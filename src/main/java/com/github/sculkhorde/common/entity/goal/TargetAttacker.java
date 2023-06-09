@@ -112,7 +112,7 @@ public class TargetAttacker extends TargetGoal {
         boolean DEBUG_THIS = false;
         double d0 = this.getFollowDistance();
         AABB axisalignedbb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
-        List<Mob> list = this.mob.level.getEntitiesOfClass(Mob.class, axisalignedbb);
+        List<Mob> list = this.mob.level().getEntitiesOfClass(Mob.class, axisalignedbb);
         Iterator iterator = list.iterator();
 
         while(true)

@@ -8,8 +8,6 @@ import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.mojang.logging.LogUtils;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -54,7 +52,7 @@ public class SculkHorde {
         ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
         SoundRegistry.SOUND_EVENTS.register(bus); //Load Sounds
 
-        bus.addListener(this::addCreative);
+        //bus.addListener(this::addCreative);
 
         //If dev environment
         if(!FMLEnvironment.production)
@@ -62,7 +60,8 @@ public class SculkHorde {
             DEBUG_MODE = true;
         }
     }
-
+    // TODO PORT
+    /*
     private void addCreative(CreativeModeTabEvent.BuildContents event) {
         if (event.getTab() == ModCreativeModeTab.CREATIVE_TAB) {
             if(DEBUG_MODE) event.accept(ItemRegistry.DEV_WAND);
@@ -112,8 +111,7 @@ public class SculkHorde {
             event.accept(BlockRegistry.INFESTED_TERRACOTTA);
             event.accept(BlockRegistry.INFESTED_SNOW);
             event.accept(BlockRegistry.INFESTED_MOSS);
-
-
         }
     }
+    */
 }

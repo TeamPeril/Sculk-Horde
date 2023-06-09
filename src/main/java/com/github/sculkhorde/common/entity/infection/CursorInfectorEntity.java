@@ -118,7 +118,7 @@ public class CursorInfectorEntity extends Entity
             BlockPos currentBlock = queue.poll();
 
             // If the current block is a target, return it
-            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
                 isSuccessful = true;
                 target = currentBlock;
                 return true;
@@ -134,7 +134,7 @@ public class CursorInfectorEntity extends Entity
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
-                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level().getBlockState(neighbor), neighbor)) {
                     queue.add(neighbor);
                     visitedPositons.put(neighbor.asLong(), true);
                 }
@@ -157,7 +157,7 @@ public class CursorInfectorEntity extends Entity
 
 
         // Play Particles on Client
-        if (this.level.isClientSide) {
+        if (this.level().isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
@@ -217,7 +217,7 @@ public class CursorInfectorEntity extends Entity
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
+                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }
@@ -270,7 +270,7 @@ public class CursorInfectorEntity extends Entity
      */
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(!state.isSolidRender(this.level, pos))
+        if(!state.isSolidRender(this.level(), pos))
         {
             return true;
         }
@@ -307,13 +307,12 @@ public class CursorInfectorEntity extends Entity
      */
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level, pos);
+        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level(), pos);
     }
 
     protected void spawnParticleEffects()
     {
-        //TODO PORT
-        this.level.addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
+        this.level().addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
     }
 
     /**

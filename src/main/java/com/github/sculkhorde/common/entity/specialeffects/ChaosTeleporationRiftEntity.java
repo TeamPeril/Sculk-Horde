@@ -71,7 +71,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
     public void tick() {
         super.tick();
 
-        if(level.isClientSide()) { return; }
+        if(level().isClientSide()) { return; }
 
         //TODO Uncomment
         //if (sourceEntity == null || !sourceEntity.isAlive()) this.discard();
@@ -98,19 +98,19 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
             for(int i = 0; i < 16; ++i)
             {
                 double d3 = entity.getX() + (entity.getRandom().nextDouble() - 0.5D) * 16.0D;
-                double d4 = Mth.clamp(entity.getY() + (double)(entity.getRandom().nextInt(16) - 8), (double)level.getMinBuildHeight(), (double)(level.getMinBuildHeight() + ((ServerLevel)level).getLogicalHeight() - 1));
+                double d4 = Mth.clamp(entity.getY() + (double)(entity.getRandom().nextInt(16) - 8), (double)level().getMinBuildHeight(), (double)(level().getMinBuildHeight() + ((ServerLevel)level()).getLogicalHeight() - 1));
                 double d5 = entity.getZ() + (entity.getRandom().nextDouble() - 0.5D) * 16.0D;
                 if (entity.isPassenger()) {
                     entity.stopRiding();
                 }
 
                 Vec3 vec3 = entity.position();
-                level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(entity));
+                level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(entity));
                 net.minecraftforge.event.entity.EntityTeleportEvent.ChorusFruit event = net.minecraftforge.event.ForgeEventFactory.onChorusFruitTeleport(entity, d3, d4, d5);
                 if (event.isCanceled()) return;
                 if (entity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {
                     SoundEvent soundevent = entity instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;
-                    level.playSound((Player)null, d0, d1, d2, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    level().playSound((Player)null, d0, d1, d2, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
                     entity.playSound(soundevent, 1.0F, 1.0F);
                     entity.hurt(this.damageSources().magic(), 2.0F);
                     // Give entity darkness potion effect

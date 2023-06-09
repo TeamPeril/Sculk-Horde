@@ -53,9 +53,9 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         this.mob.getNavigation().stop();
 
         //Spawn Ender Attack Bubble entity
-        attackBubble = new EnderBubbleAttackEntity(this.mob.level, mob);
+        attackBubble = new EnderBubbleAttackEntity(this.mob.level(), mob);
         attackBubble.setPos(this.mob.getX(), this.mob.getY() + (this.mob.getBbHeight() / 2), this.mob.getZ());
-        this.mob.level.addFreshEntity(attackBubble);
+        this.mob.level().addFreshEntity(attackBubble);
         getSculkEnderman().canTeleport = false;
     }
 

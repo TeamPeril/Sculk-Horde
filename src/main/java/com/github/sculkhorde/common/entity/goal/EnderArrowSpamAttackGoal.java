@@ -114,7 +114,7 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
     {
         ArrowItem arrowitem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
 
-        AbstractArrow abstractarrow = arrowitem.createArrow(sourceEntity.level, itemStack, sourceEntity);
+        AbstractArrow abstractarrow = arrowitem.createArrow(sourceEntity.level(), itemStack, sourceEntity);
 
         abstractarrow.setPos(sourceEntity.getX(), sourceEntity.getY() + (double)sourceEntity.getBbHeight() + 1, sourceEntity.getZ());
 
@@ -142,8 +142,8 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
         double yVector = targetEntity.getY(0.3333333333333333D) - abstractarrow.getY();
         double zVector = targetEntity.getZ() - mob.getZ();
         double finalVector = Math.sqrt(xVector * xVector + zVector * zVector);
-        abstractarrow.shoot(xVector, yVector + finalVector * (double)0.2F, zVector, 1.6F, (float)(14 - mob.level.getDifficulty().getId() * 4));
+        abstractarrow.shoot(xVector, yVector + finalVector * (double)0.2F, zVector, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));
         mob.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level.addFreshEntity(abstractarrow);
+        mob.level().addFreshEntity(abstractarrow);
     }
 }

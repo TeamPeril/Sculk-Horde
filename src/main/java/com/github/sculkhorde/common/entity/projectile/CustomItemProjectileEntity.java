@@ -171,8 +171,8 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         if (random.nextFloat() < 0.028F && !(getOwner() instanceof Player && ((Player) getOwner()).isCreative()))
         {
             final Vec3 vec = raytrace.getLocation();
-            final ItemEntity item = new ItemEntity(this.level, vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
-            this.level.addFreshEntity(item);
+            final ItemEntity item = new ItemEntity(this.level(), vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
+            this.level().addFreshEntity(item);
         }
         else
         {
@@ -192,7 +192,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
     public Entity changeDimension(ServerLevel serverWorld, ITeleporter iTeleporter)
     {
         Entity entity = this.getOwner();
-        if (entity != null && entity.level.dimension() != serverWorld.dimension())
+        if (entity != null && entity.level().dimension() != serverWorld.dimension())
         {
             setOwner(null);
         }
@@ -209,7 +209,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
             ParticleOptions iparticledata = this.getParticle();
 
             for(int i = 0; i < 8; ++i) {
-                this.level.addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+                this.level().addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
 

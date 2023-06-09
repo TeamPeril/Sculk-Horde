@@ -61,8 +61,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) {
-            this.level.addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level().isClientSide) {
+            this.level().addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -76,7 +76,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     {
         super.onHitEntity(raytrace);
 
-        if(level.isClientSide) {return;}
+        if(level().isClientSide) {return;}
 
         // This is a safety check to make sure the entity is a living entity.
         // Mutant mobs previously caused a crash related to this, though
@@ -93,7 +93,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         }
 
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-        ((ServerLevel)level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
+        ((ServerLevel)level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
 
         remove(RemovalReason.DISCARDED);
 
@@ -114,11 +114,11 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
         ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(raytrace.getBlockPos(), 3, true);
         Collections.shuffle(list);
-        list.removeIf(pos -> !level.getBlockState(pos).isSolidRender(level, pos));
+        list.removeIf(pos -> !level().getBlockState(pos).isSolidRender(level(), pos));
 
         for(int i = 0; i < 5 && i < list.size(); i++)
         {
-            CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(level);
+            CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(level());
             // Spawn Infestation Purifier Cursors
             // Spawn Block Traverser
             cursor.setPos(list.get(i).getX(), list.get(i).getY(), list.get(i).getZ());
@@ -127,7 +127,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             cursor.setSearchIterationsPerTick(5);
             cursor.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(1));
             cursor.setTickIntervalMilliseconds(150);
-            level.addFreshEntity(cursor);
+            level().addFreshEntity(cursor);
 
         }
     }

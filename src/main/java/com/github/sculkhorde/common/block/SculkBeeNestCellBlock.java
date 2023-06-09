@@ -2,13 +2,8 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ItemRegistry;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,6 +13,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
@@ -40,14 +36,6 @@ import net.minecraft.world.InteractionResult;
  */
 
 public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBlock {
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_WHITE;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -137,7 +125,8 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+        Properties prop = Properties.copy(Blocks.BEE_NEST)
+                .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS);
         return prop;

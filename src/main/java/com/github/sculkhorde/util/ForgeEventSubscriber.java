@@ -110,7 +110,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onLivingEntityDeathEvent(LivingDeathEvent event)
     {
-        if(event.getEntity().level.isClientSide())
+        if(event.getEntity().level().isClientSide())
         {
             return;
         }
@@ -126,7 +126,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(!event.getEntity().level.isClientSide() && SculkHorde.gravemind != null && event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!event.getEntity().level().isClientSide() && SculkHorde.gravemind != null && event.getEntity().level().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             MobEffectInstance effectInstance = event.getEffectInstance();
 
@@ -139,12 +139,12 @@ public class ForgeEventSubscriber {
                 {
                     //Spawn Effect Level + 1 number of mites
                     int infectionDamage = 4;
-                    Level entityLevel = entity.level;
+                    Level entityLevel = entity.level();
                     BlockPos entityPosition = entity.blockPosition();
                     float entityHealth = entity.getMaxHealth();
 
                     //Spawn Mite
-                    EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, entityPosition, MobSpawnType.SPAWNER);
+                    EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER);
 
                     //Spawn Sculk Mass
                     SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();

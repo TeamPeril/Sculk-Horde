@@ -61,15 +61,15 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
 
         // If air or water or lava, return false
-        if(mob.level.getBlockState(pos).isAir() || mob.level.getBlockState(pos).getFluidState().isSource())
+        if(mob.level().getBlockState(pos).isAir() || mob.level().getBlockState(pos).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level().getBlockState(pos.above()).canBeReplaced() || mob.level().getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level().getBlockState(pos.above().above()).canBeReplaced() || mob.level().getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -88,7 +88,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
         getSculkEnderman().canTeleport = false;
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level, mob.blockPosition(), isValidSpawn, 10);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 10);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
@@ -97,7 +97,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            EntityRegistry.CHAOS_TELEPORATION_RIFT.get().spawn( (ServerLevel) mob.level, spawnPos.above().above(), MobSpawnType.REINFORCEMENT);
+            EntityRegistry.CHAOS_TELEPORATION_RIFT.get().spawn( (ServerLevel) mob.level(), spawnPos.above().above(), MobSpawnType.REINFORCEMENT);
         }
 
     }
