@@ -7,6 +7,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -69,7 +70,8 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.copy(Blocks.OAK_LOG)
+        return Properties.of()
+                .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.WOOD);
     }

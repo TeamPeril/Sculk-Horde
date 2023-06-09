@@ -380,7 +380,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     class VibrationUser implements VibrationSystem.User
     {
-        private static final int LISTENER_RADIUS = 8;
+        private static final int LISTENER_RADIUS = 24;
         private final PositionSource positionSource = new BlockPositionSource(SculkSummonerBlockEntity.this.worldPosition);
         private SculkSummonerBlockEntity summoner;
 
@@ -390,7 +390,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
 
         public int getListenerRadius() {
-            return 8;
+            return LISTENER_RADIUS;
         }
 
         public PositionSource getPositionSource() {
@@ -402,7 +402,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         }
 
         public boolean canReceiveVibration(ServerLevel p_281256_, BlockPos p_281528_, GameEvent p_282632_, GameEvent.Context p_282914_) {
-            return !SculkSummonerBlockEntity.this.getBlockState().getValue(SculkShriekerBlock.SHRIEKING) && SculkShriekerBlockEntity.tryGetPlayer(p_282914_.sourceEntity()) != null;
+            return true;
         }
 
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)

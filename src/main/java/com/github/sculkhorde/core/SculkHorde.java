@@ -52,7 +52,7 @@ public class SculkHorde {
         ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
         SoundRegistry.SOUND_EVENTS.register(bus); //Load Sounds
 
-        //bus.addListener(this::addCreative);
+        ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
 
         //If dev environment
         if(!FMLEnvironment.production)
@@ -60,58 +60,5 @@ public class SculkHorde {
             DEBUG_MODE = true;
         }
     }
-    // TODO PORT
-    /*
-    private void addCreative(CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == ModCreativeModeTab.CREATIVE_TAB) {
-            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_WAND);
-            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_NODE_SPAWNER);
-            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_CONVERSION_WAND);
-            if(DEBUG_MODE) event.accept(ItemRegistry.DEV_RAID_WAND);
-            event.accept(ItemRegistry.INFESTATION_PURIFIER);
-            event.accept(ItemRegistry.PURIFICATION_FLASK_ITEM);
-            event.accept(ItemRegistry.SCULK_ACIDIC_PROJECTILE);
-            event.accept(ItemRegistry.SCULK_RESIN);
-            event.accept(ItemRegistry.CALCITE_CLUMP);
-            event.accept(ItemRegistry.SCULK_MATTER);
-            event.accept(BlockRegistry.SCULK_NODE_BLOCK);
-            event.accept(BlockRegistry.SCULK_ARACHNOID);
-            event.accept(BlockRegistry.SCULK_DURA_MATTER);
-            event.accept(BlockRegistry.SCULK_BEE_NEST_BLOCK);
-            event.accept(BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK);
-            event.accept(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK);
-            event.accept(BlockRegistry.SCULK_LIVING_ROCK_BLOCK);
-            event.accept(BlockRegistry.CALCITE_ORE);
-            event.accept(BlockRegistry.SCULK_SUMMONER_BLOCK);
-            event.accept(Blocks.SCULK_CATALYST);
-            event.accept(Blocks.SCULK_SHRIEKER);
-            event.accept(Blocks.SCULK_SENSOR);
-            event.accept(BlockRegistry.SCULK_MASS);
-            event.accept(BlockRegistry.GRASS);
-            event.accept(BlockRegistry.GRASS_SHORT);
-            event.accept(BlockRegistry.SCULK_SHROOM_CULTURE);
-            event.accept(BlockRegistry.SMALL_SHROOM);
-            event.accept(BlockRegistry.SPIKE);
-            event.accept(BlockRegistry.TENDRILS);
-            event.accept(Blocks.SCULK);
-            event.accept(BlockRegistry.INFESTED_LOG);
-            event.accept(BlockRegistry.INFESTED_SAND);
-            event.accept(BlockRegistry.INFESTED_RED_SAND);
-            event.accept(BlockRegistry.INFESTED_SANDSTONE);
-            event.accept(BlockRegistry.INFESTED_GRAVEL);
-            event.accept(BlockRegistry.INFESTED_STONE);
-            event.accept(BlockRegistry.INFESTED_COBBLESTONE);
-            event.accept(BlockRegistry.INFESTED_DEEPSLATE);
-            event.accept(BlockRegistry.INFESTED_COBBLED_DEEPSLATE);
-            event.accept(BlockRegistry.INFESTED_ANDESITE);
-            event.accept(BlockRegistry.INFESTED_DIORITE);
-            event.accept(BlockRegistry.INFESTED_GRANITE);
-            event.accept(BlockRegistry.INFESTED_TUFF);
-            event.accept(BlockRegistry.INFESTED_CALCITE);
-            event.accept(BlockRegistry.INFESTED_TERRACOTTA);
-            event.accept(BlockRegistry.INFESTED_SNOW);
-            event.accept(BlockRegistry.INFESTED_MOSS);
-        }
-    }
-    */
+
 }

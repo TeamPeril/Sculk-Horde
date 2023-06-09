@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20-0.6.2'
+version = '1.20-0.6.3'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -98,7 +98,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20-46.0.1'
+    minecraft 'net.minecraftforge:forge:1.20-46.0.2'
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20:4.2')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
