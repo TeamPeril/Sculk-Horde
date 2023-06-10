@@ -401,6 +401,7 @@ public class RaidHandler {
         remainingWaveParticipants = 0;
         currentWave = 0;
         scoutEnderman = null;
+        timeElapsedScouting = 0;
     }
 
     // Events
