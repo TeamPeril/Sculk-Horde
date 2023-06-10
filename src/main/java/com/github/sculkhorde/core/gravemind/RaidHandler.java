@@ -64,7 +64,7 @@ public class RaidHandler {
     // Enderman Scouting
     private SculkEndermanEntity scoutEnderman = null;
     private int timeElapsedScouting = 0;
-    private int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(5);
+    private int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(1);
 
     // Waves
     private EntityFactory.StrategicValues[] currentWavePattern;
@@ -312,7 +312,7 @@ public class RaidHandler {
         }
         else
         {
-            setRaidState(RaidState.FAILED);
+            setRaidState(RaidState.COMPLETE);
         }
     }
 
@@ -765,11 +765,13 @@ public class RaidHandler {
 
     private void completeRaidTick()
     {
+        announceToAllPlayers(Component.literal("The Sculk Horde's raid was successful!"));
         reset();
     }
 
     private void failureRaidTick()
     {
+        announceToAllPlayers(Component.literal("The Sculk Horde's raid was defeated!"));
         reset();
     }
 
