@@ -3,6 +3,7 @@ package com.github.sculkhorde.core.gravemind;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.common.entity.SculkEndermanEntity;
+import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
@@ -766,12 +767,16 @@ public class RaidHandler {
     private void completeRaidTick()
     {
         announceToAllPlayers(Component.literal("The Sculk Horde's raid was successful!"));
+        // Summon Sculk Spore Spewer
+        SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(EntityRegistry.SCULK_SPORE_SPEWER.get(), level);
+        sporeSpewer.setPos(getRaidLocation().getX(), getRaidLocation().getY(), getRaidLocation().getZ());
+        level.addFreshEntity(sporeSpewer);
         reset();
     }
 
     private void failureRaidTick()
     {
-        announceToAllPlayers(Component.literal("The Sculk Horde's raid was defeated!"));
+        announceToAllPlayers(Component.literal("The Sculk Horde's raid was failed!"));
         reset();
     }
 

@@ -69,9 +69,9 @@ public class ForgeEventSubscriber {
             //Used by anti sculk serum
             SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
 
-            SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+            if(DEBUG_MODE) SculkHorde.raidHandler.raidTick(); // Tick the raid handler
 
-            SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
+            if(DEBUG_MODE) SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
 
 
             if (event.level.getGameTime() - time_save_point > TickUnits.convertMinutesToTicks(5))
