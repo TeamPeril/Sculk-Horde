@@ -14,6 +14,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -23,7 +24,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -62,13 +62,22 @@ public class RaidHandler {
     }
     private RaidState raidState = RaidState.INACTIVE;
 
+    protected enum failureType {
+        NONE,
+        FAILED_INITIALIZATION,
+        ENDERMAN_DEFEATED,
+        FAILED_OBJECTIVE_COMPLETION
+    }
+
+    protected failureType failure = failureType.NONE;
+
     // Enderman Scouting
     private SculkEndermanEntity scoutEnderman = null;
     private int timeElapsedScouting = 0;
-    private int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(1);
+    private final int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(1);
 
     // Waves
-    private EntityFactory.StrategicValues[] currentWavePattern;
+    protected EntityFactory.StrategicValues[] currentWavePattern;
     private int maxWaves = 2;
     private int currentWave = 0;
     private int remainingWaveParticipants = 0;
@@ -76,9 +85,9 @@ public class RaidHandler {
     protected ModSavedData.AreaofInterestEntry areaOfInterestEntry;
 
     // Targets
-    private static ArrayList<BlockPos> high_priority_targets = new ArrayList();
-    private static ArrayList<BlockPos> medium_priority_targets = new ArrayList();
-    private static ArrayList<BlockPos> low_priority_targets = new ArrayList();
+    private static final ArrayList<BlockPos> high_priority_targets = new ArrayList<>();
+    private static final ArrayList<BlockPos> medium_priority_targets = new ArrayList<>();
+    private static final ArrayList<BlockPos> low_priority_targets = new ArrayList<>();
 
     // Block Searcher
     private BlockSearcher blockSearcher;
@@ -86,14 +95,14 @@ public class RaidHandler {
     /**
      * This is used to determine if a block is obstructed when searching for a spawn location
      */
-    private Predicate<BlockPos> isSpawnObstructed = (blockPos) ->
+    private final Predicate<BlockPos> isSpawnObstructed = (blockPos) ->
     {
         if(Math.abs(blockPos.getY() - raidLocation.getY()) > 15)
         {
             return true;
         }
 
-        // If block isnt solid, its obstructed
+        // If block isn't solid, its obstructed
         if(level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(Blocks.WATER) || level.getBlockState(blockPos).is(Blocks.LAVA))
         {
             return true;
@@ -109,24 +118,15 @@ public class RaidHandler {
             return true;
         }
 
-        if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above(2)).is(Blocks.WATER) || level.getBlockState(blockPos.above(2)).is(Blocks.LAVA))
-        {
-            return true;
-        }
-        return false;
+        return !level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above(2)).is(Blocks.WATER) || level.getBlockState(blockPos.above(2)).is(Blocks.LAVA);
     };
 
     /**
      * This is used to determine if a block is a valid spawn location for a mob
      */
-    private Predicate<BlockPos> isSpawnTarget = (blockPos) ->
+    private final Predicate<BlockPos> isSpawnTarget = (blockPos) ->
     {
-        if( BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (getCurrentRaidRadius() * 0.75) && BlockAlgorithms.isAreaFlat(level, blockPos, 2))
-        {
-            return true;
-        }
-
-        return false;
+        return BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (getCurrentRaidRadius() * 0.75) && BlockAlgorithms.isAreaFlat(level, blockPos, 2);
     };
 
     public RaidHandler(ServerLevel levelIn)
@@ -168,12 +168,7 @@ public class RaidHandler {
             return false;
         }
 
-        if(SculkHorde.savedData.getAreasOfInterestEntries().isEmpty())
-        {
-            return false;
-        }
-
-        return true;
+        return !SculkHorde.savedData.getAreasOfInterestEntries().isEmpty();
     }
 
     /**
@@ -190,6 +185,14 @@ public class RaidHandler {
      */
     public void setRaidState(RaidState raidStateIn) {
         raidState = raidStateIn;
+    }
+
+    /**
+     * Sets the raid State to Failed
+     * @param failureTypeIn the type of failure
+     */
+    public void setRaidStateToFailure(failureType failureTypeIn) {
+        failure = failureTypeIn;
     }
 
     /**
@@ -228,9 +231,7 @@ public class RaidHandler {
 
     private void announceToAllPlayers(Component message)
     {
-        level.players().forEach((player) -> {
-            player.displayClientMessage(message, false);
-        });
+        level.players().forEach((player) -> player.displayClientMessage(message, false));
     }
 
     private void updateRemainingWaveParticipantsAmount()
@@ -313,6 +314,10 @@ public class RaidHandler {
         }
         else
         {
+            announceToAllPlayers(Component.literal("The Sculk Horde has Successfully destroyed all objectives!"));
+
+            //level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundEvents.SCULK_SHRIEKER_SHRIEK, SoundSource.AMBIENT, 1.0F, 1.0F));
+
             setRaidState(RaidState.COMPLETE);
         }
     }
@@ -327,12 +332,7 @@ public class RaidHandler {
         {
             return false;
         }
-        else if(level.getBlockState(objectiveLocation).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
-        {
-            return false;
-        }
-
-        return true;
+        else return !level.getBlockState(objectiveLocation).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY);
     }
 
     public Optional<BlockPos> getNextObjectiveLocation()
@@ -450,7 +450,7 @@ public class RaidHandler {
     {
         if(SculkHorde.savedData.getAreasOfInterestEntries().isEmpty())
         {
-            setRaidState(RaidState.FAILED);
+            setRaidStateToFailure(failureType.FAILED_INITIALIZATION);
             return;
         }
 
@@ -465,57 +465,37 @@ public class RaidHandler {
             blockSearcher.ignoreBlocksNearTargets = true;
 
             // What is the target?
-            blockSearcher.setTargetBlockPredicate(new Predicate<BlockPos>()
-            {
-                @Override
-                public boolean test(BlockPos blockPos)
-                {
-                    boolean isTarget = false;
+            blockSearcher.setTargetBlockPredicate(blockPos -> {
+                boolean isTarget = level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+                        || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
+                        || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
 
-                    if(level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-                            || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
-                            || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
-                    {
-                        isTarget = true;
-                    }
-
-                    // If the target is outside of the current raid radius, increase the raid radius
-                    if(isTarget && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > getCurrentRaidRadius())
-                    {
-                        currentRaidRadius = (int) BlockAlgorithms.getBlockDistance(getRaidLocation(), blockPos);
-                        SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
-                    }
-
-                    return isTarget;
+                // If the target is outside of the current raid radius, increase the raid radius
+                if (isTarget && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > getCurrentRaidRadius()) {
+                    currentRaidRadius = (int) BlockAlgorithms.getBlockDistance(getRaidLocation(), blockPos);
+                    SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
                 }
+
+                return isTarget;
             });
 
             // What is obstructed?
-            blockSearcher.setObstructionPredicate(new Predicate<BlockPos>()
-            {
-                @Override
-                public boolean test(BlockPos blockPos)
+            blockSearcher.setObstructionPredicate(blockPos -> {
+                if(blockSearcher.foundTargets.size() == 0 && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
                 {
-                    if(blockSearcher.foundTargets.size() == 0 && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
-                    {
-                        return true;
-                    }
-
-                    if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 50))
-                    {
-                        return true;
-                    }
-
-                    if(level.getBlockState(blockPos).is(Blocks.AIR))
-                    {
-                        return true;
-                    }
-                    if(!BlockAlgorithms.isExposedToAir(level, blockPos))
-                    {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 }
+
+                if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 50))
+                {
+                    return true;
+                }
+
+                if(level.getBlockState(blockPos).is(Blocks.AIR))
+                {
+                    return true;
+                }
+                return !BlockAlgorithms.isExposedToAir(level, blockPos);
             });
 
             blockSearcher.MAX_TARGETS = 30;
@@ -551,34 +531,13 @@ public class RaidHandler {
             }
 
             // Sort the targets by distance to origin
-            high_priority_targets.sort(new Comparator<BlockPos>()
-            {
-                @Override
-                public int compare(BlockPos blockPos, BlockPos t1)
-                {
-                    return (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation()));
-                }
-            });
+            high_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
 
             // Sort the targets by distance to origin
-            medium_priority_targets.sort(new Comparator<BlockPos>()
-            {
-                @Override
-                public int compare(BlockPos blockPos, BlockPos t1)
-                {
-                    return (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation()));
-                }
-            });
+            medium_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
 
             // Sort the targets by distance to origin
-            low_priority_targets.sort(new Comparator<BlockPos>()
-            {
-                @Override
-                public int compare(BlockPos blockPos, BlockPos t1)
-                {
-                    return (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation()));
-                }
-            });
+            low_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
 
             maxWaves = 10;
             setRaidLocation(areaOfInterestEntry.getPosition());
@@ -587,7 +546,7 @@ public class RaidHandler {
         }
         else
         {
-            setRaidState(RaidState.FAILED);
+            setRaidStateToFailure(failureType.FAILED_INITIALIZATION);
             SculkHorde.LOGGER.debug("RaidHandler | Found no objective targets. Not Initializing Raid.");
         }
         blockSearcher = null;
@@ -607,8 +566,7 @@ public class RaidHandler {
 
         if(!scoutEnderman.isAlive())
         {
-            setRaidState(RaidState.FAILED);
-            announceToAllPlayers(Component.literal("Sculk Enderman has Died. Raid has been prevented."));
+            setRaidStateToFailure(failureType.ENDERMAN_DEFEATED);
             return;
         }
 
@@ -617,7 +575,6 @@ public class RaidHandler {
             setRaidState(RaidState.INITIALIZING_RAID);
             scoutEnderman.discard();
             scoutEnderman = null;
-            return;
         }
     }
 
@@ -639,7 +596,7 @@ public class RaidHandler {
             //
             if(allTargets.size() == 0)
             {
-                setRaidState(RaidState.FAILED);
+                setRaidState(RaidState.INITIALIZING_RAID);
                 return;
             }
             raidCenter = BlockAlgorithms.getCentroid(allTargets);
@@ -676,7 +633,7 @@ public class RaidHandler {
         // If Completed, and was not successful
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
-            setRaidState(RaidState.FAILED);
+            setRaidState(RaidState.INITIALIZING_RAID);
             SculkHorde.LOGGER.debug("RaidHandler | Unable to Find Spawn Location. Not Initializing Raid.");
         }
     }
@@ -727,7 +684,7 @@ public class RaidHandler {
         // If we are on last wave, end raid
         if(currentWave == maxWaves)
         {
-            setRaidState(RaidState.COMPLETE);
+            setRaidStateToFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
             announceToPlayersInRange(Component.literal("Final Wave Complete."), getCurrentRaidRadius() * 8);
         }
@@ -761,6 +718,10 @@ public class RaidHandler {
         if(isCurrentObjectiveCompleted())
         {
             setNextObjectiveLocation();
+
+            announceToAllPlayers(Component.literal("The Sculk Horde has Successfully Destroyed an Objective!"));
+
+            level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundEvents.BELL_RESONATE, SoundSource.AMBIENT, 1.0F, 1.0F));
         }
     }
 
@@ -776,15 +737,25 @@ public class RaidHandler {
 
     private void failureRaidTick()
     {
-        announceToAllPlayers(Component.literal("The Sculk Horde's raid was failed!"));
+        // Switch Statement for Failure Type
+        switch (failure)
+        {
+            case FAILED_OBJECTIVE_COMPLETION:
+                announceToAllPlayers(Component.literal("The Sculk Horde has failed to destroy all objectives!"));
+                level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
+                break;
+            case ENDERMAN_DEFEATED:
+                announceToAllPlayers(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"));
+                level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
+                break;
+        }
+
         reset();
     }
 
     private Predicate<EntityFactoryEntry> isValidRaidParticipant(EntityFactory.StrategicValues strategicValue)
     {
-        return (entityFactoryEntry) -> {
-            return entityFactoryEntry.getCategory() == strategicValue;
-        };
+        return (entityFactoryEntry) -> entityFactoryEntry.getCategory() == strategicValue;
     }
 
     public EntityFactory.StrategicValues[] getWavePattern()
@@ -802,7 +773,7 @@ public class RaidHandler {
             if(randomEntry.isEmpty())
             {
                 SculkHorde.LOGGER.debug("RaidHandler | Unable to find valid entity for raid.");
-                setRaidState(RaidState.FAILED);
+                setRaidState(RaidState.INITIALIZING_RAID);
                 return;
             }
             waveParticipants.add((ISculkSmartEntity) randomEntry.get().createEntity(level, spawnLocation));
