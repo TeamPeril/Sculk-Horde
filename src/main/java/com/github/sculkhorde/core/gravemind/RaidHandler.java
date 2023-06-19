@@ -149,6 +149,11 @@ public class RaidHandler {
             return false;
         }
 
+        if(!DEBUG_MODE)
+        {
+            return false;
+        }
+
         if(!SculkHorde.savedData.isRaidCooldownOver())
         {
             return false;
