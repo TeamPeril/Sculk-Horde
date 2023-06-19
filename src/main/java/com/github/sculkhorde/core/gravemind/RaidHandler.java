@@ -158,6 +158,11 @@ public class RaidHandler {
 
     public boolean canRaidStart()
     {
+        if(!DEBUG_MODE)
+        {
+            return false;
+        }
+
         if(gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
         {
             return false;

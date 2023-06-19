@@ -12,6 +12,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLLoader;
 import software.bernie.geckolib.GeckoLib;
 import org.slf4j.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
@@ -26,7 +27,7 @@ public class SculkHorde {
     //The file name in the world data folder.
     public static final String SAVE_DATA_ID = SculkHorde.MOD_ID + "_gravemind_memory";
     //The Creative Tab that all the items appear in
-    public static boolean DEBUG_MODE = false;
+    public static boolean DEBUG_MODE = !FMLLoader.getLaunchHandler().isProduction();
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
     public static ModSavedData savedData;

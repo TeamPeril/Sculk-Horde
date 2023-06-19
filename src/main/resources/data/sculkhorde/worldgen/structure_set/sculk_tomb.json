@@ -19,6 +19,6 @@
 
     // Minimum distance apart in chunks for spawn attempts
     // MUST ALWAYS BE SMALLER THAN spacing ABOVE
-    "separation": 2
+    "separation": 10
   }
 }
