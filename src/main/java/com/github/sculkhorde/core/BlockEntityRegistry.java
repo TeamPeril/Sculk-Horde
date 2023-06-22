@@ -20,6 +20,10 @@ public class BlockEntityRegistry {
             BLOCK_ENTITIES.register("sculk_node_block_entity", () -> BlockEntityType.Builder.of(
                     SculkNodeBlockEntity::new, BlockRegistry.SCULK_NODE_BLOCK.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<SculkAncientNodeBlockEntity>> SCULK_ANCIENT_NODE_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("sculk_ancient_node_block_entity", () -> BlockEntityType.Builder.of(
+                    SculkAncientNodeBlockEntity::new, BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get()).build(null));
+
     public static RegistryObject<BlockEntityType<SculkBeeNestBlockEntity>> SCULK_BEE_NEST_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("sculk_bee_nest_block_entity", () -> BlockEntityType.Builder.of(
                     SculkBeeNestBlockEntity::new, BlockRegistry.SCULK_BEE_NEST_BLOCK.get()).build(null));

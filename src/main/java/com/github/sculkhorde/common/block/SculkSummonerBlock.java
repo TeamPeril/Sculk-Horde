@@ -95,7 +95,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .noOcclusion()
-                .sound(SoundType.SLIME_BLOCK);
+                .sound(SoundType.SCULK_SHRIEKER);
         return prop;
     }
 

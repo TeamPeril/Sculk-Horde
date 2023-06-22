@@ -239,6 +239,9 @@ public class BlockRegistry {
 	public static final RegistryObject<SculkNodeBlock> SCULK_NODE_BLOCK =
 			registerBlock("sculk_node", () -> new SculkNodeBlock());
 
+	public static final RegistryObject<SculkAncientNodeBlock> SCULK_ANCIENT_NODE_BLOCK =
+			registerBlock("sculk_ancient_node", () -> new SculkAncientNodeBlock());
+
 	public static final RegistryObject<SculkBeeNestBlock> SCULK_BEE_NEST_BLOCK =
 			registerBlock("sculk_bee_nest", () -> new SculkBeeNestBlock());
 

@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "sculkhorde:infested_sand",
-    "sculkhorde:sculk_arachnoid"
+    "sculkhorde:sculk_arachnoid",
+    "sculkhorde:infested_snow",
+    "sculkhorde:infested_gravel",
+    "sculkhorde:infested_red_sand"
   ]
 }
