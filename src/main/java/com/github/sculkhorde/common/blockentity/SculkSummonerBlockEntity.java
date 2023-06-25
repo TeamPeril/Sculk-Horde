@@ -221,15 +221,12 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             //Create MAX_SPAWNED_ENTITIES amount of Reinforcement Requests
             for (int iterations = 0; iterations < possibleSpawnPositions.size(); iterations++)
             {
-                //If the array is empty, just spawn above block
-                if (possibleSpawnPositions.isEmpty()) {
-                    finalizedSpawnPositions[iterations] = blockEntity.getBlockPos().above();
-                }
-                //Else choose the spawn position
-                else
-                {
-                    finalizedSpawnPositions[iterations] = possibleSpawnPositions.get(iterations);
-                }
+                finalizedSpawnPositions[iterations] = possibleSpawnPositions.get(iterations);
+            }
+
+            //If the array is empty, just spawn above block
+            if (possibleSpawnPositions.isEmpty()) {
+                finalizedSpawnPositions[0] = blockPos.above();
             }
 
             //Give gravemind context to our request to make more informed situations

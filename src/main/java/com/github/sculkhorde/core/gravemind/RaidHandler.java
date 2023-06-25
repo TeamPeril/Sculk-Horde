@@ -14,6 +14,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -451,6 +452,84 @@ public class RaidHandler {
         }
     }
 
+    private void initializeBlockSearcher(int searchIterationsPerTick, int maxTargets)
+    {
+        areaOfInterestEntry = SculkHorde.savedData.getAreasOfInterestEntries().get(0);
+        blockSearcher = new BlockSearcher(level, areaOfInterestEntry.getPosition());
+        blockSearcher.setMaxDistance(getCurrentRaidRadius());
+        blockSearcher.setDebugMode(DEBUG_MODE);
+        blockSearcher.searchIterationsPerTick = searchIterationsPerTick;
+        blockSearcher.ignoreBlocksNearTargets = true;
+
+        // What is the target?
+        blockSearcher.setTargetBlockPredicate(blockPos -> {
+            boolean isTarget = level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+                    || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
+                    || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
+
+            // If the target is outside of the current raid radius, increase the raid radius
+            if (isTarget && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > getCurrentRaidRadius()) {
+                currentRaidRadius = (int) BlockAlgorithms.getBlockDistance(getRaidLocation(), blockPos);
+                SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
+            }
+
+            return isTarget;
+        });
+
+        // What is obstructed?
+        blockSearcher.setObstructionPredicate(blockPos -> {
+            if(blockSearcher.foundTargets.size() == 0 && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
+            {
+                return true;
+            }
+
+            if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 50))
+            {
+                return true;
+            }
+
+            if(level.getBlockState(blockPos).is(Blocks.AIR))
+            {
+                return true;
+            }
+            return !BlockAlgorithms.isExposedToAir(level, blockPos);
+        });
+
+        blockSearcher.MAX_TARGETS = maxTargets;
+    }
+
+    private void getFoundTargetsFromBlockSearcher(ArrayList<BlockPos> foundTargets)
+    {
+        high_priority_targets.clear();
+        medium_priority_targets.clear();
+        low_priority_targets.clear();
+
+        for (BlockPos blockPos : foundTargets)
+        {
+            if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+            {
+                high_priority_targets.add(blockPos);
+            }
+            else if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+            {
+                medium_priority_targets.add(blockPos);
+            }
+            else if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+            {
+                low_priority_targets.add(blockPos);
+            }
+        }
+
+        // Sort the targets by distance to origin
+        high_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
+
+        // Sort the targets by distance to origin
+        medium_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
+
+        // Sort the targets by distance to origin
+        low_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
+    }
+
     private void investigatingLocationTick()
     {
         if(SculkHorde.savedData.getAreasOfInterestEntries().isEmpty())
@@ -459,51 +538,10 @@ public class RaidHandler {
             return;
         }
 
-        // Initialize Block Searcher
+        // Initialize Block Searcher if null
         if(blockSearcher == null)
         {
-            areaOfInterestEntry = SculkHorde.savedData.getAreasOfInterestEntries().get(0);
-            blockSearcher = new BlockSearcher(level, areaOfInterestEntry.getPosition());
-            blockSearcher.setMaxDistance(getCurrentRaidRadius());
-            blockSearcher.setDebugMode(DEBUG_MODE);
-            blockSearcher.searchIterationsPerTick = 100;
-            blockSearcher.ignoreBlocksNearTargets = true;
-
-            // What is the target?
-            blockSearcher.setTargetBlockPredicate(blockPos -> {
-                boolean isTarget = level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-                        || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
-                        || level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
-
-                // If the target is outside of the current raid radius, increase the raid radius
-                if (isTarget && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > getCurrentRaidRadius()) {
-                    currentRaidRadius = (int) BlockAlgorithms.getBlockDistance(getRaidLocation(), blockPos);
-                    SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
-                }
-
-                return isTarget;
-            });
-
-            // What is obstructed?
-            blockSearcher.setObstructionPredicate(blockPos -> {
-                if(blockSearcher.foundTargets.size() == 0 && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
-                {
-                    return true;
-                }
-
-                if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 50))
-                {
-                    return true;
-                }
-
-                if(level.getBlockState(blockPos).is(Blocks.AIR))
-                {
-                    return true;
-                }
-                return !BlockAlgorithms.isExposedToAir(level, blockPos);
-            });
-
-            blockSearcher.MAX_TARGETS = 30;
+            initializeBlockSearcher(100, 30);
         }
 
         // Tick Block Searcher
@@ -515,35 +553,7 @@ public class RaidHandler {
         // If we find block targets, store them.
         if(blockSearcher.isSuccessful)
         {
-            high_priority_targets.clear();
-            medium_priority_targets.clear();
-            low_priority_targets.clear();
-
-            for (BlockPos blockPos : blockSearcher.foundTargets)
-            {
-                if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
-                {
-                    high_priority_targets.add(blockPos);
-                }
-                else if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
-                {
-                    medium_priority_targets.add(blockPos);
-                }
-                else if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
-                {
-                    low_priority_targets.add(blockPos);
-                }
-            }
-
-            // Sort the targets by distance to origin
-            high_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
-
-            // Sort the targets by distance to origin
-            medium_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
-
-            // Sort the targets by distance to origin
-            low_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
-
+            getFoundTargetsFromBlockSearcher(blockSearcher.foundTargets);
             maxWaves = 10;
             setRaidLocation(areaOfInterestEntry.getPosition());
             SculkHorde.LOGGER.debug("RaidHandler | Found " + (high_priority_targets.size() + medium_priority_targets.size() + low_priority_targets.size()) + " objective targets.");
@@ -583,6 +593,11 @@ public class RaidHandler {
         }
     }
 
+    /**
+     * This function gets called when the raid is initialized.
+     * It calculates the center of the raid, finds a spawn point
+     * for the raid, and then chuckloads it.
+     */
     private void initializingRaidTick()
     {
         SculkHorde.savedData.setTicksSinceLastRaid(0);
@@ -643,6 +658,29 @@ public class RaidHandler {
         }
     }
 
+    private void playSoundForEachPlayerInRange(SoundEvent soundEvent, float volume, float pitch, int range)
+    {
+        // Play sound for each player
+        level.players().forEach(player ->
+        {
+            if (BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= range || SculkHorde.DEBUG_MODE)
+            {
+                level.playSound(null, player.blockPosition(), soundEvent, SoundSource.HOSTILE, volume, pitch);
+            }
+        });
+    }
+
+    private void spawnWaveParticipants(BlockPos spawnLocation)
+    {
+        waveParticipants.forEach((raidParticipant) ->
+        {
+            raidParticipant.setParticipatingInRaid(true);
+            ((Mob)raidParticipant).setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
+            level.addFreshEntity((Entity) raidParticipant);
+            ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
+        });
+    }
+
     private void initializingWaveTick()
     {
         waveDuration = 0;
@@ -655,22 +693,9 @@ public class RaidHandler {
 
         announceToPlayersInRange(Component.literal(" Starting Wave " + currentWave + " out of " + maxWaves + "."), getCurrentRaidRadius() * 8);
 
-        waveParticipants.forEach((raidParticipant) ->
-        {
-            raidParticipant.setParticipatingInRaid(true);
-            ((Mob)raidParticipant).setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
-            level.addFreshEntity((Entity) raidParticipant);
-            ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertHoursToTicks(1), 0));
-        });
+        spawnWaveParticipants(spawnLocation);
 
-        // Play sound for each player
-        level.players().forEach(player ->
-        {
-            if (BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= getCurrentRaidRadius() * 4 || SculkHorde.DEBUG_MODE)
-            {
-                level.playSound(null, player.blockPosition(), SoundRegistry.RAID_START_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-            }
-        });
+        playSoundForEachPlayerInRange(SoundRegistry.RAID_START_SOUND.get(), 1.0F, 1.0F, getCurrentRaidRadius() * 4);
 
         if(objectiveLocationAtStartOfWave.equals(objectiveLocation))
         {

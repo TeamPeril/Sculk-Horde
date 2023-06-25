@@ -19,16 +19,21 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -63,12 +68,18 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static float BLAST_RESISTANCE = 10f;
 
+    // BlockStates
+    public static final BooleanProperty TRIGGERING = BooleanProperty.create("triggering");
+    public static final BooleanProperty AWAKE = BooleanProperty.create("awake");
+
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
      */
     public SculkAncientNodeBlock(Properties prop) {
         super(prop);
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(TRIGGERING, false).setValue(AWAKE, false));
     }
 
     /**
@@ -89,6 +100,8 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         return false;
     }
 
+    // Getters
+
     /**
      * Determines the properties of a block.<br>
      * I made this in order to be able to establish a block's properties from within the block class and not in the BlockRegistry.java
@@ -102,6 +115,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
                 .sound(SoundType.GRASS);
         return prop;
     }
+
 
     /**
      * This is the description the item of the block will display when hovered over.
@@ -120,7 +134,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), SculkAncientNodeBlockEntity::tick);
+        return !level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), SculkAncientNodeBlockEntity::tick) : null;
     }
 
     @org.jetbrains.annotations.Nullable
@@ -141,11 +155,29 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
     @Nullable
     public <T extends BlockEntity> GameEventListener getListener(ServerLevel level, T blockEntityListener) {
-        if (blockEntityListener instanceof SculkSummonerBlockEntity blockEntity) {
+        if (blockEntityListener instanceof SculkAncientNodeBlockEntity blockEntity) {
             return blockEntity.getListener();
         } else {
             return null;
         }
     }
 
+    // BlockStates
+
+    /**
+     * Determines what the blockstate should be for placement.
+     * @param context
+     * @return
+     */
+    public BlockState getStateForPlacement(BlockPlaceContext context)
+    {
+        return this.defaultBlockState()
+                .setValue(TRIGGERING, false).setValue(AWAKE, false)
+                .setValue(AWAKE, false);
+
+    }
+
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(TRIGGERING).add(AWAKE);
+    }
 }
