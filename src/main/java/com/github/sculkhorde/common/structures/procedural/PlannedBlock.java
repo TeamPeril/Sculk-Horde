@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.procedural.structures;
+package com.github.sculkhorde.common.structures.procedural;
 
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.level.block.Blocks;

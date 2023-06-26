@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
-import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
+import com.github.sculkhorde.common.structures.procedural.ProceduralStructure;
+import com.github.sculkhorde.common.structures.procedural.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

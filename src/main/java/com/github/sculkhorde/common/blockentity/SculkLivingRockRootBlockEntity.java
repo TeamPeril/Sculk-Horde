@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.procedural.structures.SculkLivingRockProceduralStructure;
+import com.github.sculkhorde.common.structures.procedural.SculkLivingRockProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

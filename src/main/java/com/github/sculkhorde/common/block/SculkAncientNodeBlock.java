@@ -1,22 +1,11 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -38,7 +27,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -116,25 +104,44 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         return prop;
     }
 
-
     /**
-     * This is the description the item of the block will display when hovered over.
-     * @param stack The item stack
-     * @param iBlockReader A block reader
-     * @param tooltip The tooltip
-     * @param flagIn The flag
+     * Gets ticked whenever it recieves a vibration. <br>
+     * Note: I want to make it so this block ticks on a regular basis, but also when it recieves a vibration.
+     * However, I don't know how to do that yet. Its either or, but not both.
+     * @param level The level
+     * @param blockState The current blockstate
+     * @param blockEntityType The blockentity type
+     * @return The ticker
+     * @param <T> The blockentity type
      */
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
 
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_node")); //Text that displays if holding shift
+        //Client Side does not tick
+        if(level.isClientSide) {
+            return BaseEntityBlock.createTickerHelper(blockEntityType,
+                    BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
+                    SculkAncientNodeBlockEntity::tickClient);
+        }
+
+        if(blockState.getValue(AWAKE)) {
+            return BaseEntityBlock.createTickerHelper(blockEntityType,
+                    BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
+                    SculkAncientNodeBlockEntity::tickAwake);
+        }
+
+        return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+            VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
+        });
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return !level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), SculkAncientNodeBlockEntity::tick) : null;
+    public <T extends BlockEntity> GameEventListener getListener(ServerLevel level, T blockEntityListener) {
+        if (blockEntityListener instanceof SculkAncientNodeBlockEntity blockEntity) {
+            return blockEntity.getListener();
+        } else {
+            return null;
+        }
     }
 
     @org.jetbrains.annotations.Nullable
@@ -153,14 +160,25 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         return silkTouchLevel == 0 ? 5 : 0;
     }
 
-    @Nullable
-    public <T extends BlockEntity> GameEventListener getListener(ServerLevel level, T blockEntityListener) {
-        if (blockEntityListener instanceof SculkAncientNodeBlockEntity blockEntity) {
-            return blockEntity.getListener();
-        } else {
-            return null;
-        }
+    // EVENTS
+
+    /**
+     * This is the description the item of the block will display when hovered over.
+     * @param stack The item stack
+     * @param iBlockReader A block reader
+     * @param tooltip The tooltip
+     * @param flagIn The flag
+     */
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_node")); //Text that displays if holding shift
     }
+
+
+
 
     // BlockStates
 
@@ -172,7 +190,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(TRIGGERING, false).setValue(AWAKE, false)
+                .setValue(TRIGGERING, false)
                 .setValue(AWAKE, false);
 
     }

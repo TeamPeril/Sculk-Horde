@@ -17,8 +17,8 @@
         // The Identifier of the nbt file itself of the structure piece.
         // Note, this will automatically check into the 'structures' folder for the nbt file.
         // The final path would look like 'resources/data/structure_tutorial/structures/run_down_house_left_side.nbt'
-        // The Jigsaw block in the structure will point to side_pool.json to spawn the other half of the house.
-        "location": "sculkhorde:sculk_tomb",
+        // The Jigsaw block in the structure will point to west_upper.json to spawn the other half of the house.
+        "location": "sculkhorde:sculk_tomb_main",
 
         // Processor JSON files can be used to randomize or replace blocks dynamically. Here, we don't do any of that.
         "processors": "minecraft:empty",

@@ -653,7 +653,7 @@ public class RaidHandler {
         // If Completed, and was not successful
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
-            setRaidState(RaidState.INITIALIZING_RAID);
+            setRaidState(RaidState.FAILED);
             SculkHorde.LOGGER.debug("RaidHandler | Unable to Find Spawn Location. Not Initializing Raid.");
         }
     }

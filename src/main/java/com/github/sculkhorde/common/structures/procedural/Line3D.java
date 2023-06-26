@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.procedural.structures;
+package com.github.sculkhorde.common.structures.procedural;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;

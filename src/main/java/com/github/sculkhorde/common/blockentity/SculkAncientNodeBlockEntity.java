@@ -2,9 +2,9 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
@@ -22,7 +22,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
@@ -37,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.AWAKE;
+import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.TRIGGERING;
 
 /**
  * Chunkloader code created by SuperMartijn642
@@ -164,12 +164,12 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     public void setAwake()
     {
-        this.getBlockState().setValue(AWAKE, true);
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AWAKE, true));
     }
 
     public void setTriggering(boolean value)
     {
-        this.getBlockState().setValue(SculkAncientNodeBlock.TRIGGERING, value);
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(TRIGGERING, value));
     }
 
 
@@ -185,21 +185,53 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         });
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    private static void spawnInfectorOnSurface(ServerLevel level, int x, int z, int rangeOfInfector, int maxInfectionsOfInfector)
     {
-        if(level.isClientSide)
+        // Do ray trace from top of world to bottom to find the surface
+        BlockPos.MutableBlockPos spawnPosition = new BlockPos.MutableBlockPos(x, level.getMaxBuildHeight(), z);
+        while(!level.getBlockState(spawnPosition).isSolid() && spawnPosition.getY() > level.getMinBuildHeight())
         {
-            if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
-            {
-                blockEntity.lastHeartBeat = System.currentTimeMillis();
-                level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);
-            }
-            return;
+            spawnPosition.setY(spawnPosition.getY() - 1);
         }
 
-        // If the horde is not awake, return
-        if(!blockEntity.isAwake()) { return; }
+        // If the block is not air, spawn the infector
+        if(!level.getBlockState(spawnPosition).isAir())
+        {
+            // Spawn the infector
+            CursorSurfaceInfectorEntity infectorEntity = new CursorSurfaceInfectorEntity(level);
+            infectorEntity.setPos(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+            infectorEntity.setMaxRange(rangeOfInfector);
+            infectorEntity.setMaxInfections(maxInfectionsOfInfector);
+            infectorEntity.setSearchIterationsPerTick(20);
+            level.addFreshEntity(infectorEntity);
+        }
+    }
 
+    /**
+     * Gets called on the client to do heartbeat sounds
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
+    public static void tickClient(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+        if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
+        {
+            blockEntity.lastHeartBeat = System.currentTimeMillis();
+            level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);
+        }
+    }
+
+    /**
+     * Gets called on server when the block is awake
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
+    public static void tickAwake(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
         // If the time elapsed is less than the tick interval, return
@@ -209,8 +241,20 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         blockEntity.tickedAt = System.nanoTime();
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 10);
+        // Spawn in random x and z position
+        Random rng = new Random();
+        int spawnRange = 100;
+        int x = rng.nextInt(spawnRange) - (spawnRange/2);
+        int z = rng.nextInt(spawnRange) - (spawnRange/2);
+        spawnInfectorOnSurface((ServerLevel)level, blockPos.getX() + x, blockPos.getZ() + z, 100, 50);
+    }
 
-
+    private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)
+    {
+        return level.players().stream().anyMatch((player) ->
+                player.blockPosition().closerThan(blockPos, range)
+                        && !player.isCreative() && !player.isSpectator() && !player.isInvulnerable()
+                );
     }
 
     private static void announceToAllPlayers(ServerLevel level, Component message)
@@ -220,6 +264,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     public static void tryInitializeHorde(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
+        if(blockEntity.isAwake()) { return; }
+
         int MAX_SPAWNED_SPORE_SPEWERS = 10;
 
         blockEntity.setAwake();
@@ -324,7 +370,10 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
+            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 32))
+            {
+                tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
+            }
         }
 
         public void onDataChanged()

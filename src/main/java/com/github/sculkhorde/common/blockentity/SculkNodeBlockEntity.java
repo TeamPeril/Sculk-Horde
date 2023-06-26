@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
-import com.github.sculkhorde.common.procedural.structures.SculkNodeProceduralStructure;
+import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

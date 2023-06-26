@@ -59,51 +59,41 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void WorldTickEvent(TickEvent.LevelTickEvent event)
     {
-
-        //Make sure this only gets ran on the server, gravemind has been initalized, and were in the overworld
-        if(!event.level.isClientSide() && SculkHorde.gravemind != null && event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        // If we are on client or the gravemind is null or we are not in the overworld, return
+        if(event.level.isClientSide() || SculkHorde.gravemind == null || !event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
-
-            //Infestation Related Processes
-            //Used by anti sculk serum
-            SculkHorde.infestationConversionTable.processDeInfectionQueue((ServerLevel) event.level);
-
-            if(DEBUG_MODE) SculkHorde.raidHandler.raidTick(); // Tick the raid handler
-
-            if(DEBUG_MODE) SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
-
-
-            if (event.level.getGameTime() - time_save_point > TickUnits.convertMinutesToTicks(5))
-            {
-
-                time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
-
-                SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
-
-                //Verification Processes to ensure our data is accurate
-                SculkHorde.savedData.validateNodeEntries();
-                SculkHorde.savedData.validateBeeNestEntries();
-
-                //Calculate Current State
-                SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
-                if(DEBUG_MODE) System.out.println("Gravemind Evolution State: " + SculkHorde.gravemind.getEvolutionState().toString());
-
-                if(DEBUG_MODE) System.out.println("Able to Spawn Node?: " + (SculkHorde.savedData.isSculkNodeCooldownOver()));
-
-                //Check How much Mass Was Generated over this period
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
-                sculkMassCheck = SculkHorde.savedData.getSculkAccumulatedMass();
-
-                if(DEBUG_MODE) System.out.println(
-                        "\n Known Nodes: " + SculkHorde.savedData.getNodeEntries().size()
-                        + "\n Known Nests: " + SculkHorde.savedData.getBeeNestEntries().size()
-                        + "\n Known Hostiles: " + SculkHorde.savedData.getHostileEntries().size() + "\n"
-
-                );
-                if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
-            }
+            return;
         }
+
+        // Run this stuff every tick
+
+        SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
+
+        if(DEBUG_MODE) SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+
+        if(DEBUG_MODE) SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
+
+
+        // Only run stuff below every 5 minutes
+        if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))
+        {
+            return;
+        }
+
+        time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
+
+        SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
+
+        //Verification Processes to ensure our data is accurate
+        SculkHorde.savedData.validateNodeEntries();
+        SculkHorde.savedData.validateBeeNestEntries();
+
+        //Calculate Current State
+        SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
+
+        //Check How much Mass Was Generated over this period
+        if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
+        sculkMassCheck = SculkHorde.savedData.getSculkAccumulatedMass();
 
     }
 

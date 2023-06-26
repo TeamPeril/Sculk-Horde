@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.procedural.structures;
+package com.github.sculkhorde.common.structures.procedural;
 
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;

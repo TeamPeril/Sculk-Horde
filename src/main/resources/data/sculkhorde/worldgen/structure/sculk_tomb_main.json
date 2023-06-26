@@ -1,13 +1,13 @@
 {
   // The base structure class to use for the behavior of the structure. In this case, minecraft:jigsaw is good for most structures.
-  "type": "minecraft:jigsaw",
+  "type": "sculkhorde:sculk_tomb_structure",
 
   // the path to the template pool json file to use
   "start_pool": "sculkhorde:sculk_tomb/start_pool",
 
   // This is how many pieces away from the starting piece a piece of the structure can spawn
   // Think of it like the length of the branch of the structure
-  "size": 2,
+  "size": 3,
 
   // Maximum distance away from center that pieces can spawn. Cannot be greater than 128
   "max_distance_from_center": 80,
@@ -18,12 +18,12 @@
   // The generation step for when to generate the structure. there are 10 stages you can pick from!
   // This surface structure stage places the structure before plants and ores are generated
   // See GenerationStep.Feature enum for all the stages you can use and what order they are in
-  "step": "surface_structures",
+  "step": "underground_structures",
 
   // This will add land around the bottom of the structure. (Based on the starting piece's y value)
   // The kinds of values allowed here are: none, beard_thin, beard_box, and bury
   // If no land change is deseried, removed this field entirely.
-  "terrain_adaptation": "none",
+  "terrain_adaptation": "beard_box",
 
   // Where to spawn our structure at what y value if project_start_to_heightmap is not present.
   // start_height can be used to spawn at a random fixed y value by doing something like: "max_inclusive": { "below_top": 10 }, "min_inclusive": { "above_bottom": 32 }
@@ -37,9 +37,6 @@
   // To get top land at even the bottom of oceans, use OCEAN_FLOOR_WG.
   // If no projection desired, remove this field entirely.
   // "project_start_to_heightmap": "WORLD_SURFACE_WG",
-
-  // Keep this false. This is only for vanilla legacy villages to make it spawn properly. We don't need no hacks here!
-  "use_expansion_hack": false,
 
   // What mobs can spawn over time in the structure.
   // Make sure you add the mob to the right category (monster, creature, etc)
