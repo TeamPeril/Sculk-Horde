@@ -4,6 +4,11 @@
     "sounds": [
       "sculkhorde:raid_start_sound"
     ]
-
+  },
+  "horde_start_sound": {
+    "subtitle": "sounds.sculkhorde.horde_start_sound",
+    "sounds": [
+      "sculkhorde:horde_start_sound"
+    ]
   }
 }

@@ -12,6 +12,7 @@ public class SoundRegistry {
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, SculkHorde.MOD_ID);
 
     public static final RegistryObject<SoundEvent> RAID_START_SOUND = registerSoundEvent("raid_start_sound");
+    public static final RegistryObject<SoundEvent> HORDE_START_SOUND = registerSoundEvent("horde_start_sound");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = new ResourceLocation(SculkHorde.MOD_ID, name);

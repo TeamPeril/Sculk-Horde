@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.SoundRegistry;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
@@ -302,6 +303,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             sporeSpewerEntity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             level.addFreshEntity(sporeSpewerEntity);
         }
+
+        level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundRegistry.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
     }
 
     // Data
