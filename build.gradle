@@ -98,7 +98,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.0.0'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.0.34'
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20:4.2')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
