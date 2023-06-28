@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
+import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistanceXZ;
 
 /**
  * This class handels all data that gets saved to and loaded from the world. <br>
@@ -578,11 +579,17 @@ public class ModSavedData extends SavedData {
 
 
     public boolean isInRangeOfNode(BlockPos pos, int distance) {
+
+        if(getBlockDistanceXZ(BlockPos.ZERO, pos) > distance)
+        {
+            return false;
+        }
+
         if (getNodeEntries().isEmpty()) {
             return false;
         }
 
-        return getBlockDistance(getClosestNodeEntry(pos).position, pos) <= distance;
+        return getBlockDistanceXZ(getClosestNodeEntry(pos).position, pos) <= distance;
 
     }
 
