@@ -266,7 +266,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     {
         if(blockEntity.isAwake()) { return; }
 
-        int MAX_SPAWNED_SPORE_SPEWERS = 10;
+        int MAX_SPAWNED_SPORE_SPEWERS = 50;
 
         blockEntity.setAwake();
         // If the horde has no mass, give it some
