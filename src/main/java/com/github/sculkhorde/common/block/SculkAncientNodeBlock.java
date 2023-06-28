@@ -45,7 +45,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 50f;
+    public static float HARDNESS = -1.0F;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>
@@ -54,7 +54,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      * 6f = cobblestone<br>
      * 1,200f = obsidian
      */
-    public static float BLAST_RESISTANCE = 10f;
+    public static float BLAST_RESISTANCE = 3600000.0F;
 
     // BlockStates
     public static final BooleanProperty TRIGGERING = BooleanProperty.create("triggering");
