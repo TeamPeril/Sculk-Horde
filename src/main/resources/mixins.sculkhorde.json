@@ -4,5 +4,7 @@
   "package": "com.github.sculkhorde.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "structues.StructureProcessorAccessor",
+    "structues.StructureTemplateMixin"
   ]
 }

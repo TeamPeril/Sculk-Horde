@@ -49,6 +49,8 @@ public class SculkHorde {
         EntityRegistry.register(bus); //Load Entities (this may not be necessary anymore)
         bus.register(EntityRegistry.class); //Load Entities
         StructureRegistry.STRUCTURES.register(bus); //Load Structures
+        StructureRegistry.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
+        ProcessorRegistry.PROCESSORS.register(bus); //Load Processors
 
 
         EffectRegistry.EFFECTS.register(bus); //Load Effects
