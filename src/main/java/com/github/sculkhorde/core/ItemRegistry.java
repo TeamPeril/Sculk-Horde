@@ -63,4 +63,7 @@ public class ItemRegistry {
 	public static final RegistryObject<DevRaidWand> DEV_RAID_WAND = ITEMS.register("dev_raid_wand",
 			DevRaidWand::new);
 
+	public static final RegistryObject<WardenBeefItem> WARDEN_BEEF = ITEMS.register("warden_beef",
+			WardenBeefItem::new);
+
 }

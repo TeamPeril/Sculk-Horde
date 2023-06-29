@@ -9,10 +9,9 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
 @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModCreativeModeTab {
@@ -22,10 +21,12 @@ public class ModCreativeModeTab {
             .title(Component.translatable("itemGroup.sculkhorde_tab"))
             .icon(() -> new ItemStack(com.github.sculkhorde.core.ItemRegistry.SCULK_MATTER.get()))
             .displayItems((enabledFeatures, event) -> {
-                if(DEBUG_MODE) event.accept(ItemRegistry.DEV_WAND.get());
-                if(DEBUG_MODE) event.accept(ItemRegistry.DEV_NODE_SPAWNER.get());
-                if(DEBUG_MODE) event.accept(ItemRegistry.DEV_CONVERSION_WAND.get());
-                if(DEBUG_MODE) event.accept(ItemRegistry.DEV_RAID_WAND.get());
+                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_WAND.get());
+                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.WARDEN_BEEF.get());
+                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_NODE_SPAWNER.get());
+                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_CONVERSION_WAND.get());
+                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_RAID_WAND.get());
+                if(!FMLLoader.isProduction()) event.accept(BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get());
                 event.accept(ItemRegistry.INFESTATION_PURIFIER.get());
                 event.accept(ItemRegistry.PURIFICATION_FLASK_ITEM.get());
                 event.accept(ItemRegistry.SCULK_ACIDIC_PROJECTILE.get());

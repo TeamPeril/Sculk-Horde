@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistanceXZ;
 
@@ -29,6 +28,9 @@ import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistanceXZ;
  * Learned World Data mechanics from: https://www.youtube.com/watch?v=tyTsdCzVz6w
  */
 public class ModSavedData extends SavedData {
+
+    // identifier for debugmode
+    private static final String debugModeIdentifier = "debugMode";
 
     //The world
     private final ServerLevel level;
@@ -98,6 +100,8 @@ public class ModSavedData extends SavedData {
 
         SculkHorde.savedData.setTicksSinceLastRaid(nbt.getInt(ticksSinceLastRaidIdentifier));
 
+        SculkHorde.setDebugMode(nbt.getBoolean(debugModeIdentifier));
+
         for (int i = 0; gravemindData.contains("node_entry" + i); i++) {
             SculkHorde.savedData.getNodeEntries().add(NodeEntry.serialize(gravemindData.getCompound("node_entry" + i)));
         }
@@ -140,6 +144,7 @@ public class ModSavedData extends SavedData {
         nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
         nbt.putInt(ticksSinceSculkNodeDestructionIdentifier, ticksSinceSculkNodeDestruction);
         nbt.putInt(ticksSinceLastRaidIdentifier, ticksSinceLastRaid);
+        nbt.putBoolean(debugModeIdentifier, SculkHorde.isDebugMode());
 
         for (ListIterator<NodeEntry> iterator = getNodeEntries().listIterator(); iterator.hasNext(); ) {
             gravemindData.put("node_entry" + iterator.nextIndex(), iterator.next().deserialize());
@@ -482,8 +487,10 @@ public class ModSavedData extends SavedData {
             }
         }
         long endTime = System.nanoTime();
-        if (DEBUG_MODE)
+        if (SculkHorde.isDebugMode())
+        {
             System.out.println("Node Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+        }
     }
 
 
@@ -505,8 +512,10 @@ public class ModSavedData extends SavedData {
             }
         }
         long endTime = System.nanoTime();
-        if (DEBUG_MODE)
+        if (SculkHorde.isDebugMode())
+        {
             System.out.println("Bee Nest Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+        }
     }
 
     public void validatePriorityBlockEntries()
@@ -524,7 +533,9 @@ public class ModSavedData extends SavedData {
         }
 
         long endTime = System.currentTimeMillis();
-        SculkHorde.LOGGER.info("Priority Block Validation Took " + (endTime - startTime) + " milliseconds");
+        if(SculkHorde.isDebugMode()) {
+            SculkHorde.LOGGER.info("Priority Block Validation Took " + (endTime - startTime) + " milliseconds");
+        }
     }
 
     /**

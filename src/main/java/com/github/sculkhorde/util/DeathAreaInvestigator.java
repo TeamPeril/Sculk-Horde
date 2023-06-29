@@ -8,8 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 
 import java.util.Optional;
 
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
-
 public class DeathAreaInvestigator {
 
     private BlockSearcher blockSearcher;
@@ -52,7 +50,7 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(!DEBUG_MODE)
+        if(!SculkHorde.isDebugMode())
         {
             return;
         }

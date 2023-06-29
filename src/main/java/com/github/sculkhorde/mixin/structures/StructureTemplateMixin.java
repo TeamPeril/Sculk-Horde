@@ -1,4 +1,4 @@
-package com.github.sculkhorde.mixin.structues;
+package com.github.sculkhorde.mixin.structures;
 
 import com.github.sculkhorde.core.ProcessorRegistry;
 import net.minecraft.core.BlockPos;

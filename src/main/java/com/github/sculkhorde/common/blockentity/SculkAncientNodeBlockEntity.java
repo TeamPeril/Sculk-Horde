@@ -258,7 +258,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
                 );
     }
 
-    private static void announceToAllPlayers(ServerLevel level, Component message)
+    public static void announceToAllPlayers(ServerLevel level, Component message)
     {
         level.players().forEach((player) -> player.displayClientMessage(message, false));
     }

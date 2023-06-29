@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 public class RaidHandler {
@@ -80,7 +79,7 @@ public class RaidHandler {
     // Waves
     protected EntityFactory.StrategicValues[] currentWavePattern;
     private int maxWaves = 2;
-    private int currentWave = 0;
+    private int currentWave = 1;
     private int remainingWaveParticipants = 0;
 
     protected ModSavedData.AreaofInterestEntry areaOfInterestEntry;
@@ -159,7 +158,7 @@ public class RaidHandler {
 
     public boolean canRaidStart()
     {
-        if(!DEBUG_MODE)
+        if(!SculkHorde.isDebugMode())
         {
             return false;
         }
@@ -235,7 +234,7 @@ public class RaidHandler {
         });
     }
 
-    private void announceToAllPlayers(Component message)
+    public void announceToAllPlayers(Component message)
     {
         level.players().forEach((player) -> player.displayClientMessage(message, false));
     }
@@ -457,7 +456,7 @@ public class RaidHandler {
         areaOfInterestEntry = SculkHorde.savedData.getAreasOfInterestEntries().get(0);
         blockSearcher = new BlockSearcher(level, areaOfInterestEntry.getPosition());
         blockSearcher.setMaxDistance(getCurrentRaidRadius());
-        blockSearcher.setDebugMode(DEBUG_MODE);
+        blockSearcher.setDebugMode(SculkHorde.isDebugMode());
         blockSearcher.searchIterationsPerTick = searchIterationsPerTick;
         blockSearcher.ignoreBlocksNearTargets = true;
 
@@ -628,7 +627,7 @@ public class RaidHandler {
             blockSearcher.setObstructionPredicate(isSpawnObstructed);
             blockSearcher.setMaxTargets(1);
             blockSearcher.setPositionToMoveAwayFrom(raidCenter);
-            blockSearcher.setDebugMode(DEBUG_MODE);
+            blockSearcher.setDebugMode(SculkHorde.isDebugMode());
 
 
             // Load chunks
@@ -663,7 +662,7 @@ public class RaidHandler {
         // Play sound for each player
         level.players().forEach(player ->
         {
-            if (BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= range || SculkHorde.DEBUG_MODE)
+            if (BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), player.blockPosition()) <= range || SculkHorde.isDebugMode())
             {
                 level.playSound(null, player.blockPosition(), soundEvent, SoundSource.HOSTILE, volume, pitch);
             }
@@ -711,16 +710,16 @@ public class RaidHandler {
      */
     protected void endWave()
     {
+        // Otherwise, go to next wave
+        currentWave++;
+
         // If we are on last wave, end raid
-        if(currentWave == maxWaves)
+        if(currentWave >= maxWaves)
         {
             setRaidStateToFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
             announceToPlayersInRange(Component.literal("Final Wave Complete."), getCurrentRaidRadius() * 8);
         }
-
-        // Otherwise, go to next wave
-        currentWave++;
 
         announceToPlayersInRange(Component.literal("Wave " + (currentWave-1) + " complete."), getCurrentRaidRadius() * 8);
 

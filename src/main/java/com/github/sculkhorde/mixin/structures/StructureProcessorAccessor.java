@@ -1,4 +1,4 @@
-package com.github.sculkhorde.mixin.structues;
+package com.github.sculkhorde.mixin.structures;
 
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;

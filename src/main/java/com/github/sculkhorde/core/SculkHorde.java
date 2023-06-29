@@ -27,7 +27,7 @@ public class SculkHorde {
     //The file name in the world data folder.
     public static final String SAVE_DATA_ID = SculkHorde.MOD_ID + "_gravemind_memory";
     //The Creative Tab that all the items appear in
-    public static boolean DEBUG_MODE = !FMLLoader.getLaunchHandler().isProduction();
+    private static boolean DEBUG_MODE = false;
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
     public static ModSavedData savedData;
@@ -58,12 +58,16 @@ public class SculkHorde {
         SoundRegistry.SOUND_EVENTS.register(bus); //Load Sounds
 
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
-
-        //If dev environment
-        if(!FMLEnvironment.production)
-        {
-            DEBUG_MODE = true;
-        }
     }
+
+    public static boolean isDebugMode() {
+        return DEBUG_MODE;
+    }
+
+    public static void setDebugMode(boolean debugMode) {
+        DEBUG_MODE = debugMode;
+        savedData.setDirty();
+    }
+
 
 }

@@ -20,6 +20,8 @@
   "item.sculkhorde.calcite_clump": "Calcite Clump",
   "item.sculkhorde.dev_node_spawner": "Dev Sculk Brain Node Spawner",
   "tooltip.sculkhorde.dev_node_spawner": "Calls the node spawn procedure at the player's location.",
+  "item.sculkhorde.warden_beef": "Warden Beef",
+  "tooltip.sculkhorde.warden_beef": "A forbidden food. A dev item that is used to enable in-development features when eaten.",
   "tooltip.sculkhorde.calcite_clump": "A sturdy and bone-like material.\nCan be obtained from mining calcite ore from a Sculk Living Rock structure.",
   "block.sculkhorde.calcite_ore": "Calcite Ore",
   "tooltip.sculkhorde.calcite_ore": "A sturdy and bone-like material.\nCan be obtained from the Sculk Living Rock structure. This structure is most commonly found surrounding Sculk Brain Nodes.",

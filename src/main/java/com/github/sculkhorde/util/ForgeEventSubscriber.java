@@ -22,7 +22,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
 @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEventSubscriber {
@@ -69,9 +68,9 @@ public class ForgeEventSubscriber {
 
         SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
 
-        if(DEBUG_MODE) SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+        if(SculkHorde.isDebugMode()) SculkHorde.raidHandler.raidTick(); // Tick the raid handler
 
-        if(DEBUG_MODE) SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
+        if(SculkHorde.isDebugMode()) SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
 
 
         // Only run stuff below every 5 minutes
@@ -92,7 +91,7 @@ public class ForgeEventSubscriber {
         SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
 
         //Check How much Mass Was Generated over this period
-        if(DEBUG_MODE) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
+        if(SculkHorde.isDebugMode()) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
         sculkMassCheck = SculkHorde.savedData.getSculkAccumulatedMass();
 
     }

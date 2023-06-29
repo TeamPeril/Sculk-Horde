@@ -94,11 +94,11 @@ public class DevWand extends Item implements IForgeItem {
 				playerIn.displayClientMessage(
 						Component.literal(
 								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
+								"Is Server on Debug Mode? " + SculkHorde.isDebugMode() + "\n" +
 								"Sculk Accumulated Mass: " + SculkHorde.savedData.getSculkAccumulatedMass() + "\n" +
 								"Nodes Count: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
 								"Nests Count: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
 								"Hostiles Count: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
-								"Priority Targets Count: " + SculkHorde.savedData.getPriorityBlockEntries().size() + "\n" +
 								"Death Area Reports Count: " + SculkHorde.savedData.getDeathAreaEntries().size() + "\n" +
 								"Areas of Interest Count: " + SculkHorde.savedData.getAreasOfInterestEntries().size() + "\n"
 						), false);

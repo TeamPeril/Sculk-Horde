@@ -3,6 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
@@ -118,5 +119,10 @@ public class EntityAlgorithms {
         });
         return livingEntitiesInRange;
 
+    }
+
+    public static void announceToAllPlayers(ServerLevel level, Component message)
+    {
+        level.players().forEach((player) -> player.displayClientMessage(message, false));
     }
 }
