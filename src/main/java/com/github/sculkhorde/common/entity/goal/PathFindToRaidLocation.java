@@ -54,13 +54,13 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
     {
         if (!getPathFinderMob().isPathFinding())
         {
-            getPathFinderMob().getNavigation().moveTo(SculkHorde.raidHandler.getObjectiveLocationVec3().x, SculkHorde.raidHandler.getObjectiveLocationVec3().y, SculkHorde.raidHandler.getObjectiveLocationVec3().z, 1.5D);
+            getPathFinderMob().getNavigation().moveTo(SculkHorde.raidHandler.raidData.getObjectiveLocationVec3().x, SculkHorde.raidHandler.raidData.getObjectiveLocationVec3().y, SculkHorde.raidHandler.raidData.getObjectiveLocationVec3().z, 1.5D);
         }
     }
 
     private boolean isCloseEnoughToObjective()
     {
-        if(SculkHorde.raidHandler.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
+        if(SculkHorde.raidHandler.raidData.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
         {
             hasReachedLocationOnce = true;
             return true;

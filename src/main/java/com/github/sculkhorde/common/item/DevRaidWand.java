@@ -78,7 +78,7 @@ public class DevRaidWand extends Item implements IForgeItem {
 		//If item is not on cool down
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
 		{
-			SculkHorde.raidHandler.setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
+			RaidHandler.raidData.setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
 			playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 
 			return InteractionResultHolder.pass(itemstack);

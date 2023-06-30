@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !SculkHorde.raidHandler.isRaidActive())
+        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
         {
             ticksSinceLastSearch = 0;
             searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();

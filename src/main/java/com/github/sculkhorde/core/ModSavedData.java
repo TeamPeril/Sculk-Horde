@@ -2,6 +2,7 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
@@ -55,7 +56,7 @@ public class ModSavedData extends SavedData {
     private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
     // The amount of ticks since last raid
-    private int ticksSinceLastRaid = RaidHandler.COOLDOWN_BETWEEN_RAIDS;
+    private int ticksSinceLastRaid = RaidData.COOLDOWN_BETWEEN_RAIDS;
     private static final String ticksSinceLastRaidIdentifier = "ticksSinceLastRaid";
 
     /**
@@ -127,6 +128,14 @@ public class ModSavedData extends SavedData {
             SculkHorde.savedData.getAreasOfInterestEntries().add(AreaofInterestEntry.serialize(gravemindData.getCompound("area_of_interest_entry" + i)));
         }
 
+
+        if(RaidHandler.raidData == null)
+        {
+            RaidHandler.raidData = new RaidData();
+        }
+
+        RaidHandler.raidData.load(nbt);
+
         return getGravemindMemory();
 
     }
@@ -173,6 +182,9 @@ public class ModSavedData extends SavedData {
         }
 
         nbt.put("gravemindData", gravemindData);
+
+        RaidHandler.raidData.save(nbt);
+
         return nbt;
     }
 
@@ -181,7 +193,7 @@ public class ModSavedData extends SavedData {
      **/
 
     public boolean isRaidCooldownOver() {
-        return getTicksSinceLastRaid() >= RaidHandler.COOLDOWN_BETWEEN_RAIDS;
+        return getTicksSinceLastRaid() >= RaidData.COOLDOWN_BETWEEN_RAIDS;
     }
 
     public int getTicksSinceLastRaid() {

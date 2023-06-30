@@ -183,7 +183,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     }
 
     protected boolean isValidTarget(LevelReader levelReader, BlockState blockState) {
-        return isBlockEqualOrHigherPriorityThanCurrentTarget(levelReader.getBlockState(SculkHorde.raidHandler.getObjectiveLocation()), blockState);
+        return isBlockEqualOrHigherPriorityThanCurrentTarget(levelReader.getBlockState(SculkHorde.raidHandler.raidData.getObjectiveLocation()), blockState);
     }
 
     // New Predicate for isValidTarget

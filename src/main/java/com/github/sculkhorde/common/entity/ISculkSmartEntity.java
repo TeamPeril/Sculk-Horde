@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.world.entity.Mob;
@@ -8,7 +9,7 @@ import net.minecraft.world.entity.Mob;
 public interface ISculkSmartEntity {
 
     default boolean canParticipatingInRaid() {
-        return SculkHorde.raidHandler.isRaidActive() && isParticipatingInRaid();
+        return RaidHandler.raidData.isRaidActive() && isParticipatingInRaid();
     }
 
     boolean isParticipatingInRaid();
