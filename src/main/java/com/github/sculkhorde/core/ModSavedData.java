@@ -34,7 +34,7 @@ public class ModSavedData extends SavedData {
     private static final String debugModeIdentifier = "debugMode";
 
     //The world
-    private final ServerLevel level;
+    public final ServerLevel level;
     // List of all known positions of nodes.
     private final ArrayList<NodeEntry> nodeEntries = new ArrayList<>();
     // List of all known positions of bee nests
@@ -134,7 +134,7 @@ public class ModSavedData extends SavedData {
             RaidHandler.raidData = new RaidData();
         }
 
-        RaidHandler.raidData.load(nbt);
+        RaidData.load(nbt);
 
         return getGravemindMemory();
 
@@ -183,7 +183,7 @@ public class ModSavedData extends SavedData {
 
         nbt.put("gravemindData", gravemindData);
 
-        RaidHandler.raidData.save(nbt);
+        RaidData.save(nbt);
 
         return nbt;
     }

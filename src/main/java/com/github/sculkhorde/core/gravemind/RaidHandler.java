@@ -13,10 +13,12 @@ import com.github.sculkhorde.util.ChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -54,7 +56,7 @@ public class RaidHandler {
 
     public RaidHandler(ServerLevel levelIn)
     {
-        raidData = new RaidData();
+        if(raidData == null) { raidData = new RaidData(); }
         raidData.setLevel(levelIn);
     }
 
@@ -114,8 +116,42 @@ public class RaidHandler {
 
     // Events
 
+    public void bossBarTick(){
+
+        if(raidData.getRaidState() != RaidState.ACTIVE_WAVE && raidData.getRaidState() != RaidState.INITIALIZING_WAVE)
+        {
+            return;
+        }
+
+        if(raidData.getBossEvent() == null)
+        {
+            raidData.setBossEvent(new ServerBossEvent(Component.literal("Sculk Raid Wave " + raidData.getCurrentWave() + " / " + raidData.getMaxWaves()), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS));
+            raidData.getBossEvent().setCreateWorldFog(true);
+            raidData.getBossEvent().setDarkenScreen(true);
+        }
+
+        //Set Players to be all players on server
+        raidData.getLevel().players().forEach((player) -> {
+
+            if(!raidData.getBossEvent().getPlayers().contains(player)) {
+                raidData.getBossEvent().addPlayer(player);
+            }
+        });
+
+        if(raidData.getRaidState() == RaidState.INITIALIZING_WAVE)
+        {
+            raidData.getBossEvent().setProgress(0.0F);
+            raidData.getBossEvent().setName(Component.literal("Sculk Raid Wave " + raidData.getCurrentWave() + " / " + raidData.getMaxWaves()));
+        }
+        else
+        {
+            raidData.getBossEvent().setProgress(raidData.getWaveProgress());
+        }
+    }
+
     public void raidTick()
     {
+        bossBarTick();
         switch (raidData.getRaidState())
         {
             case INACTIVE:
@@ -153,7 +189,7 @@ public class RaidHandler {
         }
     }
 
-    private void initializeBlockSearcher(int searchIterationsPerTick, int maxTargets)
+    private void initializeBlockSearcherForInvestigateLocation(int searchIterationsPerTick, int maxTargets)
     {
         raidData.setAreaOfInterestEntry(SculkHorde.savedData.getAreasOfInterestEntries().get(0));
         raidData.setBlockSearcher(new BlockSearcher(raidData.getLevel(), raidData.getAreaOfInterestEntry().getPosition()));
@@ -163,11 +199,24 @@ public class RaidHandler {
         raidData.getBlockSearcher().ignoreBlocksNearTargets = true;
 
         // What is the target?
-        raidData.getBlockSearcher().setTargetBlockPredicate(raidData.predicateIsRaidTarget);
+        raidData.getBlockSearcher().setTargetBlockPredicate(raidData.isTargetInvestigateLocationState);
 
         // What is obstructed?
-        raidData.getBlockSearcher().setObstructionPredicate(raidData.predicateIsObstructedRaidTarget);
+        raidData.getBlockSearcher().setObstructionPredicate(raidData.isObstructedInvestigateLocationState);
 
+        raidData.getBlockSearcher().MAX_TARGETS = maxTargets;
+    }
+
+    private void initializeBlockSearcherForSpawnSearch(int searchIterationsPerTick, int maxTargets)
+    {
+        raidData.setBlockSearcher(new BlockSearcher(raidData.getLevel(), raidData.getRaidLocation()));
+        raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
+        raidData.getBlockSearcher().setTargetBlockPredicate(raidData.isSpawnTarget);
+        raidData.getBlockSearcher().setObstructionPredicate(raidData.isSpawnObstructed);
+        raidData.getBlockSearcher().setMaxTargets(1);
+        raidData.getBlockSearcher().setPositionToMoveAwayFrom(raidData.getRaidCenter());
+        raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
+        raidData.getBlockSearcher().searchIterationsPerTick = searchIterationsPerTick;
         raidData.getBlockSearcher().MAX_TARGETS = maxTargets;
     }
 
@@ -184,7 +233,7 @@ public class RaidHandler {
         // Initialize Block Searcher if null
         if(raidData.getBlockSearcher() == null)
         {
-            initializeBlockSearcher(100, 30);
+            initializeBlockSearcherForInvestigateLocation(100, 30);
         }
 
         // Tick Block Searcher
@@ -236,6 +285,17 @@ public class RaidHandler {
         }
     }
 
+    private void setRaidCenterToCentroidOfAllTargets()
+    {
+        // Calculate centroid of all targets
+        ArrayList<BlockPos> allTargets = new ArrayList<>();
+        allTargets.addAll(raidData.getHighPriorityTargets());
+        allTargets.addAll(raidData.getMediumPriorityTargets());
+        allTargets.addAll(raidData.getLowPriorityTargets());
+        raidData.setRaidCenter(BlockAlgorithms.getCentroid(allTargets));
+    }
+
+
     /**
      * This function gets called when the raid is initialized.
      * It calculates the center of the raid, finds a spawn point
@@ -244,35 +304,21 @@ public class RaidHandler {
     private void initializingRaidTick()
     {
         SculkHorde.savedData.setTicksSinceLastRaid(0);
-        int MAX_SEARCH_DISTANCE = raidData.getCurrentRaidRadius();
+
 
         if(raidData.getBlockSearcher() == null)
         {
-            // Send message to all players
 
-            // Calculate centroid of all targets
-            ArrayList<BlockPos> allTargets = new ArrayList<>();
-            allTargets.addAll(raidData.getHighPriorityTargets());
-            allTargets.addAll(raidData.getMediumPriorityTargets());
-            allTargets.addAll(raidData.getLowPriorityTargets());
-
-            //
-            if(allTargets.size() == 0)
+            if(raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size() + raidData.getLowPriorityTargets().size() <= 0)
             {
-                raidData.setRaidState(RaidState.INITIALIZING_RAID);
+                raidData.setFailure(failureType.FAILED_INITIALIZATION);
                 return;
             }
-            raidData.setRaidCenter(BlockAlgorithms.getCentroid(allTargets));
-            allTargets.clear();
 
-            raidData.setBlockSearcher(new BlockSearcher(raidData.getLevel(), raidData.getRaidLocation()));
-            raidData.getBlockSearcher().setMaxDistance(MAX_SEARCH_DISTANCE);
-            raidData.getBlockSearcher().setTargetBlockPredicate(raidData.isSpawnTarget);
-            raidData.getBlockSearcher().setObstructionPredicate(raidData.isSpawnObstructed);
-            raidData.getBlockSearcher().setMaxTargets(1);
-            raidData.getBlockSearcher().setPositionToMoveAwayFrom(raidData.getRaidCenter());
-            raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
+            setRaidCenterToCentroidOfAllTargets();
 
+            // Initialize Block Searcher
+            initializeBlockSearcherForSpawnSearch(100, 1);
 
             // Load chunks
             ChunkLoaderHelper.forceLoadChunksInRadius(raidData.getLevel(), raidData.getRaidLocation(), raidData.getRaidLocation().getX() >> 4, raidData.getRaidLocation().getZ() >> 4, raidData.getCurrentRaidRadius() /16 + 1);
@@ -282,19 +328,25 @@ public class RaidHandler {
         // Tick the Block Searcher
         raidData.getBlockSearcher().tick();
 
-        // If Completed, and was successful
-        if(raidData.getBlockSearcher().isFinished && raidData.getBlockSearcher().isSuccessful)
+        if(!raidData.getBlockSearcher().isFinished)
+        {
+            return;
+        }
+
+        // If successful
+        if(raidData.getBlockSearcher().isSuccessful)
         {
             raidData.setRaidState(RaidState.INITIALIZING_WAVE);
             SculkHorde.LOGGER.debug("RaidHandler | Found Spawn Location. Initializing Raid.");
 
             raidData.setNextObjectiveLocation();
+            raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
 
             announceToPlayersInRange(Component.literal("Sculk Raid Commencing at: " + raidData.getRaidLocation()), raidData.getCurrentRaidRadius() * 8);
 
         }
-        // If Completed, and was not successful
-        else if(raidData.getBlockSearcher().isFinished && !raidData.getBlockSearcher().isSuccessful)
+        // If not successful
+        else
         {
             raidData.setRaidState(RaidState.FAILED);
             SculkHorde.LOGGER.debug("RaidHandler | Unable to Find Spawn Location. Not Initializing Raid.");
@@ -329,8 +381,7 @@ public class RaidHandler {
         raidData.setWaveDuration(0);
         raidData.setCurrentWavePattern(getWavePattern());
 
-
-        raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
+        raidData.getWaveParticipants().clear();
 
         populateRaidParticipants(raidData.getSpawnLocation());
 
@@ -363,6 +414,7 @@ public class RaidHandler {
             raidData.setFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
             announceToPlayersInRange(Component.literal("Final Wave Complete."), raidData.getCurrentRaidRadius() * 8);
+            return;
         }
 
         announceToPlayersInRange(Component.literal("Wave " + (raidData.getCurrentWave()) + " complete."), raidData.getCurrentRaidRadius() * 8);

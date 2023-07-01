@@ -40,9 +40,9 @@ public class RaidData {
     protected BlockPos objectiveLocation = BlockPos.ZERO;
     protected BlockPos objectiveLocationAtStartOfWave = objectiveLocation; // We use this to make sure we move on to next objective
     protected BlockPos raidCenter = BlockPos.ZERO; // Used for calculation purposes
-    protected int MINIMUM_RAID_RADIUS = 200;
+    protected static int MINIMUM_RAID_RADIUS = 200;
     protected int currentRaidRadius = MINIMUM_RAID_RADIUS;
-    protected int MAXIMUM_RAID_RADIUS = 500;
+    protected static int MAXIMUM_RAID_RADIUS = 500;
     // The Mobs that spawn during waves
     protected ArrayList<ISculkSmartEntity> waveParticipants = new ArrayList<>();
     private RaidHandler.RaidState raidState = RaidHandler.RaidState.INACTIVE;
@@ -145,6 +145,7 @@ public class RaidData {
     public void reset()
     {
         SculkHorde.savedData.removeAreaOfInterestFromMemory(areaOfInterestEntry.getPosition());
+        areaOfInterestEntry = null;
         ChunkLoaderHelper.unloadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
         setBlockSearcher(null);
         setRaidState(RaidHandler.RaidState.INACTIVE);
@@ -158,6 +159,8 @@ public class RaidData {
         setTimeElapsedScouting(0);
         setCurrentRaidRadius(MINIMUM_RAID_RADIUS);
         SculkHorde.savedData.setDirty();
+        bossEvent.removeAllPlayers();
+        bossEvent = null;
     }
 
     public void startRaidArtificially(RaidHandler.RaidState raidStateIn, BlockPos raidLocationIn, BlockPos spawnLocationIn, int currentWaveIn, int currentWaveRaidusIn, int waveDurationIn)
@@ -351,11 +354,6 @@ public class RaidData {
         return MINIMUM_RAID_RADIUS;
     }
 
-    public void setMINIMUM_RAID_RADIUS(int MINIMUM_RAID_RADIUS) {
-        this.MINIMUM_RAID_RADIUS = MINIMUM_RAID_RADIUS;
-        SculkHorde.savedData.setDirty();
-    }
-
     public int getCurrentRaidRadius() {
         return currentRaidRadius;
     }
@@ -367,11 +365,6 @@ public class RaidData {
 
     public int getMAXIMUM_RAID_RADIUS() {
         return MAXIMUM_RAID_RADIUS;
-    }
-
-    public void setMAXIMUM_RAID_RADIUS(int MAXIMUM_RAID_RADIUS) {
-        this.MAXIMUM_RAID_RADIUS = MAXIMUM_RAID_RADIUS;
-        SculkHorde.savedData.setDirty();
     }
 
     public ArrayList<ISculkSmartEntity> getWaveParticipants() {
@@ -405,6 +398,7 @@ public class RaidData {
     }
 
     public void setFailure(RaidHandler.failureType failure) {
+        setRaidState(RaidHandler.RaidState.FAILED);
         this.failure = failure;
         SculkHorde.savedData.setDirty();
     }
@@ -470,6 +464,29 @@ public class RaidData {
 
     public int getRemainingWaveParticipants() {
         return remainingWaveParticipants;
+    }
+
+    public float getWaveProgress() {
+        int aliveWaveParticipants = 0;
+        int deadWaveParticipants = 0;
+        for(ISculkSmartEntity entity : waveParticipants)
+        {
+            if(entity == null)
+            {
+                continue;
+            }
+
+            if(((Mob) entity).isAlive())
+            {
+                aliveWaveParticipants++;
+            }
+            else
+            {
+                deadWaveParticipants++;
+            }
+        }
+
+        return (float) aliveWaveParticipants / (float) (aliveWaveParticipants + deadWaveParticipants);
     }
 
     protected void updateRemainingWaveParticipantsAmount()
@@ -566,14 +583,9 @@ public class RaidData {
         return BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (getCurrentRaidRadius() * 0.75) && BlockAlgorithms.isAreaFlat(level, blockPos, 2);
     };
 
-    public final Predicate<BlockPos> predicateIsObstructedRaidTarget = (blockPos) ->
+    public final Predicate<BlockPos> isObstructedInvestigateLocationState = (blockPos) ->
     {
         if(blockSearcher.foundTargets.size() == 0 && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
-        {
-            return true;
-        }
-
-        if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 50))
         {
             return true;
         }
@@ -582,10 +594,16 @@ public class RaidData {
         {
             return true;
         }
+
+        if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 25))
+        {
+            return true;
+        }
+
         return !BlockAlgorithms.isExposedToAir(level, blockPos);
     };
 
-    public final Predicate<BlockPos> predicateIsRaidTarget = (blockPos) ->
+    public final Predicate<BlockPos> isTargetInvestigateLocationState = (blockPos) ->
     {
         boolean isTarget = getLevel().getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
                 || getLevel().getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
@@ -597,141 +615,130 @@ public class RaidData {
             SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
         }
 
+        if(isTarget && blockSearcher.foundTargets.size() > 0 && blockSearcher.isAnyTargetCloserThan(blockPos, 5))
+        {
+            return false;
+        }
+
         return isTarget;
     };
 
     // Save the variables to a CompoundTag
-    public void save(CompoundTag tag) {
+    public static void save(CompoundTag tag) {
         // Timing Variables
-        tag.putInt("raidState", raidStateToInt(raidState));
-        tag.putInt("cooldownBetweenRaids", COOLDOWN_BETWEEN_RAIDS);
-        tag.putInt("maxWaveDuration", MAX_WAVE_DURATION);
-        tag.putInt("waveDuration", waveDuration);
-        tag.putInt("timeElapsedScouting", timeElapsedScouting);
-        tag.putInt("scoutingDuration", SCOUTING_DURATION);
-
-        // Raid Variables
-        if (level != null) {
-            tag.putString("level", level.dimension().location().toString());
-        }
-        tag.putLong("spawnLocation", spawnLocation.asLong());
-        tag.putLong("raidLocation", raidLocation.asLong());
-        tag.putLong("objectiveLocation", objectiveLocation.asLong());
-        tag.putLong("objectiveLocationAtStartOfWave", objectiveLocationAtStartOfWave.asLong());
-        tag.putLong("raidCenter", raidCenter.asLong());
-        tag.putInt("minimumRaidRadius", MINIMUM_RAID_RADIUS);
-        tag.putInt("currentRaidRadius", currentRaidRadius);
-        tag.putInt("maximumRaidRadius", MAXIMUM_RAID_RADIUS);
-        // Save the wave participants as a list of UUIDs
+        tag.putInt("raidState", raidStateToInt(RaidHandler.raidData.getRaidState()));
+        tag.putInt("waveDuration", RaidHandler.raidData.getWaveDuration());
+        tag.putInt("timeElapsedScouting", RaidHandler.raidData.getTimeElapsedScouting());
+        tag.putLong("spawnLocation", RaidHandler.raidData.getSpawnLocation().asLong());
+        tag.putLong("raidLocation", RaidHandler.raidData.getRaidLocation().asLong());
+        tag.putLong("objectiveLocation", RaidHandler.raidData.getObjectiveLocation().asLong());
+        tag.putLong("objectiveLocationAtStartOfWave", RaidHandler.raidData.getObjectiveLocationAtStartOfWave().asLong());
+        tag.putLong("raidCenter", RaidHandler.raidData.getRaidCenter().asLong());
+        tag.putLong("raidCenter", RaidHandler.raidData.getRaidCenter().asLong());
+        tag.putInt("currentRaidRadius", RaidHandler.raidData.getCurrentRaidRadius());
+        tag.putInt("maxWaves", RaidHandler.raidData.getMaxWaves());
+        tag.putInt("currentWave", RaidHandler.raidData.getCurrentWave());
+        tag.putInt("remainingWaveParticipants", RaidHandler.raidData.getRemainingWaveParticipants());        // Save the wave participants as a list of UUIDs
         ListTag waveParticipantsTag = new ListTag();
-        for (ISculkSmartEntity entity : waveParticipants) {
+        for (ISculkSmartEntity entity : RaidHandler.raidData.getWaveParticipants()) {
             if (entity instanceof Entity) {
                 UUID uuid = ((Entity) entity).getUUID();
                 waveParticipantsTag.add(NbtUtils.createUUID(uuid));
             }
         }
         tag.put("waveParticipants", waveParticipantsTag);
-        tag.putString("raidState", raidState.name());
-        tag.putString("failureType", failure.name());
 
         // Enderman Scouting
-        if (scoutEnderman != null) {
-            tag.putUUID("scoutEnderman", scoutEnderman.getUUID());
+        if (RaidHandler.raidData.getScoutEnderman() != null) {
+            tag.putUUID("scoutEnderman", RaidHandler.raidData.getScoutEnderman().getUUID());
         }
 
         // Waves
-        if (currentWavePattern != null) {
+        if (RaidHandler.raidData.getCurrentWavePattern() != null) {
             // Save the current wave pattern as a list of strings
             ListTag currentWavePatternTag = new ListTag();
-            for (EntityFactory.StrategicValues value : currentWavePattern) {
+            for (EntityFactory.StrategicValues value : RaidHandler.raidData.getCurrentWavePattern()) {
                 currentWavePatternTag.add(StringTag.valueOf(value.name()));
             }
             tag.put("currentWavePattern", currentWavePatternTag);
         }
-        tag.putInt("maxWaves", maxWaves);
-        tag.putInt("currentWave", currentWave);
-        tag.putInt("remainingWaveParticipants", remainingWaveParticipants);
 
         // Area of Interest Entry
-        if (areaOfInterestEntry != null) {
-            CompoundTag areaOfInterestEntryTag = areaOfInterestEntry.deserialize();
+        if (RaidHandler.raidData.getAreaOfInterestEntry() != null) {
+            CompoundTag areaOfInterestEntryTag = RaidHandler.raidData.getAreaOfInterestEntry().deserialize();
             tag.put("areaOfInterestEntry", areaOfInterestEntryTag);
         }
 
         // Targets
         // Save the high priority targets as a list of longs
         ListTag highPriorityTargetsTag = new ListTag();
-        for (BlockPos pos : high_priority_targets) {
+        for (BlockPos pos : RaidHandler.raidData.getHighPriorityTargets()) {
             highPriorityTargetsTag.add(LongTag.valueOf(pos.asLong()));
         }
         tag.put("highPriorityTargets", highPriorityTargetsTag);
 
         // Save the medium priority targets as a list of longs
         ListTag mediumPriorityTargetsTag = new ListTag();
-        for (BlockPos pos : medium_priority_targets) {
+        for (BlockPos pos : RaidHandler.raidData.getMediumPriorityTargets()) {
             mediumPriorityTargetsTag.add(LongTag.valueOf(pos.asLong()));
         }
         tag.put("mediumPriorityTargets", mediumPriorityTargetsTag);
 
         // Save the low priority targets as a list of longs
         ListTag lowPriorityTargetsTag = new ListTag();
-        for (BlockPos pos : low_priority_targets) {
+        for (BlockPos pos : RaidHandler.raidData.getLowPriorityTargets()) {
             lowPriorityTargetsTag.add(LongTag.valueOf(pos.asLong()));
         }
         tag.put("lowPriorityTargets", lowPriorityTargetsTag);
 
     }
 
-    private int raidStateToInt(RaidHandler.RaidState state) {
+    private static int raidStateToInt(RaidHandler.RaidState state) {
         SculkHorde.LOGGER.debug("Saving Raid State: " + state.name() + " as " + state.ordinal() + ".");
         return state.ordinal();
     }
 
-    private RaidHandler.RaidState intToRaidState(int state) {
+    private static RaidHandler.RaidState intToRaidState(int state) {
         SculkHorde.LOGGER.debug("Loading Raid State: " + state + " as " + RaidHandler.RaidState.values()[state].name() + ".");
         return RaidHandler.RaidState.values()[state];
     }
 
     // Load the variables from a CompoundTag
-    public void load(CompoundTag tag) {
+    public static void load(CompoundTag tag) {
 
         // Timing Variables
-        raidState = intToRaidState(tag.getInt("raidState"));
-        COOLDOWN_BETWEEN_RAIDS = tag.getInt("cooldownBetweenRaids");
-        MAX_WAVE_DURATION = tag.getInt("maxWaveDuration");
-        waveDuration = tag.getInt("waveDuration");
-        timeElapsedScouting = tag.getInt("timeElapsedScouting");
+        RaidHandler.raidData.setRaidState(intToRaidState(tag.getInt("raidState")));
+        RaidHandler.raidData.setWaveDuration(tag.getInt("waveDuration"));
+        RaidHandler.raidData.setTimeElapsedScouting(tag.getInt("timeElapsedScouting"));
+        RaidHandler.raidData.setSpawnLocation(BlockPos.of(tag.getLong("spawnLocation")));
+        RaidHandler.raidData.setRaidLocation(BlockPos.of(tag.getLong("raidLocation")));
+        RaidHandler.raidData.setObjectiveLocation(BlockPos.of(tag.getLong("objectiveLocation")));
+        RaidHandler.raidData.setObjectiveLocationAtStartOfWave(BlockPos.of(tag.getLong("objectiveLocationAtStartOfWave")));
+        RaidHandler.raidData.setRaidCenter(BlockPos.of(tag.getLong("raidCenter")));
+        RaidHandler.raidData.setMaxWaves(tag.getInt("maxWaves"));
+        RaidHandler.raidData.setCurrentWave(tag.getInt("currentWave"));
+        RaidHandler.raidData.setRemainingWaveParticipants(tag.getInt("remainingWaveParticipants"));
 
-
-        spawnLocation = BlockPos.of(tag.getLong("spawnLocation"));
-        raidLocation = BlockPos.of(tag.getLong("raidLocation"));
-        objectiveLocation = BlockPos.of(tag.getLong("objectiveLocation"));
-        objectiveLocationAtStartOfWave = BlockPos.of(tag.getLong("objectiveLocationAtStartOfWave"));
-        raidCenter = BlockPos.of(tag.getLong("raidCenter"));
-        MINIMUM_RAID_RADIUS = tag.getInt("minimumRaidRadius");
-        currentRaidRadius = tag.getInt("currentRaidRadius");
-        MAXIMUM_RAID_RADIUS = tag.getInt("maximumRaidRadius");
         // Load the wave participants from a list of UUIDs
-        waveParticipants.clear();
+        RaidHandler.raidData.getWaveParticipants().clear();
         ListTag waveParticipantsTag = tag.getList("waveParticipants", 11);
         for (Tag t : waveParticipantsTag) {
             if (t instanceof IntArrayTag) {
                 UUID uuid = NbtUtils.loadUUID((IntArrayTag) t);
-                Entity entity = level.getEntity(uuid);
+                Entity entity = SculkHorde.savedData.level.getEntity(uuid);
                 if (entity instanceof ISculkSmartEntity) {
-                    waveParticipants.add((ISculkSmartEntity) entity);
+                    RaidHandler.raidData.getWaveParticipants().add((ISculkSmartEntity) entity);
+                    ((ISculkSmartEntity) entity).setParticipatingInRaid(true);
                 }
             }
         }
-        raidState = RaidHandler.RaidState.valueOf(tag.getString("raidState"));
-        failure = RaidHandler.failureType.valueOf(tag.getString("failureType"));
 
         // Enderman Scouting
         if (tag.hasUUID("scoutEnderman")) {
             UUID uuid = tag.getUUID("scoutEnderman");
-            Entity entity = level.getEntity(uuid);
+            Entity entity = SculkHorde.savedData.level.getEntity(uuid);
             if (entity instanceof SculkEndermanEntity) {
-                scoutEnderman = (SculkEndermanEntity) entity;
+                RaidHandler.raidData.setScoutEnderman((SculkEndermanEntity) entity);
             }
         }
 
@@ -739,54 +746,53 @@ public class RaidData {
         if (tag.contains("currentWavePattern")) {
             // Load the current wave pattern from a list of strings
             ListTag currentWavePatternTag = tag.getList("currentWavePattern", 8);
-            currentWavePattern = new EntityFactory.StrategicValues[currentWavePatternTag.size()];
+            RaidHandler.raidData.setCurrentWavePattern(new EntityFactory.StrategicValues[currentWavePatternTag.size()]);
             for (int i = 0; i < currentWavePatternTag.size(); i++) {
                 Tag t = currentWavePatternTag.get(i);
                 if (t instanceof StringTag) {
                     String s = ((StringTag) t).getAsString();
-                    currentWavePattern[i] = EntityFactory.StrategicValues.valueOf(s);
+                    RaidHandler.raidData.getCurrentWavePattern()[i] = EntityFactory.StrategicValues.valueOf(s);
                 }
             }
         }
-        maxWaves = tag.getInt("maxWaves");
-        currentWave = tag.getInt("currentWave");
-        remainingWaveParticipants = tag.getInt("remainingWaveParticipants");
 
         // Area of Interest Entry
         if (tag.contains("areaOfInterestEntry")) {
             CompoundTag areaOfInterestEntryTag = tag.getCompound("areaOfInterestEntry");
-            areaOfInterestEntry = ModSavedData.AreaofInterestEntry.serialize(areaOfInterestEntryTag);
+            RaidHandler.raidData.setAreaOfInterestEntry(ModSavedData.AreaofInterestEntry.serialize(areaOfInterestEntryTag));
         }
 
         // Targets
         // Load the high priority targets from a list of longs
-        high_priority_targets.clear();
+        RaidHandler.raidData.getHighPriorityTargets().clear();
         ListTag highPriorityTargetsTag = tag.getList("highPriorityTargets", 4);
         for (Tag t : highPriorityTargetsTag) {
             if (t instanceof LongTag) {
                 long l = ((LongTag) t).getAsLong();
-                high_priority_targets.add(BlockPos.of(l));
+                RaidHandler.raidData.getHighPriorityTargets().add(BlockPos.of(l));
             }
         }
 
         // Load the medium priority targets from a list of longs
-        medium_priority_targets.clear();
+        RaidHandler.raidData.getMediumPriorityTargets().clear();
         ListTag mediumPriorityTargetsTag = tag.getList("mediumPriorityTargets", 4);
         for (Tag t : mediumPriorityTargetsTag) {
             if (t instanceof LongTag) {
                 long l = ((LongTag) t).getAsLong();
-                medium_priority_targets.add(BlockPos.of(l));
+                RaidHandler.raidData.getMediumPriorityTargets().add(BlockPos.of(l));
             }
         }
 
         // Load the low priority targets from a list of longs
-        low_priority_targets.clear();
+        RaidHandler.raidData.getLowPriorityTargets().clear();
         ListTag lowPriorityTargetsTag = tag.getList("lowPriorityTargets", 4);
         for (Tag t : lowPriorityTargetsTag) {
             if (t instanceof LongTag) {
                 long l = ((LongTag) t).getAsLong();
-                low_priority_targets.add(BlockPos.of(l));
+                RaidHandler.raidData.getLowPriorityTargets().add(BlockPos.of(l));
             }
         }
     }
+
+
 }
