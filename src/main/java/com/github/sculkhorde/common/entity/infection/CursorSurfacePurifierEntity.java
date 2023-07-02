@@ -52,6 +52,10 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
         {
             this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
         }
+
+        // Get all infector cursor entities in area and kill them
+        Predicate<CursorInfectorEntity> isCursor = (entity) -> entity instanceof CursorInfectorEntity && !(entity instanceof CursorSurfacePurifierEntity);
+        level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor).forEach(entity -> entity.discard());
     }
 
     @Override
