@@ -1,11 +1,12 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -66,6 +67,10 @@ public class WardenBeefItem extends Item {
         {
             SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
             EntityAlgorithms.announceToAllPlayers((ServerLevel) level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
+            if(entity instanceof ServerPlayer player)
+            {
+                AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level,GravemindEvolveImmatureTrigger.INSTANCE);
+            }
         }
         return entity.eat(level, itemStack);
     }

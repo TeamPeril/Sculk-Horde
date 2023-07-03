@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.SculkHorde;
@@ -8,6 +9,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -71,7 +73,15 @@ public class ModEventSubscriber {
             SpawnPlacements.register(EntityRegistry.SCULK_MITE.get(),
                     SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     SculkMiteEntity::passSpawnCondition);
+            afterCommonSetup();
         });
+    }
+
+    // runs on main thread after common setup event
+    // adding things to unsynchronized registries (i.e. most vanilla registries) can be done here
+    private static void afterCommonSetup()
+    {
+        CriteriaTriggers.register(GravemindEvolveImmatureTrigger.INSTANCE);
     }
 
     /* entityAttributes
