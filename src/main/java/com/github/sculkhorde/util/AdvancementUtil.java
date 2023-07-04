@@ -1,6 +1,10 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.advancement.CustomCriterionTrigger;
+import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
+import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +40,23 @@ public final class AdvancementUtil {
         for (ServerPlayer player : level.players()) {
             trigger.trigger(player);
         }
+    }
+
+
+    public static void advancementHandlingTick(ServerLevel level)
+    {
+
+        // If Immature, give all players advancement
+        if(SculkHorde.gravemind.getEvolutionState().ordinal() >= Gravemind.evolution_states.Immature.ordinal())
+        {
+            AdvancementUtil.giveAdvancementToAllPlayers(SculkHorde.savedData.level, GravemindEvolveImmatureTrigger.INSTANCE);
+        }
+
+        if(SculkHorde.savedData.getNodeEntries().size() > 0)
+        {
+            AdvancementUtil.giveAdvancementToAllPlayers(SculkHorde.savedData.level, SculkNodeSpawnTrigger.INSTANCE);
+        }
+
     }
 
 }

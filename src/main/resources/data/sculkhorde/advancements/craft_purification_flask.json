@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:purification_flask_item"
+    },
+    "title": "The Start of a Solution",
+    "description": "Craft a Purification Flask",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:sculk_tomb_visit",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "minecraft:purification_flask_item"
+      }
+    }
+  }
+}

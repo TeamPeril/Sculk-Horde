@@ -4,9 +4,9 @@
       "item": "sculkhorde:sculk_node"
     },
     "title": "A Developed Threat",
-    "description": "Have the Sculk Horde evolve into the immature stage.",
+    "description": "Have the Gravemind evolve from the undeveloped stage into the immature stage.",
     "background": "sculkhorde:textures/block/infested_stone.png",
-    "frame": "challenge",
+    "frame": "gaol",
     "show_toast": true,
     "announce_to_chat": true
   },

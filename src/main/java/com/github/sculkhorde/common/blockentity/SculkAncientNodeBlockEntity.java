@@ -1,11 +1,13 @@
 package com.github.sculkhorde.common.blockentity;
 
+import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.SoundRegistry;
+import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
@@ -305,6 +307,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         }
 
         level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundRegistry.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
+
+        AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
     }
 
     // Data

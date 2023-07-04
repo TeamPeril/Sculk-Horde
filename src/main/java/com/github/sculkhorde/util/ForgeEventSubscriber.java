@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkMassBlock;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
@@ -142,6 +143,20 @@ public class ForgeEventSubscriber {
                     entity.hurt(entity.damageSources().magic(), infectionDamage);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    {
+        if(event.player.level().isClientSide())
+        {
+            return;
+        }
+
+        if(event.player.tickCount % 20 == 0)
+        {
+            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
         }
     }
 }

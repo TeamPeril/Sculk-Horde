@@ -1,0 +1,18 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:sculk_node"
+    },
+    "title": "The Birth of A Brain",
+    "description": "Witness the birth of a sculk node; a brain-like structure to assist the Gravemind in its conquest of the overworld.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:sculk_horde_start",
+  "criteria": {
+    "sculk_horde_start": {
+      "trigger": "sculkhorde:sculk_node_spawn"
+    }
+  }
+}

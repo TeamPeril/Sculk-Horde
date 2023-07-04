@@ -1,11 +1,13 @@
 package com.github.sculkhorde.core.gravemind;
 
 
+import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -26,7 +28,7 @@ import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
  */
 public class Gravemind
 {
-    public enum evolution_states {Undeveloped, Immature, Mature}
+    public static enum evolution_states {Undeveloped, Immature, Mature}
 
     private evolution_states evolution_state;
 

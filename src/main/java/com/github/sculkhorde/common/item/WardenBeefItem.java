@@ -67,10 +67,6 @@ public class WardenBeefItem extends Item {
         {
             SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
             EntityAlgorithms.announceToAllPlayers((ServerLevel) level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
-            if(entity instanceof ServerPlayer player)
-            {
-                AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level,GravemindEvolveImmatureTrigger.INSTANCE);
-            }
         }
         return entity.eat(level, itemStack);
     }
