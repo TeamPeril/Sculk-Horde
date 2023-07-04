@@ -243,7 +243,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();
 
-        addDarknessEffectToNearbyPlayers(level, blockPos, 10);
+        addDarknessEffectToNearbyPlayers(level, blockPos, 25);
         // Spawn in random x and z position
         Random rng = new Random();
         int spawnRange = 100;
