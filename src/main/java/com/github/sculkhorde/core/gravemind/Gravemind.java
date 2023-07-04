@@ -8,6 +8,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.AdvancementUtil;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -240,6 +241,12 @@ public class Gravemind
         }
 
         if(SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
+        {
+            return false;
+        }
+
+        // Need to be far away from ancient node at 0,0
+        if(BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < MINIMUM_DISTANCE_BETWEEN_NODES)
         {
             return false;
         }

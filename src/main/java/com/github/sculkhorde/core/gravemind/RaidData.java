@@ -159,7 +159,7 @@ public class RaidData {
         setTimeElapsedScouting(0);
         setCurrentRaidRadius(MINIMUM_RAID_RADIUS);
         SculkHorde.savedData.setDirty();
-        bossEvent.removeAllPlayers();
+        if(bossEvent != null ) bossEvent.removeAllPlayers();
         bossEvent = null;
     }
 
