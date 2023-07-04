@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.item.TooltipFlag;
@@ -61,9 +61,8 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
-    // 0 = Cooldown
-    // 1 = ReadyToSpawn
-    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
+    public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
+    public static final BooleanProperty VIBRATION_COOLDOWN = BooleanProperty.create("vibration_cooldown");
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -71,7 +70,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public SculkSummonerBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(STATE, 0));
+                .setValue(IS_ACTIVE, false).setValue(VIBRATION_COOLDOWN, false));
     }
 
     /**
@@ -108,12 +107,13 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(STATE, 0);
+                .setValue(IS_ACTIVE, false)
+                .setValue(VIBRATION_COOLDOWN, false);
 
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(STATE);
+        pBuilder.add(IS_ACTIVE).add(VIBRATION_COOLDOWN);
     }
 
     /**
@@ -161,9 +161,22 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return !level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+
+        if(level.isClientSide)
+        {
+            return null;
+        }
+
+
+        if(blockState.getValue(VIBRATION_COOLDOWN) || !blockState.getValue(IS_ACTIVE))
+        {
+            return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::tickOnCoolDown);
+        }
+
+
+        return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
             VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
-        }) : null;
+        });
     }
 
     @org.jetbrains.annotations.Nullable

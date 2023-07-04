@@ -21,9 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -56,6 +54,8 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private List<LivingEntity> possibleLivingEntityTargets;
     //possibleAggressorTargets - A list of nearby targets which should be considered hostile.
     private List<LivingEntity> possibleAggressorTargets;
+    private long lastTimeSinceVibrationRecieve = System.currentTimeMillis();
+    private long timeElapsedSinceVibrationRecieve = 0;
     //Used to track the last time this tile was ticked
     private long lastTimeOfSpawn = System.currentTimeMillis();
     private long timeElapsedSinceSpawn = 0;
@@ -83,42 +83,28 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
-    private final int STATE_COOLDOWN_VALUE = 0;
-    private final int STATE_READY_TO_SPAWN_VALUE = 1;
-    private final int STATE_SPAWNING_VALUE = 2;
-
-    private boolean isOnCooldown()
+    private boolean isActive()
     {
-        return getState() == STATE_COOLDOWN_VALUE;
+        return getBlockState().getValue(SculkSummonerBlock.IS_ACTIVE);
     }
 
-    private void setToCooldown()
+    private void setActive(boolean value)
     {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.STATE, STATE_COOLDOWN_VALUE));
+        assert level != null;
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.IS_ACTIVE, value));
     }
 
-    private boolean isReadyToSpawn()
+
+    private boolean isOnVibrationCooldown()
     {
-        return getState() == STATE_READY_TO_SPAWN_VALUE;
+        assert level != null;
+        return getBlockState().getValue(SculkSummonerBlock.VIBRATION_COOLDOWN);
     }
 
-    private void setReadyToSpawn()
+    private void setVibrationCooldown(boolean value)
     {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.STATE, STATE_READY_TO_SPAWN_VALUE));
-    }
-
-    private boolean isSpawning()
-    {
-        return getState() == STATE_SPAWNING_VALUE;
-    }
-
-    private void setSpawning()
-    {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.STATE, STATE_SPAWNING_VALUE));
-    }
-
-    public int getState() {
-        return getBlockState().getValue(SculkSummonerBlock.STATE);
+        assert level != null;
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.VIBRATION_COOLDOWN, value));
     }
 
     /** ~~~~~~~~ Modifiers ~~~~~~~~  **/
@@ -163,94 +149,116 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         return true;
     }
 
-
-    /** ~~~~~~~~ Events ~~~~~~~~ **/
-    public static void spawnReinforcementsTick(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity)
+    private boolean areAnyTargetsNearBy(BlockPos blockPos, SculkSummonerBlockEntity blockEntity)
     {
-        if(level == null || level.isClientSide) { return;}
+        //Create bounding box to detect targets
+        blockEntity.searchArea = EntityAlgorithms.getSearchAreaRectangle(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockEntity.ACTIVATION_DISTANCE, 5, blockEntity.ACTIVATION_DISTANCE);
 
-        blockEntity.timeElapsedSinceSpawn = System.currentTimeMillis() - blockEntity.lastTimeOfSpawn;
+        //Get targets inside bounding box.
+        blockEntity.possibleAggressorTargets =
+                blockEntity.level.getEntitiesOfClass(
+                        LivingEntity.class,
+                        blockEntity.searchArea,
+                        blockEntity.hostileTargetParameters.isPossibleNewTargetValid);
 
-        if(blockEntity.isOnCooldown())
+        //Get targets inside bounding box.
+        blockEntity.possibleLivingEntityTargets =
+                blockEntity.level.getEntitiesOfClass(
+                        LivingEntity.class,
+                        blockEntity.searchArea,
+                        blockEntity.infectableTargetParameters.isPossibleNewTargetValid);
+
+        if (blockEntity.possibleAggressorTargets.size() != 0 || blockEntity.possibleLivingEntityTargets.size() != 0)
         {
-            if(blockEntity.hasSpawningCoolDownEnded())
-            {
-                blockEntity.setReadyToSpawn();
-            }
-            else
-            {
-                return;
-            }
-
-
+            return true;
         }
 
-        else if(blockEntity.isReadyToSpawn())
+        return false;
+
+    }
+
+    public void calculateTimeElapsed()
+    {
+        timeElapsedSinceSpawn = System.currentTimeMillis() - lastTimeOfSpawn;
+        timeElapsedSinceVibrationRecieve = System.currentTimeMillis() - lastTimeSinceVibrationRecieve;
+    }
+
+    public void spawnReinforcements()
+    {
+        ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, this.getBlockPos().getX() + 0.5D, this.getBlockPos().getY() + 1.15D, this.getBlockPos().getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+        ((ServerLevel)level).playSound((Player)null, this.getBlockPos(), SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
+        //Choose spawn positions
+        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), 5, this.MAX_SPAWNED_ENTITIES);
+
+        BlockPos[] finalizedSpawnPositions = new BlockPos[this.MAX_SPAWNED_ENTITIES];
+
+        //Create MAX_SPAWNED_ENTITIES amount of Reinforcement Requests
+        for (int iterations = 0; iterations < possibleSpawnPositions.size(); iterations++)
         {
-            if(!blockEntity.areAllReinforcementsDead()) { return; }
-
-            //Create bounding box to detect targets
-            blockEntity.searchArea = EntityAlgorithms.getSearchAreaRectangle(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockEntity.ACTIVATION_DISTANCE, 5, blockEntity.ACTIVATION_DISTANCE);
-
-            //Get targets inside bounding box.
-            blockEntity.possibleAggressorTargets =
-                    blockEntity.level.getEntitiesOfClass(
-                            LivingEntity.class,
-                            blockEntity.searchArea,
-                            blockEntity.hostileTargetParameters.isPossibleNewTargetValid);
-
-            //Get targets inside bounding box.
-            blockEntity.possibleLivingEntityTargets =
-                    blockEntity.level.getEntitiesOfClass(
-                            LivingEntity.class,
-                            blockEntity.searchArea,
-                            blockEntity.infectableTargetParameters.isPossibleNewTargetValid);
-
-            if (blockEntity.possibleAggressorTargets.size() == 0 && blockEntity.possibleLivingEntityTargets.size() == 0) { return; }
-            blockEntity.setSpawning();
+            finalizedSpawnPositions[iterations] = possibleSpawnPositions.get(iterations);
         }
-        else if(blockEntity.isSpawning())
-        {
-            ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, blockPos.getX() + 0.5D, blockPos.getY() + 1.15D, blockPos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
-            ((ServerLevel)level).playSound((Player)null, blockPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
-            //Choose spawn positions
-            ArrayList<BlockPos> possibleSpawnPositions = blockEntity.getSpawnPositionsInCube((ServerLevel) level, blockEntity.getBlockPos(), 5, blockEntity.MAX_SPAWNED_ENTITIES);
 
-            BlockPos[] finalizedSpawnPositions = new BlockPos[blockEntity.MAX_SPAWNED_ENTITIES];
+        //If the array is empty, just spawn above block
+        if (possibleSpawnPositions.isEmpty()) {
+            finalizedSpawnPositions[0] = this.getBlockPos().above();
+        }
 
-            //Create MAX_SPAWNED_ENTITIES amount of Reinforcement Requests
-            for (int iterations = 0; iterations < possibleSpawnPositions.size(); iterations++)
-            {
-                finalizedSpawnPositions[iterations] = possibleSpawnPositions.get(iterations);
-            }
+        //Give gravemind context to our request to make more informed situations
+        this.request = new ReinforcementRequest(finalizedSpawnPositions);
+        this.request.sender = ReinforcementRequest.senderType.SculkCocoon;
 
-            //If the array is empty, just spawn above block
-            if (possibleSpawnPositions.isEmpty()) {
-                finalizedSpawnPositions[0] = blockPos.above();
-            }
+        if (this.possibleAggressorTargets.size() != 0) {
+            this.request.is_aggressor_nearby = true;
+            this.lastTimeOfSpawn = System.currentTimeMillis();
+        }
+        if (this.possibleLivingEntityTargets.size() != 0) {
+            this.request.is_non_sculk_mob_nearby = true;
+            this.lastTimeOfSpawn = System.currentTimeMillis();
+        }
 
-            //Give gravemind context to our request to make more informed situations
-            blockEntity.request = new ReinforcementRequest(finalizedSpawnPositions);
-            blockEntity.request.sender = ReinforcementRequest.senderType.SculkCocoon;
-
-            if (blockEntity.possibleAggressorTargets.size() != 0) {
-                blockEntity.request.is_aggressor_nearby = true;
-                blockEntity.lastTimeOfSpawn = System.currentTimeMillis();
-            }
-            if (blockEntity.possibleLivingEntityTargets.size() != 0) {
-                blockEntity.request.is_non_sculk_mob_nearby = true;
-                blockEntity.lastTimeOfSpawn = System.currentTimeMillis();
-            }
-
-            //If there is some sort of enemy near by, request reinforcement
-            if (blockEntity.request.is_non_sculk_mob_nearby || blockEntity.request.is_aggressor_nearby) {
-                //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
-                SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level, blockPos, false, blockEntity.request);
-            }
-
-            blockEntity.setToCooldown();
+        //If there is some sort of enemy near by, request reinforcement
+        if (this.request.is_non_sculk_mob_nearby || this.request.is_aggressor_nearby) {
+            //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
+            SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level, this.getBlockPos(), false, this.request);
         }
     }
+
+
+    /** ~~~~~~~~ Events ~~~~~~~~ **/
+    public static void recieveVibrationTick(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity)
+    {
+        if(level == null || level.isClientSide) { return; }
+
+        if(!blockEntity.areAllReinforcementsDead()) { return; }
+
+        if(blockEntity.areAnyTargetsNearBy(blockPos, blockEntity))
+        {
+            blockEntity.spawnReinforcements();
+            blockEntity.setActive(false);
+        }
+        blockEntity.setVibrationCooldown(true);
+        blockEntity.lastTimeSinceVibrationRecieve = System.currentTimeMillis();
+    }
+
+    public static void tickOnCoolDown(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity) {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        blockEntity.calculateTimeElapsed();
+        
+        if(blockEntity.timeElapsedSinceVibrationRecieve >= TimeUnit.SECONDS.toMillis(10))
+        {
+            blockEntity.setVibrationCooldown(false);
+        }
+
+
+        if (blockEntity.hasSpawningCoolDownEnded() && !blockEntity.isActive())
+        {
+            blockEntity.setActive(true);
+        }
+    }
+
 
     /**
      * Gets a list of all possible spawns, chooses a specified amount of them.
@@ -398,14 +406,15 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             return GameEventTags.SHRIEKER_CAN_LISTEN;
         }
 
-        public boolean canReceiveVibration(ServerLevel p_281256_, BlockPos p_281528_, GameEvent p_282632_, GameEvent.Context p_282914_) {
-            return true;
+        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent event, GameEvent.Context context) {
+                return !isOnVibrationCooldown();
         }
 
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            spawnReinforcementsTick(level, blockPos, getBlockState(), summoner);
-            if(!isOnCooldown())
+            recieveVibrationTick(level, blockPos, getBlockState(), summoner);
+
+            if(!isActive())
             {
                 level.levelEvent(3007, worldPosition, 0);
                 level.gameEvent(GameEvent.SHRIEK, worldPosition, GameEvent.Context.of(entity));
@@ -437,17 +446,16 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
                 BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
                 if(blockState.is(BlockRegistry.SCULK_SUMMONER_BLOCK.get()))
                 {
-                    if(state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.STATE) == 0)
+                    if(!state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.IS_ACTIVE)
+                    || state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.VIBRATION_COOLDOWN))
                     {
                         return state.setAndContinue(SCULK_SUMMONER_COOLDOWN_ANIMATION);
                     }
-                    else
-                    {
-                        return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
-                    }
+
+
+
                 }
                 return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
-
         }
         ));
     }
