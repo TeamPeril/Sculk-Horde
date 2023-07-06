@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "sculkhorde:block/sculk_node" }
+    "": { "model": "sculkhorde:block/sculk_ancient_node" }
   }
 }
