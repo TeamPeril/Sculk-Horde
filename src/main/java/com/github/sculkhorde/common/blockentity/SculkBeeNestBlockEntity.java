@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class SculkBeeNestBlockEntity extends BlockEntity
@@ -239,18 +240,21 @@ public class SculkBeeNestBlockEntity extends BlockEntity
             if (beeReleaseStatus == BeeReleaseStatus.HONEY_DELIVERED)
             {
                 bee.dropOffNectar();
-                if (blockState.is(BlockTags.BEEHIVES, (p_202037_) -> {
-                    return p_202037_.hasProperty(BeehiveBlock.HONEY_LEVEL);
-                })) {
-                    int i = getHoneyLevel(blockState);
-                    if (i < 5) {
-                        int j = level.random.nextInt(100) == 0 ? 2 : 1;
-                        if (i + j > 5) {
-                            --j;
-                        }
 
-                        level.setBlockAndUpdate(blockPos, blockState.setValue(BeehiveBlock.HONEY_LEVEL, Integer.valueOf(i + j)));
+                // Make a random cell under the hive mature
+                Optional<SculkBeeNestBlockEntity> blockEntity =  level.getBlockEntity(blockPos, BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get());
+                blockEntity.ifPresent(beeNestStructure -> {
+                    beeNestStructure.beeNestStructure.makeRandomBlockMature();
+                });
+
+                int i = getHoneyLevel(blockState);
+                if (i < 5) {
+                    int j = level.random.nextInt(100) == 0 ? 2 : 1;
+                    if (i + j > 5) {
+                        --j;
                     }
+
+                    level.setBlockAndUpdate(blockPos, blockState.setValue(BeehiveBlock.HONEY_LEVEL, Integer.valueOf(i + j)));
                 }
             }
 

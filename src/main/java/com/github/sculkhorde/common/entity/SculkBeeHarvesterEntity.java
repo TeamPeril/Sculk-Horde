@@ -186,35 +186,35 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     public void addAdditionalSaveData(CompoundTag compoundTag) {
         super.addAdditionalSaveData(compoundTag);
         if (this.hasHive()) {
-            compoundTag.put("HivePos", NbtUtils.writeBlockPos(this.getHivePos()));
+            compoundTag.put(TAG_HIVE_POS, NbtUtils.writeBlockPos(this.getHivePos()));
         }
 
         if (this.hasSavedFlowerPos()) {
-            compoundTag.put("FlowerPos", NbtUtils.writeBlockPos(this.getSavedFlowerPos()));
+            compoundTag.put(TAG_FLOWER_POS, NbtUtils.writeBlockPos(this.getSavedFlowerPos()));
         }
 
-        compoundTag.putBoolean("HasNectar", this.hasNectar());
-        compoundTag.putBoolean("HasStung", this.hasStung());
-        compoundTag.putInt("TicksSincePollination", this.ticksWithoutNectarSinceExitingHive);
-        compoundTag.putInt("CropsGrownSincePollination", this.numCropsGrownSincePollination);
+        compoundTag.putBoolean(TAG_HAS_NECTAR, this.hasNectar());
+        compoundTag.putBoolean(TAG_HAS_STUNG, this.hasStung());
+        compoundTag.putInt(TAG_TICKS_SINCE_POLLINATION, this.ticksWithoutNectarSinceExitingHive);
+        compoundTag.putInt(TAG_CROPS_GROWN_SINCE_POLLINATION, this.numCropsGrownSincePollination);
     }
 
     public void readAdditionalSaveData(CompoundTag compoundTag) {
         this.hivePos = null;
-        if (compoundTag.contains("HivePos")) {
-            this.hivePos = NbtUtils.readBlockPos(compoundTag.getCompound("HivePos"));
+        if (compoundTag.contains(TAG_HIVE_POS)) {
+            this.hivePos = NbtUtils.readBlockPos(compoundTag.getCompound(TAG_HIVE_POS));
         }
 
         this.savedFlowerPos = null;
-        if (compoundTag.contains("FlowerPos")) {
-            this.savedFlowerPos = NbtUtils.readBlockPos(compoundTag.getCompound("FlowerPos"));
+        if (compoundTag.contains(TAG_FLOWER_POS)) {
+            this.savedFlowerPos = NbtUtils.readBlockPos(compoundTag.getCompound(TAG_FLOWER_POS));
         }
 
         super.readAdditionalSaveData(compoundTag);
-        this.setHasNectar(compoundTag.getBoolean("HasNectar"));
-        this.setHasStung(compoundTag.getBoolean("HasStung"));
-        this.ticksWithoutNectarSinceExitingHive = compoundTag.getInt("TicksSincePollination");
-        this.numCropsGrownSincePollination = compoundTag.getInt("CropsGrownSincePollination");
+        this.setHasNectar(compoundTag.getBoolean(TAG_HAS_NECTAR));
+        this.setHasStung(compoundTag.getBoolean(TAG_HAS_STUNG));
+        this.ticksWithoutNectarSinceExitingHive = compoundTag.getInt(TAG_TICKS_SINCE_POLLINATION);
+        this.numCropsGrownSincePollination = compoundTag.getInt(TAG_CROPS_GROWN_SINCE_POLLINATION);
     }
 
 
