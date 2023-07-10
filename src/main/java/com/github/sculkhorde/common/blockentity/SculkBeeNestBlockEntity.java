@@ -244,7 +244,10 @@ public class SculkBeeNestBlockEntity extends BlockEntity
                 // Make a random cell under the hive mature
                 Optional<SculkBeeNestBlockEntity> blockEntity =  level.getBlockEntity(blockPos, BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get());
                 blockEntity.ifPresent(beeNestStructure -> {
-                    beeNestStructure.beeNestStructure.makeRandomBlockMature();
+                    if(beeNestStructure.beeNestStructure != null)
+                    {
+                        beeNestStructure.beeNestStructure.makeRandomBlockMature();
+                    }
                 });
 
                 int i = getHoneyLevel(blockState);
