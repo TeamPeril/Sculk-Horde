@@ -75,9 +75,9 @@ public class DeathAreaInvestigator {
             return level.getBlockState(pos).isAir();
         });
         blockSearcher.setTargetBlockPredicate((pos) -> {
-            return level.getBlockState(pos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-            || level.getBlockState(pos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
-            || level.getBlockState(pos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
+            return level.getBlockState(pos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+            || level.getBlockState(pos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
+            || level.getBlockState(pos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
         });
         setState(State.SEARCHING);
     }

@@ -7,6 +7,10 @@ import com.github.sculkhorde.common.entity.projectile.PurificationFlaskProjectil
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.common.entity.specialeffects.ChaosTeleporationRiftEntity;
 import com.github.sculkhorde.common.entity.specialeffects.EnderBubbleAttackEntity;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
@@ -60,7 +64,14 @@ public class EntityRegistry {
     public static final RegistryObject<EntityType<InfestationPurifierEntity>> INFESTATION_PURIFIER = ENTITY_TYPES.register("infestation_purifier", () -> EntityType.Builder.<InfestationPurifierEntity>of(InfestationPurifierEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("infestation_purifier"));
 
 
+    public static class EntityTags
+    {
+        public static TagKey<EntityType<?>> SCULK_ENTITY = create("sculk_entity");
 
+        private static TagKey<EntityType<?>> create(String p_203849_) {
+            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(p_203849_));
+        }
+    }
 
 
 }

@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
-    protected final TagKey<Block> blockWithTagToRemove = BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY;
+    protected final TagKey<Block> blockWithTagToRemove = BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY;
     protected final SculkCreeperEntity removerMob;
     protected int ticksSinceReachedGoal;
     protected int distanceRequired;
@@ -149,32 +149,32 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     {
 
         // If current target is high priority, and blockState is high priority, return true
-        if(objectiveBlockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY) && blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        if(objectiveBlockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY) && blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             return true;
         }
         // If current target is medium and blockState is high, return true
-        else if(objectiveBlockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        else if(objectiveBlockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             return true;
         }
         // If current target is medium and blockState is medium, return true
-        else if(objectiveBlockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        else if(objectiveBlockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
         {
             return true;
         }
         // If current target is low and blockState is high, return true
-        else if(objectiveBlockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY) && blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        else if(objectiveBlockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY) && blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             return true;
         }
         // If current target is low and blockState is medium, return true
-        else if(objectiveBlockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY) && blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        else if(objectiveBlockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY) && blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
         {
             return true;
         }
         // If current target is low and blockState is low, return true
-        else if(objectiveBlockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY) && blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+        else if(objectiveBlockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY) && blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
         {
             return true;
         }

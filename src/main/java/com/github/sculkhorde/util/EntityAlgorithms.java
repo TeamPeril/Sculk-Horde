@@ -2,16 +2,20 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -60,20 +64,7 @@ public class EntityAlgorithms {
      * @return True if Valid, False otherwise
      */
     public static Predicate<LivingEntity> isSculkLivingEntity = (e) ->
-    {
-        return e instanceof SculkMiteEntity
-                || e instanceof SculkMiteAggressorEntity
-                || e instanceof SculkZombieEntity
-                || e instanceof SculkSpitterEntity
-                || e instanceof SculkSporeSpewerEntity
-                || e instanceof SculkBeeHarvesterEntity
-                || e instanceof SculkBeeInfectorEntity
-                || e instanceof SculkHatcherEntity
-                || e instanceof SculkRavagerEntity
-                || e instanceof SculkVindicatorEntity
-                || e instanceof SculkCreeperEntity
-                || e instanceof SculkEndermanEntity;
-    };
+            e.getType().is(EntityRegistry.EntityTags.SCULK_ENTITY);
 
     /**
      * Determines if an Entity is Infected based on if it has a potion effect
@@ -102,6 +93,73 @@ public class EntityAlgorithms {
         // by using the entity's ability to swim
         return entity instanceof WaterAnimal;
     }
+
+    /**
+     * Determines if we should avoid targeting an entity at all costs.
+     * @param entity The Given Entity
+     * @return True if we should avoid, False otherwise
+     */
+    public static boolean isLivingEntityExplicitDenyTarget(LivingEntity entity)
+    {
+        if(entity == null)
+        {
+            return true;
+        }
+
+        // Is entity not a mob or player?
+        if(!(entity instanceof Mob) && !(entity instanceof Player))
+        {
+            return true;
+        }
+
+        //If not attackable or invulnerable or is dead/dying
+        if(!entity.isAttackable() || entity.isInvulnerable() || !entity.isAlive())
+        {
+            return true;
+        }
+
+        if(entity instanceof Player player)
+        {
+            if(player.isCreative() || player.isSpectator())
+            {
+                return true;
+            }
+        }
+
+        if(entity instanceof Creeper)
+        {
+            return true;
+        }
+
+        if(entity instanceof InfestationPurifierEntity)
+        {
+            return true;
+        }
+
+        if(isSculkLivingEntity.test(entity))
+        {
+            return true;
+        }
+
+        if(entity.getType().is(EntityRegistry.EntityTags.SCULK_ENTITY))
+        {
+            return true;
+        }
+
+        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity))
+        {
+            return true;
+        }
+
+        if(ModColaborationHelper.isThisASporeEntity(entity))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     /**
      * Gets all living entities in the given bounding box.

@@ -102,15 +102,15 @@ public class RaidHandler {
 
     public boolean isCurrentObjectiveCompleted()
     {
-        if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             return false;
         }
-        else if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        else if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
         {
             return false;
         }
-        else return !raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY);
+        else return !raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY);
     }
 
 

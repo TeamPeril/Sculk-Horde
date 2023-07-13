@@ -370,15 +370,15 @@ public class ModSavedData extends SavedData {
         int priority;
 
         // Determine the priority of the block
-        if(level.getBlockState(positionIn).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        if(level.getBlockState(positionIn).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             priority = 2;
         }
-        else if(level.getBlockState(positionIn).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        else if(level.getBlockState(positionIn).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
         {
             priority = 1;
         }
-        else if (level.getBlockState(positionIn).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+        else if (level.getBlockState(positionIn).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
         {
             priority = 0;
         }
@@ -704,15 +704,15 @@ public class ModSavedData extends SavedData {
         {
             BlockState blockState = level.getBlockState(position);
 
-            if (blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY) && priority == 2)
+            if (blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY) && priority == 2)
             {
                 return true;
             }
-            else if (blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && priority == 1)
+            else if (blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && priority == 1)
             {
                 return true;
             }
-            else if (blockState.is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY) && priority == 0)
+            else if (blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY) && priority == 0)
             {
                 return true;
             }

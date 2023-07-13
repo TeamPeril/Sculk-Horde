@@ -55,35 +55,7 @@ public class TargetParameters
 
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
-        if(e == null)
-        {
-            return false;
-        }
-
-        if(!(e instanceof Mob) && !(e instanceof Player))
-        {
-            return false;
-        }
-
-        //If passes sculk predicate
-        if(isSculkLivingEntity.test(e))
-        {
-            return false;
-        }
-
-        //Do not attack creepers
-        if(e instanceof Creeper)
-        {
-            return false;
-        }
-
-        if(e instanceof InfestationPurifierEntity)
-        {
-            return true;
-        }
-
-        //If not attackable or invulnerable or is dead/dying
-        if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
+        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
         {
             return false;
         }

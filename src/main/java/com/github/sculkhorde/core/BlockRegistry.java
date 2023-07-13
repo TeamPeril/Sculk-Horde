@@ -2,7 +2,6 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
@@ -260,7 +259,7 @@ public class BlockRegistry {
 	public static final RegistryObject<DevStructureTesterBlock> DEV_STRUCTURE_TESTER_BLOCK =
 			registerBlock("dev_structure_tester", () -> new DevStructureTesterBlock());
 
-	public static class Tags
+	public static class BlockTags
 	{
 		public static final TagKey<Block> SCULK_RAID_TARGET_HIGH_PRIORITY = create("sculk_raid_target/high_priority");
 		public static final TagKey<Block> SCULK_RAID_TARGET_MEDIUM_PRIORITY = create("sculk_raid_target/medium_priority");
@@ -269,19 +268,19 @@ public class BlockRegistry {
 		// Helper Function
 		private static TagKey<Block> create(String location)
 		{
-			return BlockTags.create(new ResourceLocation(SculkHorde.MOD_ID, location));
+			return net.minecraft.tags.BlockTags.create(new ResourceLocation(SculkHorde.MOD_ID, location));
 		}
 
 		// Helper Function
 		private static TagKey<Block> createForge(String location)
 		{
-			return BlockTags.create(new ResourceLocation("forge", location));
+			return net.minecraft.tags.BlockTags.create(new ResourceLocation("forge", location));
 		}
 
 		// Helper Function
 		private static TagKey<Block> createMinecraft(String location)
 		{
-			return BlockTags.create(new ResourceLocation(location));
+			return net.minecraft.tags.BlockTags.create(new ResourceLocation(location));
 		}
 	}
 }

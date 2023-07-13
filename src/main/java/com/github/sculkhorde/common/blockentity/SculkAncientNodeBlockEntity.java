@@ -181,9 +181,9 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
         level.players().forEach((player) -> {
-            if(player.blockPosition().closerThan(blockPos, distance))
+            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator())
             {
-                player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(5), 1));
+                player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 1));
             }
         });
     }

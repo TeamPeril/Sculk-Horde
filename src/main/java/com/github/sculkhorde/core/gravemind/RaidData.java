@@ -93,15 +93,15 @@ public class RaidData {
 
         for (BlockPos blockPos : foundTargets)
         {
-            if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+            if (level.getBlockState(blockPos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
             {
                 high_priority_targets.add(blockPos);
             }
-            else if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+            else if (level.getBlockState(blockPos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
             {
                 medium_priority_targets.add(blockPos);
             }
-            else if (level.getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY))
+            else if (level.getBlockState(blockPos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
             {
                 low_priority_targets.add(blockPos);
             }
@@ -605,9 +605,9 @@ public class RaidData {
 
     public final Predicate<BlockPos> isTargetInvestigateLocationState = (blockPos) ->
     {
-        boolean isTarget = getLevel().getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-                || getLevel().getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
-                || getLevel().getBlockState(blockPos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
+        boolean isTarget = getLevel().getBlockState(blockPos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+                || getLevel().getBlockState(blockPos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
+                || getLevel().getBlockState(blockPos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
 
         // If the target is outside of the current raid radius, increase the raid radius
         if (isTarget && BlockAlgorithms.getBlockDistance(getAreaOfInterestEntry().getPosition(), blockPos) > getCurrentRaidRadius()) {
