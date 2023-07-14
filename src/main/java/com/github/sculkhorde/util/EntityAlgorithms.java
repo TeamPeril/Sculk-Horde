@@ -131,11 +131,6 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(entity instanceof InfestationPurifierEntity)
-        {
-            return true;
-        }
-
         if(isSculkLivingEntity.test(entity))
         {
             return true;

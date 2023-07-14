@@ -60,6 +60,11 @@ public class TargetParameters
             return false;
         }
 
+        if(e instanceof InfestationPurifierEntity)
+        {
+            return true;
+        }
+
         //If player is in creative or spectator
         if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {

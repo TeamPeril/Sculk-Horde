@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -68,10 +69,8 @@ public class EntityRegistry {
     {
         public static TagKey<EntityType<?>> SCULK_ENTITY = create("sculk_entity");
 
-        private static TagKey<EntityType<?>> create(String p_203849_) {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(p_203849_));
+        private static TagKey<EntityType<?>> create(String string) {
+            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SculkHorde.MOD_ID, string));
         }
     }
-
-
 }
