@@ -13,6 +13,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
@@ -73,14 +74,9 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
     {
         super.start();
 
-
-        //Disable mob's movement for 10 seconds
-        this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
         getSculkEnderman().canTeleport = false;
-
-
     }
 
     @Override
@@ -130,11 +126,24 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
 
     public void performRangedAttack(LivingEntity targetEntity, float power)
     {
+
         if(targetEntity == null)
         {
             return;
         }
 
+        double xSpawn = mob.getX();
+        double ySpawn = mob.getY() + mob.getBbHeight() + 1;
+        double zSpawn = mob.getX();
+
+        double xDirection = targetEntity.getX() - xSpawn;
+        double yDirection = targetEntity.getY(0.5D) - ySpawn;
+        double zDirection = targetEntity.getZ() - zSpawn;
+
+        DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
+        dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
+        this.mob.level().addFreshEntity(dragonfireball);
+        /*
         ItemStack itemstack = this.getProjectile();
         AbstractArrow abstractarrow = this.getArrow(itemstack, power);
 
@@ -145,5 +154,7 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
         abstractarrow.shoot(xVector, yVector + finalVector * (double)0.2F, zVector, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));
         mob.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
         mob.level().addFreshEntity(abstractarrow);
+
+         */
     }
 }
