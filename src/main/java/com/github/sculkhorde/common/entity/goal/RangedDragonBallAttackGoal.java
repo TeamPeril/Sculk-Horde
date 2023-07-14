@@ -1,38 +1,39 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.SculkEndermanEntity;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.DragonFireball;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Predicate;
+import java.util.EnumSet;
 
-public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
+public class RangedDragonBallAttackGoal extends Goal
 {
+    private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
     protected int ticksElapsed = executionCooldown;
+    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(1);
+    private int attackkIntervalCooldown = 0;
 
-    public EnderArrowSpamAttackGoal(PathfinderMob mob, int durationInTicks) {
-        super(mob, 0.0F, true);
+
+    public RangedDragonBallAttackGoal(PathfinderMob mob, int durationInTicks) {
+        this.mob = mob;
         maxAttackDuration = durationInTicks;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+    }
+
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 
     private SculkEndermanEntity getSculkEnderman()
@@ -84,7 +85,7 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        performRangedAttack(mob.getTarget(), 5.0F);
+        performRangedAttack(mob.getTarget());
     }
 
     @Override
@@ -96,38 +97,18 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
         ticksElapsed = 0;
         getSculkEnderman().canTeleport = true;
     }
-
-    protected ItemStack getProjectile()
-    {
-        return new ItemStack(Items.ARROW);
-    }
-
-    protected AbstractArrow getArrow(ItemStack itemStack, float power) {
-        return getMobArrow(this.mob, itemStack, power);
-    }
-
-    public static AbstractArrow getMobArrow(LivingEntity sourceEntity, ItemStack itemStack, float power)
-    {
-        ArrowItem arrowitem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
-
-        AbstractArrow abstractarrow = arrowitem.createArrow(sourceEntity.level(), itemStack, sourceEntity);
-
-        abstractarrow.setPos(sourceEntity.getX(), sourceEntity.getY() + (double)sourceEntity.getBbHeight() + 1, sourceEntity.getZ());
-
-        abstractarrow.setEnchantmentEffectsFromEntity(sourceEntity, power);
-
-        if (itemStack.is(Items.TIPPED_ARROW) && abstractarrow instanceof Arrow)
-        {
-            ((Arrow)abstractarrow).setEffectsFromItem(itemStack);
-        }
-
-        return abstractarrow;
-    }
-
-    public void performRangedAttack(LivingEntity targetEntity, float power)
+    public void performRangedAttack(LivingEntity targetEntity)
     {
 
         if(targetEntity == null)
+        {
+            return;
+        }
+
+        attackkIntervalCooldown--;
+
+
+        if(attackkIntervalCooldown > 0)
         {
             return;
         }
@@ -142,19 +123,8 @@ public class EnderArrowSpamAttackGoal extends MeleeAttackGoal
 
         DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
         dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
-        this.mob.level().addFreshEntity(dragonfireball);
-        /*
-        ItemStack itemstack = this.getProjectile();
-        AbstractArrow abstractarrow = this.getArrow(itemstack, power);
+        mob.level().addFreshEntity(dragonfireball);
 
-        double xVector = targetEntity.getX() - mob.getX();
-        double yVector = targetEntity.getY(0.3333333333333333D) - abstractarrow.getY();
-        double zVector = targetEntity.getZ() - mob.getZ();
-        double finalVector = Math.sqrt(xVector * xVector + zVector * zVector);
-        abstractarrow.shoot(xVector, yVector + finalVector * (double)0.2F, zVector, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));
-        mob.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level().addFreshEntity(abstractarrow);
-
-         */
+        attackkIntervalCooldown = attackIntervalTicks;
     }
 }
