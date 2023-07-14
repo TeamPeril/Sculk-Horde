@@ -41,7 +41,7 @@ public class ModColaborationHelper {
             return false;
         }
 
-        TagKey<EntityType<?>> sporeEntityTagKey = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("spore:things"));
+        TagKey<EntityType<?>> sporeEntityTagKey = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("spore:fungus_entities"));
 
         return entity.getType().is(sporeEntityTagKey);
     }
