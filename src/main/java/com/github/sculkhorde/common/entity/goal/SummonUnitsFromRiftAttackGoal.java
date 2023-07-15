@@ -99,7 +99,6 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        getSculkEnderman().canTeleport = false;
         ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
         // Shuffle
         Collections.shuffle(possibleSpawns);
@@ -124,6 +123,7 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
+        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override

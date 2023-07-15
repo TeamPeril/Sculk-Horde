@@ -3,6 +3,9 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.RaidData;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -187,10 +190,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     public void registerGoals() {
 
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        //this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
-        //this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
-        //this.goalSelector.addGoal(2, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(2, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
@@ -227,6 +230,43 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         super.aiStep();
     }
 
+    private boolean isWithinRaidLocation()
+    {
+        return BlockAlgorithms.getBlockDistance(RaidHandler.raidData.getRaidLocation(), this.blockPosition()) <= 64;
+    }
+
+    private void teleportTowardsRaidLocationIfOutside()
+    {
+        if(!isWithinRaidLocation() && isInvestigatingPossibleRaidLocation && ticksSinceLastTeleport >= TELEPORT_COOLDOWN)
+        {
+            teleportTowardsPos(RaidHandler.raidData.getRaidLocation());
+        }
+    }
+
+    public void stayInSpecificRangeOfTarget(int min, int max)
+    {
+        if(getTarget() == null)
+        {
+            return;
+        }
+
+        if(ticksSinceLastTeleport < TELEPORT_COOLDOWN/4)
+        {
+            return;
+        }
+
+        // If Too Far, teleport closer
+        if(distanceTo(getTarget()) > max)
+        {
+            teleportTowardsEntity(getTarget());
+        }
+        // If Too Close, teleport away
+        else if(distanceTo(getTarget()) < min)
+        {
+            teleportAwayFromEntity(getTarget());
+        }
+    }
+
     /**
      * Called every tick to update the entity's position/logic.
      */
@@ -236,19 +276,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
 
         ticksSinceLastTeleport++;
+
         incrementSpecialAttackCooldown();
-        if ((getTarget() == null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN) || (getTarget() != null && ticksSinceLastTeleport >= TELEPORT_COOLDOWN/8))
-        {
-            ticksSinceLastTeleport = 0;
-            if(getTarget() == null && !isInvestigatingPossibleRaidLocation)
-            {
-                this.teleport();
-            }
-            else if(getTarget() != null)
-            {
-                teleportTowards(getTarget());
-            }
-        }
+
+        teleportTowardsRaidLocationIfOutside();
 
         // If angry, dont check for looking players
         if(entityData.get(DATA_ANGRY))
@@ -293,7 +324,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      * @param entity The entity to teleport towards
      * @return Returns true if the teleport was successful
      */
-    protected boolean teleportTowards(Entity entity)
+    public boolean teleportTowardsEntity(Entity entity)
     {
         if(!canTeleport)
         {
@@ -301,6 +332,27 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         }
 
         Vec3 vec3 = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
+        vec3 = vec3.normalize();
+        double teleportDistance = 8.0D;
+        double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * teleportDistance;
+        double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3.y * teleportDistance;
+        double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * teleportDistance;
+        return this.teleport(d1, d2, d3);
+    }
+
+    /**
+     * Teleports the entity towards the given entity
+     * @param pos The position to teleport towards
+     * @return Returns true if the teleport was successful
+     */
+    protected boolean teleportTowardsPos(BlockPos pos)
+    {
+        if(!canTeleport)
+        {
+            return false;
+        }
+
+        Vec3 vec3 = new Vec3(this.getX() - pos.getX(), this.getY(0.5D), this.getZ() - pos.getZ());
         vec3 = vec3.normalize();
         double teleportDistance = 8.0D;
         double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * teleportDistance;
@@ -354,7 +406,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
         boolean isMotionBlockFlag = false; blockstate.blocksMotion();
         boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
-        if (isMotionBlockFlag && !isWaterFlag)
+        if (!isWaterFlag)
         {
             net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, x, y, z);
             if (event.isCanceled())
@@ -370,6 +422,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 {
                     this.level().playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                    ticksSinceLastTeleport = 0;
                 }
             }
 

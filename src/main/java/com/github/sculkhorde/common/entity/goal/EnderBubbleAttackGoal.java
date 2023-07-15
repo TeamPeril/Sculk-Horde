@@ -57,6 +57,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         attackBubble.setPos(this.mob.getX(), this.mob.getY() + (this.mob.getBbHeight() / 2), this.mob.getZ());
         this.mob.level().addFreshEntity(attackBubble);
         getSculkEnderman().canTeleport = false;
+        this.mob.setInvulnerable(true);
     }
 
     @Override
@@ -74,5 +75,6 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         attackBubble.discard();
         elapsedAttackDuration = 0;
         getSculkEnderman().canTeleport = true;
+        this.mob.setInvulnerable(false);
     }
 }
