@@ -18,9 +18,11 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -472,8 +474,14 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         super.onSyncedDataUpdated(p_32513_);
     }
 
+    @Override
     public boolean isSensitiveToWater() {
         return true;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        return source.is(DamageTypeTags.BYPASSES_ARMOR);
     }
 
     // ####### Animation Code ###########

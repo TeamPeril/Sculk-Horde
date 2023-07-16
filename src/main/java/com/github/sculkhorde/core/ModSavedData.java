@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -47,6 +48,8 @@ public class ModSavedData extends SavedData {
     private final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
     // List of areas of interests
     private final ArrayList<AreaofInterestEntry> areasOfInterestEntries = new ArrayList<>();
+    // List of No Raid Zone Areas
+    private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
 
     // the amount of mass that the sculk hoard has accumulated.
     private int sculkAccumulatedMass = 0;
@@ -128,6 +131,9 @@ public class ModSavedData extends SavedData {
             SculkHorde.savedData.getAreasOfInterestEntries().add(AreaofInterestEntry.serialize(gravemindData.getCompound("area_of_interest_entry" + i)));
         }
 
+        for(int i = 0; gravemindData.contains("no_raid_zone_entry" + i); i++) {
+            SculkHorde.savedData.getNoRaidZoneEntries().add(NoRaidZoneEntry.serialize(gravemindData.getCompound("no_raid_zone_entry" + i)));
+        }
 
         if(RaidHandler.raidData == null)
         {
@@ -138,6 +144,10 @@ public class ModSavedData extends SavedData {
 
         return getGravemindMemory();
 
+    }
+
+    public ArrayList<NoRaidZoneEntry> getNoRaidZoneEntries() {
+        return noRaidZoneEntries;
     }
 
     /**
@@ -179,6 +189,10 @@ public class ModSavedData extends SavedData {
 
         for (ListIterator<AreaofInterestEntry> iterator = getAreasOfInterestEntries().listIterator(); iterator.hasNext(); ) {
             gravemindData.put("area_of_interest_entry" + iterator.nextIndex(), iterator.next().deserialize());
+        }
+
+        for (ListIterator<NoRaidZoneEntry> iterator = getNoRaidZoneEntries().listIterator(); iterator.hasNext(); ) {
+            gravemindData.put("no_raid_zone_entry" + iterator.nextIndex(), iterator.next().deserialize());
         }
 
         nbt.put("gravemindData", gravemindData);
@@ -436,6 +450,27 @@ public class ModSavedData extends SavedData {
         setDirty();
     }
 
+    public void addNoRaidZoneToMemory(BlockPos positionIn) {
+        if(getNoRaidZoneEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to add a no raid zone to memory but the list was null");
+            return;
+        }
+
+        // If already exists in memory, dont add it again
+        for(int i = 0; i < getNoRaidZoneEntries().size(); i++)
+        {
+            if(getNoRaidZoneEntries().get(i).position == positionIn || getNoRaidZoneEntries().get(i).position.closerThan(positionIn, 100))
+            {
+                return;
+            }
+        }
+
+        SculkHorde.LOGGER.info("Adding No Raid Zone at " + positionIn + " to memory");
+        getNoRaidZoneEntries().add(new NoRaidZoneEntry(positionIn, 1000, level.getGameTime(), TickUnits.convertHoursToTicks(5)));
+        setDirty();
+    }
+
     private Optional<DeathAreaEntry> getDeathAreaWithinRange(BlockPos positionIn, int range)
     {
         if(getDeathAreaEntries() == null)
@@ -480,6 +515,29 @@ public class ModSavedData extends SavedData {
         }
 
         return Optional.of(highestDeathArea);
+    }
+
+    /**
+     * Will try to return an Area of Interest Entry that is not in a no raid zone.
+     * @return Optional<AreaofInterestEntry> - The area of interest entry that is not in a no raid zone
+     */
+    public Optional<AreaofInterestEntry> getAreaOfInterestEntryNotInNoRaidZone()
+    {
+        if(getAreasOfInterestEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to get an area of interest from memory but the list was null");
+            return null;
+        }
+
+        for(int i = 0; i < getAreasOfInterestEntries().size(); i++)
+        {
+            // If the area of interest is not in a no raid zone, return it
+            if(!isInNoRaidZone(getAreasOfInterestEntries().get(i).getPosition()))
+            {
+                return Optional.of(getAreasOfInterestEntries().get(i));
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -537,10 +595,9 @@ public class ModSavedData extends SavedData {
         {
             if (!getPriorityBlockEntries().get(index).isEntryValid(level))
             {
-                getPriorityBlockEntries().remove(index);
+                SculkHorde.LOGGER.info("Priority Block Entry at " + getPriorityBlockEntries().get(index).position + " is invalid. Removing from memory.");                getPriorityBlockEntries().remove(index);
                 index--;
                 setDirty();
-                SculkHorde.LOGGER.info("Priority Block Entry at " + getPriorityBlockEntries().get(index).position + " is invalid. Removing from memory.");
             }
         }
 
@@ -548,6 +605,38 @@ public class ModSavedData extends SavedData {
         if(SculkHorde.isDebugMode()) {
             SculkHorde.LOGGER.info("Priority Block Validation Took " + (endTime - startTime) + " milliseconds");
         }
+    }
+
+    public void validateNoRaidZoneEntries()
+    {
+        long startTime = System.currentTimeMillis();
+        for (int index = 0; index < getNoRaidZoneEntries().size(); index++)
+        {
+            if (getNoRaidZoneEntries().get(index).isExpired(level.getGameTime()))
+            {
+                SculkHorde.LOGGER.info("No Raid Zone Entry at " + getNoRaidZoneEntries().get(index).position + " has expired. Removing from memory.");
+                getNoRaidZoneEntries().remove(index);
+                index--;
+                setDirty();
+            }
+        }
+
+        long endTime = System.currentTimeMillis();
+        if(SculkHorde.isDebugMode()) {
+            SculkHorde.LOGGER.info("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
+        }
+    }
+
+    public boolean isInNoRaidZone(BlockPos pos)
+    {
+        for(NoRaidZoneEntry entry : getNoRaidZoneEntries())
+        {
+            if(entry.isBlockPosInRadius(pos))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1067,6 +1156,76 @@ public class ModSavedData extends SavedData {
          */
         public static AreaofInterestEntry serialize(CompoundTag nbt) {
             return new AreaofInterestEntry(BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
+        }
+    }
+
+    public static class NoRaidZoneEntry
+    {
+        private final BlockPos position; // The Location
+        private final int radius;
+        private final long timeOfCreation; // this.level.getGameTime();
+        private long durationInTicksUntilExpiration;
+
+        public NoRaidZoneEntry(BlockPos positionIn, int radiusIn, long gameTimeStampIn, long durationUntilExpirationIn)
+        {
+            position = positionIn;
+            radius = radiusIn;
+            timeOfCreation = gameTimeStampIn;
+            durationInTicksUntilExpiration = durationUntilExpirationIn;
+        }
+
+
+        public BlockPos getPosition()
+        {
+            return position;
+        }
+
+        public int getRadius()
+        {
+            return radius;
+        }
+
+        public long getTimeOfCreation()
+        {
+            return timeOfCreation;
+        }
+
+        public long getDurationInTicksUntilExpiration()
+        {
+            return durationInTicksUntilExpiration;
+        }
+
+        public boolean isExpired(long currentTimeStamp)
+        {
+            return (currentTimeStamp - timeOfCreation) > durationInTicksUntilExpiration;
+        }
+
+        public boolean isBlockPosInRadius(BlockPos blockPosIn)
+        {
+            return position.closerThan(blockPosIn, radius);
+        }
+
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
+        public CompoundTag deserialize()
+        {
+            CompoundTag nbt = new CompoundTag();
+            nbt.putLong("position", position.asLong());
+            nbt.putInt("radius", radius);
+            nbt.putLong("gameTimeStamp", timeOfCreation);
+            nbt.putLong("durationUntilExpiration", durationInTicksUntilExpiration);
+            return nbt;
+        }
+
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
+        public static NoRaidZoneEntry serialize(CompoundTag nbt)
+        {
+            return new NoRaidZoneEntry(BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }
 }

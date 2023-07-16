@@ -77,7 +77,17 @@ public class RaidHandler {
             return false;
         }
 
-        return !SculkHorde.savedData.getAreasOfInterestEntries().isEmpty() || raidData.getAreaOfInterestEntry() != null;
+        if(SculkHorde.savedData.getAreasOfInterestEntries().isEmpty())
+        {
+            return false;
+        }
+
+        if(SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone().isEmpty())
+        {
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -191,7 +201,14 @@ public class RaidHandler {
 
     private void initializeBlockSearcherForInvestigateLocation(int searchIterationsPerTick, int maxTargets)
     {
-        raidData.setAreaOfInterestEntry(SculkHorde.savedData.getAreasOfInterestEntries().get(0));
+        Optional<ModSavedData.AreaofInterestEntry> possibleEntry = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone();
+        if(possibleEntry.isEmpty())
+        {
+            raidData.setFailure(failureType.FAILED_INITIALIZATION);
+            return;
+        }
+
+        raidData.setAreaOfInterestEntry(possibleEntry.get());
         raidData.setBlockSearcher(new BlockSearcher(raidData.getLevel(), raidData.getAreaOfInterestEntry().getPosition()));
         raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
         raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
@@ -220,16 +237,8 @@ public class RaidHandler {
         raidData.getBlockSearcher().MAX_TARGETS = maxTargets;
     }
 
-
-
     private void investigatingLocationTick()
     {
-        if(SculkHorde.savedData.getAreasOfInterestEntries().isEmpty())
-        {
-            raidData.setFailure(failureType.FAILED_INITIALIZATION);
-            return;
-        }
-
         // Initialize Block Searcher if null
         if(raidData.getBlockSearcher() == null)
         {
@@ -453,6 +462,7 @@ public class RaidHandler {
 
     private void completeRaidTick()
     {
+        SculkHorde.savedData.addNoRaidZoneToMemory(raidData.getRaidLocation());
         announceToAllPlayers(Component.literal("The Sculk Horde's raid was successful!"));
         // Summon Sculk Spore Spewer
         SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(EntityRegistry.SCULK_SPORE_SPEWER.get(), raidData.getLevel());
@@ -474,6 +484,11 @@ public class RaidHandler {
                 announceToAllPlayers(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"));
                 raidData.getLevel().players().forEach((player) -> raidData.getLevel().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
                 break;
+        }
+
+        if(raidData.getRaidLocation() != null && raidData.getRaidLocation() != BlockPos.ZERO && raidData.getRaidLocation() != null)
+        {
+            SculkHorde.savedData.addNoRaidZoneToMemory(raidData.getRaidLocation());
         }
 
         raidData.reset();
@@ -513,7 +528,7 @@ public class RaidHandler {
             raidData.getWaveParticipants().add(creeper);
         }
 
-        if(raidData.getCurrentWave() == raidData.getMaxWaves())
+        if(raidData.getCurrentWave() > raidData.getMaxWaves())
         {
             Mob boss = EntityRegistry.SCULK_ENDERMAN.get().create(raidData.getLevel());
             boss.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());

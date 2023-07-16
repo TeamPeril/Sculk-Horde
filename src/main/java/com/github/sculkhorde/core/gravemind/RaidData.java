@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 public class RaidData {
 
     // Timing Variables
-    public static int COOLDOWN_BETWEEN_RAIDS = TickUnits.convertMinutesToTicks(5); // TODO INCREASE COOLDOWN
+    public static int COOLDOWN_BETWEEN_RAIDS = TickUnits.convertHoursToTicks(1);
     protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
     protected int waveDuration = 0;
     private int timeElapsedScouting = 0;
@@ -47,6 +47,7 @@ public class RaidData {
     protected ArrayList<ISculkSmartEntity> waveParticipants = new ArrayList<>();
     private RaidHandler.RaidState raidState = RaidHandler.RaidState.INACTIVE;
     protected RaidHandler.failureType failure = RaidHandler.failureType.NONE;
+
 
     // Enderman Scouting
     private SculkEndermanEntity scoutEnderman = null;
@@ -154,7 +155,7 @@ public class RaidData {
         setSpawnLocation(BlockPos.ZERO);
         waveParticipants.clear();
         setRemainingWaveParticipants(0);
-        setCurrentWave(0);
+        setCurrentWave(1);
         setScoutEnderman(null);
         setTimeElapsedScouting(0);
         setCurrentRaidRadius(MINIMUM_RAID_RADIUS);

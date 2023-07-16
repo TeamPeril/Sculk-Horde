@@ -134,4 +134,5 @@ public class RainDragonBallAttackGoal extends Goal
 
         attackkIntervalCooldown = attackIntervalTicks;
     }
+
 }

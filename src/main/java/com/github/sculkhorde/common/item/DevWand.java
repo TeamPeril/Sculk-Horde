@@ -100,7 +100,8 @@ public class DevWand extends Item implements IForgeItem {
 								"Nests Count: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
 								"Hostiles Count: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
 								"Death Area Reports Count: " + SculkHorde.savedData.getDeathAreaEntries().size() + "\n" +
-								"Areas of Interest Count: " + SculkHorde.savedData.getAreasOfInterestEntries().size() + "\n"
+								"Areas of Interest Count: " + SculkHorde.savedData.getAreasOfInterestEntries().size() + "\n" +
+								"No Raid Zone Entries Count: " + SculkHorde.savedData.getNoRaidZoneEntries().size() + "\n"
 						), false);
 				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
 				return InteractionResultHolder.pass(itemstack);
