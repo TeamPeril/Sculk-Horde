@@ -202,7 +202,119 @@ public class BlockRegistry {
 
 	public static final RegistryObject<Block> INFESTED_TERRACOTTA =
 			registerBlock("infested_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_ORANGE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_BLACK_TERRACOTTA =
+			registerBlock("infested_black_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_BLUE_TERRACOTTA =
+			registerBlock("infested_blue_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_BROWN_TERRACOTTA =
+			registerBlock("infested_brown_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BROWN)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_CYAN_TERRACOTTA =
+			registerBlock("infested_cyan_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_CYAN)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_GRAY_TERRACOTTA =
+			registerBlock("infested_gray_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_GRAY)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_GREEN_TERRACOTTA =
+			registerBlock("infested_green_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_GREEN)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_LIGHT_BLUE_TERRACOTTA =
+			registerBlock("infested_light_blue_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_LIGHT_BLUE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_LIGHT_GRAY_TERRACOTTA =
+			registerBlock("infested_light_gray_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_LIME_TERRACOTTA =
+			registerBlock("infested_lime_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_LIGHT_GREEN)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_MAGENTA_TERRACOTTA =
+			registerBlock("infested_magenta_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_MAGENTA)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_ORANGE_TERRACOTTA =
+			registerBlock("infested_orange_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_ORANGE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_PINK_TERRACOTTA =
+			registerBlock("infested_pink_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_PINK)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_PURPLE_TERRACOTTA =
+			registerBlock("infested_purple_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_PURPLE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_RED_TERRACOTTA =
+			registerBlock("infested_red_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_RED)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_WHITE_TERRACOTTA =
+			registerBlock("infested_white_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_WHITE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_YELLOW_TERRACOTTA =
+			registerBlock("infested_yellow_terracotta", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_YELLOW)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));

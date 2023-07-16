@@ -67,9 +67,25 @@ public class ModCreativeModeTab {
                 event.accept(BlockRegistry.INFESTED_GRANITE.get());
                 event.accept(BlockRegistry.INFESTED_TUFF.get());
                 event.accept(BlockRegistry.INFESTED_CALCITE.get());
-                event.accept(BlockRegistry.INFESTED_TERRACOTTA.get());
                 event.accept(BlockRegistry.INFESTED_SNOW.get());
                 event.accept(BlockRegistry.INFESTED_MOSS.get());
+                event.accept(BlockRegistry.INFESTED_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_BLACK_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_BLUE_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_BROWN_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_CYAN_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_GRAY_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_GREEN_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_LIGHT_BLUE_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_LIGHT_GRAY_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_LIME_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_MAGENTA_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_ORANGE_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_PINK_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_PURPLE_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_RED_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_WHITE_TERRACOTTA.get());
+                event.accept(BlockRegistry.INFESTED_YELLOW_TERRACOTTA.get());
             })
             .build());
 }

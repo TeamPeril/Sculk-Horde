@@ -58,8 +58,24 @@ public class ModEventSubscriber {
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COBBLESTONE, BlockRegistry.INFESTED_COBBLESTONE.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRAVEL, BlockRegistry.INFESTED_GRAVEL.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SNOW_BLOCK, BlockRegistry.INFESTED_SNOW.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TERRACOTTA, BlockRegistry.INFESTED_TERRACOTTA.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MOSS_BLOCK, BlockRegistry.INFESTED_MOSS.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TERRACOTTA, BlockRegistry.INFESTED_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BLACK_TERRACOTTA, BlockRegistry.INFESTED_BLACK_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BLUE_TERRACOTTA, BlockRegistry.INFESTED_BLUE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BROWN_TERRACOTTA, BlockRegistry.INFESTED_BROWN_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CYAN_TERRACOTTA, BlockRegistry.INFESTED_CYAN_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRAY_TERRACOTTA, BlockRegistry.INFESTED_GRAY_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GREEN_TERRACOTTA, BlockRegistry.INFESTED_GREEN_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIGHT_BLUE_TERRACOTTA, BlockRegistry.INFESTED_LIGHT_BLUE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIGHT_GRAY_TERRACOTTA, BlockRegistry.INFESTED_LIGHT_GRAY_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIME_TERRACOTTA, BlockRegistry.INFESTED_LIME_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MAGENTA_TERRACOTTA, BlockRegistry.INFESTED_MAGENTA_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ORANGE_TERRACOTTA, BlockRegistry.INFESTED_ORANGE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PINK_TERRACOTTA, BlockRegistry.INFESTED_PINK_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PURPLE_TERRACOTTA, BlockRegistry.INFESTED_PURPLE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.RED_TERRACOTTA, BlockRegistry.INFESTED_RED_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.WHITE_TERRACOTTA, BlockRegistry.INFESTED_WHITE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.YELLOW_TERRACOTTA, BlockRegistry.INFESTED_YELLOW_TERRACOTTA.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
