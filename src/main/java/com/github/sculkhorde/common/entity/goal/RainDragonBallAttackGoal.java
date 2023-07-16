@@ -6,30 +6,25 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.DragonFireball;
-import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.EnumSet;
 
-public class RangedDragonBallAttackGoal extends Goal
+public class RainDragonBallAttackGoal extends Goal
 {
     private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
-    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(1);
+    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.5F);
     private int attackkIntervalCooldown = 0;
 
 
-    public RangedDragonBallAttackGoal(PathfinderMob mob, int durationInTicks) {
+    public RainDragonBallAttackGoal(PathfinderMob mob, int durationInTicks) {
         this.mob = mob;
         maxAttackDuration = durationInTicks;
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -61,7 +56,7 @@ public class RangedDragonBallAttackGoal extends Goal
             return false;
         }
 
-        if(mob.getHealth() < mob.getMaxHealth()/2)
+        if(mob.getHealth() > mob.getMaxHealth()/2)
         {
             return false;
         }
@@ -89,8 +84,10 @@ public class RangedDragonBallAttackGoal extends Goal
     {
         super.tick();
         elapsedAttackDuration++;
-        performRangedAttack(mob.getTarget());
-
+        spawnFallingDragonBallInRandomPosition(30);
+        spawnFallingDragonBallInRandomPosition(30);
+        spawnFallingDragonBallInRandomPosition(30);
+        spawnFallingDragonBallInRandomPosition(30);
         getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
@@ -104,26 +101,10 @@ public class RangedDragonBallAttackGoal extends Goal
         getSculkEnderman().canTeleport = true;
     }
 
-    public void keepDistanceFromTarget(int distance)
-    {
-        if(mob.getTarget() == null)
-        {
-            return;
-        }
 
-        if(mob.distanceTo(mob.getTarget()) < distance)
-        {
-            getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        }
-    }
-
-    public void performRangedAttack(LivingEntity targetEntity)
+    public void spawnFallingDragonBallInRandomPosition(int range)
     {
 
-        if(targetEntity == null)
-        {
-            return;
-        }
 
         attackkIntervalCooldown--;
 
@@ -133,13 +114,19 @@ public class RangedDragonBallAttackGoal extends Goal
             return;
         }
 
-        double xSpawn = mob.getX();
-        double ySpawn = mob.getY() + mob.getBbHeight() + 2;
-        double zSpawn = mob.getZ();
+        if(mob.getTarget() == null)
+        {
+            return;
+        }
 
-        double xDirection = targetEntity.getX() - xSpawn;
-        double yDirection = targetEntity.getY(0.5D) - ySpawn;
-        double zDirection = targetEntity.getZ() - zSpawn;
+        double xSpawn = mob.getTarget().getX() + (mob.getTarget().getRandom().nextInt(range) - ((double) range / 2));
+        double ySpawn = mob.getTarget().level().getMaxBuildHeight();
+        double zSpawn = mob.getTarget().getZ() + (mob.getTarget().getRandom().nextInt(range) - ((double) range / 2));
+
+        // Spawn going downwards
+        double xDirection = 0;
+        double yDirection = -3;
+        double zDirection = 0;
 
         DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
         dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);

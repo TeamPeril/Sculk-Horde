@@ -8,7 +8,9 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
@@ -17,14 +19,14 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
+public class SummonRandomAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
 
-    public SummonUnitsFromRiftAttackGoal(PathfinderMob mob, int durationInTicks) {
+    public SummonRandomAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -108,11 +110,12 @@ public class SummonUnitsFromRiftAttackGoal extends MeleeAttackGoal
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            Optional<EntityFactoryEntry> entry =  SculkHorde.entityFactory.getRandomEntry(isValidReinforcement());
+            Optional<EntityFactoryEntry> entry =  EntityFactory.getRandomEntry(isValidReinforcement());
 
             if(entry.isPresent())
             {
-                entry.get().spawnEntity((ServerLevel) mob.level(), spawnPos.above());
+                Mob spawnedMob = entry.get().spawnEntity((ServerLevel) mob.level(), spawnPos.above());
+
             }
         }
 

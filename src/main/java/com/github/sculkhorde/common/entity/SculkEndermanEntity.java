@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
@@ -178,6 +177,16 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     }
 
+    public boolean isTeleportCooldownOver() {
+        if(getTarget() != null)
+        {
+            return ticksSinceLastTeleport >= TELEPORT_COOLDOWN/8;
+        }
+
+        return ticksSinceLastTeleport >= TELEPORT_COOLDOWN;
+
+    }
+
     @Override
     public void checkDespawn() {}
 
@@ -189,10 +198,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     @Override
     public void registerGoals() {
 
-        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
-        this.goalSelector.addGoal(2, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
-        this.goalSelector.addGoal(2, new SummonUnitsFromRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(2, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
+        //this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
@@ -207,10 +219,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     @Override
     public boolean hurt(DamageSource damageSource, float amount)
     {
-        if(damageSource.getEntity() != null)
-        {
-            teleportAwayFromEntity(damageSource.getEntity());
-        }
+
+        teleportRandomly(32);
+
         entityData.set(DATA_ANGRY, true);
         return super.hurt(damageSource, amount);
     }
@@ -237,7 +248,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     private void teleportTowardsRaidLocationIfOutside()
     {
-        if(!isWithinRaidLocation() && isInvestigatingPossibleRaidLocation && ticksSinceLastTeleport >= TELEPORT_COOLDOWN)
+        if(!isWithinRaidLocation() && isInvestigatingPossibleRaidLocation && isTeleportCooldownOver())
         {
             teleportTowardsPos(RaidHandler.raidData.getRaidLocation());
         }
@@ -250,7 +261,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             return;
         }
 
-        if(ticksSinceLastTeleport < TELEPORT_COOLDOWN/4)
+        if(!isTeleportCooldownOver())
         {
             return;
         }
@@ -304,17 +315,16 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      * Teleports the entity to a random position within 64 blocks of the entity
      * @return Returns true if the teleport was successful
      */
-    protected boolean teleport()
+    protected boolean teleportRandomly(int distance)
     {
         if (this.level().isClientSide() || !this.isAlive() || !canTeleport)
         {
             return false;
         }
 
-        double teleportDistance = 64.0D;
-        double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * teleportDistance;
+        double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * distance;
         double d1 = this.getY() + (double)(this.random.nextInt(64) - 32);
-        double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * teleportDistance;
+        double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * distance;
         return this.teleport(d0, d1, d2);
 
     }

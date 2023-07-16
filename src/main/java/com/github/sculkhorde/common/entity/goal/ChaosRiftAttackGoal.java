@@ -84,10 +84,8 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         // TODO Trigger Animation
 
         //Disable mob's movement for 10 seconds
-        this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        getSculkEnderman().canTeleport = false;
         ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 10);
         // Shuffle
         Collections.shuffle(possibleSpawns);
@@ -107,6 +105,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
+        getSculkEnderman().stayInSpecificRangeOfTarget(8, 16);
     }
 
     @Override
