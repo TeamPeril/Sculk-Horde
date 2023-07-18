@@ -160,26 +160,6 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         return silkTouchLevel == 0 ? 5 : 0;
     }
 
-    // EVENTS
-
-    /**
-     * This is the description the item of the block will display when hovered over.
-     * @param stack The item stack
-     * @param iBlockReader A block reader
-     * @param tooltip The tooltip
-     * @param flagIn The flag
-     */
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
-
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_node")); //Text that displays if holding shift
-    }
-
-
-
-
     // BlockStates
 
     /**

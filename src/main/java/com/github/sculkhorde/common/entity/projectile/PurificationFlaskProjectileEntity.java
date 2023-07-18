@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
+import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ItemRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,6 +68,27 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         }
     }
 
+
+    @Override
+    protected void onHit(HitResult result) {
+        super.onHit(result);
+
+        // If any entities are close to the impact, remove the infection from them.
+        for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2.0D)))
+        {
+            // If the entity is infected, remove the infection.
+            if(entity.hasEffect(EffectRegistry.SCULK_INFECTION.get()))
+            {
+                entity.removeEffect(EffectRegistry.SCULK_INFECTION.get());
+            }
+
+            // If the entity is lured, remove the lure.
+            if(entity.hasEffect(EffectRegistry.SCULK_LURE.get()))
+            {
+                entity.removeEffect(EffectRegistry.SCULK_LURE.get());
+            }
+        }
+    }
 
     /**
      * Gets called when this projectile hits an entity.

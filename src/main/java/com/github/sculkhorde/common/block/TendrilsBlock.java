@@ -56,39 +56,38 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
     @Override
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos)
     {
-        Level worldIn = (Level) pLevel;
         //IF the face it is placed on is not a valid face, return false.
         //The face depends on the direction of the block
-        BlockState northBlock = worldIn.getBlockState(pPos.north());
-        BlockState eastBlock = worldIn.getBlockState(pPos.east());
-        BlockState southBlock = worldIn.getBlockState(pPos.south());
-        BlockState westBlock = worldIn.getBlockState(pPos.west());
+        BlockState northBlock = pLevel.getBlockState(pPos.north());
+        BlockState eastBlock = pLevel.getBlockState(pPos.east());
+        BlockState southBlock = pLevel.getBlockState(pPos.south());
+        BlockState westBlock = pLevel.getBlockState(pPos.west());
 
         if(pState.getBlock().equals(BlockRegistry.TENDRILS.get()))
         {
-            if(pState.getValue(NORTH) == true && isValidFace(worldIn, northBlock, pPos, Direction.SOUTH))
+            if(pState.getValue(NORTH) == true && isValidFace(pLevel, northBlock, pPos, Direction.SOUTH))
             {
                 return true;
             }
-            else if(pState.getValue(EAST) == true && isValidFace(worldIn, eastBlock, pPos, Direction.WEST))
+            else if(pState.getValue(EAST) == true && isValidFace(pLevel, eastBlock, pPos, Direction.WEST))
             {
                 return true;
             }
-            else if(pState.getValue(SOUTH) == true && isValidFace(worldIn, southBlock, pPos, Direction.NORTH))
+            else if(pState.getValue(SOUTH) == true && isValidFace(pLevel, southBlock, pPos, Direction.NORTH))
             {
                 return true;
             }
-            else if(pState.getValue(WEST) == true && isValidFace(worldIn, westBlock, pPos, Direction.EAST))
+            else if(pState.getValue(WEST) == true && isValidFace(pLevel, westBlock, pPos, Direction.EAST))
             {
                 return true;
             }
         }
         else
         {
-            if(isValidFace(worldIn, northBlock, pPos, Direction.SOUTH)
-                || isValidFace(worldIn, eastBlock, pPos, Direction.WEST)
-                || isValidFace(worldIn, southBlock, pPos, Direction.NORTH)
-                || isValidFace(worldIn, westBlock, pPos, Direction.EAST))
+            if(isValidFace(pLevel, northBlock, pPos, Direction.SOUTH)
+                || isValidFace(pLevel, eastBlock, pPos, Direction.WEST)
+                || isValidFace(pLevel, southBlock, pPos, Direction.NORTH)
+                || isValidFace(pLevel, westBlock, pPos, Direction.EAST))
             {
                 return true;
             }
@@ -151,7 +150,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
      * @param direction The direction of the face
      * @return
      */
-    public boolean isValidFace(Level worldIn, BlockState blockState, BlockPos blockPosIn, Direction direction)
+    public boolean isValidFace(LevelReader worldIn, BlockState blockState, BlockPos blockPosIn, Direction direction)
     {
         if(!blockState.isFaceSturdy(worldIn, blockPosIn, direction))
         {

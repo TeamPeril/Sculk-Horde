@@ -2,6 +2,8 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkMassBlock;
+import com.github.sculkhorde.common.effect.SculkInfectionEffect;
+import com.github.sculkhorde.common.effect.SculkLureEffect;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.BlockRegistry;
@@ -117,35 +119,25 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(!event.getEntity().level().isClientSide() && SculkHorde.gravemind != null && event.getEntity().level().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.getEntity().level().isClientSide() || SculkHorde.gravemind == null || !event.getEntity().level().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
-            MobEffectInstance effectInstance = event.getEffectInstance();
-
-            //If Sculk Infection, spawn mites and mass.
-            assert effectInstance != null;
-            if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
-            {
-                LivingEntity entity = event.getEntity();
-                if(entity != null && entity instanceof LivingEntity)
-                {
-                    //Spawn Effect Level + 1 number of mites
-                    int infectionDamage = 4;
-                    Level entityLevel = entity.level();
-                    BlockPos entityPosition = entity.blockPosition();
-                    float entityHealth = entity.getMaxHealth();
-
-                    //Spawn Mite
-                    EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER);
-
-                    //Spawn Sculk Mass
-                    SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
-                    sculkMass.spawn(entityLevel, entityPosition, entityHealth);
-                    //Do infectionDamage to victim per mite
-                    entity.hurt(entity.damageSources().magic(), infectionDamage);
-                }
-            }
+            return;
         }
+
+        MobEffectInstance effectInstance = event.getEffectInstance();
+
+        if(effectInstance == null)
+        {
+            return;
+        }
+
+        if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
+        {
+            SculkInfectionEffect.onPotionExpire(event);
+        }
+
     }
+
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
