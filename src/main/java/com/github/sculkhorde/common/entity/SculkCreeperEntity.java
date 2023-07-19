@@ -35,6 +35,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     }
     @Override
     protected void registerGoals() {
+        this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(3)));
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SwellGoal(this));

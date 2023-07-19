@@ -152,7 +152,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private boolean areAnyTargetsNearBy(BlockPos blockPos, SculkSummonerBlockEntity blockEntity)
     {
         //Create bounding box to detect targets
-        blockEntity.searchArea = EntityAlgorithms.getSearchAreaRectangle(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockEntity.ACTIVATION_DISTANCE, 5, blockEntity.ACTIVATION_DISTANCE);
+         blockEntity.searchArea = EntityAlgorithms.getSearchAreaRectangle(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockEntity.ACTIVATION_DISTANCE, 5, blockEntity.ACTIVATION_DISTANCE);
 
         //Get targets inside bounding box.
         blockEntity.possibleAggressorTargets =

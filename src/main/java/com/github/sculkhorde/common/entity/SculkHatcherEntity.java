@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -156,6 +157,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     {
         Goal[] goals =
                 {
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                         new DespawnWhenIdle(this, 30),
                         //SwimGoal(mob)
                         new FloatGoal(this),

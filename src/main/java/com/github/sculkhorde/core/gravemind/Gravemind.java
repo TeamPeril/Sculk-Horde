@@ -3,6 +3,8 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.core.BlockEntityRegistry;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
@@ -77,12 +79,13 @@ public class Gravemind
         //This is how much mass is needed to go from undeveloped to immature
         int MASS_GOAL_FOR_IMMATURE = 5000;
         //This is how much mass is needed to go from immature to mature
-        int MASS_GOAL_FOR_MATURE = 100000000;
+        int MASS_GOAL_FOR_MATURE = 20000;
         if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
             //The radius that sculk nodes can infect in the immature state
             sculk_node_infect_radius = 20;
             evolution_state = evolution_states.Immature;
+            sculk_node_limit = 1;
         }
         else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
         {
@@ -140,13 +143,33 @@ public class Gravemind
             return;
         }
 
+        boolean isSenderTypeSummoner = context.sender == ReinforcementRequest.senderType.SculkCocoon;
+        boolean isThereAtLeastOneSpawnPoint = context.positions.length > 0;
+        boolean isThereSculkNodesInExistence = SculkHorde.savedData.getNodeEntries().size() > 0;
+
+        // If Overpopulated, and its a summoner, do not approve.
+        if(isSenderTypeSummoner && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
+        {
+            BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.positions[0]).getPosition();
+            Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get());
+            if(nodeBlockEntity.isPresent())
+            {
+                if(nodeBlockEntity.get().isPopulationAtMax())
+                {
+                    context.isRequestApproved = false;
+                    return;
+                }
+            }
+        }
+
+
 
         //If gravemind is undeveloped, just auto approve all requests
         if(evolution_state == evolution_states.Undeveloped)
         {
             context.isRequestApproved = true;
         }
-        else if(evolution_state == evolution_states.Immature)
+        else if(evolution_state == evolution_states.Immature || evolution_state == evolution_states.Mature)
         {
             //Spawn Combat Mobs to deal with player
             if(context.is_aggressor_nearby)

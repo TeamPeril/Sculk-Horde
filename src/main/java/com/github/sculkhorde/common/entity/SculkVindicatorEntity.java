@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -141,6 +142,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     {
         Goal[] goals =
                 {
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                         new DespawnWhenIdle(this, 120),
                         new OpenDoorGoal(this, true),
                         //SwimGoal(mob)

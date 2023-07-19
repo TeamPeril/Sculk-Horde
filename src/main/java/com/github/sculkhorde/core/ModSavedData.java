@@ -965,6 +965,21 @@ public class ModSavedData extends SavedData {
             SculkBeeNestBlock.setNestOpen(world, world.getBlockState(position), position);
         }
 
+
+        public NodeEntry getClosestNode(BlockPos pos)
+        {
+            NodeEntry closestEntry = getGravemindMemory().getNodeEntries().get(0);
+            for(NodeEntry entry : getGravemindMemory().getNodeEntries())
+            {
+                //If entry is closer than our current closest entry
+                if(getBlockDistance(pos, entry.position) < getBlockDistance(pos, closestEntry.position))
+                {
+                    closestEntry = entry;
+                }
+            }
+            return closestEntry;
+        }
+
         /**
          * Checks list of node entries and finds the closest one.
          * It then sets the parentNodePosition to be the position of

@@ -211,7 +211,7 @@ public class RaidHandler {
         raidData.setAreaOfInterestEntry(possibleEntry.get());
         raidData.setBlockSearcher(new BlockSearcher(raidData.getLevel(), raidData.getAreaOfInterestEntry().getPosition()));
         raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
-        raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
+        //raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
         raidData.getBlockSearcher().searchIterationsPerTick = searchIterationsPerTick;
         raidData.getBlockSearcher().ignoreBlocksNearTargets = true;
 
@@ -232,7 +232,7 @@ public class RaidHandler {
         raidData.getBlockSearcher().setObstructionPredicate(raidData.isSpawnObstructed);
         raidData.getBlockSearcher().setMaxTargets(1);
         raidData.getBlockSearcher().setPositionToMoveAwayFrom(raidData.getRaidCenter());
-        raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
+       // raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
         raidData.getBlockSearcher().searchIterationsPerTick = searchIterationsPerTick;
         raidData.getBlockSearcher().MAX_TARGETS = maxTargets;
     }

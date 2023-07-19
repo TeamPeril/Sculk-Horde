@@ -1,16 +1,29 @@
 package com.github.sculkhorde.common.blockentity;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,9 +52,72 @@ public class SculkNodeBlockEntity extends BlockEntity
     private long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
     private long lastHeartBeat = System.currentTimeMillis();
 
+    private long lastPopulationUpdate = 0;
+    private final long populationUpdateIntervalMillis = TickUnits.convertMinutesToTicks(3);
+    public final int MAX_POPULATION = 100;
+    Collection<ISculkSmartEntity> sculkEntitiesBelongingToThisNode = new ArrayList<>();
 
     /** Accessors **/
 
+    public void updateListOfSculkEntitiesBelongingToThisNode()
+    {
+        if(level.getGameTime() - lastPopulationUpdate < populationUpdateIntervalMillis)
+        {
+            return;
+        }
+
+        lastPopulationUpdate = level.getGameTime();
+        sculkEntitiesBelongingToThisNode.clear();
+        ServerLevel serverLevel = (ServerLevel)level;
+        Iterable<Entity> listOfEntities = serverLevel.getEntities().getAll();
+
+        for(Entity entity : listOfEntities)
+        {
+            if(! (entity instanceof LivingEntity))
+            {
+                continue;
+            }
+
+            if(!EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
+            {
+                continue;
+            }
+
+            if(entity instanceof SculkBeeHarvesterEntity)
+            {
+                continue;
+            }
+
+            BlockPos thisNodePosition = this.getBlockPos();
+            BlockPos theClosestNodetoEntity = ((ISculkSmartEntity)entity).getClosestNodePosition();
+            boolean isClosestNodeThisNode = theClosestNodetoEntity.equals(thisNodePosition);
+
+            if(isClosestNodeThisNode && entity.isAlive())
+            {
+                sculkEntitiesBelongingToThisNode.add((ISculkSmartEntity) entity);
+                if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Node has reached maximum population."); }
+            }
+        }
+    }
+
+    public boolean isPopulationAtMax()
+    {
+        tryCalculateSculkEntityPopulationForThisNode();
+        return sculkEntitiesBelongingToThisNode.size() > MAX_POPULATION;
+    }
+
+    public void tryCalculateSculkEntityPopulationForThisNode()
+    {
+        assert level != null;
+
+        if(level.getGameTime() - lastPopulationUpdate < populationUpdateIntervalMillis)
+        {
+            return;
+        }
+
+        lastPopulationUpdate = level.getGameTime();
+        updateListOfSculkEntitiesBelongingToThisNode();
+    }
 
     /** Modifiers **/
 
@@ -58,46 +134,48 @@ public class SculkNodeBlockEntity extends BlockEntity
             }
             return;
         }
-            long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
-
-            // If the time elapsed is less than the tick interval, return
-            if(timeElapsed < tickIntervalSeconds) { return; }
-
-            // Update the tickedAt time
-            blockEntity.tickedAt = System.nanoTime();
-
-            /** Building Shell Process **/
-            long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
-
-            //If the structure has not been initialized yet, do it
-            if(blockEntity.nodeProceduralStructure == null)
-            {
-                //Create Structure
-                blockEntity.nodeProceduralStructure = new SculkNodeProceduralStructure((ServerLevel) level, blockPos);
-                blockEntity.nodeProceduralStructure.generatePlan();
-            }
-
-            //If currently building, call build tick.
-            if(blockEntity.nodeProceduralStructure.isCurrentlyBuilding())
-            {
-                blockEntity.nodeProceduralStructure.buildTick();
-                blockEntity.lastTimeSinceRepair = System.nanoTime();
-            }
-            //If enough time has passed, or we havent built yet, and we can build, start build
-            else if((repairTimeElapsed >= blockEntity.repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1) && blockEntity.nodeProceduralStructure.canStartToBuild())
-            {
-                blockEntity.nodeProceduralStructure.startBuildProcedure();
-            }
 
 
-            /** Infection Routine **/
-            if(blockEntity.infectionHandler == null)
-            {
-                blockEntity.infectionHandler = new SculkNodeInfectionHandler(blockEntity);
-            }
-            else
-            {
-                blockEntity.infectionHandler.tick();
-            }
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+
+        // If the time elapsed is less than the tick interval, return
+        if(timeElapsed < tickIntervalSeconds) { return; }
+
+        // Update the tickedAt time
+        blockEntity.tickedAt = System.nanoTime();
+
+        /** Building Shell Process **/
+        long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+
+        //If the structure has not been initialized yet, do it
+        if(blockEntity.nodeProceduralStructure == null)
+        {
+            //Create Structure
+            blockEntity.nodeProceduralStructure = new SculkNodeProceduralStructure((ServerLevel) level, blockPos);
+            blockEntity.nodeProceduralStructure.generatePlan();
+        }
+
+        //If currently building, call build tick.
+        if(blockEntity.nodeProceduralStructure.isCurrentlyBuilding())
+        {
+            blockEntity.nodeProceduralStructure.buildTick();
+            blockEntity.lastTimeSinceRepair = System.nanoTime();
+        }
+        //If enough time has passed, or we havent built yet, and we can build, start build
+        else if((repairTimeElapsed >= blockEntity.repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1) && blockEntity.nodeProceduralStructure.canStartToBuild())
+        {
+            blockEntity.nodeProceduralStructure.startBuildProcedure();
+        }
+
+
+        /** Infection Routine **/
+        if(blockEntity.infectionHandler == null)
+        {
+            blockEntity.infectionHandler = new SculkNodeInfectionHandler(blockEntity);
+        }
+        else
+        {
+            blockEntity.infectionHandler.tick();
+        }
     }
 }

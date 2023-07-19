@@ -1,15 +1,32 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
+
+import java.util.Optional;
 
 public interface ISculkSmartEntity {
 
     default boolean canParticipatingInRaid() {
         return RaidHandler.raidData.isRaidActive() && isParticipatingInRaid();
+    }
+
+    default ModSavedData.NodeEntry getClosestNode() {
+        return SculkHorde.savedData.getClosestNodeEntry(((Mob) this).blockPosition());
+    }
+
+    default BlockPos getClosestNodePosition() {
+        return getClosestNode().getPosition();
+    }
+
+    default Optional<SculkNodeBlockEntity> getClosestNodeBlockEntity() {
+        return ((Mob)this).level().getBlockEntity(getClosestNodePosition(), BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get());
     }
 
     boolean isParticipatingInRaid();

@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -145,6 +146,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     {
         return new Goal[]{
 
+                new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                 new DespawnWhenIdle(this, 120),
                 //SwimGoal(mob)
                 new FloatGoal(this),

@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
@@ -157,6 +158,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     {
         Goal[] goals =
                 {
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                         new DespawnWhenIdle(this, 120),
                         //SwimGoal(mob)
                         new FloatGoal(this),
