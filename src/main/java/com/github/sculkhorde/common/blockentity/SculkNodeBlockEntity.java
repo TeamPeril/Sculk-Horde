@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.BlockEntityRegistry;
@@ -11,6 +12,8 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -24,6 +27,7 @@ import net.minecraft.world.phys.AABB;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,6 +65,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     public void updateListOfSculkEntitiesBelongingToThisNode()
     {
+        assert level != null;
         if(level.getGameTime() - lastPopulationUpdate < populationUpdateIntervalMillis)
         {
             return;
@@ -123,6 +128,38 @@ public class SculkNodeBlockEntity extends BlockEntity
 
 
     /** Events **/
+
+    private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
+    {
+        level.players().forEach((player) -> {
+            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator())
+            {
+                player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 1));
+            }
+        });
+    }
+
+    private static void spawnInfectorOnSurface(ServerLevel level, int x, int z, int rangeOfInfector, int maxInfectionsOfInfector)
+    {
+        // Do ray trace from top of world to bottom to find the surface
+        BlockPos.MutableBlockPos spawnPosition = new BlockPos.MutableBlockPos(x, level.getMaxBuildHeight(), z);
+        while(!level.getBlockState(spawnPosition).isSolid() && spawnPosition.getY() > level.getMinBuildHeight())
+        {
+            spawnPosition.setY(spawnPosition.getY() - 1);
+        }
+
+        // If the block is not air, spawn the infector
+        if(!level.getBlockState(spawnPosition).isAir())
+        {
+            // Spawn the infector
+            CursorSurfaceInfectorEntity infectorEntity = new CursorSurfaceInfectorEntity(level);
+            infectorEntity.setPos(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
+            infectorEntity.setMaxRange(rangeOfInfector);
+            infectorEntity.setMaxInfections(maxInfectionsOfInfector);
+            infectorEntity.setSearchIterationsPerTick(20);
+            level.addFreshEntity(infectorEntity);
+        }
+    }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
         if(level.isClientSide)
@@ -143,6 +180,15 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();
+
+        addDarknessEffectToNearbyPlayers(level, blockPos, 50);
+        // Spawn in random x and z position
+        Random rng = new Random();
+        int spawnRange = 100;
+        int x = rng.nextInt(spawnRange) - (spawnRange/2);
+        int z = rng.nextInt(spawnRange) - (spawnRange/2);
+        spawnInfectorOnSurface((ServerLevel)level, blockPos.getX() + x, blockPos.getZ() + z, 100, 50);
+
 
         /** Building Shell Process **/
         long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
@@ -169,6 +215,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
 
         /** Infection Routine **/
+        /*
         if(blockEntity.infectionHandler == null)
         {
             blockEntity.infectionHandler = new SculkNodeInfectionHandler(blockEntity);
@@ -177,5 +224,7 @@ public class SculkNodeBlockEntity extends BlockEntity
         {
             blockEntity.infectionHandler.tick();
         }
+
+         */
     }
 }
