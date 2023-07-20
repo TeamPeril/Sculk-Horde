@@ -2,10 +2,16 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -133,6 +139,19 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
             VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
         });
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
+
+        ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
+    {
+        ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     @Nullable

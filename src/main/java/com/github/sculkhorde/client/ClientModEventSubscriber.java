@@ -85,7 +85,7 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(EntityRegistry.CHAOS_TELEPORATION_RIFT.get(), ChaosTeleporationRiftRenderer::new);
 
-
+        event.registerEntityRenderer(EntityRegistry.SCULK_SPINE_SPIKE_ATTACK.get(), SculkSpineSpikeRenderer::new);
 
     }
 

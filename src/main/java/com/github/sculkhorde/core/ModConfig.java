@@ -25,6 +25,8 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_mature_stage;
 
+        public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
+
         public Server(ForgeConfigSpec.Builder builder) {
 
             builder.push("Mod Compatability");
@@ -36,7 +38,11 @@ public class ModConfig {
             builder.push("Gravemind Variables");
             this.gravemind_mass_goal_for_immature_stage = builder.comment("Default 5000").define("How much mass is needed for the Gravemind to enter the immature stage?",5000);
             this.gravemind_mass_goal_for_mature_stage = builder.comment("Default 20000").define("How much mass is needed for the Gravemind to enter the mature stage?",20000);
+            builder.pop();
 
+            builder.push("Sculk Node Variables");
+            this.sculk_node_chunkload_radius = builder.comment("Default 15").define("How many chunks should be loaded around a sculk node?",15);
+            builder.pop();
         }
     }
 
