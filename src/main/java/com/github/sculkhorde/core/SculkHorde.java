@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.FMLPaths;
 import software.bernie.geckolib.GeckoLib;
 import org.slf4j.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
@@ -42,6 +43,9 @@ public class SculkHorde {
     {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
+
+        ModConfig.loadConfig(ModConfig.SERVER_SPEC, FMLPaths.CONFIGDIR.get().resolve(MOD_ID + "_config.toml").toString());
+
         GeckoLib.initialize();
         ItemRegistry.ITEMS.register(bus); //Load Items
         BlockEntityRegistry.register(bus); //Load Tile Entities

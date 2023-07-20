@@ -1,8 +1,8 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -141,12 +140,12 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity))
+        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity) && ModConfig.SERVER.target_faw_entities.get())
         {
             return true;
         }
 
-        if(ModColaborationHelper.isThisASporeEntity(entity))
+        if(ModColaborationHelper.isThisASporeEntity(entity) && ModConfig.SERVER.target_spore_entities.get())
         {
             return true;
         }

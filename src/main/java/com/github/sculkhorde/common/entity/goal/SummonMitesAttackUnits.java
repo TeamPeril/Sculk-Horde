@@ -101,7 +101,6 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
             mite.setTarget(mob.getTarget());
             mob.level().addFreshEntity(mite);
         }
-
     }
 
     @Override

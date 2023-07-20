@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
@@ -77,9 +78,9 @@ public class Gravemind
     {
 
         //This is how much mass is needed to go from undeveloped to immature
-        int MASS_GOAL_FOR_IMMATURE = 5000;
+        int MASS_GOAL_FOR_IMMATURE = ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get();
         //This is how much mass is needed to go from immature to mature
-        int MASS_GOAL_FOR_MATURE = 20000;
+        int MASS_GOAL_FOR_MATURE = ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get();
         if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
             //The radius that sculk nodes can infect in the immature state
