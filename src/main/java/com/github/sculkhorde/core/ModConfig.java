@@ -27,6 +27,8 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_naturally;
+
         public Server(ForgeConfigSpec.Builder builder) {
 
             builder.push("Mod Compatability");
@@ -42,6 +44,10 @@ public class ModConfig {
 
             builder.push("Sculk Node Variables");
             this.sculk_node_chunkload_radius = builder.comment("Default 15").define("How many chunks should be loaded around a sculk node?",15);
+            builder.pop();
+
+            builder.push("Sculk Mite Variables");
+            this.should_sculk_mites_spawn_naturally = builder.comment("Default false").define("Should sculk mites spawn naturally?",false);
             builder.pop();
         }
     }

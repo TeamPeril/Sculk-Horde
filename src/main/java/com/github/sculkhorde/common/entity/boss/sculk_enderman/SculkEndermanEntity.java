@@ -1,5 +1,6 @@
-package com.github.sculkhorde.common.entity;
+package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
@@ -22,7 +23,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -203,10 +203,11 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(1, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(1, new SculkSpineSpikeRadialAttack(this, TickUnits.convertSecondsToTicks(1)));
+        this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-        this.goalSelector.addGoal(3, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
@@ -479,7 +480,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return source.is(DamageTypeTags.BYPASSES_ARMOR);
+        return false; /*source.is(DamageTypeTags.BYPASSES_ARMOR);*/
     }
 
     // ####### Animation Code ###########

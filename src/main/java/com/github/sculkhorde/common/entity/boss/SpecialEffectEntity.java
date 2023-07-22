@@ -1,4 +1,4 @@
-package com.github.sculkhorde.common.entity.specialeffects;
+package com.github.sculkhorde.common.entity.boss;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;

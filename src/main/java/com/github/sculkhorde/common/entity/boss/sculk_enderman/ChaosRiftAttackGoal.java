@@ -1,32 +1,26 @@
-package com.github.sculkhorde.common.entity.goal;
+package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkEndermanEntity;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Predicate;
 
-public class SummonRandomAttackUnits extends MeleeAttackGoal
+public class ChaosRiftAttackGoal extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
     protected int ticksElapsed = executionCooldown;
 
-    public SummonRandomAttackUnits(PathfinderMob mob, int durationInTicks) {
+    public ChaosRiftAttackGoal(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -42,6 +36,11 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
         ticksElapsed++;
 
         if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        {
+            return false;
+        }
+
+        if(!mob.closerThan(mob.getTarget(), 5.0D))
         {
             return false;
         }
@@ -78,18 +77,6 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
         return true;
     };
 
-    private Predicate<EntityFactoryEntry> isValidReinforcement()
-    {
-        return (entityFactoryEntry) ->
-        {
-            if(entityFactoryEntry.getEntity() == EntityRegistry.SCULK_CREEPER.get() || entityFactoryEntry.getEntity() == EntityRegistry.SCULK_RAVAGER.get())
-            {
-                return false;
-            }
-
-            return entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Melee || entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Ranged;
-        };
-    }
 
     @Override
     public void start()
@@ -98,25 +85,18 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
         // TODO Trigger Animation
 
         //Disable mob's movement for 10 seconds
-        this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 10);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
         // Spawn 10 units
-        for(int i = 0; i < 10 && i < possibleSpawns.size(); i++)
+        for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            Optional<EntityFactoryEntry> entry =  EntityFactory.getRandomEntry(isValidReinforcement());
-
-            if(entry.isPresent())
-            {
-                Mob spawnedMob = entry.get().spawnEntity((ServerLevel) mob.level(), spawnPos.above());
-
-            }
+            EntityRegistry.CHAOS_TELEPORATION_RIFT.get().spawn( (ServerLevel) mob.level(), spawnPos.above().above(), MobSpawnType.REINFORCEMENT);
         }
 
     }
@@ -126,7 +106,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
+        getSculkEnderman().stayInSpecificRangeOfTarget(8, 16);
     }
 
     @Override

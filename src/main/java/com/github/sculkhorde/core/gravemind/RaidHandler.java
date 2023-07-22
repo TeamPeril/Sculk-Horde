@@ -2,7 +2,7 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
-import com.github.sculkhorde.common.entity.SculkEndermanEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;

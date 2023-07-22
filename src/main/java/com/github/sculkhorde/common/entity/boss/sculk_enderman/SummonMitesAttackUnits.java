@@ -1,15 +1,11 @@
-package com.github.sculkhorde.common.entity.goal;
+package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkEndermanEntity;
+import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
@@ -17,14 +13,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
 
-public class ChaosRiftAttackGoal extends MeleeAttackGoal
+public class SummonMitesAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
 
-    public ChaosRiftAttackGoal(PathfinderMob mob, int durationInTicks) {
+    public SummonMitesAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -40,11 +36,6 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         ticksElapsed++;
 
         if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
-        {
-            return false;
-        }
-
-        if(!mob.closerThan(mob.getTarget(), 5.0D))
         {
             return false;
         }
@@ -89,20 +80,22 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         // TODO Trigger Animation
 
         //Disable mob's movement for 10 seconds
+        this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 10);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
-        // Spawn 10 units
+        // Spawn 20 units
         for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            // Spawn unit
-            EntityRegistry.CHAOS_TELEPORATION_RIFT.get().spawn( (ServerLevel) mob.level(), spawnPos.above().above(), MobSpawnType.REINFORCEMENT);
+            SculkMiteEntity mite = new SculkMiteEntity(EntityRegistry.SCULK_MITE.get(), mob.level());
+            mite.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+            mite.setTarget(mob.getTarget());
+            mob.level().addFreshEntity(mite);
         }
-
     }
 
     @Override
@@ -110,7 +103,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(8, 16);
+        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override

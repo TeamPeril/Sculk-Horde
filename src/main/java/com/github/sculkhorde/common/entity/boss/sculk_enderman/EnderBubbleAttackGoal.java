@@ -1,7 +1,8 @@
-package com.github.sculkhorde.common.entity.goal;
+package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkEndermanEntity;
-import com.github.sculkhorde.common.entity.specialeffects.EnderBubbleAttackEntity;
+import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
@@ -25,6 +26,11 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
     public boolean canUse()
     {
         if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        {
+            return false;
+        }
+
+        if(getSculkEnderman().getHealth() > 0.5F * getSculkEnderman().getMaxHealth())
         {
             return false;
         }
@@ -58,6 +64,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         this.mob.level().addFreshEntity(attackBubble);
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);
+        getSculkEnderman().addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(10), 2));
     }
 
     @Override

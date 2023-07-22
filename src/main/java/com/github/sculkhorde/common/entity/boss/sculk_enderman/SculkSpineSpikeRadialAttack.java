@@ -1,31 +1,28 @@
-package com.github.sculkhorde.common.entity.goal;
+package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Predicate;
 
-public class SummonMitesAttackUnits extends MeleeAttackGoal
+public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
 
-    public SummonMitesAttackUnits(PathfinderMob mob, int durationInTicks) {
+    public SculkSpineSpikeRadialAttack(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -45,6 +42,11 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
             return false;
         }
 
+        if(!mob.closerThan(mob.getTarget(), 5.0D))
+        {
+            return false;
+        }
+
         if(ticksElapsed < executionCooldown)
         {
             return false;
@@ -56,7 +58,7 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
     @Override
     public boolean canContinueToUse()
     {
-        return elapsedAttackDuration < maxAttackDuration;
+        return elapsedAttackDuration < maxAttackDuration && false;
     }
 
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
@@ -77,6 +79,19 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         return true;
     };
 
+    private ArrayList<Vec3> getPositionsOnCircumferenceOfCircle(int radiusOfCircle, int numberOfPositionsToCreate)
+    {
+        ArrayList<Vec3> positions = new ArrayList<Vec3>();
+        float angleIncrement = (float) (2 * Math.PI / numberOfPositionsToCreate);
+        for(int i = 0; i < numberOfPositionsToCreate; i++)
+        {
+            float angle = i * angleIncrement;
+            double x = radiusOfCircle * Math.cos(angle);
+            double z = radiusOfCircle * Math.sin(angle);
+            positions.add(new Vec3(mob.getX() + x, mob.getY(), mob.getZ() + z));
+        }
+        return positions;
+    }
 
     @Override
     public void start()
@@ -88,27 +103,33 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
-        // Shuffle
-        Collections.shuffle(possibleSpawns);
+        ArrayList<Vec3> possibleSpawns = getPositionsOnCircumferenceOfCircle(1, 8);
+        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(4, 16));
+        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(5, 24));
+        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(6, 32));
+        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(8, 40));
+        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(10, 64));
+        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(12, 72));
 
         // Spawn 20 units
-        for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
+        for(int i = 0; i < possibleSpawns.size(); i++)
         {
-            BlockPos spawnPos = possibleSpawns.get(i);
-            SculkMiteEntity mite = new SculkMiteEntity(EntityRegistry.SCULK_MITE.get(), mob.level());
-            mite.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-            mite.setTarget(mob.getTarget());
+            Vec3 spawnPos = possibleSpawns.get(i);
+            SculkSpineSpikeAttackEntity mite = new SculkSpineSpikeAttackEntity(this.mob, spawnPos.x(), spawnPos.y(), spawnPos.z());
+            // Rotate random degree between 0 amd 360
+            mite.setYRot((float) (Math.random() * 360));
             mob.level().addFreshEntity(mite);
         }
     }
+
+
 
     @Override
     public void tick()
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
+        //getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override
