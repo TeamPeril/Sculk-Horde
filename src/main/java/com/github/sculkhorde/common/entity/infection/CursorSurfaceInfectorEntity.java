@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
@@ -31,6 +32,11 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
+        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
+        {
+            return false;
+        }
+
         if(!state.isSolidRender(this.level(), pos))
         {
             return true;
