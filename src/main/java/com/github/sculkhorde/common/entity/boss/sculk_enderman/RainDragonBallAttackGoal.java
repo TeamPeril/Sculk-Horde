@@ -13,9 +13,9 @@ public class RainDragonBallAttackGoal extends Goal
     private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(30);
     protected int ticksElapsed = executionCooldown;
-    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.5F);
+    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(2F);
     private int attackkIntervalCooldown = 0;
 
 
@@ -82,11 +82,11 @@ public class RainDragonBallAttackGoal extends Goal
     {
         super.tick();
         elapsedAttackDuration++;
-        spawnFallingDragonBallInRandomPosition(30);
-        spawnFallingDragonBallInRandomPosition(30);
-        spawnFallingDragonBallInRandomPosition(30);
-        spawnFallingDragonBallInRandomPosition(30);
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
+        spawnFallingDragonBallInRandomPosition(5);
+        spawnFallingDragonBallInRandomPosition(5);
+        spawnFallingDragonBallInRandomPosition(5);
+        spawnFallingDragonBallInRandomPosition(5);
+        getSculkEnderman().stayInSpecificRangeOfTarget(32, 40);
     }
 
     @Override

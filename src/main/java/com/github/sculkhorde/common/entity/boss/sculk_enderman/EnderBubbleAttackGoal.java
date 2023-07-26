@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -14,7 +15,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected EnderBubbleAttackEntity attackBubble;
+    protected SpecialEffectEntity attackBubble;
 
     public EnderBubbleAttackGoal(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
@@ -64,7 +65,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
 
         //Spawn Ender Attack Bubble entity
         BlockPos spawnPos = new BlockPos((int) this.mob.getX(), (int) (this.mob.getY() + (this.mob.getBbHeight() / 2)), (int) this.mob.getZ());
-        EnderBubbleAttackEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos, EntityRegistry.ENDER_BUBBLE_ATTACK.get());
+        attackBubble = EnderBubbleAttackEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos, EntityRegistry.ENDER_BUBBLE_ATTACK.get());
 
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);
@@ -83,7 +84,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
     {
         super.stop();
         getSculkEnderman().resetSpecialAttackCooldown();
-        attackBubble.discard();
+        if(attackBubble != null) { attackBubble.discard(); }
         elapsedAttackDuration = 0;
         getSculkEnderman().canTeleport = true;
         this.mob.setInvulnerable(false);

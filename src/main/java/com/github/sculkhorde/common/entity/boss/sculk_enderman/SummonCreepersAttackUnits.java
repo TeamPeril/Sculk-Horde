@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -13,14 +14,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
 
-public class SummonMitesAttackUnits extends MeleeAttackGoal
+public class SummonCreepersAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
 
-    public SummonMitesAttackUnits(PathfinderMob mob, int durationInTicks) {
+    public SummonCreepersAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -41,6 +42,11 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         }
 
         if(ticksElapsed < executionCooldown)
+        {
+            return false;
+        }
+
+        if(getSculkEnderman().getHealth() > 0.5F * getSculkEnderman().getMaxHealth())
         {
             return false;
         }
@@ -91,10 +97,10 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            SculkMiteEntity mite = new SculkMiteEntity(EntityRegistry.SCULK_MITE.get(), mob.level());
-            mite.setPos(spawnPos.getX(), spawnPos.getY() + 1, spawnPos.getZ());
-            mite.setTarget(mob.getTarget());
-            mob.level().addFreshEntity(mite);
+            SculkCreeperEntity creeper = new SculkCreeperEntity(EntityRegistry.SCULK_CREEPER.get(), mob.level());
+            creeper.setPos(spawnPos.getX(), spawnPos.getY() + 1, spawnPos.getZ());
+            creeper.setTarget(mob.getTarget());
+            mob.level().addFreshEntity(creeper);
         }
     }
 

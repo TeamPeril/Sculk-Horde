@@ -47,6 +47,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
 
 
 
+
     public ChaosTeleporationRiftEntity(EntityType<?> entityType, Level level)
     {
         super(entityType, level);
