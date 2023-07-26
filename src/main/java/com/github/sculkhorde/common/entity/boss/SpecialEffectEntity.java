@@ -1,14 +1,14 @@
 package com.github.sculkhorde.common.entity.boss;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
@@ -16,16 +16,21 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class SpecialEffectEntity extends Entity
+public abstract class SpecialEffectEntity extends Entity implements TraceableEntity
 {
     public LivingEntity sourceEntity;
     protected boolean hasSyncedSourceEntity = false;
     private static final EntityDataAccessor<Optional<UUID>> SOURCE_ENTITY = SynchedEntityData.defineId(SpecialEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    @Nullable
+    private LivingEntity owner;
+    @Nullable
+    private UUID ownerUUID;
 
     public SpecialEffectEntity(EntityType<?> entityType, Level level)
     {
@@ -38,18 +43,28 @@ public abstract class SpecialEffectEntity extends Entity
         this.sourceEntity = sourceEntity;
     }
 
+    public void setOwner(@Nullable LivingEntity p_36939_) {
+        this.owner = p_36939_;
+        this.ownerUUID = p_36939_ == null ? null : p_36939_.getUUID();
+    }
+
+    @Nullable
+    public LivingEntity getOwner() {
+        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
+            if (entity instanceof LivingEntity) {
+                this.owner = (LivingEntity)entity;
+            }
+        }
+
+        return this.owner;
+    }
+
     @Override
     public PushReaction getPistonPushReaction() {
         return PushReaction.IGNORE;
     }
 
-    public Optional<UUID> getSourceEntityID() {
-        return getEntityData().get(SOURCE_ENTITY);
-    }
-
-    public void setSourceEntityID(UUID id) {
-        getEntityData().set(SOURCE_ENTITY, Optional.of(id));
-    }
 
     @Override
     public boolean isPickable() {
@@ -60,52 +75,36 @@ public abstract class SpecialEffectEntity extends Entity
     public void push(Entity entityIn) {
     }
 
-    @Override
-    public void tick()
-    {
-        super.tick();
-
-        /*
-        if (!level.isClientSide() && getSourceEntityID().isPresent() && sourceEntity == null) {
-            Entity casterEntity = ((ServerLevel)this.level).getEntity(getSourceEntityID().get());
-            if (casterEntity instanceof LivingEntity) {
-                sourceEntity = (LivingEntity) casterEntity;
-            }
-            hasSyncedSourceEntity = true;
-        }
-        */
-    }
-
-    public void link(Entity entity) {
-        if (entity instanceof LivingEntity) {
-            sourceEntity = (LivingEntity) entity;
-        }
-        hasSyncedSourceEntity = true;
-    }
-
-
     public Packet<ClientGamePacketListener> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        //setSourceEntityID(compound.getUUID("source_entity"));
+    protected void defineSynchedData() {
+
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
-        /*
-        if (getSourceEntityID().isPresent()) {
-            //compound.putUUID("source_entity", getSourceEntityID().get());
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        if (tag.hasUUID("Owner")) {
+            this.ownerUUID = tag.getUUID("Owner");
         }
-
-         */
     }
 
-    public List<LivingEntity> getEntityLivingBaseNearby(double radius) {
-        return getEntitiesNearby(LivingEntity.class, radius);
+    @Override
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        if (this.ownerUUID != null) {
+            tag.putUUID("Owner", this.ownerUUID);
+        }
+    }
+
+    public static SpecialEffectEntity spawn(Level world, LivingEntity owner, BlockPos pos, EntityType<?> type) {
+        SpecialEffectEntity entity = (SpecialEffectEntity) type.spawn((ServerLevel) world, pos, MobSpawnType.REINFORCEMENT);
+        assert entity != null;
+        entity.setOwner(owner);
+        world.addFreshEntity(entity);
+        return entity;
     }
 
     public <T extends Entity> List<T> getEntitiesNearby(Class<T> entityClass, double r) {

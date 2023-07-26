@@ -4,9 +4,12 @@ import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -77,13 +80,6 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
             entity.hurt(damageSources().generic(), 1);
         }
 
-
-    }
-
-    // ### Data ###
-
-    @Override
-    protected void defineSynchedData() {
 
     }
 

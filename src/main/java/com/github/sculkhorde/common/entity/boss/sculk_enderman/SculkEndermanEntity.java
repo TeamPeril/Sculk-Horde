@@ -203,7 +203,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(1, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
-        this.goalSelector.addGoal(1, new SculkSpineSpikeRadialAttack(this, TickUnits.convertSecondsToTicks(1)));
+        this.goalSelector.addGoal(1, new SculkSpineSpikeRadialAttack(this));
         this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));

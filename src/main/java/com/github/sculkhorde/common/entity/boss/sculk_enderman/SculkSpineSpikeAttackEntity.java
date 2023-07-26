@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -26,7 +27,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public class SculkSpineSpikeAttackEntity extends Entity implements TraceableEntity, GeoEntity {
+public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements TraceableEntity, GeoEntity {
 
     public static int LIFE_IN_TICKS = TickUnits.convertSecondsToTicks(2);
     public static int ATTACK_DELAY_TICKS = TickUnits.convertSecondsToTicks(0.5F); // Had to eye ball this value
@@ -39,6 +40,8 @@ public class SculkSpineSpikeAttackEntity extends Entity implements TraceableEnti
 
     public SculkSpineSpikeAttackEntity(EntityType<? extends SculkSpineSpikeAttackEntity> entityType, Level level) {
         super(entityType, level);
+        triggerAnim("attack_controller", "attack_animation");
+        ATTACK_ANIMATION_CONTROLLER.setAnimationSpeed(0.0F);
     }
 
     public SculkSpineSpikeAttackEntity(LivingEntity owner, double x, double y, double z) {
@@ -46,25 +49,12 @@ public class SculkSpineSpikeAttackEntity extends Entity implements TraceableEnti
         this.setPos(x, y, z);
         this.owner = owner;
         this.ownerUUID = owner.getUUID();
+
     }
 
-    // Getters
 
-    public void setOwner(@Nullable LivingEntity p_36939_) {
-        this.owner = p_36939_;
-        this.ownerUUID = p_36939_ == null ? null : p_36939_.getUUID();
-    }
-
-    @Nullable
-    public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
-            if (entity instanceof LivingEntity) {
-                this.owner = (LivingEntity)entity;
-            }
-        }
-
-        return this.owner;
+    public void setAppearanceDelay(int delay) {
+        this.lifeTicks -= delay;
     }
 
     private void dealDamageTo(LivingEntity targetEntity) {
@@ -114,7 +104,7 @@ public class SculkSpineSpikeAttackEntity extends Entity implements TraceableEnti
 
         if(lifeTicks == 0)
         {
-            triggerAnim("attack_controller", "attack_animation");
+            ATTACK_ANIMATION_CONTROLLER.setAnimationSpeed(1.0F);
         }
 
         this.lifeTicks++;
@@ -133,28 +123,9 @@ public class SculkSpineSpikeAttackEntity extends Entity implements TraceableEnti
             hurtTouchingEntities();
         }
 
-        if(this.lifeTicks > LIFE_IN_TICKS)
+        if(this.lifeTicks > LIFE_IN_TICKS || ATTACK_ANIMATION_CONTROLLER.hasAnimationFinished())
         {
             this.remove(RemovalReason.DISCARDED);
-        }
-    }
-
-    @Override
-    protected void defineSynchedData() {
-
-    }
-
-    @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.hasUUID("Owner")) {
-            this.ownerUUID = tag.getUUID("Owner");
-        }
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        if (this.ownerUUID != null) {
-            tag.putUUID("Owner", this.ownerUUID);
         }
     }
 
@@ -183,8 +154,6 @@ public class SculkSpineSpikeAttackEntity extends Entity implements TraceableEnti
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-
-
 
     private <ENTITY extends GeoEntity> void instructionListener(CustomInstructionKeyframeEvent<ENTITY> event) {
         if(event.getKeyframeData().getInstructions().contains("DoDamageInstruction"))

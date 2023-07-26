@@ -3,10 +3,13 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.phys.Vec3;
@@ -17,14 +20,13 @@ import java.util.function.Predicate;
 
 public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 {
-    protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
+    protected Vec3 origin;
 
-    public SculkSpineSpikeRadialAttack(PathfinderMob mob, int durationInTicks) {
+    public SculkSpineSpikeRadialAttack(PathfinderMob mob) {
         super(mob, 0.0F, true);
-        maxAttackDuration = durationInTicks;
     }
 
     private SculkEndermanEntity getSculkEnderman()
@@ -58,7 +60,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     @Override
     public boolean canContinueToUse()
     {
-        return elapsedAttackDuration < maxAttackDuration && false;
+        return elapsedAttackDuration <= 30;
     }
 
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
@@ -79,57 +81,73 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         return true;
     };
 
-    private ArrayList<Vec3> getPositionsOnCircumferenceOfCircle(int radiusOfCircle, int numberOfPositionsToCreate)
-    {
-        ArrayList<Vec3> positions = new ArrayList<Vec3>();
-        float angleIncrement = (float) (2 * Math.PI / numberOfPositionsToCreate);
-        for(int i = 0; i < numberOfPositionsToCreate; i++)
-        {
-            float angle = i * angleIncrement;
-            double x = radiusOfCircle * Math.cos(angle);
-            double z = radiusOfCircle * Math.sin(angle);
-            positions.add(new Vec3(mob.getX() + x, mob.getY(), mob.getZ() + z));
-        }
-        return positions;
-    }
+
 
     @Override
     public void start()
     {
         super.start();
         // TODO Trigger Animation
-
+        origin = mob.position();
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        ArrayList<Vec3> possibleSpawns = getPositionsOnCircumferenceOfCircle(1, 8);
-        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(4, 16));
-        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(5, 24));
-        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(6, 32));
-        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(8, 40));
-        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(10, 64));
-        possibleSpawns.addAll(getPositionsOnCircumferenceOfCircle(12, 72));
+    }
 
-        // Spawn 20 units
+    public void spawnSpikesOnCircumference(int radius, int amount)
+    {
+        ArrayList<SculkSpineSpikeAttackEntity> entities = new ArrayList<SculkSpineSpikeAttackEntity>();
+        ArrayList<Vec3> possibleSpawns = BlockAlgorithms.getPointsOnCircumferenceVec3(origin, radius, amount);
         for(int i = 0; i < possibleSpawns.size(); i++)
         {
             Vec3 spawnPos = possibleSpawns.get(i);
-            SculkSpineSpikeAttackEntity mite = new SculkSpineSpikeAttackEntity(this.mob, spawnPos.x(), spawnPos.y(), spawnPos.z());
-            // Rotate random degree between 0 amd 360
-            mite.setYRot((float) (Math.random() * 360));
-            mob.level().addFreshEntity(mite);
+            SculkSpineSpikeAttackEntity entity = EntityRegistry.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+            assert entity != null;
+            entity.setPos(spawnPos.x(), spawnPos.y(), spawnPos.z());
+            entities.add(entity);
+            entity.setOwner(mob);
+        }
+
+        for (SculkSpineSpikeAttackEntity entity : entities) {
+            mob.level().addFreshEntity(entity);
         }
     }
-
-
 
     @Override
     public void tick()
     {
         super.tick();
+        if(elapsedAttackDuration == 0)
+        {
+            spawnSpikesOnCircumference(1, 8);
+        }
+        if(elapsedAttackDuration == 5)
+        {
+            spawnSpikesOnCircumference(4, 16);
+        }
+        else if(elapsedAttackDuration == 10)
+        {
+            spawnSpikesOnCircumference(5, 5*2);
+        }
+        else if(elapsedAttackDuration == 15)
+        {
+            spawnSpikesOnCircumference(6, 6*3);
+        }
+        else if(elapsedAttackDuration == 20)
+        {
+            spawnSpikesOnCircumference(8, 8*3);
+        }
+        else if(elapsedAttackDuration == 25)
+        {
+            spawnSpikesOnCircumference(10, 10*4);
+        }
+        else if(elapsedAttackDuration == 30)
+        {
+            spawnSpikesOnCircumference(12, 12*4);
+        }
+
         elapsedAttackDuration++;
-        //getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override

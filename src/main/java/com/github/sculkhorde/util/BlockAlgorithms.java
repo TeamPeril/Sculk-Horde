@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -575,6 +576,20 @@ public class BlockAlgorithms {
             points.add(new BlockPos(x, origin.getY(), z));
         }
         return points;
+    }
+
+    public static ArrayList<Vec3> getPointsOnCircumferenceVec3(Vec3 origin, int radiusOfCircle, int numberOfPositionsToCreate)
+    {
+        ArrayList<Vec3> positions = new ArrayList<Vec3>();
+        float angleIncrement = (float) (2 * Math.PI / numberOfPositionsToCreate);
+        for(int i = 0; i < numberOfPositionsToCreate; i++)
+        {
+            float angle = i * angleIncrement;
+            double x = radiusOfCircle * Math.cos(angle);
+            double z = radiusOfCircle * Math.sin(angle);
+            positions.add(new Vec3(origin.x() + x, origin.y(), origin.z() + z));
+        }
+        return positions;
     }
 
     public static boolean isAreaFlat(ServerLevel level, BlockPos centerPos, int radius) {

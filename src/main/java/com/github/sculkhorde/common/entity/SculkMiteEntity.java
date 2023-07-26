@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -24,6 +24,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -138,7 +139,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
      * @param random ???
      * @return Returns a boolean determining if it is a suitable spawn location
      */
-    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random)
+    public static boolean additionalSpawnCheck(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random)
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
@@ -150,7 +151,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
         if(pos.getY() > 50) return false;
 
-        if(!world.getBiome(pos).is(Biomes.DEEP_DARK))
+        if(world.getBiome(pos).is(Biomes.DEEP_DARK) && !ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get())
         {
             return false;
         }

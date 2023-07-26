@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -96,9 +97,8 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            EntityRegistry.CHAOS_TELEPORATION_RIFT.get().spawn( (ServerLevel) mob.level(), spawnPos.above().above(), MobSpawnType.REINFORCEMENT);
+            ChaosTeleporationRiftEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos.above().above(), EntityRegistry.CHAOS_TELEPORATION_RIFT.get());
         }
-
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
 import com.github.sculkhorde.core.EffectRegistry;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.WaterAnimal;
@@ -15,8 +18,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -153,6 +158,22 @@ public class EntityAlgorithms {
         return false;
     }
 
+    public static void spawnEntitiesOnCircumference(ServerLevel level, Vec3 origin, int radius, int amount, EntityType<?> type)
+    {
+        ArrayList<Entity> entities = new ArrayList<Entity>();
+        ArrayList<Vec3> possibleSpawns = BlockAlgorithms.getPointsOnCircumferenceVec3(origin, radius, amount);
+        for(int i = 0; i < possibleSpawns.size(); i++)
+        {
+            Vec3 spawnPos = possibleSpawns.get(i);
+            Entity entity = type.create(level);
+            entity.setPos(spawnPos.x(), spawnPos.y(), spawnPos.z());
+            entities.add(entity);
+        }
+
+        for (Entity entity : entities) {
+            level.addFreshEntity(entity);
+        }
+    }
 
 
     /**

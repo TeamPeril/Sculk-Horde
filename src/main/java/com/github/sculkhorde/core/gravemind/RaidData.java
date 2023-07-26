@@ -31,7 +31,7 @@ public class RaidData {
     protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
     protected int waveDuration = 0;
     private int timeElapsedScouting = 0;
-    private final int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(1);
+    private final int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(8);
 
     // Raid Variables
     private ServerLevel level;

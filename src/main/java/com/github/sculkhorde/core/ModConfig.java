@@ -27,7 +27,8 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
 
-        public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_naturally;
+        public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
+
 
         public Server(ForgeConfigSpec.Builder builder) {
 
@@ -47,7 +48,7 @@ public class ModConfig {
             builder.pop();
 
             builder.push("Sculk Mite Variables");
-            this.should_sculk_mites_spawn_naturally = builder.comment("Default false").define("Should sculk mites spawn naturally?",false);
+            this.should_sculk_mites_spawn_in_deep_dark = builder.comment("Default false").define("Should sculk mites spawn in deep dark?",false);
             builder.pop();
         }
     }
