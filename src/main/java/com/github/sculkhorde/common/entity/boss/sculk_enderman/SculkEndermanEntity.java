@@ -310,6 +310,11 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             }
         }
 
+        if(level().isRaining())
+        {
+            level().setRainLevel(0);
+        }
+
 
     }
 
