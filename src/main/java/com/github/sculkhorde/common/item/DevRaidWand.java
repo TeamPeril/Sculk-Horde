@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAt
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeRadialAttack;
 import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -136,6 +137,7 @@ public class DevRaidWand extends Item implements IForgeItem {
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
 		{
 			spawnSpikesOnCircumference(playerIn, 4, 1);
+			RaidHandler.raidData.startRaidArtificially(playerIn.blockPosition());
 			playerIn.getCooldowns().addCooldown(this, 5); //Cool down for second (20 ticks per second)
 			return InteractionResultHolder.pass(itemstack);
 		}

@@ -164,15 +164,18 @@ public class RaidData {
         bossEvent = null;
     }
 
-    public void startRaidArtificially(RaidHandler.RaidState raidStateIn, BlockPos raidLocationIn, BlockPos spawnLocationIn, int currentWaveIn, int currentWaveRaidusIn, int waveDurationIn)
+    public void startRaidArtificially(BlockPos raidLocationIn)
     {
-        setRaidState(raidStateIn);
-        setRaidLocation(raidLocationIn);
-        setSpawnLocation(spawnLocationIn);
-        setCurrentWave(currentWaveIn);
-        ChunkLoaderHelper.forceLoadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
-        setCurrentRaidRadius(currentWaveRaidusIn);
-        setWaveDuration(waveDurationIn);
+        Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(raidLocationIn);
+        if(possibleAreaOfInterestEntry.isPresent())
+        {
+            setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
+            setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
+        }
+        else
+        {
+            reset();
+        }
     }
 
     public static int getCooldownBetweenRaids() {

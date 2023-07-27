@@ -201,14 +201,17 @@ public class RaidHandler {
 
     private void initializeBlockSearcherForInvestigateLocation(int searchIterationsPerTick, int maxTargets)
     {
-        Optional<ModSavedData.AreaofInterestEntry> possibleEntry = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone();
-        if(possibleEntry.isEmpty())
+        if(raidData.getAreaOfInterestEntry() == null)
         {
-            raidData.setFailure(failureType.FAILED_INITIALIZATION);
-            return;
-        }
+            Optional<ModSavedData.AreaofInterestEntry> possibleEntry = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone();
+            if(possibleEntry.isEmpty())
+            {
+                raidData.setFailure(failureType.FAILED_INITIALIZATION);
+                return;
+            }
 
-        raidData.setAreaOfInterestEntry(possibleEntry.get());
+            raidData.setAreaOfInterestEntry(possibleEntry.get());
+        }
         raidData.setBlockSearcher(new BlockSearcher(raidData.getLevel(), raidData.getAreaOfInterestEntry().getPosition()));
         raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
         //raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
@@ -350,6 +353,9 @@ public class RaidHandler {
 
             raidData.setNextObjectiveLocation();
             raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
+
+            raidData.setCurrentRaidRadius(raidData.getDistanceOfFurthestObjective());
+            SculkHorde.LOGGER.debug("RaidHandler | Current Raid Radius: " + raidData.getCurrentRaidRadius());
 
             announceToPlayersInRange(Component.literal("Sculk Raid Commencing at: " + raidData.getRaidLocation()), raidData.getCurrentRaidRadius() * 8);
 

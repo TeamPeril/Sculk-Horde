@@ -429,11 +429,11 @@ public class ModSavedData extends SavedData {
         setDirty();
     }
 
-    public void addAreaOfInterestToMemory(BlockPos positionIn) {
+    public Optional<AreaofInterestEntry> addAreaOfInterestToMemory(BlockPos positionIn) {
         if(getAreasOfInterestEntries() == null)
         {
             SculkHorde.LOGGER.warn("Attempted to add an area of interest to memory but the list was null");
-            return;
+            return Optional.empty();
         }
 
         // If already exists in memory, dont add it again
@@ -441,13 +441,15 @@ public class ModSavedData extends SavedData {
         {
             if(getAreasOfInterestEntries().get(i).position == positionIn || getAreasOfInterestEntries().get(i).position.closerThan(positionIn, 100))
             {
-                return;
+                return Optional.empty();
             }
         }
 
         SculkHorde.LOGGER.info("Adding Area of Interest at " + positionIn + " to memory");
-        getAreasOfInterestEntries().add(new AreaofInterestEntry(positionIn));
+        AreaofInterestEntry entry = new AreaofInterestEntry(positionIn);
+        getAreasOfInterestEntries().add(entry);
         setDirty();
+        return Optional.of(entry);
     }
 
     public void addNoRaidZoneToMemory(BlockPos positionIn) {
