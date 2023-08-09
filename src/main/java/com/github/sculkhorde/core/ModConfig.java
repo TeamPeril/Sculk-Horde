@@ -39,28 +39,28 @@ public class ModConfig {
         public Server(ForgeConfigSpec.Builder builder) {
 
             builder.push("Mod Compatability");
-            this.target_faw_entities = builder.comment("Default false").define("Should the Sculk Horde attack mobs from the mod 'From Another World'?",false);
-            this.target_spore_entities = builder.comment("Default false").define("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'?",false);
+            target_faw_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'From Another World'? (Default false)").define("target_faw_entities",false);
+            target_spore_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'? (Default false)").define("target_spore_entities",false);
             builder.pop();
 
 
             builder.push("Gravemind Variables");
-            this.gravemind_mass_goal_for_immature_stage = builder.comment("Default 5000").define("How much mass is needed for the Gravemind to enter the immature stage?",5000);
-            this.gravemind_mass_goal_for_mature_stage = builder.comment("Default 20000").define("How much mass is needed for the Gravemind to enter the mature stage?",20000);
+            gravemind_mass_goal_for_immature_stage = builder.comment("How much mass is needed for the Gravemind to enter the immature stage? (Default 5000)").defineInRange("gravemind_mass_goal_for_immature_stage",5000, 0, Integer.MAX_VALUE);
+            gravemind_mass_goal_for_mature_stage = builder.comment("How much mass is needed for the Gravemind to enter the mature stage? (Default 20000)").defineInRange("gravemind_mass_goal_for_mature_stage",20000, 0, Integer.MAX_VALUE);
             builder.pop();
 
             builder.push("Sculk Node Variables");
-            this.sculk_node_chunkload_radius = builder.comment("Default 15").define("How many chunks should be loaded around a sculk node?",15);
+            sculk_node_chunkload_radius = builder.comment("How many chunks should be loaded around a sculk node? (Default 15)").defineInRange("sculk_node_chunkload_radius",15, 0, 15);
             builder.pop();
 
             builder.push("Sculk Mite Variables");
-            this.should_sculk_mites_spawn_in_deep_dark = builder.comment("Default false").define("Should sculk mites spawn in deep dark?",false);
+            should_sculk_mites_spawn_in_deep_dark = builder.comment("Should sculk mites spawn in deep dark? (Default false)").define("should_sculk_mites_spawn_in_deep_dark",false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");
-            this.sculk_raid_enderman_scouting_duration_minutes = builder.comment("Default 8").define("How long should the Sculk Enderman scout for?",8);
-            this.sculk_raid_global_cooldown_between_raids_minutes = builder.comment("Default 300").define("How long should the global cooldown between raids be in minutes?",300);
-            this.sculk_raid_no_raid_zone_duration_minutes = builder.comment("Default 480").define("How long should the no raid zone last at a location in minutes? This occurs when a raid succeeds or fails so that the same location is not raided for a while.",480);
+            sculk_raid_enderman_scouting_duration_minutes = builder.comment("How long should the Sculk Enderman scout for? (Default 8)").defineInRange("sculk_raid_enderman_scouting_duration_minutes",8, 0, Integer.MAX_VALUE);
+            sculk_raid_global_cooldown_between_raids_minutes = builder.comment("How long should the global cooldown between raids be in minutes? (Default 300)").defineInRange("sculk_raid_global_cooldown_between_raids_minutes", 300 , 0, Integer.MAX_VALUE);
+            sculk_raid_no_raid_zone_duration_minutes = builder.comment("How long should the no raid zone last at a location in minutes? This occurs when a raid succeeds or fails so that the same location is not raided for a while. (Default 480)").defineInRange("sculk_raid_no_raid_zone_duration_minutes", 480 , 0, Integer.MAX_VALUE);
             builder.pop();
         }
     }
