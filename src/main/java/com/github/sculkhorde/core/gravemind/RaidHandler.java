@@ -415,6 +415,11 @@ public class RaidHandler {
         raidData.setRaidState(RaidState.ACTIVE_WAVE);
     }
 
+    protected boolean isLastWave(int offset)
+    {
+        return raidData.getCurrentWave() >= raidData.getMaxWaves() + offset;
+    }
+
     /**
      * If on last wave, end raid. Otherwise, go to next wave.
      */
@@ -424,7 +429,7 @@ public class RaidHandler {
         raidData.incrementCurrentWave();
 
         // If we are on last wave, end raid
-        if(raidData.getCurrentWave() >= raidData.getMaxWaves() + 1)
+        if(isLastWave(1))
         {
             raidData.setFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
@@ -534,7 +539,7 @@ public class RaidHandler {
             raidData.getWaveParticipants().add(creeper);
         }
 
-        if(raidData.getCurrentWave() > raidData.getMaxWaves())
+        if(isLastWave(0))
         {
             Mob boss = EntityRegistry.SCULK_ENDERMAN.get().create(raidData.getLevel());
             boss.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
