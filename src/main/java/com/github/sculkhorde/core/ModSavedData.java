@@ -59,7 +59,7 @@ public class ModSavedData extends SavedData {
     private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
     // The amount of ticks since last raid
-    private int ticksSinceLastRaid = RaidData.COOLDOWN_BETWEEN_RAIDS;
+    private int ticksSinceLastRaid = 0;
     private static final String ticksSinceLastRaidIdentifier = "ticksSinceLastRaid";
 
     /**
@@ -207,7 +207,7 @@ public class ModSavedData extends SavedData {
      **/
 
     public boolean isRaidCooldownOver() {
-        return getTicksSinceLastRaid() >= RaidData.COOLDOWN_BETWEEN_RAIDS;
+        return getTicksSinceLastRaid() >= TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_global_cooldown_between_raids_minutes.get());
     }
 
     public int getTicksSinceLastRaid() {
@@ -469,7 +469,7 @@ public class ModSavedData extends SavedData {
         }
 
         SculkHorde.LOGGER.info("Adding No Raid Zone at " + positionIn + " to memory");
-        getNoRaidZoneEntries().add(new NoRaidZoneEntry(positionIn, 1000, level.getGameTime(), TickUnits.convertHoursToTicks(5)));
+        getNoRaidZoneEntries().add(new NoRaidZoneEntry(positionIn, 1000, level.getGameTime(), TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_no_raid_zone_duration_minutes.get())));
         setDirty();
     }
 

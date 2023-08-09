@@ -3,15 +3,14 @@ package com.github.sculkhorde.core.gravemind;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.BlockSearcher;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
-import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +26,6 @@ import java.util.function.Predicate;
 public class RaidData {
 
     // Timing Variables
-    public static int COOLDOWN_BETWEEN_RAIDS = TickUnits.convertHoursToTicks(1);
     protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
     protected int waveDuration = 0;
     private int timeElapsedScouting = 0;
@@ -166,6 +164,13 @@ public class RaidData {
 
     public void startRaidArtificially(BlockPos raidLocationIn)
     {
+        SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
+        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
+        SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
+        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Mass is now: " + SculkHorde.savedData.getSculkAccumulatedMass()));
+        SculkHorde.gravemind.calulateCurrentState();
+        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState()));
+
         Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(raidLocationIn);
         if(possibleAreaOfInterestEntry.isPresent())
         {
@@ -176,15 +181,6 @@ public class RaidData {
         {
             reset();
         }
-    }
-
-    public static int getCooldownBetweenRaids() {
-        return COOLDOWN_BETWEEN_RAIDS;
-    }
-
-    public static void setCooldownBetweenRaids(int cooldownBetweenRaids) {
-        COOLDOWN_BETWEEN_RAIDS = cooldownBetweenRaids;
-        SculkHorde.savedData.setDirty();
     }
 
     public int getMAX_WAVE_DURATION() {
@@ -490,7 +486,7 @@ public class RaidData {
             }
         }
 
-        return (float) aliveWaveParticipants / (float) (aliveWaveParticipants + deadWaveParticipants);
+        return (float) remainingWaveParticipants / (float) getWaveParticipants().size();
     }
 
     protected void updateRemainingWaveParticipantsAmount()

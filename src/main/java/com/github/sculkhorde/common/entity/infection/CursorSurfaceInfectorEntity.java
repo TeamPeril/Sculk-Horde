@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
@@ -53,7 +54,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos) && !state.is(BlockRegistry.SCULK_ARACHNOID.get()) && !state.is(BlockRegistry.SCULK_DURA_MATTER.get()))
         {
             return true;
         }

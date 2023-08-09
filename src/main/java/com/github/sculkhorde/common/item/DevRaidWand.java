@@ -132,12 +132,14 @@ public class DevRaidWand extends Item implements IForgeItem {
 	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
+		BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
 
 		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
+		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
 		{
 			spawnSpikesOnCircumference(playerIn, 4, 1);
-			RaidHandler.raidData.startRaidArtificially(playerIn.blockPosition());
+			RaidHandler.raidData.startRaidArtificially(targetPos);
+
 			playerIn.getCooldowns().addCooldown(this, 5); //Cool down for second (20 ticks per second)
 			return InteractionResultHolder.pass(itemstack);
 		}

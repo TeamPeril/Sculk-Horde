@@ -29,6 +29,12 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
 
+        public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_enderman_scouting_duration_minutes;
+
+        public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_global_cooldown_between_raids_minutes;
+
+        public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_no_raid_zone_duration_minutes;
+
 
         public Server(ForgeConfigSpec.Builder builder) {
 
@@ -49,6 +55,12 @@ public class ModConfig {
 
             builder.push("Sculk Mite Variables");
             this.should_sculk_mites_spawn_in_deep_dark = builder.comment("Default false").define("Should sculk mites spawn in deep dark?",false);
+            builder.pop();
+
+            builder.push("Sculk Raid Variables");
+            this.sculk_raid_enderman_scouting_duration_minutes = builder.comment("Default 8").define("How long should the Sculk Enderman scout for?",8);
+            this.sculk_raid_global_cooldown_between_raids_minutes = builder.comment("Default 300").define("How long should the global cooldown between raids be in minutes?",300);
+            this.sculk_raid_no_raid_zone_duration_minutes = builder.comment("Default 480").define("How long should the no raid zone last at a location in minutes? This occurs when a raid succeeds or fails so that the same location is not raided for a while.",480);
             builder.pop();
         }
     }

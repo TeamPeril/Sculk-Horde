@@ -67,7 +67,7 @@ public class RaidHandler {
             return false;
         }
 
-        if(gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
+        if(gravemind.getEvolutionState() == Gravemind.evolution_states.Immature)
         {
             return false;
         }
@@ -424,7 +424,7 @@ public class RaidHandler {
         raidData.incrementCurrentWave();
 
         // If we are on last wave, end raid
-        if(raidData.getCurrentWave() >= raidData.getMaxWaves())
+        if(raidData.getCurrentWave() >= raidData.getMaxWaves() + 1)
         {
             raidData.setFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
