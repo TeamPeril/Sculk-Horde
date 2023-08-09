@@ -32,11 +32,6 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
-        {
-            return false;
-        }
-
         if(!state.isSolidRender(this.level(), pos))
         {
             return true;
