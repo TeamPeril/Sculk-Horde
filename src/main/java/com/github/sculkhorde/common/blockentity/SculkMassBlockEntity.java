@@ -107,7 +107,7 @@ public class SculkMassBlockEntity extends BlockEntity {
             // Spawn Block Traverser
             CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            cursor.setMaxInfections(blockEntity.getStoredSculkMass() * 10);
+            cursor.setMaxTransformations(blockEntity.getStoredSculkMass() * 10);
             cursor.setMaxRange(blockEntity.getStoredSculkMass());
             level.addFreshEntity(cursor);
         }

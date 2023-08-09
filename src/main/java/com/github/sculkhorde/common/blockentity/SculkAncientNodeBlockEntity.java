@@ -204,7 +204,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             CursorSurfaceInfectorEntity infectorEntity = new CursorSurfaceInfectorEntity(level);
             infectorEntity.setPos(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
             infectorEntity.setMaxRange(rangeOfInfector);
-            infectorEntity.setMaxInfections(maxInfectionsOfInfector);
+            infectorEntity.setMaxTransformations(maxInfectionsOfInfector);
             infectorEntity.setSearchIterationsPerTick(20);
             level.addFreshEntity(infectorEntity);
         }

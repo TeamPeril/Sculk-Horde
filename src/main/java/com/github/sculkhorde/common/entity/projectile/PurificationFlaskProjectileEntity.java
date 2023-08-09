@@ -145,7 +145,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             // Spawn Infestation Purifier Cursors
             // Spawn Block Traverser
             cursor.setPos(list.get(i).getX(), list.get(i).getY(), list.get(i).getZ());
-            cursor.setMaxInfections(5);
+            cursor.setMaxTransformations(5);
             cursor.setMaxRange(10);
             cursor.setSearchIterationsPerTick(5);
             cursor.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(1));

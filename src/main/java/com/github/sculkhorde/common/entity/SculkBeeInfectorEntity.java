@@ -104,7 +104,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     {
         CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
         cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
-        cursor.setMaxInfections(100);
+        cursor.setMaxTransformations(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);
         cursor.setSearchIterationsPerTick(10);

@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -9,7 +10,7 @@ public class InfectionTree {
     private boolean Active = false;
     private final Direction direction;
     private CursorProberEntity cursorProbe;
-    private CursorInfectorEntity cursorInfection;
+    private CursorSurfaceInfectorEntity cursorInfection;
     private final ServerLevel world;
     private state currentState = state.IDLE;
     private enum state {
@@ -83,8 +84,8 @@ public class InfectionTree {
      */
     public void createProbeCursor(int maxDistance) {
         cursorProbe = new CursorProberEntity(world);
-        cursorProbe.setMAX_DISTANCE(maxDistance);
-        cursorProbe.setDirection(direction);
+        cursorProbe.setMaxRange(maxDistance);
+        cursorProbe.setPreferedDirection(direction);
         cursorProbe.setPos(this.root.blockPos.getX(), this.root.blockPos.getY(), this.root.blockPos.getZ());
         this.world.addFreshEntity(cursorProbe);
     }
@@ -94,9 +95,8 @@ public class InfectionTree {
      * @param maxInfections The maximum number of infections the cursor can perform
      */
     public void createInfectionCursor(int maxInfections) {
-        cursorInfection = new CursorInfectorEntity(world);
+        cursorInfection = new CursorSurfaceInfectorEntity(world);
         cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
-        cursorInfection.setMaxInfections(maxInfections);
         cursorInfection.setMaxRange(maxInfections);
         this.world.addFreshEntity(cursorInfection);
     }
@@ -108,6 +108,11 @@ public class InfectionTree {
     {
         // If the root is null, or the tree is not active, do nothing
         if(root.blockPos == BlockPos.ZERO || !isActive())
+        {
+            return;
+        }
+
+        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             return;
         }
@@ -150,7 +155,7 @@ public class InfectionTree {
             // If the probe is successful, record the findings
             if(cursorProbe.isSuccessful)
             {
-                potentialNodePosition = cursorProbe.lastKnownBlockPos;
+                potentialNodePosition = cursorProbe.blockPosition();
                 failedProbeAttempts = 0;
                 cursorProbe = null;
                 // Change State to Infection Mode

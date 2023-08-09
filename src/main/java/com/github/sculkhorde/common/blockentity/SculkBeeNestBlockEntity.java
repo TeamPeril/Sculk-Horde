@@ -183,7 +183,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
                 //Summon Surface Infestor
                 CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
                 cursor.setPos(blockpos.getX(), blockpos.getY() - 1, blockpos.getZ());
-                cursor.setMaxInfections(100);
+                cursor.setMaxTransformations(100);
                 cursor.setMaxRange(100);
                 cursor.setTickIntervalMilliseconds(500);
                 cursor.setSearchIterationsPerTick(10);

@@ -12,9 +12,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
-public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
+public class CursorSurfacePurifierEntity extends CursorEntity{
 
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
@@ -45,25 +46,24 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
      * Transforms the block at the given position.
      * @param pos the position of the block
      */
+    @Override
     protected void transformBlock(BlockPos pos)
     {
         SculkHorde.infestationConversionTable.deinfectBlock((ServerLevel) this.level(), pos);
-        if(isSculkFlora.test(this.level().getBlockState(pos.above())))
+        if(shouldBeRemovedFromAboveBlock.test(this.level().getBlockState(pos.above())))
         {
             this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
         }
 
         // Get all infector cursor entities in area and kill them
-        Predicate<CursorInfectorEntity> isCursor = (entity) -> entity instanceof CursorInfectorEntity && !(entity instanceof CursorSurfacePurifierEntity);
+        Predicate<CursorInfectorEntity> isCursor = Objects::nonNull;
         level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor).forEach(entity -> entity.discard());
     }
 
     @Override
     protected void spawnParticleEffects()
     {
-
-        this.level().addParticle(ParticleTypes.COMPOSTER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
-
+        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
     }
 
     /**
@@ -109,7 +109,7 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
      * Determines if a blockstate is considered to be sculk Flora
      * @return True if Valid, False otherwise
      */
-    public static Predicate<BlockState> isSculkFlora = (b) ->
+    public static Predicate<BlockState> shouldBeRemovedFromAboveBlock = (b) ->
     {
         if (b.is(BlockRegistry.GRASS.get()))
         {
@@ -141,9 +141,31 @@ public class CursorSurfacePurifierEntity extends CursorSurfaceInfectorEntity{
             return true;
         }
 
+        if(b.is(Blocks.SCULK_CATALYST))
+        {
+            return true;
+        }
+
+        if(b.is(Blocks.SCULK_SHRIEKER))
+        {
+            return true;
+        }
+
+        if(b.is(Blocks.SCULK_VEIN))
+        {
+            return true;
+        }
+
+        if(b.is(Blocks.SCULK_SENSOR))
+        {
+            return true;
+        }
+
+        if(b.is(BlockRegistry.TENDRILS.get()))
+        {
+            return true;
+        }
+
         return false;
-
-
-
     };
 }
