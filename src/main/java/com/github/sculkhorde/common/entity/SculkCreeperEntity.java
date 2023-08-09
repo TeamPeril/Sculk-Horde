@@ -38,13 +38,11 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(3)));
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new SwellGoal(this));
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Ocelot.class, 6.0F, 1.0D, 1.2D));
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Cat.class, 6.0F, 1.0D, 1.2D));
-        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
-        this.goalSelector.addGoal(5, new BlowUpPriorityBlockGoal(this, 1.0F, 3, 4, 5));
-        this.goalSelector.addGoal(6, new PathFindToRaidLocation<>(this));
-        this.goalSelector.addGoal(7, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
+        this.goalSelector.addGoal(1, new SwellGoal(this));
+        this.goalSelector.addGoal(2, new BlowUpPriorityBlockGoal(this, 1.0F, 3, 4, 5));
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
+        this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
+        this.goalSelector.addGoal(5, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(1, new NearestLivingEntityTargetGoal<>(this, true, true));
         this.targetSelector.addGoal(2, new TargetAttacker(this).setAlertAllies());
     }
