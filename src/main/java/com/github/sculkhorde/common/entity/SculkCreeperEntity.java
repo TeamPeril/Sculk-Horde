@@ -80,18 +80,17 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         }
     }
 
-    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
-    private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenLoop("move.run");
-    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
-    private static final RawAnimation SWELL_ANIMATION = RawAnimation.begin().thenPlay("attack");
-    private static final RawAnimation DESWELL_ANIMATION = RawAnimation.begin().thenPlay("unattack");
+    private static final RawAnimation CREEPER_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.idle");
+    private static final RawAnimation BLOB_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_blob.idle");
+    private static final RawAnimation CREEPER_WALK_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.walk");
+    private static final RawAnimation CREEPER_SWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack");
+    private static final RawAnimation CREEPER_DESWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack.cancel");
     private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                LIVING_CONTROLLER.transitionLength(5),
-                new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),
+                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
                 new AnimationController<>(this, "attack_cycle", 5, this::poseAttackCycle)
         );
     }
@@ -101,11 +100,11 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     {
         if(!state.isMoving())
         {
-            state.setAnimation(IDLE_ANIMATION);
+            state.setAnimation(CREEPER_IDLE_ANIMATION);
         }
         else
         {
-            state.setAnimation(RUN_ANIMATION);
+            state.setAnimation(CREEPER_WALK_ANIMATION);
         }
 
         return PlayState.CONTINUE;
@@ -114,13 +113,18 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     // Create the animation handler for the body segment
     protected PlayState poseAttackCycle(AnimationState<SculkCreeperEntity> state)
     {
+        //  Goes from 0 to 30. Vanilla mc mechanics, not mine
+        float swellValue = this.getSwelling(1);
+
         if(this.getSwellDir() > 0)
         {
-            state.setAnimation(SWELL_ANIMATION);
+            state.setAnimation(CREEPER_SWELL_ANIMATION);
+            return PlayState.CONTINUE;
         }
         else if(this.getSwellDir() < 0)
         {
-            state.setAnimation(DESWELL_ANIMATION);
+            state.setAnimation(CREEPER_DESWELL_ANIMATION);
+            return PlayState.CONTINUE;
         }
         return PlayState.CONTINUE;
     }
