@@ -225,7 +225,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
             return false;
         }
-        else if (blockState.is(BlockRegistry.SMALL_SHROOM.get()))
+        else if (blockState.is(BlockRegistry.BlockTags.SCULK_BEE_HARVESTABLE))
         {
             return true;
         }
