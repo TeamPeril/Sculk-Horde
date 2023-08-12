@@ -4,12 +4,8 @@ import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkMassBlock;
 import com.github.sculkhorde.common.effect.SculkInfectionEffect;
 import com.github.sculkhorde.common.effect.SculkLureEffect;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
@@ -71,10 +67,11 @@ public class ForgeEventSubscriber {
 
         SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
 
-        if(SculkHorde.isDebugMode()) SculkHorde.raidHandler.raidTick(); // Tick the raid handler
-
-        if(SculkHorde.isDebugMode()) SculkHorde.deathAreaInvestigator.tick(); // Tick the death area investigator
-
+        if(ModConfig.SERVER.experimental_features_enabled.get())
+        {
+            SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+            SculkHorde.deathAreaInvestigator.tick();
+        }
 
         // Only run stuff below every 5 minutes
         if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))

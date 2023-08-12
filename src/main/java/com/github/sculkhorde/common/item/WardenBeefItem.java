@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -66,6 +67,8 @@ public class WardenBeefItem extends Item {
         if(!level.isClientSide())
         {
             SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
+            ModConfig.SERVER.experimental_features_enabled.set(true);
+            EntityAlgorithms.announceToAllPlayers((ServerLevel) level, Component.literal("Experimental Features is now: " + ModConfig.SERVER.experimental_features_enabled.get()));
             EntityAlgorithms.announceToAllPlayers((ServerLevel) level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
         }
         return entity.eat(level, itemStack);

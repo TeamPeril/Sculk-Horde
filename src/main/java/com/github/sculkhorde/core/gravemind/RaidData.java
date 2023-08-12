@@ -166,6 +166,8 @@ public class RaidData {
     {
         SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
         EntityAlgorithms.announceToAllPlayers(level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
+        ModConfig.SERVER.experimental_features_enabled.set(true);
+        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Experimental Features is now: " + ModConfig.SERVER.experimental_features_enabled.get()));
         SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
         EntityAlgorithms.announceToAllPlayers(level, Component.literal("Mass is now: " + SculkHorde.savedData.getSculkAccumulatedMass()));
         SculkHorde.gravemind.calulateCurrentState();
@@ -176,6 +178,7 @@ public class RaidData {
         {
             setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
             setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
+            SculkHorde.savedData.setTicksSinceLastRaid(TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_global_cooldown_between_raids_minutes.get()));
         }
         else
         {

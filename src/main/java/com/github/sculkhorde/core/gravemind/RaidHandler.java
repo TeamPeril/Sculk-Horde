@@ -62,12 +62,12 @@ public class RaidHandler {
 
     public boolean canRaidStart()
     {
-        if(!SculkHorde.isDebugMode())
+        if(!ModConfig.SERVER.experimental_features_enabled.get())
         {
             return false;
         }
 
-        if(gravemind.getEvolutionState() == Gravemind.evolution_states.Immature)
+        if(gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
         {
             return false;
         }

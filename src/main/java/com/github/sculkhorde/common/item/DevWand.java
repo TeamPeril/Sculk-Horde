@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.client.Minecraft;
@@ -95,6 +96,7 @@ public class DevWand extends Item implements IForgeItem {
 						Component.literal(
 								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
 								"Is Server on Debug Mode? " + SculkHorde.isDebugMode() + "\n" +
+								"Are Experimental Features On? " + ModConfig.SERVER.experimental_features_enabled.get() + "\n" +
 								"Sculk Accumulated Mass: " + SculkHorde.savedData.getSculkAccumulatedMass() + "\n" +
 								"Nodes Count: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
 								"Nests Count: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +

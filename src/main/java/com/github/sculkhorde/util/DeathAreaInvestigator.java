@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
@@ -51,7 +52,7 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(!SculkHorde.isDebugMode())
+        if(!ModConfig.SERVER.experimental_features_enabled.get())
         {
             return;
         }

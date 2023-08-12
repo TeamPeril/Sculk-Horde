@@ -59,7 +59,7 @@ public class ModSavedData extends SavedData {
     private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
     // The amount of ticks since last raid
-    private int ticksSinceLastRaid = 0;
+    private int ticksSinceLastRaid = TickUnits.convertHoursToTicks(8);
     private static final String ticksSinceLastRaidIdentifier = "ticksSinceLastRaid";
 
     /**
