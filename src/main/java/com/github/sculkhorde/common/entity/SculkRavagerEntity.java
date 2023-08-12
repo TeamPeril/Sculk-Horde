@@ -22,7 +22,9 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
@@ -178,6 +180,10 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         };
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+    }
 
     /**
      * If a sculk living entity despawns, refund it's current health to the sculk hoard
@@ -191,12 +197,14 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
     private static final RawAnimation HEAD_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("head.attack");
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", HEAD_ATTACK_ANIMATION);
 
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(DefaultAnimations.genericWalkIdleController(this));
-        controllers.add(DefaultAnimations.genericAttackAnimation(this, HEAD_ATTACK_ANIMATION));
+        controllers.add(ATTACK_ANIMATION_CONTROLLER);
     }
 
     @Override
@@ -206,8 +214,11 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
 
-    class AttackGoal extends MeleeAttackGoal
+    class AttackGoal extends CustomMeleeAttackGoal
     {
+        private final int ATTACK_DELAY_TICKS = 20;
+        private int currentAttackDelayTicks = 0;
+
         public AttackGoal()
         {
             super(SculkRavagerEntity.this, 1.0D, true);
@@ -231,6 +242,11 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         {
             float f = SculkRavagerEntity.this.getBbWidth() - 0.1F;
             return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
     }
 
