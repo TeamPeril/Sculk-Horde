@@ -216,8 +216,6 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     class AttackGoal extends CustomMeleeAttackGoal
     {
-        private final int ATTACK_DELAY_TICKS = 20;
-        private int currentAttackDelayTicks = 0;
 
         public AttackGoal()
         {

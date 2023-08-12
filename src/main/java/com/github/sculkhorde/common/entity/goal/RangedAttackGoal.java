@@ -132,7 +132,7 @@ public class RangedAttackGoal extends Goal {
     public boolean canUse()
     {
         if(this.entity.getTarget() == null) {return false;}
-        return !this.entity.getTarget().isAlive() == false;
+        return this.entity.getTarget().isAlive();
     }
 
     /**
@@ -266,6 +266,7 @@ public class RangedAttackGoal extends Goal {
         {
             if (this.attackTime >= this.attackCooldown)
             {
+                this.attack.triggerAttackAnimation();
                 this.attack.shoot();
                 this.attackTime = 0;
             }

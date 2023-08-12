@@ -106,4 +106,9 @@ public abstract class RangedAttack {
          */
 
     }
+
+    public void triggerAttackAnimation()
+    {
+
+    }
 }
