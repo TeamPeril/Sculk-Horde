@@ -27,6 +27,9 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -183,10 +186,16 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     }
     //Animation Related Functions
 
+    private static final RawAnimation SPREAD_ANIMATION = RawAnimation.begin().thenPlay("spread");
+    private final AnimationController SPREAD_ANIMATION_CONTROLLER = new AnimationController<>(this, "spread_controller", state -> PlayState.STOP)
+            .triggerableAnim("spread_animation", SPREAD_ANIMATION);
+
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericIdleController(this));
+        controllers.add(
+                DefaultAnimations.genericLivingController(this),
+                SPREAD_ANIMATION_CONTROLLER);
     }
 
     @Override
@@ -202,7 +211,8 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level().isClientSide) {
+        if (level().isClientSide)
+        {
             Random random = new Random();
             for (int i = 0; i < 1; i++) {
                 level().addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
@@ -220,6 +230,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             cursor.setTickIntervalMilliseconds(10);
             cursor.setSearchIterationsPerTick(1);
             level().addFreshEntity(cursor);
+            triggerAnim("spread_controller", "spread_animation");
         }
 
         if (System.currentTimeMillis() - lastInfectionTime > INFECTION_INTERVAL_MILLIS)
@@ -238,21 +249,16 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENDERMITE_AMBIENT;
+        return SoundEvents.SCULK_CATALYST_BLOOM;
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.ENDERMITE_HURT;
+        return SoundEvents.GENERIC_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENDERMITE_DEATH;
+        return SoundEvents.SCULK_CATALYST_BREAK;
     }
-
-    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-        this.playSound(SoundEvents.ENDERMITE_STEP, 0.15F, 1.0F);
-    }
-
 
     /**
      * This is a custom goal that I made to make the mob die after a certain amount of time.
