@@ -47,7 +47,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     //The armor of the mob
     public static final float ARMOR = 10F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 22F;
+    public static final float ATTACK_DAMAGE = 18F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies

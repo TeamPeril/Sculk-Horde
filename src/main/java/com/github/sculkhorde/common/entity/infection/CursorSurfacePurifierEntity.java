@@ -63,7 +63,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
     }
 
     /**

@@ -60,7 +60,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private int MAX_TARGET_FIND_FAILS = 16;
+    private int MAX_TARGET_FIND_FAILS = 32;
     private int targetFindFails = 0;
 
     CursorSurfacePurifierEntity cursor1;
@@ -249,7 +249,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor1.setMaxTransformations(100);
                 cursor1.setMaxRange(100);
                 cursor1.setSearchIterationsPerTick(2);
-                cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
+                cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor1.setTickIntervalMilliseconds(150);
                 level().addFreshEntity(cursor1);
             }
@@ -262,7 +262,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor2.setMaxTransformations(100);
                 cursor2.setMaxRange(100);
                 cursor2.setSearchIterationsPerTick(2);
-                cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
+                cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor2.setTickIntervalMilliseconds(150);
                 level().addFreshEntity(cursor2);
             }
@@ -275,7 +275,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor3.setMaxTransformations(100);
                 cursor3.setMaxRange(100);
                 cursor3.setSearchIterationsPerTick(2);
-                cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
+                cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor3.setTickIntervalMilliseconds(150);
                 level().addFreshEntity(cursor3);
             }
@@ -288,7 +288,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor4.setMaxTransformations(100);
                 cursor4.setMaxRange(100);
                 cursor4.setSearchIterationsPerTick(2);
-                cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
+                cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor4.setTickIntervalMilliseconds(150);
                 level().addFreshEntity(cursor4);
             }
