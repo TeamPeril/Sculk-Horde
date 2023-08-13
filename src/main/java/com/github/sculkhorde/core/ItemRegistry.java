@@ -2,8 +2,6 @@ package com.github.sculkhorde.core;
 
 
 import com.github.sculkhorde.common.item.*;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import software.bernie.geckolib.GeckoLib;
 
 import java.util.List;
 
@@ -21,6 +18,12 @@ public class ItemRegistry {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SculkHorde.MOD_ID);
     
     public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties()));
+
+	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties()));
+
+	public static final RegistryObject<Item> PURE_SOULS = ITEMS.register("pure_souls", () -> new Item(new Item.Properties()));
+
+	public static final RegistryObject<Item> ESSENCE_OF_PURITY = ITEMS.register("essence_of_purity", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand",
 			DevWand::new);

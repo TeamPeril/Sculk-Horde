@@ -326,6 +326,13 @@ public class BlockRegistry {
 					.sound(SoundType.STONE)
 			));
 
+	public static final RegistryObject<Block> INFESTED_CRYING_OBSIDIAN =
+			registerBlock("infested_crying_obsidian", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PURPLE)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
 

@@ -19,20 +19,23 @@ public class ModCreativeModeTab {
 
     public static final RegistryObject<CreativeModeTab> SCULK_HORDE_TAB = TABS.register("sculk_horde_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.sculkhorde_tab"))
-            .icon(() -> new ItemStack(com.github.sculkhorde.core.ItemRegistry.SCULK_MATTER.get()))
+            .icon(() -> new ItemStack(BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get()))
             .displayItems((enabledFeatures, event) -> {
-                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ItemRegistry.WARDEN_BEEF.get());
+                if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_NODE_SPAWNER.get());
                 if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_RAID_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get());
                 event.accept(ItemRegistry.INFESTATION_PURIFIER.get());
                 event.accept(ItemRegistry.PURIFICATION_FLASK_ITEM.get());
+                event.accept(ItemRegistry.ESSENCE_OF_PURITY.get());
+                event.accept(ItemRegistry.PURE_SOULS.get());
                 event.accept(ItemRegistry.SCULK_ACIDIC_PROJECTILE.get());
                 event.accept(ItemRegistry.SCULK_RESIN.get());
                 event.accept(ItemRegistry.CALCITE_CLUMP.get());
                 event.accept(ItemRegistry.SCULK_MATTER.get());
+                event.accept(ItemRegistry.CRYING_SOULS.get());
                 event.accept(BlockRegistry.SCULK_NODE_BLOCK.get());
                 event.accept(BlockRegistry.SCULK_ARACHNOID.get());
                 event.accept(BlockRegistry.SCULK_DURA_MATTER.get());
@@ -53,6 +56,7 @@ public class ModCreativeModeTab {
                 event.accept(BlockRegistry.SPIKE.get());
                 event.accept(BlockRegistry.TENDRILS.get());
                 event.accept(Blocks.SCULK);
+                event.accept(BlockRegistry.INFESTED_CRYING_OBSIDIAN.get());
                 event.accept(BlockRegistry.INFESTED_LOG.get());
                 event.accept(BlockRegistry.INFESTED_SAND.get());
                 event.accept(BlockRegistry.INFESTED_RED_SAND.get());
