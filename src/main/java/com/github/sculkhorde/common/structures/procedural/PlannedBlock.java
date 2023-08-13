@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.structures.procedural;
 
 import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
@@ -34,15 +35,18 @@ public class PlannedBlock
      */
     protected final Predicate<BlockState> VALID_BLOCKS_TO_REPLACE = (validBlocksPredicate) ->
     {
-        // If the block is a normal variant,
-        // or is replaceable by water,
-        // or is an infected variant,
-        // or can be broken by an iron pickaxe
+        // Explicit Deny List
+        if(validBlocksPredicate.is(BlockTags.NEEDS_DIAMOND_TOOL)
+        || validBlocksPredicate.is(BlockTags.WITHER_IMMUNE)
+        || validBlocksPredicate.is(BlockTags.DRAGON_IMMUNE))
+        {
+            return false;
+        }
+        // Explicit Allow
         if(
                 SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
-                || validBlocksPredicate.canBeReplaced(Fluids.WATER)
                 || SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(validBlocksPredicate)
-                || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F
+                || validBlocksPredicate.is(BlockTags.REPLACEABLE)
                 || validBlocksPredicate.getBlock().equals(Blocks.AIR)
                 || validBlocksPredicate.getBlock().equals(Blocks.CAVE_AIR))
 
