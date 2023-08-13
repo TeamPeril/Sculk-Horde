@@ -154,7 +154,9 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
         ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
-        SculkHorde.savedData.resetTicksSinceSculkNodeDestruction();
+        SculkHorde.savedData.removeNodeFromMemory(pos);
+        worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed!"), true));
+        worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

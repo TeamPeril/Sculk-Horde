@@ -246,11 +246,6 @@ public class ModSavedData extends SavedData {
 
     public void resetTicksSinceSculkNodeDestruction() {
         //Send message to all players that node has spawned
-        level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed!"), true));
-        // Play sound for each player
-        level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
-
-
         this.ticksSinceSculkNodeDestruction = 0;
         setDirty();
     }
@@ -705,6 +700,27 @@ public class ModSavedData extends SavedData {
 
         return getBlockDistanceXZ(getClosestNodeEntry(pos).position, pos) <= distance;
 
+    }
+
+    public void removeNodeFromMemory(BlockPos positionIn)
+    {
+        if(getNodeEntries() == null)
+        {
+            SculkHorde.LOGGER.warn("Attempted to remove an area of interest from memory but the list was null");
+            return;
+        }
+
+        for(int i = 0; i < getNodeEntries().size(); i++)
+        {
+            if(getNodeEntries().get(i).position.equals(positionIn))
+            {
+                getNodeEntries().remove(i);
+                setDirty();
+                resetTicksSinceSculkNodeDestruction();
+                return;
+            }
+        }
+        setDirty();
     }
 
     public void removeDeathAreaFromMemory(BlockPos positionIn)

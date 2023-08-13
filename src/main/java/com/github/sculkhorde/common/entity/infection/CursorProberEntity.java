@@ -176,7 +176,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             this.setPos(closest.getX(), closest.getY(), closest.getZ());
             visitedPositons.put(closest.asLong(), true);
 
-            // If we've reached the target block, find a new target
+            // If we've reached the target block, die then report successful
             if (this.blockPosition().equals(target))
             {
                 target = BlockPos.ZERO;
@@ -185,8 +185,8 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
                 currentTransformations++;
                 state = State.SEARCHING;
                 visitedPositons.clear();
-                stack.clear();
-                stack.add(this.blockPosition());
+                queue.clear();
+                queue.add(this.blockPosition());
             }
         }
         else if (state == State.FINISHED)

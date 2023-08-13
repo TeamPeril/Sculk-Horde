@@ -22,7 +22,7 @@ public class InfectionTree {
 
     private BlockPos potentialNodePosition = null;
     private int failedProbeAttempts = 0;
-    private final int MAX_FAILED_PROBE_ATTEMPTS = 10;
+    private final int MAX_FAILED_PROBE_ATTEMPTS = 2;
     private int currentProbeRange = 10;
     private final int MAX_PROBE_RANGE = 5000;
     private final int MIN_PROBE_RANGE = 10;
@@ -87,6 +87,7 @@ public class InfectionTree {
         cursorProbe.setMaxRange(maxDistance);
         cursorProbe.setPreferedDirection(direction);
         cursorProbe.setPos(this.root.blockPos.getX(), this.root.blockPos.getY(), this.root.blockPos.getZ());
+        cursorProbe.setMaxTransformations(1);
         this.world.addFreshEntity(cursorProbe);
     }
 
@@ -98,6 +99,7 @@ public class InfectionTree {
         cursorInfection = new CursorSurfaceInfectorEntity(world);
         cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
         cursorInfection.setMaxRange(maxInfections);
+        cursorInfection.setTickIntervalMilliseconds(20);
         this.world.addFreshEntity(cursorInfection);
     }
 
@@ -153,7 +155,7 @@ public class InfectionTree {
             }
 
             // If the probe is successful, record the findings
-            if(cursorProbe.isSuccessful)
+            if(cursorProbe.currentTransformations > 0)
             {
                 potentialNodePosition = cursorProbe.blockPosition();
                 failedProbeAttempts = 0;
@@ -186,7 +188,7 @@ public class InfectionTree {
             }
 
             // If the infection is successful, record the findings
-            if(cursorInfection.isSuccessful)
+            if(cursorInfection.currentTransformations > 0)
             {
                 failedInfectionAttempts = 0;
                 cursorInfection = null;

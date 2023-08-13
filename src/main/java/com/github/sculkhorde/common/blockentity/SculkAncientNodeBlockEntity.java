@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.AWAKE;
-import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.TRIGGERING;
+import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.CURED;
 
 /**
  * Chunkloader code created by SuperMartijn642
@@ -68,7 +68,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     public boolean isTriggering()
     {
-        return this.getBlockState().getValue(SculkAncientNodeBlock.TRIGGERING);
+        return this.getBlockState().getValue(SculkAncientNodeBlock.CURED);
     }
 
     public boolean isAwake()
@@ -172,7 +172,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     public void setTriggering(boolean value)
     {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(TRIGGERING, value));
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(CURED, value));
     }
 
 

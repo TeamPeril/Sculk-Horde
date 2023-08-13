@@ -77,6 +77,7 @@ public class ModEventSubscriber {
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.RED_TERRACOTTA, BlockRegistry.INFESTED_RED_TERRACOTTA.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.WHITE_TERRACOTTA, BlockRegistry.INFESTED_WHITE_TERRACOTTA.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.YELLOW_TERRACOTTA, BlockRegistry.INFESTED_YELLOW_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CRYING_OBSIDIAN, BlockRegistry.INFESTED_CRYING_OBSIDIAN.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);

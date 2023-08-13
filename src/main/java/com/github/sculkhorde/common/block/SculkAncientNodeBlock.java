@@ -1,9 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -11,31 +9,27 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 
 /**
@@ -63,7 +57,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     public static float BLAST_RESISTANCE = 3600000.0F;
 
     // BlockStates
-    public static final BooleanProperty TRIGGERING = BooleanProperty.create("triggering");
+    public static final BooleanProperty CURED = BooleanProperty.create("cured");
     public static final BooleanProperty AWAKE = BooleanProperty.create("awake");
 
     /**
@@ -73,7 +67,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     public SculkAncientNodeBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(TRIGGERING, false).setValue(AWAKE, false));
+                .setValue(CURED, false).setValue(AWAKE, false));
     }
 
     /**
@@ -82,6 +76,54 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public SculkAncientNodeBlock() {
         this(getProperties());
+    }
+
+    public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
+        if (level.isClientSide)
+        {
+            return InteractionResult.SUCCESS;
+        }
+
+        if(!level.getBlockState(pos).is(BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get()))
+        {
+            return InteractionResult.FAIL;
+        }
+
+
+        if(playerIn.getMainHandItem().is(ItemRegistry.PURE_SOULS.get()) && !level.getBlockState(pos).getValue(CURED))
+        {
+            if(!areAllNodesDestroyed())
+            {
+                playerIn.displayClientMessage(Component.literal("The Ancient Sculk Node cannot be destroyed until all remaining Sculk Nodes are!"), true);
+                level.playSound(playerIn, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.MASTER);
+                return InteractionResult.FAIL;
+            }
+
+
+            level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CURED, true));
+            level.players().forEach(player -> player.displayClientMessage(Component.literal("The Ancient Sculk Node has been Defeated!"), true));
+            level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
+
+            //Spawn Explosion that Does No Damage
+            level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
+
+            return InteractionResult.CONSUME;
+        }
+
+        if(playerIn.getMainHandItem().is(ItemRegistry.CRYING_SOULS.get()) && level.getBlockState(pos).getValue(CURED))
+        {
+            level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CURED, false));
+            return InteractionResult.CONSUME;
+        }
+
+
+        return InteractionResult.FAIL;
+
+    }
+
+    public boolean areAllNodesDestroyed()
+    {
+        return SculkHorde.savedData.getNodeEntries().size() == 0;
     }
 
     /**
@@ -123,8 +165,15 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
 
+        if(blockState.getValue(CURED))
+        {
+            return null;
+        }
+
         //Client Side does not tick
-        if(level.isClientSide) {
+        if(level.isClientSide)
+        {
+
             return BaseEntityBlock.createTickerHelper(blockEntityType,
                     BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
                     SculkAncientNodeBlockEntity::tickClient);
@@ -189,12 +238,12 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(TRIGGERING, false)
+                .setValue(CURED, false)
                 .setValue(AWAKE, false);
 
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(TRIGGERING).add(AWAKE);
+        pBuilder.add(CURED).add(AWAKE);
     }
 }

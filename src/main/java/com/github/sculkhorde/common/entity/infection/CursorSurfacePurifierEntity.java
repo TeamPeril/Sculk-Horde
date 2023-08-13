@@ -75,7 +75,13 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(!state.isSolidRender(this.level(), pos))
+        // I'm doing this because cursors will get stuck on infested logs.
+        // TODO FIX INFESTED LOG SHITTERY
+        if(state.is(BlockRegistry.INFESTED_LOG.get()))
+        {
+            return true;
+        }
+        else if(!state.isSolidRender(this.level(), pos))
         {
             return true;
         }
