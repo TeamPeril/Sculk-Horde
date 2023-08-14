@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
+
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
  * Once it has found a block to infect, it will infect it and then move on to the next block.
@@ -53,6 +55,10 @@ public class CursorInfectorEntity extends CursorEntity
         // I'm doing this because cursors will get stuck on infested logs.
         // TODO FIX INFESTED LOG SHITTERY
         if(state.is(BlockRegistry.INFESTED_LOG.get()))
+        {
+            return true;
+        }
+        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
         {
             return true;
         }

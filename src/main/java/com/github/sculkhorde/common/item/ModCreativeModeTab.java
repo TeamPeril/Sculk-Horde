@@ -30,6 +30,7 @@ public class ModCreativeModeTab {
                 event.accept(ItemRegistry.INFESTATION_PURIFIER.get());
                 event.accept(ItemRegistry.PURIFICATION_FLASK_ITEM.get());
                 event.accept(ItemRegistry.ESSENCE_OF_PURITY.get());
+                event.accept(BlockRegistry.INFESTATION_WARD_BLOCK.get());
                 event.accept(ItemRegistry.PURE_SOULS.get());
                 event.accept(ItemRegistry.SCULK_ACIDIC_PROJECTILE.get());
                 event.accept(ItemRegistry.SCULK_RESIN.get());

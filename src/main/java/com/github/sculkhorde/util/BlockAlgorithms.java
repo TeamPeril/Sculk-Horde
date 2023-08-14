@@ -406,6 +406,27 @@ public class BlockAlgorithms {
         return false;
     }
 
+    /**
+     * Checks immediate blocks to see if any of them are infestation ward blocks
+     * @param serverWorld The world
+     * @param targetPos The position to check
+     * @return true if any air found, false otherwise
+     */
+    public static boolean isExposedToInfestationWardBlock(ServerLevel serverWorld, BlockPos targetPos)
+    {
+        ArrayList<BlockPos> list = getAdjacentNeighbors(targetPos);
+
+        for(BlockPos position : list)
+        {
+            if(serverWorld.getBlockState(position).is(BlockRegistry.INFESTATION_WARD_BLOCK.get()))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /**
      * Will only place Sculk Bee Hives

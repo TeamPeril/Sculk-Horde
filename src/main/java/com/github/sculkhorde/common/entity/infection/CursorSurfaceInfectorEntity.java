@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
+import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
+
 public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
@@ -36,6 +38,10 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         // I'm doing this because cursors will get stuck on infested logs.
         // TODO FIX INFESTED LOG SHITTERY
         if(state.is(BlockRegistry.INFESTED_LOG.get()))
+        {
+            return true;
+        }
+        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
         {
             return true;
         }

@@ -333,6 +333,12 @@ public class BlockRegistry {
 					.sound(SoundType.STONE)
 			));
 
+	public static final RegistryObject<Block> INFESTATION_WARD_BLOCK =
+			registerBlock("infestation_ward_block", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_YELLOW)
+					.sound(SoundType.AMETHYST)
+			));
+
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
 
