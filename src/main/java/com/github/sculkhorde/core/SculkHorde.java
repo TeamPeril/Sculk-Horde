@@ -55,7 +55,7 @@ public class SculkHorde {
         StructureRegistry.STRUCTURES.register(bus); //Load Structures
         StructureRegistry.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
         ProcessorRegistry.PROCESSORS.register(bus); //Load Processors
-
+        CommandRegistry.init();
 
         EffectRegistry.EFFECTS.register(bus); //Load Effects
         ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
