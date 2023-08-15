@@ -1,22 +1,18 @@
 package com.github.sculkhorde.common.command;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.LocaleUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 
-public class SculkHordeCommand implements Command<CommandSourceStack> {
+public class MassCommand implements Command<CommandSourceStack> {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
 
@@ -41,8 +37,6 @@ public class SculkHordeCommand implements Command<CommandSourceStack> {
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendSuccess(()->Component.literal("Sculk Mass is Now: " + SculkHorde.savedData.getSculkAccumulatedMass()), true);
-
         return 0;
     }
 
@@ -68,11 +62,6 @@ public class SculkHordeCommand implements Command<CommandSourceStack> {
             }
         }
         context.getSource().sendSuccess(()->Component.literal("Sculk Mass is Now: " + SculkHorde.savedData.getSculkAccumulatedMass()), true);
-        return 0;
-    }
-
-    private static int adjustGravemindState(CommandContext<CommandSourceStack> context, String operation) throws CommandSyntaxException {
-        context.getSource().sendSuccess(()->Component.literal("Gravemind is in the state: " + SculkHorde.gravemind.getEvolutionState().toString()), true);
         return 0;
     }
 

@@ -81,19 +81,49 @@ public class Gravemind
         int MASS_GOAL_FOR_IMMATURE = ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get();
         //This is how much mass is needed to go from immature to mature
         int MASS_GOAL_FOR_MATURE = ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get();
-        if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
+
+        if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
+        {
+            //The radius that sculk nodes can infect in the mature state
+            sculk_node_infect_radius = 50;
+            evolution_state = evolution_states.Mature;
+            sculk_node_limit = 2;
+        }
+        else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
             //The radius that sculk nodes can infect in the immature state
             sculk_node_infect_radius = 20;
             evolution_state = evolution_states.Immature;
             sculk_node_limit = 1;
         }
-        else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
+
+    }
+
+    public void advanceState()
+    {
+        if(evolution_state == evolution_states.Undeveloped)
         {
-            //The radius that sculk nodes can infect in the mature state
-            sculk_node_infect_radius = 50;
-            evolution_state = evolution_states.Mature;
-            sculk_node_limit = 2;
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get());
+            calulateCurrentState();
+        }
+        else if(evolution_state == evolution_states.Immature)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get());
+            calulateCurrentState();
+        }
+    }
+
+    public void deadvanceState()
+    {
+        if(evolution_state == evolution_states.Immature)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get()/2);
+            calulateCurrentState();
+        }
+        else if(evolution_state == evolution_states.Mature)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() - 1);
+            calulateCurrentState();
         }
     }
 
