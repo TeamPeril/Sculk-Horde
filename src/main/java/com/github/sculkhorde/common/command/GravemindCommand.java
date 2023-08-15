@@ -18,10 +18,10 @@ public class GravemindCommand implements Command<CommandSourceStack> {
 
         return Commands.literal("gravemind")
                 .then(Commands.literal("state")
-                        .then(Commands.literal("advance")
+                        .then(Commands.literal("advance").requires(command -> command.hasPermission(4))
                                 .executes((context -> adjustGravemindState(context, "advance"))
                                 ))
-                        .then(Commands.literal("deadvance")
+                        .then(Commands.literal("deadvance").requires(command -> command.hasPermission(4))
                                 .executes((context -> adjustGravemindState(context, "deadvance"))
                                 ))
                         .then(Commands.literal("get")

@@ -2,6 +2,7 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.command.GravemindCommand;
 import com.github.sculkhorde.common.command.MassCommand;
+import com.github.sculkhorde.common.command.StatusCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandBuildContext;
@@ -24,7 +25,8 @@ public class CommandRegistry {
     public static void registerSubCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         LiteralArgumentBuilder<CommandSourceStack> cmd = Commands.literal(SculkHorde.MOD_ID)
                 .then(MassCommand.register(dispatcher, buildContext))
-                .then(GravemindCommand.register(dispatcher, buildContext));
+                .then(GravemindCommand.register(dispatcher, buildContext))
+                .then(StatusCommand.register(dispatcher, buildContext));
 
         dispatcher.register(cmd);
     }
