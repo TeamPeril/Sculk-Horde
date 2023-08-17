@@ -238,7 +238,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
-
+        if(this.getTarget() != null)
+        {
+            this.teleportTowardsEntity(this.getTarget());
+        }
         this.jumping = false;
         super.aiStep();
     }
@@ -330,7 +333,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         }
 
         double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * distance;
-        double d1 = this.getY() + (double)(this.random.nextInt(64) - 32);
+        double d1 = this.getY() + (int)(this.random.nextDouble() - 0.5D) * distance;
         double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * distance;
         return this.teleport(d0, d1, d2);
 
@@ -343,10 +346,12 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public boolean teleportTowardsEntity(Entity entity)
     {
-        if(!canTeleport)
+        if(!canTeleport || !isTeleportCooldownOver())
         {
             return false;
         }
+
+        ticksSinceLastTeleport = 0;
 
         Vec3 vec3 = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ());
         vec3 = vec3.normalize();

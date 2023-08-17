@@ -1,17 +1,17 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -70,14 +70,55 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         return getTarget() == null;
     }
 
+    public void spawnInfectors()
+    {
+        int numToSpawn = 15;
+        int spawnRange = 5;
+        for(int i = 0; i < numToSpawn; i++)
+        {
+            double x = this.getX() + (this.getRandom().nextDouble() * spawnRange) - spawnRange/2;
+            double z = this.getZ() + (this.getRandom().nextDouble() * spawnRange) - spawnRange/2;
+            double y = this.getY() + (this.getRandom().nextDouble() * spawnRange/2) - spawnRange/4;
+            CursorInfectorEntity infector = new CursorInfectorEntity(EntityRegistry.CURSOR_INFECTOR.get(), this.level());
+            infector.setPos(x, y, z);
+            infector.setTickIntervalMilliseconds(3);
+            infector.setMaxTransformations(10);
+            infector.setMaxRange(10);
+            this.level().addFreshEntity(infector);
+        }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        // The reason I do this is because I need my custom explode function to run before the regular creeper one does.
+        // This shit honestly sucks ass, but it works.
+        // Creeper expodes when get swelling is 1.1, but if we run it at 1.0, should hopefully work.
+        if(getSwelling(1) >= 1.0)
+        {
+            explodeSculkCreeper();
+        }
+    }
+
     public void explodeSculkCreeper()
     {
-        if (!this.level().isClientSide)
-        {
-            this.dead = true;
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
-            this.discard();
+        if (this.level().isClientSide) {
+            return;
         }
+
+        if(!isParticipatingInRaid())
+        {
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+            spawnInfectors();
+        }
+        else
+        {
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
+        }
+        this.dead = true;
+
+        this.discard();
+
     }
 
     private static final RawAnimation CREEPER_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.idle");
@@ -85,14 +126,20 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     private static final RawAnimation CREEPER_WALK_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.walk");
     private static final RawAnimation CREEPER_SWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack");
     private static final RawAnimation CREEPER_DESWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack.cancel");
-    private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
-                new AnimationController<>(this, "attack_cycle", 5, this::poseAttackCycle)
+                new AnimationController<>(this, "attack_cycle", 5, this::poseAttackCycle),
+                new AnimationController<>(this, "blob_idle", 5, this::poseBlobIdleCycle)
         );
+    }
+
+    protected PlayState poseBlobIdleCycle(AnimationState<SculkCreeperEntity> state)
+    {
+        state.setAnimation(BLOB_IDLE_ANIMATION);
+        return PlayState.CONTINUE;
     }
 
     // Create the animation handler for the body segment

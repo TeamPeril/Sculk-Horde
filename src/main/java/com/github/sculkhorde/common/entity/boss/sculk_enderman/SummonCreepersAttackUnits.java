@@ -94,7 +94,7 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
         Collections.shuffle(possibleSpawns);
 
         // Spawn 20 units
-        for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
+        for(int i = 0; i < 5 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             SculkCreeperEntity creeper = new SculkCreeperEntity(EntityRegistry.SCULK_CREEPER.get(), mob.level());
