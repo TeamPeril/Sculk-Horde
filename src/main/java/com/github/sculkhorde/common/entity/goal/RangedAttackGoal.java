@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.entity.goal;
+import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.entity.attack.RangedAttack;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -226,6 +227,10 @@ public class RangedAttackGoal extends Goal {
             }
 
             this.strafingTime = 0; //Reset Strafing Time
+            if(this.entity instanceof SculkSpitterEntity spitter)
+            {
+                spitter.setStrafing(true);
+            }
         }
 
         //If directed to stop strafing
@@ -247,10 +252,19 @@ public class RangedAttackGoal extends Goal {
                     this.strafingClockwise ? 0.5F : -0.5F);
             //Tell Entity to look at target
             this.entity.lookAt(targetEntity, 30.0F, 30.0F);
+
+            if(this.entity instanceof SculkSpitterEntity spitter)
+            {
+                spitter.setStrafing(false);
+            }
         }
         else //If in process of strafing, just look at target entity
         {
             this.entity.getLookControl().setLookAt(targetEntity, 30.0F, 30.0F);
+            if(this.entity instanceof SculkSpitterEntity spitter)
+            {
+                spitter.setStrafing(true);
+            }
         }
 
 

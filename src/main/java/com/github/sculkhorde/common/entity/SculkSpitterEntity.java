@@ -6,6 +6,10 @@ import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
@@ -67,6 +71,8 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
 
+    private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -123,7 +129,6 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
     }
-
 
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
@@ -200,17 +205,56 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         return goals;
     }
 
+    // Synced Data
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(IS_STRAFING, false);
+    }
+
+    public boolean isStrafing()
+    {
+        return this.entityData.get(IS_STRAFING);
+    }
+
+    public void setStrafing(boolean value)
+    {
+        this.entityData.set(IS_STRAFING, value);
+    }
+
+
+
     // ANIMATIONS
+    private static final RawAnimation STRAFE_ANIMATION = RawAnimation.begin().thenPlay("move.strafe");
+    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", ATTACK_ANIMATION);
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                DefaultAnimations.genericWalkIdleController(this),
+                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
                 DefaultAnimations.genericLivingController(this),
                 ATTACK_ANIMATION_CONTROLLER
         );
+    }
+
+    protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
+    {
+        if(state.getAnimatable().isStrafing())
+        {
+            state.setAnimation(STRAFE_ANIMATION);
+        }
+        else if(state.isMoving())
+        {
+            state.setAnimation(WALK_ANIMATION);
+        }
+        else
+        {
+            state.setAnimation(IDLE_ANIMATION);
+        }
+
+        return PlayState.CONTINUE;
     }
 
 
