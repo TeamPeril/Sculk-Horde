@@ -331,6 +331,8 @@ public class BlockRegistry {
 					.mapColor(MapColor.COLOR_PURPLE)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
+					.explosionResistance(1200f)
+					.destroyTime(50f)
 			));
 
 	public static final RegistryObject<Block> INFESTATION_WARD_BLOCK =
