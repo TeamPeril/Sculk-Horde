@@ -127,7 +127,6 @@ public class RaidHandler {
     // Events
 
     public void bossBarTick(){
-
         if(raidData.getRaidState() != RaidState.ACTIVE_WAVE && raidData.getRaidState() != RaidState.INITIALIZING_WAVE)
         {
             return;
@@ -140,13 +139,28 @@ public class RaidHandler {
             raidData.getBossEvent().setDarkenScreen(true);
         }
 
-        //Set Players to be all players on server
+        //Add players to event as necessary
         raidData.getLevel().players().forEach((player) -> {
 
-            if(!raidData.getBossEvent().getPlayers().contains(player)) {
+            boolean isPlayerInListAlready = raidData.getBossEvent().getPlayers().contains(player);
+            boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= raidData.getCurrentRaidRadius() * 2;
+
+            if(!isPlayerInListAlready && isPlayerInRangeOfRaid)
+            {
+
                 raidData.getBossEvent().addPlayer(player);
             }
         });
+
+        // Remove players from event as necessary
+        raidData.getBossEvent().getPlayers().forEach((player) -> {
+            boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= raidData.getCurrentRaidRadius() * 2;
+            if(!isPlayerInRangeOfRaid)
+            {
+                raidData.getBossEvent().removePlayer(player);
+            }
+        });
+
 
         if(raidData.getRaidState() == RaidState.INITIALIZING_WAVE)
         {
