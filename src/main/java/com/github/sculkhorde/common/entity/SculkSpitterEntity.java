@@ -282,14 +282,4 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public boolean dampensVibrations() {
         return true;
     }
-
-
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
-    @Override
-    public void onRemovedFromWorld() {
-        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
-    }
 }

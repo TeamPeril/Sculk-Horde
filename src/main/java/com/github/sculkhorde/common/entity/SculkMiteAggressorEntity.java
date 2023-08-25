@@ -217,12 +217,5 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     }
 
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
-    @Override
-    public void onRemovedFromWorld() {
-        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
-    }
+
 }
