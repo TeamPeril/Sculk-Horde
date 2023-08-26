@@ -592,7 +592,7 @@ public class ModSavedData extends SavedData {
         {
             if (!getAreasOfInterestEntries().get(index).isInNoRaidZone())
             {
-                SculkHorde.LOGGER.info("Area of Interest at " + getAreasOfInterestEntries().get(index).position + " is on no raid zone. Removing from memory.");                getPriorityBlockEntries().remove(index);
+                SculkHorde.LOGGER.info("Area of Interest at " + getAreasOfInterestEntries().get(index).position + " is on no raid zone. Removing from memory.");
                 getAreasOfInterestEntries().remove(index);
                 index--;
                 setDirty();
