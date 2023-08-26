@@ -585,14 +585,15 @@ public class ModSavedData extends SavedData {
         }
     }
 
-    public void validatePriorityBlockEntries()
+    public void validateAreasOfInterest()
     {
         long startTime = System.currentTimeMillis();
-        for (int index = 0; index < getPriorityBlockEntries().size(); index++)
+        for (int index = 0; index < getAreasOfInterestEntries().size(); index++)
         {
-            if (!getPriorityBlockEntries().get(index).isEntryValid(level))
+            if (!getAreasOfInterestEntries().get(index).isInNoRaidZone())
             {
-                SculkHorde.LOGGER.info("Priority Block Entry at " + getPriorityBlockEntries().get(index).position + " is invalid. Removing from memory.");                getPriorityBlockEntries().remove(index);
+                SculkHorde.LOGGER.info("Area of Interest at " + getAreasOfInterestEntries().get(index).position + " is on no raid zone. Removing from memory.");                getPriorityBlockEntries().remove(index);
+                getAreasOfInterestEntries().remove(index);
                 index--;
                 setDirty();
             }
@@ -600,7 +601,7 @@ public class ModSavedData extends SavedData {
 
         long endTime = System.currentTimeMillis();
         if(SculkHorde.isDebugMode()) {
-            SculkHorde.LOGGER.info("Priority Block Validation Took " + (endTime - startTime) + " milliseconds");
+            SculkHorde.LOGGER.info("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
 
@@ -622,18 +623,6 @@ public class ModSavedData extends SavedData {
         if(SculkHorde.isDebugMode()) {
             SculkHorde.LOGGER.info("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
         }
-    }
-
-    public boolean isInNoRaidZone(BlockPos pos)
-    {
-        for(NoRaidZoneEntry entry : getNoRaidZoneEntries())
-        {
-            if(entry.isBlockPosInRadius(pos))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -1166,9 +1155,16 @@ public class ModSavedData extends SavedData {
             return position;
         }
 
-        public long getTicksSinceLastRaid()
+        public boolean isInNoRaidZone()
         {
-            return ticksSinceLastRaid;
+            for(NoRaidZoneEntry entry : SculkHorde.savedData.getNoRaidZoneEntries())
+            {
+                if(entry.isBlockPosInRadius(getPosition()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /**

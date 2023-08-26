@@ -87,6 +87,7 @@ public class ForgeEventSubscriber {
         SculkHorde.savedData.validateNodeEntries();
         SculkHorde.savedData.validateBeeNestEntries();
         SculkHorde.savedData.validateNoRaidZoneEntries();
+        SculkHorde.savedData.validateAreasOfInterest();
 
         //Calculate Current State
         SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary

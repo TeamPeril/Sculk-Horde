@@ -294,6 +294,7 @@ public class RaidHandler {
             raidData.setScoutEnderman(new SculkEndermanEntity(raidData.getLevel(), raidData.getAreaOfInterestEntry().getPosition()));
             raidData.getLevel().addFreshEntity(raidData.getScoutEnderman());
             raidData.getScoutEnderman().setInvestigatingPossibleRaidLocation(true);
+            SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + raidData.getAreaOfInterestEntry().getPosition() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
             announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location. Keep an eye out."), raidData.getCurrentRaidRadius() * 8);
         }
 
@@ -363,7 +364,7 @@ public class RaidHandler {
         if(raidData.getBlockSearcher().isSuccessful)
         {
             raidData.setRaidState(RaidState.INITIALIZING_WAVE);
-            SculkHorde.LOGGER.debug("RaidHandler | Found Spawn Location. Initializing Raid.");
+            SculkHorde.LOGGER.info("RaidHandler | Found Spawn Location. Initializing Raid.");
 
             raidData.setNextObjectiveLocation();
             raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
@@ -488,6 +489,7 @@ public class RaidHandler {
     private void completeRaidTick()
     {
         SculkHorde.savedData.addNoRaidZoneToMemory(raidData.getRaidLocation());
+        SculkHorde.LOGGER.info("RaidHandler | Raid Complete.");
         announceToAllPlayers(Component.literal("The Sculk Horde's raid was successful!"));
         // Summon Sculk Spore Spewer
         SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(EntityRegistry.SCULK_SPORE_SPEWER.get(), raidData.getLevel());
@@ -502,10 +504,12 @@ public class RaidHandler {
         switch (raidData.getFailure())
         {
             case FAILED_OBJECTIVE_COMPLETION:
+                SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Objectives Not Destroyed.");
                 announceToAllPlayers(Component.literal("The Sculk Horde has failed to destroy all objectives!"));
                 raidData.getLevel().players().forEach((player) -> raidData.getLevel().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
                 break;
             case ENDERMAN_DEFEATED:
+                SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Sculk Enderman Defeated.");
                 announceToAllPlayers(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"));
                 raidData.getLevel().players().forEach((player) -> raidData.getLevel().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
                 break;
