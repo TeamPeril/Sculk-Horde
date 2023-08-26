@@ -7,6 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -31,8 +32,8 @@ public class ItemRegistry {
 	public static final RegistryObject<DevConversionWand> DEV_CONVERSION_WAND = ITEMS.register("dev_conversion_wand",
 			DevConversionWand::new);
 
-	public static final RegistryObject<InfestationPurifier> INFESTATION_PURIFIER = ITEMS.register("infestation_purifier",
-			InfestationPurifier::new);
+	public static final RegistryObject<InfestationPurifierItem> INFESTATION_PURIFIER = ITEMS.register("infestation_purifier",
+			InfestationPurifierItem::new);
 
 	public static final RegistryObject<CustomItemProjectile> CUSTOM_ITEM_PROJECTILE = ITEMS.register("custom_item_projectile",
 			CustomItemProjectile::new);
@@ -69,4 +70,14 @@ public class ItemRegistry {
 	public static final RegistryObject<WardenBeefItem> WARDEN_BEEF = ITEMS.register("warden_beef",
 			WardenBeefItem::new);
 
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPORE_SPEWER_SPAWN_EGG = ITEMS.register("sculk_spore_spewer_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_SPORE_SPEWER, 0x111B21, 0xD1D6B6, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_SPAWN_EGG = ITEMS.register("sculk_mite_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_MITE, 0x062E37, 0x034150, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_AGGRESSOR_SPAWN_EGG = ITEMS.register("sculk_mite_aggressor_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_MITE_AGGRESSOR, 0x062E37, 0xA2AF86, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ZOMBIE_SPAWN_EGG = ITEMS.register("sculk_zombie_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_ZOMBIE, 0x44975c, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPITTER_SPAWN_EGG = ITEMS.register("sculk_spitter_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_SPITTER, 0xD1D6B6, 0x0BB4AA, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_CREEPER_SPAWN_EGG = ITEMS.register("sculk_creeper_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_CREEPER, 0x0DA70B, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_HATCHER_SPAWN_EGG = ITEMS.register("sculk_hatcher_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_HATCHER, 0x443626, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_VINDICATOR_SPAWN_EGG = ITEMS.register("sculk_vindicator_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_VINDICATOR, 0x959B9B, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_RAVAGER_SPAWN_EGG = ITEMS.register("sculk_ravager_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_RAVAGER, 0x5B5049, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ENDERMAN_SPAWN_EGG = ITEMS.register("sculk_enderman_spawn_egg",() ->  new ForgeSpawnEggItem(EntityRegistry.SCULK_ENDERMAN, 0x111B21, 0xE079FA, new Item.Properties()));
 }

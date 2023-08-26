@@ -27,6 +27,16 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ItemRegistry.DEV_RAID_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get());
+                event.accept(ItemRegistry.SCULK_SPORE_SPEWER_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_MITE_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_MITE_AGGRESSOR_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_ZOMBIE_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_SPITTER_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_CREEPER_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_HATCHER_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_VINDICATOR_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_RAVAGER_SPAWN_EGG.get());
+                event.accept(ItemRegistry.SCULK_ENDERMAN_SPAWN_EGG.get());
                 event.accept(ItemRegistry.INFESTATION_PURIFIER.get());
                 event.accept(ItemRegistry.PURIFICATION_FLASK_ITEM.get());
                 event.accept(ItemRegistry.ESSENCE_OF_PURITY.get());
