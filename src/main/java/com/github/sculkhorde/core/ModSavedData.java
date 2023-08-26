@@ -529,7 +529,7 @@ public class ModSavedData extends SavedData {
         for(int i = 0; i < getAreasOfInterestEntries().size(); i++)
         {
             // If the area of interest is not in a no raid zone, return it
-            if(!isInNoRaidZone(getAreasOfInterestEntries().get(i).getPosition()))
+            if(!getAreasOfInterestEntries().get(i).isInNoRaidZone())
             {
                 return Optional.of(getAreasOfInterestEntries().get(i));
             }
