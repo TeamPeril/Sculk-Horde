@@ -41,6 +41,7 @@ public class ModBlocks {
 							.mapColor(MapColor.TERRACOTTA_BLUE)
 							.strength(15f, 30f)
 							.requiresCorrectToolForDrops()
+							.destroyTime(10f)
 							.sound(SoundType.ANCIENT_DEBRIS)
     					));
 
@@ -50,6 +51,7 @@ public class ModBlocks {
 							.mapColor(MapColor.TERRACOTTA_BLUE)
 							.strength(15f, 30f)//Hardness & Resistance
 							.requiresCorrectToolForDrops()
+							.destroyTime(10f)
 							.sound(SoundType.ANCIENT_DEBRIS)
     					));
 
@@ -76,6 +78,7 @@ public class ModBlocks {
 			registerBlock("calcite_ore", () -> new Block(BlockBehaviour.Properties.of()
 						.mapColor(MapColor.QUARTZ)
 						.strength(15f, 30f)//Hardness & Resistance
+						.destroyTime(5f)
 						.requiresCorrectToolForDrops()
 						.sound(SoundType.ANCIENT_DEBRIS)
 			));
@@ -84,6 +87,7 @@ public class ModBlocks {
 			registerBlock("infested_stone", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
@@ -95,6 +99,7 @@ public class ModBlocks {
 			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.SAND)
 			));
@@ -103,6 +108,7 @@ public class ModBlocks {
 			registerBlock("infested_red_sand", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.SAND)
 			));
@@ -111,6 +117,7 @@ public class ModBlocks {
 			registerBlock("infested_deepslate", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.DEEPSLATE)
 			));
@@ -119,22 +126,15 @@ public class ModBlocks {
 			registerBlock("infested_sandstone", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
-
-	public static final RegistryObject<Block> INFESTED_RED_SANDSTONE =
-			registerBlock("infested_red_sandstone", () -> new Block(BlockBehaviour.Properties.of()
-					.mapColor(MapColor.TERRACOTTA_BLUE)
-					.strength(15f, 30f)//Hardness & Resistance
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
-			));
-
 	public static final RegistryObject<Block> INFESTED_DIORITE =
 			registerBlock("infested_diorite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -143,6 +143,7 @@ public class ModBlocks {
 			registerBlock("infested_granite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -151,6 +152,7 @@ public class ModBlocks {
 			registerBlock("infested_andesite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -159,6 +161,7 @@ public class ModBlocks {
 			registerBlock("infested_tuff", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -167,6 +170,7 @@ public class ModBlocks {
 			registerBlock("infested_calcite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.CALCITE)
 			));
@@ -175,6 +179,7 @@ public class ModBlocks {
 			registerBlock("infested_cobbled_deepslate", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -182,6 +187,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_GRAVEL =
 			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.GRAVEL)
 			));
@@ -189,6 +196,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_MOSS =
 			registerBlock("infested_moss", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.GRASS)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.MOSS)
 			));
@@ -196,6 +205,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_SNOW =
 			registerBlock("infested_snow", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.SNOW)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.SNOW)
 			));
@@ -203,6 +214,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_TERRACOTTA =
 			registerBlock("infested_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_ORANGE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -210,6 +223,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_BLACK_TERRACOTTA =
 			registerBlock("infested_black_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -217,6 +232,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_BLUE_TERRACOTTA =
 			registerBlock("infested_blue_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -224,6 +241,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_BROWN_TERRACOTTA =
 			registerBlock("infested_brown_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BROWN)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -231,6 +250,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_CYAN_TERRACOTTA =
 			registerBlock("infested_cyan_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_CYAN)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -238,6 +259,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_GRAY_TERRACOTTA =
 			registerBlock("infested_gray_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_GRAY)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -245,6 +268,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_GREEN_TERRACOTTA =
 			registerBlock("infested_green_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_GREEN)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -252,6 +277,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_LIGHT_BLUE_TERRACOTTA =
 			registerBlock("infested_light_blue_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_LIGHT_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -259,6 +286,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_LIGHT_GRAY_TERRACOTTA =
 			registerBlock("infested_light_gray_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -266,6 +295,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_LIME_TERRACOTTA =
 			registerBlock("infested_lime_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_LIGHT_GREEN)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -273,6 +304,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_MAGENTA_TERRACOTTA =
 			registerBlock("infested_magenta_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_MAGENTA)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -280,6 +313,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_ORANGE_TERRACOTTA =
 			registerBlock("infested_orange_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_ORANGE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -287,6 +322,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_PINK_TERRACOTTA =
 			registerBlock("infested_pink_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_PINK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -294,6 +331,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_PURPLE_TERRACOTTA =
 			registerBlock("infested_purple_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_PURPLE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -301,6 +340,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_RED_TERRACOTTA =
 			registerBlock("infested_red_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_RED)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -308,6 +349,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_WHITE_TERRACOTTA =
 			registerBlock("infested_white_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_WHITE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -315,6 +358,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_YELLOW_TERRACOTTA =
 			registerBlock("infested_yellow_terracotta", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_YELLOW)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -322,6 +367,8 @@ public class ModBlocks {
 	public static final RegistryObject<Block> INFESTED_COBBLESTONE =
 			registerBlock("infested_cobblestone", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
@@ -333,6 +380,114 @@ public class ModBlocks {
 					.sound(SoundType.STONE)
 					.explosionResistance(1200f)
 					.destroyTime(50f)
+			));
+
+	public static final RegistryObject<Block> INFESTED_MUD =
+			registerBlock("infested_mud", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_GRAY)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.MUD)
+			));
+
+	public static final RegistryObject<Block> INFESTED_PACKED_MUD =
+			registerBlock("infested_packed_mud", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.DIRT)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.PACKED_MUD)
+			));
+
+	public static final RegistryObject<Block> INFESTED_MUD_BRICKS =
+			registerBlock("infested_mud_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.DIRT)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.MUD_BRICKS)
+			));
+
+	public static final RegistryObject<Block> INFESTED_BLACKSTONE =
+			registerBlock("infested_blackstone", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_BASALT =
+			registerBlock("infested_basalt", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_GRAY)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_SMOOTH_BASALT =
+			registerBlock("infested_smooth_basalt", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_GRAY)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_ENDSTONE =
+			registerBlock("infested_endstone", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_YELLOW)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_NETHERRACK =
+			registerBlock("infested_netherrack", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.NETHER)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_CRIMSON_NYLIUM =
+			registerBlock("infested_crimson_nylium", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.NETHER)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_WARPED_NYLIUM =
+			registerBlock("infested_warped_nylium", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.NETHER)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_MOSSY_COBBLESTONE =
+			registerBlock("infested_mossy_cobblestone", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor. STONE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<Block> INFESTED_CLAY =
+			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor. CLAY)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.MUD)
 			));
 
 	public static final RegistryObject<Block> INFESTATION_WARD_BLOCK =

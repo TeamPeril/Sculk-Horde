@@ -1,7 +1,6 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
-import com.github.sculkhorde.common.item.ModCreativeModeTab;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;

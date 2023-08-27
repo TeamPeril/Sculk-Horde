@@ -106,5 +106,16 @@
   "item.sculkhorde.crying_souls": "Crying Souls",
   "item.sculkhorde.essence_of_purity": "Essence of Purity",
   "item.sculkhorde.pure_souls": "Pure Souls",
-  "block.sculkhorde.infestation_ward_block": "Infestation Ward Block"
+  "block.sculkhorde.infestation_ward_block": "Infestation Ward Block",
+  "block.sculkhorde.infested_mud": "Infested Mud",
+  "block.sculkhorde.infested_packed_mud": "Infested Packed Mud",
+  "block.sculkhorde.infested_mud_bricks": "Infested Mud Bricks",
+  "block.sculkhorde.infested_netherrack": "Infested Netherrack",
+  "block.sculkhorde.infested_crimson_nylium": "Infested Crimson Nylium",
+  "block.sculkhorde.infested_warped_nylium": "Infested Warped Nylium",
+  "block.sculkhorde.infested_blackstone": "Infested Blackstone",
+  "block.sculkhorde.infested_basalt": "Infested Basalt",
+  "block.sculkhorde.infested_smooth_basalt": "Infested Smooth Basalt",
+  "block.sculkhorde.infested_endstone": "Infested Endstone",
+  "block.sculkhorde.infested_mossy_cobblestone": "Infested Mossy Cobblestone"
 }

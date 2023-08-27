@@ -32,6 +32,14 @@
     "sculkhorde:calcite_ore",
     "sculkhorde:sculk_dura_matter",
     "sculkhorde:sculk_living_rock",
-    "sculkhorde:sculk_living_rock_root"
+    "sculkhorde:sculk_living_rock_root",
+    "sculkhorde:infested_netherrack",
+    "sculkhorde:infested_crimson_nylium",
+    "sculkhorde:infested_warped_nylium",
+    "sculkhorde:infested_blackstone",
+    "sculkhorde:infested_basalt",
+    "sculkhorde:infested_smooth_basalt",
+    "sculkhorde:infested_endstone",
+    "sculkhorde:infested_mossy_cobblestone"
   ]
 }
