@@ -45,7 +45,6 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
     public static Properties getProperties()
     {
         return new Item.Properties()
-                .durability(1)
                 .rarity(Rarity.EPIC)
                 .stacksTo(8);
     }
