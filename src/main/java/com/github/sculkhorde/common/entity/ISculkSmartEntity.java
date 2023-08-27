@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
@@ -26,7 +26,7 @@ public interface ISculkSmartEntity {
     }
 
     default Optional<SculkNodeBlockEntity> getClosestNodeBlockEntity() {
-        return ((Mob)this).level().getBlockEntity(getClosestNodePosition(), BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get());
+        return ((Mob)this).level().getBlockEntity(getClosestNodePosition(), ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
     }
 
     boolean isParticipatingInRaid();

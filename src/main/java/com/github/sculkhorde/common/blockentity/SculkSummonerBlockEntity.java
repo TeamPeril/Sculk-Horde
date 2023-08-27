@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.SculkSummonerBlock;
-import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -75,7 +75,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     public SculkSummonerBlockEntity(BlockPos blockPos, BlockState blockState)
     {
-        super(BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), blockPos, blockState);
+        super(ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), blockPos, blockState);
         searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), ACTIVATION_DISTANCE, 5, ACTIVATION_DISTANCE);
         possibleLivingEntityTargets = new ArrayList<>();
         possibleAggressorTargets = new ArrayList<>();
@@ -444,7 +444,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         controllers.add(new AnimationController<>(this, state ->
         {
                 BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
-                if(blockState.is(BlockRegistry.SCULK_SUMMONER_BLOCK.get()))
+                if(blockState.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
                 {
                     if(!state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.IS_ACTIVE)
                     || state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.VIBRATION_COOLDOWN))

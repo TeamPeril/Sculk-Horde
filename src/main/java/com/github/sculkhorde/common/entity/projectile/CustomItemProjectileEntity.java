@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.projectile;
 
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
@@ -56,7 +56,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      * @param shooterIn The Entity Shooting the Projectile
      */
     public CustomItemProjectileEntity(Level worldIn, LivingEntity shooterIn, float damageIn) {
-        this(EntityRegistry.CUSTOM_ITEM_PROJECTILE_ENTITY.get(), worldIn);
+        this(ModEntities.CUSTOM_ITEM_PROJECTILE_ENTITY.get(), worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
         this.setDamage(damageIn);
@@ -83,7 +83,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      * @return The Item
      */
     protected Item getDefaultItem() {
-        return ItemRegistry.CUSTOM_ITEM_PROJECTILE.get();
+        return ModItems.CUSTOM_ITEM_PROJECTILE.get();
     }
 
     /**

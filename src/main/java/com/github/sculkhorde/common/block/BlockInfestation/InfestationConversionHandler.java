@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.block.BlockInfestation;
 
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.core.BlockRegistry;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -69,7 +69,7 @@ public class InfestationConversionHandler
         // Special Condition for Infested Logs because I do not care right now
         if(targetBlock.is(BlockTags.LOGS))
         {
-            newBlock = BlockRegistry.INFESTED_LOG.get().defaultBlockState();
+            newBlock = ModBlocks.INFESTED_LOG.get().defaultBlockState();
         }
 
 
@@ -85,7 +85,7 @@ public class InfestationConversionHandler
         for(BlockPos pos : adjacentBlockPos)
         {
             BlockState blockState = world.getBlockState(pos);
-            if(blockState.getBlock() == BlockRegistry.TENDRILS.get())
+            if(blockState.getBlock() == ModBlocks.TENDRILS.get())
             {
                 if(!blockState.getBlock().canSurvive(blockState, world, pos))
                     world.destroyBlock(pos, false);
@@ -104,7 +104,7 @@ public class InfestationConversionHandler
         }
 
         // If the block we are placing is an Infested Log, place down sculk flora around it.
-        if(newBlock.getBlock() == BlockRegistry.INFESTED_LOG.get())
+        if(newBlock.getBlock() == ModBlocks.INFESTED_LOG.get())
             BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
         // Chance to place a sculk node above the block
@@ -143,7 +143,7 @@ public class InfestationConversionHandler
         BlockState victimVariant = victimBlock.defaultBlockState();
 
         // Special Condition for Infested Logs because I do not care right now
-        if(targetBlock.is(BlockRegistry.INFESTED_LOG.get()))
+        if(targetBlock.is(ModBlocks.INFESTED_LOG.get()))
         {
             victimVariant = Blocks.OAK_LOG.defaultBlockState();
         }
@@ -283,7 +283,7 @@ public class InfestationConversionHandler
         public boolean isInfectedVariant(BlockState blockState)
         {
             // Special Condition for Infested Logs because I do not care right now
-            if(blockState.is(BlockRegistry.INFESTED_LOG.get())) { return true;}
+            if(blockState.is(ModBlocks.INFESTED_LOG.get())) { return true;}
 
             for(InfestationTableEntry entry : entries)
             {

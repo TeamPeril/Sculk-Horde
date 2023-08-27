@@ -1,8 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
-import com.github.sculkhorde.common.entity.SculkMiteEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -97,7 +96,7 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
         for(int i = 0; i < 5 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            SculkCreeperEntity creeper = new SculkCreeperEntity(EntityRegistry.SCULK_CREEPER.get(), mob.level());
+            SculkCreeperEntity creeper = new SculkCreeperEntity(ModEntities.SCULK_CREEPER.get(), mob.level());
             creeper.setPos(spawnPos.getX(), spawnPos.getY() + 1, spawnPos.getZ());
             creeper.setTarget(mob.getTarget());
             mob.level().addFreshEntity(creeper);

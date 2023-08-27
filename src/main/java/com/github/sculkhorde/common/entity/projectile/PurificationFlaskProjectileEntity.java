@@ -1,9 +1,9 @@
 package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
-import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
@@ -43,7 +43,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
      * @param worldIn The World to spawn the projectile in
      */
     public PurificationFlaskProjectileEntity(Level worldIn, LivingEntity shooterIn, float damageIn) {
-        this(EntityRegistry.PURIFICATION_FLASK_PROJECTILE_ENTITY.get(), worldIn);
+        this(ModEntities.PURIFICATION_FLASK_PROJECTILE_ENTITY.get(), worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
         this.setDamage(damageIn);
@@ -55,7 +55,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     /** ACCESSORS **/
 
     protected Item getDefaultItem() {
-        return ItemRegistry.PURIFICATION_FLASK_ITEM.get();
+        return ModItems.PURIFICATION_FLASK_ITEM.get();
     }
 
 
@@ -77,15 +77,15 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2.0D)))
         {
             // If the entity is infected, remove the infection.
-            if(entity.hasEffect(EffectRegistry.SCULK_INFECTION.get()))
+            if(entity.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
             {
-                entity.removeEffect(EffectRegistry.SCULK_INFECTION.get());
+                entity.removeEffect(ModMobEffects.SCULK_INFECTION.get());
             }
 
             // If the entity is lured, remove the lure.
-            if(entity.hasEffect(EffectRegistry.SCULK_LURE.get()))
+            if(entity.hasEffect(ModMobEffects.SCULK_LURE.get()))
             {
-                entity.removeEffect(EffectRegistry.SCULK_LURE.get());
+                entity.removeEffect(ModMobEffects.SCULK_LURE.get());
             }
         }
     }
@@ -116,7 +116,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         }
 
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-        ((ServerLevel)level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
+        ((ServerLevel)level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
 
         remove(RemovalReason.DISCARDED);
 

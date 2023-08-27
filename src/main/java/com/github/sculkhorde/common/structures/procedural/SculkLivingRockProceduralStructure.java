@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.structures.procedural;
 
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -46,7 +46,7 @@ public class SculkLivingRockProceduralStructure extends ProceduralStructure
         // The maximum height is the square of the height degradation multiplier, or the diameter times 2
         int MAXIMUM_HEIGHT = Math.max(HEIGHT_DEGRADE_MULTIPLIER * (DIAMETER), DIAMETER * 2);
         //Generate Circle Base
-        ArrayList<PlannedBlock> circleBase = BlockAlgorithms.generate2DCirclePlan(origin, DIAMETER, world, BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+        ArrayList<PlannedBlock> circleBase = BlockAlgorithms.generate2DCirclePlan(origin, DIAMETER, world, ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
         // Create a new ArrayList to store all the planned pillar blocks
         ArrayList<PlannedBlock> pillarList = new ArrayList<PlannedBlock>();
 
@@ -64,11 +64,11 @@ public class SculkLivingRockProceduralStructure extends ProceduralStructure
                 BlockPos newPos = new BlockPos(pos.getX(), y, pos.getZ());
                 if(BlockAlgorithms.getSudoRNGFromPosition(newPos, 0, 10) == 0)
                 {
-                    pillarList.add(new PlannedBlock(world, BlockRegistry.CALCITE_ORE.get().defaultBlockState(), newPos));
+                    pillarList.add(new PlannedBlock(world, ModBlocks.CALCITE_ORE.get().defaultBlockState(), newPos));
                 }
                 else
                 {
-                    pillarList.add(new PlannedBlock(world, BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState(), newPos));
+                    pillarList.add(new PlannedBlock(world, ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState(), newPos));
                 }
 
             }
@@ -76,7 +76,7 @@ public class SculkLivingRockProceduralStructure extends ProceduralStructure
             // Generate downward pillars
             for (int y = pos.getY(); y > pos.getY() - height; y--) {
                 BlockPos newPos = new BlockPos(pos.getX(), y, pos.getZ());
-                pillarList.add(new PlannedBlock(world, BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState(), newPos));
+                pillarList.add(new PlannedBlock(world, ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState(), newPos));
             }
         }
         plannedBlockQueue.addAll(circleBase);

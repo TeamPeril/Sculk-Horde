@@ -4,9 +4,9 @@ import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.SoundRegistry;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
@@ -59,7 +59,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     private final VibrationSystem.Listener vibrationListener = new VibrationSystem.Listener(this);
 
     public SculkAncientNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
+        super(ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
 
@@ -306,7 +306,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             level.addFreshEntity(sporeSpewerEntity);
         }
 
-        level.players().forEach((player) -> level.playSound(null, player.blockPosition(), SoundRegistry.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
+        level.players().forEach((player) -> level.playSound(null, player.blockPosition(), ModSounds.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
 
         AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
     }

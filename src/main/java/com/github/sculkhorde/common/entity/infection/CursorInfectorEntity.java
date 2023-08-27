@@ -1,20 +1,14 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
 
@@ -31,7 +25,7 @@ public class CursorInfectorEntity extends CursorEntity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorInfectorEntity(Level worldIn) {super(EntityRegistry.CURSOR_INFECTOR.get(), worldIn);}
+    public CursorInfectorEntity(Level worldIn) {super(ModEntities.CURSOR_INFECTOR.get(), worldIn);}
 
     public CursorInfectorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -54,7 +48,7 @@ public class CursorInfectorEntity extends CursorEntity
     {
         // I'm doing this because cursors will get stuck on infested logs.
         // TODO FIX INFESTED LOG SHITTERY
-        if(state.is(BlockRegistry.INFESTED_LOG.get()))
+        if(state.is(ModBlocks.INFESTED_LOG.get()))
         {
             return true;
         }

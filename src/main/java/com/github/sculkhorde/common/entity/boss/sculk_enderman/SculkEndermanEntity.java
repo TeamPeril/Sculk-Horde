@@ -2,8 +2,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
@@ -19,7 +18,6 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -48,7 +46,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
-     * Edited {@link com.github.sculkhorde.core.EntityRegistry}<br>
+     * Edited {@link ModEntities}<br>
      * Edited {@link com.github.sculkhorde.util.ModEventSubscriber}<br>
      * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
      * Added {@link SculkEndermanEntity}<br>
@@ -105,7 +103,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     public SculkEndermanEntity(Level level, BlockPos pos)
     {
-        this(EntityRegistry.SCULK_ENDERMAN.get(), level);
+        this(ModEntities.SCULK_ENDERMAN.get(), level);
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
     }
 

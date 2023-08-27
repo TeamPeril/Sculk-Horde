@@ -5,7 +5,7 @@ import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.structures.procedural.SculkBeeNestProceduralStructure;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
@@ -17,7 +17,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -65,7 +64,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
     private long lastTimeSinceRepair = -1;
 
     public SculkBeeNestBlockEntity(BlockPos p_155134_, BlockState p_155135_) {
-        super(BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get(), p_155134_, p_155135_);
+        super(ModBlockEntities.SCULK_BEE_NEST_BLOCK_ENTITY.get(), p_155134_, p_155135_);
     }
 
     public void setChanged() {
@@ -242,7 +241,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
                 bee.dropOffNectar();
 
                 // Make a random cell under the hive mature
-                Optional<SculkBeeNestBlockEntity> blockEntity =  level.getBlockEntity(blockPos, BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get());
+                Optional<SculkBeeNestBlockEntity> blockEntity =  level.getBlockEntity(blockPos, ModBlockEntities.SCULK_BEE_NEST_BLOCK_ENTITY.get());
                 blockEntity.ifPresent(beeNestStructure -> {
                     if(beeNestStructure.beeNestStructure != null)
                     {

@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkLivingRockRootBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -98,7 +98,7 @@ public class SculkLivingRockRootBlock extends BaseEntityBlock implements IForgeB
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), SculkLivingRockRootBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), SculkLivingRockRootBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable

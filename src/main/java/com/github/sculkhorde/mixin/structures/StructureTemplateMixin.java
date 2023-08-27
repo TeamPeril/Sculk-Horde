@@ -1,6 +1,6 @@
 package com.github.sculkhorde.mixin.structures;
 
-import com.github.sculkhorde.core.ProcessorRegistry;
+import com.github.sculkhorde.core.ModStructureProcessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -23,7 +23,7 @@ public class StructureTemplateMixin {
                                                               RandomSource random, int flag, CallbackInfoReturnable<Boolean> cir) {
 
         if(structurePlaceSettings.getProcessors().stream().anyMatch(processor ->
-                ((StructureProcessorAccessor)processor).callGetType() == ProcessorRegistry.WATERLOGGING_FIX_PROCESSOR.get())) {
+                ((StructureProcessorAccessor)processor).callGetType() == ModStructureProcessors.WATERLOGGING_FIX_PROCESSOR.get())) {
             structurePlaceSettings.setKeepLiquids(false);
         }
     }

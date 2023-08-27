@@ -1,15 +1,12 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -20,7 +17,7 @@ import java.util.List;
 
 /**
  * The following java files were created/edited for this entity.<br>
- * Edited {@link com.github.sculkhorde.core.EntityRegistry}<br>
+ * Edited {@link ModEntities}<br>
  * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
  * Added {@link EnderBubbleAttackEntity}<br>
  * Added {@link com.github.sculkhorde.client.model.enitity.EnderBubbleAttackModel}<br>
@@ -36,7 +33,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     }
 
     public EnderBubbleAttackEntity( Level level) {
-        super(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), level);
+        super(ModEntities.ENDER_BUBBLE_ATTACK.get(), level);
     }
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level, LivingEntity sourceEntity) {
@@ -44,7 +41,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     }
 
     public EnderBubbleAttackEntity( Level level, LivingEntity sourceEntity) {
-        super(EntityRegistry.ENDER_BUBBLE_ATTACK.get(), level, sourceEntity);
+        super(ModEntities.ENDER_BUBBLE_ATTACK.get(), level, sourceEntity);
     }
 
     public EnderBubbleAttackEntity enableDeleteAfterTime(int ticks)

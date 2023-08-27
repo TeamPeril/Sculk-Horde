@@ -2,10 +2,9 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,7 +44,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     private SculkNodeInfectionHandler infectionHandler;
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
+        super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     private final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);

@@ -112,15 +112,15 @@ public class RaidHandler {
 
     public boolean isCurrentObjectiveCompleted()
     {
-        if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             return false;
         }
-        else if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        else if(raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
         {
             return false;
         }
-        else return !raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY);
+        else return !raidData.getLevel().getBlockState(raidData.getObjectiveLocation()).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY);
     }
 
 
@@ -419,7 +419,7 @@ public class RaidHandler {
 
         spawnWaveParticipants(raidData.getSpawnLocation());
 
-        playSoundForEachPlayerInRange(SoundRegistry.RAID_START_SOUND.get(), 1.0F, 1.0F, raidData.getCurrentRaidRadius() * 4);
+        playSoundForEachPlayerInRange(ModSounds.RAID_START_SOUND.get(), 1.0F, 1.0F, raidData.getCurrentRaidRadius() * 4);
 
         if(raidData.getObjectiveLocationAtStartOfWave().equals(raidData.getObjectiveLocation()))
         {
@@ -492,7 +492,7 @@ public class RaidHandler {
         SculkHorde.LOGGER.info("RaidHandler | Raid Complete.");
         announceToAllPlayers(Component.literal("The Sculk Horde's raid was successful!"));
         // Summon Sculk Spore Spewer
-        SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(EntityRegistry.SCULK_SPORE_SPEWER.get(), raidData.getLevel());
+        SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(ModEntities.SCULK_SPORE_SPEWER.get(), raidData.getLevel());
         sporeSpewer.setPos(raidData.getRaidLocation().getX(), raidData.getRaidLocation().getY(), raidData.getRaidLocation().getZ());
         raidData.getLevel().addFreshEntity(sporeSpewer);
         raidData.reset();
@@ -552,14 +552,14 @@ public class RaidHandler {
         // Add 5 Creepers
         for(int i = 0; i < 6; i++)
         {
-            SculkCreeperEntity creeper = EntityRegistry.SCULK_CREEPER.get().create(raidData.getLevel());
+            SculkCreeperEntity creeper = ModEntities.SCULK_CREEPER.get().create(raidData.getLevel());
             creeper.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
             raidData.getWaveParticipants().add(creeper);
         }
 
         if(isLastWave(0))
         {
-            Mob boss = EntityRegistry.SCULK_ENDERMAN.get().create(raidData.getLevel());
+            Mob boss = ModEntities.SCULK_ENDERMAN.get().create(raidData.getLevel());
             boss.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
             raidData.getWaveParticipants().add((ISculkSmartEntity) boss);
         }

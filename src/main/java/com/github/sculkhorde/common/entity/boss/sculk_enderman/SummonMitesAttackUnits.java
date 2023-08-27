@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -91,7 +91,7 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            SculkMiteEntity mite = new SculkMiteEntity(EntityRegistry.SCULK_MITE.get(), mob.level());
+            SculkMiteEntity mite = new SculkMiteEntity(ModEntities.SCULK_MITE.get(), mob.level());
             mite.setPos(spawnPos.getX(), spawnPos.getY() + 1, spawnPos.getZ());
             mite.setTarget(mob.getTarget());
             mob.level().addFreshEntity(mite);

@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -64,7 +64,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked
-    public static MobEffect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
+    public static MobEffect INFECT_EFFECT = ModMobEffects.SCULK_INFECTION.get();
     //INFECT_DURATION The duration of the effect
     public static int INFECT_DURATION = 500;
     //INFECT_LEVEL The level of the effect

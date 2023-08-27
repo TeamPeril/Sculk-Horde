@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -99,18 +99,18 @@ public class SculkBeeNestBlock extends BaseEntityBlock
 
     public static boolean isNestClosed(BlockState blockState)
     {
-        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
+        return blockState.hasProperty(CLOSED) && blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
     }
 
     public static void setNestClosed(ServerLevel world, BlockState blockState, BlockPos position)
     {
-        if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
+        if(!blockState.hasProperty(CLOSED) || !blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get())) { return; }
         world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(true)), 3);
     }
 
     public static void setNestOpen(ServerLevel world, BlockState blockState, BlockPos position)
     {
-        if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
+        if(!blockState.hasProperty(CLOSED) || !blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get())) { return; }
         world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(false)), 3);
     }
 
@@ -186,7 +186,7 @@ public class SculkBeeNestBlock extends BaseEntityBlock
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get(), SculkBeeNestBlockEntity::serverTick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_BEE_NEST_BLOCK_ENTITY.get(), SculkBeeNestBlockEntity::serverTick);
     }
 
     @org.jetbrains.annotations.Nullable

@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -39,7 +39,7 @@ public class CursorBridgerEntity extends Entity {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorBridgerEntity(Level worldIn) {super(EntityRegistry.CURSOR_BRIDGER.get(), worldIn);}
+    public CursorBridgerEntity(Level worldIn) {super(ModEntities.CURSOR_BRIDGER.get(), worldIn);}
 
     public CursorBridgerEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -109,7 +109,7 @@ public class CursorBridgerEntity extends Entity {
             closest = pos;
             if(this.level().getBlockState(closest).isAir())
             {
-                this.level().setBlockAndUpdate(closest, BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+                this.level().setBlockAndUpdate(closest, ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
             }
 
         }
@@ -124,7 +124,7 @@ public class CursorBridgerEntity extends Entity {
         // If block break speed is < 3, then covert it to a sculk block
         if (this.level().getBlockState(this.blockPosition()).getDestroySpeed(this.level(), this.blockPosition()) <= 3)
         {
-            this.level().setBlockAndUpdate(this.blockPosition(), BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+            this.level().setBlockAndUpdate(this.blockPosition(), ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
         }
 
         // Keep track of how far we've traveled

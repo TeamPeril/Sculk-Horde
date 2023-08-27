@@ -1,19 +1,11 @@
 package com.github.sculkhorde.common.effect;
 
-import com.github.sculkhorde.common.block.SculkMassBlock;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
 
 import java.util.ArrayList;
 import java.util.List;

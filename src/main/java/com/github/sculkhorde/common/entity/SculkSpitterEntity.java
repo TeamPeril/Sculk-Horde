@@ -2,14 +2,12 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.attack.AcidAttack;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
@@ -39,7 +37,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
 public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
 
@@ -89,7 +86,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSpitterEntity(Level worldIn) {super(EntityRegistry.SCULK_SPITTER.get(), worldIn);}
+    public SculkSpitterEntity(Level worldIn) {super(ModEntities.SCULK_SPITTER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.

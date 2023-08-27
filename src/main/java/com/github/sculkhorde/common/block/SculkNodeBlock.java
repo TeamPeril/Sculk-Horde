@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.ChunkLoaderHelper;
@@ -80,7 +80,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public static void FindAreaAndPlaceNode(ServerLevel level, BlockPos searchOrigin)
     {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), level.getMinBuildHeight() + 35, searchOrigin.getZ());
-        level.setBlockAndUpdate(newOrigin, BlockRegistry.SCULK_NODE_BLOCK.get().defaultBlockState());
+        level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(newOrigin);
         EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
 
@@ -177,7 +177,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get(), SculkNodeBlockEntity::tick);
+        return createTickerHelper(blockEntityType, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), SculkNodeBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable

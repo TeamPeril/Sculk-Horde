@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.core.BlockRegistry;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -33,7 +33,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
 
     public Optional<BlockPos> findLivingRockStructureIfExists(ServerLevel world, BlockPos placementPos)
     {
-        if(world.getBlockState(placementPos).getBlock().equals(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
+        if(world.getBlockState(placementPos).getBlock().equals(ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
         {
             return Optional.of(placementPos);
         }
@@ -44,7 +44,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
         //Search all the way to bedrock for the structure
         while(placementPos.offset(0, offsetBelow, 0).getY() > 0)
         {
-            if(world.getBlockState(placementPos.offset(0, offsetBelow, 0)).getBlock().equals(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
+            if(world.getBlockState(placementPos.offset(0, offsetBelow, 0)).getBlock().equals(ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
             {
                 return Optional.of(placementPos.offset(0, offsetBelow, 0));
             }
@@ -53,7 +53,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
 
         while(placementPos.offset(0, offsetAbove, 0).getY() > world.getHeight())
         {
-            if(world.getBlockState(placementPos.offset(0, offsetAbove, 0)).getBlock().equals(BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
+            if(world.getBlockState(placementPos.offset(0, offsetAbove, 0)).getBlock().equals(ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get()))
             {
                 return Optional.of(placementPos.offset(0, offsetAbove, 0));
             }
@@ -116,11 +116,11 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
             //I dont know why i have to do -1 for the radius, something is wrong with the math
             if(BlockAlgorithms.getBlockDistance(this.origin, position) < SHELL_RADIUS - 1)
             {
-                plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_ARACHNOID.get().defaultBlockState(), position));
+                plannedBlockQueue.add(new PlannedBlock(this.world, ModBlocks.SCULK_ARACHNOID.get().defaultBlockState(), position));
             }
             else
             {
-                plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_DURA_MATTER.get().defaultBlockState(), position));
+                plannedBlockQueue.add(new PlannedBlock(this.world, ModBlocks.SCULK_DURA_MATTER.get().defaultBlockState(), position));
             }
         }
 
@@ -129,7 +129,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
         surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 20, SHELL_RADIUS *9));
         for(BlockPos position : surroundingLivingRock)
         {
-            plannedBlockQueue.add(new PlannedBlock(this.world, BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState(), findLivingRockPlacementPosition(this.world, position)));
+            plannedBlockQueue.add(new PlannedBlock(this.world, ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState(), findLivingRockPlacementPosition(this.world, position)));
         }
     }
 }

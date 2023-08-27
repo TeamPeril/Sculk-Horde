@@ -1,9 +1,8 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
@@ -17,7 +16,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.VisibleForDebug;
@@ -42,11 +40,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
@@ -158,7 +154,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
      */
     public SculkBeeHarvesterEntity(Level worldIn)
     {
-        this(EntityRegistry.SCULK_BEE_HARVESTER.get(), worldIn);
+        this(ModEntities.SCULK_BEE_HARVESTER.get(), worldIn);
     }
 
     protected void defineSynchedData() {
@@ -225,7 +221,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
             return false;
         }
-        else if (blockState.is(BlockRegistry.BlockTags.SCULK_BEE_HARVESTABLE))
+        else if (blockState.is(ModBlocks.BlockTags.SCULK_BEE_HARVESTABLE))
         {
             return true;
         }
@@ -702,7 +698,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
                 return false;
             }
 
-            if(!SculkBeeHarvesterEntity.this.level().getBlockState(SculkBeeHarvesterEntity.this.hivePos).is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+            if(!SculkBeeHarvesterEntity.this.level().getBlockState(SculkBeeHarvesterEntity.this.hivePos).is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
             {
                 return false;
             }
@@ -903,7 +899,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
 
         private final Predicate<BlockState> VALID_HIVE_BLOCKS = (validBlocksPredicate) ->
         {
-            if (validBlocksPredicate.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+            if (validBlocksPredicate.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
             {
                 return true;
             }

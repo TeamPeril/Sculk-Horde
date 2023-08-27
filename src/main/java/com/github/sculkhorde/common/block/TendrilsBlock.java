@@ -1,11 +1,10 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
@@ -63,7 +62,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         BlockState southBlock = pLevel.getBlockState(pPos.south());
         BlockState westBlock = pLevel.getBlockState(pPos.west());
 
-        if(pState.getBlock().equals(BlockRegistry.TENDRILS.get()))
+        if(pState.getBlock().equals(ModBlocks.TENDRILS.get()))
         {
             if(pState.getValue(NORTH) == true && isValidFace(pLevel, northBlock, pPos, Direction.SOUTH))
             {
@@ -115,7 +114,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         }
 
         // Get the blocks around the block
-        Block vein = BlockRegistry.TENDRILS.get();
+        Block vein = ModBlocks.TENDRILS.get();
         BlockState northBlock = worldIn.getBlockState(blockPosIn.north());
         BlockState eastBlock = worldIn.getBlockState(blockPosIn.east());
         BlockState southBlock = worldIn.getBlockState(blockPosIn.south());
@@ -160,23 +159,23 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+        else if(blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.SCULK_SUMMONER_BLOCK.get()))
+        else if(blockState.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get()))
+        else if(blockState.is(ModBlocks.SCULK_LIVING_ROCK_BLOCK.get()))
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.SCULK_NODE_BLOCK.get()))
+        else if(blockState.is(ModBlocks.SCULK_NODE_BLOCK.get()))
         {
             return false;
         }
-        else if(blockState.is(BlockRegistry.INFESTED_STONE.get()))
+        else if(blockState.is(ModBlocks.INFESTED_STONE.get()))
         {
             return false;
         }

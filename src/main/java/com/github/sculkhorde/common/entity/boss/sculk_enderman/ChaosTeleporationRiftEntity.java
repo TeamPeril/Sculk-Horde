@@ -1,10 +1,8 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -12,7 +10,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Fox;
@@ -20,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -34,7 +30,7 @@ import java.util.List;
 
 /**
  * The following java files were created/edited for this entity.<br>
- * Edited {@link com.github.sculkhorde.core.EntityRegistry}<br>
+ * Edited {@link ModEntities}<br>
  * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
  * Added {@link ChaosTeleporationRiftEntity}<br>
  * Added {@link com.github.sculkhorde.client.model.enitity.ChaosTeleporationRiftModel}<br>

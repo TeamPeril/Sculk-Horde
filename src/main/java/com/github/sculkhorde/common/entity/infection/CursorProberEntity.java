@@ -1,19 +1,13 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -29,7 +23,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorProberEntity(Level worldIn) {super(EntityRegistry.CURSOR_PROBER.get(), worldIn);}
+    public CursorProberEntity(Level worldIn) {super(ModEntities.CURSOR_PROBER.get(), worldIn);}
 
     public CursorProberEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);

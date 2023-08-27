@@ -1,16 +1,13 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TraceableEntity;
@@ -45,7 +42,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     }
 
     public SculkSpineSpikeAttackEntity(LivingEntity owner, double x, double y, double z) {
-        super(EntityRegistry.SCULK_SPINE_SPIKE_ATTACK.get(), owner.level());
+        super(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), owner.level());
         this.setPos(x, y, z);
         this.owner = owner;
         this.ownerUUID = owner.getUUID();

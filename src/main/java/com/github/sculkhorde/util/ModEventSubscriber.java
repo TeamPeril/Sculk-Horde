@@ -6,12 +6,12 @@ import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
 import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.block.Blocks;
@@ -28,15 +28,15 @@ public class ModEventSubscriber {
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
         //Add entries to the entity factory (please add them in order, I don't want to sort)
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPORE_SPEWER.get(), (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature).setLimit(1);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_RAVAGER.get(), (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature).setLimit(1);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_HATCHER.get(), (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_CREEPER.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_VINDICATOR.get(), (int) SculkVindicatorEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
-        SculkHorde.entityFactory.addEntry(EntityRegistry.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPORE_SPEWER.get(), (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature).setLimit(1);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_RAVAGER.get(), (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature).setLimit(1);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_HATCHER.get(), (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_CREEPER.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_VINDICATOR.get(), (int) SculkVindicatorEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
 
         SculkHorde.infestationConversionTable = new InfestationConversionHandler();
 
@@ -45,52 +45,52 @@ public class ModEventSubscriber {
         //SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_PATH.defaultBlockState(), BlockRegistry.CRUST.get().defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRASS_BLOCK, Blocks.SCULK.defaultBlockState());
         SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PODZOL, Blocks.SCULK.defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.STONE, BlockRegistry.INFESTED_STONE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DEEPSLATE, BlockRegistry.INFESTED_DEEPSLATE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COBBLED_DEEPSLATE, BlockRegistry.INFESTED_COBBLED_DEEPSLATE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SAND, BlockRegistry.INFESTED_SAND.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SANDSTONE, BlockRegistry.INFESTED_SANDSTONE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.RED_SAND, BlockRegistry.INFESTED_RED_SAND.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIORITE, BlockRegistry.INFESTED_DIORITE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRANITE, BlockRegistry.INFESTED_GRANITE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ANDESITE, BlockRegistry.INFESTED_ANDESITE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TUFF, BlockRegistry.INFESTED_TUFF.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CALCITE, BlockRegistry.INFESTED_CALCITE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COBBLESTONE, BlockRegistry.INFESTED_COBBLESTONE.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRAVEL, BlockRegistry.INFESTED_GRAVEL.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SNOW_BLOCK, BlockRegistry.INFESTED_SNOW.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MOSS_BLOCK, BlockRegistry.INFESTED_MOSS.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TERRACOTTA, BlockRegistry.INFESTED_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BLACK_TERRACOTTA, BlockRegistry.INFESTED_BLACK_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BLUE_TERRACOTTA, BlockRegistry.INFESTED_BLUE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BROWN_TERRACOTTA, BlockRegistry.INFESTED_BROWN_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CYAN_TERRACOTTA, BlockRegistry.INFESTED_CYAN_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRAY_TERRACOTTA, BlockRegistry.INFESTED_GRAY_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GREEN_TERRACOTTA, BlockRegistry.INFESTED_GREEN_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIGHT_BLUE_TERRACOTTA, BlockRegistry.INFESTED_LIGHT_BLUE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIGHT_GRAY_TERRACOTTA, BlockRegistry.INFESTED_LIGHT_GRAY_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIME_TERRACOTTA, BlockRegistry.INFESTED_LIME_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MAGENTA_TERRACOTTA, BlockRegistry.INFESTED_MAGENTA_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ORANGE_TERRACOTTA, BlockRegistry.INFESTED_ORANGE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PINK_TERRACOTTA, BlockRegistry.INFESTED_PINK_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PURPLE_TERRACOTTA, BlockRegistry.INFESTED_PURPLE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.RED_TERRACOTTA, BlockRegistry.INFESTED_RED_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.WHITE_TERRACOTTA, BlockRegistry.INFESTED_WHITE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.YELLOW_TERRACOTTA, BlockRegistry.INFESTED_YELLOW_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CRYING_OBSIDIAN, BlockRegistry.INFESTED_CRYING_OBSIDIAN.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.STONE, ModBlocks.INFESTED_STONE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DEEPSLATE, ModBlocks.INFESTED_DEEPSLATE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COBBLED_DEEPSLATE, ModBlocks.INFESTED_COBBLED_DEEPSLATE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SAND, ModBlocks.INFESTED_SAND.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SANDSTONE, ModBlocks.INFESTED_SANDSTONE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.RED_SAND, ModBlocks.INFESTED_RED_SAND.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.DIORITE, ModBlocks.INFESTED_DIORITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRANITE, ModBlocks.INFESTED_GRANITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ANDESITE, ModBlocks.INFESTED_ANDESITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TUFF, ModBlocks.INFESTED_TUFF.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CALCITE, ModBlocks.INFESTED_CALCITE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.COBBLESTONE, ModBlocks.INFESTED_COBBLESTONE.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRAVEL, ModBlocks.INFESTED_GRAVEL.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.SNOW_BLOCK, ModBlocks.INFESTED_SNOW.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MOSS_BLOCK, ModBlocks.INFESTED_MOSS.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.TERRACOTTA, ModBlocks.INFESTED_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BLACK_TERRACOTTA, ModBlocks.INFESTED_BLACK_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BLUE_TERRACOTTA, ModBlocks.INFESTED_BLUE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.BROWN_TERRACOTTA, ModBlocks.INFESTED_BROWN_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CYAN_TERRACOTTA, ModBlocks.INFESTED_CYAN_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GRAY_TERRACOTTA, ModBlocks.INFESTED_GRAY_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.GREEN_TERRACOTTA, ModBlocks.INFESTED_GREEN_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIGHT_BLUE_TERRACOTTA, ModBlocks.INFESTED_LIGHT_BLUE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIGHT_GRAY_TERRACOTTA, ModBlocks.INFESTED_LIGHT_GRAY_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.LIME_TERRACOTTA, ModBlocks.INFESTED_LIME_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.MAGENTA_TERRACOTTA, ModBlocks.INFESTED_MAGENTA_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.ORANGE_TERRACOTTA, ModBlocks.INFESTED_ORANGE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PINK_TERRACOTTA, ModBlocks.INFESTED_PINK_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.PURPLE_TERRACOTTA, ModBlocks.INFESTED_PURPLE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.RED_TERRACOTTA, ModBlocks.INFESTED_RED_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.WHITE_TERRACOTTA, ModBlocks.INFESTED_WHITE_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.YELLOW_TERRACOTTA, ModBlocks.INFESTED_YELLOW_TERRACOTTA.get().defaultBlockState());
+        SculkHorde.infestationConversionTable.infestationTable.addEntry(Blocks.CRYING_OBSIDIAN, ModBlocks.INFESTED_CRYING_OBSIDIAN.get().defaultBlockState());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SUMMONER_BLOCK.get(), 2);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SCULK_SUMMONER_BLOCK.get(), 2);
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 3);
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SPIKE.get(), 4);
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SMALL_SHROOM.get(), 6);
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.SCULK_SHROOM_CULTURE.get(), 6);
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS_SHORT.get(), 200);
-        SculkHorde.randomSculkFlora.addEntry(BlockRegistry.GRASS.get(), 200);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SPIKE.get(), 4);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SMALL_SHROOM.get(), 6);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SCULK_SHROOM_CULTURE.get(), 6);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.GRASS_SHORT.get(), 200);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.GRASS.get(), 200);
 
         event.enqueueWork(() -> {
-            SpawnPlacements.register(EntityRegistry.SCULK_MITE.get(),
+            SpawnPlacements.register(ModEntities.SCULK_MITE.get(),
                     SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     SculkMiteEntity::additionalSpawnCheck);
             afterCommonSetup();
@@ -111,19 +111,19 @@ public class ModEventSubscriber {
      */
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
-        event.put(EntityRegistry.SCULK_ZOMBIE.get(), SculkZombieEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_MITE.get(), SculkMiteEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_MITE_AGGRESSOR.get(), SculkMiteAggressorEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_SPITTER.get(), SculkSpitterEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_BEE_INFECTOR.get(), SculkBeeInfectorEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_BEE_HARVESTER.get(), SculkBeeHarvesterEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_HATCHER.get(), SculkHatcherEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_SPORE_SPEWER.get(), SculkSporeSpewerEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_RAVAGER.get(), SculkRavagerEntity.createAttributes().build());
-        event.put(EntityRegistry.INFESTATION_PURIFIER.get(), InfestationPurifierEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_VINDICATOR.get(), SculkVindicatorEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_CREEPER.get(), SculkCreeperEntity.createAttributes().build());
-        event.put(EntityRegistry.SCULK_ENDERMAN.get(), SculkEndermanEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_ZOMBIE.get(), SculkZombieEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_MITE.get(), SculkMiteEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_MITE_AGGRESSOR.get(), SculkMiteAggressorEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_SPITTER.get(), SculkSpitterEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_BEE_INFECTOR.get(), SculkBeeInfectorEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_BEE_HARVESTER.get(), SculkBeeHarvesterEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_HATCHER.get(), SculkHatcherEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_SPORE_SPEWER.get(), SculkSporeSpewerEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_RAVAGER.get(), SculkRavagerEntity.createAttributes().build());
+        event.put(ModEntities.INFESTATION_PURIFIER.get(), InfestationPurifierEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_VINDICATOR.get(), SculkVindicatorEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_CREEPER.get(), SculkCreeperEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_ENDERMAN.get(), SculkEndermanEntity.createAttributes().build());
     }
 }
 

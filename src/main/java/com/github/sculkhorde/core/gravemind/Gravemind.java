@@ -1,16 +1,14 @@
 package com.github.sculkhorde.core.gravemind;
 
 
-import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
-import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -182,7 +180,7 @@ public class Gravemind
         if(isSenderTypeSummoner && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
         {
             BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.positions[0]).getPosition();
-            Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, BlockEntityRegistry.SCULK_NODE_BLOCK_ENTITY.get());
+            Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
             if(nodeBlockEntity.isPresent())
             {
                 if(nodeBlockEntity.get().isPopulationAtMax())

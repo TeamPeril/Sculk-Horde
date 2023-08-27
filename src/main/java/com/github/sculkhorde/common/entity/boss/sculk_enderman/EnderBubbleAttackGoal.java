@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -9,7 +9,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.phys.Vec3;
 
 public class EnderBubbleAttackGoal extends MeleeAttackGoal
 {
@@ -65,7 +64,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
 
         //Spawn Ender Attack Bubble entity
         BlockPos spawnPos = new BlockPos((int) this.mob.getX(), (int) (this.mob.getY() + (this.mob.getBbHeight() / 2)), (int) this.mob.getZ());
-        attackBubble = EnderBubbleAttackEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos, EntityRegistry.ENDER_BUBBLE_ATTACK.get());
+        attackBubble = EnderBubbleAttackEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos, ModEntities.ENDER_BUBBLE_ATTACK.get());
 
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);

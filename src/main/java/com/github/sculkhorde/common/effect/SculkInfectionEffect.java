@@ -1,9 +1,9 @@
 package com.github.sculkhorde.common.effect;
 
 import com.github.sculkhorde.common.block.SculkMassBlock;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -59,17 +59,17 @@ public class SculkInfectionEffect extends MobEffect {
         float entityHealth = entity.getMaxHealth();
 
         //Spawn Mite
-        EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER);
+        ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER);
 
         //Spawn Sculk Mass
-        SculkMassBlock sculkMass = BlockRegistry.SCULK_MASS.get();
+        SculkMassBlock sculkMass = ModBlocks.SCULK_MASS.get();
         sculkMass.spawn(entityLevel, entityPosition, entityHealth);
         //Do infectionDamage to victim per mite
         entity.hurt(entity.damageSources().magic(), infectionDamage);
 
         if(SculkHorde.isDebugMode() && Objects.requireNonNull(event.getEffectInstance()).getAmplifier() >= 2)
         {
-            entity.addEffect(new MobEffectInstance(EffectRegistry.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(20), 3));
+            entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(20), 3));
         }
 
     }

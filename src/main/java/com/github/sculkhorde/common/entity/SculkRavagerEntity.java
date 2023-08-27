@@ -3,8 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
@@ -12,9 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -29,7 +26,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * In order to create a mob, the following java files were created/edited.<br>
- * Edited {@link EntityRegistry}<br>
+ * Edited {@link ModEntities}<br>
  * Edited {@link com.github.sculkhorde.util.ModEventSubscriber}<br>
  * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
  * Edited {@link com.github.sculkhorde.common.world.ModWorldEvents} (this might not be necessary)<br>
@@ -55,7 +52,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkRavagerEntity(Level worldIn) {super(EntityRegistry.SCULK_RAVAGER.get(), worldIn);}
+    public SculkRavagerEntity(Level worldIn) {super(ModEntities.SCULK_RAVAGER.get(), worldIn);}
 
     //The Health
     public static final float MAX_HEALTH = 50F;

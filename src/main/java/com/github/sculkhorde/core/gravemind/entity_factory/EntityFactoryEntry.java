@@ -1,6 +1,6 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
@@ -114,7 +114,7 @@ public class EntityFactoryEntry {
             return false;
         }
         // These sculk spore spewers get spammed to hell if they spawn in sculk masses
-        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == EntityRegistry.SCULK_SPORE_SPEWER.get())
+        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == ModEntities.SCULK_SPORE_SPEWER.get())
         {
             return false;
         }

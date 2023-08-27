@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.EntityType;
@@ -82,7 +82,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public InfestationPurifierEntity(Level worldIn) {super(EntityRegistry.INFESTATION_PURIFIER.get(), worldIn);}
+    public InfestationPurifierEntity(Level worldIn) {super(ModEntities.INFESTATION_PURIFIER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -190,7 +190,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
         if(targetFindFails >= MAX_TARGET_FIND_FAILS)
         {
             this.remove(RemovalReason.DISCARDED);
-            this.spawnAtLocation(new ItemStack(ItemRegistry.INFESTATION_PURIFIER.get()));
+            this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
         }
 
         Random random = new Random();
@@ -314,7 +314,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (!this.level().isClientSide) {
             this.remove(RemovalReason.DISCARDED);
-            this.spawnAtLocation(new ItemStack(ItemRegistry.INFESTATION_PURIFIER.get()));
+            this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
         }
         return InteractionResult.SUCCESS;
     }

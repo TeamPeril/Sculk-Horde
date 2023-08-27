@@ -11,8 +11,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import software.bernie.geckolib.GeckoLib;
 import org.slf4j.Logger;
@@ -47,19 +45,19 @@ public class SculkHorde {
         ModConfig.loadConfig(ModConfig.SERVER_SPEC, FMLPaths.CONFIGDIR.get().resolve(MOD_ID + "_config.toml").toString());
 
         GeckoLib.initialize();
-        ItemRegistry.ITEMS.register(bus); //Load Items
-        BlockEntityRegistry.register(bus); //Load Tile Entities
-        BlockRegistry.BLOCKS.register(bus); //Load Blocks
-        EntityRegistry.register(bus); //Load Entities (this may not be necessary anymore)
-        bus.register(EntityRegistry.class); //Load Entities
-        StructureRegistry.STRUCTURES.register(bus); //Load Structures
-        StructureRegistry.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
-        ProcessorRegistry.PROCESSORS.register(bus); //Load Processors
-        CommandRegistry.init();
+        ModItems.ITEMS.register(bus); //Load Items
+        ModBlockEntities.register(bus); //Load Tile Entities
+        ModBlocks.BLOCKS.register(bus); //Load Blocks
+        ModEntities.register(bus); //Load Entities (this may not be necessary anymore)
+        bus.register(ModEntities.class); //Load Entities
+        ModStructures.STRUCTURES.register(bus); //Load Structures
+        ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
+        ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
+        ModCommands.init();
 
-        EffectRegistry.EFFECTS.register(bus); //Load Effects
-        ParticleRegistry.PARTICLE_TYPES.register(bus); //Load Particles
-        SoundRegistry.SOUND_EVENTS.register(bus); //Load Sounds
+        ModMobEffects.EFFECTS.register(bus); //Load Effects
+        ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
+        ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
 
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
     }

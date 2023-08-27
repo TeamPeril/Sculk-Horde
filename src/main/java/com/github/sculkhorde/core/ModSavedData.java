@@ -8,10 +8,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.block.state.BlockState;
@@ -379,15 +376,15 @@ public class ModSavedData extends SavedData {
         int priority;
 
         // Determine the priority of the block
-        if(level.getBlockState(positionIn).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+        if(level.getBlockState(positionIn).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
         {
             priority = 2;
         }
-        else if(level.getBlockState(positionIn).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
+        else if(level.getBlockState(positionIn).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY))
         {
             priority = 1;
         }
-        else if (level.getBlockState(positionIn).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
+        else if (level.getBlockState(positionIn).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
         {
             priority = 0;
         }
@@ -800,15 +797,15 @@ public class ModSavedData extends SavedData {
         {
             BlockState blockState = level.getBlockState(position);
 
-            if (blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY) && priority == 2)
+            if (blockState.is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY) && priority == 2)
             {
                 return true;
             }
-            else if (blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && priority == 1)
+            else if (blockState.is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY) && priority == 1)
             {
                 return true;
             }
-            else if (blockState.is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY) && priority == 0)
+            else if (blockState.is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY) && priority == 0)
             {
                 return true;
             }
@@ -884,7 +881,7 @@ public class ModSavedData extends SavedData {
          */
         public boolean isEntryValid(ServerLevel worldIn)
         {
-            return worldIn.getBlockState(position).getBlock().equals(BlockRegistry.SCULK_NODE_BLOCK.get());
+            return worldIn.getBlockState(position).getBlock().equals(ModBlocks.SCULK_NODE_BLOCK.get());
         }
 
         /**
@@ -942,7 +939,7 @@ public class ModSavedData extends SavedData {
          */
         public boolean isEntryValid(ServerLevel worldIn)
         {
-            return worldIn.getBlockState(position).getBlock().equals(BlockRegistry.SCULK_BEE_NEST_BLOCK.get());
+            return worldIn.getBlockState(position).getBlock().equals(ModBlocks.SCULK_BEE_NEST_BLOCK.get());
         }
 
 

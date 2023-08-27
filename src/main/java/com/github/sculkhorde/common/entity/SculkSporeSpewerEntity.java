@@ -2,13 +2,11 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ParticleRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -22,7 +20,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -86,7 +83,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSporeSpewerEntity(Level worldIn) {super(EntityRegistry.SCULK_SPORE_SPEWER.get(), worldIn);}
+    public SculkSporeSpewerEntity(Level worldIn) {super(ModEntities.SCULK_SPORE_SPEWER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -215,7 +212,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         {
             Random random = new Random();
             for (int i = 0; i < 1; i++) {
-                level().addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level().addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
             return;
         }
@@ -242,7 +239,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             {
                 if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
                 {
-                    entity.addEffect(new MobEffectInstance(EffectRegistry.SCULK_INFECTION.get(), 500, 3));
+                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), 500, 3));
                 }
             }
         }

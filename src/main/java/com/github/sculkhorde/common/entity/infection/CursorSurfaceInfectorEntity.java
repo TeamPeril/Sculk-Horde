@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
@@ -37,7 +36,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     {
         // I'm doing this because cursors will get stuck on infested logs.
         // TODO FIX INFESTED LOG SHITTERY
-        if(state.is(BlockRegistry.INFESTED_LOG.get()))
+        if(state.is(ModBlocks.INFESTED_LOG.get()))
         {
             return true;
         }
@@ -66,7 +65,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos) && !state.is(BlockRegistry.SCULK_ARACHNOID.get()) && !state.is(BlockRegistry.SCULK_DURA_MATTER.get()))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos) && !state.is(ModBlocks.SCULK_ARACHNOID.get()) && !state.is(ModBlocks.SCULK_DURA_MATTER.get()))
         {
             return true;
         }

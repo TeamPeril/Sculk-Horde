@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
-import com.github.sculkhorde.core.BlockRegistry;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +35,7 @@ public class SculkBeeNestProceduralStructure extends ProceduralStructure
         for(int offset = 1; offset <= 4; offset++)
         {
             plannedBlockQueue.add(
-                    new PlannedBlock(world, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get().defaultBlockState(), origin.below(offset))
+                    new PlannedBlock(world, ModBlocks.SCULK_BEE_NEST_CELL_BLOCK.get().defaultBlockState(), origin.below(offset))
             );
         }
 
@@ -104,7 +104,7 @@ public class SculkBeeNestProceduralStructure extends ProceduralStructure
                 //Set the MATURE value of the cell block to be a random int between 1 and 3
                 //Random rng = new Random();
                 //this.world.getBlockState(block.getPosition()).setValue(SculkBeeNestCellBlock.MATURE, /*rng.nextInt(2) + 1*/ 3);
-                BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get().setMature(this.world, this.world.getBlockState(block.getPosition()), block.getPosition());
+                ModBlocks.SCULK_BEE_NEST_CELL_BLOCK.get().setMature(this.world, this.world.getBlockState(block.getPosition()), block.getPosition());
                 return;
             }
         }
@@ -136,7 +136,7 @@ public class SculkBeeNestProceduralStructure extends ProceduralStructure
          */
         public SculkNestCellPlannedBlock(ServerLevel worldIn, BlockPos targetPosIn)
         {
-            super(worldIn, BlockRegistry.SCULK_BEE_NEST_CELL_BLOCK.get().defaultBlockState(), targetPosIn);
+            super(worldIn, ModBlocks.SCULK_BEE_NEST_CELL_BLOCK.get().defaultBlockState(), targetPosIn);
         }
 
         /**

@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -138,7 +138,7 @@ public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBl
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.DEV_STRUCTURE_TESTER_BLOCK_ENTITY.get(), DevStructureTesterBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.DEV_STRUCTURE_TESTER_BLOCK_ENTITY.get(), DevStructureTesterBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable

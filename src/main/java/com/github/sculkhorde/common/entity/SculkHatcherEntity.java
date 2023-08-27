@@ -1,8 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -40,7 +39,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
-     * Edited {@link EntityRegistry}<br>
+     * Edited {@link ModEntities}<br>
      * Edited {@link com.github.sculkhorde.util.ModEventSubscriber}<br>
      * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
      * Edited {@link com.github.sculkhorde.common.world.ModWorldEvents} (this might not be necessary)<br>
@@ -83,7 +82,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkHatcherEntity(Level worldIn) {super(EntityRegistry.SCULK_HATCHER.get(), worldIn);}
+    public SculkHatcherEntity(Level worldIn) {super(ModEntities.SCULK_HATCHER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -323,7 +322,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 {
                     ticksInCooldown = 0;
                     BlockPos spawnPos = new BlockPos(thisMob.blockPosition());
-                    EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) thisMob.level(), spawnPos, MobSpawnType.SPAWNER);
+                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level(), spawnPos, MobSpawnType.SPAWNER);
                     thisMob.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
                 }
                 else

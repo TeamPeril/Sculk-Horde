@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.world.processors;
 
-import com.github.sculkhorde.core.ProcessorRegistry;
+import com.github.sculkhorde.core.ModStructureProcessors;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
@@ -22,6 +22,6 @@ public class WaterloggingFixProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return ProcessorRegistry.WATERLOGGING_FIX_PROCESSOR.get();
+        return ModStructureProcessors.WATERLOGGING_FIX_PROCESSOR.get();
     }
 }

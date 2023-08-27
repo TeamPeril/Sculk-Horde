@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -79,7 +79,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     {
         return (entityFactoryEntry) ->
         {
-            if(entityFactoryEntry.getEntity() == EntityRegistry.SCULK_CREEPER.get() || entityFactoryEntry.getEntity() == EntityRegistry.SCULK_RAVAGER.get())
+            if(entityFactoryEntry.getEntity() == ModEntities.SCULK_CREEPER.get() || entityFactoryEntry.getEntity() == ModEntities.SCULK_RAVAGER.get())
             {
                 return false;
             }

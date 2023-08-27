@@ -1,11 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeRadialAttack;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.RaidData;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -13,10 +9,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -110,7 +104,7 @@ public class DevRaidWand extends Item implements IForgeItem {
 		for(int i = 0; i < possibleSpawns.size(); i++)
 		{
 			Vec3 spawnPos = possibleSpawns.get(i);
-			SculkSpineSpikeAttackEntity entity = EntityRegistry.SCULK_SPINE_SPIKE_ATTACK.get().create(player.level());
+			SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(player.level());
 			assert entity != null;
 
 			double spawnHeight = getSpawnHeight(player, BlockPos.containing(spawnPos));

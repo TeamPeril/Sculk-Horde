@@ -2,8 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
@@ -79,7 +78,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
             double x = this.getX() + (this.getRandom().nextDouble() * spawnRange) - spawnRange/2;
             double z = this.getZ() + (this.getRandom().nextDouble() * spawnRange) - spawnRange/2;
             double y = this.getY() + (this.getRandom().nextDouble() * spawnRange/2) - spawnRange/4;
-            CursorInfectorEntity infector = new CursorInfectorEntity(EntityRegistry.CURSOR_INFECTOR.get(), this.level());
+            CursorInfectorEntity infector = new CursorInfectorEntity(ModEntities.CURSOR_INFECTOR.get(), this.level());
             infector.setPos(x, y, z);
             infector.setTickIntervalMilliseconds(3);
             infector.setMaxTransformations(10);

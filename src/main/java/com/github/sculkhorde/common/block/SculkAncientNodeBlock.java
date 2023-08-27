@@ -13,7 +13,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -84,13 +83,13 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             return InteractionResult.SUCCESS;
         }
 
-        if(!level.getBlockState(pos).is(BlockRegistry.SCULK_ANCIENT_NODE_BLOCK.get()))
+        if(!level.getBlockState(pos).is(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get()))
         {
             return InteractionResult.FAIL;
         }
 
 
-        if(playerIn.getMainHandItem().is(ItemRegistry.PURE_SOULS.get()) && !level.getBlockState(pos).getValue(CURED))
+        if(playerIn.getMainHandItem().is(ModItems.PURE_SOULS.get()) && !level.getBlockState(pos).getValue(CURED))
         {
             if(!areAllNodesDestroyed())
             {
@@ -110,7 +109,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             return InteractionResult.CONSUME;
         }
 
-        if(playerIn.getMainHandItem().is(ItemRegistry.CRYING_SOULS.get()) && level.getBlockState(pos).getValue(CURED))
+        if(playerIn.getMainHandItem().is(ModItems.CRYING_SOULS.get()) && level.getBlockState(pos).getValue(CURED))
         {
             level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CURED, false));
             return InteractionResult.CONSUME;
@@ -175,17 +174,17 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         {
 
             return BaseEntityBlock.createTickerHelper(blockEntityType,
-                    BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
+                    ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
                     SculkAncientNodeBlockEntity::tickClient);
         }
 
         if(blockState.getValue(AWAKE)) {
             return BaseEntityBlock.createTickerHelper(blockEntityType,
-                    BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
+                    ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
                     SculkAncientNodeBlockEntity::tickAwake);
         }
 
-        return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+        return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
             VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
         });
     }

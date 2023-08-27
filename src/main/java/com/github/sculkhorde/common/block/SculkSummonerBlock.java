@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -170,11 +170,11 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
         if(blockState.getValue(VIBRATION_COOLDOWN) || !blockState.getValue(IS_ACTIVE))
         {
-            return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::tickOnCoolDown);
+            return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::tickOnCoolDown);
         }
 
 
-        return BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+        return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
             VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
         });
     }

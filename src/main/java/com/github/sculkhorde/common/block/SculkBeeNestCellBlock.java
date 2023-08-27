@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
-import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ModItems;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
@@ -211,7 +211,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     }
 
     public static void dropResin(Level pLevel, BlockPos pPos) {
-        popResource(pLevel, pPos, new ItemStack(ItemRegistry.SCULK_RESIN.get(), 1));
+        popResource(pLevel, pPos, new ItemStack(ModItems.SCULK_RESIN.get(), 1));
     }
 
     /** TOOLTIPS **/

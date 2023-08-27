@@ -5,7 +5,7 @@ import com.github.sculkhorde.common.block.SculkFloraBlock;
 import com.github.sculkhorde.common.block.TendrilsBlock;
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -418,7 +418,7 @@ public class BlockAlgorithms {
 
         for(BlockPos position : list)
         {
-            if(serverWorld.getBlockState(position).is(BlockRegistry.INFESTATION_WARD_BLOCK.get()))
+            if(serverWorld.getBlockState(position).is(ModBlocks.INFESTATION_WARD_BLOCK.get()))
             {
                 return true;
             }
@@ -438,7 +438,7 @@ public class BlockAlgorithms {
         //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
         {
-            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
+            world.setBlockAndUpdate(targetPos, ModBlocks.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
             SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
 
             //Add bees
@@ -460,7 +460,7 @@ public class BlockAlgorithms {
         //If block below target is valid and the target can be replaced by water
         if(SculkHorde.savedData.isInRangeOfNode(targetPos, 100) && world.getBlockState(targetPos).isAir())
         {
-            world.setBlockAndUpdate(targetPos, BlockRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState());
+            world.setBlockAndUpdate(targetPos, ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState());
         }
     }
 
@@ -489,7 +489,7 @@ public class BlockAlgorithms {
      * @param origin the position
      */
     public static void placeFloraAroundLog(ServerLevel serverWorld, BlockPos origin) {
-        TendrilsBlock vein = BlockRegistry.TENDRILS.get();
+        TendrilsBlock vein = ModBlocks.TENDRILS.get();
 
         BlockPos[] possiblePositions = {
                 origin.north(),
@@ -523,7 +523,7 @@ public class BlockAlgorithms {
         Random rng = new Random();
         int offset = rng.nextInt(OFFSET_MAX);
         int length = rng.nextInt(LENGTH_MAX - LENGTH_MIN) + LENGTH_MIN;
-        TendrilsBlock vein = BlockRegistry.TENDRILS.get();
+        TendrilsBlock vein = ModBlocks.TENDRILS.get();
 
         //Attempt to place sculk vein in a straight line above origin
         BlockPos indexPos = origin.above(offset);

@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,7 +23,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
      */
     public CursorSurfacePurifierEntity(Level worldIn)
     {
-        super(EntityRegistry.CURSOR_SURFACE_PURIFIER.get(), worldIn);
+        super(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn);
     }
 
     public CursorSurfacePurifierEntity(EntityType<?> pType, Level pLevel) {
@@ -77,7 +77,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     {
         // I'm doing this because cursors will get stuck on infested logs.
         // TODO FIX INFESTED LOG SHITTERY
-        if(state.is(BlockRegistry.INFESTED_LOG.get()))
+        if(state.is(ModBlocks.INFESTED_LOG.get()))
         {
             return true;
         }
@@ -117,32 +117,32 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
      */
     public static Predicate<BlockState> shouldBeRemovedFromAboveBlock = (b) ->
     {
-        if (b.is(BlockRegistry.GRASS.get()))
+        if (b.is(ModBlocks.GRASS.get()))
         {
             return true;
         }
 
-        if(b.is(BlockRegistry.GRASS_SHORT.get()))
+        if(b.is(ModBlocks.GRASS_SHORT.get()))
         {
             return true;
         }
 
-        if( b.is(BlockRegistry.SMALL_SHROOM.get()))
+        if( b.is(ModBlocks.SMALL_SHROOM.get()))
         {
             return true;
         }
 
-        if( b.is(BlockRegistry.SCULK_SHROOM_CULTURE.get()))
+        if( b.is(ModBlocks.SCULK_SHROOM_CULTURE.get()))
         {
             return true;
         }
 
-        if( b.is(BlockRegistry.SPIKE.get()))
+        if( b.is(ModBlocks.SPIKE.get()))
         {
             return true;
         }
 
-        if( b.is(BlockRegistry.SCULK_SUMMONER_BLOCK.get()))
+        if( b.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
         {
             return true;
         }
@@ -167,7 +167,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
             return true;
         }
 
-        if(b.is(BlockRegistry.TENDRILS.get()))
+        if(b.is(ModBlocks.TENDRILS.get()))
         {
             return true;
         }

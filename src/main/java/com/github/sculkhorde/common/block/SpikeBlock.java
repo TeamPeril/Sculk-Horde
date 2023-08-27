@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.EffectRegistry;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
@@ -21,8 +21,6 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -127,7 +125,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
             if (d0 >= (double)0.003F || d1 >= (double)0.003F)
             {
                 entity.hurt(entity.damageSources().generic(), 1.0F);
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
                 world.destroyBlock(blockPos, false);
             }
         }

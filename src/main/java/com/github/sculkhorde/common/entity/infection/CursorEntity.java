@@ -1,19 +1,16 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.NetworkHooks;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +54,7 @@ public abstract class CursorEntity extends Entity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorEntity(Level worldIn) {super(EntityRegistry.CURSOR_INFECTOR.get(), worldIn);}
+    public CursorEntity(Level worldIn) {super(ModEntities.CURSOR_INFECTOR.get(), worldIn);}
 
     public CursorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);

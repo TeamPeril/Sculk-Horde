@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
@@ -55,7 +55,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkBeeInfectorEntity(Level worldIn) {super(EntityRegistry.SCULK_BEE_INFECTOR.get(), worldIn);}
+    public SculkBeeInfectorEntity(Level worldIn) {super(ModEntities.SCULK_BEE_INFECTOR.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.

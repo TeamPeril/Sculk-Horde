@@ -1,8 +1,7 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.network.chat.Component;
@@ -68,7 +67,7 @@ public class EntityAlgorithms {
      * @return True if Valid, False otherwise
      */
     public static Predicate<LivingEntity> isSculkLivingEntity = (e) ->
-            e.getType().is(EntityRegistry.EntityTags.SCULK_ENTITY);
+            e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
 
     /**
      * Determines if an Entity is Infected based on if it has a potion effect
@@ -77,7 +76,7 @@ public class EntityAlgorithms {
      */
     public static boolean isLivingEntityInfected(LivingEntity e)
     {
-        return e.hasEffect(EffectRegistry.SCULK_INFECTION.get());
+        return e.hasEffect(ModMobEffects.SCULK_INFECTION.get());
     }
 
 
@@ -140,7 +139,7 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(entity.getType().is(EntityRegistry.EntityTags.SCULK_ENTITY))
+        if(entity.getType().is(ModEntities.EntityTags.SCULK_ENTITY))
         {
             return true;
         }

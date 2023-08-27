@@ -1,6 +1,6 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
@@ -76,9 +76,9 @@ public class DeathAreaInvestigator {
             return level.getBlockState(pos).isAir();
         });
         blockSearcher.setTargetBlockPredicate((pos) -> {
-            return level.getBlockState(pos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-            || level.getBlockState(pos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
-            || level.getBlockState(pos).is(BlockRegistry.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
+            return level.getBlockState(pos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+            || level.getBlockState(pos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
+            || level.getBlockState(pos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
         });
         setState(State.SEARCHING);
     }

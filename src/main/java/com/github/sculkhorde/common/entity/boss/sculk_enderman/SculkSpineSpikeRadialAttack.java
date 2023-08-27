@@ -1,22 +1,14 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkMiteEntity;
-import com.github.sculkhorde.core.EntityRegistry;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.function.Predicate;
 
 public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
@@ -124,7 +116,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         for(int i = 0; i < possibleSpawns.size(); i++)
         {
             Vec3 spawnPos = possibleSpawns.get(i);
-            SculkSpineSpikeAttackEntity entity = EntityRegistry.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+            SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
             assert entity != null;
 
             double spawnHeight = getSpawnHeight(BlockPos.containing(spawnPos));

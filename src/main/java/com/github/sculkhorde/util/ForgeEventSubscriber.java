@@ -1,17 +1,10 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
-import com.github.sculkhorde.common.block.SculkMassBlock;
 import com.github.sculkhorde.common.effect.SculkInfectionEffect;
-import com.github.sculkhorde.common.effect.SculkLureEffect;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -129,7 +122,7 @@ public class ForgeEventSubscriber {
             return;
         }
 
-        if(effectInstance.getEffect() == EffectRegistry.SCULK_INFECTION.get())
+        if(effectInstance.getEffect() == ModMobEffects.SCULK_INFECTION.get())
         {
             SculkInfectionEffect.onPotionExpire(event);
         }

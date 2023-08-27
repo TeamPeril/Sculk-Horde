@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.BlockEntityRegistry;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -201,7 +201,7 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_MASS_BLOCK_ENTITY.get(), SculkMassBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_MASS_BLOCK_ENTITY.get(), SculkMassBlockEntity::tick);
     }
 
 

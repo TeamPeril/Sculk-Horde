@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.ParticleRegistry;
+import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
@@ -19,7 +19,6 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import java.util.Random;
 
 //Not an actual block, just a parent class
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BushBlock;
@@ -103,7 +102,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
             Random random = new Random();
             if (random.nextInt(10) == 0)
             {
-                worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                worldIn.addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
         }
 
