@@ -74,7 +74,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         super.onHit(result);
 
         // If any entities are close to the impact, remove the infection from them.
-        for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2.0D)))
+        for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
         {
             // If the entity is infected, remove the infection.
             if(entity.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
@@ -145,8 +145,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             // Spawn Infestation Purifier Cursors
             // Spawn Block Traverser
             cursor.setPos(list.get(i).getX(), list.get(i).getY(), list.get(i).getZ());
-            cursor.setMaxTransformations(5);
-            cursor.setMaxRange(10);
+            cursor.setMaxTransformations(50);
+            cursor.setMaxRange(50);
             cursor.setSearchIterationsPerTick(5);
             cursor.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(1));
             cursor.setTickIntervalMilliseconds(150);
