@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
@@ -10,6 +11,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -18,6 +20,7 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -80,10 +83,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     protected ServerBossEvent bossEvent;
 
-    protected boolean isInvestigatingPossibleRaidLocation = false;
-
     // Data
     public static final EntityDataAccessor<Boolean> DATA_ANGRY = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> DATA_SCOUTING = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
 
     // Animation
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -152,13 +154,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         isParticipatingInRaid = isParticipatingInRaidIn;
     }
 
-    public boolean isInvestigatingPossibleRaidLocation() {
-        return isInvestigatingPossibleRaidLocation;
+    public boolean isScouting() {
+        return entityData.get(DATA_SCOUTING);
     }
 
-    public void setInvestigatingPossibleRaidLocation(boolean value)
+    public void setScouting(boolean value)
     {
-        isInvestigatingPossibleRaidLocation = value;
+        entityData.set(DATA_SCOUTING, value);
     }
 
     @Override
@@ -246,15 +248,12 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     private boolean isWithinRaidLocation()
     {
-        return BlockAlgorithms.getBlockDistance(RaidHandler.raidData.getRaidLocation(), this.blockPosition()) <= 64;
+        return BlockAlgorithms.getBlockDistance(RaidHandler.raidData.getRaidLocation(), this.blockPosition()) <= 32;
     }
 
-    private void teleportTowardsRaidLocationIfOutside()
+    private void teleportToRaidLocationIfOutside()
     {
-        if(!isWithinRaidLocation() && isInvestigatingPossibleRaidLocation && isTeleportCooldownOver())
-        {
-            teleportTowardsPos(RaidHandler.raidData.getRaidLocation());
-        }
+        teleport(RaidHandler.raidData.getRaidLocation().getX(), RaidHandler.raidData.getRaidLocation().getY(), RaidHandler.raidData.getRaidLocation().getZ());
     }
 
     public void stayInSpecificRangeOfTarget(int min, int max)
@@ -293,13 +292,23 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         incrementSpecialAttackCooldown();
 
-        teleportTowardsRaidLocationIfOutside();
+        if(!SculkHorde.raidHandler.isRaidInactive() && !isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
+        {
+            teleportToRaidLocationIfOutside();
+        }
+
+        if(SculkHorde.raidHandler.isRaidInactive() && isScouting())
+        {
+            discard();
+        }
 
         // If angry, dont check for looking players
         if(entityData.get(DATA_ANGRY))
         {
             return;
         }
+
+
 
         // Check to see if any players are looking at the entity
         for (Player player : this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(64.0D, 64.0D, 64.0D)))
@@ -310,13 +319,6 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 entityData.set(DATA_ANGRY, true);
             }
         }
-
-        if(level().isRaining())
-        {
-            level().setRainLevel(0);
-        }
-
-
     }
 
     /**
@@ -472,24 +474,29 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     }
 
     // ###### Data Code ########
+    String DATA_IS_SCOUTING_IDENTIFIER = "is_scouting";
     protected void defineSynchedData()
     {
         super.defineSynchedData();
         this.entityData.define(DATA_ANGRY, false);
+        this.entityData.define(DATA_SCOUTING, false);
     }
 
-    public void onSyncedDataUpdated(EntityDataAccessor<?> p_32513_) {
-        super.onSyncedDataUpdated(p_32513_);
+    public void addAdditionalSaveData(CompoundTag nbt)
+    {
+        super.addAdditionalSaveData(nbt);
+        nbt.putBoolean("DATA_IS_SCOUTING_IDENTIFIER", true);
     }
 
-    @Override
-    public boolean isSensitiveToWater() {
-        return true;
+    public void readAdditionalSaveData(CompoundTag nbt)
+    {
+        super.readAdditionalSaveData(nbt);
+        this.entityData.set(DATA_SCOUTING, nbt.getBoolean("DATA_IS_SCOUTING_IDENTIFIER"));
     }
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return false; /*source.is(DamageTypeTags.BYPASSES_ARMOR);*/
+        return source.is(DamageTypeTags.WITHER_IMMUNE_TO);
     }
 
     // ####### Animation Code ###########

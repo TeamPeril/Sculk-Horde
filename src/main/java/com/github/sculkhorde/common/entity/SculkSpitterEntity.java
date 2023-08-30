@@ -238,11 +238,14 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
     {
+        /*
         if(state.getAnimatable().isStrafing())
         {
             state.setAnimation(STRAFE_ANIMATION);
         }
-        else if(state.isMoving())
+         */
+
+        if(state.isMoving())
         {
             state.setAnimation(WALK_ANIMATION);
         }

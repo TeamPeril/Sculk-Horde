@@ -90,7 +90,10 @@ public class RaidHandler {
         return true;
     }
 
-
+    public boolean isRaidInactive()
+    {
+        return raidData.getRaidState() == RaidState.INACTIVE;
+    }
 
     private void announceToPlayersInRange(Component message, int range)
     {
@@ -293,7 +296,7 @@ public class RaidHandler {
         {
             raidData.setScoutEnderman(new SculkEndermanEntity(raidData.getLevel(), raidData.getAreaOfInterestEntry().getPosition()));
             raidData.getLevel().addFreshEntity(raidData.getScoutEnderman());
-            raidData.getScoutEnderman().setInvestigatingPossibleRaidLocation(true);
+            raidData.getScoutEnderman().setScouting(true);
             SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + raidData.getAreaOfInterestEntry().getPosition() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
             announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location. Keep an eye out."), raidData.getCurrentRaidRadius() * 8);
         }

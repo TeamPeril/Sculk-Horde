@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +60,7 @@ public class DevNodeSpawner extends Item implements IForgeItem {
 		}
 
 
-		SculkHorde.gravemind.placeSculkNode((ServerLevel) level, playerIn.blockPosition(), false);
+		SculkNodeBlock.tryPlaceSculkNode((ServerLevel) level, playerIn.blockPosition(), false);
 		level.players().forEach(player -> player.displayClientMessage(Component.literal("Admin Attempting to Spawn Node."), true));
 		return InteractionResultHolder.pass(itemstack);
 	}

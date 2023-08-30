@@ -39,10 +39,6 @@ public class Gravemind
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
     public static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
-    private final int SCULK_NODE_INFECT_RADIUS_UNDEVELOPED = 10;
-
-    //Determines the range which a sculk node can infect land around it
-    public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
     public int sculk_node_limit = 1;
 
     public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(8);
@@ -82,15 +78,11 @@ public class Gravemind
 
         if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
         {
-            //The radius that sculk nodes can infect in the mature state
-            sculk_node_infect_radius = 50;
             evolution_state = evolution_states.Mature;
             sculk_node_limit = 2;
         }
         else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
-            //The radius that sculk nodes can infect in the immature state
-            sculk_node_infect_radius = 20;
             evolution_state = evolution_states.Immature;
             sculk_node_limit = 1;
         }

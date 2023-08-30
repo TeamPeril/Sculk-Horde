@@ -31,7 +31,7 @@ public class NearestLivingEntityTargetEndermanGoal<T extends SculkEndermanEntity
     public boolean canUse()
     {
         // If enderman is investigating, but not angry, don't bother
-        if(((SculkEndermanEntity) mob).isInvestigatingPossibleRaidLocation() && !mob.getEntityData().get(SculkEndermanEntity.DATA_ANGRY))
+        if(((SculkEndermanEntity) mob).isScouting() && !mob.getEntityData().get(SculkEndermanEntity.DATA_ANGRY))
         {
             return false;
         }
