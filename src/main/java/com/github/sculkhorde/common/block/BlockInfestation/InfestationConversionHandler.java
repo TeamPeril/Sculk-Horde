@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block.BlockInfestation;
 
+import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import net.minecraft.core.particles.ParticleTypes;
@@ -108,7 +108,7 @@ public class InfestationConversionHandler
             BlockAlgorithms.placeFloraAroundLog(world, targetPos);
 
         // Chance to place a sculk node above the block
-        SculkHorde.gravemind.placeSculkNode(world, targetPos.above(), true);
+        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, true);
 
         // Chance to place a vein patch above the block
         BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);

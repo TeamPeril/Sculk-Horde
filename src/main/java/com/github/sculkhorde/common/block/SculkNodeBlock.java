@@ -1,10 +1,9 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -34,6 +33,9 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
+
+import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 
 
 /**
@@ -76,6 +78,82 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         this(getProperties());
     }
 
+
+    /**
+     * Will only place sculk nodes if sky is visible
+     * @param worldIn The World to place it in
+     * @param targetPos The position to place it in
+     */
+    public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
+    {
+        final int SPAWN_NODE_COST = 3000;
+        final int SPAWN_NODE_BUFFER = 1000;
+
+        //Random Chance to Place TreeNode
+        if(new Random().nextInt(1000) > 1 && enableChance) { return; }
+
+        if(!SculkHorde.savedData.isSculkNodeCooldownOver())
+        {
+            return;
+        }
+
+        //If we are too close to another node, do not create one
+        if(!isValidPositionForSculkNode(worldIn, targetPos)) { return; }
+
+
+        if(SculkHorde.savedData.getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
+        {
+            return;
+        }
+
+        SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
+        SculkHorde.savedData.subtractSculkAccumulatedMass(SPAWN_NODE_COST);
+
+    }
+
+    /**
+     * Will check each known node location in {@link ModSavedData}
+     * to see if there is one too close.
+     * @param positionIn The potential location of a new node
+     * @return true if creation of new node is approved, false otherwise.
+     */
+    public static boolean isValidPositionForSculkNode(ServerLevel worldIn, BlockPos positionIn)
+    {
+        if(worldIn.canSeeSky(positionIn))
+        {
+            return false;
+        }
+
+        if(SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
+        {
+            return false;
+        }
+
+        //Is Overworld
+        if(!worldIn.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        {
+            return false;
+        }
+
+        // Need to be far away from ancient node at 0,0
+        if(BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
+        {
+            return false;
+        }
+
+        for (ModSavedData.NodeEntry entry : SculkHorde.savedData.getNodeEntries())
+        {
+            //Get Distance from our potential location to the current index node position
+            int distanceFromPotentialToCurrentNode = (int) getBlockDistance(positionIn, entry.getPosition());
+
+            //if we find a single node that is too close, disapprove of creating a new one
+            if (distanceFromPotentialToCurrentNode < Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static void FindAreaAndPlaceNode(ServerLevel level, BlockPos searchOrigin)
     {

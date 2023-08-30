@@ -147,8 +147,8 @@ public class SculkNodeBlockEntity extends BlockEntity
             spawnPosition.setY(spawnPosition.getY() - 1);
         }
 
-        // If the block is not air, spawn the infector
-        if(!level.getBlockState(spawnPosition).isAir())
+        // If the block can occlude, spawn the infection handler
+        if(level.getBlockState(spawnPosition).canOcclude())
         {
             infectionHandler = new SculkNodeInfectionHandler(this, spawnPosition);
         }

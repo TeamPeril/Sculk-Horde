@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -102,7 +103,7 @@ public class BlockAlgorithms {
 
     public static BlockPos getCentroid(ArrayList<BlockPos> positions)
     {
-        if(positions.size() == 0) return new BlockPos(0, 0, 0); //Return origin if no positions (should never happen
+        if(positions.isEmpty()) return new BlockPos(0, 0, 0); //Return origin if no positions (should never happen
 
         int x = 0;
         int y = 0;
@@ -435,6 +436,11 @@ public class BlockAlgorithms {
      */
     public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos)
     {
+        if(!world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        {
+            return;
+        }
+
         //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
         {

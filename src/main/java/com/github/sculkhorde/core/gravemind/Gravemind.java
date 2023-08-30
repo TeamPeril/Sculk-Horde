@@ -38,14 +38,14 @@ public class Gravemind
     public static EntityFactory entityFactory;
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
-    private static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
+    public static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
     private final int SCULK_NODE_INFECT_RADIUS_UNDEVELOPED = 10;
 
     //Determines the range which a sculk node can infect land around it
     public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
     public int sculk_node_limit = 1;
 
-    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(1);
+    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(8);
 
     /**
      * Default Constructor <br>
@@ -246,76 +246,10 @@ public class Gravemind
         return false;
     }
 
-    /**
-     * Will only place sculk nodes if sky is visible
-     * @param worldIn The World to place it in
-     * @param targetPos The position to place it in
-     */
-    public void placeSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
-    {
-        final int SPAWN_NODE_COST = 3000;
-        final int SPAWN_NODE_BUFFER = 1000;
-
-        //Random Chance to Place TreeNode
-        if(new Random().nextInt(1000) > 1 && enableChance) { return; }
-
-        if(!SculkHorde.savedData.isSculkNodeCooldownOver())
-        {
-            return;
-        }
-
-        //If we are too close to another node, do not create one
-        if(!SculkHorde.gravemind.isValidPositionForSculkNode(worldIn, targetPos)) { return; }
 
 
-        if(SculkHorde.savedData.getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
-        {
-            return;
-        }
-
-        SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
-        SculkHorde.savedData.subtractSculkAccumulatedMass(SPAWN_NODE_COST);
-
-    }
 
 
-    /**
-     * Will check each known node location in {@link ModSavedData}
-     * to see if there is one too close.
-     * @param positionIn The potential location of a new node
-     * @return true if creation of new node is approved, false otherwise.
-     */
-    public boolean isValidPositionForSculkNode(ServerLevel worldIn, BlockPos positionIn)
-    {
-        if(worldIn.canSeeSky(positionIn))
-        {
-            return false;
-        }
-
-        if(SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
-        {
-            return false;
-        }
-
-        // Need to be far away from ancient node at 0,0
-        if(BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < MINIMUM_DISTANCE_BETWEEN_NODES)
-        {
-            return false;
-        }
-
-        for (ModSavedData.NodeEntry entry : SculkHorde.savedData.getNodeEntries())
-        {
-            //Get Distance from our potential location to the current index node position
-            int distanceFromPotentialToCurrentNode = (int) getBlockDistance(positionIn, entry.getPosition());
-
-            //if we find a single node that is too close, disapprove of creating a new one
-            if (distanceFromPotentialToCurrentNode < MINIMUM_DISTANCE_BETWEEN_NODES)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
 
 
     /** ######## Classes ######## **/

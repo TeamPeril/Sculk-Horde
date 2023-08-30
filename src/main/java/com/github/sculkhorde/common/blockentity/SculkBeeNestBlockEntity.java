@@ -94,7 +94,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
     }
 
     public boolean isFull() {
-        return this.stored.size() == MAX_OCCUPANTS;
+        return getOccupantCount() == MAX_OCCUPANTS;
     }
 
     public void emptyAllLivingFromHive(@Nullable Player p_58749_, BlockState p_58750_, BeeReleaseStatus p_58751_) {
@@ -155,7 +155,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
     }
 
     public void addOccupantWithPresetTicks(Entity entity, boolean hasNectar, int ticks) {
-        if (this.stored.size() < MAX_OCCUPANTS)
+        if (getOccupantCount() < MAX_OCCUPANTS)
         {
             entity.stopRiding();
             entity.ejectPassengers();
