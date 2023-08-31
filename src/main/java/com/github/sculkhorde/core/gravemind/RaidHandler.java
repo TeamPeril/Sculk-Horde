@@ -549,7 +549,7 @@ public class RaidHandler {
                 raidData.setRaidState(RaidState.INITIALIZING_RAID);
                 return;
             }
-            raidData.getWaveParticipants().add((ISculkSmartEntity) randomEntry.get().createEntity(raidData.getLevel(), spawnLocation));
+            raidData.getWaveParticipants().add((ISculkSmartEntity) randomEntry.get().spawnEntity(raidData.getLevel(), spawnLocation));
         }
 
         // Add 5 Creepers

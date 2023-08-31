@@ -175,6 +175,6 @@ public class StatisticsData {
                 "Total Raids Occured: " + getTotalRaidsOccured() + "\n" +
                 "Total Mass From Bees: " + getTotalMassFromBees() + "\n" +
                 "Total Mass From Burrowed: " + getTotalMassFromBurrowed() + "\n" +
-                "Total Mass From Nodes: " + getTotalMassFromNodes() + "\n" +
+                "Total Mass From Nodes: " + getTotalMassFromNodes() + "\n";
     }
 }
