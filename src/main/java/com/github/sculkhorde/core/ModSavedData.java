@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.StatisticsData;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -137,6 +138,12 @@ public class ModSavedData extends SavedData {
             RaidHandler.raidData = new RaidData();
         }
 
+        if(SculkHorde.statisticsData == null)
+        {
+            SculkHorde.statisticsData = new StatisticsData();
+        }
+
+        StatisticsData.load(nbt);
         RaidData.load(nbt);
 
         return getGravemindMemory();
@@ -195,6 +202,7 @@ public class ModSavedData extends SavedData {
         nbt.put("gravemindData", gravemindData);
 
         RaidData.save(nbt);
+        StatisticsData.save(nbt);
 
         return nbt;
     }

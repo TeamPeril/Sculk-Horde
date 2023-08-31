@@ -276,6 +276,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             SculkHorde.savedData.addSculkAccumulatedMass(1000);
+            SculkHorde.statisticsData.addTotalMassFromNodes(1000);
         }
 
         announceToAllPlayers((ServerLevel)level, Component.literal("The Sculk Horde has been awakened!"));

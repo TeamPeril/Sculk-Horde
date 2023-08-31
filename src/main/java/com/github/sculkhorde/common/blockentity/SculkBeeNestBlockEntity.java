@@ -178,6 +178,7 @@ public class SculkBeeNestBlockEntity extends BlockEntity
 
                 //Give Sculk Horde Mass
                 SculkHorde.savedData.addSculkAccumulatedMass(5);
+                SculkHorde.statisticsData.addTotalMassFromBees(5);
 
                 //Summon Surface Infestor
                 CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);

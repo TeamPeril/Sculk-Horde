@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
+import com.github.sculkhorde.util.StatisticsData;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -33,6 +34,7 @@ public class SculkHorde {
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;
+    public static StatisticsData statisticsData;
     public static final Logger LOGGER = LogUtils.getLogger();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).

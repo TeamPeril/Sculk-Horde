@@ -111,8 +111,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
 
             if(entry.isPresent())
             {
-                Mob spawnedMob = entry.get().spawnEntity((ServerLevel) mob.level(), spawnPos.above());
-
+                entry.get().spawnEntity((ServerLevel) mob.level(), spawnPos.above());
             }
         }
 

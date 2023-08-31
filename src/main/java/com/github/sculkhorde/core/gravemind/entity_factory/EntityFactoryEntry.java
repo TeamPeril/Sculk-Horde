@@ -130,20 +130,7 @@ public class EntityFactoryEntry {
     public Mob spawnEntity(ServerLevel level, BlockPos pos)
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
+        SculkHorde.statisticsData.incrementTotalUnitsSpawned();
         return (Mob) getEntity().spawn(level, pos, MobSpawnType.EVENT);
-    }
-
-    /**
-     * Will create entity and subtract the cost of spawning it.
-     * @param level The level to spawn the entity in
-     * @param pos The position to spawn the entity at
-     * @return The entity that was created
-     */
-    public Mob createEntity(ServerLevel level, BlockPos pos)
-    {
-        SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
-        Mob mob = (Mob) getEntity().create(level);
-        mob.setPos(pos.getX(), pos.getY(), pos.getZ());
-        return mob;
     }
 }
