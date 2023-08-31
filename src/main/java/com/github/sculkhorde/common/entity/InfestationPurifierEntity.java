@@ -250,7 +250,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor1.setMaxRange(100);
                 cursor1.setSearchIterationsPerTick(2);
                 cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
-                cursor1.setTickIntervalMilliseconds(50);
+                cursor1.setTickIntervalMilliseconds(20);
                 level().addFreshEntity(cursor1);
             }
 
@@ -263,7 +263,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor2.setMaxRange(100);
                 cursor2.setSearchIterationsPerTick(2);
                 cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
-                cursor2.setTickIntervalMilliseconds(50);
+                cursor2.setTickIntervalMilliseconds(20);
                 level().addFreshEntity(cursor2);
             }
 
@@ -276,7 +276,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor3.setMaxRange(100);
                 cursor3.setSearchIterationsPerTick(2);
                 cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
-                cursor3.setTickIntervalMilliseconds(50);
+                cursor3.setTickIntervalMilliseconds(20);
                 level().addFreshEntity(cursor3);
             }
 
@@ -289,7 +289,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor4.setMaxRange(100);
                 cursor4.setSearchIterationsPerTick(2);
                 cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
-                cursor4.setTickIntervalMilliseconds(50);
+                cursor4.setTickIntervalMilliseconds(20);
                 level().addFreshEntity(cursor4);
             }
 
