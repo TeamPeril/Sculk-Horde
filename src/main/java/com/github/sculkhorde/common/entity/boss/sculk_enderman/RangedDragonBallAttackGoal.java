@@ -14,7 +14,7 @@ public class RangedDragonBallAttackGoal extends Goal
     private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(60);
     protected int ticksElapsed = executionCooldown;
     private int attackIntervalTicks = TickUnits.convertSecondsToTicks(1);
     private int attackkIntervalCooldown = 0;
@@ -74,6 +74,8 @@ public class RangedDragonBallAttackGoal extends Goal
     {
         super.start();
         this.mob.getNavigation().stop();
+        getSculkEnderman().triggerAnim("attack_controller", "fireball_sky_summon_animation");
+        getSculkEnderman().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
     }

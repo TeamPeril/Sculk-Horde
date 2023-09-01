@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -81,11 +82,14 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        // TODO Trigger Animation
+        getSculkEnderman().triggerAnim("attack_controller", "rifts_summon_animation");
 
-        //Disable mob's movement for 10 seconds
+        //Disable mob's movement
+        this.mob.getNavigation().stop();
+        getSculkEnderman().canTeleport = false;
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
+
         ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 10);
         // Shuffle
         Collections.shuffle(possibleSpawns);
@@ -95,7 +99,8 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            ChaosTeleporationRiftEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos.above().above(), ModEntities.CHAOS_TELEPORATION_RIFT.get());
+            SpecialEffectEntity entity = ChaosTeleporationRiftEntity.spawn( mob.level(), mob, spawnPos.above().above(), ModEntities.CHAOS_TELEPORATION_RIFT.get());
+            entity.setOwner(mob);
         }
     }
 
@@ -104,7 +109,6 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(8, 16);
     }
 
     @Override

@@ -17,6 +17,8 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
     protected Vec3 origin;
+    protected int DELAY_BEFORE_ATTACK = 30;
+    protected int delayRemaining = DELAY_BEFORE_ATTACK;
 
     public SculkSpineSpikeRadialAttack(PathfinderMob mob) {
         super(mob, 0.0F, true);
@@ -80,7 +82,10 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        // TODO Trigger Animation
+        getSculkEnderman().canTeleport = false;
+        getSculkEnderman().getNavigation().stop();
+        getSculkEnderman().triggerAnim("attack_controller", "spike_animation");
+        getSculkEnderman().triggerAnim("twitch_controller", "spike_twitch_animation");
         origin = new Vec3(mob.getX(), mob.getY() + mob.getEyeHeight(), mob.getZ());
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();
@@ -139,6 +144,14 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     public void tick()
     {
         super.tick();
+
+        delayRemaining = Math.max(0, delayRemaining - 1);
+
+        if(delayRemaining != 0)
+        {
+            return;
+        }
+
         if(elapsedAttackDuration == 0)
         {
             spawnSpikesOnCircumference(1, 8);
@@ -179,5 +192,11 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         elapsedAttackDuration = 0;
         ticksElapsed = 0;
         getSculkEnderman().canTeleport = true;
+        delayRemaining = DELAY_BEFORE_ATTACK;
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 }

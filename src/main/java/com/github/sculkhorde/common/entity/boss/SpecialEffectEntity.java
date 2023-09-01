@@ -24,8 +24,6 @@ import java.util.UUID;
 
 public abstract class SpecialEffectEntity extends Entity implements TraceableEntity
 {
-    public LivingEntity sourceEntity;
-    protected boolean hasSyncedSourceEntity = false;
     private static final EntityDataAccessor<Optional<UUID>> SOURCE_ENTITY = SynchedEntityData.defineId(SpecialEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     @Nullable
     private LivingEntity owner;
@@ -35,12 +33,6 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     public SpecialEffectEntity(EntityType<?> entityType, Level level)
     {
         super(entityType, level);
-    }
-
-    public SpecialEffectEntity(EntityType<?> entityType, Level level, LivingEntity sourceEntity)
-    {
-        super(entityType, level);
-        this.sourceEntity = sourceEntity;
     }
 
     public void setOwner(@Nullable LivingEntity p_36939_) {

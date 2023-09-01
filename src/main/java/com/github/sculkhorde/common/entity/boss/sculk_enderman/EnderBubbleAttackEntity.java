@@ -37,11 +37,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     }
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level, LivingEntity sourceEntity) {
-        super(entityType, level, sourceEntity);
-    }
-
-    public EnderBubbleAttackEntity( Level level, LivingEntity sourceEntity) {
-        super(ModEntities.ENDER_BUBBLE_ATTACK.get(), level, sourceEntity);
+        super(entityType, level);
     }
 
     public EnderBubbleAttackEntity enableDeleteAfterTime(int ticks)
@@ -67,14 +63,19 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         List<LivingEntity> hitList = getEntitiesNearbyCube(LivingEntity.class, 3);
         for (LivingEntity entity : hitList)
         {
-            if (entity == sourceEntity || EntityAlgorithms.isSculkLivingEntity.test(entity))
+            if (getOwner() != null && getOwner().equals(entity))
             {
                 continue;
             }
 
-            //TODO Uncomment when source entity actually works
-            //entity.hurt(damageSources().indirectMagic(entity, sourceEntity), 1);
-            entity.hurt(damageSources().generic(), 1);
+            if(getOwner() != null)
+            {
+                entity.hurt(damageSources().indirectMagic(entity, getOwner()), 5);
+            }
+            else
+            {
+                entity.hurt(damageSources().indirectMagic(entity, this), 5);
+            }
         }
 
 

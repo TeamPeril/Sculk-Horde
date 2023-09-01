@@ -25,14 +25,15 @@ public class CustomMeleeAttackGoal extends Goal{
     protected static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
     protected int failedPathFindingPenalty = 0;
     protected boolean canPenalize = false;
-    protected final int ATTACK_ANIMATION_DELAY_TICKS = 10;
+    protected int ATTACK_ANIMATION_DELAY_TICKS = 10;
     protected int attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
 
-    public CustomMeleeAttackGoal(PathfinderMob p_25552_, double p_25553_, boolean p_25554_) {
-        this.mob = p_25552_;
-        this.speedModifier = p_25553_;
-        this.followingTargetEvenIfNotSeen = p_25554_;
+    public CustomMeleeAttackGoal(PathfinderMob mob, double speedMod, boolean followTargetIfNotSeen, int attackAnimationDelayTicksIn) {
+        this.mob = mob;
+        this.speedModifier = speedMod;
+        this.followingTargetEvenIfNotSeen = followTargetIfNotSeen;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        ATTACK_ANIMATION_DELAY_TICKS = attackAnimationDelayTicksIn;
     }
 
     public boolean canUse() {
@@ -151,11 +152,6 @@ public class CustomMeleeAttackGoal extends Goal{
 
             this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
 
-            if(ticksUntilNextAttack == ATTACK_ANIMATION_DELAY_TICKS)
-            {
-
-            }
-
             this.checkAndPerformAttack(livingentity, distanceFromTarget);
         }
     }
@@ -166,10 +162,15 @@ public class CustomMeleeAttackGoal extends Goal{
     }
 
     protected void checkAndPerformAttack(LivingEntity targetMob, double distanceFromTargetIn) {
-        double attackReach = this.getAttackReachSqr(targetMob);
-        if (distanceFromTargetIn > attackReach && isTimeToAttack())
+        double attackReach = this.getAttackReachSqr(this.mob);
+        boolean isTooFarFromTarget = distanceFromTargetIn > attackReach;
+        if (!isTimeToAttack())
         {
-            attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
+            //attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
+            return;
+        }
+        else if(isTooFarFromTarget)
+        {
             return;
         }
 
@@ -181,15 +182,11 @@ public class CustomMeleeAttackGoal extends Goal{
             return;
         }
 
-        if(distanceFromTargetIn > attackReach)
-        {
-            return;
-        }
-
         this.resetAttackCooldown();
         this.mob.swing(InteractionHand.MAIN_HAND);
         this.mob.doHurtTarget(targetMob);
         attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
+        return;
 
     }
 

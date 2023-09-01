@@ -62,8 +62,11 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
 
         if(level().isClientSide()) { return; }
 
-        //TODO Uncomment
-        //if (sourceEntity == null || !sourceEntity.isAlive()) this.discard();
+        if (getOwner() != null && !getOwner().isAlive()) {
+            this.discard();
+            return;
+        }
+
 
         currentLifeTicks++;
 
@@ -75,9 +78,22 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
         List<LivingEntity> hitList = getEntitiesNearbyCube(LivingEntity.class, 1);
         for (LivingEntity entity : hitList)
         {
-            if (entity == sourceEntity)
+            if(entity == null)
             {
                 continue;
+            }
+
+            if (getOwner() != null && getOwner().equals(entity))
+            {
+                continue;
+            }
+
+            if(entity instanceof Player player)
+            {
+                if(player.isCreative() || player.isSpectator())
+                {
+                    continue;
+                }
             }
 
             double d0 = entity.getX();

@@ -38,6 +38,10 @@ public class ForgeEventSubscriber {
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
             SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
+            if(SculkHorde.statisticsData == null)
+            {
+                SculkHorde.statisticsData = new StatisticsData();
+            }
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
         }

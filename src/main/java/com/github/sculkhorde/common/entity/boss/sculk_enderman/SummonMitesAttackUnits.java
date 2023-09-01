@@ -18,7 +18,7 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(40);
     protected int ticksElapsed = executionCooldown;
 
     public SummonMitesAttackUnits(PathfinderMob mob, int durationInTicks) {
@@ -78,7 +78,8 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        // TODO Trigger Animation
+        getSculkEnderman().triggerAnim("attack_controller", "summon_animation");
+        getSculkEnderman().triggerAnim("twitch_controller", "summon_twitch_animation");
 
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();

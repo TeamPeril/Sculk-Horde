@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkRavagerEntity;
+import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
@@ -37,6 +39,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -121,7 +124,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
-                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
     // Accessors and Modifiers
@@ -209,7 +213,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(3, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
-        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
+        this.goalSelector.addGoal(3, new AttackGoal());
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 0.8F, 20F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
@@ -485,13 +489,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     public void addAdditionalSaveData(CompoundTag nbt)
     {
         super.addAdditionalSaveData(nbt);
-        nbt.putBoolean("DATA_IS_SCOUTING_IDENTIFIER", true);
+        nbt.putBoolean(DATA_IS_SCOUTING_IDENTIFIER, this.entityData.get(DATA_SCOUTING));
     }
 
     public void readAdditionalSaveData(CompoundTag nbt)
     {
         super.readAdditionalSaveData(nbt);
-        this.entityData.set(DATA_SCOUTING, nbt.getBoolean("DATA_IS_SCOUTING_IDENTIFIER"));
+        this.entityData.set(DATA_SCOUTING, nbt.getBoolean(DATA_IS_SCOUTING_IDENTIFIER));
     }
 
     @Override
@@ -501,71 +505,60 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     // ####### Animation Code ###########
 
-    private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
-    private static final RawAnimation BODY_IDLE_ANIMATION = RawAnimation.begin().thenPlay("body.idle");
-    private static final RawAnimation BODY_WALK_ANIMATION = RawAnimation.begin().thenPlay("body.walk");
-    private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs.idle");
-    private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
-    private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
-    private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
-    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+    private static final RawAnimation IDLE_BODY_ANIMATION = RawAnimation.begin().thenPlay("idle");
+    private static final RawAnimation IDLE_TWITCH_ANIMATION = RawAnimation.begin().thenPlay("idle.twitch");
+    private static final RawAnimation IDLE_TENDRILS_ANIMATION = RawAnimation.begin().thenPlay("idle.tendrils");
+    private static final RawAnimation COMBAT_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("combat.attack");
+    private static final RawAnimation COMBAT_FIREBALL_SKY_SUMMON_ANIMATION = RawAnimation.begin().thenPlay("combat.fireball.sky.summon");
+    private static final RawAnimation COMBAT_FIREBALL_SKY_TWITCH_ANIMATION = RawAnimation.begin().thenPlay("combat.fireball.sky.twitch");
+    private static final RawAnimation COMBAT_SUMMON_ANIMATION = RawAnimation.begin().thenLoop("combat.summon");
+    private static final RawAnimation COMBAT_SUMMON_TWITCH_ANIMATION = RawAnimation.begin().thenLoop("combat.summon.twitch");
+    private static final RawAnimation COMBAT_RIFTS_SUMMON_ANIMATION = RawAnimation.begin().thenPlay("combat.rifts.summon");
+    private static final RawAnimation COMBAT_SPIKE = RawAnimation.begin().thenPlay("combat.spike.line");
+    private static final RawAnimation COMBAT_SPIKE_TWITCH = RawAnimation.begin().thenPlay("combat.spike.line.twitch");
+
+    private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .transitionLength(5)
+            .triggerableAnim("melee_attack_animation", COMBAT_ATTACK_ANIMATION)
+            .triggerableAnim("fireball_sky_summon_animation", COMBAT_FIREBALL_SKY_SUMMON_ANIMATION)
+            .triggerableAnim("summon_animation", COMBAT_SUMMON_ANIMATION)
+            .triggerableAnim("rifts_summon_animation", COMBAT_RIFTS_SUMMON_ANIMATION)
+            .triggerableAnim("spike_animation", COMBAT_SPIKE);
+
+    private final AnimationController COMBAT_TWITCH_ANIMATION_CONTROLLER = new AnimationController<>(this, "twitch_controller", state -> PlayState.STOP)
+            .transitionLength(5)
+            .triggerableAnim("fireball_sky_twitch_animation", COMBAT_FIREBALL_SKY_TWITCH_ANIMATION)
+            .triggerableAnim("summon_twitch_animation", COMBAT_SUMMON_TWITCH_ANIMATION)
+            .triggerableAnim("spike_twitch_animation", COMBAT_SPIKE_TWITCH);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
     {
         controllers.add(
-                LIVING_CONTROLLER.transitionLength(5)
+                new AnimationController<>(this, "walk_cycle", 5, this::poseWalk),
+                new AnimationController<>(this, "twitch", 5, this::poseTwitch),
+                new AnimationController<>(this, "tendrils", 5, this::poseTendrils),
+                COMBAT_ATTACK_ANIMATION_CONTROLLER,
+                COMBAT_TWITCH_ANIMATION_CONTROLLER
         );
     }
 
     // Create the animation handler for the leg segment
-    protected PlayState poseLegs(AnimationState<SculkEndermanEntity> state)
+    protected PlayState poseWalk(AnimationState<SculkEndermanEntity> state)
     {
-        if(state.isMoving())
-        {
-            state.setAnimation(LEGS_WALK_ANIMATION);
-        }
-        else
-        {
-            //state.setAnimation(LEGS_IDLE_ANIMATION);
-            state.setAnimation(LEGS_IDLE_ANIMATION);
-        }
-
+        state.setAnimation(IDLE_BODY_ANIMATION);
         return PlayState.CONTINUE;
     }
 
-    // Create the animation handler for the body segment
-    protected PlayState poseBody(AnimationState<SculkEndermanEntity> state)
+    protected PlayState poseTwitch(AnimationState<SculkEndermanEntity> state)
     {
-        if(state.isMoving())
-        {
-            state.setAnimation(BODY_WALK_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(BODY_IDLE_ANIMATION);
-        }
-
+        state.setAnimation(IDLE_TWITCH_ANIMATION);
         return PlayState.CONTINUE;
     }
 
-    // Create the animation handler for the arm segment
-    protected PlayState poseArms(AnimationState<SculkEndermanEntity> state)
+    protected PlayState poseTendrils(AnimationState<SculkEndermanEntity> state)
     {
-        if(state.getAnimatable().swinging)
-        {
-            state.setAnimation(ARMS_ATTACK_ANIMATION);
-        }
-        else if(state.isMoving())
-        {
-            state.setAnimation(ARMS_WALK_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(ARMS_IDLE_ANIMATION);
-        }
-
-
+        state.setAnimation(IDLE_TENDRILS_ANIMATION);
         return PlayState.CONTINUE;
     }
 
@@ -608,4 +601,24 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         super.onRemovedFromWorld();
     }
     */
+
+
+    class AttackGoal extends CustomMeleeAttackGoal
+    {
+
+        public AttackGoal()
+        {
+            super(SculkEndermanEntity.this, 1.0D, true, 17);
+        }
+
+        protected double getAttackReachSqr(LivingEntity pAttackTarget)
+        {
+            return 6;
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation");
+        }
+    }
 }

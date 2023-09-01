@@ -20,7 +20,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(40);
     protected int ticksElapsed = executionCooldown;
 
     public SummonRandomAttackUnits(PathfinderMob mob, int durationInTicks) {
@@ -92,9 +92,10 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        // TODO Trigger Animation
+        getSculkEnderman().triggerAnim("attack_controller", "summon_animation");
+        getSculkEnderman().triggerAnim("twitch_controller", "summon_twitch_animation");
 
-        //Disable mob's movement for 10 seconds
+        //Disable mob's movement
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
