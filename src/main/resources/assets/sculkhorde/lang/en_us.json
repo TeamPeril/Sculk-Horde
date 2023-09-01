@@ -117,5 +117,17 @@
   "block.sculkhorde.infested_basalt": "Infested Basalt",
   "block.sculkhorde.infested_smooth_basalt": "Infested Smooth Basalt",
   "block.sculkhorde.infested_endstone": "Infested Endstone",
-  "block.sculkhorde.infested_mossy_cobblestone": "Infested Mossy Cobblestone"
+  "block.sculkhorde.infested_mossy_cobblestone": "Infested Mossy Cobblestone",
+  "item.sculkhorde.sculk_spore_spewer_spawn_egg": "Sculk Spore Spewer Spawn Egg",
+  "item.sculkhorde.sculk_zombie_spawn_egg": "Sculk Zombie Spawn Egg",
+  "item.sculkhorde.sculk_spitter_spawn_egg": "Sculk Spitter Spawn Egg",
+  "item.sculkhorde.sculk_mite_spawn_egg": "Sculk Mite Spawn Egg",
+  "item.sculkhorde.sculk_mite_aggressor_spawn_egg": "Sculk Mite Aggressor Spawn Egg",
+  "item.sculkhorde.sculk_hatcher_spawn_egg": "Sculk Hatcher Spawn Egg",
+  "item.sculkhorde.sculk_ravager_spawn_egg": "Sculk Ravager Spawn Egg",
+  "item.sculkhorde.sculk_vindicator_spawn_egg": "Sculk Vindicator Spawn Egg",
+  "item.sculkhorde.sculk_creeper_spawn_egg": "Sculk Creeper Spawn Egg",
+  "item.sculkhorde.sculk_enderman_spawn_egg": "Sculk Enderman Spawn Egg"
+
+
 }
