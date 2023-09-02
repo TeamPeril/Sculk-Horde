@@ -32,6 +32,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.concurrent.TimeUnit;
+
 public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
@@ -192,7 +194,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
         Goal[] goals =
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, 60),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(1)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)

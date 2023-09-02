@@ -521,6 +521,7 @@ public class RaidData {
             if(((Mob) entity).isAlive())
             {
                 ((Mob) entity).removeAllEffects();
+                entity.setParticipatingInRaid(false);
             }
             else
             {

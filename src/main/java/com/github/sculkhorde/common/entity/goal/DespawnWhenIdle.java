@@ -15,7 +15,7 @@ public class DespawnWhenIdle extends Goal {
     long secondsIdleThreshold;
     ISculkSmartEntity mob;
 
-    public DespawnWhenIdle(ISculkSmartEntity mob, int secondsIdleThreshold)
+    public DespawnWhenIdle(ISculkSmartEntity mob, long secondsIdleThreshold)
     {
         super();
         this.mob = mob;
@@ -29,7 +29,7 @@ public class DespawnWhenIdle extends Goal {
     @Override
     public boolean canUse()
     {
-        if(!mob.isIdle())
+        if(!mob.isIdle() || mob.isParticipatingInRaid())
         {
             lastTimeSinceNotIdle = System.nanoTime();
         }

@@ -24,6 +24,8 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * In order to create a mob, the following java files were created/edited.<br>
  * Edited {@link ModEntities}<br>
@@ -146,7 +148,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         return new Goal[]{
 
                 new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                new DespawnWhenIdle(this, 120),
+                new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(5)),
                 //SwimGoal(mob)
                 new FloatGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)

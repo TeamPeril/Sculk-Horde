@@ -28,6 +28,8 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.concurrent.TimeUnit;
+
 public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
@@ -143,7 +145,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
         Goal[] goals =
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         new OpenDoorGoal(this, true),
                         //SwimGoal(mob)
                         new FloatGoal(this),

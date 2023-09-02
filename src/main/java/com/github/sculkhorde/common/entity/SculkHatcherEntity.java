@@ -30,6 +30,8 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * The Sculk Hatcher.
  * @see com.github.sculkhorde.client.renderer.entity.SculkHatcherRenderer
@@ -157,7 +159,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         Goal[] goals =
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, 30),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)

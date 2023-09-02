@@ -38,6 +38,8 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 
+import java.util.concurrent.TimeUnit;
+
 public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
 
     /**
@@ -162,7 +164,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         Goal[] goals =
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         //

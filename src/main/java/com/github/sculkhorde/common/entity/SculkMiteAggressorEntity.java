@@ -30,6 +30,8 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 
+import java.util.concurrent.TimeUnit;
+
 public class SculkMiteAggressorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
@@ -144,7 +146,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
         Goal[] goals =
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)

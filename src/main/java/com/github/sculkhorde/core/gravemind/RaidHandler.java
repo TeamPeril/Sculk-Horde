@@ -414,13 +414,11 @@ public class RaidHandler {
             ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
         });
     }
-
     private void initializingWaveTick()
     {
         raidData.setWaveDuration(0);
         raidData.setCurrentWavePattern(getWavePattern());
 
-        raidData.getWaveParticipants().clear();
 
         populateRaidParticipants(raidData.getSpawnLocation());
 
