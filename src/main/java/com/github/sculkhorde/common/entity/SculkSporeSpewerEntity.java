@@ -25,6 +25,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -231,7 +232,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxTransformations(100);
             cursor.setMaxRange(100);
-            cursor.setTickIntervalMilliseconds(10);
+            cursor.setTickIntervalMilliseconds(50);
             cursor.setSearchIterationsPerTick(1);
             level().addFreshEntity(cursor);
             triggerAnim("spread_controller", "spread_animation");
@@ -244,9 +245,14 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
-                if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
+                if(entity instanceof Player && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
                 {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), 500, 3));
+                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertMinutesToTicks(10), 3));
+                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 1));
+                }
+                else if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
+                {
+                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertMinutesToTicks(1), 3));
                 }
             }
         }

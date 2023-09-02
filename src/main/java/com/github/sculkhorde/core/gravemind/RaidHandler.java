@@ -87,6 +87,12 @@ public class RaidHandler {
             return false;
         }
 
+        //If there are players on server
+        if(raidData.getLevel().players().isEmpty())
+        {
+            return false;
+        }
+
         return true;
     }
 
