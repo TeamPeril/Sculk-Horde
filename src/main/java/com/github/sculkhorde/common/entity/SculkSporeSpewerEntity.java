@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -7,6 +8,11 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -70,6 +76,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     private long INFECTION_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(20);
     private long lastInfectionTime = 0;
 
+    public static final EntityDataAccessor<Integer> DATA_TICKS_ALIVE = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.INT);
     /**
      * The Constructor
      * @param type The Mob Type
@@ -264,7 +271,6 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     private class dieAfterTimeGoal extends Goal
     {
         private final SculkSporeSpewerEntity entity;
-        private int timeUntilDeath = 0;
 
         public dieAfterTimeGoal(SculkSporeSpewerEntity entity) {
             this.entity = entity;
@@ -277,7 +283,6 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         @Override
         public void start() {
-            timeUntilDeath = 20 * 60 * 60; //Die after 60 Minutes
         }
 
         @Override
@@ -288,8 +293,9 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 return;
             }
 
-            timeUntilDeath--;
-            if (timeUntilDeath <= 0) {
+            entityData.set(DATA_TICKS_ALIVE, entityData.get(DATA_TICKS_ALIVE) + 1);
+            int ticksAlive = entityData.get(DATA_TICKS_ALIVE);
+            if (ticksAlive > TickUnits.convertMinutesToTicks(15)) {
                 entity.remove(Entity.RemovalReason.DISCARDED);
             }
         }
@@ -299,6 +305,26 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         return true;
     }
 
+    String DATA_TICKS_ALIVE_IDENTIFIER = "ticks_alive";
+
+    // ###### Data Code ########
+    protected void defineSynchedData()
+    {
+        super.defineSynchedData();
+        this.entityData.define(DATA_TICKS_ALIVE, 0);
+    }
+
+    public void addAdditionalSaveData(CompoundTag nbt)
+    {
+        super.addAdditionalSaveData(nbt);
+        nbt.putInt(DATA_TICKS_ALIVE_IDENTIFIER, this.entityData.get(DATA_TICKS_ALIVE));
+    }
+
+    public void readAdditionalSaveData(CompoundTag nbt)
+    {
+        super.readAdditionalSaveData(nbt);
+        this.entityData.set(DATA_TICKS_ALIVE, nbt.getInt(DATA_TICKS_ALIVE_IDENTIFIER));
+    }
 
     /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override

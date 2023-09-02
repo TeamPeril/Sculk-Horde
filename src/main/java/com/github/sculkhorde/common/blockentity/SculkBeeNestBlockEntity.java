@@ -63,8 +63,109 @@ public class SculkBeeNestBlockEntity extends BlockEntity
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
 
+    //Game Timestamp for last time this bee hive was ticked
+    private long lastGameTimeOfTick = -1;
+    private long intervalBetweenTicks = TickUnits.convertSecondsToTicks(5);
+
     public SculkBeeNestBlockEntity(BlockPos p_155134_, BlockState p_155135_) {
         super(ModBlockEntities.SCULK_BEE_NEST_BLOCK_ENTITY.get(), p_155134_, p_155135_);
+    }
+
+    /**
+     * Tick Every Bee Inside the Nest
+     * @param level The level
+     * @param blockPos The block position
+     * @param blockState The block state
+     * @param beeDataList The list of bee data
+     * @param blockPos1 The block position
+     */
+    private static void tickOccupants(Level level, BlockPos blockPos, BlockState blockState, List<BeeData> beeDataList, @Nullable BlockPos blockPos1) {
+        boolean beeWasRemoved = false;
+
+        BeeData beehiveblockentity$beedata;
+        for(Iterator<BeeData> iterator = beeDataList.iterator(); iterator.hasNext(); ++beehiveblockentity$beedata.ticksInHive)
+        {
+            beehiveblockentity$beedata = iterator.next();
+            if (beehiveblockentity$beedata.ticksInHive > beehiveblockentity$beedata.minOccupationTicks)
+            {
+                BeeReleaseStatus beehiveblockentity$beereleasestatus = beehiveblockentity$beedata.entityData.getBoolean(HAS_NECTAR) ? BeeReleaseStatus.HONEY_DELIVERED : BeeReleaseStatus.BEE_RELEASED;
+                if (releaseOccupant(level, blockPos, blockState, beehiveblockentity$beedata, (List<Entity>)null, beehiveblockentity$beereleasestatus, blockPos1))
+                {
+                    beeWasRemoved = true;
+                    iterator.remove();
+                }
+            }
+        }
+
+        if (beeWasRemoved) {
+            setChanged(level, blockPos, blockState);
+        }
+
+    }
+
+    /**
+     * Gets called every server tick.
+     * @param level The level
+     * @param blockPos The block position
+     * @param blockState The block state
+     * @param blockEntity The block entity
+     */
+    public static void serverTick(Level level, BlockPos blockPos, BlockState blockState, SculkBeeNestBlockEntity blockEntity)
+    {
+        boolean blockHasTickedAtLeastOnce = blockEntity.lastGameTimeOfTick != -1;
+        boolean itIsNotTimeToTick = !(level.getGameTime() - blockEntity.lastGameTimeOfTick < blockEntity.intervalBetweenTicks);
+        boolean isHiveClosed = blockState.getValue(SculkBeeNestBlock.CLOSED);
+
+        if(isHiveClosed)
+        {
+            return;
+        }
+
+        blockEntity.lastGameTimeOfTick = level.getGameTime();
+
+
+        tickOccupants(level, blockPos, blockState, blockEntity.stored, blockEntity.savedFlowerPos);
+        if (!blockEntity.stored.isEmpty() && level.getRandom().nextDouble() < 0.005D)
+        {
+            double d0 = (double)blockPos.getX() + 0.5D;
+            double d1 = (double)blockPos.getY();
+            double d2 = (double)blockPos.getZ() + 0.5D;
+            level.playSound((Player)null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+
+        /** Structure Building Process **/
+        blockEntity.tickTracker++;
+
+        //Tick Every Minute
+        if(blockEntity.tickTracker < TickUnits.convertMinutesToTicks(1))
+        {
+            return;
+        }
+
+        blockEntity.tickTracker = 0;
+        long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
+
+        //If the Bee Nest Structure hasnt been initialized yet, do it
+        if(blockEntity.beeNestStructure == null)
+        {
+            //Create Structure
+            blockEntity.beeNestStructure = new SculkBeeNestProceduralStructure((ServerLevel) level, blockPos);
+            blockEntity.beeNestStructure.generatePlan();
+        }
+
+        //If currently building, call build tick.
+        //Repair routine will restart after an hour
+        long repairIntervalInMinutes = 30;
+        if(blockEntity.beeNestStructure.isCurrentlyBuilding())
+        {
+            blockEntity.beeNestStructure.buildTick();
+            blockEntity.lastTimeSinceRepair = System.nanoTime();
+        }
+        //If enough time has passed, or we havent built yet, start build
+        else if((timeElapsed >= repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1) && blockEntity.beeNestStructure.canStartToBuild())
+        {
+            blockEntity.beeNestStructure.startBuildProcedure();
+        }
     }
 
     public void setChanged() {
@@ -297,92 +398,30 @@ public class SculkBeeNestBlockEntity extends BlockEntity
         return this.savedFlowerPos != null;
     }
 
-    private static void tickOccupants(Level p_155150_, BlockPos p_155151_, BlockState p_155152_, List<BeeData> p_155153_, @Nullable BlockPos p_155154_) {
-        boolean flag = false;
-
-        BeeData beehiveblockentity$beedata;
-        for(Iterator<BeeData> iterator = p_155153_.iterator(); iterator.hasNext(); ++beehiveblockentity$beedata.ticksInHive) {
-            beehiveblockentity$beedata = iterator.next();
-            if (beehiveblockentity$beedata.ticksInHive > beehiveblockentity$beedata.minOccupationTicks) {
-                BeeReleaseStatus beehiveblockentity$beereleasestatus = beehiveblockentity$beedata.entityData.getBoolean("HasNectar") ? BeeReleaseStatus.HONEY_DELIVERED : BeeReleaseStatus.BEE_RELEASED;
-                if (releaseOccupant(p_155150_, p_155151_, p_155152_, beehiveblockentity$beedata, (List<Entity>)null, beehiveblockentity$beereleasestatus, p_155154_)) {
-                    flag = true;
-                    iterator.remove();
-                }
-            }
-        }
-
-        if (flag) {
-            setChanged(p_155150_, p_155151_, p_155152_);
-        }
-
-    }
-
-    public static void serverTick(Level level, BlockPos blockPos, BlockState p_155147_, SculkBeeNestBlockEntity blockEntity)
-    {
-        tickOccupants(level, blockPos, p_155147_, blockEntity.stored, blockEntity.savedFlowerPos);
-        if (!blockEntity.stored.isEmpty() && level.getRandom().nextDouble() < 0.005D) {
-            double d0 = (double)blockPos.getX() + 0.5D;
-            double d1 = (double)blockPos.getY();
-            double d2 = (double)blockPos.getZ() + 0.5D;
-            level.playSound((Player)null, d0, d1, d2, SoundEvents.BEEHIVE_WORK, SoundSource.BLOCKS, 1.0F, 1.0F);
-        }
-
-        /** Structure Building Process **/
-        blockEntity.tickTracker++;
-
-        //Tick Every Minute
-        if(blockEntity.tickTracker < TickUnits.convertMinutesToTicks(1)) { return; }
-
-        blockEntity.tickTracker = 0;
-        long timeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
-
-        //If the Bee Nest Structure hasnt been initialized yet, do it
-        if(blockEntity.beeNestStructure == null)
-        {
-            //Create Structure
-            blockEntity.beeNestStructure = new SculkBeeNestProceduralStructure((ServerLevel) level, blockPos);
-            blockEntity.beeNestStructure.generatePlan();
-        }
-
-        //If currently building, call build tick.
-        //Repair routine will restart after an hour
-        long repairIntervalInMinutes = 30;
-        if(blockEntity.beeNestStructure.isCurrentlyBuilding())
-        {
-            blockEntity.beeNestStructure.buildTick();
-            blockEntity.lastTimeSinceRepair = System.nanoTime();
-        }
-        //If enough time has passed, or we havent built yet, start build
-        else if((timeElapsed >= repairIntervalInMinutes || blockEntity.lastTimeSinceRepair == -1) && blockEntity.beeNestStructure.canStartToBuild())
-        {
-            blockEntity.beeNestStructure.startBuildProcedure();
-        }
-    }
 
     public void load(CompoundTag p_155156_) {
         super.load(p_155156_);
         this.stored.clear();
-        ListTag listtag = p_155156_.getList("Bees", 10);
+        ListTag listtag = p_155156_.getList(BEES, 10);
 
         for(int i = 0; i < listtag.size(); ++i) {
             CompoundTag compoundtag = listtag.getCompound(i);
-            BeeData beehiveblockentity$beedata = new BeeData(compoundtag.getCompound("EntityData"), compoundtag.getInt("TicksInHive"), compoundtag.getInt("MinOccupationTicks"));
+            BeeData beehiveblockentity$beedata = new BeeData(compoundtag.getCompound(ENTITY_DATA), compoundtag.getInt(TICKS_IN_HIVE), compoundtag.getInt(MIN_OCCUPATION_TICKS));
             this.stored.add(beehiveblockentity$beedata);
         }
 
         this.savedFlowerPos = null;
-        if (p_155156_.contains("FlowerPos")) {
-            this.savedFlowerPos = NbtUtils.readBlockPos(p_155156_.getCompound("FlowerPos"));
+        if (p_155156_.contains(TAG_FLOWER_POS)) {
+            this.savedFlowerPos = NbtUtils.readBlockPos(p_155156_.getCompound(TAG_FLOWER_POS));
         }
 
     }
 
     protected void saveAdditional(CompoundTag p_187467_) {
         super.saveAdditional(p_187467_);
-        p_187467_.put("Bees", this.writeBees());
+        p_187467_.put(BEES, this.writeBees());
         if (this.hasSavedFlowerPos()) {
-            p_187467_.put("FlowerPos", NbtUtils.writeBlockPos(this.savedFlowerPos));
+            p_187467_.put(TAG_FLOWER_POS, NbtUtils.writeBlockPos(this.savedFlowerPos));
         }
 
     }
@@ -394,9 +433,9 @@ public class SculkBeeNestBlockEntity extends BlockEntity
             CompoundTag compoundtag = beehiveblockentity$beedata.entityData.copy();
             compoundtag.remove("UUID");
             CompoundTag compoundtag1 = new CompoundTag();
-            compoundtag1.put("EntityData", compoundtag);
-            compoundtag1.putInt("TicksInHive", beehiveblockentity$beedata.ticksInHive);
-            compoundtag1.putInt("MinOccupationTicks", beehiveblockentity$beedata.minOccupationTicks);
+            compoundtag1.put(ENTITY_DATA, compoundtag);
+            compoundtag1.putInt(TICKS_IN_HIVE, beehiveblockentity$beedata.ticksInHive);
+            compoundtag1.putInt(MIN_OCCUPATION_TICKS, beehiveblockentity$beedata.minOccupationTicks);
             listtag.add(compoundtag1);
         }
 
