@@ -68,6 +68,11 @@ public class CursorInfectorEntity extends CursorEntity
         {
             return true;
         }
+        // Check if block is not beyond world border
+        else if(!level().isInWorldBounds(pos))
+        {
+            return true;
+        }
         // This is to prevent the entity from getting stuck in a loop
         else if(visitedPositons.containsKey(pos.asLong()))
         {
