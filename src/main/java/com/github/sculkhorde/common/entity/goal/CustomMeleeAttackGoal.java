@@ -40,6 +40,11 @@ public class CustomMeleeAttackGoal extends Goal{
         delayedHurtScheduler = new EntityAlgorithms.DelayedHurtScheduler(mob, ATTACK_ANIMATION_DELAY_TICKS);
     }
 
+    protected float getMinimumDistanceToTarget()
+    {
+        return 1.0F;
+    }
+
     public boolean canUse() {
         long i = this.mob.level().getGameTime();
         if (i - this.lastCanUseCheck < COOLDOWN_BETWEEN_CAN_USE_CHECKS) {
@@ -112,54 +117,57 @@ public class CustomMeleeAttackGoal extends Goal{
     {
         delayedHurtScheduler.tick();
         LivingEntity target = this.mob.getTarget();
-        if (target != null)
+        if (target == null)
         {
-            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
-            double distanceFromTarget = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
-            this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
-            if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D || this.mob.getRandom().nextFloat() < 0.05F))
+            return;
+        }
+
+        this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+        double distanceFromTarget = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
+        this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
+        if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= getMinimumDistanceToTarget() || this.mob.getRandom().nextFloat() < 0.05F))
+        {
+            this.pathedTargetX = target.getX();
+            this.pathedTargetY = target.getY();
+            this.pathedTargetZ = target.getZ();
+            this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
+            if (this.canPenalize)
             {
-                this.pathedTargetX = target.getX();
-                this.pathedTargetY = target.getY();
-                this.pathedTargetZ = target.getZ();
-                this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                if (this.canPenalize)
+                this.ticksUntilNextPathRecalculation += failedPathFindingPenalty;
+                if (this.mob.getNavigation().getPath() != null)
                 {
-                    this.ticksUntilNextPathRecalculation += failedPathFindingPenalty;
-                    if (this.mob.getNavigation().getPath() != null)
+                    net.minecraft.world.level.pathfinder.Node finalPathPoint = this.mob.getNavigation().getPath().getEndNode();
+                    if (finalPathPoint != null && target.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
                     {
-                        net.minecraft.world.level.pathfinder.Node finalPathPoint = this.mob.getNavigation().getPath().getEndNode();
-                        if (finalPathPoint != null && target.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
-                        {
-                            failedPathFindingPenalty = 0;
-                        } else {
-                            failedPathFindingPenalty += 10;
-                        }
+                        failedPathFindingPenalty = 0;
                     } else {
                         failedPathFindingPenalty += 10;
                     }
+                } else {
+                    failedPathFindingPenalty += 10;
                 }
-                if (distanceFromTarget > 1024.0D)
-                {
-                    this.ticksUntilNextPathRecalculation += 10;
-                }
-                else if (distanceFromTarget > 256.0D)
-                {
-                    this.ticksUntilNextPathRecalculation += 5;
-                }
-
-                if (!this.mob.getNavigation().moveTo(target, this.speedModifier))
-                {
-                    this.ticksUntilNextPathRecalculation += 15;
-                }
-
-                this.ticksUntilNextPathRecalculation = this.adjustedTickDelay(this.ticksUntilNextPathRecalculation);
+            }
+            if (distanceFromTarget > 1024.0D)
+            {
+                this.ticksUntilNextPathRecalculation += 10;
+            }
+            else if (distanceFromTarget > 256.0D)
+            {
+                this.ticksUntilNextPathRecalculation += 5;
             }
 
-            this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
+            if (!this.mob.getNavigation().moveTo(target, this.speedModifier))
+            {
+                this.ticksUntilNextPathRecalculation += 15;
+            }
 
-            this.checkAndPerformAttack(target, distanceFromTarget);
+            this.ticksUntilNextPathRecalculation = this.adjustedTickDelay(this.ticksUntilNextPathRecalculation);
         }
+
+        this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
+
+        this.checkAndPerformAttack(target, distanceFromTarget);
+
     }
 
     protected void triggerAnimation()

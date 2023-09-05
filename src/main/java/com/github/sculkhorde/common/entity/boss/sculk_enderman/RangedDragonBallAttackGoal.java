@@ -16,7 +16,7 @@ public class RangedDragonBallAttackGoal extends Goal
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(60);
     protected int ticksElapsed = executionCooldown;
-    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(1);
+    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(2);
     private int attackkIntervalCooldown = 0;
 
 
@@ -97,20 +97,6 @@ public class RangedDragonBallAttackGoal extends Goal
         ticksElapsed = 0;
         getSculkEnderman().canTeleport = true;
     }
-
-    public void keepDistanceFromTarget(int distance)
-    {
-        if(mob.getTarget() == null)
-        {
-            return;
-        }
-
-        if(mob.distanceTo(mob.getTarget()) < distance)
-        {
-            getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        }
-    }
-
     public void performRangedAttack(LivingEntity targetEntity)
     {
 
@@ -128,7 +114,7 @@ public class RangedDragonBallAttackGoal extends Goal
         }
 
         double xSpawn = mob.getX();
-        double ySpawn = mob.getY() + mob.getBbHeight() + 2;
+        double ySpawn = mob.getY() + mob.getBbHeight();
         double zSpawn = mob.getZ();
 
         double xDirection = targetEntity.getX() - xSpawn;

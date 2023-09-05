@@ -75,7 +75,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.3F;
+    public static final float MOVEMENT_SPEED = 0.4F;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
@@ -214,7 +214,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
-        this.goalSelector.addGoal(2, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(2, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(8)));
         this.goalSelector.addGoal(3, new AttackGoal());
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 1.0F, 20F));
@@ -634,6 +634,12 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         protected double getAttackReachSqr(LivingEntity pAttackTarget)
         {
             return 6;
+        }
+
+        @Override
+        protected float getMinimumDistanceToTarget()
+        {
+            return getHealth() >= getMaxHealth()/2 ? 10F : 0.5F;
         }
 
         @Override
