@@ -541,6 +541,9 @@ public class ModBlocks {
 	public static final RegistryObject<DevStructureTesterBlock> DEV_STRUCTURE_TESTER_BLOCK =
 			registerBlock("dev_structure_tester", () -> new DevStructureTesterBlock());
 
+	public static final RegistryObject<DevMassInfectinator3000Block> DEV_MASS_INFECTINATOR_3000_BLOCK =
+			registerBlock("dev_mass_infectinator_3000", () -> new DevMassInfectinator3000Block());
+
 	public static class BlockTags
 	{
 		public static final TagKey<Block> SCULK_RAID_TARGET_HIGH_PRIORITY = create("sculk_raid_target/high_priority");

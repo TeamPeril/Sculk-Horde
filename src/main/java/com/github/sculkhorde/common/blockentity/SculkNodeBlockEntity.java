@@ -135,22 +135,9 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     private void initializeInfectionHandler()
     {
-        if(infectionHandler != null)
+        if(infectionHandler == null)
         {
-            return;
-        }
-
-        // Do ray trace from top of world to bottom to find the surface
-        BlockPos.MutableBlockPos spawnPosition = new BlockPos.MutableBlockPos(getBlockPos().getX(), level.getMaxBuildHeight(), getBlockPos().getZ());
-        while(!level.getBlockState(spawnPosition).isSolid() && spawnPosition.getY() > level.getMinBuildHeight())
-        {
-            spawnPosition.setY(spawnPosition.getY() - 1);
-        }
-
-        // If the block can occlude, spawn the infection handler
-        if(level.getBlockState(spawnPosition).canOcclude())
-        {
-            infectionHandler = new SculkNodeInfectionHandler(this, spawnPosition);
+            infectionHandler = new SculkNodeInfectionHandler(this, getBlockPos());
         }
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
@@ -171,6 +158,10 @@ public class SculkNodeBlockEntity extends BlockEntity
             blockEntity.initializeInfectionHandler();
         }
 
+        if(blockEntity.infectionHandler.canBeActivated())
+        {
+            blockEntity.infectionHandler.activate();
+        }
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 

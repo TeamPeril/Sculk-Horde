@@ -1,5 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,13 +22,14 @@ public class CustomMeleeAttackGoal extends Goal{
     protected double pathedTargetZ;
     protected int ticksUntilNextPathRecalculation;
     protected int ticksUntilNextAttack;
-    protected final int attackInterval = 20;
+    protected final int attackInterval = 60;
     protected long lastCanUseCheck;
     protected static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
     protected int failedPathFindingPenalty = 0;
     protected boolean canPenalize = false;
-    protected int ATTACK_ANIMATION_DELAY_TICKS = 10;
-    protected int attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
+    protected int ATTACK_ANIMATION_DELAY_TICKS;
+
+    protected EntityAlgorithms.DelayedHurtScheduler delayedHurtScheduler;
 
     public CustomMeleeAttackGoal(PathfinderMob mob, double speedMod, boolean followTargetIfNotSeen, int attackAnimationDelayTicksIn) {
         this.mob = mob;
@@ -34,6 +37,7 @@ public class CustomMeleeAttackGoal extends Goal{
         this.followingTargetEvenIfNotSeen = followTargetIfNotSeen;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         ATTACK_ANIMATION_DELAY_TICKS = attackAnimationDelayTicksIn;
+        delayedHurtScheduler = new EntityAlgorithms.DelayedHurtScheduler(mob, ATTACK_ANIMATION_DELAY_TICKS);
     }
 
     public boolean canUse() {
@@ -104,18 +108,20 @@ public class CustomMeleeAttackGoal extends Goal{
         return true;
     }
 
-    public void tick() {
-        LivingEntity livingentity = this.mob.getTarget();
-        if (livingentity != null)
+    public void tick()
+    {
+        delayedHurtScheduler.tick();
+        LivingEntity target = this.mob.getTarget();
+        if (target != null)
         {
-            this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            double distanceFromTarget = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(livingentity);
+            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            double distanceFromTarget = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
             this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
-            if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(livingentity)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || livingentity.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D || this.mob.getRandom().nextFloat() < 0.05F))
+            if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D || this.mob.getRandom().nextFloat() < 0.05F))
             {
-                this.pathedTargetX = livingentity.getX();
-                this.pathedTargetY = livingentity.getY();
-                this.pathedTargetZ = livingentity.getZ();
+                this.pathedTargetX = target.getX();
+                this.pathedTargetY = target.getY();
+                this.pathedTargetZ = target.getZ();
                 this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
                 if (this.canPenalize)
                 {
@@ -123,7 +129,7 @@ public class CustomMeleeAttackGoal extends Goal{
                     if (this.mob.getNavigation().getPath() != null)
                     {
                         net.minecraft.world.level.pathfinder.Node finalPathPoint = this.mob.getNavigation().getPath().getEndNode();
-                        if (finalPathPoint != null && livingentity.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
+                        if (finalPathPoint != null && target.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
                         {
                             failedPathFindingPenalty = 0;
                         } else {
@@ -142,7 +148,7 @@ public class CustomMeleeAttackGoal extends Goal{
                     this.ticksUntilNextPathRecalculation += 5;
                 }
 
-                if (!this.mob.getNavigation().moveTo(livingentity, this.speedModifier))
+                if (!this.mob.getNavigation().moveTo(target, this.speedModifier))
                 {
                     this.ticksUntilNextPathRecalculation += 15;
                 }
@@ -152,7 +158,7 @@ public class CustomMeleeAttackGoal extends Goal{
 
             this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
 
-            this.checkAndPerformAttack(livingentity, distanceFromTarget);
+            this.checkAndPerformAttack(target, distanceFromTarget);
         }
     }
 
@@ -166,28 +172,17 @@ public class CustomMeleeAttackGoal extends Goal{
         boolean isTooFarFromTarget = distanceFromTargetIn > attackReach;
         if (!isTimeToAttack())
         {
-            //attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
             return;
         }
         else if(isTooFarFromTarget)
         {
+
             return;
         }
 
         triggerAnimation();
-        attackAnimationDelayTicks--;
-
-        if(attackAnimationDelayTicks > 0 )
-        {
-            return;
-        }
-
-        this.resetAttackCooldown();
-        this.mob.swing(InteractionHand.MAIN_HAND);
-        this.mob.doHurtTarget(targetMob);
-        attackAnimationDelayTicks = ATTACK_ANIMATION_DELAY_TICKS;
-        return;
-
+        delayedHurtScheduler.trigger();
+        resetAttackCooldown();
     }
 
     protected void resetAttackCooldown() {

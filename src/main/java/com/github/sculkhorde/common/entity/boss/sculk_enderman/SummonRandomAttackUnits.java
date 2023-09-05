@@ -92,8 +92,8 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        getSculkEnderman().triggerAnim("attack_controller", "summon_animation");
-        getSculkEnderman().triggerAnim("twitch_controller", "summon_twitch_animation");
+        //getSculkEnderman().triggerAnim("attack_controller", "summon_animation");
+        //getSculkEnderman().triggerAnim("twitch_controller", "summon_twitch_animation");
 
         //Disable mob's movement
         this.mob.getNavigation().stop();

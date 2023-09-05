@@ -74,8 +74,6 @@ public class RangedDragonBallAttackGoal extends Goal
     {
         super.start();
         this.mob.getNavigation().stop();
-        getSculkEnderman().triggerAnim("attack_controller", "fireball_sky_summon_animation");
-        getSculkEnderman().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
     }
@@ -140,6 +138,8 @@ public class RangedDragonBallAttackGoal extends Goal
         DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
         dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
         mob.level().addFreshEntity(dragonfireball);
+
+        getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
 
         attackkIntervalCooldown = attackIntervalTicks;
     }

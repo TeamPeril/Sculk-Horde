@@ -1,10 +1,12 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +24,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class EntityAlgorithms {
@@ -196,5 +199,81 @@ public class EntityAlgorithms {
     public static void announceToAllPlayers(ServerLevel level, Component message)
     {
         level.players().forEach((player) -> player.displayClientMessage(message, false));
+    }
+
+    public static class DelayedHurtScheduler
+    {
+        private int ticksRemaining;
+        private int delayInTicks;
+        private Mob damageDealer;
+        private boolean active = false;
+
+        public DelayedHurtScheduler(Mob damageDealer, int delayInTicks)
+        {
+            this.damageDealer = damageDealer;
+            this.delayInTicks = delayInTicks;
+            this.ticksRemaining = delayInTicks;
+        }
+
+        private ISculkSmartEntity getDamageDealerAsISculkSmartEntity()
+        {
+            return (ISculkSmartEntity) damageDealer;
+        }
+
+        private Mob getDamageDealerAsMob()
+        {
+            return damageDealer;
+        }
+
+        public void tick()
+        {
+            if(!active)
+            {
+                return;
+            }
+
+            if(ticksRemaining > 0)
+            {
+                ticksRemaining--;
+            }
+            else
+            {
+                tryToDealDamage();
+                reset();
+            }
+        }
+
+        private boolean tryToDealDamage()
+        {
+            Optional<Entity> target = Optional.ofNullable(getDamageDealerAsMob().getTarget());
+
+            if(damageDealer == null || !getDamageDealerAsMob().isAlive())
+            {
+                return false;
+            }
+            else if(target.isEmpty())
+            {
+                return false;
+            }
+            else if(!target.get().isAlive())
+            {
+                return false;
+            }
+
+            getDamageDealerAsMob().swing(InteractionHand.MAIN_HAND);
+            getDamageDealerAsMob().doHurtTarget(getDamageDealerAsMob().getTarget());
+            return true;
+        }
+
+        public void trigger()
+        {
+            active = true;
+        }
+
+        public void reset()
+        {
+            ticksRemaining = delayInTicks;
+            active = false;
+        }
     }
 }

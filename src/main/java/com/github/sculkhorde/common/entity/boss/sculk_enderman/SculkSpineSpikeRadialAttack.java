@@ -84,8 +84,8 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         super.start();
         getSculkEnderman().canTeleport = false;
         getSculkEnderman().getNavigation().stop();
-        getSculkEnderman().triggerAnim("attack_controller", "spike_animation");
-        getSculkEnderman().triggerAnim("twitch_controller", "spike_twitch_animation");
+        getSculkEnderman().triggerAnim("attack_controller", "spike_radial_animation");
+        getSculkEnderman().triggerAnim("twitch_controller", "spike_radial_twitch_animation");
         origin = new Vec3(mob.getX(), mob.getY() + mob.getEyeHeight(), mob.getZ());
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();

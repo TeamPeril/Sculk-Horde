@@ -30,8 +30,8 @@ public class NearestLivingEntityTargetEndermanGoal<T extends SculkEndermanEntity
     @Override
     public boolean canUse()
     {
-        // If enderman is investigating, but not angry, don't bother
-        if(((SculkEndermanEntity) mob).isScouting() && !mob.getEntityData().get(SculkEndermanEntity.DATA_ANGRY))
+        // If enderman is investigating, but not aggro, don't bother
+        if(((SculkEndermanEntity) mob).isScouting() && !mob.getEntityData().get(SculkEndermanEntity.DATA_AGGRO))
         {
             return false;
         }

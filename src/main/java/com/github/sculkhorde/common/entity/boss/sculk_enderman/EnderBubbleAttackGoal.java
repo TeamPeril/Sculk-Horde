@@ -57,7 +57,8 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        // TODO Trigger Animation
+        getSculkEnderman().triggerAnim("attack_controller", "bubble_animation");
+        getSculkEnderman().triggerAnim("twitch_controller", "bubble_twitch_animation");
 
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();
@@ -68,7 +69,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         attackBubble.setOwner(mob);
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);
-        getSculkEnderman().addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(10), 4));
+        getSculkEnderman().addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(5), 4));
     }
 
     @Override

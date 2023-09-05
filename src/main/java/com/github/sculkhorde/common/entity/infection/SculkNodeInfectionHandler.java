@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -12,6 +13,11 @@ public class SculkNodeInfectionHandler {
     private BlockEntity parent = null;
     private ServerLevel world = null;
     private BlockPos origin = null;
+
+    private final int CHECK_FOR_ACTIVATION_INTERVAL = TickUnits.convertMinutesToTicks(1);
+    private int timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
+
+    private boolean isActive = false;
 
     // The infection trees
     private InfectionTree northInfectionTree;
@@ -47,7 +53,75 @@ public class SculkNodeInfectionHandler {
 
     }
 
+    public BlockPos calculateSpawnPosition()
+    {
+        // Do ray trace from bottom to top of world. Return last known solid block
+        BlockPos.MutableBlockPos checkPosition = new BlockPos.MutableBlockPos(origin.getX(), world.getMinBuildHeight(), origin.getZ());
+        BlockPos lastKnownSolidBlock = null;
+        while(checkPosition.getY() < world.getMaxBuildHeight())
+        {
+            checkPosition.setY(checkPosition.getY() + 1);
+            if(world.getBlockState(checkPosition).isSolid() && world.getBlockState(checkPosition).canOcclude())
+            {
+                lastKnownSolidBlock = checkPosition.immutable();
+            }
+        }
+
+        if(lastKnownSolidBlock != null)
+        {
+            origin = lastKnownSolidBlock;
+            SculkHorde.LOGGER.info("Sculk Node found InfestationHandler spawn position at " + lastKnownSolidBlock + " of blockstate " + world.getBlockState(lastKnownSolidBlock));
+        }
+
+        return lastKnownSolidBlock;
+    }
+
+    public boolean canBeActivated()
+    {
+        if(timeRemainingUntilNextActivationCheck > 0)
+        {
+            timeRemainingUntilNextActivationCheck--;
+            return false;
+        }
+
+
+        if(parent == null || world == null || origin == null)
+        {
+            timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
+            return false;
+        }
+
+        if(calculateSpawnPosition() != null)
+        {
+            timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
+            return true;
+        }
+
+        SculkHorde.LOGGER.info("Sculk Node at " + parent.getBlockPos() + " cannot be activated because it has no spawn position.");
+        timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
+        return false;
+    }
+
+    public void activate()
+    {
+        isActive = true;
+        northInfectionTree.setOrigin(origin);
+        southInfectionTree.setOrigin(origin);
+        eastInfectionTree.setOrigin(origin);
+        westInfectionTree.setOrigin(origin);
+    }
+
+    public void deactivate()
+    {
+        isActive = false;
+    }
+
     public void tick() {
+        if(!isActive)
+        {
+            return;
+        }
+
         northInfectionTree.tick();
         southInfectionTree.tick();
         eastInfectionTree.tick();

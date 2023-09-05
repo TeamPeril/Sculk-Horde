@@ -76,6 +76,11 @@ public class InfectionTree {
         this.root = root;
     }
 
+    public void setOrigin(BlockPos origin)
+    {
+        this.root.blockPos = origin;
+    }
+
     // Events
 
     /**

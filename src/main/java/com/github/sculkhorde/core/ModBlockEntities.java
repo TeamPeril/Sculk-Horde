@@ -44,6 +44,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("dev_structure_tester_block_entity", () -> BlockEntityType.Builder.of(
                     DevStructureTesterBlockEntity::new, ModBlocks.DEV_STRUCTURE_TESTER_BLOCK.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<DevMassInfectinator3000BlockEntity>> DEV_MASS_INFECTINATOR_3000_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("dev_mass_infectinator_3000_block_entity", () -> BlockEntityType.Builder.of(
+                    DevMassInfectinator3000BlockEntity::new, ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }
