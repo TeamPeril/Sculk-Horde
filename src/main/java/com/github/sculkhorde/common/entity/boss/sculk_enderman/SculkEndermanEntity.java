@@ -26,6 +26,8 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -225,6 +227,11 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     @Override
     public boolean hurt(DamageSource damageSource, float amount)
     {
+        boolean isIndirectMagicDamageType = damageSource.is(DamageTypes.INDIRECT_MAGIC);
+        if(isIndirectMagicDamageType)
+        {
+            return false;
+        }
 
         teleportRandomly(32);
 

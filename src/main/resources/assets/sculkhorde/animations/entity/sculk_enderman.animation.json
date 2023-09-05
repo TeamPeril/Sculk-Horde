@@ -3115,6 +3115,7 @@
 		},
 		"combat.fireball.sky.summon": {
 			"animation_length": 4,
+			"override_previous_animation": true,
 			"bones": {
 				"upperbody": {
 					"rotation": {
