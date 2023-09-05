@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "minecraft:crafting_table",
-    "minecraft:chest"
+    "minecraft:chest",
+    "minecraft:barrel"
   ]
 }

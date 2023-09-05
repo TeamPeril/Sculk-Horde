@@ -283,7 +283,7 @@ public class RaidHandler {
             raidData.getFoundTargetsFromBlockSearcher(raidData.getBlockSearcher().foundTargets);
             raidData.setMaxWaves(10);
             raidData.setRaidLocation(raidData.getAreaOfInterestEntry().getPosition());
-            SculkHorde.LOGGER.debug("RaidHandler | Found " + (raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size() + raidData.getLowPriorityTargets().size()) + " objective targets.");
+            SculkHorde.LOGGER.debug("RaidHandler | Found " + (raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size()) + " objective targets.");
             raidData.setRaidState(RaidState.ENDERMAN_SCOUTING);
         }
         else
@@ -327,7 +327,6 @@ public class RaidHandler {
         ArrayList<BlockPos> allTargets = new ArrayList<>();
         allTargets.addAll(raidData.getHighPriorityTargets());
         allTargets.addAll(raidData.getMediumPriorityTargets());
-        allTargets.addAll(raidData.getLowPriorityTargets());
         raidData.setRaidCenter(BlockAlgorithms.getCentroid(allTargets));
     }
 
@@ -345,7 +344,7 @@ public class RaidHandler {
         if(raidData.getBlockSearcher() == null)
         {
 
-            if(raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size() + raidData.getLowPriorityTargets().size() <= 0)
+            if(raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size() <= 0)
             {
                 raidData.setFailure(failureType.FAILED_INITIALIZATION);
                 return;

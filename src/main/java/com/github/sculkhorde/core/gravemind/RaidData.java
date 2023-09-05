@@ -64,7 +64,6 @@ public class RaidData {
     // Targets
     private static final ArrayList<BlockPos> high_priority_targets = new ArrayList<>();
     private static final ArrayList<BlockPos> medium_priority_targets = new ArrayList<>();
-    private static final ArrayList<BlockPos> low_priority_targets = new ArrayList<>();
 
     // Block Searcher
     private BlockSearcher blockSearcher;
@@ -79,16 +78,10 @@ public class RaidData {
         return medium_priority_targets;
     }
 
-    public ArrayList<BlockPos> getLowPriorityTargets()
-    {
-        return low_priority_targets;
-    }
-
     public void getFoundTargetsFromBlockSearcher(ArrayList<BlockPos> foundTargets)
     {
         high_priority_targets.clear();
         medium_priority_targets.clear();
-        low_priority_targets.clear();
 
         for (BlockPos blockPos : foundTargets)
         {
@@ -100,10 +93,6 @@ public class RaidData {
             {
                 medium_priority_targets.add(blockPos);
             }
-            else if (level.getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
-            {
-                low_priority_targets.add(blockPos);
-            }
         }
 
         // Sort the targets by distance to origin
@@ -112,8 +101,6 @@ public class RaidData {
         // Sort the targets by distance to origin
         medium_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
 
-        // Sort the targets by distance to origin
-        low_priority_targets.sort((blockPos, t1) -> (int) (blockPos.distSqr(blockSearcher.origin) - t1.distSqr(getRaidLocation())));
     }
 
     public Optional<BlockPos> popObjectiveLocation()
@@ -128,11 +115,6 @@ public class RaidData {
         {
             objective = Optional.of(medium_priority_targets.get(0));
             medium_priority_targets.remove(0);
-        }
-        else if(!low_priority_targets.isEmpty())
-        {
-            objective = Optional.of(low_priority_targets.get(0));
-            low_priority_targets.remove(0);
         }
         return objective;
     }
@@ -290,14 +272,6 @@ public class RaidData {
                 distance = tempDistance;
             }
         }
-        for(BlockPos pos : low_priority_targets)
-        {
-            int tempDistance = (int) BlockAlgorithms.getBlockDistanceXZ(getRaidLocation(), pos);
-            if(tempDistance > distance)
-            {
-                distance = tempDistance;
-            }
-        }
         return distance;
     }
 
@@ -311,10 +285,6 @@ public class RaidData {
         else if(!medium_priority_targets.isEmpty())
         {
             objective = Optional.of(medium_priority_targets.get(0));
-        }
-        else if(!low_priority_targets.isEmpty())
-        {
-            objective = Optional.of(low_priority_targets.get(0));
         }
         return objective;
     }
@@ -589,7 +559,7 @@ public class RaidData {
 
     public final Predicate<BlockPos> isObstructedInvestigateLocationState = (blockPos) ->
     {
-        if(blockSearcher.foundTargets.size() == 0 && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
+        if(blockSearcher.foundTargets.isEmpty() && BlockAlgorithms.getBlockDistance(areaOfInterestEntry.getPosition(), blockPos) > MAXIMUM_RAID_RADIUS)
         {
             return true;
         }
@@ -599,7 +569,7 @@ public class RaidData {
             return true;
         }
 
-        if(blockSearcher.foundTargets.size() > 0 && !blockSearcher.isAnyTargetCloserThan(blockPos, 25))
+        if(!blockSearcher.foundTargets.isEmpty() && !blockSearcher.isAnyTargetCloserThan(blockPos, 25))
         {
             return true;
         }
@@ -619,7 +589,7 @@ public class RaidData {
             SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
         }
 
-        if(isTarget && blockSearcher.foundTargets.size() > 0 && blockSearcher.isAnyTargetCloserThan(blockPos, 5))
+        if(isTarget && !blockSearcher.foundTargets.isEmpty() && blockSearcher.isAnyTargetCloserThan(blockPos, 5))
         {
             return false;
         }
@@ -687,14 +657,6 @@ public class RaidData {
             mediumPriorityTargetsTag.add(LongTag.valueOf(pos.asLong()));
         }
         tag.put("mediumPriorityTargets", mediumPriorityTargetsTag);
-
-        // Save the low priority targets as a list of longs
-        ListTag lowPriorityTargetsTag = new ListTag();
-        for (BlockPos pos : RaidHandler.raidData.getLowPriorityTargets()) {
-            lowPriorityTargetsTag.add(LongTag.valueOf(pos.asLong()));
-        }
-        tag.put("lowPriorityTargets", lowPriorityTargetsTag);
-
     }
 
     private static int raidStateToInt(RaidHandler.RaidState state) {
@@ -786,17 +748,5 @@ public class RaidData {
                 RaidHandler.raidData.getMediumPriorityTargets().add(BlockPos.of(l));
             }
         }
-
-        // Load the low priority targets from a list of longs
-        RaidHandler.raidData.getLowPriorityTargets().clear();
-        ListTag lowPriorityTargetsTag = tag.getList("lowPriorityTargets", 4);
-        for (Tag t : lowPriorityTargetsTag) {
-            if (t instanceof LongTag) {
-                long l = ((LongTag) t).getAsLong();
-                RaidHandler.raidData.getLowPriorityTargets().add(BlockPos.of(l));
-            }
-        }
     }
-
-
 }
