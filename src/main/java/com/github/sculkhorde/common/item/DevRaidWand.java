@@ -76,52 +76,6 @@ public class DevRaidWand extends Item implements IForgeItem {
 		return Rarity.EPIC;
 	}
 
-	public int getSpawnHeight(Player player, BlockPos startPos)
-	{
-		BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos(startPos.getX(), startPos.getY(), startPos.getZ());
-		int iterationsElapsed = 0;
-		int iterationsMax = 7;
-		while(iterationsElapsed < iterationsMax)
-		{
-
-			iterationsElapsed++;
-
-			if(!player.level().getBlockState(mutablePos).canBeReplaced())
-			{
-				continue;
-			}
-			mutablePos.move(0, -1, 0);
-
-		}
-		return mutablePos.getY() + 1;
-	}
-
-	public void spawnSpikesOnCircumference(Player player, int radius, int amount)
-	{
-		Vec3 origin = new Vec3(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
-		ArrayList<SculkSpineSpikeAttackEntity> entities = new ArrayList<SculkSpineSpikeAttackEntity>();
-		ArrayList<Vec3> possibleSpawns = BlockAlgorithms.getPointsOnCircumferenceVec3(origin, radius, amount);
-		for(int i = 0; i < possibleSpawns.size(); i++)
-		{
-			Vec3 spawnPos = possibleSpawns.get(i);
-			SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(player.level());
-			assert entity != null;
-
-			double spawnHeight = getSpawnHeight(player, BlockPos.containing(spawnPos));
-			Vec3 possibleSpawnPosition = new Vec3(spawnPos.x(), spawnHeight, spawnPos.z());
-			// If the block below our spawn is solid, spawn the entity
-			if(!player.level().getBlockState(BlockPos.containing(possibleSpawnPosition).below()).canBeReplaced())
-			{
-				entity.setPos(possibleSpawnPosition.x(), possibleSpawnPosition.y(), possibleSpawnPosition.z());
-				entities.add(entity);
-				entity.setOwner(player);
-			}
-		}
-
-		for (SculkSpineSpikeAttackEntity entity : entities) {
-			player.level().addFreshEntity(entity);
-		}
-	}
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
@@ -132,7 +86,6 @@ public class DevRaidWand extends Item implements IForgeItem {
 		//If item is not on cool down
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
 		{
-			spawnSpikesOnCircumference(playerIn, 4, 1);
 			RaidHandler.raidData.startRaidArtificially(targetPos);
 			playerIn.getCooldowns().addCooldown(this, 5); //Cool down for second (20 ticks per second)
 			return InteractionResultHolder.pass(itemstack);
