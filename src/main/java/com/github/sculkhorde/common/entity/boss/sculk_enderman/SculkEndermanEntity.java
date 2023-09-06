@@ -52,6 +52,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Random;
 
+import static net.minecraft.world.entity.ai.behavior.BehaviorUtils.canSee;
+
 public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
@@ -207,15 +209,23 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     public void registerGoals() {
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
+
+
+        //All Phases
         this.goalSelector.addGoal(1, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(1, new SculkSpineSpikeRadialAttack(this));
-        this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
-        this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
-        this.goalSelector.addGoal(2, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(8)));
         this.goalSelector.addGoal(3, new AttackGoal());
+
+        // Phase 2
+        this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
+        this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
+
+        // Phase 1
+        this.goalSelector.addGoal(1, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
+
+
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 1.0F, 20F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
@@ -249,10 +259,17 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
-        if(this.getTarget() != null)
+        // IF target isnt null and we cannot see them, teleport to them
+        if(this.getTarget() != null && !canSee(this, this.getTarget()))
         {
-            this.teleportTowardsEntity(this.getTarget());
+            stayInSpecificRangeOfTarget(1, 32);
         }
+
+        if(this.getTarget() != null && getHealth() >= getMaxHealth() * 0.5)
+        {
+            stayInSpecificRangeOfTarget(8, 27);
+        }
+
         this.jumping = false;
         super.aiStep();
     }
@@ -639,7 +656,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         @Override
         protected float getMinimumDistanceToTarget()
         {
-            return getHealth() >= getMaxHealth()/2 ? 10F : 0.5F;
+            return getHealth() >= getMaxHealth()/2 ? 16F : 0.5F;
         }
 
         @Override

@@ -47,16 +47,23 @@ public class CustomMeleeAttackGoal extends Goal{
 
     public boolean canUse() {
         long i = this.mob.level().getGameTime();
-        if (i - this.lastCanUseCheck < COOLDOWN_BETWEEN_CAN_USE_CHECKS) {
+        if (i - this.lastCanUseCheck < COOLDOWN_BETWEEN_CAN_USE_CHECKS)
+        {
             return false;
-        } else {
+        } else
+        {
             this.lastCanUseCheck = i;
             LivingEntity livingentity = this.mob.getTarget();
-            if (livingentity == null) {
+            if (livingentity == null)
+            {
                 return false;
-            } else if (!livingentity.isAlive()) {
+            }
+            else if (!livingentity.isAlive())
+            {
                 return false;
-            } else {
+            }
+            else
+            {
                 if (canPenalize)
                 {
                     if (--this.ticksUntilNextPathRecalculation <= 0) {
@@ -77,7 +84,8 @@ public class CustomMeleeAttackGoal extends Goal{
         }
     }
 
-    public boolean canContinueToUse() {
+    public boolean canContinueToUse()
+    {
         LivingEntity livingentity = this.mob.getTarget();
         if (livingentity == null) {
             return false;
@@ -113,6 +121,7 @@ public class CustomMeleeAttackGoal extends Goal{
         return true;
     }
 
+
     public void tick()
     {
         delayedHurtScheduler.tick();
@@ -123,9 +132,28 @@ public class CustomMeleeAttackGoal extends Goal{
         }
 
         this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
-        double distanceFromTarget = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
+
+        double perceivedTargetDistanceSquareForMeleeAttack = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
+
+        this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
+
+        this.checkAndPerformAttack(target, perceivedTargetDistanceSquareForMeleeAttack);
+
+        float distanceToTarget = this.mob.distanceTo(target);
+        if (distanceToTarget <= getMinimumDistanceToTarget())
+        {
+            this.mob.getNavigation().stop();
+            return;
+        }
+
         this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
-        if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= getMinimumDistanceToTarget() || this.mob.getRandom().nextFloat() < 0.05F))
+        boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(target);
+        boolean canRecalculatePath = this.ticksUntilNextPathRecalculation <= 0;
+        boolean isPathedTargetZERO = this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D;
+        boolean isPathedTargetCloseEnough = target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) < getMinimumDistanceToTarget();
+        boolean randomChanceToRecalculatePath = this.mob.getRandom().nextFloat() < 0.05F;
+
+        if ((this.followingTargetEvenIfNotSeen || canSeeTarget) && canRecalculatePath && (isPathedTargetZERO || isPathedTargetCloseEnough || randomChanceToRecalculatePath))
         {
             this.pathedTargetX = target.getX();
             this.pathedTargetY = target.getY();
@@ -147,26 +175,25 @@ public class CustomMeleeAttackGoal extends Goal{
                     failedPathFindingPenalty += 10;
                 }
             }
-            if (distanceFromTarget > 1024.0D)
+            // If Really Far, Increase Delay
+            if (perceivedTargetDistanceSquareForMeleeAttack > 1024.0D)
             {
                 this.ticksUntilNextPathRecalculation += 10;
             }
-            else if (distanceFromTarget > 256.0D)
+            // If Far, Increase Delay
+            else if (perceivedTargetDistanceSquareForMeleeAttack > 256.0D)
             {
                 this.ticksUntilNextPathRecalculation += 5;
             }
 
-            if (!this.mob.getNavigation().moveTo(target, this.speedModifier))
+            boolean cantReachTarget = !this.mob.getNavigation().moveTo(target, this.speedModifier);
+            if (cantReachTarget)
             {
                 this.ticksUntilNextPathRecalculation += 15;
             }
 
             this.ticksUntilNextPathRecalculation = this.adjustedTickDelay(this.ticksUntilNextPathRecalculation);
         }
-
-        this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
-
-        this.checkAndPerformAttack(target, distanceFromTarget);
 
     }
 

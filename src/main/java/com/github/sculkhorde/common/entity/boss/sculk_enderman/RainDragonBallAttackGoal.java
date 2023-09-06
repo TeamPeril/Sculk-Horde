@@ -13,7 +13,7 @@ public class RainDragonBallAttackGoal extends Goal
     private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(120);
+    protected final int executionCooldown = TickUnits.convertMinutesToTicks(8);
     protected int ticksElapsed = executionCooldown;
     private int attackIntervalTicks = TickUnits.convertSecondsToTicks(2F);
     private int attackkIntervalCooldown = 0;

@@ -1,6 +1,9 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -14,10 +17,8 @@ public class RangedDragonBallAttackGoal extends Goal
     private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(60);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(5);
     protected int ticksElapsed = executionCooldown;
-    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(2);
-    private int attackkIntervalCooldown = 0;
 
 
     public RangedDragonBallAttackGoal(PathfinderMob mob, int durationInTicks) {
@@ -50,11 +51,6 @@ public class RangedDragonBallAttackGoal extends Goal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 10.0F))
-        {
-            return false;
-        }
-
         if(mob.getHealth() < mob.getMaxHealth()/2)
         {
             return false;
@@ -76,6 +72,8 @@ public class RangedDragonBallAttackGoal extends Goal
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
+        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
+        getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
     }
 
     @Override
@@ -83,9 +81,10 @@ public class RangedDragonBallAttackGoal extends Goal
     {
         super.tick();
         elapsedAttackDuration++;
-        performRangedAttack(mob.getTarget());
-
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
+        if(elapsedAttackDuration == 10)
+        {
+            performRangedAttack(mob.getTarget());
+        }
     }
 
     @Override
@@ -105,16 +104,8 @@ public class RangedDragonBallAttackGoal extends Goal
             return;
         }
 
-        attackkIntervalCooldown--;
-
-
-        if(attackkIntervalCooldown > 0)
-        {
-            return;
-        }
-
         double xSpawn = mob.getX();
-        double ySpawn = mob.getY() + mob.getBbHeight();
+        double ySpawn = mob.getY() + mob.getEyeHeight();
         double zSpawn = mob.getZ();
 
         double xDirection = targetEntity.getX() - xSpawn;
@@ -124,9 +115,7 @@ public class RangedDragonBallAttackGoal extends Goal
         DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
         dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
         mob.level().addFreshEntity(dragonfireball);
-
-        getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
-
-        attackkIntervalCooldown = attackIntervalTicks;
+        //Play blaze shoot sound
+        mob.level().playLocalSound(xSpawn, ySpawn, zSpawn, SoundEvents.ENDER_DRAGON_SHOOT, mob.getSoundSource(), 1.0F, 1.0F, false);
     }
 }
