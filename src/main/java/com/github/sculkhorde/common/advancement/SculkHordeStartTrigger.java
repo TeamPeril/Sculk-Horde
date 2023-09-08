@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class SculkHordeStartTrigger extends SimpleCriterionTrigger<SculkHordeStartTrigger.SculkHordeStartCriterion> implements CustomCriterionTrigger{
 
     public static final SculkHordeStartTrigger INSTANCE = new SculkHordeStartTrigger();
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "sculkhorde_start");
+    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "sculk_horde_start");
 
     @Override
     public ResourceLocation getId() {

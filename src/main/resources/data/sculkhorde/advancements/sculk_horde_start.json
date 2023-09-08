@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:ancient_sculk_node"
+      "item": "sculkhorde:sculk_ancient_node"
     },
     "title": "Unleash Incomprehensible Horrors",
     "description": "The Sculk Horde has been unleashed, and now they're coming for you.",
@@ -9,10 +9,10 @@
     "show_toast": true,
     "announce_to_chat": true
   },
-  "parent": "sculkhorde:sculk_tomb_visit",
+
   "criteria": {
     "sculk_horde_start": {
-      "trigger": "sculkhorde:sculkhorde_start"
+      "trigger": "sculkhorde:sculk_horde_start"
     }
   }
 }
