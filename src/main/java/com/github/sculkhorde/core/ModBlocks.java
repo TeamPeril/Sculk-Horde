@@ -550,6 +550,7 @@ public class ModBlocks {
 		public static final TagKey<Block> SCULK_RAID_TARGET_MEDIUM_PRIORITY = create("sculk_raid_target/medium_priority");
 		public static final TagKey<Block> SCULK_RAID_TARGET_LOW_PRIORITY = create("sculk_raid_target/low_priority");
 		public static final TagKey<Block> SCULK_BEE_HARVESTABLE = create("sculk_bee_harvestable");
+		public static final TagKey<Block> INFESTED_BLOCK = create("infested_block");
 
 		// Helper Function
 		private static TagKey<Block> create(String location)

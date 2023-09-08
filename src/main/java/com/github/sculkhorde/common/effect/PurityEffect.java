@@ -53,7 +53,7 @@ public class PurityEffect extends MobEffect {
         }
 
         // If Sculk Living Entity, do damage
-        if(EntityAlgorithms.isLivingEntityHostile(entity))
+        if(EntityAlgorithms.isSculkLivingEntity.test(entity))
         {
             entity.hurt(entity.damageSources().magic(), 1);
         }
