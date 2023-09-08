@@ -4,8 +4,8 @@
 	"render_type": "minecraft:cutout",
 	"texture_size": [64, 64],
 	"textures": {
-		"2": "sculkhorde:block/sculk_summoner",
-		"particle": "sculkhorde:block/sculk_summoner"
+		"2": "sculkhorde:block/sculk_summoner_item_model",
+		"particle": "sculkhorde:block/sculk_summoner_item_model"
 	},
 	"elements": [
 		{
