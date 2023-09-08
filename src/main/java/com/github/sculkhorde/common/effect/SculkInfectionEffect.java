@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -27,6 +28,9 @@ public class SculkInfectionEffect extends MobEffect {
     public static int liquidColor = 338997;
     public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
 
+    public long COOLDOWN = TickUnits.convertSecondsToTicks(1);
+    public long cooldownTicksRemaining = COOLDOWN;
+
 
     /**
      * Old Dumb Constructor
@@ -47,7 +51,7 @@ public class SculkInfectionEffect extends MobEffect {
     public static void onPotionExpire(MobEffectEvent.Expired event)
     {
         LivingEntity entity = event.getEntity();
-        if(entity == null)
+        if(entity == null || EntityAlgorithms.isSculkLivingEntity.test(entity))
         {
             return;
         }
@@ -77,6 +81,12 @@ public class SculkInfectionEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
+
+        if(EntityAlgorithms.isSculkLivingEntity.test(entity))
+        {
+            // Remove effect
+            entity.removeEffect(ModMobEffects.SCULK_INFECTION.get());
+        }
     }
 
     /**
@@ -86,11 +96,19 @@ public class SculkInfectionEffect extends MobEffect {
      * I instead use ForgeEventSubscriber.java to handle the logic.
      * @param ticksLeft The amount of ticks remaining
      * @param amplifier The level of the effect
-     * @return ??
+     * @return Determines if the effect should apply.
      */
     @Override
     public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
-        return super.isDurationEffectTick(ticksLeft, amplifier);
+
+        if(cooldownTicksRemaining > 0)
+        {
+            cooldownTicksRemaining--;
+            return false;
+        }
+        cooldownTicksRemaining = COOLDOWN;
+        return true;
+
     }
 
     @Override

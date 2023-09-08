@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.effect;
 
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -38,6 +40,12 @@ public class SculkLureEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int p_19468_) {
 
+        if(EntityAlgorithms.isSculkLivingEntity.test(entity))
+        {
+            // Remove effect
+            entity.removeEffect(ModMobEffects.SCULK_LURE.get());
+            return;
+        }
         SculkHorde.savedData.reportDeath(entity.blockPosition());
 
     }
