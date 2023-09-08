@@ -9,7 +9,7 @@
     "show_toast": true,
     "announce_to_chat": true
   },
-
+  "parent": "sculkhorde:sculk_tomb_visit",
   "criteria": {
     "sculk_horde_start": {
       "trigger": "sculkhorde:sculk_horde_start"

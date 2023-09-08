@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:pure_souls"
+    },
+    "title": "Souls of the Assimilated",
+    "description": "Craft Pure Souls from Crying Souls. Crying souls are obtained from infested crying obsidian.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:craft_essence_of_purity",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "minecraft:pure_souls"
+      }
+    }
+  }
+}

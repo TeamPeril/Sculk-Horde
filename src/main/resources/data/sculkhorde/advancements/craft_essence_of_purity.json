@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:essence_of_purity"
+    },
+    "title": "The Start of a Solution",
+    "description": "Craft Essence of Purity",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:sculk_horde_start",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "sculkhorde:essence_of_purity"
+      }
+    }
+  }
+}

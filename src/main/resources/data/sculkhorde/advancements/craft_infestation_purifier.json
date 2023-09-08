@@ -9,13 +9,13 @@
     "show_toast": true,
     "announce_to_chat": true
   },
-  "parent": "sculkhorde:craft_purification_flask",
+  "parent": "sculkhorde:craft_pure_souls",
   "criteria": {
     "crafted_the_item": {
       "trigger": "minecraft:recipe_crafted",
       "conditions": {
         "player": [],
-        "recipe_id": "minecraft:infestation_purifier"
+        "recipe_id": "sculkhorde:infestation_purifier"
       }
     }
   }
