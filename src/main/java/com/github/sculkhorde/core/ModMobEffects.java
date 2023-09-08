@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core;
 
+import com.github.sculkhorde.common.effect.PurityEffect;
 import com.github.sculkhorde.common.effect.SculkInfectionEffect;
 import com.github.sculkhorde.common.effect.SculkLureEffect;
 import net.minecraft.world.effect.MobEffect;
@@ -14,5 +15,6 @@ public class ModMobEffects {
     public static final RegistryObject<SculkInfectionEffect> SCULK_INFECTION = EFFECTS.register("sculk_infected", SculkInfectionEffect::new);
 
     public static final RegistryObject<SculkLureEffect> SCULK_LURE = EFFECTS.register("sculk_lure", SculkLureEffect::new);
+    public static final RegistryObject<PurityEffect> PURITY = EFFECTS.register("purity", PurityEffect::new);
 
 }

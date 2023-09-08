@@ -2,6 +2,7 @@ package com.github.sculkhorde.core;
 
 
 import com.github.sculkhorde.common.item.*;
+import com.github.sculkhorde.common.potion.PuritySplashPotionItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,11 +21,29 @@ public class ModItems {
     
     public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties()));
 
-	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties()){
+		@Override
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			tooltip.add(Component.translatable("tooltip.sculkhorde.crying_souls"));
+		}
+	});
 
-	public static final RegistryObject<Item> PURE_SOULS = ITEMS.register("pure_souls", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> PURE_SOULS = ITEMS.register("pure_souls", () -> new Item(new Item.Properties()){
+		@Override
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			tooltip.add(Component.translatable("tooltip.sculkhorde.pure_souls"));
+		}
+	});
 
-	public static final RegistryObject<Item> ESSENCE_OF_PURITY = ITEMS.register("essence_of_purity", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> ESSENCE_OF_PURITY = ITEMS.register("essence_of_purity", () -> new Item(new Item.Properties()){
+		@Override
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			tooltip.add(Component.translatable("tooltip.sculkhorde.essence_of_purity"));
+		}
+	});
+
+	public static final RegistryObject<PuritySplashPotionItem> PURITY_SPLASH_POTION = ITEMS.register("purity_splash_potion",
+			PuritySplashPotionItem::new);
 
     public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand",
 			DevWand::new);
@@ -46,9 +65,6 @@ public class ModItems {
 					tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_acidic_projectile"));
 				}
 			});
-
-	public static final RegistryObject<CustomItemProjectile> PURIFICATION_FLASK_ITEM = ITEMS.register("purification_flask_item",
-			PurificationFlaskItem::new);
 
 	public static final RegistryObject<SculkResinItem> SCULK_RESIN = ITEMS.register("sculk_resin",
 			SculkResinItem::new);

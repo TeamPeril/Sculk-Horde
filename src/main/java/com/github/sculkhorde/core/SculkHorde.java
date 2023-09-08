@@ -55,6 +55,7 @@ public class SculkHorde {
         ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
         ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
         ModCommands.init();
+        ModPotions.register(bus); //Load Potions
 
         ModMobEffects.EFFECTS.register(bus); //Load Effects
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles

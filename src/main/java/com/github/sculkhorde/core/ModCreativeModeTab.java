@@ -40,6 +40,7 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
                 event.accept(ModItems.INFESTATION_PURIFIER.get());
                 event.accept(ModItems.PURIFICATION_FLASK_ITEM.get());
+                event.accept(ModItems.PURITY_SPLASH_POTION.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());
                 event.accept(ModBlocks.INFESTATION_WARD_BLOCK.get());
                 event.accept(ModItems.PURE_SOULS.get());

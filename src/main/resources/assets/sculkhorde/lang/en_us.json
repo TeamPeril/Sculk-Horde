@@ -103,10 +103,15 @@
   "entity.sculkhorde.sculk_skeleton": "Sculk Skeleton",
   "entity.sculkhorde.sculk_vindicator": "Sculk Vindicator",
   "block.sculkhorde.infested_crying_obsidian": "Infested Crying Obsidian",
+  "tooltip.sculkhorde.infested_crying_obsidian": "A strange infested block. You can hear the cries of the dead within it. Used to craft Crying Souls.",
   "item.sculkhorde.crying_souls": "Crying Souls",
+  "tooltip.sculkhorde.crying_souls": "The souls of the assimilated. They lost their bodies, memories, and personality. The only thing that remains is their anguish. Used to craft Pure Souls.",
   "item.sculkhorde.essence_of_purity": "Essence of Purity",
+  "tooltip.sculkhorde.essence_of_purity": "A pure essence that is used to craft purity items. It radiates the warmth of an early sunrise and fills you with a feeling of comfort.",
   "item.sculkhorde.pure_souls": "Pure Souls",
+  "tooltip.sculkhorde.pure_souls": "Used to craft Infestation Purifiers and to deactivate the Ancient Sculk Node. Souls of the Assimilated that have been purified. You brought them peace and tranquility.",
   "block.sculkhorde.infestation_ward_block": "Infestation Ward Block",
+    "tooltip.sculkhorde.infestation_ward_block": "A block that prevents Sculk Infestation from spreading to any of it's neighboring blocks. This includes diagonals.",
   "block.sculkhorde.infested_mud": "Infested Mud",
   "block.sculkhorde.infested_packed_mud": "Infested Packed Mud",
   "block.sculkhorde.infested_mud_bricks": "Infested Mud Bricks",
@@ -128,5 +133,6 @@
   "item.sculkhorde.sculk_vindicator_spawn_egg": "Sculk Vindicator Spawn Egg",
   "item.sculkhorde.sculk_creeper_spawn_egg": "Sculk Creeper Spawn Egg",
   "item.sculkhorde.sculk_enderman_spawn_egg": "Sculk Enderman Spawn Egg",
-  "block.sculkhorde.dev_mass_infectinator_3000": "Dev Mass Infectinator 3000"
+  "block.sculkhorde.dev_mass_infectinator_3000": "Dev Mass Infectinator 3000",
+  "tooltip.sculkhorde.dev_mass_infectinator_3000": "Use at your own risk. A dev block that continuously infects an extremely large area. Made for Karat Feng's unquenchable conquest to infest everything he lays his eyes upon."
 }
