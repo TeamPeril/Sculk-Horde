@@ -12,7 +12,7 @@
   "parent": "sculkhorde:sculk_tomb_visit",
   "criteria": {
     "sculk_horde_start": {
-      "trigger": "sculkhorde:sculk_horde_start"
+      "trigger": "sculkhorde:sculkhorde_start"
     }
   }
 }

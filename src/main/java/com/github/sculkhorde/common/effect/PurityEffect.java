@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PurityEffect extends MobEffect {
 
-    public static int liquidColor = 338997;
+    public static int liquidColor = 15518533;
     public static MobEffectCategory effectType = MobEffectCategory.BENEFICIAL;
     public long COOLDOWN = TickUnits.convertSecondsToTicks(2);
     public long cooldownTicksRemaining = COOLDOWN;
