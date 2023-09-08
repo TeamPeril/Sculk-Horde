@@ -7,10 +7,7 @@
   "tooltip.sculkhorde.dev_wand.shift": "\u00A75JoeMama",
   "item.sculkhorde.dev_conversion_wand": "开发者 转换魔杖",
   "tooltip.sculkhorde.dev_conversion_wand": "将块转换为受感染的变体",
-  "item.sculkhorde.infestation_purifier": "净化感染",
-  "tooltip.sculkhorde.infestation_purifier": "右键单击以返回物品\\n当它死亡时，物品不会掉落\\n当一个实体产生时，会从该地区清除幽匿感染 如果它在其范围内找不到更多的幽匿感染则会下降 此外，幽匿部落会攻击它",
-  "item.sculkhorde.purification_flask_item": "净化瓶",
-  "tooltip.sculkhorde.purification_flask_item": "投掷到感染上净化它",
+
   "item.sculkhorde.custom_item_projectile": "物品抛射物",
   "tooltip.sculkhorde.custom_item_projectile": "这是一个用于测试弹丸的开发者物品。它是所有弹丸的父类。我决定将其作为一个物品添加，只是为了开心而已。",
   "item.sculkhorde.sculk_acidic_projectile": "酸性质量",
@@ -134,5 +131,10 @@
   "item.sculkhorde.sculk_creeper_spawn_egg": "骨骼爬行者生成蛋",
   "item.sculkhorde.sculk_enderman_spawn_egg": "骨骼末影人生成蛋",
   "block.sculkhorde.dev_mass_infectinator_3000": "开发者大规模感染器3000",
-  "tooltip.sculkhorde.dev_mass_infectinator_3000": "使用风险自负。一个开发者方块，能够持续感染一个极大的区域。为了满足Karat Feng无法抑制的征服欲，感染他所看到的一切而制作。"
+  "tooltip.sculkhorde.dev_mass_infectinator_3000": "使用风险自负。一个开发者方块，能够持续感染一个极大的区域。为了满足Karat Feng无法抑制的征服欲，感染他所看到的一切而制作。",
+
+  "item.sculkhorde.infestation_purifier": "净化感染",
+  "tooltip.sculkhorde.infestation_purifier": "右键单击以返回物品\\n当它死亡时，物品不会掉落\\n当一个实体产生时，会从该地区清除幽匿感染 如果它在其范围内找不到更多的幽匿感染则会下降 此外，幽匿部落会攻击它",
+  "item.sculkhorde.purification_flask_item": "净化瓶",
+  "tooltip.sculkhorde.purification_flask_item": "投掷到感染上净化它"
 }

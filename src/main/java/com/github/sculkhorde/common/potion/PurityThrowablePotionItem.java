@@ -75,4 +75,14 @@ public class PurityThrowablePotionItem extends ThrowablePotionItem {
 
         return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
     }
+
+    @Override
+    public String getDescriptionId(ItemStack p_43003_) {
+        return "item.sculkhorde.purity_splash_potion";
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(Component.translatable("tooltip.sculkhorde.purity_splash_potion"));
+    }
 }
