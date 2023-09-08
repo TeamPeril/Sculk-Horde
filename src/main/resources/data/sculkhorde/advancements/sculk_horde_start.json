@@ -1,9 +1,9 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:sculk_summoner"
+      "item": "sculkhorde:ancient_sculk_node"
     },
-    "title": "Unleash Incomprehensible Horror",
+    "title": "Unleash Incomprehensible Horrors",
     "description": "The Sculk Horde has been unleashed, and now they're coming for you.",
     "frame": "goal",
     "show_toast": true,
