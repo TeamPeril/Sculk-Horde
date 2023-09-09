@@ -17,7 +17,7 @@ public class RangedDragonBallAttackGoal extends Goal
     private final Mob mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(5);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(2);
     protected int ticksElapsed = executionCooldown;
 
 
