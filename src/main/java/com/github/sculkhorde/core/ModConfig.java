@@ -64,7 +64,7 @@ public class ModConfig {
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
             builder.pop();
 
-            builder.push("Sculk Raid Variables (Experimental Feature)");
+            builder.push("Sculk Raid Variables");
             sculk_raid_enabled = builder.comment("Should sculk raids be enabled? (Default true)").define("sculk_raid_enabled",true);
             sculk_raid_enderman_scouting_duration_minutes = builder.comment("How long should the Sculk Enderman scout for? (Default 8)").defineInRange("sculk_raid_enderman_scouting_duration_minutes",8, 0, Integer.MAX_VALUE);
             sculk_raid_global_cooldown_between_raids_minutes = builder.comment("How long should the global cooldown between raids be in minutes? (Default 300)").defineInRange("sculk_raid_global_cooldown_between_raids_minutes", 300 , 0, Integer.MAX_VALUE);

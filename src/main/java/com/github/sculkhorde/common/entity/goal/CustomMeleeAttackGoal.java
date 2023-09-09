@@ -216,7 +216,7 @@ public class CustomMeleeAttackGoal extends Goal{
         }
 
         triggerAnimation();
-        delayedHurtScheduler.trigger();
+        delayedHurtScheduler.trigger(attackReach);
         resetAttackCooldown();
     }
 

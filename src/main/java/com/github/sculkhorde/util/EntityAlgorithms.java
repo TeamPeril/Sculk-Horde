@@ -208,6 +208,8 @@ public class EntityAlgorithms {
         private Mob damageDealer;
         private boolean active = false;
 
+        private double attackReach = 0.0;
+
         public DelayedHurtScheduler(Mob damageDealer, int delayInTicks)
         {
             this.damageDealer = damageDealer;
@@ -247,6 +249,7 @@ public class EntityAlgorithms {
         {
             Optional<Entity> target = Optional.ofNullable(getDamageDealerAsMob().getTarget());
 
+
             if(damageDealer == null || !getDamageDealerAsMob().isAlive())
             {
                 return false;
@@ -259,14 +262,19 @@ public class EntityAlgorithms {
             {
                 return false;
             }
+            else if(getDamageDealerAsMob().distanceTo(target.get()) > attackReach)
+            {
+                return false;
+            }
 
             getDamageDealerAsMob().swing(InteractionHand.MAIN_HAND);
             getDamageDealerAsMob().doHurtTarget(getDamageDealerAsMob().getTarget());
             return true;
         }
 
-        public void trigger()
+        public void trigger(double attackReach)
         {
+            this.attackReach = attackReach;
             active = true;
         }
 
