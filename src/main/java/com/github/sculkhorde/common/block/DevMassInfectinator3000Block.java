@@ -128,7 +128,7 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(Component.translatable("tooltip.sculkhorde.dev_mass_infectinator_3000"));
     }
 
     @Nullable
