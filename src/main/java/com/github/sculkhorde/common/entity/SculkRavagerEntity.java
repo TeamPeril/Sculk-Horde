@@ -241,6 +241,11 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         }
 
         @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(2);
+        }
+
+        @Override
         protected void triggerAnimation() {
             ((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }

@@ -152,7 +152,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
 
         if(raytrace.getEntity() instanceof LivingEntity)
         {
-            ((LivingEntity)raytrace.getEntity()).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
+            //((LivingEntity)raytrace.getEntity()).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 1));
         }
 
         remove(RemovalReason.DISCARDED);

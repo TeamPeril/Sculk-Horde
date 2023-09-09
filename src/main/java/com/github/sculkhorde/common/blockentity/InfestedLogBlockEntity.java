@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -26,7 +27,7 @@ public class InfestedLogBlockEntity extends BlockEntity implements ITagInfestedB
      * storedSculkMassIdentifier is the string used to identify storedSculkMass
      * in CompoundNBT. It allows us to read/write to it.<br>
      */
-    protected BlockState storedNormalVariant = null;
+    protected BlockState storedNormalVariant = Blocks.OAK_LOG.defaultBlockState();
     protected String storedNormalVariantIdentifier = "storedNormalVariant";
 
 

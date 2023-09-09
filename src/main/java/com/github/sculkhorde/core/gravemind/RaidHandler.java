@@ -62,7 +62,7 @@ public class RaidHandler {
 
     public boolean canRaidStart()
     {
-        if(!ModConfig.SERVER.experimental_features_enabled.get())
+        if(!ModConfig.SERVER.sculk_raid_enabled.get())
         {
             return false;
         }
