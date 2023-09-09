@@ -302,7 +302,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(worldIn.getBlockState(pos.below()))  &&
+        return SculkHorde.blockInfestationTable.isCurable(worldIn.getBlockState(pos.below()))  &&
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
             worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 

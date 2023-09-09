@@ -1,6 +1,6 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
+import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
@@ -30,7 +30,7 @@ public class SculkHorde {
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
     public static ModSavedData savedData;
-    public static InfestationConversionHandler infestationConversionTable;
+    public static BlockInfestationTable blockInfestationTable;
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;

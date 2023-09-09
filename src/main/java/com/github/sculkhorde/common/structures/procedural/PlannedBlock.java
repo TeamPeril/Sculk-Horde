@@ -44,8 +44,8 @@ public class PlannedBlock
         }
         // Explicit Allow
         if(
-                SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(validBlocksPredicate)
-                || SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(validBlocksPredicate)
+                SculkHorde.blockInfestationTable.isInfectable(validBlocksPredicate)
+                || SculkHorde.blockInfestationTable.isCurable(validBlocksPredicate)
                 || validBlocksPredicate.is(BlockTags.REPLACEABLE)
                 || validBlocksPredicate.is(BlockTags.NEEDS_IRON_TOOL)
                 || validBlocksPredicate.is(BlockTags.NEEDS_STONE_TOOL)

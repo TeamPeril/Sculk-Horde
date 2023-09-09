@@ -48,6 +48,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("dev_mass_infectinator_3000_block_entity", () -> BlockEntityType.Builder.of(
                     DevMassInfectinator3000BlockEntity::new, ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<InfestedLogBlockEntity>> INFESTED_LOG_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("infested_log_block_entity", () -> BlockEntityType.Builder.of(
+                    InfestedLogBlockEntity::new, ModBlocks.INFESTED_LOG.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

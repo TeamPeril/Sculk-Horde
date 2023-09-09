@@ -128,7 +128,7 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
                 SculkHorde.statisticsData.addTotalMassFromBurrowed(totalMassTax);
 
                 //Replace Block Under sculk mass with infested variant if possible
-                SculkHorde.infestationConversionTable.infectBlock((ServerLevel) world, originPos.below());
+                SculkHorde.blockInfestationTable.infectBlock((ServerLevel) world, originPos.below());
             }
         }
     }

@@ -39,7 +39,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isTarget(BlockState state, BlockPos pos)
     {
-        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(state);
+        return SculkHorde.blockInfestationTable.isCurable(state);
     }
 
     /**
@@ -49,7 +49,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.infestationConversionTable.deinfectBlock((ServerLevel) this.level(), pos);
+        SculkHorde.blockInfestationTable.cureBlock((ServerLevel) this.level(), pos);
         if(shouldBeRemovedFromAboveBlock.test(this.level().getBlockState(pos.above())))
         {
             this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
@@ -75,13 +75,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        // I'm doing this because cursors will get stuck on infested logs.
-        // TODO FIX INFESTED LOG SHITTERY
-        if(state.is(ModBlocks.INFESTED_LOG.get()))
-        {
-            return true;
-        }
-        else if(!state.isSolidRender(this.level(), pos))
+        if(!state.isSolidRender(this.level(), pos))
         {
             return true;
         }

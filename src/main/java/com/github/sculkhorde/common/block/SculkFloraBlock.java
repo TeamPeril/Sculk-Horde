@@ -122,7 +122,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     @Override
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
 
-        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(blockState);
+        return SculkHorde.blockInfestationTable.isCurable(blockState);
     }
 
 
@@ -192,6 +192,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(levelReader.getBlockState(blockPos.below()));
+        return SculkHorde.blockInfestationTable.isCurable(levelReader.getBlockState(blockPos.below()));
     }
 }

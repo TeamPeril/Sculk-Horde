@@ -1,7 +1,5 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.block.BlockInfestation.InfestationConversionHandler;
-import com.github.sculkhorde.common.block.SculkFloraBlock;
 import com.github.sculkhorde.common.block.TendrilsBlock;
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
@@ -542,25 +540,6 @@ public class BlockAlgorithms {
             {
                 vein.placeBlock(serverWorld, indexPos);
             }
-        }
-    }
-
-
-    /**
-     * Will replace sculk flora with grass.
-     * Gets called in {@link InfestationConversionHandler#processDeInfectionQueue}
-     * @param serverWorld the world
-     * @param targetPos the position
-     */
-    public static void replaceSculkFlora(ServerLevel serverWorld, BlockPos targetPos)
-    {
-        if(serverWorld.getBlockState(targetPos).getBlock() instanceof SculkFloraBlock)
-        {
-            serverWorld.setBlockAndUpdate(targetPos, Blocks.GRASS.defaultBlockState());
-        }
-        else if(serverWorld.getBlockState(targetPos).getBlock() instanceof TendrilsBlock)
-        {
-            serverWorld.removeBlock(targetPos, false);
         }
     }
 

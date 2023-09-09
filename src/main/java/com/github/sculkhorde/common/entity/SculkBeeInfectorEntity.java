@@ -77,7 +77,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
             return false;
         }
 
-        if(!SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(level().getBlockState(blockPos)))
+        if(!SculkHorde.blockInfestationTable.isInfectable(level().getBlockState(blockPos)))
         {
             return false;
         }

@@ -155,7 +155,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(blockState))
+        else if(SculkHorde.blockInfestationTable.isCurable(blockState))
         {
             return false;
         }

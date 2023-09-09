@@ -1,12 +1,18 @@
 package com.github.sculkhorde.common.block;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
+import com.github.sculkhorde.common.blockentity.InfestedLogBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,7 +21,7 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class InfestedLogBlock extends Block implements IForgeBlock {
+public class InfestedLogBlock extends BaseEntityBlock implements IForgeBlock, ITagInfestedBlock {
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -90,5 +96,35 @@ public class InfestedLogBlock extends Block implements IForgeBlock {
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.translatable("tooltip.sculkhorde.infested_log")); //Text that displays if holding shift
 
+    }
+
+    /**
+     * Determines if this block will randomly tick or not.
+     * @param blockState The current blockstate
+     * @return True/False
+     */
+    @Override
+    public boolean isRandomlyTicking(BlockState blockState) {
+        return false;
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
+        return new InfestedLogBlockEntity(blockPos, state);
+    }
+
+    @Override
+    public ITagInfestedBlockEntity getTagInfestedBlockEntity(Level level, BlockPos blockPos) {
+        BlockEntity blockEntity = level.getBlockEntity(blockPos);
+        if(blockEntity instanceof ITagInfestedBlockEntity)
+        {
+            return (ITagInfestedBlockEntity) blockEntity;
+        }
+        return null;
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState p_54296_) {
+        return RenderShape.MODEL;
     }
 }

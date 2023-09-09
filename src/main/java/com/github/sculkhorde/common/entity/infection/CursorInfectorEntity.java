@@ -90,7 +90,7 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected boolean isTarget(BlockState state, BlockPos pos)
     {
-        return SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(state);
+        return SculkHorde.blockInfestationTable.isInfectable(state);
     }
 
     /**
@@ -100,7 +100,7 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level(), pos);
+        SculkHorde.blockInfestationTable.infectBlock((ServerLevel) this.level(), pos);
     }
 
     @Override
