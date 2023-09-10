@@ -122,6 +122,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
     public boolean areAllNodesDestroyed()
     {
+        if(SculkHorde.savedData == null) { return true; }
         return SculkHorde.savedData.getNodeEntries().size() == 0;
     }
 

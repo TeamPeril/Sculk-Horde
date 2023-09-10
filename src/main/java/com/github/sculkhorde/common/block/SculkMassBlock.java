@@ -124,8 +124,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
                 thisTile.setStoredSculkMass(totalRemainingMass);
 
                 //Pay Mass Tax to the Sculk Hoard
-                SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);
-                SculkHorde.statisticsData.addTotalMassFromBurrowed(totalMassTax);
+                if(SculkHorde.savedData != null) {SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);}
+                if(SculkHorde.statisticsData != null) {SculkHorde.statisticsData.addTotalMassFromBurrowed(totalMassTax);}
 
                 //Replace Block Under sculk mass with infested variant if possible
                 SculkHorde.blockInfestationTable.infectBlock((ServerLevel) world, originPos.below());

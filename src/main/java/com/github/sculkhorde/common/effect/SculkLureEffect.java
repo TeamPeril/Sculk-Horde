@@ -46,7 +46,7 @@ public class SculkLureEffect extends MobEffect {
             entity.removeEffect(ModMobEffects.SCULK_LURE.get());
             return;
         }
-        SculkHorde.savedData.reportDeath(entity.blockPosition());
+        if(SculkHorde.savedData != null) { SculkHorde.savedData.reportDeath(entity.blockPosition()); }
 
     }
 

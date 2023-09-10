@@ -278,8 +278,8 @@ public class SculkBeeNestBlockEntity extends BlockEntity
                 this.level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(entity, this.getBlockState()));
 
                 //Give Sculk Horde Mass
-                SculkHorde.savedData.addSculkAccumulatedMass(5);
-                SculkHorde.statisticsData.addTotalMassFromBees(5);
+                if(SculkHorde.savedData != null) { SculkHorde.savedData.addSculkAccumulatedMass(5); }
+                if(SculkHorde.statisticsData != null) { SculkHorde.statisticsData.addTotalMassFromBees(5); }
 
                 //Summon Surface Infestor
                 CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);

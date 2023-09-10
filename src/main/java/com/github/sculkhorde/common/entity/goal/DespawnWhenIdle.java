@@ -42,6 +42,6 @@ public class DespawnWhenIdle extends Goal {
     public void start()
     {
         ((Mob)mob).remove(Entity.RemovalReason.DISCARDED);
-        SculkHorde.savedData.addSculkAccumulatedMass((int) ((Mob) mob).getHealth());
+        if(SculkHorde.savedData != null) { SculkHorde.savedData.addSculkAccumulatedMass((int) ((Mob) mob).getHealth()); }
     }
 }

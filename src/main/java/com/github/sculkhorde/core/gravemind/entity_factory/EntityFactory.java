@@ -125,6 +125,8 @@ public class EntityFactory {
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
 
+        if(SculkHorde.savedData == null) { return; }
+
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             return;
@@ -203,6 +205,8 @@ public class EntityFactory {
      */
     public void requestReinforcementSculkMass(Level world, BlockPos pos, ReinforcementRequest context)
     {
+        if(SculkHorde.savedData == null) { return; }
+
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             return;

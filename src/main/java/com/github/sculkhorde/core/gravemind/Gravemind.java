@@ -119,6 +119,8 @@ public class Gravemind
 
     public void enableAmountOfBeeHives(ServerLevel worldIn, int amount)
     {
+        if(SculkHorde.savedData == null) { return; }
+
         if(SculkHorde.savedData.getBeeNestEntries().size() <= 0) { return; }
 
         int lastEnabledIndex = -1;

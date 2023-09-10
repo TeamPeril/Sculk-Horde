@@ -118,6 +118,7 @@ public class InfectionTree {
         {
             return;
         }
+        if(SculkHorde.savedData == null) { return; }
 
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {

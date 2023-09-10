@@ -92,6 +92,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         //Random Chance to Place TreeNode
         if(new Random().nextInt(1000) > 1 && enableChance) { return; }
 
+        if(SculkHorde.savedData == null) { return;}
         if(!SculkHorde.savedData.isSculkNodeCooldownOver())
         {
             return;
@@ -100,7 +101,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         //If we are too close to another node, do not create one
         if(!isValidPositionForSculkNode(worldIn, targetPos)) { return; }
 
-
+        if(SculkHorde.savedData == null) { return;}
         if(SculkHorde.savedData.getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
         {
             return;
@@ -124,6 +125,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return false;
         }
 
+        if(SculkHorde.savedData == null) { return false;}
         if(SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
         {
             return false;

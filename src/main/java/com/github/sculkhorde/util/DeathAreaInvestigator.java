@@ -60,7 +60,7 @@ public class DeathAreaInvestigator {
         if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
         {
             ticksSinceLastSearch = 0;
-            searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();
+            if(SculkHorde.savedData != null) {searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();}
             if(searchEntry.isPresent())
             {
                 setState(State.INITIALIZING);
@@ -94,7 +94,7 @@ public class DeathAreaInvestigator {
             //Send message to all players
             SculkHorde.LOGGER.debug("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition());
             // Add to Area of Interest Memory
-            SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getPosition());
+            if(SculkHorde.savedData != null) {SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getPosition());}
         }
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
@@ -106,7 +106,7 @@ public class DeathAreaInvestigator {
 
     public void finishedTick()
     {
-        SculkHorde.savedData.removeDeathAreaFromMemory(searchEntry.get().getPosition());
+        if(SculkHorde.savedData != null) { SculkHorde.savedData.removeDeathAreaFromMemory(searchEntry.get().getPosition()); }
         ticksSinceLastSearch = 0;
         setState(State.IDLE);
         blockSearcher = null;
