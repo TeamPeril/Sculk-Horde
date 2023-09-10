@@ -1,8 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkRavagerEntity;
-import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
@@ -26,7 +24,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -40,8 +37,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -224,7 +219,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
 
         // Phase 1
-        this.goalSelector.addGoal(1, new RangedDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
+        this.goalSelector.addGoal(1, new RangedSonicBoomAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
 
 
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));

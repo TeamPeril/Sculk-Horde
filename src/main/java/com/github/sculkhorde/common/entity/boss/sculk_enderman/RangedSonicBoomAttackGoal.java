@@ -3,21 +3,18 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
-public class RangedDragonBallAttackGoal extends Goal
+public class RangedSonicBoomAttackGoal extends Goal
 {
     private final Mob mob;
     protected int maxAttackDuration = 0;
@@ -26,7 +23,7 @@ public class RangedDragonBallAttackGoal extends Goal
     protected int ticksElapsed = executionCooldown;
 
 
-    public RangedDragonBallAttackGoal(PathfinderMob mob, int durationInTicks) {
+    public RangedSonicBoomAttackGoal(PathfinderMob mob, int durationInTicks) {
         this.mob = mob;
         maxAttackDuration = durationInTicks;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
@@ -124,7 +121,8 @@ public class RangedDragonBallAttackGoal extends Goal
         }
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().sonicBoom(mob), 10.0F);
+        float damage = targetEntity.getMaxHealth() > 50.0F ? targetEntity.getMaxHealth() * 0.25F : 10.0F;
+        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().sonicBoom(mob), damage);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);
