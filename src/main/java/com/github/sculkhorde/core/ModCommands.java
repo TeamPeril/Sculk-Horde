@@ -26,7 +26,8 @@ public class ModCommands {
                 .then(GravemindCommand.register(dispatcher, buildContext))
                 .then(StatusCommand.register(dispatcher, buildContext))
                 .then(StatusAllCommand.register(dispatcher, buildContext))
-                .then(RaidCommand.register(dispatcher, buildContext));
+                .then(RaidCommand.register(dispatcher, buildContext))
+                .then(StatisticsCommand.register(dispatcher, buildContext));
 
         dispatcher.register(cmd);
     }
