@@ -27,9 +27,7 @@ public class InfectionTree {
     private final int MAX_PROBE_RANGE = 5000;
     private final int MIN_PROBE_RANGE = 10;
     private final int PROBE_RANGE_INCREMENT = 50;
-
-    private int currentInfectRange = 10;
-    private final int MAX_INFECTOR_RANGE = 50;
+    private final int MAX_INFECTOR_RANGE = 100;
     private final int MIN_INFECTOR_RANGE = 10;
     private final int MAX_INFECTOR_RANGE_INCREMENT = 10;
 
@@ -104,7 +102,7 @@ public class InfectionTree {
         cursorInfection = new CursorSurfaceInfectorEntity(world);
         cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
         cursorInfection.setMaxRange(maxInfections);
-        cursorInfection.setTickIntervalMilliseconds(20);
+        cursorInfection.setTickIntervalMilliseconds(10);
         this.world.addFreshEntity(cursorInfection);
     }
 
@@ -184,7 +182,7 @@ public class InfectionTree {
             // If the infection cursor is null, create a new one
             if(cursorInfection == null)
             {
-                createInfectionCursor(currentInfectRange);
+                createInfectionCursor(MAX_INFECTOR_RANGE);
                 return;
             }
             // If the infection cursor is still active, wait for it to finish
@@ -206,18 +204,10 @@ public class InfectionTree {
                 cursorInfection = null;
             }
 
-            // If failed infection attempts is too high, increase the infection range
+            // If the infection range is too large, reset it and change state to complete
             if(failedInfectionAttempts >= MAX_FAILED_INFECTION_ATTEMPTS)
             {
-                currentInfectRange += MAX_INFECTOR_RANGE_INCREMENT;
                 failedInfectionAttempts = 0;
-            }
-
-            // If the infection range is too large, reset it and change state to complete
-            if(currentInfectRange > MAX_INFECTOR_RANGE)
-            {
-                failedInfectionAttempts = 0;
-                currentInfectRange = MIN_INFECTOR_RANGE;
                 currentState = state.PROBING;
             }
         }
@@ -228,7 +218,6 @@ public class InfectionTree {
                 currentProbeRange += PROBE_RANGE_INCREMENT;
                 failedProbeAttempts = 0;
                 currentState = state.IDLE;
-
             }
 
             if(failedInfectionAttempts >= MAX_FAILED_INFECTION_ATTEMPTS)
