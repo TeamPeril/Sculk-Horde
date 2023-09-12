@@ -79,6 +79,15 @@ public class BlockInfestationTable{
      */
     public boolean isInfectable(BlockState blockState)
     {
+        if(blockState.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        {
+            return false;
+        }
+        else if( blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK))
+        {
+            return false;
+        }
+
         for(IBlockInfestationEntry entry : entries)
         {
             if(entry.isNormalVariant(blockState))

@@ -595,6 +595,8 @@ public class ModBlocks {
 		public static final TagKey<Block> SCULK_BEE_HARVESTABLE = create("sculk_bee_harvestable");
 		public static final TagKey<Block> INFESTED_BLOCK = create("infested_block");
 
+		public static final TagKey<Block> NOT_INFESTABLE = create("not_infestable");
+
 		// Helper Function
 		private static TagKey<Block> create(String location)
 		{

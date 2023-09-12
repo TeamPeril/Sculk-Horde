@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:piston",
+    "minecraft:sticky_piston",
+    "minecraft:sculk",
+    "sculkhorde:sculk_arachnoid",
+    "sculkhorde:sculk_dura_matter"
+  ]
+}

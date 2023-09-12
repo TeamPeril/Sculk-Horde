@@ -46,13 +46,7 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        // I'm doing this because cursors will get stuck on infested logs.
-        // TODO FIX INFESTED LOG SHITTERY
-        if(state.is(ModBlocks.INFESTED_LOG.get()))
-        {
-            return true;
-        }
-        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
         {
             return true;
         }
