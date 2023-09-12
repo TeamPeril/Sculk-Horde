@@ -48,9 +48,13 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("dev_mass_infectinator_3000_block_entity", () -> BlockEntityType.Builder.of(
                     DevMassInfectinator3000BlockEntity::new, ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get()).build(null));
 
-    public static RegistryObject<BlockEntityType<InfestedLogBlockEntity>> INFESTED_LOG_BLOCK_ENTITY =
+    public static RegistryObject<BlockEntityType<InfestedTagBlockEntity>> INFESTED_LOG_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("infested_log_block_entity", () -> BlockEntityType.Builder.of(
-                    InfestedLogBlockEntity::new, ModBlocks.INFESTED_LOG.get()).build(null));
+                    InfestedTagBlockEntity::new, ModBlocks.INFESTED_LOG.get()).build(null));
+
+    public static RegistryObject<BlockEntityType<InfestedTagBlockEntity>> INFESTED_WOOD_MASS_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("infested_wood_mass_block_entity", () -> BlockEntityType.Builder.of(
+                    InfestedTagBlockEntity::new, ModBlocks.INFESTED_WOOD_MASS.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

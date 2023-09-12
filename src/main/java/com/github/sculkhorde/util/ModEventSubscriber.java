@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.ModBlocks;
@@ -13,7 +14,9 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -41,7 +44,6 @@ public class ModEventSubscriber {
         SculkHorde.blockInfestationTable = new BlockInfestationTable();
 
         // Add Log Tag
-        SculkHorde.blockInfestationTable.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
         SculkHorde.blockInfestationTable.addEntry(Blocks.DIRT, Blocks.SCULK.defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.COARSE_DIRT, Blocks.SCULK.defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.GRASS_BLOCK, Blocks.SCULK.defaultBlockState());
@@ -90,7 +92,11 @@ public class ModEventSubscriber {
         SculkHorde.blockInfestationTable.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
-
+        SculkHorde.blockInfestationTable.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
+        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_MASS.get());
+        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get());
+        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
+        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);

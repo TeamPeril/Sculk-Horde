@@ -137,5 +137,10 @@
   "tooltip.sculkhorde.infestation_purifier": "Right-click to drop back into item.\nOn death, item does not drop.\nAn entity that when spawned, removes Sculk Infestation from the area. If it cannot find any more infestation within it's range, it will drop. The Sculk Horde will attack it.",
   "item.sculkhorde.purity_splash_potion": "Purification Flask",
   "tooltip.sculkhorde.purity_splash_potion": "Throw at Infestation to clear it up. Cures Burrowed and Lure status effects.",
-  "effect.sculkhorde.purity": "Purity"
+  "effect.sculkhorde.purity": "Purity",
+
+  "block.sculkhorde.infested_sturdy_mass": "Infested Sturdy Mass",
+  "block.sculkhorde.infested_crumpled_mass": "Infested Crumpled Mass",
+  "block.sculkhorde.infested_compost_mass": "Infested Compost Mass",
+  "block.sculkhorde.infested_wood_mass": "Infested Wood Mass"
 }

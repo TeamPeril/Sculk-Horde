@@ -1,24 +1,19 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class InfestedLogBlockEntity extends BlockEntity implements ITagInfestedBlockEntity {
+public class InfestedTagBlockEntity extends BlockEntity implements ITagInfestedBlockEntity {
 
     /**
      * storedSculkMass is the value of sculk mass was this block has.
@@ -34,7 +29,7 @@ public class InfestedLogBlockEntity extends BlockEntity implements ITagInfestedB
     /**
      * The Constructor that takes in properties
      */
-    public InfestedLogBlockEntity(BlockPos pos, BlockState state) {
+    public InfestedTagBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.INFESTED_LOG_BLOCK_ENTITY.get(), pos, state);
     }
 

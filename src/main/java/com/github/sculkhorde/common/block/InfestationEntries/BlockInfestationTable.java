@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,6 +41,11 @@ public class BlockInfestationTable{
     public void addEntry(TagKey<Block> normalTag, ITagInfestedBlock infectedVariant)
     {
         entries.add(new BlockTagInfestationTableEntry(normalTag, infectedVariant));
+    }
+
+    public void addEntry(TagKey<Block> toolRequired, Tier tier, ITagInfestedBlock infectedVariant)
+    {
+        entries.add(new ToolTaglInfestationTableEntry(toolRequired, tier, infectedVariant));
     }
 
     public BlockState getInfestedVariant(Level level, BlockPos blockPos, BlockState blockState)

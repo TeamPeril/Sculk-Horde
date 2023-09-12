@@ -92,8 +92,14 @@ public class ModBlocks {
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
 
-	public static final RegistryObject<InfestedLogBlock> INFESTED_LOG =
-			registerBlock("infested_log", () -> new InfestedLogBlock());
+	public static final RegistryObject<InfestedTagBlock> INFESTED_LOG =
+			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
 
 	public static final RegistryObject<Block> INFESTED_SAND =
 			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of()
@@ -489,6 +495,43 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.MUD)
 			));
+
+	public static final RegistryObject<InfestedTagBlock> INFESTED_WOOD_MASS =
+			registerBlock("infested_wood_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
+	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
+			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedTagBlock> INFESTED_CRUMPLED_MASS =
+			registerBlock("infested_crumpled_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.GRAVEL)
+			));
+
+	public static final RegistryObject<InfestedTagBlock> INFESTED_COMPOST_MASS =
+			registerBlock("infested_compost_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.MOSS)
+			));
+
 
 	public static final RegistryObject<Block> INFESTATION_WARD_BLOCK =
 			registerBlock("infestation_ward_block", () -> new Block(BlockBehaviour.Properties.of()
