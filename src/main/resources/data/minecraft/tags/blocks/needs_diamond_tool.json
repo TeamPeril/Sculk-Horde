@@ -51,6 +51,12 @@
     "sculkhorde:infested_smooth_basalt",
     "sculkhorde:infested_endstone",
     "sculkhorde:infested_mossy_cobblestone",
-    "sculkhorde:sculk_summoner"
+    "sculkhorde:sculk_summoner",
+
+    "sculkhorde:infested_compost_mass",
+    "sculkhorde:infested_sturdy_mass",
+    "sculkhorde:infested_wood_mass",
+    "sculkhorde:infested_crumpled_mass"
+
   ]
 }

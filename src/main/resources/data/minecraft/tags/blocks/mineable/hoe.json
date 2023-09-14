@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "sculkhorde:infested_moss"
+    "sculkhorde:infested_moss",
+    "sculkhorde:infested_compost_mass"
   ]
 }
