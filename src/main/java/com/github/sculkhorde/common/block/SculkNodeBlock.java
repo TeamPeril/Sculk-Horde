@@ -162,7 +162,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), level.getMinBuildHeight() + 35, searchOrigin.getZ());
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(newOrigin);
-        EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
+        EntityType.LIGHTNING_BOLT.spawn(level, null, null, newOrigin, MobSpawnType.SPAWNER, false, false);
 
         //Send message to all players that node has spawned
         level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
