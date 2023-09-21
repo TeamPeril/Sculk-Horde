@@ -71,12 +71,6 @@ public class SculkInfectionEffect extends MobEffect {
         sculkMass.spawn(entityLevel, entityPosition, entityHealth);
         //Do infectionDamage to victim per mite
         entity.hurt(entity.damageSources().magic(), infectionDamage);
-
-        if(SculkHorde.isDebugMode() && Objects.requireNonNull(event.getEffectInstance()).getAmplifier() >= 2)
-        {
-            entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(20), 3));
-        }
-
     }
 
     @Override
