@@ -288,8 +288,14 @@ public abstract class CursorEntity extends Entity
             if (this.blockPosition().equals(target))
             {
                 target = BlockPos.ZERO;
-                // Infect the block and increase the infection count
-                transformBlock(this.blockPosition());
+
+                // If the block is not obstructed, infect it
+                if(isTarget(level().getBlockState(this.blockPosition()), this.blockPosition()))
+                {
+                    // Infect the block and increase the infection count
+                    transformBlock(this.blockPosition());
+                }
+
                 currentTransformations++;
                 state = State.SEARCHING;
                 visitedPositons.clear();

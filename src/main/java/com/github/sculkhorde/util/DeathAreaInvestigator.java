@@ -52,11 +52,6 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(!ModConfig.SERVER.experimental_features_enabled.get())
-        {
-            return;
-        }
-
         if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
         {
             ticksSinceLastSearch = 0;

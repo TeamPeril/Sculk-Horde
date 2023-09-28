@@ -62,9 +62,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
 
     //The Health
-    public static final float MAX_HEALTH = 100F;
+    public static final float MAX_HEALTH = 200F;
     //The armor of the mob
-    public static final float ARMOR = 20F;
+    public static final float ARMOR = 5F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
     public static final float ATTACK_DAMAGE = 7F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
@@ -239,7 +239,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             return false;
         }
 
-        teleportRandomly(32);
+        // 50% chance to teleport randomly
+        if(this.random.nextInt(2) == 0) {
+            teleportRandomly(32);
+        }
 
         setAggro();
         return super.hurt(damageSource, amount);
@@ -263,7 +266,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         if(this.getTarget() != null && getHealth() >= getMaxHealth() * 0.5)
         {
-            stayInSpecificRangeOfTarget(8, 27);
+            //stayInSpecificRangeOfTarget(3, 10);
         }
 
         this.jumping = false;
@@ -560,8 +563,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 new AnimationController<>(this, "walk_cycle", 5, this::poseWalk),
                 new AnimationController<>(this, "twitch", 5, this::poseTwitch),
                 new AnimationController<>(this, "tendrils", 5, this::poseTendrils),
-                COMBAT_ATTACK_ANIMATION_CONTROLLER,
-                COMBAT_TWITCH_ANIMATION_CONTROLLER
+                COMBAT_ATTACK_ANIMATION_CONTROLLER
+                //COMBAT_TWITCH_ANIMATION_CONTROLLER
         );
     }
 
@@ -652,7 +655,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         @Override
         protected float getMinimumDistanceToTarget()
         {
-            return getHealth() >= getMaxHealth()/2 ? 16F : 0.5F;
+            return 0.5F;
         }
 
         @Override

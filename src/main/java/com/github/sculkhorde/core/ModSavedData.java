@@ -1231,7 +1231,15 @@ public class ModSavedData extends SavedData {
 
         public boolean isExpired(long currentTimeStamp)
         {
-            return (currentTimeStamp - timeOfCreation) > durationInTicksUntilExpiration;
+            long defaultTicksUntilExpiration = TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_no_raid_zone_duration_minutes.get());
+            long ticksUntilThisNoRaidZoneExpires = getDurationInTicksUntilExpiration();
+            // If the user has set a lower duration in the config, we will use that instead
+            if(ticksUntilThisNoRaidZoneExpires > defaultTicksUntilExpiration)
+            {
+                durationInTicksUntilExpiration = defaultTicksUntilExpiration;
+            }
+
+            return (currentTimeStamp - getTimeOfCreation()) > getDurationInTicksUntilExpiration();
         }
 
         public boolean isBlockPosInRadius(BlockPos blockPosIn)

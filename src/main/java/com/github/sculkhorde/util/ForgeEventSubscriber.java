@@ -64,11 +64,9 @@ public class ForgeEventSubscriber {
 
         SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
 
-        if(ModConfig.SERVER.experimental_features_enabled.get())
-        {
-            SculkHorde.raidHandler.raidTick(); // Tick the raid handler
-            SculkHorde.deathAreaInvestigator.tick();
-        }
+        SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+        SculkHorde.deathAreaInvestigator.tick();
+
 
         // Only run stuff below every 5 minutes
         if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))

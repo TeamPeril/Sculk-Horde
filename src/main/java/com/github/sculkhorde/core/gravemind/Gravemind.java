@@ -1,7 +1,6 @@
 package com.github.sculkhorde.core.gravemind;
 
 
-import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
@@ -9,14 +8,10 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.*;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.
@@ -41,7 +36,7 @@ public class Gravemind
     public static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
     public int sculk_node_limit = 1;
 
-    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(8);
+    public static int TICKS_BETWEEN_NODE_SPAWNS = ModConfig.SERVER.sculk_node_spawn_cooldown_hours.get();
 
     /**
      * Default Constructor <br>
