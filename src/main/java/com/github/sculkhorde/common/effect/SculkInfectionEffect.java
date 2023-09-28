@@ -2,25 +2,23 @@ package com.github.sculkhorde.common.effect;
 
 import com.github.sculkhorde.common.block.SculkMassBlock;
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SculkInfectionEffect extends MobEffect {
 
@@ -52,25 +50,25 @@ public class SculkInfectionEffect extends MobEffect {
     {
         LivingEntity entity = event.getEntity();
         // OR mob outside of world border
-        if(entity == null || EntityAlgorithms.isSculkLivingEntity.test(entity) || !entity.level().isInWorldBounds(entity.blockPosition()))
+        if(entity == null || EntityAlgorithms.isSculkLivingEntity.test(entity) || !entity.level.isInWorldBounds(entity.blockPosition()))
         {
             return;
         }
 
         //Spawn Effect Level + 1 number of mites
         int infectionDamage = 4;
-        Level entityLevel = entity.level();
+        Level entityLevel = entity.level;
         BlockPos entityPosition = entity.blockPosition();
         float entityHealth = entity.getMaxHealth();
 
         //Spawn Mite
-        ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER);
+        ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, null, null, entityPosition, MobSpawnType.SPAWNER, false, false);
 
         //Spawn Sculk Mass
         SculkMassBlock sculkMass = ModBlocks.SCULK_MASS.get();
         sculkMass.spawn(entityLevel, entityPosition, entityHealth);
         //Do infectionDamage to victim per mite
-        entity.hurt(entity.damageSources().magic(), infectionDamage);
+        entity.hurt(DamageSource.MAGIC, infectionDamage);
     }
 
     @Override
@@ -111,6 +109,4 @@ public class SculkInfectionEffect extends MobEffect {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;
     }
-
-
 }
