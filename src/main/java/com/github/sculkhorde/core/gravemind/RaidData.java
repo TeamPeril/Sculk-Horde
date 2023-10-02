@@ -125,9 +125,9 @@ public class RaidData {
      */
     public void reset()
     {
-        SculkHorde.savedData.removeAreaOfInterestFromMemory(areaOfInterestEntry.getPosition());
+        if(areaOfInterestEntry != null) { SculkHorde.savedData.removeAreaOfInterestFromMemory(areaOfInterestEntry.getPosition()); }
         areaOfInterestEntry = null;
-        ChunkLoaderHelper.unloadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
+        if(getRaidLocation() != null) ChunkLoaderHelper.unloadChunksInRadius(level, getRaidLocation(), getRaidLocation().getX() >> 4, getRaidLocation().getZ() >> 4, 5);
         setBlockSearcher(null);
         setRaidState(RaidHandler.RaidState.INACTIVE);
         setRaidLocation(BlockPos.ZERO);
