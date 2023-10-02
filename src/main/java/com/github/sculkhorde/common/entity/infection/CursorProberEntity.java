@@ -147,7 +147,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }

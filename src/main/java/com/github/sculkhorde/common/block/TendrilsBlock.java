@@ -14,7 +14,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -47,7 +48,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
     public static Properties getProperties()
     {
         return Properties.copy(Blocks.VINE)
-                .mapColor(MapColor.TERRACOTTA_BLUE)
+                .color(MaterialColor.TERRACOTTA_BLUE)
                 .noOcclusion()
                 .noCollission();
     }

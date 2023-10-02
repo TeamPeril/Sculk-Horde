@@ -22,9 +22,12 @@ public class StructureTemplateMixin {
                                                               BlockPos blockPos2, StructurePlaceSettings structurePlaceSettings,
                                                               RandomSource random, int flag, CallbackInfoReturnable<Boolean> cir) {
 
+        /* //TODO PORT 1.19.2
         if(structurePlaceSettings.getProcessors().stream().anyMatch(processor ->
                 ((StructureProcessorAccessor)processor).callGetType() == ModStructureProcessors.WATERLOGGING_FIX_PROCESSOR.get())) {
             structurePlaceSettings.setKeepLiquids(false);
         }
+
+         */
     }
 }

@@ -46,7 +46,7 @@ public class PlannedBlock
         if(
                 SculkHorde.blockInfestationTable.isInfectable(validBlocksPredicate)
                 || SculkHorde.blockInfestationTable.isCurable(validBlocksPredicate)
-                || validBlocksPredicate.is(BlockTags.REPLACEABLE)
+                || validBlocksPredicate.canBeReplaced(Fluids.WATER)
                 || validBlocksPredicate.is(BlockTags.NEEDS_IRON_TOOL)
                 || validBlocksPredicate.is(BlockTags.NEEDS_STONE_TOOL)
                 || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F

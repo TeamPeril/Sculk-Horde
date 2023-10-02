@@ -57,8 +57,8 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        getSculkEnderman().triggerAnim("attack_controller", "bubble_animation");
-        getSculkEnderman().triggerAnim("twitch_controller", "bubble_twitch_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("attack_controller", "bubble_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("twitch_controller", "bubble_twitch_animation");
 
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();

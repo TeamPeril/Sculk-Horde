@@ -7,7 +7,7 @@ plugins {
 }
 
 
-version = '1.19.2.1-0.7.0'
+version = '1.19.2.1-0.7.0-Alpha1'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -95,7 +95,10 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { 
+	name = 'GeckoLib'
+	url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' 
+	}
 }
 
 dependencies {

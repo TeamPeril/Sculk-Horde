@@ -5,10 +5,12 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.NetworkHooks;
 
 import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
 
@@ -63,7 +65,7 @@ public class CursorInfectorEntity extends CursorEntity
             return true;
         }
         // Check if block is not beyond world border
-        else if(!level().isInWorldBounds(pos))
+        else if(!level.isInWorldBounds(pos))
         {
             return true;
         }
@@ -100,5 +102,10 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected void spawnParticleEffects()
     {
+    }
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

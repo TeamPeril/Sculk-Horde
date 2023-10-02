@@ -9,7 +9,6 @@ import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntit
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporationRiftEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Mob;
@@ -71,7 +70,7 @@ public class ModEntities {
         public static TagKey<EntityType<?>> SCULK_ENTITY = create("sculk_entity");
 
         private static TagKey<EntityType<?>> create(String string) {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SculkHorde.MOD_ID, string));
+            return TagKey.create(ForgeRegistries.ENTITY_TYPES.getRegistryKey(), new ResourceLocation(SculkHorde.MOD_ID, string));
         }
     }
 }

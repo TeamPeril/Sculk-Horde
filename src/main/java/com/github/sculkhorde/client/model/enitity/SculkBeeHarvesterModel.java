@@ -1,9 +1,7 @@
 package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

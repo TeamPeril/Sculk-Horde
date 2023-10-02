@@ -22,7 +22,7 @@ public class StatisticsCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context)
     {
-        context.getSource().sendSuccess(()->Component.literal(
+        context.getSource().sendSuccess(Component.literal(
                 printIfNotZero("Total Blocks Infested", SculkHorde.statisticsData.getTotalBlocksInfested())
                         + printIfNotZero("Total Units Spawned", SculkHorde.statisticsData.getTotalUnitsSpawned())
                         + printIfNotZero("Total Units Killed", SculkHorde.statisticsData.getTotalUnitDeaths())

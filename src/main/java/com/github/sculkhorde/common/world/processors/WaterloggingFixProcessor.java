@@ -22,6 +22,7 @@ public class WaterloggingFixProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return ModStructureProcessors.WATERLOGGING_FIX_PROCESSOR.get();
+        //TODO PORT 1.19.2 return ModStructureProcessors.WATERLOGGING_FIX_PROCESSOR.get();
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
@@ -23,8 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
@@ -94,7 +95,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             if(!areAllNodesDestroyed())
             {
                 playerIn.displayClientMessage(Component.literal("The Ancient Sculk Node cannot be destroyed until all remaining Sculk Nodes are!"), true);
-                level.playSound(playerIn, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.MASTER);
+                level.playSound(playerIn, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
                 return InteractionResult.FAIL;
             }
 
@@ -102,9 +103,6 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CURED, true));
             level.players().forEach(player -> player.displayClientMessage(Component.literal("The Ancient Sculk Node has been Defeated!"), true));
             level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
-
-            //Spawn Explosion that Does No Damage
-            level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
 
             return InteractionResult.CONSUME;
         }
@@ -145,8 +143,8 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_BLUE)
+        Properties prop = Properties.of(Material.STONE)
+                .color(MaterialColor.COLOR_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS);
         return prop;
@@ -186,7 +184,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         }
 
         return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
-            VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
+            entity.getListener().tick(level1);
         });
     }
 

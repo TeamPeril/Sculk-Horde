@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,11 +67,11 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -82,7 +83,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
     public void start()
     {
         super.start();
-        getSculkEnderman().triggerAnim("attack_controller", "rifts_summon_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("attack_controller", "rifts_summon_animation");
 
         //Disable mob's movement
         this.mob.getNavigation().stop();

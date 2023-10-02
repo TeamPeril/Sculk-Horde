@@ -46,11 +46,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -62,7 +62,7 @@ import java.util.function.Predicate;
  * A lot of this is copied from BeeEntity.java.
  * I do not want to learn how to use mixins, so I am just copying the code.
  */
-public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, FlyingAnimal {
+public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, IAnimationTickable, FlyingAnimal {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -80,10 +80,6 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.25F;
-
-    protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public static final float FLAP_DEGREES_PER_TICK = 120.32113F;
     public static final int TICKS_PER_FLAP = Mth.ceil(1.4959966F);
     public static final String TAG_CROPS_GROWN_SINCE_POLLINATION = "CropsGrownSincePollination";
     public static final String TAG_CANNOT_ENTER_HIVE_TICKS = "CannotEnterHiveTicks";
@@ -439,13 +435,13 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
         }
 
         if (this.underWaterTicks > 20) {
-            this.hurt(this.damageSources().drown(), 1.0F);
+            this.hurt(DamageSource.DROWN, 1.0F);
         }
 
         if (flag) {
             ++this.timeSinceSting;
             if (this.timeSinceSting % 5 == 0 && this.random.nextInt(Mth.clamp(1200 - this.timeSinceSting, 1, 1200)) == 0) {
-                this.hurt(this.damageSources().generic(), this.getHealth());
+                this.hurt(DamageSource.GENERIC, this.getHealth());
             }
         }
 
@@ -548,22 +544,6 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
         this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.01D, 0.0D));
     }
 
-    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
-    // Add our animations
-    @Override
-    public void registerControllers(AnimationData data) {
-        controllers.add(DefaultAnimations.genericFlyController(this));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    boolean closerThan(BlockPos p_27817_, int p_27818_) {
-        return p_27817_.closerThan(this.blockPosition(), (double)p_27818_);
-    }
-
     /**
      * We override this and keep it blank so that this mob doesnt not despawn
      */
@@ -588,6 +568,28 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
     @Override
     public boolean isFlying() {
         return true;
+    }
+
+    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
+    // Add our animations
+    @Override
+    public void registerControllers(AnimationData data) {
+        //controllers.add(DefaultAnimations.genericFlyController(this));
+    }
+
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+    @Override
+    public int tickTimer() {
+        return tickCount;
+    }
+
+    boolean closerThan(BlockPos p_27817_, int p_27818_) {
+        return p_27817_.closerThan(this.blockPosition(), (double)p_27818_);
     }
 
     /* ~~~~~~~~ Classes ~~~~~~~~ */
@@ -825,7 +827,7 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
 
     public class BeeGoToKnownFlowerGoal extends BaseBeeGoal {
         protected static final int MAX_TRAVELLING_TICKS = TickUnits.convertMinutesToTicks(1);
-        int travellingTicks = level().random.nextInt(10);
+        int travellingTicks = level.random.nextInt(10);
 
         BeeGoToKnownFlowerGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -969,7 +971,7 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
                 return false;
             } else if (hasNectar()) {
                 return false;
-            } else if (level().isRaining()) {
+            } else if (level.isRaining()) {
                 return false;
             } else {
                 Optional<BlockPos> optional = this.findNearbyFlower();
@@ -991,7 +993,7 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
                 return false;
             } else if (!hasSavedFlowerPos()) {
                 return false;
-            } else if (level().isRaining()) {
+            } else if (level.isRaining()) {
                 return false;
             } else if (this.hasPollinatedLongEnough()) {
                 return random.nextFloat() < 0.2F;
@@ -1093,7 +1095,7 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
         }
 
         protected Optional<BlockPos> findNearbyFlower() {
-            return BlockAlgorithms.findBlockInCubeBlockPosPredicate((ServerLevel) level(), blockPosition(), getIsFlowerValidPredicate(), 5);
+            return BlockAlgorithms.findBlockInCubeBlockPosPredicate((ServerLevel) level, blockPosition(), getIsFlowerValidPredicate(), 5);
         }
 
     }
@@ -1116,7 +1118,7 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, Fly
         public void start() {
             Vec3 vec3 = this.findPos();
             if (vec3 != null) {
-                navigation.moveTo(navigation.createPath(BlockPos.containing(vec3), 1), 1.0D);
+                navigation.moveTo(navigation.createPath(new BlockPos(vec3), 1), 1.0D);
             }
 
         }

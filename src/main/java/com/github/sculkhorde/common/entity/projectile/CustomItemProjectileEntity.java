@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -100,7 +101,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      * @return The Packet
      */
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -147,7 +148,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         }
 
 
-        raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
+        raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
 
         if(raytrace.getEntity() instanceof LivingEntity)

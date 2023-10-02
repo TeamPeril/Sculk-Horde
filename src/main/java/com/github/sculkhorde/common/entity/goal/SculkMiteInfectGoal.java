@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -76,7 +77,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
                  *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
                  */
                 //thisMob.die(DamageSource.GENERIC);
-                thisMob.hurt(thisMob.damageSources().generic(), thisMob.getHealth());
+                thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
             }
         }
     }

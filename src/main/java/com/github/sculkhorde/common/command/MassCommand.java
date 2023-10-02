@@ -61,7 +61,7 @@ public class MassCommand implements Command<CommandSourceStack> {
                 SculkHorde.gravemind.calulateCurrentState();
             }
         }
-        context.getSource().sendSuccess(()->Component.literal("Sculk Mass is Now: " + SculkHorde.savedData.getSculkAccumulatedMass()), true);
+        context.getSource().sendSuccess(Component.literal("Sculk Mass is Now: " + SculkHorde.savedData.getSculkAccumulatedMass()), true);
         return 0;
     }
 

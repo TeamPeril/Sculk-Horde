@@ -131,6 +131,6 @@ public class EntityFactoryEntry {
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
         SculkHorde.statisticsData.incrementTotalUnitsSpawned();
-        return (Mob) getEntity().spawn(level, pos, MobSpawnType.EVENT);
+        return (Mob) getEntity().spawn(level, null, null, pos, MobSpawnType.EVENT, false, false);
     }
 }

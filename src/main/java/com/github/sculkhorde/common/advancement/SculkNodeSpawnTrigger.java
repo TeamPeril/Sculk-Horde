@@ -4,8 +4,8 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,8 +21,8 @@ public class SculkNodeSpawnTrigger extends SimpleCriterionTrigger<SculkNodeSpawn
     }
 
     @Override
-    public SculkNodeSpawnCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
-        return new SculkNodeSpawnCriterion(awarePredicate);
+    public SculkNodeSpawnCriterion createInstance(JsonObject pJson, EntityPredicate.Composite pPlayer, DeserializationContext pContext) {
+        return new SculkNodeSpawnCriterion(pPlayer);
     }
 
     public void trigger(ServerPlayer player) {
@@ -31,8 +31,8 @@ public class SculkNodeSpawnTrigger extends SimpleCriterionTrigger<SculkNodeSpawn
 
     public static class SculkNodeSpawnCriterion extends AbstractCriterionTriggerInstance {
 
-        public SculkNodeSpawnCriterion(ContextAwarePredicate awarePredicate) {
-            super(ID, awarePredicate);
+        public SculkNodeSpawnCriterion(EntityPredicate.Composite pPlayer) {
+            super(ID, pPlayer);
         }
     }
 }

@@ -15,15 +15,11 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSmartEntity, IAnimatable {
+public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
 
 
     /**
@@ -72,8 +68,6 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * Determines & registers the attributes of the mob.
@@ -194,7 +188,7 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
     */
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
-
+    /*
     private static final RawAnimation HEAD_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("head.attack");
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", HEAD_ATTACK_ANIMATION);
@@ -209,6 +203,23 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+     */
+
+    // Add our animations
+    @Override
+    public void registerControllers(AnimationData data) {
+    }
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+    @Override
+    public int tickTimer() {
+        return tickCount;
     }
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
@@ -248,7 +259,7 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSm
 
         @Override
         protected void triggerAnimation() {
-            ((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
+            //((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
     }
 

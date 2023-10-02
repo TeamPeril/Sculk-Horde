@@ -24,10 +24,6 @@ public class SculkLivingRockRootBlockEntity extends BlockEntity
     //Keep track of last time since repair so we know when to restart
     private long lastTimeSinceRepair = -1;
 
-    /**
-     * The Constructor that takes in properties
-     * @param type The Tile Entity Type
-     */
     public SculkLivingRockRootBlockEntity(BlockPos blockPos, BlockState blockState)
     {
         super(ModBlockEntities.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), blockPos, blockState);

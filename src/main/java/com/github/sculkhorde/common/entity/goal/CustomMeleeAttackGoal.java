@@ -133,7 +133,7 @@ public class CustomMeleeAttackGoal extends Goal{
 
         this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-        double perceivedTargetDistanceSquareForMeleeAttack = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
+        double perceivedTargetDistanceSquareForMeleeAttack = this.mob.distanceToSqr(target.getX(), target.getY(), target.getZ());
 
         this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
 

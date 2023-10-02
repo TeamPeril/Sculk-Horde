@@ -28,6 +28,7 @@ public class AcidAttack extends RangedAttack{
     @Override
     public void triggerAttackAnimation()
     {
-        ((SculkSpitterEntity)thisMob).triggerAnim("attack_controller", "attack_animation");
+        // TODO PORT TO 1.19.2
+        //((SculkSpitterEntity)thisMob).triggerAnim("attack_controller", "attack_animation");
     }
 }

@@ -136,7 +136,7 @@ public abstract class CursorEntity extends Entity
      */
     protected void transformBlock(BlockPos pos)
     {
-        level().setBlockAndUpdate(pos, Blocks.DIAMOND_BLOCK.defaultBlockState());
+        level.setBlockAndUpdate(pos, Blocks.DIAMOND_BLOCK.defaultBlockState());
     }
 
     protected void spawnParticleEffects()
@@ -260,7 +260,7 @@ public abstract class CursorEntity extends Entity
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }

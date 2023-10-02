@@ -22,7 +22,7 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context)
     {
-        context.getSource().sendSuccess(()->Component.literal(
+        context.getSource().sendSuccess(Component.literal(
                 "Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString()
                         + "\n"
                         + "Sculk Mass Accumulated: " + SculkHorde.savedData.getSculkAccumulatedMass()

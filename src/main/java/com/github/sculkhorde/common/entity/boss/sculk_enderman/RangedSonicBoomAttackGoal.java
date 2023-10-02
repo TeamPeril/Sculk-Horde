@@ -5,6 +5,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -75,7 +76,7 @@ public class RangedSonicBoomAttackGoal extends Goal
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
         getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
-        getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
         mob.playSound(SoundEvents.WARDEN_SONIC_CHARGE, 3.0F, 1.0F);
     }
 
@@ -122,7 +123,7 @@ public class RangedSonicBoomAttackGoal extends Goal
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
         float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5 ? targetEntity.getMaxHealth() : 10.0F;
-        targetEntity.hurt(((ServerLevel)mob.level).damageSources().sonicBoom(mob), damage);
+        targetEntity.hurt(DamageSource.sonicBoom(mob), damage);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);

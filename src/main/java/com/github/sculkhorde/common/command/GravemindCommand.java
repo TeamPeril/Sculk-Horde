@@ -46,7 +46,7 @@ public class GravemindCommand implements Command<CommandSourceStack> {
             }
         }
 
-        context.getSource().sendSuccess(()->Component.literal("Gravemind is in the state: " + SculkHorde.gravemind.getEvolutionState().toString()), true);
+        context.getSource().sendSuccess(Component.literal("Gravemind is in the state: " + SculkHorde.gravemind.getEvolutionState().toString()), true);
         return 0;
     }
 

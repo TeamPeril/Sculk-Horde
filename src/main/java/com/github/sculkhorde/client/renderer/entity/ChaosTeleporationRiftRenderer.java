@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
+import software.bernie.geckolib3.renderers.geo.GeoProjectilesRenderer;
 
-public class ChaosTeleporationRiftRenderer extends GeoEntityRenderer<ChaosTeleporationRiftEntity> {
+public class ChaosTeleporationRiftRenderer extends GeoProjectilesRenderer<ChaosTeleporationRiftEntity> {
 
     public ChaosTeleporationRiftRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ChaosTeleporationRiftModel());

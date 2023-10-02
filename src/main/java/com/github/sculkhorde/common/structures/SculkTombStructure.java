@@ -103,7 +103,7 @@ public class SculkTombStructure extends Structure {
 
 
     @Override
-    protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
+    public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         // Check if the spot is valid for our structure. This is just as another method for cleanness.
         // Returning an empty optional tells the game to skip this spot as it will not generate the structure.
         if (!SculkTombStructure.extraSpawningChecks(context)) {
@@ -145,7 +145,8 @@ public class SculkTombStructure extends Structure {
 
     @Override
     public StructureType<?> type() {
-        return ModStructures.SCULK_TOMB_STRUCTURE.get();
+        //TODO PORT 1.19.2 return ModStructures.SCULK_TOMB_STRUCTURE.get();
+        return null;
     }
 
 }

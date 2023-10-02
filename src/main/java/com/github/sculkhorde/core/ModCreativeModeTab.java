@@ -1,9 +1,4 @@
 package com.github.sculkhorde.core;
-
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModItems;
-import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -15,8 +10,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModCreativeModeTab {
-    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SculkHorde.MOD_ID);
-
+    //public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SculkHorde.MOD_ID);
+    /*
     public static final RegistryObject<CreativeModeTab> SCULK_HORDE_TAB = TABS.register("sculk_horde_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.sculkhorde_tab"))
             .icon(() -> new ItemStack(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get()))
@@ -115,4 +110,6 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_SMOOTH_BASALT.get());
             })
             .build());
+
+     */
 }

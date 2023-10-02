@@ -51,9 +51,9 @@ public class SculkHorde {
         ModBlocks.BLOCKS.register(bus); //Load Blocks
         ModEntities.register(bus); //Load Entities (this may not be necessary anymore)
         bus.register(ModEntities.class); //Load Entities
-        ModStructures.STRUCTURES.register(bus); //Load Structures
-        ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
-        ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
+        //TODO PORT 1.19.2 ModStructures.STRUCTURES.register(bus); //Load Structures
+        //TODO PORT 1.19.2 ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
+        //TODO PORT 1.19.2 ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
         ModCommands.init();
         ModPotions.register(bus); //Load Potions
 
@@ -61,7 +61,7 @@ public class SculkHorde {
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
 
-        ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
+        //TODO PORT 1.19.2 ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
     }
 
     public static boolean isDebugMode() {

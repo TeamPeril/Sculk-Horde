@@ -93,9 +93,9 @@ public class ClientModEventSubscriber {
     public static void registerRenderers(final RegisterParticleProvidersEvent event)
     {
        // Register renderer for sculk crust partcile
-       //event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new));
-        //Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
-        event.registerSpriteSet(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
+        //event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new));
+        Minecraft.getInstance().particleEngine.register(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
+        // 1.20 event.registerSpriteSet(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
     }
 
 

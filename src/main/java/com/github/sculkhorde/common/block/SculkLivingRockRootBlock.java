@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
@@ -88,7 +88,7 @@ public class SculkLivingRockRootBlock extends BaseEntityBlock implements IForgeB
     public static Properties getProperties()
     {
         Properties prop = Properties.copy(Blocks.STONE)
-                .mapColor(MapColor.TERRACOTTA_GRAY)
+                .color(MaterialColor.TERRACOTTA_GRAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
         return prop;

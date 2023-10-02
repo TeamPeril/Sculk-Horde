@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EntityType;
@@ -11,6 +12,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -57,7 +59,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
 
         // Get all infector cursor entities in area and kill them
         Predicate<CursorInfectorEntity> isCursor = Objects::nonNull;
-        level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor).forEach(entity -> entity.discard());
+        level.getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor).forEach(entity -> entity.discard());
     }
 
     @Override
@@ -168,4 +170,9 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
 
         return false;
     };
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
 }

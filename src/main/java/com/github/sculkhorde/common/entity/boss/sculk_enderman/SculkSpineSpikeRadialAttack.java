@@ -6,6 +6,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -65,11 +66,11 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -84,8 +85,8 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         super.start();
         getSculkEnderman().canTeleport = false;
         getSculkEnderman().getNavigation().stop();
-        getSculkEnderman().triggerAnim("attack_controller", "spike_radial_animation");
-        getSculkEnderman().triggerAnim("twitch_controller", "spike_radial_twitch_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("attack_controller", "spike_radial_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("twitch_controller", "spike_radial_twitch_animation");
         origin = new Vec3(mob.getX(), mob.getY() + mob.getEyeHeight(), mob.getZ());
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();
@@ -103,7 +104,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 
             iterationsElapsed++;
 
-            if(!mob.level.getBlockState(mutablePos).canBeReplaced())
+            if(!mob.level.getBlockState(mutablePos).canBeReplaced(Fluids.WATER))
             {
                 continue;
             }
@@ -124,10 +125,11 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
             SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level);
             assert entity != null;
 
-            double spawnHeight = getSpawnHeight(BlockPos.containing(spawnPos));
+            double spawnHeight = getSpawnHeight(new BlockPos(spawnPos));
             Vec3 possibleSpawnPosition = new Vec3(spawnPos.x(), spawnHeight, spawnPos.z());
             // If the block below our spawn is solid, spawn the entity
-            if(!mob.level.getBlockState(BlockPos.containing(possibleSpawnPosition).below()).canBeReplaced())
+            BlockPos belowSpawnPos = new BlockPos(possibleSpawnPosition).below();
+            if(!mob.level.getBlockState(belowSpawnPos).canBeReplaced(Fluids.WATER))
             {
                 entity.setPos(possibleSpawnPosition.x(), possibleSpawnPosition.y(), possibleSpawnPosition.z());
                 entities.add(entity);

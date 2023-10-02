@@ -12,10 +12,6 @@ public class SculkBeeNestCellBlockEntity extends BlockEntity {
 
     private boolean isMature = false;
 
-    /**
-     * The Constructor that takes in properties
-     * @param type The Tile Entity Type
-     */
     public SculkBeeNestCellBlockEntity(BlockPos pos, BlockState state)
     {
         super(ModBlockEntities.SCULK_BEE_NEST_CELL_BLOCK_ENTITY.get(), pos, state);

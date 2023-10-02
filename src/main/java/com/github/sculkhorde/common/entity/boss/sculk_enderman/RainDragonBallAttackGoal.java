@@ -72,8 +72,8 @@ public class RainDragonBallAttackGoal extends Goal
     public void start()
     {
         super.start();
-        getSculkEnderman().triggerAnim("attack_controller", "fireball_sky_summon_animation");
-        getSculkEnderman().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("attack_controller", "fireball_sky_summon_animation");
+        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());

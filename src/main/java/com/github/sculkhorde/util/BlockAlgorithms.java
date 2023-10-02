@@ -627,7 +627,7 @@ public class BlockAlgorithms {
     }
 
     public static boolean isSolid(BlockState state) {
-        return !state.canBeReplaced();
+        return !state.canBeReplaced(Fluids.WATER);
     }
 
     private static boolean isBlockFlat(ServerLevel level, BlockPos pos) {

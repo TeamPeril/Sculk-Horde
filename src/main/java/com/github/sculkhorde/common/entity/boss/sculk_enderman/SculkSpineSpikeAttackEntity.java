@@ -4,27 +4,22 @@ import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.keyframe.event.CustomInstructionKeyframeEvent;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements TraceableEntity, GeoEntity {
+public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements IAnimatable {
 
     public static int LIFE_IN_TICKS = TickUnits.convertSecondsToTicks(2);
     public static int ATTACK_DELAY_TICKS = TickUnits.convertSecondsToTicks(0.5F); // Had to eye ball this value
@@ -37,8 +32,8 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
     public SculkSpineSpikeAttackEntity(EntityType<? extends SculkSpineSpikeAttackEntity> entityType, Level level) {
         super(entityType, level);
-        triggerAnim("attack_controller", "attack_animation");
-        ATTACK_ANIMATION_CONTROLLER.setAnimationSpeed(0.0F);
+        //triggerAnim("attack_controller", "attack_animation");
+        //ATTACK_ANIMATION_CONTROLLER.setAnimationSpeed(0.0F);
     }
 
     public SculkSpineSpikeAttackEntity(LivingEntity owner, double x, double y, double z) {
@@ -61,7 +56,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
             if (livingentity == null)
             {
-                targetEntity.hurt(this.damageSources().generic(), 6.0F);
+                targetEntity.hurt(DamageSource.GENERIC, 6.0F);
                 return;
             }
 
@@ -75,7 +70,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
                 return;
             }
 
-            targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), 6.0F);
+            targetEntity.hurt(DamageSource.indirectMagic(this, livingentity), 6.0F);
             // Give weakness and levetation
             targetEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(20), 0));
@@ -101,7 +96,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
         if(lifeTicks == 0)
         {
-            ATTACK_ANIMATION_CONTROLLER.setAnimationSpeed(1.0F);
+            //ATTACK_ANIMATION_CONTROLLER.setAnimationSpeed(1.0F);
         }
 
         this.lifeTicks++;
@@ -120,7 +115,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
             hurtTouchingEntities();
         }
 
-        if(this.lifeTicks > LIFE_IN_TICKS || ATTACK_ANIMATION_CONTROLLER.hasAnimationFinished())
+        if(this.lifeTicks > LIFE_IN_TICKS /*|| ATTACK_ANIMATION_CONTROLLER.hasAnimationFinished()*/)
         {
             this.remove(RemovalReason.DISCARDED);
         }
@@ -134,6 +129,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
         }
     }
 
+    /*
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("misc.living");
 
     // ### GECKOLIB Animation Code ###
@@ -170,5 +166,18 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
             }
         }
     }
+
+     */
+    // Add our animations
+    @Override
+    public void registerControllers(AnimationData data) {
+    }
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+
 
 }
