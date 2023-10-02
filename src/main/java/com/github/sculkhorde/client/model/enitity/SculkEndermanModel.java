@@ -2,30 +2,31 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class SculkEndermanModel extends DefaultedEntityGeoModel<SculkEndermanEntity> {
+public class SculkEndermanModel extends AnimatedGeoModel<SculkEndermanEntity> {
 
 
-    /**
-     * Create a new instance of this model class.<br>
-     * The asset path should be the truncated relative path from the base folder.<br>
-     * E.G.
-     * <pre>{@code
-     * 	new ResourceLocation("myMod", "animals/red_fish")
-     * }</pre>
-     *
-     */
-    public SculkEndermanModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_enderman"));
+    public static final ResourceLocation MODEL = new ResourceLocation(SculkHorde.MOD_ID, "geo/sculk_spore_spewer.geo.json");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(SculkHorde.MOD_ID,
+            "textures/entity/sculk_spore_spewer.png");
+    public static final ResourceLocation ANIMATIONS = new ResourceLocation(SculkHorde.MOD_ID,
+            "animations/sculk_enderman.animations.json");
+
+    @Override
+    public ResourceLocation getModelResource(SculkEndermanEntity object) {
+        return MODEL;
     }
 
-    // We want our model to render using the translucent render type
     @Override
-    public RenderType getRenderType(SculkEndermanEntity animatable, ResourceLocation texture) {
-        return RenderType.entityTranslucent(getTextureResource(animatable));
+    public ResourceLocation getTextureResource(SculkEndermanEntity object) {
+        return TEXTURE;
+    }
+
+    @Override
+    public ResourceLocation getAnimationResource(SculkEndermanEntity animatable) {
+        return ANIMATIONS;
     }
 
 }

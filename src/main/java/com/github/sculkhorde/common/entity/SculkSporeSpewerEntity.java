@@ -27,20 +27,17 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class SculkSporeSpewerEntity extends Monster implements IAnimatable, ISculkSmartEntity {
+public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -70,7 +67,6 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IScu
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives();
 
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     private CursorSurfaceInfectorEntity cursor;
 
@@ -191,21 +187,30 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IScu
     }
     //Animation Related Functions
 
+    /*
     private static final RawAnimation SPREAD_ANIMATION = RawAnimation.begin().thenPlay("spread");
     private final AnimationController SPREAD_ANIMATION_CONTROLLER = new AnimationController<>(this, "spread_controller", state -> PlayState.STOP)
             .triggerableAnim("spread_animation", SPREAD_ANIMATION);
-
+    */
     // Add our animations
     @Override
     public void registerControllers(AnimationData data) {
+        /*
         controllers.add(
                 DefaultAnimations.genericLivingController(this),
                 SPREAD_ANIMATION_CONTROLLER);
+
+         */
     }
 
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+    @Override
+    public int tickTimer() {
+        return tickCount;
     }
 
 
@@ -216,11 +221,11 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IScu
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level().isClientSide)
+        if (level.isClientSide)
         {
             Random random = new Random();
             for (int i = 0; i < 1; i++) {
-                level().addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level.addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
             return;
         }
@@ -228,21 +233,21 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IScu
         Random random = new Random();
         if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive())) {
             // Spawn Block Traverser
-            cursor = new CursorSurfaceInfectorEntity(level());
+            cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxTransformations(100);
             cursor.setMaxRange(100);
             cursor.setTickIntervalMilliseconds(50);
             cursor.setSearchIterationsPerTick(1);
-            level().addFreshEntity(cursor);
-            triggerAnim("spread_controller", "spread_animation");
+            level.addFreshEntity(cursor);
+            //triggerAnim("spread_controller", "spread_animation");
         }
 
         if (System.currentTimeMillis() - lastInfectionTime > INFECTION_INTERVAL_MILLIS)
         {
             lastInfectionTime = System.currentTimeMillis();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
                 if(entity instanceof Player && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
@@ -294,7 +299,7 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IScu
         @Override
         public void tick()
         {
-            if(level().isClientSide())
+            if(level.isClientSide())
             {
                 return;
             }

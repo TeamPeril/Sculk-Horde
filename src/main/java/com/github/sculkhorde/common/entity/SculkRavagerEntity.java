@@ -23,6 +23,7 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSmartEntity {
+public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSmartEntity, IAnimatable {
 
 
     /**

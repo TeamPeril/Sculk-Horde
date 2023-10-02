@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class ScullkSpineSpikeAttackModel extends DefaultedEntityGeoModel<SculkSpineSpikeAttackEntity> {
+public class ScullkSpineSpikeAttackModel extends AnimatedGeoModel<SculkSpineSpikeAttackEntity> {
     public ScullkSpineSpikeAttackModel() {
         super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_spine_spike_attack"));
     }

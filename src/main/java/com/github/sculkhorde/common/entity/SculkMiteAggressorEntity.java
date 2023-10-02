@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.monster.Monster;
@@ -17,22 +16,21 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkMiteAggressorEntity extends Monster implements IAnimatable, ISculkSmartEntity {
+public class SculkMiteAggressorEntity extends Monster implements ISculkSmartEntity, IAnimatable, IAnimationTickable {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -60,8 +58,6 @@ public class SculkMiteAggressorEntity extends Monster implements IAnimatable, IS
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * The Constructor
@@ -190,13 +186,19 @@ public class SculkMiteAggressorEntity extends Monster implements IAnimatable, IS
     // Add our animations
     @Override
     public void registerControllers(AnimationData data) {
-        //controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return this.factory;
     }
+    @Override
+    public int tickTimer() {
+        return tickCount;
+    }
+
+
 
     protected SoundEvent getAmbientSound() {
         return SoundEvents.SILVERFISH_AMBIENT;

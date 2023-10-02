@@ -2,20 +2,29 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class SculkMiteModel extends DefaultedEntityGeoModel<SculkMiteEntity> {
+public class SculkMiteModel extends AnimatedGeoModel<SculkMiteEntity> {
 
+    public static final ResourceLocation MODEL = new ResourceLocation(SculkHorde.MOD_ID, "geo/sculk_mite.geo.json");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(SculkHorde.MOD_ID,
+            "textures/entity/sculk_mite.png");
+    public static final ResourceLocation ANIMATIONS = new ResourceLocation(SculkHorde.MOD_ID,
+            "animations/sculk_mite.animations.json");
 
-    public SculkMiteModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_mite"));
+    @Override
+    public ResourceLocation getModelResource(SculkMiteEntity object) {
+        return MODEL;
     }
 
-    // We want our model to render using the translucent render type
     @Override
-    public RenderType getRenderType(SculkMiteEntity animatable, ResourceLocation texture) {
-        return RenderType.entityTranslucent(getTextureResource(animatable));
+    public ResourceLocation getTextureResource(SculkMiteEntity object) {
+        return TEXTURE;
+    }
+
+    @Override
+    public ResourceLocation getAnimationResource(SculkMiteEntity animatable) {
+        return ANIMATIONS;
     }
 }

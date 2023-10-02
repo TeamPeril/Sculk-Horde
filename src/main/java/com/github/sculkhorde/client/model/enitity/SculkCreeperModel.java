@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkCreeperModel extends DefaultedEntityGeoModel<SculkCreeperEntity> {
+public class SculkCreeperModel extends AnimatedGeoModel<SculkCreeperEntity> {
 
 
     public SculkCreeperModel() {

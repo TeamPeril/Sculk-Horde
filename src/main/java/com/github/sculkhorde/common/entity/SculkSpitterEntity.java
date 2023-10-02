@@ -27,10 +27,14 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkSpitterEntity extends Monster implements IAnimatable,ISculkSmartEntity {
+public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimationTickable,ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -61,8 +65,6 @@ public class SculkSpitterEntity extends Monster implements IAnimatable,ISculkSma
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
 
     private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
-
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * The Constructor
@@ -213,30 +215,17 @@ public class SculkSpitterEntity extends Monster implements IAnimatable,ISculkSma
 
 
     // ANIMATIONS
+    /*
     private static final RawAnimation STRAFE_ANIMATION = RawAnimation.begin().thenPlay("move.strafe");
     private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", ATTACK_ANIMATION);
-    @Override
-    public void registerControllers(AnimationData data) {
-        controllers.add(
-                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
-                DefaultAnimations.genericLivingController(this),
-                ATTACK_ANIMATION_CONTROLLER
-        );
-    }
+
 
     protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
     {
-        /*
-        if(state.getAnimatable().isStrafing())
-        {
-            state.setAnimation(STRAFE_ANIMATION);
-        }
-         */
-
         if(state.isMoving())
         {
             state.setAnimation(WALK_ANIMATION);
@@ -248,11 +237,29 @@ public class SculkSpitterEntity extends Monster implements IAnimatable,ISculkSma
 
         return PlayState.CONTINUE;
     }
-
+    */
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public void registerControllers(AnimationData data) {
+        /*
+        controllers.add(
+                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
+                DefaultAnimations.genericLivingController(this),
+                ATTACK_ANIMATION_CONTROLLER
+        );
+
+         */
+    }
+
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+
+    @Override
+    public int tickTimer() {
+        return tickCount;
     }
 
     protected SoundEvent getAmbientSound() {

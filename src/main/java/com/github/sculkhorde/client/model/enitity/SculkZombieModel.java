@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkZombieModel extends DefaultedEntityGeoModel<SculkZombieEntity> {
+public class SculkZombieModel extends AnimatedGeoModel<SculkZombieEntity> {
 
 
     /**

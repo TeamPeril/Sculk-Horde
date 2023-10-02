@@ -18,19 +18,15 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkVindicatorEntity extends Monster implements IAnimatable, ISculkSmartEntity {
+public class SculkVindicatorEntity extends Monster implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -59,8 +55,6 @@ public class SculkVindicatorEntity extends Monster implements IAnimatable, IScul
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * The Constructor
@@ -182,22 +176,29 @@ public class SculkVindicatorEntity extends Monster implements IAnimatable, IScul
         return goals;
     }
 
+    /*
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
     private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenLoop("move.run");
     private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
     private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
 
+     */
+
     @Override
     public void registerControllers(AnimationData data) {
+        /*
         controllers.add(
                 LIVING_CONTROLLER.transitionLength(5),
                 new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),
                 DefaultAnimations.genericAttackAnimation(this, ATTACK_ANIMATION)
         );
+
+         */
     }
 
     // Create the animation handler for the body segment
+    /*
     protected PlayState poseWalkCycle(AnimationState<SculkVindicatorEntity> state)
     {
         if(!state.isMoving())
@@ -215,10 +216,17 @@ public class SculkVindicatorEntity extends Monster implements IAnimatable, IScul
 
         return PlayState.CONTINUE;
     }
+     */
+
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+    @Override
+    public int tickTimer() {
+        return tickCount;
     }
 
 
