@@ -30,7 +30,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkVindicatorEntity extends Monster implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -60,7 +60,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * The Constructor
@@ -189,7 +189,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
         controllers.add(
                 LIVING_CONTROLLER.transitionLength(5),
                 new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),

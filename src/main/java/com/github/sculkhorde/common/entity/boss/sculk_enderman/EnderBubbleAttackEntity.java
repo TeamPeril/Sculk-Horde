@@ -4,14 +4,14 @@ import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import java.util.List;
  * Added {@link com.github.sculkhorde.client.model.enitity.EnderBubbleAttackModel}<br>
  * Added {@link com.github.sculkhorde.client.renderer.entity.EnderBubbleAttackRenderer}
  */
-public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoEntity {
+public class EnderBubbleAttackEntity extends SpecialEffectEntity implements IAnimatable {
 
     public static int LIFE_TIME = TickUnits.convertSecondsToTicks(10);
     public int currentLifeTicks = 0;
@@ -70,11 +70,11 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
             if(getOwner() != null)
             {
-                entity.hurt(damageSources().indirectMagic(entity, getOwner()), 5);
+                entity.hurt(DamageSource.indirectMagic(entity, getOwner()), 5);
             }
             else
             {
-                entity.hurt(damageSources().indirectMagic(entity, this), 5);
+                entity.hurt(DamageSource.indirectMagic(entity, this), 5);
             }
         }
 
@@ -82,15 +82,15 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     }
 
     // ### GECKOLIB Animation Code ###
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericIdleController(this));
+    public void registerControllers(AnimationData data) {
+        //controllers.add(DefaultAnimations.genericIdleController(this));
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
+    public AnimationFactory getFactory() {
+        return factory;
     }
 }

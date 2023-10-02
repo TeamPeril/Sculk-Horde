@@ -18,18 +18,15 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkZombieEntity extends Monster implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -59,7 +56,6 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -185,6 +181,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         return goals;
     }
 
+    /*
     private static final RawAnimation BODY_IDLE_ANIMATION = RawAnimation.begin().thenPlay("body.idle");
     private static final RawAnimation BODY_WALK_ANIMATION = RawAnimation.begin().thenPlay("body.walk");
     private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs.idle");
@@ -193,15 +190,20 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
     private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
 
+     */
+
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
+        /*
         controllers.add(
                 new AnimationController<>(this, "Legs", 5, this::poseLegs),
                 new AnimationController<>(this, "Body", 5, this::poseBody),
                 new AnimationController<>(this, "Arms", 5, this::poseArms)
         );
-    }
 
+         */
+    }
+    /*
     // Create the animation handler for the leg segment
     protected PlayState poseLegs(AnimationState<SculkZombieEntity> state)
     {
@@ -253,11 +255,18 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         return PlayState.CONTINUE;
     }
 
+     */
+
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public int tickTimer() {
+        return tickCount;
     }
 
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
 
 
     protected SoundEvent getAmbientSound() {

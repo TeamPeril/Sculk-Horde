@@ -9,6 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,11 +64,11 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }

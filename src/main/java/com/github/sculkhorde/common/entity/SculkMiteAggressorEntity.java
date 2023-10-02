@@ -32,7 +32,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkMiteAggressorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkMiteAggressorEntity extends Monster implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -61,7 +61,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * The Constructor
@@ -189,7 +189,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
 
     // Add our animations
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
         //controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 

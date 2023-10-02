@@ -62,7 +62,7 @@ import java.util.function.Predicate;
  * A lot of this is copied from BeeEntity.java.
  * I do not want to learn how to use mixins, so I am just copying the code.
  */
-public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, FlyingAnimal {
+public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, FlyingAnimal {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -551,7 +551,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
     // Add our animations
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
         controllers.add(DefaultAnimations.genericFlyController(this));
     }
 

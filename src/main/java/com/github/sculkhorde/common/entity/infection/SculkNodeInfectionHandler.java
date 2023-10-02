@@ -61,7 +61,7 @@ public class SculkNodeInfectionHandler {
         while(checkPosition.getY() < world.getMaxBuildHeight())
         {
             checkPosition.setY(checkPosition.getY() + 1);
-            if(world.getBlockState(checkPosition).isSolid() && world.getBlockState(checkPosition).canOcclude())
+            if(world.getBlockState(checkPosition).isSolidRender(world, checkPosition) && world.getBlockState(checkPosition).canOcclude())
             {
                 lastKnownSolidBlock = checkPosition.immutable();
             }

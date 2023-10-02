@@ -27,14 +27,15 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkMiteEntity extends Monster implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -71,8 +72,6 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     public static int INFECT_DURATION = 500;
     //INFECT_LEVEL The level of the effect
     public static int INFECT_LEVEL = 1;
-    //factory The animation factory used for animations
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -235,12 +234,17 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
     // Add our animations
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
     }
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+    @Override
+    public int tickTimer() {
+        return tickCount;
     }
 
     private boolean isParticipatingInRaid = false;

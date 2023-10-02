@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkSporeSpewerEntity extends Monster implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -70,7 +70,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     private CursorSurfaceInfectorEntity cursor;
 
@@ -197,7 +197,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
     // Add our animations
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
         controllers.add(
                 DefaultAnimations.genericLivingController(this),
                 SPREAD_ANIMATION_CONTROLLER);

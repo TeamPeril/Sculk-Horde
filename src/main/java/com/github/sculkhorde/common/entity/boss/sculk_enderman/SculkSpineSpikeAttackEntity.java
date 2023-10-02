@@ -137,13 +137,13 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("misc.living");
 
     // ### GECKOLIB Animation Code ###
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", ATTACK_ANIMATION)
             .setCustomInstructionKeyframeHandler(this::instructionListener);
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
         controllers.add(ATTACK_ANIMATION_CONTROLLER);
     }
 

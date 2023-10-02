@@ -17,11 +17,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -32,8 +27,13 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class InfestationPurifierEntity extends PathfinderMob implements GeoEntity {
+public class InfestationPurifierEntity extends PathfinderMob implements IAnimatable, IAnimationTickable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -57,8 +57,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     public static final float FOLLOW_RANGE = 0F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0F;
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private int MAX_TARGET_FIND_FAILS = 32;
     private int targetFindFails = 0;
@@ -161,18 +159,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     @Override
     public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
 
-    // Add our animations
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericLivingController(this));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-
     //Every tick, spawn a short range cursor
     @Override
     public void aiStep()
@@ -181,7 +167,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level().isClientSide)
+        if (level.isClientSide)
         {
             return;
         }
@@ -244,57 +230,57 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
             if((cursor1 == null || !cursor1.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor1 = new CursorSurfacePurifierEntity(level());
+                cursor1 = new CursorSurfacePurifierEntity(level);
                 cursor1.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor1.setMaxTransformations(100);
                 cursor1.setMaxRange(48);
                 cursor1.setSearchIterationsPerTick(2);
                 cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor1.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor1);
+                level.addFreshEntity(cursor1);
             }
 
             if((cursor2 == null || !cursor2.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor2 = new CursorSurfacePurifierEntity(level());
+                cursor2 = new CursorSurfacePurifierEntity(level);
                 cursor2.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor2.setMaxTransformations(100);
                 cursor2.setMaxRange(48);
                 cursor2.setSearchIterationsPerTick(2);
                 cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor2.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor2);
+                level.addFreshEntity(cursor2);
             }
 
             if((cursor3 == null || !cursor3.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor3 = new CursorSurfacePurifierEntity(level());
+                cursor3 = new CursorSurfacePurifierEntity(level);
                 cursor3.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor3.setMaxTransformations(100);
                 cursor3.setMaxRange(48);
                 cursor3.setSearchIterationsPerTick(2);
                 cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor3.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor3);
+                level.addFreshEntity(cursor3);
             }
 
             if((cursor4 == null || !cursor4.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor4 = new CursorSurfacePurifierEntity(level());
+                cursor4 = new CursorSurfacePurifierEntity(level);
                 cursor4.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor4.setMaxTransformations(100);
                 cursor4.setMaxRange(48);
                 cursor4.setSearchIterationsPerTick(2);
                 cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor4.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor4);
+                level.addFreshEntity(cursor4);
             }
 
             // Any sculk entity within 10 blocks of the spewer will be set on fire
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
             for (LivingEntity entity : entities)
             {
                 if (entity instanceof LivingEntity && EntityAlgorithms.isSculkLivingEntity.test(entity))
@@ -317,6 +303,25 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
             this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    // Add our animations
+
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        //controllers.add(DefaultAnimations.genericLivingController(this));
+    }
+
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+
+    @Override
+    public int tickTimer() {
+        return tickCount;
     }
 
     protected SoundEvent getAmbientSound() {

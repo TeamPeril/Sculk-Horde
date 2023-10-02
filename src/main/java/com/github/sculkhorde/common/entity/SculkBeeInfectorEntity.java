@@ -13,15 +13,15 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.function.Predicate;
 
-public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements GeoEntity {
+public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements IAnimatable, IAnimationTickable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -39,8 +39,6 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how fast this mob moves
     public static final float MOVEMENT_SPEED = 0.5F;
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -71,18 +69,18 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     }
 
     private final Predicate<BlockPos> IS_VALID_FLOWER = (blockPos) -> {
-        BlockState blockState = level().getBlockState(blockPos);
+        BlockState blockState = level.getBlockState(blockPos);
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED))
         {
             return false;
         }
 
-        if(!SculkHorde.blockInfestationTable.isInfectable(level().getBlockState(blockPos)))
+        if(!SculkHorde.blockInfestationTable.isInfectable(level.getBlockState(blockPos)))
         {
             return false;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level(), blockPos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level, blockPos))
         {
             return false;
         }
@@ -102,31 +100,32 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     @Override
     protected void executeCodeOnPollination()
     {
-        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
+        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
         cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
         cursor.setMaxTransformations(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);
         cursor.setSearchIterationsPerTick(10);
-        level().addFreshEntity(cursor);
+        level.addFreshEntity(cursor);
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericFlyController(this));
+    public void registerControllers(AnimationData data) {
+        //controllers.add(DefaultAnimations.genericFlyController(this));
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return this.factory;
     }
 
-
     @Override
-    public boolean isFlying() {
-        return true;
+    public int tickTimer() {
+        return tickCount;
     }
 
     public boolean dampensVibrations() {

@@ -8,27 +8,23 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimationTickable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
-public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, GeoEntity
+public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IAnimatable, IAnimationTickable
 {
     private boolean isParticipatingInRaid = false;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SculkCreeperEntity(EntityType<? extends Creeper> entityType, Level level) {
         super(entityType, level);
@@ -109,12 +105,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
         if(!isParticipatingInRaid())
         {
-            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Explosion.BlockInteraction.NONE);
             spawnInfectors();
         }
         else
         {
-            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Explosion.BlockInteraction.DESTROY);
         }
         this.dead = true;
 
@@ -122,21 +118,39 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     }
 
+    /*
     private static final RawAnimation CREEPER_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.idle");
     private static final RawAnimation BLOB_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_blob.idle");
     private static final RawAnimation CREEPER_WALK_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.walk");
     private static final RawAnimation CREEPER_SWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack");
     private static final RawAnimation CREEPER_DESWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack.cancel");
+    */
+
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+
+    @Override
+    public int tickTimer() {
+        return tickCount;
+    }
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        /*
         controllers.add(
                 new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
                 new AnimationController<>(this, "attack_cycle", 5, this::poseAttackCycle),
                 new AnimationController<>(this, "blob_idle", 5, this::poseBlobIdleCycle)
         );
+
+         */
     }
 
+    /*
     protected PlayState poseBlobIdleCycle(AnimationState<SculkCreeperEntity> state)
     {
         state.setAnimation(BLOB_IDLE_ANIMATION);
@@ -177,8 +191,5 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         return PlayState.CONTINUE;
     }
 
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
+     */
 }

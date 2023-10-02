@@ -20,15 +20,10 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @see com.github.sculkhorde.client.renderer.entity.SculkHatcherRenderer
  * @see com.github.sculkhorde.client.model.enitity.SculkHatcherModel
  */
-public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkHatcherEntity extends Monster implements IAnimatable, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -67,8 +62,6 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().ignoreTargetBelow50PercentHealth().enableMustReachTarget();
 
-    //factory The animation factory used for animations
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -200,21 +193,28 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
+    /*
     private static final RawAnimation BODY_IDLE_ANIMATION = RawAnimation.begin().thenPlay("body.idle");
     private static final RawAnimation BODY_WALK_ANIMATION = RawAnimation.begin().thenPlay("body.walk");
     private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs.idle");
     private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
     private static final RawAnimation HEAD_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("head.attack");
 
+     */
+
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
+        /*
         controllers.add(
                 new AnimationController<>(this, "Legs", 5, this::poseLegs),
                 new AnimationController<>(this, "Body", 5, this::poseBody),
                 DefaultAnimations.genericAttackAnimation(this, HEAD_ATTACK_ANIMATION)
         );
+
+         */
     }
 
+    /*
     // Create the animation handler for the leg segment
     protected PlayState poseLegs(AnimationState<SculkHatcherEntity> state)
     {
@@ -246,9 +246,14 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         return PlayState.CONTINUE;
     }
 
+     */
+
+    //factory The animation factory used for animations
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return this.factory;
     }
 
     private boolean isParticipatingInRaid = false;
@@ -324,8 +329,8 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 {
                     ticksInCooldown = 0;
                     BlockPos spawnPos = new BlockPos(thisMob.blockPosition());
-                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level, spawnPos, MobSpawnType.SPAWNER);
-                    thisMob.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
+                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level, null, null, spawnPos, MobSpawnType.SPAWNER, false, false);
+                    thisMob.hurt(DamageSource.GENERIC, SculkMiteEntity.MAX_HEALTH);
                 }
                 else
                 {

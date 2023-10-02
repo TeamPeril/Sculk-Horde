@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmartEntity {
+public class SculkRavagerEntity extends Ravager implements IAnimatable, ISculkSmartEntity {
 
 
     /**
@@ -72,7 +72,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     /**
      * Determines & registers the attributes of the mob.
@@ -200,7 +200,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     // Add our animations
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    public void registerControllers(AnimationData data) {
         controllers.add(DefaultAnimations.genericWalkIdleController(this));
         controllers.add(ATTACK_ANIMATION_CONTROLLER);
     }
