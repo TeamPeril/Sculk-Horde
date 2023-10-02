@@ -26,7 +26,7 @@ public interface ISculkSmartEntity {
     }
 
     default Optional<SculkNodeBlockEntity> getClosestNodeBlockEntity() {
-        return ((Mob)this).level().getBlockEntity(getClosestNodePosition(), ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+        return ((Mob)this).level.getBlockEntity(getClosestNodePosition(), ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
     }
 
     boolean isParticipatingInRaid();

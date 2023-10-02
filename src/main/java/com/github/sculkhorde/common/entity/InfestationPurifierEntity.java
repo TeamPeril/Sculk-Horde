@@ -312,7 +312,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     //If entity is rightclicked, drop item
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             this.remove(RemovalReason.DISCARDED);
             this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
         }

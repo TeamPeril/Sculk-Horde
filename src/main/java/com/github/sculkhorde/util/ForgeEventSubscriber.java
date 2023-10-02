@@ -98,7 +98,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onLivingEntityDeathEvent(LivingDeathEvent event)
     {
-        if(event.getEntity().level().isClientSide())
+        if(event.getEntity().level.isClientSide())
         {
             return;
         }
@@ -114,7 +114,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(event.getEntity().level().isClientSide() || SculkHorde.gravemind == null || !event.getEntity().level().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.getEntity().level.isClientSide() || SculkHorde.gravemind == null || !event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             return;
         }
@@ -137,14 +137,14 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
-        if(event.player.level().isClientSide())
+        if(event.player.level.isClientSide())
         {
             return;
         }
 
         if(event.player.tickCount % 20 == 0)
         {
-            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
+            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level);
         }
     }
 }

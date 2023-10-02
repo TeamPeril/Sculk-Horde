@@ -46,7 +46,7 @@ public class CustomMeleeAttackGoal extends Goal{
     }
 
     public boolean canUse() {
-        long i = this.mob.level().getGameTime();
+        long i = this.mob.level.getGameTime();
         if (i - this.lastCanUseCheck < COOLDOWN_BETWEEN_CAN_USE_CHECKS)
         {
             return false;

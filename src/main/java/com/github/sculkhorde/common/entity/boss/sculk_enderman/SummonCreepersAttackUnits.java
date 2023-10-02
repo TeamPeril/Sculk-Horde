@@ -64,15 +64,15 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
 
         // If air or water or lava, return false
-        if(mob.level().getBlockState(pos).isAir() || mob.level().getBlockState(pos).getFluidState().isSource())
+        if(mob.level.getBlockState(pos).isAir() || mob.level.getBlockState(pos).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level().getBlockState(pos.above()).canBeReplaced() || mob.level().getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).canBeReplaced() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level().getBlockState(pos.above().above()).canBeReplaced() || mob.level().getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -91,7 +91,7 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level, mob.blockPosition(), isValidSpawn, 5);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
@@ -99,7 +99,7 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
         for(int i = 0; i < 5 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            EntityFactory.spawnReinforcementOfThisEntityType(ModEntities.SCULK_CREEPER.get(), mob.level(), spawnPos.above());
+            EntityFactory.spawnReinforcementOfThisEntityType(ModEntities.SCULK_CREEPER.get(), mob.level, spawnPos.above());
         }
     }
 

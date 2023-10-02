@@ -65,8 +65,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
     public void tick() {
         super.tick();
-        if (this.level().isClientSide) {
-            this.level().addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            this.level.addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 

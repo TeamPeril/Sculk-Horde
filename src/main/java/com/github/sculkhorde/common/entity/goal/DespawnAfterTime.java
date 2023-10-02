@@ -24,7 +24,7 @@ public class DespawnAfterTime extends Goal {
         super();
         this.mob = mob;
         this.ticksThreshold = ticksThreshold;
-        this.level = ((Mob) mob).level();
+        this.level = ((Mob) mob).level;
         this.creationTime = level.getGameTime();
     }
 

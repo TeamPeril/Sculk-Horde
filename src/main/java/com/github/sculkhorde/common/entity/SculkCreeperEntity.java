@@ -80,12 +80,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
             double x = this.getX() + (this.getRandom().nextDouble() * spawnRange) - spawnRange/2;
             double z = this.getZ() + (this.getRandom().nextDouble() * spawnRange) - spawnRange/2;
             double y = this.getY() + (this.getRandom().nextDouble() * spawnRange/2) - spawnRange/4;
-            CursorInfectorEntity infector = new CursorInfectorEntity(ModEntities.CURSOR_INFECTOR.get(), this.level());
+            CursorInfectorEntity infector = new CursorInfectorEntity(ModEntities.CURSOR_INFECTOR.get(), this.level);
             infector.setPos(x, y, z);
             infector.setTickIntervalMilliseconds(3);
             infector.setMaxTransformations(10);
             infector.setMaxRange(10);
-            this.level().addFreshEntity(infector);
+            this.level.addFreshEntity(infector);
         }
     }
 
@@ -103,18 +103,18 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public void explodeSculkCreeper()
     {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             return;
         }
 
         if(!isParticipatingInRaid())
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
             spawnInfectors();
         }
         else
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
         }
         this.dead = true;
 

@@ -34,11 +34,11 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        if(isExposedToInfestationWardBlock((ServerLevel) this.level, pos))
         {
             return true;
         }
-        else if(!state.isSolidRender(this.level(), pos))
+        else if(!state.isSolidRender(this.level, pos))
         {
             return true;
         }
@@ -65,7 +65,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos) && !state.is(ModBlocks.SCULK_ARACHNOID.get()) && !state.is(ModBlocks.SCULK_DURA_MATTER.get()))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos) && !state.is(ModBlocks.SCULK_ARACHNOID.get()) && !state.is(ModBlocks.SCULK_DURA_MATTER.get()))
         {
             return true;
         }

@@ -46,11 +46,11 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        if(isExposedToInfestationWardBlock((ServerLevel) this.level, pos))
         {
             return true;
         }
-        else if(!state.isSolidRender(this.level(), pos))
+        else if(!state.isSolidRender(this.level, pos))
         {
             return true;
         }
@@ -94,7 +94,7 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.blockInfestationTable.infectBlock((ServerLevel) this.level(), pos);
+        SculkHorde.blockInfestationTable.infectBlock((ServerLevel) this.level, pos);
     }
 
     @Override

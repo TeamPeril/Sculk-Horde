@@ -240,9 +240,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public void aiStep()
     {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+                this.level.addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
         // IF target isnt null and we cannot see them, teleport to them
@@ -323,7 +323,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected boolean teleportRandomly(int distance)
     {
-        if (this.level().isClientSide() || !this.isAlive() || !canTeleport)
+        if (this.level.isClientSide() || !this.isAlive() || !canTeleport)
         {
             return false;
         }
@@ -416,12 +416,12 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while(blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion())
+        while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).blocksMotion())
         {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
-        BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
+        BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
         boolean isMotionBlockFlag = false; blockstate.blocksMotion();
         boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
         if (!isWaterFlag)
@@ -435,10 +435,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             boolean ifCanRandomTeleport = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
             if (ifCanRandomTeleport)
             {
-                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+                this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (!this.isSilent())
                 {
-                    this.level().playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+                    this.level.playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                     ticksSinceLastTeleport = 0;
                 }

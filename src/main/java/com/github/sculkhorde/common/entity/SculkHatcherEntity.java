@@ -324,7 +324,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 {
                     ticksInCooldown = 0;
                     BlockPos spawnPos = new BlockPos(thisMob.blockPosition());
-                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level(), spawnPos, MobSpawnType.SPAWNER);
+                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level, spawnPos, MobSpawnType.SPAWNER);
                     thisMob.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
                 }
                 else

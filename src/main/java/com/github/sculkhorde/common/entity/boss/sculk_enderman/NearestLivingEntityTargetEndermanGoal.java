@@ -49,7 +49,7 @@ public class NearestLivingEntityTargetEndermanGoal<T extends SculkEndermanEntity
     protected void findTarget()
     {
         possibleTargets =
-                this.mob.level().getEntitiesOfClass(
+                this.mob.level.getEntitiesOfClass(
                 LivingEntity.class,
                 this.getTargetSearchArea(this.getFollowDistance()),
                         ((ISculkSmartEntity)this.mob).getTargetParameters().isPossibleNewTargetValid);

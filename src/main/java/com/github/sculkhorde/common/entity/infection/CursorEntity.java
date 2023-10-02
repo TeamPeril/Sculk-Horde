@@ -99,7 +99,7 @@ public abstract class CursorEntity extends Entity
             return false;
         }
 
-        if(!state.isSolidRender(this.level(), pos))
+        if(!state.isSolidRender(this.level, pos))
         {
             return true;
         }
@@ -141,7 +141,7 @@ public abstract class CursorEntity extends Entity
 
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
+        this.level.addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class CursorEntity extends Entity
             BlockPos currentBlock = queue.poll();
 
             // If the current block is a target, return it
-            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
                 isSuccessful = true;
                 target = currentBlock;
                 return true;
@@ -178,7 +178,7 @@ public abstract class CursorEntity extends Entity
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
-                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level().getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     queue.add(neighbor);
                     visitedPositons.put(neighbor.asLong(), true);
                 }
@@ -201,7 +201,7 @@ public abstract class CursorEntity extends Entity
 
 
         // Play Particles on Client
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
