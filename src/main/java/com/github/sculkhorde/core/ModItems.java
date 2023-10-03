@@ -18,7 +18,15 @@ import java.util.List;
 public class ModItems {
     //https://www.mr-pineapple.co.uk/tutorials/items
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SculkHorde.MOD_ID);
-    
+
+	public static final RegistryObject<SculkSweeperSword> SCULK_SWEEPER_SWORD = ITEMS.register("sculk_sweeper_sword", SculkSweeperSword::new);
+	public static final RegistryObject<Item> SCULK_ENDERMAN_CLEAVER = ITEMS.register("sculk_enderman_cleaver", () -> new Item(new Item.Properties()){
+		@Override
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_enderman_cleaver"));
+		}
+	});
+
     public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties()));
 
 	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties()){

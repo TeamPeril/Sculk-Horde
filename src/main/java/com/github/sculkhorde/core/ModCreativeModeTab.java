@@ -38,6 +38,8 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_VINDICATOR_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_RAVAGER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_ENDERMAN_CLEAVER.get());
+                event.accept(ModItems.SCULK_SWEEPER_SWORD.get());
                 event.accept(ModItems.INFESTATION_PURIFIER.get());
                 event.accept(ModItems.PURITY_SPLASH_POTION.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());

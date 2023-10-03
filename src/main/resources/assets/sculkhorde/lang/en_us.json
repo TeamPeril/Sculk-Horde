@@ -120,6 +120,7 @@
   "block.sculkhorde.infested_smooth_basalt": "Infested Smooth Basalt",
   "block.sculkhorde.infested_endstone": "Infested Endstone",
   "block.sculkhorde.infested_mossy_cobblestone": "Infested Mossy Cobblestone",
+
   "item.sculkhorde.sculk_spore_spewer_spawn_egg": "Sculk Spore Spewer Spawn Egg",
   "item.sculkhorde.sculk_zombie_spawn_egg": "Sculk Zombie Spawn Egg",
   "item.sculkhorde.sculk_spitter_spawn_egg": "Sculk Spitter Spawn Egg",
@@ -142,5 +143,10 @@
   "block.sculkhorde.infested_sturdy_mass": "Infested Sturdy Mass",
   "block.sculkhorde.infested_crumpled_mass": "Infested Crumpled Mass",
   "block.sculkhorde.infested_compost_mass": "Infested Compost Mass",
-  "block.sculkhorde.infested_wood_mass": "Infested Wood Mass"
+  "block.sculkhorde.infested_wood_mass": "Infested Wood Mass",
+
+  "item.sculkhorde.sculk_sweeper_sword": "The Sculk Sweeper",
+  "tooltip.sculkhorde.sculk_sweeper_sword": "A sword specialized in the extermination of Sculk Infested mobs. Does Area Of Effect damage to Sculk Mobs. The blade is forged from the cleaver of a Sculk Enderman.",
+  "item.sculkhorde.sculk_enderman_cleaver": "Sculk Enderman Cleaver",
+  "tooltip.sculkhorde.sculk_enderman_cleaver": "The blade from the cleaver of a Sculk Enderman. It is used to craft The Sculk Sweeper. \nIt appears to be made of a sculk-ified bone-like material. Extremely sharp and tough like metal."
 }
