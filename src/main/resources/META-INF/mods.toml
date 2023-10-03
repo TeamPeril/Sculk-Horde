@@ -51,7 +51,7 @@ Sculk Horde implements a new end-game era to your game that once activated, will
 [[dependencies.sculkhorde]] #optional
     modId="geckolib" #mandatory
     mandatory=true #mandatory
-    versionRange="[3.1,)" #mandatory
+    versionRange="[3.1.40,)" #mandatory
     ordering="NONE"
     side="BOTH"
 # Here's another dependency
