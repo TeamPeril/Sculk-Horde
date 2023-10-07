@@ -3,13 +3,19 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.client.renderer.EffectInstance;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -89,6 +95,25 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         }
     }
 
+    public void infectEntitiesAroundMe()
+    {
+        //Create a list of all entities within a 5 block radius
+        //For each entity, infect them
+        //If the entity is a sculk creeper, don't infect it
+        AABB aabb = this.getBoundingBox().inflate(5);
+        this.level().getEntitiesOfClass(LivingEntity.class, aabb).forEach(infector -> {
+            if(EntityAlgorithms.isSculkLivingEntity.test(infector))
+            {
+                return;
+            }
+
+            // GIve effect
+            infector.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 1));
+        });
+
+
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -97,6 +122,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         // Creeper expodes when get swelling is 1.1, but if we run it at 1.0, should hopefully work.
         if(getSwelling(1) >= 1.0)
         {
+            infectEntitiesAroundMe();
             explodeSculkCreeper();
         }
     }
