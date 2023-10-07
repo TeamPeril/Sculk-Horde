@@ -6,7 +6,11 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -129,6 +133,28 @@ public class ForgeEventSubscriber {
             SculkInfectionEffect.onPotionExpire(event);
         }
 
+    }
+
+    @SubscribeEvent
+    public static void OnLivingDamageEvent(LivingDamageEvent event)
+    {
+        // Get Item being used to attack
+        ItemStack itemStack = ItemStack.EMPTY;
+        Entity damageSourceEntity = event.getSource().getEntity();
+        LivingEntity targetEntity = event.getEntity();
+        if(damageSourceEntity instanceof LivingEntity attackingEntity)
+        {
+            itemStack = attackingEntity.getMainHandItem();
+            if(!itemStack.getItem().equals(ModItems.SCULK_SWEEPER_SWORD.get()))
+            {
+               return;
+            }
+
+            if(!EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
+            {
+                event.setAmount(event.getAmount()/2);
+            }
+        }
     }
 
 

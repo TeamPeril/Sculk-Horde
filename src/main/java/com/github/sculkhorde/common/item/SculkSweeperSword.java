@@ -1,77 +1,95 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.extensions.IForgeItem;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SculkSweeperSword extends SwordItem {
+public class SculkSweeperSword extends SwordItem implements IForgeItem {
 
     public SculkSweeperSword() {
-        this(Tiers.DIAMOND, 4, -3F, new Item.Properties().rarity(Rarity.EPIC).setNoRepair().durability(40));
+        this(Tiers.DIAMOND, 4, -3F, new Item.Properties().rarity(Rarity.EPIC).setNoRepair().durability(10));
     }
     public SculkSweeperSword(Tier tier, int baseDamage, float baseAttackSpeed, Properties prop) {
         super(tier, baseDamage, baseAttackSpeed, prop);
     }
 
+    private void doSpikeAttack(LivingEntity ownerEntity, LivingEntity targetEntity, ItemStack itemStack)
+    {
+        AABB spikeHitbox = new AABB(targetEntity.blockPosition());
+        spikeHitbox = spikeHitbox.inflate(20.0D);
+        for(LivingEntity possibleSpikeTargets : targetEntity.level().getEntitiesOfClass(LivingEntity.class, spikeHitbox))
+        {
+            if(possibleSpikeTargets != ownerEntity)
+            {
+                boolean isSculkLivingEntity = EntityAlgorithms.isSculkLivingEntity.test(possibleSpikeTargets);
+                if(isSculkLivingEntity)
+                {
+                    SculkSpineSpikeAttackEntity sculkSpineSpikeAttackEntity = new SculkSpineSpikeAttackEntity(ownerEntity, possibleSpikeTargets.getX(), possibleSpikeTargets.getY(), possibleSpikeTargets.getZ());
+                    targetEntity.level().addFreshEntity(sculkSpineSpikeAttackEntity);
+                    // Give effect
+                    possibleSpikeTargets.addEffect(new MobEffectInstance(MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(5), 1));
+                }
+            }
+        }
+
+        itemStack.setDamageValue(itemStack.getMaxDamage());
+    }
+
 
     @Override
     public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity, LivingEntity ownerEntity) {
-        // Create a 2 block square bounding box around target and damage enemies
-        AABB aabb = new AABB(targetEntity.blockPosition());
-        aabb = aabb.inflate(10.0D);
-
-        for(LivingEntity livingEntity : targetEntity.level().getEntitiesOfClass(LivingEntity.class, aabb))
+        boolean isSculkLivingEntity = EntityAlgorithms.isSculkLivingEntity.test(targetEntity);
+        if(isSculkLivingEntity)
         {
-            if(livingEntity != ownerEntity)
-            {
-                boolean isSculkLivingEntity = EntityAlgorithms.isSculkLivingEntity.test(livingEntity);
-
-
-                if(isSculkLivingEntity && itemStack.getDamageValue() > 0)
-                {
-                    targetEntity.hurt(ownerEntity.damageSources().indirectMagic(targetEntity, ownerEntity), isSculkLivingEntity ? getDamage() : getDamage() / 2);
-                    itemStack.setDamageValue(itemStack.getDamageValue() - 1);
-                }
-                else
-                {
-                    AABB spikeHitbox = new AABB(targetEntity.blockPosition());
-                    spikeHitbox = spikeHitbox.inflate(20.0D);
-                    for(LivingEntity possibleSpikeTargets : targetEntity.level().getEntitiesOfClass(LivingEntity.class, spikeHitbox))
-                    {
-                        if(possibleSpikeTargets != ownerEntity)
-                        {
-                            boolean isSculkLivingEntity2 = EntityAlgorithms.isSculkLivingEntity.test(possibleSpikeTargets);
-                            if(isSculkLivingEntity2 )
-                            {
-                                SculkSpineSpikeAttackEntity sculkSpineSpikeAttackEntity = new SculkSpineSpikeAttackEntity(ownerEntity, possibleSpikeTargets.getX(), possibleSpikeTargets.getY(), possibleSpikeTargets.getZ());
-                                targetEntity.level().addFreshEntity(sculkSpineSpikeAttackEntity);
-                                // Give effect
-                                possibleSpikeTargets.addEffect(new MobEffectInstance(MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(5), 1));
-                            }
-                        }
-                    }
-
-                    itemStack.setDamageValue(itemStack.getMaxDamage());
-                    break;
-                }
-            }
+            itemStack.setDamageValue(Math.max(0, itemStack.getDamageValue() - 1));
         }
         return true;
     }
 
     @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+
+        ItemStack itemstack = player.getItemInHand(hand);
+        if(!itemstack.isDamaged())
+        {
+            doSpikeAttack(player, player, itemstack);
+            level.playSound(player, player.blockPosition(), SoundEvents.EVOKER_FANGS_ATTACK, player.getSoundSource());
+            return InteractionResultHolder.success(itemstack);
+        }
+        return InteractionResultHolder.pass(itemstack);
+    }
+
+    @Override
+    public @NotNull AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target)
+    {
+        return target.getBoundingBox().inflate(3.0D, 0.25D, 3.0D);
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_sweeper_sword"));
+    }
+
+    @Override
+    public float getXpRepairRatio(ItemStack stack)
+    {
+        return 0f;
     }
 }
