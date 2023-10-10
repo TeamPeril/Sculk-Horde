@@ -2,10 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TargetParameters;
-import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -31,9 +28,11 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -76,14 +75,18 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private AttackPhase attackPhase = AttackPhase.CIRCLE;
-    //private BlockPos anchorPoint = BlockPos.ZERO;
-    private BlockPos anchorPoint = new BlockPos(0, 200, 0);
+    private BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
     private static final EntityDataAccessor<Integer> ID_SIZE = SynchedEntityData.defineId(Phantom.class, EntityDataSerializers.INT);
 
     Vec3 moveTargetPoint = new Vec3(anchorPoint.getX(), anchorPoint.getY(), anchorPoint.getZ());
 
     Vec3 spawnPoint = null;
+
+    //Remember current chunk
+    protected ChunkPos lastKnownChunk = null;
+    // Remember old chunk
+    protected ChunkPos oldChunk = null;
 
     /**
      * The Constructor
@@ -190,9 +193,15 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     static enum AttackPhase {
         CIRCLE,
-        SWOOP;
+        SWOOP,
+        INFECT;
     }
     /** Getters and Setters **/
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double distance) {
+        return true;
+    }
 
     protected Vec3 getRandomTravelLocationVec3()
     {
@@ -269,7 +278,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public void tick()
     {
         super.tick();
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide)
+        {
             float f = Mth.cos((float)(this.getUniqueFlapTickOffset() + this.tickCount) * 7.448451F * ((float)Math.PI / 180F) + (float)Math.PI);
             float f1 = Mth.cos((float)(this.getUniqueFlapTickOffset() + this.tickCount + 1) * 7.448451F * ((float)Math.PI / 180F) + (float)Math.PI);
             if (f > 0.0F && f1 <= 0.0F) {
@@ -281,12 +291,34 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             float f4 = (0.3F + f * 0.45F) * (0.2F + 1.0F);
             this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
             this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
+            return;
         }
 
         if(spawnPoint == null)
         {
             spawnPoint = new Vec3(getX(), getY(), getZ());
         }
+
+        ChunkPos currentChunk = level().getChunkAt(blockPosition()).getPos();
+
+        if(lastKnownChunk != currentChunk)
+        {
+            oldChunk = lastKnownChunk;
+            lastKnownChunk = currentChunk;
+
+            if(oldChunk != null)
+            {
+                //Unload chunk
+                ChunkLoaderHelper.unloadChunk((ServerLevel) level(), blockPosition(), oldChunk.x, oldChunk.z, true);
+            }
+
+            if(lastKnownChunk != null)
+            {
+                //Load chunk
+                ChunkLoaderHelper.forceLoadChunk((ServerLevel) level(), blockPosition(), lastKnownChunk.x, lastKnownChunk.z, true);
+            }
+        }
+
 
     }
 
@@ -454,21 +486,49 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         private int nextSweepTick;
 
         public boolean canUse() {
-            LivingEntity livingentity = getTarget();
-            return livingentity != null ? canAttack(livingentity, TargetingConditions.DEFAULT) : false;
+            LivingEntity target = getTarget();
+
+            if(target == null)
+            {
+                return false;
+            }
+            else if(!canAttack(target, TargetingConditions.DEFAULT))
+            {
+                return false;
+            }
+
+
+            return true;
         }
 
         public void start() {
+
+            if(level().canSeeSky(blockPosition().above()))
+            {
+                SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.INFECT;
+                return;
+            }
+
             this.nextSweepTick = this.adjustedTickDelay(10);
             SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
             this.setAnchorAboveTarget();
         }
 
         public void stop() {
-            //SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, SculkPhantomEntity.this.anchorPoint).above(10 + SculkPhantomEntity.this.random.nextInt(20));
+            if(SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.INFECT)
+            {
+                return;
+            }
+            SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, SculkPhantomEntity.this.anchorPoint).above(10 + SculkPhantomEntity.this.random.nextInt(20));
         }
 
         public void tick() {
+            if(SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.INFECT)
+            {
+                return;
+            }
+
+
             if (SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.CIRCLE) {
                 --this.nextSweepTick;
                 if (this.nextSweepTick <= 0) {
@@ -482,9 +542,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
 
         private void setAnchorAboveTarget() {
-            //SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.getTarget().blockPosition().above(20 + SculkPhantomEntity.this.random.nextInt(20));
+            SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.getTarget().blockPosition().above(20 + SculkPhantomEntity.this.random.nextInt(20));
             if (SculkPhantomEntity.this.anchorPoint.getY() < SculkPhantomEntity.this.level().getSeaLevel()) {
-                //SculkPhantomEntity.this.anchorPoint = new BlockPos(SculkPhantomEntity.this.anchorPoint.getX(), SculkPhantomEntity.this.level().getSeaLevel() + 1, SculkPhantomEntity.this.anchorPoint.getZ());
+                SculkPhantomEntity.this.anchorPoint = new BlockPos(SculkPhantomEntity.this.anchorPoint.getX(), SculkPhantomEntity.this.level().getSeaLevel() + 1, SculkPhantomEntity.this.anchorPoint.getZ());
             }
 
         }
@@ -507,7 +567,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         private float clockwise;
 
         public boolean canUse() {
-            return SculkPhantomEntity.this.getTarget() == null || SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.CIRCLE;
+            return (SculkPhantomEntity.this.getTarget() == null || SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.CIRCLE)
+                    && SculkPhantomEntity.this.attackPhase != SculkPhantomEntity.AttackPhase.INFECT;
         }
 
         public void start() {
@@ -559,11 +620,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         private void selectNext() {
             if (BlockPos.ZERO.equals(SculkPhantomEntity.this.anchorPoint)) {
-                //SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.blockPosition();
+                SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.blockPosition();
             }
 
             this.angle += this.clockwise * 15.0F * ((float)Math.PI / 180F);
-            //SculkPhantomEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(SculkPhantomEntity.this.anchorPoint).add((double)(this.distance * Mth.cos(this.angle)), (double)(-4.0F + this.height), (double)(this.distance * Mth.sin(this.angle)));
+            SculkPhantomEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(SculkPhantomEntity.this.anchorPoint).add((double)(this.distance * Mth.cos(this.angle)), (double)(-4.0F + this.height), (double)(this.distance * Mth.sin(this.angle)));
         }
     }
 
