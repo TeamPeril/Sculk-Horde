@@ -2,8 +2,10 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.ModSounds;
@@ -22,6 +24,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,6 +55,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     public static final int tickIntervalSeconds = 10;
     private long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(5);
     private long lastHeartBeat = System.currentTimeMillis();
+
+    private SculkNodeInfectionHandler infectionHandler;
 
     // Vibration Code
     private final VibrationSystem.User vibrationUser = new SculkAncientNodeBlockEntity.VibrationUser(this);
@@ -178,6 +183,14 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     /** Events **/
 
+    private void initializeInfectionHandler()
+    {
+        if(infectionHandler == null)
+        {
+            infectionHandler = new SculkNodeInfectionHandler(this, getBlockPos());
+        }
+    }
+
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
         level.players().forEach((player) -> {
@@ -206,6 +219,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             infectorEntity.setMaxRange(rangeOfInfector);
             infectorEntity.setMaxTransformations(maxInfectionsOfInfector);
             infectorEntity.setSearchIterationsPerTick(20);
+            infectorEntity.setTickIntervalMilliseconds(10);
             level.addFreshEntity(infectorEntity);
         }
     }
@@ -237,6 +251,18 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     {
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
+        // Initialize the infection handler
+        if(blockEntity.infectionHandler == null)
+        {
+            blockEntity.initializeInfectionHandler();
+        }
+        if(blockEntity.infectionHandler.canBeActivated())
+        {
+            blockEntity.infectionHandler.activate();
+        }
+
+        blockEntity.infectionHandler.tick();
+
         // If the time elapsed is less than the tick interval, return
         if(timeElapsed < tickIntervalSeconds) { return; }
 
@@ -249,7 +275,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         int spawnRange = 100;
         int x = rng.nextInt(spawnRange) - (spawnRange/2);
         int z = rng.nextInt(spawnRange) - (spawnRange/2);
-        spawnInfectorOnSurface((ServerLevel)level, blockPos.getX() + x, blockPos.getZ() + z, 100, 50);
+        //spawnInfectorOnSurface((ServerLevel)level, blockPos.getX() + x, blockPos.getZ() + z, 100, 50);
     }
 
     private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)
@@ -258,6 +284,24 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
                 player.blockPosition().closerThan(blockPos, range)
                         && !player.isCreative() && !player.isSpectator() && !player.isInvulnerable()
                 );
+    }
+
+    private static void spawnSculkPhantomsAtTopOfWorld(SculkAncientNodeBlockEntity blockEntity, int amount)
+    {
+        ServerLevel level = (ServerLevel) blockEntity.level;
+        int spawnRange = 100;
+        int minimumSpawnRange = 50;
+        Random rng = new Random();
+        for(int i = 0; i < amount; i++)
+        {
+            int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int y = level.getMaxBuildHeight();
+            BlockPos spawnPosition = new BlockPos(blockEntity.getBlockPos().getX() + x, y, blockEntity.getBlockPos().getZ() + z);
+
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+
+        }
     }
 
     public static void announceToAllPlayers(ServerLevel level, Component message)
@@ -269,7 +313,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     {
         if(blockEntity.isAwake()) { return; }
 
-        int MAX_SPAWNED_SPORE_SPEWERS = 50;
+        int MAX_SPAWNED_SPORE_SPEWERS = 10;
 
         blockEntity.setAwake();
         // If the horde has no mass, give it some

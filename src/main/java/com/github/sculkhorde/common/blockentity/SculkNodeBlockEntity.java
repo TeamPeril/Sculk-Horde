@@ -163,12 +163,12 @@ public class SculkNodeBlockEntity extends BlockEntity
             blockEntity.infectionHandler.activate();
         }
 
+        blockEntity.infectionHandler.tick();
+
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
         // If the time elapsed is less than the tick interval, return
         if(timeElapsed < tickIntervalSeconds) { return; }
-
-        blockEntity.infectionHandler.tick();
 
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();

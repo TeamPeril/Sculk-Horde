@@ -27,6 +27,9 @@ public class SculkNodeInfectionHandler {
     private InfectionTree upInfectionTree;
     private InfectionTree downInfectionTree;
 
+    protected int lastTimeSinceTick = 0;
+    protected int TICK_COOLDOWN = TickUnits.convertSecondsToTicks(1);
+
 
     public SculkNodeInfectionHandler(BlockEntity parent, BlockPos origin) {
         this.parent = parent;
@@ -121,6 +124,13 @@ public class SculkNodeInfectionHandler {
         {
             return;
         }
+
+        if(lastTimeSinceTick < TICK_COOLDOWN)
+        {
+            lastTimeSinceTick++;
+            return;
+        }
+        lastTimeSinceTick = 0;
 
         northInfectionTree.tick();
         southInfectionTree.tick();

@@ -106,7 +106,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);
         phantom.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         phantom.spawnPoint = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-        phantom.moveTargetPoint = phantom.spawnPoint.add(0,32,0);
         worldIn.addFreshEntity(phantom);
         return phantom;
     }
@@ -479,6 +478,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         {
             lastTimeOfExecution = level().getGameTime();
             moveTargetPoint = getRandomTravelLocationVec3();
+            anchorPoint = BlockPos.containing(moveTargetPoint);
         }
     }
 
