@@ -68,13 +68,13 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     public static final float MOVEMENT_SPEED = 0F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private CursorSurfaceInfectorEntity cursor;
 
-    private long INFECTION_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(20);
+    private long INFECTION_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(5);
     private long lastInfectionTime = 0;
 
     public static final EntityDataAccessor<Integer> DATA_TICKS_ALIVE = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.INT);
@@ -238,11 +238,11 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             triggerAnim("spread_controller", "spread_animation");
         }
 
-        if (System.currentTimeMillis() - lastInfectionTime > INFECTION_INTERVAL_MILLIS)
+        if (level().getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
         {
-            lastInfectionTime = System.currentTimeMillis();
+            lastInfectionTime = level().getGameTime();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), this.blockPosition(), 10);
             for (LivingEntity entity : entities)
             {
                 if(entity instanceof Player && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))

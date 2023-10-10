@@ -6,7 +6,9 @@ import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
@@ -649,6 +651,17 @@ public class BlockAlgorithms {
         }
 
         return false;
+    }
+
+
+    public static BlockPos getGroundBlockPos(Level level, BlockPos origin, int startHeight)
+    {
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(origin.getX(), startHeight, origin.getZ());
+        while(mutable.getY() > level.getMinBuildHeight() && level.isEmptyBlock(mutable))
+        {
+            mutable.move(Direction.DOWN);
+        }
+        return mutable;
     }
 
 

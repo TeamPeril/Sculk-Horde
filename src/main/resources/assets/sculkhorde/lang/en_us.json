@@ -4,8 +4,6 @@
   "effect.sculkhorde.sculk_lure": "Lure",
   "item.sculkhorde.sculk_matter": "Sculk Matter",
   "item.sculkhorde.dev_wand": "Dev Wand",
-  "tooltip.sculkhorde.dev_wand": "Right-click to spawn a spore spewer to start world infection.\nRight-click + Left-Shift to Show Total Sculk Mass. \nRight-click + Left-Alt to add 100 Sculk Mass.",
-  "tooltip.sculkhorde.dev_wand.shift": "\u00A75JoeMama",
   "item.sculkhorde.dev_conversion_wand": "Dev Conversion Wand",
   "tooltip.sculkhorde.dev_conversion_wand": "Converts blocks to infected variants.",
 

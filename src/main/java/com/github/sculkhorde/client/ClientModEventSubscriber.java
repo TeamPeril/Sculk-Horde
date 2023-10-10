@@ -3,6 +3,7 @@ package com.github.sculkhorde.client;
 import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
 import com.github.sculkhorde.client.renderer.entity.*;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
@@ -80,6 +81,8 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(ModEntities.SCULK_CREEPER.get(), SculkCreeperRenderer::new);
 
         event.registerEntityRenderer(ModEntities.SCULK_ENDERMAN.get(), SculkEndermanRenderer::new);
+
+        event.registerEntityRenderer(ModEntities.SCULK_PHANTOM.get(), SculkPhantomRenderer::new);
 
         event.registerEntityRenderer(ModEntities.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
 

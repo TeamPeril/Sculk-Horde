@@ -192,9 +192,40 @@ public class EntityAlgorithms {
                 return true;
             }
         });
-        return livingEntitiesInRange;
+                  return livingEntitiesInRange;
 
     }
+
+    public static AABB createBoundingBoxCubeAtBlockPos(Vec3 origin, int squareLength)
+    {
+        double halfLength = squareLength/2;
+        AABB boundingBox = new AABB(origin.x() - halfLength, origin.y() - halfLength, origin.z() - halfLength, origin.x() + halfLength, origin.y() + halfLength, origin.z() + halfLength);
+        return boundingBox;
+    }
+
+    public static AABB createBoundingBoxRectableAtBlockPos(Vec3 origin, int width, int height, int length)
+    {
+        double halfWidth = width/2;
+        double halfHeight = height/2;
+        double halfLength = length/2;
+
+        AABB boundingBox = new AABB(origin.x() - halfWidth, origin.y() - halfHeight, origin.z() - halfLength, origin.x() + halfWidth, origin.y() + halfHeight, origin.z() + halfLength);
+        return boundingBox;
+    }
+
+    public static List<LivingEntity> getNonSculkEntitiesAtBlockPos(ServerLevel level, BlockPos origin, int squareLength)
+    {
+        AABB boundingBox = createBoundingBoxCubeAtBlockPos(origin.getCenter(), squareLength);
+        List<LivingEntity> livingEntitiesInRange = level.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
+            @Override
+            public boolean test(LivingEntity livingEntity) {
+                return !EntityAlgorithms.isSculkLivingEntity.test(livingEntity);
+            }
+        });
+        return livingEntitiesInRange;
+    }
+
+
 
     public static void announceToAllPlayers(ServerLevel level, Component message)
     {

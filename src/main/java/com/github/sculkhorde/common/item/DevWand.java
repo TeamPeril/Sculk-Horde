@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
@@ -61,21 +62,6 @@ public class DevWand extends Item implements IForgeItem {
 
 	}
 
-	//This changes the text you see when hovering over an item
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-		
-		super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-		
-		//If User presses left shift, else
-		if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{
-			tooltip.add(Component.translatable("tooltip.sculkhorde.dev_wand.shift")); //Text that displays if holding shift
-		} else {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.dev_wand")); //Text that displays if not holding shift
-		}
-	}
-
 	@Override
 	public Rarity getRarity(ItemStack itemStack) {
 		return Rarity.EPIC;
@@ -87,66 +73,13 @@ public class DevWand extends Item implements IForgeItem {
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
+		if(worldIn.isClientSide())
 		{
-			//If Player is holding shift, just output sculk mass of world
-			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
-			{
-				playerIn.displayClientMessage(
-						Component.literal(
-								"Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString() + "\n" +
-								"Is Server on Debug Mode? " + SculkHorde.isDebugMode() + "\n" +
-								"Are Experimental Features On? " + ModConfig.SERVER.experimental_features_enabled.get() + "\n" +
-								"Sculk Accumulated Mass: " + SculkHorde.savedData.getSculkAccumulatedMass() + "\n" +
-								"Nodes Count: " + SculkHorde.savedData.getNodeEntries().size() + "\n" +
-								"Nests Count: " + SculkHorde.savedData.getBeeNestEntries().size() + "\n" +
-								"Hostiles Count: " + SculkHorde.savedData.getHostileEntries().size() + "\n" +
-								"Death Area Reports Count: " + SculkHorde.savedData.getDeathAreaEntries().size() + "\n" +
-								"Areas of Interest Count: " + SculkHorde.savedData.getAreasOfInterestEntries().size() + "\n" +
-								"No Raid Zone Entries Count: " + SculkHorde.savedData.getNoRaidZoneEntries().size() + "\n"
-						), false);
-				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-				return InteractionResultHolder.pass(itemstack);
-			}
-			//If player clicks left-alt, set sculk mass to 10k
-			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT))
-			{
-				playerIn.displayClientMessage(Component.literal("Adding 1000 Sculk Mass"), false);
-				SculkHorde.savedData.addSculkAccumulatedMass(1000);
-				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-				SculkHorde.gravemind.calulateCurrentState();
-				return InteractionResultHolder.pass(itemstack);
-			}
-			else
-			{
-				//Ray trace to see what block the player is looking at
-				BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
-
-				double targetX;
-				double targetY;
-				double targetZ;
-
-				if(targetPos != null) //If player Looking at Block
-				{
-					targetX = targetPos.getX() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
-					targetY = targetPos.getY() + 1;
-					targetZ = targetPos.getZ() + 0.5; //We add 0.5 so that the mob can be in the middle of a block
-
-					//Give Player Effect
-					playerIn.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 5));
-					//Create Mob Instance
-					SculkSporeSpewerEntity entity = new SculkSporeSpewerEntity(worldIn);
-					//Set Mob's Position
-					entity.setPos(targetX, targetY, targetZ);
-					//Spawn instance in world
-					worldIn.addFreshEntity(entity);
-					//Set Wand on cool down
-					playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-				}
-
-				return InteractionResultHolder.pass(itemstack);
-			}
+			return InteractionResultHolder.fail(itemstack);
 		}
-		return InteractionResultHolder.fail(itemstack);
+
+		SculkPhantomEntity.spawnPhantom(worldIn, playerIn.blockPosition());
+
+		return InteractionResultHolder.pass(itemstack);
 	}
 }

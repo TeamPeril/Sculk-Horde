@@ -37,6 +37,7 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_HATCHER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_VINDICATOR_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_RAVAGER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_PHANTOM_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_ENDERMAN_CLEAVER.get());
                 event.accept(ModItems.SCULK_SWEEPER_SWORD.get());
