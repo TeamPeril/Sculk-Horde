@@ -228,9 +228,15 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     /** ~~~~~~~~ Events ~~~~~~~~ **/
     public static void recieveVibrationTick(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity)
     {
-        if(level == null || level.isClientSide) { return; }
+        if(level == null || level.isClientSide)
+        {
+            return;
+        }
 
-        if(!blockEntity.areAllReinforcementsDead()) { return; }
+        if(!blockEntity.areAllReinforcementsDead())
+        {
+            return;
+        }
 
         if(blockEntity.areAnyTargetsNearBy(blockPos, blockEntity))
         {
