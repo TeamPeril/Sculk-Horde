@@ -124,9 +124,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
             }
         }
 
-        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 5, SHELL_RADIUS *3);
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 10, SHELL_RADIUS *6));
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 20, SHELL_RADIUS *9));
+        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 10, SHELL_RADIUS *6);
         for(BlockPos position : surroundingLivingRock)
         {
             plannedBlockQueue.add(new PlannedBlock(this.world, ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState(), findLivingRockPlacementPosition(this.world, position)));

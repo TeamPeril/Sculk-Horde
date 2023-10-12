@@ -6,7 +6,9 @@ import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.ChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
@@ -191,6 +193,18 @@ public class SculkNodeBlockEntity extends BlockEntity
         blockEntity.tickedAt = System.nanoTime();
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 50);
+
+        /** Chunkloading **/
+
+        if(blockEntity.isActive())
+        {
+            ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) level, blockPos, level.getChunk(blockPos).getPos().x, level.getChunk(blockPos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        }
+        else
+        {
+            ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) level, blockPos, level.getChunk(blockPos).getPos().x, level.getChunk(blockPos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        }
+
 
         /** Building Shell Process **/
         long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);

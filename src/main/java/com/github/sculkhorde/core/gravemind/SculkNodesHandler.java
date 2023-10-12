@@ -78,6 +78,19 @@ public class SculkNodesHandler {
         return false;
     }
 
+    protected boolean areAllNodesInactive()
+    {
+        for(ModSavedData.NodeEntry node : getNodes())
+        {
+            if(node.isActive())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     protected void ActivateNodeWithLongestDurationOfInactivity()
     {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
@@ -108,7 +121,7 @@ public class SculkNodesHandler {
 
         int maxActiveNodes = 1;
 
-        if(/*hasAnyNodeBeenActiveForTooLong() &&*/ getNodes().size() > maxActiveNodes)
+        if((hasAnyNodeBeenActiveForTooLong() && getNodes().size() > maxActiveNodes) || (areAllNodesInactive() && getNodes().size() >= maxActiveNodes))
         {
             for(int i = 0; i < maxActiveNodes; i++)
             {

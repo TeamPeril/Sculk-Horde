@@ -179,7 +179,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
     public static void FindAreaAndPlaceNode(ServerLevel level, BlockPos searchOrigin)
     {
-        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), level.getMinBuildHeight() + 35, searchOrigin.getZ());
+        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ());
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(newOrigin);
         EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
@@ -236,7 +236,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
 
-        ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        //ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
         if(worldIn.isClientSide())
         {
             // Play Sound that Can be Heard by all players
@@ -258,7 +258,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return;
         }
 
-        ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        //ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
         SculkHorde.savedData.removeNodeFromMemory(pos);
         worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed!"), true));
         worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
