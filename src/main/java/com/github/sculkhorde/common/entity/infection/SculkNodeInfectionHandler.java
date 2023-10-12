@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.Direction;
@@ -120,7 +121,7 @@ public class SculkNodeInfectionHandler {
     }
 
     public void tick() {
-        if(!isActive)
+        if(!isActive || !ModConfig.SERVER.block_infestation_enabled.get())
         {
             return;
         }

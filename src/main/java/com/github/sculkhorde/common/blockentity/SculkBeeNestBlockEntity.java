@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.structures.procedural.SculkBeeNestProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
@@ -281,14 +282,19 @@ public class SculkBeeNestBlockEntity extends BlockEntity
                 if(SculkHorde.savedData != null) { SculkHorde.savedData.addSculkAccumulatedMass(5); }
                 if(SculkHorde.statisticsData != null) { SculkHorde.statisticsData.addTotalMassFromBees(5); }
 
+
                 //Summon Surface Infestor
-                CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
-                cursor.setPos(blockpos.getX(), blockpos.getY() - 1, blockpos.getZ());
-                cursor.setMaxTransformations(100);
-                cursor.setMaxRange(100);
-                cursor.setTickIntervalMilliseconds(500);
-                cursor.setSearchIterationsPerTick(10);
-                level.addFreshEntity(cursor);
+                if(ModConfig.SERVER.block_infestation_enabled.get())
+                {
+                    CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
+                    cursor.setPos(blockpos.getX(), blockpos.getY() - 1, blockpos.getZ());
+                    cursor.setMaxTransformations(100);
+                    cursor.setMaxRange(100);
+                    cursor.setTickIntervalMilliseconds(500);
+                    cursor.setSearchIterationsPerTick(10);
+                    level.addFreshEntity(cursor);
+                }
+
             }
 
             entity.discard();

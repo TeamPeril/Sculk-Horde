@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
@@ -103,6 +104,12 @@ public class SculkMassBlockEntity extends BlockEntity {
         if(context.isRequestViewed && context.isRequestApproved)
         {
             blockEntity.setStoredSculkMass(context.remaining_balance);
+
+            // Do not spawn infectors if infection not enabled.
+            if(!ModConfig.SERVER.block_infestation_enabled.get())
+            {
+                return;
+            }
 
             // Spawn Block Traverser
             CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);

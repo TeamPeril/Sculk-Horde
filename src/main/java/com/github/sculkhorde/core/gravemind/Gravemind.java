@@ -74,12 +74,12 @@ public class Gravemind
         if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
         {
             evolution_state = evolution_states.Mature;
-            sculk_node_limit = 800;
+            sculk_node_limit = 8;
         }
         else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
             evolution_state = evolution_states.Immature;
-            sculk_node_limit = 400;
+            sculk_node_limit = 4;
         }
 
     }

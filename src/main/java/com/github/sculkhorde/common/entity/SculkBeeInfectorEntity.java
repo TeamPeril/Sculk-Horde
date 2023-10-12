@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -102,6 +103,11 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     @Override
     protected void executeCodeOnPollination()
     {
+        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        {
+            return;
+        }
+
         CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
         cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
         cursor.setMaxTransformations(100);

@@ -40,12 +40,18 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
+
 
         public Server(ForgeConfigSpec.Builder builder) {
 
             builder.push("Mod Compatability");
             target_faw_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'From Another World'? (Default false)").define("target_faw_entities",false);
             target_spore_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'? (Default false)").define("target_spore_entities",false);
+            builder.pop();
+
+            builder.push("General Variables");
+            block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
             builder.pop();
 
             builder.push("Gravemind Variables");

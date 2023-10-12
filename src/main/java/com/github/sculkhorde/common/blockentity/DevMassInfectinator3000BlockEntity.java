@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.infection.DevInfectionHandler;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -91,7 +92,7 @@ public class DevMassInfectinator3000BlockEntity extends BlockEntity
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, DevMassInfectinator3000BlockEntity blockEntity)
     {
-        if(level.isClientSide)
+        if(level.isClientSide || !ModConfig.SERVER.block_infestation_enabled.get())
         {
             return;
         }

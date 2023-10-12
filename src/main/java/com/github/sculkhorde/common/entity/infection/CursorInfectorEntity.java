@@ -1,8 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -46,7 +44,11 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        {
+            return true;
+        }
+        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
         {
             return true;
         }

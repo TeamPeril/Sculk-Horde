@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModParticles;
@@ -226,7 +227,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         }
 
         Random random = new Random();
-        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive())) {
+        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive()) && ModConfig.SERVER.block_infestation_enabled.get()) {
             // Spawn Block Traverser
             cursor = new CursorSurfaceInfectorEntity(level());
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
