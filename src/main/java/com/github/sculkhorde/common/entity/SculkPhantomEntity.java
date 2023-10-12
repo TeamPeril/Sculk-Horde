@@ -308,13 +308,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             if(oldChunk != null)
             {
                 //Unload chunk
-                ChunkLoaderHelper.unloadChunk((ServerLevel) level(), blockPosition(), oldChunk.x, oldChunk.z, true);
+                //ChunkLoaderHelper.unloadChunk((ServerLevel) level(), blockPosition(), oldChunk.x, oldChunk.z, true);
             }
 
             if(lastKnownChunk != null)
             {
                 //Load chunk
-                ChunkLoaderHelper.forceLoadChunk((ServerLevel) level(), blockPosition(), lastKnownChunk.x, lastKnownChunk.z, true);
+                //ChunkLoaderHelper.forceLoadChunk((ServerLevel) level(), blockPosition(), lastKnownChunk.x, lastKnownChunk.z, true);
             }
         }
 

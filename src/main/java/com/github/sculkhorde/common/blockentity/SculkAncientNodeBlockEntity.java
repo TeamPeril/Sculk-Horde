@@ -7,6 +7,7 @@ import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
@@ -355,7 +356,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
 
-        spawnSculkPhantomsAtTopOfWorld(blockEntity, 50);
+        if(ModConfig.SERVER.experimental_features_enabled.get()) {spawnSculkPhantomsAtTopOfWorld(blockEntity, 50);}
     }
 
     // Data

@@ -20,7 +20,7 @@ public class SculkPhantomModel extends DefaultedEntityGeoModel<SculkPhantomEntit
      *
      */
     public SculkPhantomModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_mite"));
+        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_phantom"));
     }
 
     // We want our model to render using the translucent render type
