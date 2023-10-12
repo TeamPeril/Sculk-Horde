@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTab
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.github.sculkhorde.util.StatisticsData;
@@ -34,6 +35,7 @@ public class SculkHorde {
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;
+    public static SculkNodesHandler sculkNodesHandler;
     public static StatisticsData statisticsData;
     public static final Logger LOGGER = LogUtils.getLogger();
 

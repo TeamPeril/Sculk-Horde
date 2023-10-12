@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.blockentity;
 
+import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +31,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class SculkNodeBlockEntity extends BlockEntity
 {
-
     private long tickedAt = System.nanoTime();
 
     private SculkNodeProceduralStructure nodeProceduralStructure;
@@ -45,6 +46,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
+
     }
 
     private final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
@@ -56,6 +58,16 @@ public class SculkNodeBlockEntity extends BlockEntity
     Collection<ISculkSmartEntity> sculkEntitiesBelongingToThisNode = new ArrayList<>();
 
     /** Accessors **/
+
+    public boolean isActive()
+    {
+        return this.getBlockState().getValue(SculkNodeBlock.ACTIVE);
+    }
+
+    public void setActive(boolean active)
+    {
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkNodeBlock.ACTIVE, active), 3);
+    }
 
     public void updateListOfSculkEntitiesBelongingToThisNode()
     {
@@ -158,9 +170,14 @@ public class SculkNodeBlockEntity extends BlockEntity
             blockEntity.initializeInfectionHandler();
         }
 
-        if(blockEntity.infectionHandler.canBeActivated())
+        if(blockEntity.infectionHandler.canBeActivated() && blockEntity.isActive())
         {
             blockEntity.infectionHandler.activate();
+        }
+
+        if(!blockEntity.isActive())
+        {
+            blockEntity.infectionHandler.deactivate();
         }
 
         blockEntity.infectionHandler.tick();
@@ -197,19 +214,5 @@ public class SculkNodeBlockEntity extends BlockEntity
         {
             blockEntity.nodeProceduralStructure.startBuildProcedure();
         }
-
-
-        /** Infection Routine **/
-        /*
-        if(blockEntity.infectionHandler == null)
-        {
-            blockEntity.infectionHandler = new SculkNodeInfectionHandler(blockEntity);
-        }
-        else
-        {
-            blockEntity.infectionHandler.tick();
-        }
-
-         */
     }
 }

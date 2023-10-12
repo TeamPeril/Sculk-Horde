@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.effect.SculkInfectionEffect;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -42,6 +43,7 @@ public class ForgeEventSubscriber {
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
             SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
+            SculkHorde.sculkNodesHandler = new SculkNodesHandler(); //Initialize Sculk Nodes Handler
             if(SculkHorde.statisticsData == null)
             {
                 SculkHorde.statisticsData = new StatisticsData();
@@ -70,6 +72,7 @@ public class ForgeEventSubscriber {
 
         SculkHorde.raidHandler.raidTick(); // Tick the raid handler
         SculkHorde.deathAreaInvestigator.tick();
+        SculkHorde.sculkNodesHandler.tick();
 
 
         // Only run stuff below every 5 minutes
@@ -79,7 +82,6 @@ public class ForgeEventSubscriber {
         }
 
         time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
-
         SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
 
         //Verification Processes to ensure our data is accurate

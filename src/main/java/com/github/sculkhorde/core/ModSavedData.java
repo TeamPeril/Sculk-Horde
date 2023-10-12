@@ -1,6 +1,8 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
@@ -855,7 +857,12 @@ public class ModSavedData extends SavedData {
     public static class NodeEntry
     {
         private final BlockPos position; //The Location in the world where the node is
-        private long lastTimeWasActive; //The Last Time A node was active and working
+        private long lastTimeWasActive;
+
+        private long activationTimeStamp;
+
+        private boolean IsActive;
+
 
         /**
          * Default Constructor
@@ -864,12 +871,24 @@ public class ModSavedData extends SavedData {
         public NodeEntry(BlockPos positionIn)
         {
             position = positionIn;
-            lastTimeWasActive = System.nanoTime();
+            lastTimeWasActive = SculkHorde.savedData.level.getGameTime();
         }
 
         public BlockPos getPosition()
         {
             return position;
+        }
+
+        public boolean isActive()
+        {
+            return IsActive;
+        }
+
+        public void setActive(boolean activeIn)
+        {
+            IsActive = activeIn;
+            SculkNodeBlockEntity sculkNodeBlockEntity = (SculkNodeBlockEntity) SculkHorde.savedData.level.getBlockEntity(position);
+            sculkNodeBlockEntity.setActive(activeIn);
         }
 
         public long getLastTimeWasActive()
@@ -880,6 +899,16 @@ public class ModSavedData extends SavedData {
         public void setLastTimeWasActive(long lastTimeWasActiveIn)
         {
             lastTimeWasActive = lastTimeWasActiveIn;
+        }
+
+        public void setActivationTimeStamp(long activationTimeStampIn)
+        {
+            activationTimeStamp = activationTimeStampIn;
+        }
+
+        public long getActivationTimeStamp()
+        {
+            return activationTimeStamp;
         }
 
         /**
@@ -901,6 +930,8 @@ public class ModSavedData extends SavedData {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
+            nbt.putLong("activationTimeStamp", activationTimeStamp);
+            nbt.putBoolean("IsActive", IsActive);
             return nbt;
         }
 
@@ -910,7 +941,11 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry serialize(CompoundTag nbt)
         {
-            return new NodeEntry(BlockPos.of(nbt.getLong("position")));
+            NodeEntry entry = new NodeEntry(BlockPos.of(nbt.getLong("position")));
+            entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
+            entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
+            entry.setActive(nbt.getBoolean("IsActive"));
+            return entry;
         }
 
     }
