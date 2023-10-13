@@ -479,11 +479,10 @@ public class BlockAlgorithms {
     {
         BlockState blockState = SculkHorde.randomSculkFlora.getRandomEntry().defaultBlockState();
 
-        //If block below target is valid and the target can be replaced by water
+        //If block below target is valid and the target can be replaced by water and target is not waterloggable
         if(blockState.canSurvive(world, targetPos)
-                && world.getBlockState(targetPos).canBeReplaced(Fluids.WATER)
-                && !world.getBlockState(targetPos).is(Blocks.WATER)
-                && !world.getBlockState(targetPos).is(Blocks.LAVA))
+                && (world.getBlockState(targetPos).isAir()
+                || world.getBlockState(targetPos).is(Blocks.SNOW)))
         {
             world.setBlockAndUpdate(targetPos, blockState);
         }
