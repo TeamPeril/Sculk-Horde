@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -136,7 +137,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         if(!isParticipatingInRaid())
         {
             this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
-            spawnInfectors();
+            if(ModConfig.SERVER.block_infestation_enabled.get()) {spawnInfectors();}
         }
         else
         {
