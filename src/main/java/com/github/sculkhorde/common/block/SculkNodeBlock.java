@@ -4,7 +4,7 @@ import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -236,12 +236,8 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
 
-        //ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
         if(worldIn.isClientSide())
         {
-            // Play Sound that Can be Heard by all players
-            worldIn.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
-
             // Display Text On Player Screens
             for (Player player : worldIn.players()) {
                 player.displayClientMessage(Component.translatable("message.sculk_horde.node_placed"), true);
@@ -258,10 +254,14 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return;
         }
 
-        //ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        if(worldIn.isClientSide())
+        {
+            return;
+        }
         SculkHorde.savedData.removeNodeFromMemory(pos);
         worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed!"), true));
         worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
+
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

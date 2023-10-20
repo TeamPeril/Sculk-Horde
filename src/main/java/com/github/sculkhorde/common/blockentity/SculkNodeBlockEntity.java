@@ -8,7 +8,7 @@ import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStr
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -198,11 +197,11 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         if(blockEntity.isActive())
         {
-            ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) level, blockPos, level.getChunk(blockPos).getPos().x, level.getChunk(blockPos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+            ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquareForEntityOrBlockPos(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1);
         }
         else
         {
-            ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) level, blockPos, level.getChunk(blockPos).getPos().x, level.getChunk(blockPos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+            ChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(blockPos, (ServerLevel) level);
         }
 
 

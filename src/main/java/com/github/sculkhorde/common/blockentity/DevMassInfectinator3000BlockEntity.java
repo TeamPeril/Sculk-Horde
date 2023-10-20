@@ -26,9 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Chunkloader code created by SuperMartijn642
- */
 public class DevMassInfectinator3000BlockEntity extends BlockEntity
 {
 

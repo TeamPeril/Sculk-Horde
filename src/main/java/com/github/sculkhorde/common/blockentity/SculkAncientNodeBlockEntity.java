@@ -11,6 +11,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
@@ -271,12 +272,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         blockEntity.tickedAt = System.nanoTime();
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 25);
-        // Spawn in random x and z position
-        Random rng = new Random();
-        int spawnRange = 100;
-        int x = rng.nextInt(spawnRange) - (spawnRange/2);
-        int z = rng.nextInt(spawnRange) - (spawnRange/2);
-        //spawnInfectorOnSurface((ServerLevel)level, blockPos.getX() + x, blockPos.getZ() + z, 100, 50);
+
+        ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquareForEntityOrBlockPos(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1);
     }
 
     private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)

@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.StatisticsData;
 import com.github.sculkhorde.util.TickUnits;
@@ -147,6 +148,7 @@ public class ModSavedData extends SavedData {
 
         StatisticsData.load(nbt);
         RaidData.load(nbt);
+        ChunkLoaderHelper.load(nbt);
 
         return getGravemindMemory();
 
@@ -205,6 +207,7 @@ public class ModSavedData extends SavedData {
 
         RaidData.save(nbt);
         StatisticsData.save(nbt);
+        ChunkLoaderHelper.save(nbt);
 
         return nbt;
     }

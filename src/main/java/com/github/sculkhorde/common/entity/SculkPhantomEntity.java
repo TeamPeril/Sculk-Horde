@@ -2,7 +2,9 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.*;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -35,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.world.ForgeChunkManager;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -308,13 +311,14 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             if(oldChunk != null)
             {
                 //Unload chunk
-                //ChunkLoaderHelper.unloadChunk((ServerLevel) level(), blockPosition(), oldChunk.x, oldChunk.z, true);
+                ChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(this);
             }
 
             if(lastKnownChunk != null)
             {
+                ChunkPos chunkPos = level().getChunkAt(blockPosition()).getPos();
                 //Load chunk
-                //ChunkLoaderHelper.forceLoadChunk((ServerLevel) level(), blockPosition(), lastKnownChunk.x, lastKnownChunk.z, true);
+                ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequest(this, new ChunkPos[]{chunkPos}, 3);
             }
         }
 

@@ -44,6 +44,7 @@ public class ForgeEventSubscriber {
             SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
             SculkHorde.sculkNodesHandler = new SculkNodesHandler(); //Initialize Sculk Nodes Handler
+
             if(SculkHorde.statisticsData == null)
             {
                 SculkHorde.statisticsData = new StatisticsData();
@@ -74,6 +75,8 @@ public class ForgeEventSubscriber {
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesHandler.tick();
 
+        SculkHorde.chunkLoaderHelper.processBlockChunkLoadRequests((ServerLevel) event.level);
+        SculkHorde.chunkLoaderHelper.processEntityChunkLoadRequests((ServerLevel) event.level);
 
         // Only run stuff below every 5 minutes
         if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))

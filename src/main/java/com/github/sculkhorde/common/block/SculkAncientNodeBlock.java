@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.core.*;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -193,13 +193,19 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
 
-        ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        if(worldIn.isClientSide())
+        {
+            return;
+        }
     }
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
-        ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        if(worldIn.isClientSide())
+        {
+            return;
+        }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

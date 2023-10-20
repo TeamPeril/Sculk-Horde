@@ -9,7 +9,7 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockSearcher;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -356,8 +356,7 @@ public class RaidHandler {
             initializeBlockSearcherForSpawnSearch(100, 1);
 
             // Load chunks
-            ChunkLoaderHelper.forceLoadChunksInRadius(raidData.getLevel(), raidData.getRaidLocation(), raidData.getRaidLocation().getX() >> 4, raidData.getRaidLocation().getZ() >> 4, raidData.getCurrentRaidRadius() /16 + 1);
-
+            ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquareForEntityOrBlockPos(raidData.getRaidLocation(), raidData.getCurrentRaidRadius() / 16, 2);
         }
 
         // Tick the Block Searcher

@@ -51,6 +51,11 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
     @Override
     public void tick()
     {
+        if(!canContinueToUse())
+        {
+            return;
+        }
+
         SculkMiteEntity thisMob = this.mob;
         LivingEntity target = this.mob.getTarget();
         super.tick();
