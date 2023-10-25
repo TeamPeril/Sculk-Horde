@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.DevMassInfectinator3000BlockEntity;
-import com.github.sculkhorde.core.*;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -99,7 +99,7 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
         {
             return;
         }
-        ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquareForEntityOrBlockPos(pos, 16, 1);
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(pos, 16, 1, TickUnits.convertMinutesToTicks(15));
     }
 
     @Override
@@ -110,7 +110,7 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
             return;
         }
 
-        ChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(pos, (ServerLevel) worldIn);
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(pos, (ServerLevel) worldIn);
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

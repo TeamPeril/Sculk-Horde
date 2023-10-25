@@ -8,7 +8,7 @@ import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStr
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
@@ -197,11 +197,11 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         if(blockEntity.isActive())
         {
-            ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquareForEntityOrBlockPos(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1);
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
         }
         else
         {
-            ChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(blockPos, (ServerLevel) level);
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(blockPos, (ServerLevel) level);
         }
 
 

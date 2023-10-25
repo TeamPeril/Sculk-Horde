@@ -1,16 +1,24 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+
+import java.util.Objects;
+
 
 public abstract class ChunkLoadRequest {
 
     ChunkPos[] chunkPositionsToLoad;
     int priority; // Lower number means higher priority
+    String requestID;
 
-    public ChunkLoadRequest(ChunkPos[] chunkPositionsToLoad, int priority) {
+    long ticksUntilExpiration = 0;
+
+    public ChunkLoadRequest(ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration) {
         this.chunkPositionsToLoad = chunkPositionsToLoad;
         this.priority = priority;
+        this.requestID = requestID;
+        this.ticksUntilExpiration = ticksUntilExpiration;
     }
 
     public ChunkPos[] getChunkPositionsToLoad() {
@@ -21,9 +29,32 @@ public abstract class ChunkLoadRequest {
         return priority;
     }
 
+    public String getRequestID() {
+        return requestID;
+    }
+
+    public boolean isRequestID(String requestID) {
+        return Objects.equals(this.requestID, requestID);
+    }
+
     public abstract Object getOwner();
 
     public abstract boolean isOwner(Object owner);
+
+    public boolean isExpired()
+    {
+        return ticksUntilExpiration <= 0;
+    }
+
+    public void decrementTicksUntilExpiration(int amountToDecrement)
+    {
+        ticksUntilExpiration -= amountToDecrement;
+    }
+
+    public long getTicksUntilExpiration()
+    {
+        return ticksUntilExpiration;
+    }
 
     public boolean isHigherPriorityThan(ChunkLoadRequest other)
     {

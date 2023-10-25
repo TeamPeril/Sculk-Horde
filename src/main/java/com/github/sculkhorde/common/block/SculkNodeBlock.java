@@ -4,7 +4,6 @@ import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;

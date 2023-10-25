@@ -5,6 +5,8 @@ import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +46,8 @@ public class ForgeEventSubscriber {
             SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
             SculkHorde.sculkNodesHandler = new SculkNodesHandler(); //Initialize Sculk Nodes Handler
-
+            SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper(); //Initialize Entity Chunk Loader Helper
+            SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper(); //Initialize Block Entity Chunk Loader Helper
             if(SculkHorde.statisticsData == null)
             {
                 SculkHorde.statisticsData = new StatisticsData();
@@ -75,8 +78,8 @@ public class ForgeEventSubscriber {
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesHandler.tick();
 
-        SculkHorde.chunkLoaderHelper.processBlockChunkLoadRequests((ServerLevel) event.level);
-        SculkHorde.chunkLoaderHelper.processEntityChunkLoadRequests((ServerLevel) event.level);
+        SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests((ServerLevel) event.level);
+        SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests((ServerLevel) event.level);
 
         // Only run stuff below every 5 minutes
         if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))

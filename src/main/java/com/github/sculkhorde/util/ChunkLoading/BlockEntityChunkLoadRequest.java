@@ -4,19 +4,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 
-import java.util.UUID;
-
 public class BlockEntityChunkLoadRequest extends ChunkLoadRequest {
 
     private BlockPos owner;
 
-    public BlockEntityChunkLoadRequest(BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority) {
-        super(chunkPositionsToLoad, priority);
+    public BlockEntityChunkLoadRequest(BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration) {
+        super(chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         this.owner = owner;
     }
 
     @Override
-    public Object getOwner() {
+    public BlockPos getOwner() {
         return owner;
     }
 
@@ -32,6 +30,8 @@ public class BlockEntityChunkLoadRequest extends ChunkLoadRequest {
         compound.putInt("priority", priority);
         compound.putLong("owner", owner.asLong());
         compound.putInt("chunkPositionsToLoadLength", chunkPositionsToLoad.length);
+        compound.putString("requestID", requestID);
+        compound.putLong("ticksUntilExpiration", ticksUntilExpiration);
         for(int i = 0; i < chunkPositionsToLoad.length; i++)
         {
             compound.putLong("chunkPositionsToLoad" + i, chunkPositionsToLoad[i].toLong());
@@ -45,12 +45,14 @@ public class BlockEntityChunkLoadRequest extends ChunkLoadRequest {
         int priority = compound.getInt("priority");
         BlockPos owner = BlockPos.of(compound.getLong("owner"));
         int chunkPositionsToLoadLength = compound.getInt("chunkPositionsToLoadLength");
+        String requestID = compound.getString("requestID");
+        long ticksUntilExpiration = compound.getLong("ticksUntilExpiration");
         ChunkPos[] chunkPositionsToLoad = new ChunkPos[chunkPositionsToLoadLength];
         for(int i = 0; i < chunkPositionsToLoadLength; i++)
         {
             chunkPositionsToLoad[i] = new ChunkPos(compound.getLong("chunkPositionsToLoad" + i));
         }
-        return new BlockEntityChunkLoadRequest(owner, chunkPositionsToLoad, priority);
+        return new BlockEntityChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
     }
 
     public void setOwner(BlockPos owner) {

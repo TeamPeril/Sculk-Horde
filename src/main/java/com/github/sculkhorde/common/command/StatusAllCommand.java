@@ -38,6 +38,10 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "Areas of Interest Count: " + SculkHorde.savedData.getAreasOfInterestEntries().size()
                         + "\n"
                         + "No Raid Zone Entries Count: " + SculkHorde.savedData.getNoRaidZoneEntries().size()
+                        + "\n"
+                        + "Entity Chunk Load Requests: " + SculkHorde.entityChunkLoaderHelper.getEntityChunkLoadRequests().size()
+                        + "\n"
+                        + "BlockEntity Chunk load Requests: " + SculkHorde.blockEntityChunkLoaderHelper.getBlockChunkLoadRequests().size()
                 ), false);
         return 0;
     }

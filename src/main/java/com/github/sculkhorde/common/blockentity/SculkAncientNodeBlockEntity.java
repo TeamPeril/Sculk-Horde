@@ -11,7 +11,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
@@ -26,7 +26,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -273,7 +272,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 25);
 
-        ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquareForEntityOrBlockPos(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1);
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
     }
 
     private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)

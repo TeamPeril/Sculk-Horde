@@ -8,7 +8,7 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.*;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -130,7 +130,7 @@ public class RaidData {
         areaOfInterestEntry = null;
         if(getRaidLocation() != null)
         {
-            ChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), level);
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), level);
         }
         setBlockSearcher(null);
         setRaidState(RaidHandler.RaidState.INACTIVE);

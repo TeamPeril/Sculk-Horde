@@ -2,9 +2,8 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.*;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +36,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.world.ForgeChunkManager;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -46,7 +44,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSmartEntity {
 
@@ -301,28 +298,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             spawnPoint = new Vec3(getX(), getY(), getZ());
         }
 
-        ChunkPos currentChunk = level().getChunkAt(blockPosition()).getPos();
-
-        if(lastKnownChunk != currentChunk)
-        {
-            oldChunk = lastKnownChunk;
-            lastKnownChunk = currentChunk;
-
-            if(oldChunk != null)
-            {
-                //Unload chunk
-                ChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(this);
-            }
-
-            if(lastKnownChunk != null)
-            {
-                ChunkPos chunkPos = level().getChunkAt(blockPosition()).getPos();
-                //Load chunk
-                ChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequest(this, new ChunkPos[]{chunkPos}, 3);
-            }
-        }
-
-
+        EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,2, 3, TickUnits.convertMinutesToTicks(1));
     }
 
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33126_, DifficultyInstance p_33127_, MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {

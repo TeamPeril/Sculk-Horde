@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.core.*;
-import com.github.sculkhorde.util.ChunkLoading.ChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
