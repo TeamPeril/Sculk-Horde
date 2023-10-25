@@ -34,7 +34,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }

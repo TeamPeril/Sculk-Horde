@@ -29,7 +29,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canUse()
     {
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }

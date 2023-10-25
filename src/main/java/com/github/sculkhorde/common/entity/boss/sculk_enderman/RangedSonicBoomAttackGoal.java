@@ -43,7 +43,7 @@ public class RangedSonicBoomAttackGoal extends Goal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
@@ -122,7 +122,7 @@ public class RangedSonicBoomAttackGoal extends Goal
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
         float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5 ? targetEntity.getMaxHealth() : 10.0F;
-        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().sonicBoom(mob), damage);
+        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().generic(), damage);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);

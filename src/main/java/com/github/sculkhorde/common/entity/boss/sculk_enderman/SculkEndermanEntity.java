@@ -28,7 +28,8 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -47,8 +48,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Random;
 
-import static net.minecraft.world.entity.ai.behavior.BehaviorUtils.canSee;
-
 public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
@@ -66,16 +65,16 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     //The armor of the mob
     public static final float ARMOR = 5F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 7F;
+    public static final float ATTACK_DAMAGE = 20F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 3F;
+    public static final float ATTACK_KNOCKBACK = 5F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
 
     // Timing Variables
     public boolean canTeleport = true;
@@ -131,8 +130,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     // Accessors and Modifiers
 
-    public boolean isSpecialAttackReady() {
-        return ticksSinceLastSpecialAttack >= SPECIAL_ATTACK_COOLDOWN;
+    public boolean isSpecialAttackOnCooldown() {
+        return ticksSinceLastSpecialAttack < SPECIAL_ATTACK_COOLDOWN;
     }
 
     public void incrementSpecialAttackCooldown() {
@@ -259,14 +258,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             }
         }
         // IF target isnt null and we cannot see them, teleport to them
-        if(this.getTarget() != null && !canSee(this, this.getTarget()))
+        if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget())
         {
-            stayInSpecificRangeOfTarget(1, 32);
-        }
-
-        if(this.getTarget() != null && getHealth() >= getMaxHealth() * 0.5)
-        {
-            //stayInSpecificRangeOfTarget(3, 10);
+            teleportTowardsEntity(getTarget());
         }
 
         this.jumping = false;
@@ -332,32 +326,31 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     /**
      * Teleports the entity to a random position within 64 blocks of the entity
-     * @return Returns true if the teleport was successful
      */
-    protected boolean teleportRandomly(int distance)
+    protected void teleportRandomly(int distance)
     {
         if (this.level().isClientSide() || !this.isAlive() || !canTeleport)
         {
-            return false;
+            return;
         }
 
         double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * distance;
         double d1 = this.getY() + (int)(this.random.nextDouble() - 0.5D) * distance;
         double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * distance;
-        return this.teleport(d0, d1, d2);
+        this.teleport(d0, d1, d2);
 
     }
 
     /**
      * Teleports the entity towards the given entity
+     *
      * @param entity The entity to teleport towards
-     * @return Returns true if the teleport was successful
      */
-    public boolean teleportTowardsEntity(Entity entity)
+    public void teleportTowardsEntity(Entity entity)
     {
         if(!canTeleport || !isTeleportCooldownOver())
         {
-            return false;
+            return;
         }
 
         ticksSinceLastTeleport = 0;
@@ -368,7 +361,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * teleportDistance;
         double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3.y * teleportDistance;
         double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * teleportDistance;
-        return this.teleport(d1, d2, d3);
+        this.teleport(d1, d2, d3);
     }
 
     /**

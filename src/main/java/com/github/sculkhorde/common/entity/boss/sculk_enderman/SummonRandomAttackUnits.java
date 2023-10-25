@@ -7,7 +7,6 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
@@ -38,7 +37,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }

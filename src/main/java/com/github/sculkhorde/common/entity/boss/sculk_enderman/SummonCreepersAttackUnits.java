@@ -1,9 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -37,7 +35,7 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }

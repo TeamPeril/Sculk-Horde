@@ -197,6 +197,34 @@ public class TargetParameters
         return targetSwimmers;
     }
 
+    public TargetParameters enableMustSeeTarget()
+    {
+        if(this.mob == null)
+        {
+            throw new IllegalStateException("Cannot enable must reach target without a mob");
+        }
+        mustSeeTarget = true;
+        return this;
+    }
+
+    public boolean isMustSeeTarget()
+    {
+        return mustSeeTarget;
+    }
+
+    public boolean canSeeTarget()
+    {
+        if(this.mob == null)
+        {
+            throw new IllegalStateException("Cannot enable must reach target without a mob");
+        }
+        if(mob.getTarget() == null)
+        {
+            return false;
+        }
+        return mob.getSensing().hasLineOfSight(mob.getTarget());
+    }
+
     public TargetParameters enableMustReachTarget()
     {
         if(this.mob == null)

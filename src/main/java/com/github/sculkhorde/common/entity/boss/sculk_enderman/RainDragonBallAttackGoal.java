@@ -39,7 +39,7 @@ public class RainDragonBallAttackGoal extends Goal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
