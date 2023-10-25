@@ -184,14 +184,14 @@ public class BlockInfestationTable{
         // If the block we are placing is an Infested Log, place down sculk flora around it.
         if(newBlock.getBlock() == ModBlocks.INFESTED_LOG.get())
         {
-            BlockAlgorithms.placeFloraAroundLog(world, targetPos);
+            //BlockAlgorithms.placeFloraAroundLog(world, targetPos);
         }
 
         // Chance to place a sculk node above the block
         SculkNodeBlock.tryPlaceSculkNode(world, targetPos, true);
 
         // Chance to place a vein patch above the block
-        BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
+        //BlockAlgorithms.placePatchesOfVeinAbove(world, targetPos);
 
         // Chance to place a sculk bee hive above the block
         BlockAlgorithms.tryPlaceSculkBeeHive(world, targetPos.above());
