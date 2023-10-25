@@ -352,7 +352,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
 
-        if(ModConfig.SERVER.experimental_features_enabled.get()) {spawnSculkPhantomsAtTopOfWorld(blockEntity, 50);}
+        if(ModConfig.SERVER.experimental_features_enabled.get()) {spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);}
     }
 
     // Data

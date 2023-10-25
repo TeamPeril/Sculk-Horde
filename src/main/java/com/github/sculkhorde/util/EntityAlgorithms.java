@@ -196,6 +196,19 @@ public class EntityAlgorithms {
 
     }
 
+    /**
+     * Gets all living entities in the given bounding box.
+     * @param serverLevel The given world
+     * @param boundingBox The given bounding box to search for a target
+     * @param predicate The given predicate to filter the results
+     * @return A list of valid targets
+     */
+    public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox, Predicate<LivingEntity> predicate)
+    {
+        List<LivingEntity> livingEntitiesInRange = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, predicate);
+        return livingEntitiesInRange;
+    }
+
     public static AABB createBoundingBoxCubeAtBlockPos(Vec3 origin, int squareLength)
     {
         double halfLength = squareLength/2;

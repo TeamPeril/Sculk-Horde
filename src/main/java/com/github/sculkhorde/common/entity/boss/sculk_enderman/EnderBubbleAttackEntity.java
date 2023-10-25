@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -14,6 +15,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * The following java files were created/edited for this entity.<br>
@@ -46,22 +48,46 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         return this;
     }
 
+    private void pullInEntities(double range)
+    {
+        if(level().isClientSide()) return;
+
+        Predicate<LivingEntity> predicate = (entity) -> {
+            if(entity == null) {return false;}
+            else if(entity instanceof SculkEndermanEntity)
+            {
+                return false;
+            }
+
+            return true;
+        };
+
+        List<LivingEntity> pullInHitList = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(range, range, range), predicate);
+
+        for(LivingEntity entity : pullInHitList)
+        {
+            double forceAmount = 0.02;
+            double xDirection = this.getX() - entity.getX();
+            double yDirection = this.getY() - entity.getY();
+            double zDirection = this.getZ() - entity.getZ();
+            entity.push(xDirection * forceAmount, yDirection * forceAmount, zDirection * forceAmount);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
-        //TODO Uncomment
-        //if (sourceEntity == null || !sourceEntity.isAlive()) this.discard();
 
         currentLifeTicks++;
 
         // If the entity is alive for more than LIFE_TIME, discard it
         if(currentLifeTicks >= LIFE_TIME && LIFE_TIME != -1) this.discard();
 
-        //playSound(SoundEvents.GENERIC_EXPLODE);
+        pullInEntities(10);
 
+        List<LivingEntity> damageHitList = getEntitiesNearbyCube(LivingEntity.class, 3);
 
-        List<LivingEntity> hitList = getEntitiesNearbyCube(LivingEntity.class, 3);
-        for (LivingEntity entity : hitList)
+        for (LivingEntity entity : damageHitList)
         {
             if (getOwner() != null && getOwner().equals(entity))
             {
