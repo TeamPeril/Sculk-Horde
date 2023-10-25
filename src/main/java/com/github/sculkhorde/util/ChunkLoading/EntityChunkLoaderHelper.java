@@ -76,15 +76,8 @@ public class EntityChunkLoaderHelper
             return;
         }
 
-        if(SculkHorde.isDebugMode())
-        {
-            SculkHorde.LOGGER.info("EntityChunkLoader | Processing Entity Chunk Load Requests");
-        }
-
-        if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Reset Execurion Cooldown");}
         resetTickCooldown();
 
-        if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Starting Processing");}
         for(int i = 0; i < entityChunkLoadRequests.size(); i++)
         {
             EntityChunkLoadRequest request = entityChunkLoadRequests.get(i);

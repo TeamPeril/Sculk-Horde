@@ -84,6 +84,7 @@ public class BlockEntityChunkLoaderHelper
             request.decrementTicksUntilExpiration(TICKS_BETWEEN_PROCESSING);
             if(request.isExpired())
             {
+                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("BlockEntityChunkLoader | Chunk EXPIRED, Unloading and Removing");}
                 unloadAndRemoveChunksWithOwner(request.getOwner(), world);
             }
 
