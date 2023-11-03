@@ -50,6 +50,11 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
             return false;
         }
 
+        if(!mob.getTarget().onGround())
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -106,7 +111,6 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override

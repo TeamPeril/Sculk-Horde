@@ -42,6 +42,10 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> sculk_phantoms_enabled;
+
+        public final ForgeConfigSpec.ConfigValue<Boolean> sculk_phantoms_spawn_from_summoners;
+
 
         public Server(ForgeConfigSpec.Builder builder) {
 
@@ -70,6 +74,8 @@ public class ModConfig {
 
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
+            sculk_phantoms_enabled = builder.comment("Should sculk phantoms be enabled? (Default true)").define("sculk_phantoms_enabled",true);
+            sculk_phantoms_spawn_from_summoners = builder.comment("Should sculk phantoms spawn from summoners? (Default false)").define("sculk_phantoms_spawn_from_summoners",false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");

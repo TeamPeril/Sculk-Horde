@@ -40,7 +40,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 5.0D))
+        if(!mob.closerThan(mob.getTarget(), 5.0D) || !mob.getTarget().onGround())
         {
             return false;
         }

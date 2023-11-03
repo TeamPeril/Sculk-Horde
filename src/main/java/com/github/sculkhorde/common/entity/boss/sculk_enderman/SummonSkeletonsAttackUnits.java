@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
 
-public class SummonMitesAttackUnits extends MeleeAttackGoal
+public class SummonSkeletonsAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(40);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(50);
     protected int ticksElapsed = executionCooldown;
 
-    public SummonMitesAttackUnits(PathfinderMob mob, int durationInTicks) {
+    public SummonSkeletonsAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
     }
@@ -45,7 +45,7 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.getTarget().onGround())
+        if(!mob.closerThan(mob.getTarget(), 8.0D) && mob.getTarget().onGround())
         {
             return false;
         }
@@ -85,7 +85,7 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         //getSculkEnderman().triggerAnim("attack_controller", "summon_animation");
         //getSculkEnderman().triggerAnim("twitch_controller", "summon_twitch_animation");
 
-        //Disable mob's movement for 10 seconds
+        //Disable mob's movement
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
@@ -93,11 +93,11 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
-        // Spawn 20 units
-        for(int i = 0; i < 20 && i < possibleSpawns.size(); i++)
+        // Spawn units
+        for(int i = 0; i < 7 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            EntityFactory.spawnReinforcementOfThisEntityType(ModEntities.SCULK_MITE.get(), mob.level(), spawnPos.above());
+            EntityFactory.spawnReinforcementOfThisEntityType(ModEntities.SCULK_SPITTER.get(), mob.level(), spawnPos.above());
         }
     }
 

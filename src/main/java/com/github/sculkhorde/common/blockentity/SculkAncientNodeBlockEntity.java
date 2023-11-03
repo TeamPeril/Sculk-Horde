@@ -285,6 +285,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     private static void spawnSculkPhantomsAtTopOfWorld(SculkAncientNodeBlockEntity blockEntity, int amount)
     {
+        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
+
         ServerLevel level = (ServerLevel) blockEntity.level;
         int spawnRange = 100;
         int minimumSpawnRange = 50;

@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -11,16 +12,18 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
+public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
 {
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
     protected Vec3 origin;
+    protected Vec3 lookVec;
     protected int DELAY_BEFORE_ATTACK = 30;
     protected int delayRemaining = DELAY_BEFORE_ATTACK;
 
-    public SculkSpineSpikeRadialAttack(PathfinderMob mob) {
+
+    public SculkSpineSpikeLineAttack(PathfinderMob mob) {
         super(mob, 0.0F, true);
     }
 
@@ -34,12 +37,12 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     {
         ticksElapsed++;
 
-        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null || !ModConfig.SERVER.experimental_features_enabled.get())
         {
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 12.0D) || !mob.getTarget().onGround())
+        if(!mob.closerThan(mob.getTarget(), 13.0D) || !mob.getTarget().onGround())
         {
             return false;
         }
@@ -55,7 +58,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
     @Override
     public boolean canContinueToUse()
     {
-        return elapsedAttackDuration <= 30;
+        return elapsedAttackDuration <= 60;
     }
 
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
@@ -87,6 +90,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         getSculkEnderman().triggerAnim("attack_controller", "spike_radial_animation");
         getSculkEnderman().triggerAnim("twitch_controller", "spike_radial_twitch_animation");
         origin = new Vec3(mob.getX(), mob.getY() + mob.getEyeHeight(), mob.getZ());
+        lookVec = mob.getLookAngle();
         //Disable mob's movement for 10 seconds
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
@@ -115,7 +119,6 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 
     public void spawnSpikesOnCircumference(int radius, int amount)
     {
-        Vec3 origin = new Vec3(mob.getX(), mob.getY() + mob.getEyeHeight(), mob.getZ());
         ArrayList<SculkSpineSpikeAttackEntity> entities = new ArrayList<SculkSpineSpikeAttackEntity>();
         ArrayList<Vec3> possibleSpawns = BlockAlgorithms.getPointsOnCircumferenceVec3(origin, radius, amount);
         for(int i = 0; i < possibleSpawns.size(); i++)
@@ -140,6 +143,40 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         }
     }
 
+    public void spawnSpikesInPerpendicularLineInFrontOfEnderman(int offsetFromEnderman)
+    {
+        Vec3 middle = origin.add(lookVec.scale(offsetFromEnderman));
+
+        // Spawn spikes to the left and to the right of this spike, perpendicular to the enderman's look vector
+        Vec3 left = new Vec3(origin.z(), 0, -origin.x());
+        Vec3 right = new Vec3(-origin.z(), 0, origin.x());
+
+        left = new Vec3(middle.x() + left.x(), getSpawnHeight(BlockPos.containing(middle)), middle.z() + left.z());
+        right = new Vec3(middle.x() + right.x(), getSpawnHeight(BlockPos.containing(middle)), middle.z() + right.z());
+
+
+        // Spawn left, right, and middle entity
+        SculkSpineSpikeAttackEntity leftEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+        assert leftEntity != null;
+        leftEntity.setPos(left.x(), left.y(), left.z());
+        leftEntity.setOwner(mob);
+        mob.level().addFreshEntity(leftEntity);
+
+        SculkSpineSpikeAttackEntity rightEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+        assert rightEntity != null;
+        rightEntity.setPos(right.x(), right.y(),  right.z());
+        rightEntity.setOwner(mob);
+        mob.level().addFreshEntity(rightEntity);
+
+        SculkSpineSpikeAttackEntity middleEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+        assert middleEntity != null;
+        middleEntity.setPos(middle.x(), middle.y(), middle.z());
+        middleEntity.setOwner(mob);
+        mob.level().addFreshEntity(middleEntity);
+
+
+    }
+
     @Override
     public void tick()
     {
@@ -152,35 +189,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
             return;
         }
 
-        if(elapsedAttackDuration == 0)
-        {
-            spawnSpikesOnCircumference(1, 8);
-        }
-        if(elapsedAttackDuration == 5)
-        {
-            spawnSpikesOnCircumference(4, 16);
-        }
-        else if(elapsedAttackDuration == 10)
-        {
-            spawnSpikesOnCircumference(5, 5*2);
-        }
-        else if(elapsedAttackDuration == 15)
-        {
-            spawnSpikesOnCircumference(6, 6*3);
-        }
-        else if(elapsedAttackDuration == 20)
-        {
-            spawnSpikesOnCircumference(8, 8*3);
-        }
-        else if(elapsedAttackDuration == 25)
-        {
-            spawnSpikesOnCircumference(10, 10*4);
-        }
-        else if(elapsedAttackDuration == 30)
-        {
-            spawnSpikesOnCircumference(12, 12*4);
-        }
-
+        spawnSpikesInPerpendicularLineInFrontOfEnderman(elapsedAttackDuration + 1);
         elapsedAttackDuration++;
     }
 

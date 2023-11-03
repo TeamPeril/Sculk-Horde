@@ -39,7 +39,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 3.0D))
+        if(!mob.closerThan(mob.getTarget(), 5.0D) && mob.getTarget().onGround())
         {
             return false;
         }

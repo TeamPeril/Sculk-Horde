@@ -49,7 +49,7 @@ public class RainDragonBallAttackGoal extends Goal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 10.0F))
+        if(!mob.closerThan(mob.getTarget(), 10.0F) || !mob.getTarget().onGround())
         {
             return false;
         }

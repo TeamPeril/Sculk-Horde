@@ -205,22 +205,21 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.goalSelector.addGoal(0, new FloatGoal(this));
 
 
-        //All Phases
+        //All Phase Attacks
         this.goalSelector.addGoal(1, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(1, new SculkSpineSpikeRadialAttack(this));
+        this.goalSelector.addGoal(1, new SculkSpineSpikeLineAttack(this));
+        this.goalSelector.addGoal(1, new SummonSkeletonsAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(1, new RangedSonicBoomAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
         this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
-        this.goalSelector.addGoal(3, new AttackGoal());
 
-        // Phase 2
+        // Phase 2 Attacks
         this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(1, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
 
-        // Phase 1
-        this.goalSelector.addGoal(1, new RangedSonicBoomAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
-
-
+        this.goalSelector.addGoal(3, new AttackGoal());
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 1.0F, 20F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
@@ -261,6 +260,11 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget())
         {
             teleportTowardsEntity(getTarget());
+        }
+
+        if(this.getTarget() != null && !this.getTarget().onGround())
+        {
+            stayInSpecificRangeOfTarget(16, 32);
         }
 
         this.jumping = false;

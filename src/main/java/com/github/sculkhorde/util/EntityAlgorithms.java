@@ -130,6 +130,11 @@ public class EntityAlgorithms {
             {
                 return true;
             }
+
+            if(player.getEffect(ModMobEffects.PURITY.get()) != null && player.getEffect(ModMobEffects.PURITY.get()).getAmplifier() > 50)
+            {
+                return true;
+            }
         }
 
         if(entity instanceof Creeper)

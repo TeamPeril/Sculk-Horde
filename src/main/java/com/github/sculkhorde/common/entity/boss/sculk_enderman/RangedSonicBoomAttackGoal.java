@@ -53,11 +53,6 @@ public class RangedSonicBoomAttackGoal extends Goal
             return false;
         }
 
-        if(mob.getHealth() < mob.getMaxHealth()/2)
-        {
-            return false;
-        }
-
         return true;
     }
 
@@ -121,26 +116,10 @@ public class RangedSonicBoomAttackGoal extends Goal
         }
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-        float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5 ? targetEntity.getMaxHealth() : 10.0F;
-        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().generic(), damage);
+        float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5F ? (targetEntity.getMaxHealth()/4F) + 10.0F : 10.0F;
+        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().explosion(null, mob), damage);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);
-
-        /*
-        double xSpawn = mob.getX();
-        double ySpawn = mob.getY() + mob.getEyeHeight();
-        double zSpawn = mob.getZ();
-
-        double xDirection = targetEntity.getX() - xSpawn;
-        double yDirection = targetEntity.getY(0.5D) - ySpawn;
-        double zDirection = targetEntity.getZ() - zSpawn;
-
-        DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
-        dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
-        mob.level().addFreshEntity(dragonfireball);
-        //Play blaze shoot sound
-        mob.level().playLocalSound(xSpawn, ySpawn, zSpawn, SoundEvents.ENDER_DRAGON_SHOOT, mob.getSoundSource(), 1.0F, 1.0F, false);
-        */
     }
 }
