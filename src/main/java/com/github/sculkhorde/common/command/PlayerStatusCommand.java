@@ -48,7 +48,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
         Player player = context.getSource().getPlayerOrException();
 
         // If username is not Assassin_Mike
-        if(!player.getScoreboardName().equals("Assassin_Mike") && !player.getScoreboardName().equals("Dev")) {
+        if(!player.getScoreboardName().equals("Assassin_Mike") && !player.getScoreboardName().equals("Dev") && !player.getScoreboardName().equals("Sly3501")) {
             context.getSource().sendFailure(Component.literal("Command is WIP."));
             return 0;
         }
