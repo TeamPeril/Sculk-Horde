@@ -57,6 +57,7 @@
   "block.sculkhorde.infested_white_terracotta": "Infested White Terracotta",
   "block.sculkhorde.infested_yellow_terracotta": "Infested Yellow Terracotta",
   "block.sculkhorde.infested_tuff": "Infested Tuff",
+  "block.sculkhorde.infested_clay": "Infested Clay",
   "block.sculkhorde.sculk_node": "Sculk Brain Node",
   "tooltip.sculkhorde.sculk_node": "A highly sophisticated neural hub found within the Sculk Horde. It acts as a secondary brain for the Sculk Node, facilitating the intricate control of the local Sculk network.",
   "block.sculkhorde.sculk_ancient_node": "Ancient Sculk Brain Node",
