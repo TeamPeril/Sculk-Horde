@@ -152,12 +152,12 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity) && ModConfig.SERVER.target_faw_entities.get())
+        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity) && !ModConfig.SERVER.target_faw_entities.get())
         {
             return true;
         }
 
-        if(ModColaborationHelper.isThisASporeEntity(entity) && ModConfig.SERVER.target_spore_entities.get())
+        if(ModColaborationHelper.isThisASporeEntity(entity) && !ModConfig.SERVER.target_spore_entities.get())
         {
             return true;
         }

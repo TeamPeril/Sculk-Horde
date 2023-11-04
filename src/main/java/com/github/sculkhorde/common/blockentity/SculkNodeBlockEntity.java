@@ -151,6 +151,7 @@ public class SculkNodeBlockEntity extends BlockEntity
         if(infectionHandler == null)
         {
             infectionHandler = new SculkNodeInfectionHandler(this, getBlockPos());
+            infectionHandler.spawnOnSurface = false;
         }
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)

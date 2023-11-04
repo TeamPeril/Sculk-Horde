@@ -18,7 +18,7 @@ public class ModColaborationHelper {
 
     public static boolean isThisAFromAnotherWorldEntity(LivingEntity entity)
     {
-        if(isFromAnotherWorldLoaded())
+        if(!isFromAnotherWorldLoaded())
         {
             return false;
         }
@@ -36,13 +36,14 @@ public class ModColaborationHelper {
 
     public static boolean isThisASporeEntity(LivingEntity entity)
     {
-        if(isSporeLoaded())
+        if(!isSporeLoaded())
         {
             return false;
         }
 
         TagKey<EntityType<?>> sporeEntityTagKey = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("spore:fungus_entities"));
 
-        return entity.getType().is(sporeEntityTagKey);
+        boolean isSporeEntity = entity.getType().is(sporeEntityTagKey);
+        return isSporeEntity;
     }
 }

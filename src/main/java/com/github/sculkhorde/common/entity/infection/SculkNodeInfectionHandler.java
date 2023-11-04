@@ -15,6 +15,8 @@ public class SculkNodeInfectionHandler {
     private ServerLevel world = null;
     private BlockPos origin = null;
 
+    public boolean spawnOnSurface = true;
+
     private final int CHECK_FOR_ACTIVATION_INTERVAL = TickUnits.convertMinutesToTicks(1);
     private int timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
 
@@ -59,6 +61,11 @@ public class SculkNodeInfectionHandler {
 
     public BlockPos calculateSpawnPosition()
     {
+        if(!spawnOnSurface)
+        {
+            return origin;
+        }
+
         // Do ray trace from bottom to top of world. Return last known solid block
         BlockPos.MutableBlockPos checkPosition = new BlockPos.MutableBlockPos(origin.getX(), world.getMinBuildHeight(), origin.getZ());
         BlockPos lastKnownSolidBlock = null;

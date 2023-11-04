@@ -95,6 +95,13 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+	maven {
+			url 'https://www.cursemaven.com'
+			// FG4: It's recommended to uncomment the following block
+			content {
+				includeGroup "curse.maven"
+			}
+		}
 }
 
 dependencies {
@@ -102,6 +109,11 @@ dependencies {
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.1')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+	implementation fg.deobf("curse.maven:A_jei-238222:4712868")
+	implementation fg.deobf("curse.maven:A_spore-678295:4764840")
+	implementation fg.deobf("curse.maven:A_fromanotherworld-829752:4829103")
+	implementation fg.deobf("curse.maven:A_fromanotherlibrary-921324:4798023")
+	implementation fg.deobf("curse.maven:A_AzureLib-817423:4812417")
 }
 
 mixin {

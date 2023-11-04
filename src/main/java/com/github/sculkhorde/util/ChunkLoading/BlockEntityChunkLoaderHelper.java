@@ -41,6 +41,12 @@ public class BlockEntityChunkLoaderHelper
 
     public static void load(CompoundTag tag)
     {
+        if(getChunkLoaderHelper() == null)
+        {
+            SculkHorde.LOGGER.error("BlockEntityChunkLoaderHelper is null. Cannot Load");
+            return;
+        }
+
         getChunkLoaderHelper().blockChunkLoadRequests.clear();
         ListTag blockChunkLoadRequestsTag = tag.getList("blockChunkLoadRequests", 10);
         for(int i = 0; i < blockChunkLoadRequestsTag.size(); i++)
@@ -53,6 +59,12 @@ public class BlockEntityChunkLoaderHelper
 
     public static CompoundTag save(CompoundTag tag)
     {
+        if(getChunkLoaderHelper() == null)
+        {
+            SculkHorde.LOGGER.error("BlockEntityChunkLoaderHelper is null. Cannot Save.");
+            return tag;
+        }
+
         ListTag blockChunkLoadRequestsTag = new ListTag();
         for(BlockEntityChunkLoadRequest request : getChunkLoaderHelper().blockChunkLoadRequests)
         {
