@@ -119,10 +119,10 @@ public class SculkBeeNestBlock extends BaseEntityBlock
     {
         super.onPlace(state, level, pos, oldState, isMoving);
 
-        //If world isnt client side and we are in the overworld
-        if(!level.isClientSide() && level.dimension() == Level.OVERWORLD && SculkHorde.savedData != null)
+        //If world isn't client side and saved data exists, add this node to memory
+        if(!level.isClientSide() && SculkHorde.savedData != null)
         {
-            SculkHorde.savedData.addBeeNestToMemory(pos);
+            SculkHorde.savedData.addBeeNestToMemory((ServerLevel) level, pos);
         }
     }
 

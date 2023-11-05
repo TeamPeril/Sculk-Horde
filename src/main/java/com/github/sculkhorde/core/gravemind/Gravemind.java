@@ -123,11 +123,11 @@ public class Gravemind
         {
             ModSavedData.BeeNestEntry entry = SculkHorde.savedData.getBeeNestEntries().get(i);
 
-            if(!entry.isEntryValid(worldIn)) { continue; }
+            if(!entry.isEntryValid()) { continue; }
 
-            if (!entry.isOccupantsExistingDisabled(worldIn))
+            if (!entry.isOccupantsExistingDisabled())
             {
-                entry.disableOccupantsExiting(worldIn);
+                entry.disableOccupantsExiting();
                 lastEnabledIndex = i;
             }
         }
@@ -140,9 +140,9 @@ public class Gravemind
         {
             int index = i % SculkHorde.savedData.getBeeNestEntries().size();
 
-            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid(worldIn)) { continue; }
+            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid()) { continue; }
 
-            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting(worldIn);
+            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting();
         }
     }
 

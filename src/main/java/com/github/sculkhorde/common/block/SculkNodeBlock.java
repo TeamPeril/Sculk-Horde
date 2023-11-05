@@ -145,12 +145,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return false;
         }
 
-        //Is Overworld
-        if(!worldIn.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
-        {
-            return false;
-        }
-
         // Need to be far away from ancient node at 0,0
         if(worldIn.equals(ServerLifecycleHooks.getCurrentServer().overworld()) && BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
         {

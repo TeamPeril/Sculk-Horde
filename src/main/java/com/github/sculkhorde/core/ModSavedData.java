@@ -350,11 +350,11 @@ public class ModSavedData extends SavedData {
      *
      * @param positionIn The Position to add
      */
-    public void addBeeNestToMemory(BlockPos positionIn)
+    public void addBeeNestToMemory(ServerLevel level, BlockPos positionIn)
     {
         if (!isBeeNestPositionInMemory(positionIn) && getBeeNestEntries() != null)
         {
-            getBeeNestEntries().add(new BeeNestEntry(positionIn));
+            getBeeNestEntries().add(new BeeNestEntry(level, positionIn));
             setDirty();
         }
         // TODO For some reason this continously gets called, find out why
@@ -562,7 +562,6 @@ public class ModSavedData extends SavedData {
     public void validateNodeEntries() {
         long startTime = System.nanoTime();
         for (int index = 0; index < nodeEntries.size(); index++) {
-            //TODO: Figure out if not being in the overworld can mess this up
             if (!getNodeEntries().get(index).isEntryValid()) {
                 resetTicksSinceSculkNodeDestruction();
                 getNodeEntries().remove(index);
@@ -588,8 +587,7 @@ public class ModSavedData extends SavedData {
         long startTime = System.nanoTime();
         for (int index = 0; index < getBeeNestEntries().size(); index++) {
             getBeeNestEntries().get(index).setParentNodeToClosest();
-            //TODO: Figure out if not being in the overworld can mess this up
-            if (!getBeeNestEntries().get(index).isEntryValid(level)) {
+            if (!getBeeNestEntries().get(index).isEntryValid()) {
                 getBeeNestEntries().remove(index);
                 index--;
                 setDirty();
@@ -1007,29 +1005,57 @@ public class ModSavedData extends SavedData {
         private final BlockPos position; //The location in the world where the node is
         private BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
 
+        private ResourceKey<Level> dimension;
+
         /**
          * Default Constructor
          * @param positionIn The Position of this Nest
          */
-        public BeeNestEntry(BlockPos positionIn)
+        public BeeNestEntry(ServerLevel dimension, BlockPos positionIn)
         {
+            this.dimension = dimension.dimension();
             position = positionIn;
         }
 
-        public BeeNestEntry(BlockPos positionIn, BlockPos parentPositionIn)
+        public BeeNestEntry(ServerLevel dimension, BlockPos positionIn, BlockPos parentPositionIn)
         {
             position = positionIn;
             parentNodePosition = parentPositionIn;
+            this.dimension = dimension.dimension();
+        }
+
+        public BeeNestEntry(ResourceKey<Level> dimension, BlockPos positionIn, BlockPos parentPositionIn)
+        {
+            position = positionIn;
+            parentNodePosition = parentPositionIn;
+            this.dimension = dimension;
+        }
+
+        public ServerLevel getDimension()
+        {
+            return SculkHorde.savedData.level.getServer().getLevel(dimension);
         }
 
         /**
          * Checks if the block does still exist in the world.
-         * @param worldIn The world to check
          * @return True if valid, false otherwise.
          */
-        public boolean isEntryValid(ServerLevel worldIn)
+        public boolean isEntryValid()
         {
-            return worldIn.getBlockState(position).getBlock().equals(ModBlocks.SCULK_BEE_NEST_BLOCK.get());
+            ServerLevel dimension = getDimension();
+
+            if(dimension == null)
+            {
+                SculkHorde.LOGGER.error("Failed To Validate Bee Nest Entry. Dimension was null.");
+                return false;
+            }
+            else if(dimension.getBlockEntity(position) == null)
+            {
+                SculkHorde.LOGGER.error("Failed To Validate Bee Nest Entry. Block Entity was null.");
+                return false;
+            }
+
+            return dimension.getBlockState(position).getBlock().equals(ModBlocks.SCULK_BEE_NEST_BLOCK.get());
         }
 
 
@@ -1037,38 +1063,48 @@ public class ModSavedData extends SavedData {
          * is Hive enabled?
          * @return True if enabled, false otherwise
          */
-        public boolean isOccupantsExistingDisabled(ServerLevel worldIn)
+        public boolean isOccupantsExistingDisabled()
         {
-            return SculkBeeNestBlock.isNestClosed(worldIn.getBlockState(position));
+            return SculkBeeNestBlock.isNestClosed(getDimension().getBlockState(position));
         }
 
         /**
          * Sets Hive to deny bees leaving
          */
-        public void disableOccupantsExiting(ServerLevel world)
+        public void disableOccupantsExiting()
         {
-            SculkBeeNestBlock.setNestClosed(world, world.getBlockState(position), position);
+            SculkBeeNestBlock.setNestClosed(getDimension(), getDimension().getBlockState(position), position);
         }
 
 
         /**
          * Sets Hive to allow bees leaving
          */
-        public void enableOccupantsExiting(ServerLevel world)
+        public void enableOccupantsExiting()
         {
-            SculkBeeNestBlock.setNestOpen(world, world.getBlockState(position), position);
+            SculkBeeNestBlock.setNestOpen(getDimension(), getDimension().getBlockState(position), position);
         }
 
 
-        public NodeEntry getClosestNode(BlockPos pos)
+        public Optional<NodeEntry> getClosestNode(BlockPos pos)
         {
-            NodeEntry closestEntry = getGravemindMemory().getNodeEntries().get(0);
+            Optional<NodeEntry> closestEntry = Optional.empty();
             for(NodeEntry entry : getGravemindMemory().getNodeEntries())
             {
-                //If entry is closer than our current closest entry
-                if(getBlockDistance(pos, entry.position) < getBlockDistance(pos, closestEntry.position))
+                // If we are not in the same dimension
+                if(!entry.dimension.equals(dimension))
                 {
-                    closestEntry = entry;
+                    continue;
+                }
+
+                if(closestEntry.isEmpty())
+                {
+                    closestEntry = Optional.of(entry);
+                }
+                //If entry is closer than our current closest entry
+                else if(getBlockDistance(pos, entry.position) < getBlockDistance(pos, closestEntry.get().position))
+                {
+                    closestEntry = Optional.of(entry);
                 }
             }
             return closestEntry;
@@ -1084,16 +1120,26 @@ public class ModSavedData extends SavedData {
             //Make sure nodeEntries isnt null and nodeEntries isnt empty
             if(getGravemindMemory().getNodeEntries() != null && !getGravemindMemory().getNodeEntries().isEmpty())
             {
-                NodeEntry closestEntry = getGravemindMemory().getNodeEntries().get(0);
+                Optional<NodeEntry> closestEntry = Optional.empty();
                 for(NodeEntry entry : getGravemindMemory().getNodeEntries())
                 {
-                    //If entry is closer than our current closest entry
-                    if(getBlockDistance(position, entry.position) < getBlockDistance(position, closestEntry.position))
+                    // If we are not in the same dimension
+                    if(!entry.dimension.equals(dimension))
                     {
-                        closestEntry = entry;
+                        continue;
+                    }
+
+                    if(closestEntry.isEmpty())
+                    {
+                        closestEntry = Optional.of(entry);
+                    }
+                    //If entry is closer than our current closest entry
+                    else if(getBlockDistance(position, entry.position) < getBlockDistance(position, closestEntry.get().position))
+                    {
+                        closestEntry = Optional.of(entry);
                     }
                 }
-                parentNodePosition = closestEntry.position;
+                parentNodePosition = closestEntry.get().position;
             }
         }
 
@@ -1106,6 +1152,7 @@ public class ModSavedData extends SavedData {
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
+            if(dimension != null) nbt.putString("dimension", dimension.location().toString());
             if(parentNodePosition != null) nbt.putLong("parentNodePosition", parentNodePosition.asLong());
             return nbt;
         }
@@ -1117,7 +1164,9 @@ public class ModSavedData extends SavedData {
          */
         public static BeeNestEntry serialize(CompoundTag nbt)
         {
-            return new BeeNestEntry(BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+
+            return new BeeNestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
         }
     }
 

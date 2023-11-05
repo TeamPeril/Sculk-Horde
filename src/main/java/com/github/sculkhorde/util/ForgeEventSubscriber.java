@@ -124,7 +124,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(event.getEntity().level().isClientSide() || SculkHorde.gravemind == null || !event.getEntity().level().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.getEntity().level().isClientSide() || SculkHorde.gravemind == null)
         {
             return;
         }

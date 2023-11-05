@@ -436,10 +436,6 @@ public class BlockAlgorithms {
      */
     public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos)
     {
-        if(!world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
-        {
-            return;
-        }
 
         //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
