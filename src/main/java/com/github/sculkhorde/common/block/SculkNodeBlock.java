@@ -139,11 +139,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static boolean isValidPositionForSculkNode(ServerLevel worldIn, BlockPos positionIn)
     {
-        if(worldIn.canSeeSky(positionIn))
-        {
-            return false;
-        }
-
         if(SculkHorde.savedData == null) { return false;}
         if(SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
         {
@@ -157,13 +152,18 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         }
 
         // Need to be far away from ancient node at 0,0
-        if(BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
+        if(worldIn.equals(ServerLifecycleHooks.getCurrentServer().overworld()) && BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
         {
             return false;
         }
 
         for (ModSavedData.NodeEntry entry : SculkHorde.savedData.getNodeEntries())
         {
+            if(!entry.getDimension().toString().equals(worldIn.dimension().toString()))
+            {
+                continue;
+            }
+
             //Get Distance from our potential location to the current index node position
             int distanceFromPotentialToCurrentNode = (int) getBlockDistance(positionIn, entry.getPosition());
 
@@ -180,7 +180,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ());
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
-        SculkHorde.savedData.addNodeToMemory(newOrigin);
+        SculkHorde.savedData.addNodeToMemory(level, newOrigin);
         EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
 
         //Send message to all players that node has spawned
@@ -201,10 +201,13 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public void setPlacedBy(Level world, BlockPos bp, BlockState blockState, @Nullable LivingEntity entity, ItemStack itemStack)
     {
         super.setPlacedBy(world, bp, blockState, entity, itemStack);
+
+        if(world.isClientSide()) { return; }
+
         //If world isnt client side and we are in the overworld
-        if(!world.isClientSide() && world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(!world.isClientSide())
         {
-            SculkHorde.savedData.addNodeToMemory(bp);
+            SculkHorde.savedData.addNodeToMemory((ServerLevel) world, bp);
         }
     }
 

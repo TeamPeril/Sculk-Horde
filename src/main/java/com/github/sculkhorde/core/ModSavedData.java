@@ -11,10 +11,15 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.StatisticsData;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -331,11 +336,11 @@ public class ModSavedData extends SavedData {
      *
      * @param positionIn The Posoition to add
      */
-    public void addNodeToMemory(BlockPos positionIn)
+    public void addNodeToMemory(ServerLevel level, BlockPos positionIn)
     {
         if (!isNodePositionInMemory(positionIn) && getNodeEntries() != null)
         {
-            getNodeEntries().add(new NodeEntry(positionIn));
+            getNodeEntries().add(new NodeEntry(level, positionIn));
             setDirty();
         }
     }
@@ -558,7 +563,7 @@ public class ModSavedData extends SavedData {
         long startTime = System.nanoTime();
         for (int index = 0; index < nodeEntries.size(); index++) {
             //TODO: Figure out if not being in the overworld can mess this up
-            if (!getNodeEntries().get(index).isEntryValid(level)) {
+            if (!getNodeEntries().get(index).isEntryValid()) {
                 resetTicksSinceSculkNodeDestruction();
                 getNodeEntries().remove(index);
                 index--;
@@ -863,20 +868,37 @@ public class ModSavedData extends SavedData {
     {
         private final BlockPos position; //The Location in the world where the node is
         private long lastTimeWasActive;
-
         private long activationTimeStamp;
-
         private boolean IsActive;
+        private ResourceKey<Level> dimension;
 
 
         /**
          * Default Constructor
          * @param positionIn The physical location
          */
-        public NodeEntry(BlockPos positionIn)
+        public NodeEntry(ServerLevel level, BlockPos positionIn)
         {
             position = positionIn;
             lastTimeWasActive = SculkHorde.savedData.level.getGameTime();
+
+            this.dimension = level.dimension();
+        }
+
+        /**
+         * Default Constructor
+         * @param positionIn The physical location
+         */
+        public NodeEntry(ResourceKey<Level> dimensionResource, BlockPos positionIn)
+        {
+            position = positionIn;
+            lastTimeWasActive = SculkHorde.savedData.level.getGameTime();
+
+            this.dimension = dimensionResource;
+        }
+        public ServerLevel getDimension()
+        {
+            return SculkHorde.savedData.level.getServer().getLevel(dimension);
         }
 
         public BlockPos getPosition()
@@ -891,8 +913,24 @@ public class ModSavedData extends SavedData {
 
         public void setActive(boolean activeIn)
         {
+            if(getDimension() == null)
+            {
+                SculkHorde.LOGGER.error("Failed To Set Node Active. Dimension was null.");
+                return;
+            }
+            else if(getDimension().getBlockEntity(position) == null)
+            {
+                SculkHorde.LOGGER.error("Failed To Set Node Active. Block Entity was null.");
+                return;
+            }
+            else if(!(getDimension().getBlockEntity(position) instanceof SculkNodeBlockEntity))
+            {
+                SculkHorde.LOGGER.error("Failed To Set Node Active. Block Entity was not instance of Sculk Node Block Entity.");
+                return;
+            }
+
             IsActive = activeIn;
-            SculkNodeBlockEntity sculkNodeBlockEntity = (SculkNodeBlockEntity) SculkHorde.savedData.level.getBlockEntity(position);
+            SculkNodeBlockEntity sculkNodeBlockEntity = (SculkNodeBlockEntity) getDimension().getBlockEntity(position);
             sculkNodeBlockEntity.setActive(activeIn);
         }
 
@@ -918,12 +956,11 @@ public class ModSavedData extends SavedData {
 
         /**
          * Checks the world to see if the node is still there.
-         * @param worldIn The world to check
          * @return True if in the world at location, false otherwise
          */
-        public boolean isEntryValid(ServerLevel worldIn)
+        public boolean isEntryValid()
         {
-            return worldIn.getBlockState(position).getBlock().equals(ModBlocks.SCULK_NODE_BLOCK.get());
+            return getDimension().getBlockState(position).getBlock().equals(ModBlocks.SCULK_NODE_BLOCK.get());
         }
 
         /**
@@ -937,6 +974,8 @@ public class ModSavedData extends SavedData {
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
             nbt.putLong("activationTimeStamp", activationTimeStamp);
             nbt.putBoolean("IsActive", IsActive);
+            // Put Dimension ID
+            nbt.putString("dimension", dimension.location().toString());
             return nbt;
         }
 
@@ -946,10 +985,13 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry serialize(CompoundTag nbt)
         {
-            NodeEntry entry = new NodeEntry(BlockPos.of(nbt.getLong("position")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
             entry.setActive(nbt.getBoolean("IsActive"));
+            // Get Dimension
+
             return entry;
         }
 

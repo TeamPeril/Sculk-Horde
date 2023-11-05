@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20.1-0.7.3'
+version = '1.20.1-0.7.4-Beta1'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -109,11 +109,13 @@ dependencies {
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.1')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:A_jei-238222:4712868")
-	implementation fg.deobf("curse.maven:A_spore-678295:4764840")
-	implementation fg.deobf("curse.maven:A_fromanotherworld-829752:4829103")
-	implementation fg.deobf("curse.maven:A_fromanotherlibrary-921324:4798023")
-	implementation fg.deobf("curse.maven:A_AzureLib-817423:4812417")
+	implementation fg.deobf("curse.maven:jei-238222:4712868")
+	implementation fg.deobf("curse.maven:spore-678295:4764840")
+	implementation fg.deobf("curse.maven:fromanotherworld-829752:4829103")
+	implementation fg.deobf("curse.maven:fromanotherlibrary-921324:4798023")
+	implementation fg.deobf("curse.maven:azureLib-817423:4812417")
+	implementation fg.deobf("curse.maven:spark-361579:4738952")
+	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
 }
 
 mixin {

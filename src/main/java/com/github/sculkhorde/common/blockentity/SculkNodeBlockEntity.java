@@ -52,7 +52,6 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     private final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
     private long lastHeartBeat = System.currentTimeMillis();
-
     private long lastPopulationUpdate = 0;
     private final long populationUpdateIntervalMillis = TickUnits.convertMinutesToTicks(3);
     public final int MAX_POPULATION = 100;

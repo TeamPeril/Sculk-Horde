@@ -12,7 +12,7 @@ public class SculkNodesHandler {
     protected boolean isActive = false;
 
     //protected long TICK_COOLDOWN = TickUnits.convertMinutesToTicks(5);
-    protected long TICK_COOLDOWN = TickUnits.convertMinutesToTicks(1);
+    protected long TICK_COOLDOWN = TickUnits.convertSecondsToTicks(10);
     protected long lastTimeSinceTick = 0;
 
 
@@ -28,13 +28,12 @@ public class SculkNodesHandler {
         return this.isActive;
     }
 
+    protected ServerLevel getLevel() {
+        return getSavedData().level;
+    }
 
     protected ModSavedData getSavedData() {
         return SculkHorde.savedData;
-    }
-
-    protected ServerLevel getLevel() {
-        return getSavedData().level;
     }
 
     protected ArrayList<ModSavedData.NodeEntry> getNodes() {
@@ -46,7 +45,7 @@ public class SculkNodesHandler {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = null;
         for(ModSavedData.NodeEntry node : getNodes())
         {
-            long currentTime = getLevel().getGameTime();
+            long currentTime = node.getDimension().getGameTime();
             long currentNodeDurationOfInactivity =  currentTime - node.getLastTimeWasActive();
             long nodeWithLongestTimeOfInactivityDuration = nodeWithLongestTimeOfInactivity == null ? 0 : currentTime - nodeWithLongestTimeOfInactivity.getLastTimeWasActive();
 
@@ -69,7 +68,7 @@ public class SculkNodesHandler {
     {
         for(ModSavedData.NodeEntry node : getNodes())
         {
-            long currentNodeDurationOfInactivity =  getLevel().getGameTime() - node.getActivationTimeStamp();
+            long currentNodeDurationOfInactivity =  node.getDimension().getGameTime() - node.getActivationTimeStamp();
             if(currentNodeDurationOfInactivity > TickUnits.convertHoursToTicks(1) && node.isActive())
             {
                 return true;
@@ -95,7 +94,7 @@ public class SculkNodesHandler {
     {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
         nodeWithLongestTimeOfInactivity.setActive(true);
-        nodeWithLongestTimeOfInactivity.setActivationTimeStamp(getLevel().getGameTime());
+        nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
         SculkHorde.LOGGER.info("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
     }
 
@@ -105,15 +104,20 @@ public class SculkNodesHandler {
         {
             if(!node.isActive()) { continue; }
             node.setActive(false);
-            node.setLastTimeWasActive(getLevel().getGameTime());
+            node.setLastTimeWasActive(node.getDimension().getGameTime());
             SculkHorde.LOGGER.info("Deactivating Node at: " + node.getPosition().toString());
         }
     }
 
     public void tick()
     {
+        boolean isSculkNodeHandlerNotActive = !isActive();
         boolean isSaveDataNull = getSavedData() == null;
-        if(!isActive() || isSaveDataNull || getNodes().isEmpty() || getLevel().getGameTime() - lastTimeSinceTick < TICK_COOLDOWN)
+        long timeElapsedSinceLastTick = getLevel().getGameTime() - lastTimeSinceTick;
+        boolean isCooldownStillActive = timeElapsedSinceLastTick < TICK_COOLDOWN;
+        boolean areThereNoNodes = getNodes().isEmpty();
+
+        if(isSculkNodeHandlerNotActive || isSaveDataNull || areThereNoNodes || isCooldownStillActive)
         {
             return;
         }
@@ -121,7 +125,13 @@ public class SculkNodesHandler {
 
         int maxActiveNodes = 1;
 
-        if((hasAnyNodeBeenActiveForTooLong() && getNodes().size() > maxActiveNodes) || (areAllNodesInactive() && getNodes().size() >= maxActiveNodes))
+        boolean isThereMoreNodesThanMaxActiveNodes = getNodes().size() > maxActiveNodes;
+
+        boolean hasAnyNodeBeenActiveForTooLong = hasAnyNodeBeenActiveForTooLong();
+
+        boolean areAllNodesInactive = areAllNodesInactive();
+
+        if((hasAnyNodeBeenActiveForTooLong && isThereMoreNodesThanMaxActiveNodes) || areAllNodesInactive)
         {
             for(int i = 0; i < maxActiveNodes; i++)
             {

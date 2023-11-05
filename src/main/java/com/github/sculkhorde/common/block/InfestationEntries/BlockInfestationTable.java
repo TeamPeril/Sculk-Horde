@@ -139,10 +139,6 @@ public class BlockInfestationTable{
         {
             BlockAlgorithms.tryPlaceSculkFlora(position.above(), world);
         }
-        else if(world.random.nextInt(1000) <= 0)
-        {
-            BlockAlgorithms.tryPlaceLivingRockRoot(position.above(), world);
-        }
     }
 
     /**
