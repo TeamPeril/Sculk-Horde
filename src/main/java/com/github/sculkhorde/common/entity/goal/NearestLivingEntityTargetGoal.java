@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -14,6 +15,9 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     //protected EntityPredicate targetConditions;
     List<LivingEntity> possibleTargets;
+
+    long lastTimeSinceTargetSearch = 0;
+    long targetSearchInterval = TickUnits.convertSecondsToTicks(1);
 
     public NearestLivingEntityTargetGoal(Mob mobEntity, boolean mustSee, boolean mustReach)
     {
@@ -44,6 +48,13 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     protected void findTarget()
     {
+        if(this.mob.level().getGameTime() - lastTimeSinceTargetSearch < targetSearchInterval)
+        {
+            return;
+        }
+
+        lastTimeSinceTargetSearch = this.mob.level().getGameTime();
+
         possibleTargets =
                 this.mob.level().getEntitiesOfClass(
                 LivingEntity.class,
