@@ -167,7 +167,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             }
 
             // Move to the closest block
-            this.setPos(closest.getX(), closest.getY(), closest.getZ());
+            this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
             visitedPositons.put(closest.asLong(), true);
 
             // If we've reached the target block, die then report successful
