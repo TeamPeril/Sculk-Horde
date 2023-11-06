@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -187,6 +189,26 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
         // Play sound for each player
         level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.HOSTILE, 1.0F, 1.0F));
+        spawnSculkPhantomsAtTopOfWorld(level, newOrigin, 20);
+    }
+
+    private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
+    {
+        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
+        ;
+        int spawnRange = 100;
+        int minimumSpawnRange = 50;
+        Random rng = new Random();
+        for(int i = 0; i < amount; i++)
+        {
+            int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int y = level.getMaxBuildHeight();
+            BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
+
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+
+        }
     }
 
     /**
