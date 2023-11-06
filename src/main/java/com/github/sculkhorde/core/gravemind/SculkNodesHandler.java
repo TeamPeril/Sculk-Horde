@@ -10,9 +10,7 @@ import java.util.ArrayList;
 public class SculkNodesHandler {
 
     protected boolean isActive = false;
-
-    //protected long TICK_COOLDOWN = TickUnits.convertMinutesToTicks(5);
-    protected long TICK_COOLDOWN = TickUnits.convertSecondsToTicks(10);
+    protected long TICK_COOLDOWN = TickUnits.convertMinutesToTicks(5);
     protected long lastTimeSinceTick = 0;
 
 
@@ -95,7 +93,7 @@ public class SculkNodesHandler {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
         nodeWithLongestTimeOfInactivity.setActive(true);
         nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
-        SculkHorde.LOGGER.info("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
+        SculkHorde.LOGGER.debug("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
     }
 
     protected void DeactivateAllNodes()
@@ -105,7 +103,7 @@ public class SculkNodesHandler {
             if(!node.isActive()) { continue; }
             node.setActive(false);
             node.setLastTimeWasActive(node.getDimension().getGameTime());
-            SculkHorde.LOGGER.info("Deactivating Node at: " + node.getPosition().toString());
+            SculkHorde.LOGGER.debug("Deactivating Node at: " + node.getPosition().toString());
         }
     }
 

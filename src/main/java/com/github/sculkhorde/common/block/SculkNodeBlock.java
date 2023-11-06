@@ -167,6 +167,12 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
                 return false;
             }
         }
+
+        if(BlockAlgorithms.isNearFluid(worldIn, positionIn, 5))
+        {
+            return false;
+        }
+
         return true;
     }
 

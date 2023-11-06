@@ -112,7 +112,7 @@ public class Gravemind
         }
     }
 
-    public void enableAmountOfBeeHives(ServerLevel worldIn, int amount)
+    public void enableAmountOfBeeHives(int amount)
     {
         if(SculkHorde.savedData == null) { return; }
 

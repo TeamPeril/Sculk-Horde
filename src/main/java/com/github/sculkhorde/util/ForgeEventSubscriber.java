@@ -88,7 +88,7 @@ public class ForgeEventSubscriber {
         }
 
         time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
-        SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
+        SculkHorde.gravemind.enableAmountOfBeeHives(20);
 
         //Verification Processes to ensure our data is accurate
         SculkHorde.savedData.validateNodeEntries();

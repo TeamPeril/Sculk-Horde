@@ -471,62 +471,6 @@ public class BlockAlgorithms {
     }
 
     /**
-     * Will place random flora attached to a given position.
-     * @param serverWorld the world
-     * @param origin the position
-     */
-    public static void placeFloraAroundLog(ServerLevel serverWorld, BlockPos origin) {
-        TendrilsBlock vein = ModBlocks.TENDRILS.get();
-
-        BlockPos[] possiblePositions = {
-                origin.north(),
-                origin.east(),
-                origin.south(),
-                origin.west()
-        };
-
-        //50% chance to place sculk vein for each face
-        for(BlockPos pos : possiblePositions)
-        {
-            if(serverWorld.random.nextInt(10) < 3 &&
-                    serverWorld.getBlockState(pos).isAir())
-            {
-                vein.placeBlock(serverWorld, pos);
-            }
-        }
-    }
-
-    /**
-     * Places a line of sculk vein above a block. Length and height of line is random.
-     * @param serverWorld the world
-     * @param origin the block we want to place these above
-     */
-    public static void placePatchesOfVeinAbove(ServerLevel serverWorld, BlockPos origin)
-    {
-        int OFFSET_MAX = 3;
-        int LENGTH_MAX = 5;
-        int LENGTH_MIN = 3;
-
-        Random rng = new Random();
-        int offset = rng.nextInt(OFFSET_MAX);
-        int length = rng.nextInt(LENGTH_MAX - LENGTH_MIN) + LENGTH_MIN;
-        TendrilsBlock vein = ModBlocks.TENDRILS.get();
-
-        //Attempt to place sculk vein in a straight line above origin
-        BlockPos indexPos = origin.above(offset);
-        for(int i = 0; i < length; i++)
-        {
-            indexPos = indexPos.above();
-
-            //75% chance to place vein
-            if(serverWorld.random.nextInt(4) <= 2)
-            {
-                vein.placeBlock(serverWorld, indexPos);
-            }
-        }
-    }
-
-    /**
      * Generates a list of PlannedBlocks in the shape of a 2D circle.
      *
      * @param centerPos The center of the circle
@@ -643,6 +587,19 @@ public class BlockAlgorithms {
             mutable.move(Direction.DOWN);
         }
         return mutable;
+    }
+
+    public static boolean isNearFluid(ServerLevel level, BlockPos origin, int range)
+    {
+        for(BlockPos pos : getBlockPosInCube(origin, range, true))
+        {
+            if(level.getFluidState(pos).getType() != Fluids.EMPTY)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

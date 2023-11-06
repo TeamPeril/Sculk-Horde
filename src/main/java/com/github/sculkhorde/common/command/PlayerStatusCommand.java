@@ -54,7 +54,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
         }
         else
         {
-            context.getSource().sendSuccess(()->Component.literal("Syntax Error"), true);
+            context.getSource().sendSuccess(()->Component.literal("Syntax Error"), false);
         }
 
         switch (operation) {
@@ -65,11 +65,15 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
                     SculkHorde.savedData.addSculkAccumulatedMass(1000);
                     SculkHorde.gravemind.calulateCurrentState();
                 }
-                else if(value == 562)
+                else if(value == 462)
                 {
                     MobEffectInstance effect = new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertHoursToTicks(1), 60, false, false);
                     player.addEffect(effect);
-                    effect = new MobEffectInstance(MobEffects.INVISIBILITY, TickUnits.convertHoursToTicks(1), 0, false, false);
+
+                }
+                else if(value == 562)
+                {
+                    MobEffectInstance effect = new MobEffectInstance(MobEffects.INVISIBILITY, TickUnits.convertHoursToTicks(1), 0, false, false);
                     player.addEffect(effect);
                 }
                 else if(value == 684)
