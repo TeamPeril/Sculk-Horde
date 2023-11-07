@@ -204,7 +204,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         }
 
         //Give gravemind context to our request to make more informed situations
-        this.request = new ReinforcementRequest(finalizedSpawnPositions);
+        this.request = new ReinforcementRequest((ServerLevel) getLevel(), finalizedSpawnPositions);
         this.request.sender = ReinforcementRequest.senderType.SculkCocoon;
 
         if (this.possibleAggressorTargets.size() != 0) {

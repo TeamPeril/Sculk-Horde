@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -86,7 +87,7 @@ public class DevRaidWand extends Item implements IForgeItem {
 		//If item is not on cool down
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
 		{
-			RaidHandler.raidData.startRaidArtificially(targetPos);
+			RaidHandler.raidData.startRaidArtificially((ServerLevel) worldIn, targetPos);
 			playerIn.getCooldowns().addCooldown(this, 5); //Cool down for second (20 ticks per second)
 			return InteractionResultHolder.pass(itemstack);
 		}

@@ -56,6 +56,11 @@ public class BlockSearcher
         currentPosition = origin;
     }
 
+    public ServerLevel getDimension()
+    {
+        return level;
+    }
+
     public BlockSearcher setMaxDistance(int maxDistance)
     {
         this.MAX_DISTANCE = maxDistance;

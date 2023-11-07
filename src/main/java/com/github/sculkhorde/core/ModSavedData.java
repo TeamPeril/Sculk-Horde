@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -16,7 +17,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
@@ -33,7 +33,7 @@ import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistanceXZ;
 
 /**
  * This class handels all data that gets saved to and loaded from the world. <br>
- * Learned World Data mechanics from: https://www.youtube.com/watch?v=tyTsdCzVz6w
+ * Learned World Data mechanics from: <a href="https://www.youtube.com/watch?v=tyTsdCzVz6w">...</a>
  */
 public class ModSavedData extends SavedData {
 
@@ -419,7 +419,7 @@ public class ModSavedData extends SavedData {
 
     }
 
-    public void addDeathAreaToMemory(BlockPos positionIn)
+    public void addDeathAreaToMemory(ServerLevel dimension, BlockPos positionIn)
     {
         if(getDeathAreaEntries() == null)
         {
@@ -436,12 +436,12 @@ public class ModSavedData extends SavedData {
             }
         }
 
-        SculkHorde.LOGGER.info("Adding Death Area at " + positionIn + " to memory");
-        getDeathAreaEntries().add(new DeathAreaEntry(positionIn));
+        SculkHorde.LOGGER.info("Adding Death Area in " + dimension.dimension() + " at " + positionIn + " to memory");
+        getDeathAreaEntries().add(new DeathAreaEntry(dimension, positionIn));
         setDirty();
     }
 
-    public Optional<AreaofInterestEntry> addAreaOfInterestToMemory(BlockPos positionIn) {
+    public Optional<AreaofInterestEntry> addAreaOfInterestToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getAreasOfInterestEntries() == null)
         {
             SculkHorde.LOGGER.warn("Attempted to add an area of interest to memory but the list was null");
@@ -457,14 +457,14 @@ public class ModSavedData extends SavedData {
             }
         }
 
-        SculkHorde.LOGGER.info("Adding Area of Interest at " + positionIn + " to memory");
-        AreaofInterestEntry entry = new AreaofInterestEntry(positionIn);
+        SculkHorde.LOGGER.info("Adding Area of Interest at " + dimension.dimension() + " at " + positionIn + " to memory");
+        AreaofInterestEntry entry = new AreaofInterestEntry(dimension, positionIn);
         getAreasOfInterestEntries().add(entry);
         setDirty();
         return Optional.of(entry);
     }
 
-    public void addNoRaidZoneToMemory(BlockPos positionIn) {
+    public void addNoRaidZoneToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getNoRaidZoneEntries() == null)
         {
             SculkHorde.LOGGER.warn("Attempted to add a no raid zone to memory but the list was null");
@@ -474,14 +474,21 @@ public class ModSavedData extends SavedData {
         // If already exists in memory, dont add it again
         for(int i = 0; i < getNoRaidZoneEntries().size(); i++)
         {
-            if(getNoRaidZoneEntries().get(i).position == positionIn || getNoRaidZoneEntries().get(i).position.closerThan(positionIn, 100))
+            boolean areInSameDimension = BlockAlgorithms.areTheseDimensionsEqual(getNoRaidZoneEntries().get(i).dimension, dimension.dimension());
+            boolean arePositionsEqual = getNoRaidZoneEntries().get(i).position.equals(positionIn);
+            boolean isCloserThan100BlocksFromPosition = getNoRaidZoneEntries().get(i).position.closerThan(positionIn, 100);
+
+            if((areInSameDimension && arePositionsEqual) || (areInSameDimension && isCloserThan100BlocksFromPosition))
             {
+                if(isCloserThan100BlocksFromPosition) { SculkHorde.LOGGER.debug("Attempted to add a no raid zone to memory but it was too close to another no raid zone"); }
+                else if(arePositionsEqual) { SculkHorde.LOGGER.debug("Attempted to add a no raid zone to memory but it already existed"); }
+
                 return;
             }
         }
 
-        SculkHorde.LOGGER.info("Adding No Raid Zone at " + positionIn + " to memory");
-        getNoRaidZoneEntries().add(new NoRaidZoneEntry(positionIn, 1000, level.getGameTime(), TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_no_raid_zone_duration_minutes.get())));
+        SculkHorde.LOGGER.info("Adding No Raid Zone at " + positionIn + " in " + dimension.dimension() + " to memory");
+        getNoRaidZoneEntries().add(new NoRaidZoneEntry(dimension, positionIn, 1000, level.getGameTime(), TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_no_raid_zone_duration_minutes.get())));
         setDirty();
     }
 
@@ -775,7 +782,7 @@ public class ModSavedData extends SavedData {
      *
      * @param deathPosition The position where the player died
      */
-    public void reportDeath(BlockPos deathPosition)
+    public void reportDeath(ServerLevel level, BlockPos deathPosition)
     {
         // If a death area already exist close to this location, iterate the death count
         Optional<DeathAreaEntry> deathArea = getDeathAreaWithinRange(deathPosition, 100);
@@ -787,7 +794,7 @@ public class ModSavedData extends SavedData {
         }
 
         // If the death area does not exist, create a new one
-        addDeathAreaToMemory(deathPosition);
+        addDeathAreaToMemory(level, deathPosition);
     }
 
     public static class PriorityBlockEntry
@@ -1129,6 +1136,12 @@ public class ModSavedData extends SavedData {
                         continue;
                     }
 
+                    if(Optional.of(entry).get() == null)
+                    {
+                        SculkHorde.LOGGER.error("Failed To Set Parent Node To Closest. Node Entry was null.");
+                        continue;
+                    }
+
                     if(closestEntry.isEmpty())
                     {
                         closestEntry = Optional.of(entry);
@@ -1217,16 +1230,25 @@ public class ModSavedData extends SavedData {
         private final BlockPos position; // The Location of the Death Area
         private int deathCount; // The number of deaths that have occurred in this area
 
-        public DeathAreaEntry(BlockPos positionIn)
+        private ResourceKey<Level> dimension;
+
+        public DeathAreaEntry(ServerLevel dimension, BlockPos positionIn)
         {
             position = positionIn;
             deathCount = 1;
+            this.dimension = dimension.dimension();
         }
 
-        public DeathAreaEntry(BlockPos positionIn, int deathCountIn)
+        public DeathAreaEntry(ResourceKey<Level> dimension, BlockPos positionIn, int deathCountIn)
         {
             position = positionIn;
             deathCount = deathCountIn;
+            this.dimension = dimension;
+        }
+
+        public ServerLevel getDimension()
+        {
+            return SculkHorde.savedData.level.getServer().getLevel(dimension);
         }
 
         public void setDeathCount(int deathCountIn)
@@ -1258,6 +1280,7 @@ public class ModSavedData extends SavedData {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
             nbt.putInt("deathCount", deathCount);
+            if(dimension != null) nbt.putString("dimension", dimension.location().toString());
             return nbt;
         }
 
@@ -1266,22 +1289,27 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static DeathAreaEntry serialize(CompoundTag nbt) {
-            return new DeathAreaEntry(BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
+
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
         }
     }
 
     public static class AreaofInterestEntry
     {
         private final BlockPos position; // The Location of the Death Area
+        private final ResourceKey<Level> dimension;
         private long ticksSinceLastRaid;
 
-        public AreaofInterestEntry(BlockPos positionIn)
+        public AreaofInterestEntry(ServerLevel dimension, BlockPos positionIn)
         {
+            this.dimension = dimension.dimension();
             position = positionIn;
         }
 
-        public AreaofInterestEntry(BlockPos positionIn, long ticksSinceLastRaidIn)
+        public AreaofInterestEntry(ResourceKey<Level> dimension, BlockPos positionIn, long ticksSinceLastRaidIn)
         {
+            this.dimension = dimension;
             position = positionIn;
             ticksSinceLastRaid = ticksSinceLastRaidIn;
         }
@@ -1291,11 +1319,16 @@ public class ModSavedData extends SavedData {
             return position;
         }
 
+        public ServerLevel getDimension()
+        {
+            return SculkHorde.savedData.level.getServer().getLevel(dimension);
+        }
+
         public boolean isInNoRaidZone()
         {
             for(NoRaidZoneEntry entry : SculkHorde.savedData.getNoRaidZoneEntries())
             {
-                if(entry.isBlockPosInRadius(getPosition()))
+                if(entry.isBlockPosInRadius(entry.getDimension(), getPosition()))
                 {
                     return true;
                 }
@@ -1312,6 +1345,7 @@ public class ModSavedData extends SavedData {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
             nbt.putLong("ticksSinceLastRaid", ticksSinceLastRaid);
+            nbt.putString("dimension", dimension.location().toString());
             return nbt;
         }
 
@@ -1320,7 +1354,8 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static AreaofInterestEntry serialize(CompoundTag nbt) {
-            return new AreaofInterestEntry(BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            return new AreaofInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
 
@@ -1331,14 +1366,30 @@ public class ModSavedData extends SavedData {
         private final long timeOfCreation; // this.level.getGameTime();
         private long durationInTicksUntilExpiration;
 
-        public NoRaidZoneEntry(BlockPos positionIn, int radiusIn, long gameTimeStampIn, long durationUntilExpirationIn)
+        private final ResourceKey<Level> dimension;
+
+        public NoRaidZoneEntry(ServerLevel dimension, BlockPos positionIn, int radiusIn, long gameTimeStampIn, long durationUntilExpirationIn)
         {
+            this.dimension = dimension.dimension();
             position = positionIn;
             radius = radiusIn;
             timeOfCreation = gameTimeStampIn;
             durationInTicksUntilExpiration = durationUntilExpirationIn;
         }
 
+        public NoRaidZoneEntry(ResourceKey<Level> dimension, BlockPos positionIn, int radiusIn, long gameTimeStampIn, long durationUntilExpirationIn)
+        {
+            this.dimension = dimension;
+            position = positionIn;
+            radius = radiusIn;
+            timeOfCreation = gameTimeStampIn;
+            durationInTicksUntilExpiration = durationUntilExpirationIn;
+        }
+
+        public ServerLevel getDimension()
+        {
+            return SculkHorde.savedData.level.getServer().getLevel(dimension);
+        }
 
         public BlockPos getPosition()
         {
@@ -1373,9 +1424,10 @@ public class ModSavedData extends SavedData {
             return (currentTimeStamp - getTimeOfCreation()) > getDurationInTicksUntilExpiration();
         }
 
-        public boolean isBlockPosInRadius(BlockPos blockPosIn)
+        public boolean isBlockPosInRadius(ServerLevel level, BlockPos blockPosIn)
         {
-            return position.closerThan(blockPosIn, radius);
+
+            return position.closerThan(blockPosIn, radius) && BlockAlgorithms.areTheseDimensionsEqual(level, getDimension());
         }
 
         /**
@@ -1389,6 +1441,7 @@ public class ModSavedData extends SavedData {
             nbt.putInt("radius", radius);
             nbt.putLong("gameTimeStamp", timeOfCreation);
             nbt.putLong("durationUntilExpiration", durationInTicksUntilExpiration);
+            nbt.putString("dimension", dimension.location().toString());
             return nbt;
         }
 
@@ -1398,7 +1451,8 @@ public class ModSavedData extends SavedData {
          */
         public static NoRaidZoneEntry serialize(CompoundTag nbt)
         {
-            return new NoRaidZoneEntry(BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }
 }

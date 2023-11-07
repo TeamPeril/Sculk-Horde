@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -587,6 +588,16 @@ public class BlockAlgorithms {
             mutable.move(Direction.DOWN);
         }
         return mutable;
+    }
+
+    public static boolean areTheseDimensionsEqual(ResourceKey<Level> dimension1, ResourceKey<Level> dimension2)
+    {
+        return dimension1.location().equals(dimension2.location());
+    }
+
+    public static boolean areTheseDimensionsEqual(ServerLevel dimension1, ServerLevel dimension2)
+    {
+        return dimension1.dimension().location().equals(dimension2.dimension().location());
     }
 
     public static boolean isNearFluid(ServerLevel level, BlockPos origin, int range)

@@ -155,7 +155,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
         for (ModSavedData.NodeEntry entry : SculkHorde.savedData.getNodeEntries())
         {
-            if(!entry.getDimension().toString().equals(worldIn.dimension().toString()))
+            if(!BlockAlgorithms.areTheseDimensionsEqual(entry.getDimension().dimension(), worldIn.dimension()))
             {
                 continue;
             }

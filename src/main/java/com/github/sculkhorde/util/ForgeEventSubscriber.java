@@ -43,7 +43,7 @@ public class ForgeEventSubscriber {
         {
             SculkHorde.savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID); //Initialize Saved Data
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
-            SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
+            SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator(); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
             SculkHorde.sculkNodesHandler = new SculkNodesHandler(); //Initialize Sculk Nodes Handler
             SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper(); //Initialize Entity Chunk Loader Helper
@@ -115,7 +115,7 @@ public class ForgeEventSubscriber {
 
         if(EntityAlgorithms.isSculkLivingEntity.test(event.getEntity()))
         {
-            SculkHorde.savedData.reportDeath(event.getEntity().blockPosition());
+            SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
             SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
 
         }

@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
@@ -94,7 +95,7 @@ public class SculkMassBlockEntity extends BlockEntity {
         }
 
         EntityFactory entityFactory = SculkHorde.entityFactory;
-        ReinforcementRequest context = new ReinforcementRequest(blockPos);
+        ReinforcementRequest context = new ReinforcementRequest((ServerLevel) level, blockPos);
 
         context.sender = ReinforcementRequest.senderType.SculkMass;
         context.budget = blockEntity.getStoredSculkMass();

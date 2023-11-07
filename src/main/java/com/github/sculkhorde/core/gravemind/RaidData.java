@@ -10,14 +10,19 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -33,7 +38,7 @@ public class RaidData {
     private final int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(8);
 
     // Raid Variables
-    private ServerLevel level;
+    private ResourceKey<Level> dimension;
     protected BlockPos spawnLocation = BlockPos.ZERO;
     protected BlockPos raidLocation = BlockPos.ZERO;
     protected BlockPos objectiveLocation = BlockPos.ZERO;
@@ -79,6 +84,19 @@ public class RaidData {
         return medium_priority_targets;
     }
 
+    public ServerLevel getDimension() {
+        return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
+    }
+
+    public ResourceKey<Level> getDimensionResourceKey() {
+        return dimension;
+    }
+
+    public void setDimension(ResourceKey<Level> dimension) {
+        this.dimension = dimension;
+        SculkHorde.savedData.setDirty();
+    }
+
     public void getFoundTargetsFromBlockSearcher(ArrayList<BlockPos> foundTargets)
     {
         high_priority_targets.clear();
@@ -86,11 +104,11 @@ public class RaidData {
 
         for (BlockPos blockPos : foundTargets)
         {
-            if (level.getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
+            if (getDimension().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
             {
                 high_priority_targets.add(blockPos);
             }
-            else if (level.getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
+            else if (getDimension().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY))
             {
                 medium_priority_targets.add(blockPos);
             }
@@ -130,7 +148,7 @@ public class RaidData {
         areaOfInterestEntry = null;
         if(getRaidLocation() != null)
         {
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), level);
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), getDimension());
         }
         setBlockSearcher(null);
         setRaidState(RaidHandler.RaidState.INACTIVE);
@@ -148,7 +166,7 @@ public class RaidData {
         bossEvent = null;
     }
 
-    public void startRaidArtificially(BlockPos raidLocationIn)
+    public void startRaidArtificially(ServerLevel level, BlockPos raidLocationIn)
     {
         SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
         EntityAlgorithms.announceToAllPlayers(level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
@@ -159,7 +177,7 @@ public class RaidData {
         SculkHorde.gravemind.calulateCurrentState();
         EntityAlgorithms.announceToAllPlayers(level, Component.literal("Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState()));
 
-        Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(raidLocationIn);
+        Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(level, raidLocationIn);
         if(possibleAreaOfInterestEntry.isPresent())
         {
             setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
@@ -211,14 +229,6 @@ public class RaidData {
 
     public int getSCOUTING_DURATION() {
         return SCOUTING_DURATION;
-    }
-
-    public ServerLevel getLevel() {
-        return level;
-    }
-
-    public void setLevel(ServerLevel level) {
-        this.level = level;
     }
 
     public BlockPos getSpawnLocation() {
@@ -535,22 +545,22 @@ public class RaidData {
         }
 
         // If block isn't solid, its obstructed
-        if(level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(Blocks.WATER) || level.getBlockState(blockPos).is(Blocks.LAVA))
+        if(getDimension().getBlockState(blockPos).isAir() || getDimension().getBlockState(blockPos).is(Blocks.WATER) || getDimension().getBlockState(blockPos).is(Blocks.LAVA))
         {
             return true;
         }
         // If block above is not
-        if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above()).is(Blocks.WATER) || level.getBlockState(blockPos.above()).is(Blocks.LAVA))
+        if(!getDimension().getBlockState(blockPos.above()).canBeReplaced() || getDimension().getBlockState(blockPos.above()).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above()).is(Blocks.LAVA))
         {
             return true;
         }
 
-        if(!level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above(1)).is(Blocks.WATER) || level.getBlockState(blockPos.above(1)).is(Blocks.LAVA))
+        if(!getDimension().getBlockState(blockPos.above()).canBeReplaced() || getDimension().getBlockState(blockPos.above(1)).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above(1)).is(Blocks.LAVA))
         {
             return true;
         }
 
-        return !level.getBlockState(blockPos.above()).canBeReplaced() || level.getBlockState(blockPos.above(2)).is(Blocks.WATER) || level.getBlockState(blockPos.above(2)).is(Blocks.LAVA);
+        return !getDimension().getBlockState(blockPos.above()).canBeReplaced() || getDimension().getBlockState(blockPos.above(2)).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above(2)).is(Blocks.LAVA);
     };
 
     /**
@@ -558,7 +568,7 @@ public class RaidData {
      */
     public final Predicate<BlockPos> isSpawnTarget = (blockPos) ->
     {
-        return BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (getCurrentRaidRadius() * 0.75) && BlockAlgorithms.isAreaFlat(level, blockPos, 2);
+        return BlockAlgorithms.getBlockDistance(blockPos, raidLocation) > (getCurrentRaidRadius() * 0.75) && BlockAlgorithms.isAreaFlat(getDimension(), blockPos, 2);
     };
 
     public final Predicate<BlockPos> isObstructedInvestigateLocationState = (blockPos) ->
@@ -568,7 +578,7 @@ public class RaidData {
             return true;
         }
 
-        if(level.getBlockState(blockPos).is(Blocks.AIR))
+        if(getDimension().getBlockState(blockPos).is(Blocks.AIR))
         {
             return true;
         }
@@ -578,14 +588,14 @@ public class RaidData {
             return true;
         }
 
-        return !BlockAlgorithms.isExposedToAir(level, blockPos);
+        return !BlockAlgorithms.isExposedToAir(getDimension(), blockPos);
     };
 
     public final Predicate<BlockPos> isTargetInvestigateLocationState = (blockPos) ->
     {
-        boolean isTarget = getLevel().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-                || getLevel().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
-                || getLevel().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
+        boolean isTarget = getDimension().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+                || getDimension().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
+                || getDimension().getBlockState(blockPos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
 
         // If the target is outside of the current raid radius, increase the raid radius
         if (isTarget && BlockAlgorithms.getBlockDistance(getAreaOfInterestEntry().getPosition(), blockPos) > getCurrentRaidRadius()) {
@@ -616,6 +626,7 @@ public class RaidData {
         tag.putInt("currentRaidRadius", RaidHandler.raidData.getCurrentRaidRadius());
         tag.putInt("maxWaves", RaidHandler.raidData.getMaxWaves());
         tag.putInt("currentWave", RaidHandler.raidData.getCurrentWave());
+        tag.putString("dimension", RaidHandler.raidData.getDimensionResourceKey().location().toString());
         tag.putInt("remainingWaveParticipants", RaidHandler.raidData.getRemainingWaveParticipants());        // Save the wave participants as a list of UUIDs
         ListTag waveParticipantsTag = new ListTag();
         for (ISculkSmartEntity entity : RaidHandler.raidData.getWaveParticipants()) {
@@ -688,6 +699,9 @@ public class RaidData {
         RaidHandler.raidData.setMaxWaves(tag.getInt("maxWaves"));
         RaidHandler.raidData.setCurrentWave(tag.getInt("currentWave"));
         RaidHandler.raidData.setRemainingWaveParticipants(tag.getInt("remainingWaveParticipants"));
+
+        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));
+        RaidHandler.raidData.setDimension(dimensionResourceKey);
 
         // Load the wave participants from a list of UUIDs
         RaidHandler.raidData.getWaveParticipants().clear();

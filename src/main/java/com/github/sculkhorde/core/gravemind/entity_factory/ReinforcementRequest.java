@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.BlockPos;
 
@@ -21,9 +22,12 @@ public class ReinforcementRequest {
     public ArrayList<EntityFactory.StrategicValues>  approvedMobTypes; // All approved mob types to spawn.
     public LivingEntity[] spawnedEntities; // All entities spawned by this request.
 
+    public ServerLevel dimension;
 
-    public ReinforcementRequest(BlockPos blockPosIn)
+
+    public ReinforcementRequest(ServerLevel dimension, BlockPos blockPosIn)
     {
+        this.dimension = dimension;
         is_aggressor_nearby = false;
         is_non_sculk_mob_nearby = false;
         sender = null;
@@ -34,8 +38,9 @@ public class ReinforcementRequest {
     }
 
 
-    public ReinforcementRequest(BlockPos[] positions)
+    public ReinforcementRequest(ServerLevel dimension, BlockPos[] positions)
     {
+        this.dimension = dimension;
         is_aggressor_nearby = false;
         is_non_sculk_mob_nearby = false;
         sender = null;
@@ -54,7 +59,8 @@ public class ReinforcementRequest {
         || sender != context.sender
         || isRequestViewed != context.isRequestViewed
         || isRequestApproved != context.isRequestApproved
-        || !approvedMobTypes.equals(context.approvedMobTypes))
+        || !approvedMobTypes.equals(context.approvedMobTypes)
+        || dimension.toString().equals(context.dimension.toString()))
             return false;
 
         return true;

@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,7 +47,7 @@ public class SculkLureEffect extends MobEffect {
             entity.removeEffect(ModMobEffects.SCULK_LURE.get());
             return;
         }
-        if(SculkHorde.savedData != null) { SculkHorde.savedData.reportDeath(entity.blockPosition()); }
+        if(SculkHorde.savedData != null) { SculkHorde.savedData.reportDeath((ServerLevel) entity.level(), entity.blockPosition()); }
 
     }
 
