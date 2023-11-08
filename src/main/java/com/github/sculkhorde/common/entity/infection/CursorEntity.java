@@ -289,26 +289,31 @@ public abstract class CursorEntity extends Entity
 
             // Move to the closest block
             this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
-            visitedPositons.put(closest.asLong(), true);
 
             // If we've reached the target block, find a new target
             if (this.blockPosition().equals(target))
             {
                 target = BlockPos.ZERO;
+                BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
 
+                boolean isTarget = isTarget(stateOfCurrentBlock, this.blockPosition());
+                boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());
                 // If the block is not obstructed, infect it
-                if(isTarget(level().getBlockState(this.blockPosition()), this.blockPosition()))
+                if(isTarget && isNotObstructed)
                 {
                     // Infect the block and increase the infection count
                     transformBlock(this.blockPosition());
+                    currentTransformations++;
                 }
 
-                currentTransformations++;
                 setState(State.SEARCHING);
                 visitedPositons.clear();
                 queue.clear();
                 queue.add(this.blockPosition());
             }
+
+            // Mark position as visited
+            visitedPositons.put(closest.asLong(), true);
         }
         else if (state == State.FINISHED)
         {
