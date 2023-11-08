@@ -259,7 +259,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         // IF target isnt null and we cannot see them, teleport to them
         if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget())
         {
-            teleportTowardsEntity(getTarget());
+            teleportBehindEntity(getTarget());
         }
 
         if(this.getTarget() != null && !this.getTarget().onGround())
@@ -408,6 +408,16 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) + vec3.y * teleportDistance;
         double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D + vec3.z * teleportDistance;
         return this.teleport(d1, d2, d3);
+    }
+
+    protected void teleportBehindEntity(Entity entity)
+    {
+        if(!canTeleport)
+        {
+            return;
+        }
+
+        this.teleport(entity.getX(), entity.getY(), entity.getZ());
     }
 
     /**
