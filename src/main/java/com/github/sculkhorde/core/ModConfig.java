@@ -18,11 +18,9 @@ public class ModConfig {
     public static class Server {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> target_faw_entities;
-
         public final ForgeConfigSpec.ConfigValue<Boolean> target_spore_entities;
 
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_immature_stage;
-
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_mature_stage;
 
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
@@ -31,20 +29,18 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> sculk_raid_enabled;
-
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_enderman_scouting_duration_minutes;
-
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_global_cooldown_between_raids_minutes;
-
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_no_raid_zone_duration_minutes;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
-
         public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
-
         public final ForgeConfigSpec.ConfigValue<Boolean> sculk_phantoms_enabled;
 
-        public final ForgeConfigSpec.ConfigValue<Boolean> sculk_phantoms_spawn_from_summoners;
+
+        public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
+        public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
+        public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
 
 
         public Server(ForgeConfigSpec.Builder builder) {
@@ -56,6 +52,12 @@ public class ModConfig {
 
             builder.push("General Variables");
             block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
+            builder.pop();
+
+            builder.push("Infestation / Purification Variables");
+            infestation_speed_multiplier = builder.comment("How much faster or slower should infestation spread? (Default 0)").defineInRange("infestation_speed_multiplier",0f, -10f, 10f);
+            purification_speed_multiplier = builder.comment("How much faster or slower should purification spread? (Default 0)").defineInRange("purification_speed_multiplier",0f, -10f, 10f);
+            infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             builder.pop();
 
             builder.push("Gravemind Variables");
@@ -75,7 +77,6 @@ public class ModConfig {
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
             sculk_phantoms_enabled = builder.comment("Should sculk phantoms be enabled? (Default true)").define("sculk_phantoms_enabled",true);
-            sculk_phantoms_spawn_from_summoners = builder.comment("Should sculk phantoms spawn from summoners? (Default false)").define("sculk_phantoms_spawn_from_summoners",false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");

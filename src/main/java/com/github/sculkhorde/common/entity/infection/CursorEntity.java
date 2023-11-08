@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -86,6 +87,11 @@ public abstract class CursorEntity extends Entity
         this.tickIntervalMilliseconds = milliseconds;
     }
 
+    public void setState(State state)
+    {
+        this.state = state;
+    }
+
     /**
      * Returns true if the block is considered obstructed.
      * @param state the block state
@@ -151,7 +157,7 @@ public abstract class CursorEntity extends Entity
     protected boolean searchTick()
     {
         // Complete 20 times.
-        for (int i = 0; i < searchIterationsPerTick; i++)
+        for (int i = 0; i < Math.max(searchIterationsPerTick, 1); i++)
         {
             // Breadth-First Search
 
@@ -193,13 +199,14 @@ public abstract class CursorEntity extends Entity
         super.tick();
 
         float timeElapsedMilliSeconds = System.currentTimeMillis() - lastTickTime;
-
-        if (timeElapsedMilliSeconds < tickIntervalMilliseconds) {
+        double tickIntervalMillisecondsAfterMultiplier = tickIntervalMilliseconds - (tickIntervalMilliseconds * (ModConfig.SERVER.infestation_speed_multiplier.get()));
+        if (timeElapsedMilliSeconds < Math.max(tickIntervalMillisecondsAfterMultiplier, 1)) {
             return;
         }
+
         lastTickTime = System.currentTimeMillis();
 
-
+        // Play Particles on Client
         // Play Particles on Client
         if (this.level().isClientSide) {
             for (int i = 0; i < 2; ++i) {
@@ -220,17 +227,17 @@ public abstract class CursorEntity extends Entity
         // If entity has lived too long, remove it
         if (currentLifeTimeMilliseconds >= MAX_LIFETIME_MILLIS)
         {
-            state = State.FINISHED;
+            setState(State.FINISHED);
         }
         else if (currentTransformations >= MAX_TRANSFORMATIONS)
         {
-            state = State.FINISHED;
+            setState(State.FINISHED);
         }
 
         if(state == State.IDLE)
         {
             queue.add(this.blockPosition());
-            state = State.SEARCHING;
+            setState(State.SEARCHING);
         }
         else if (state == State.SEARCHING)
         {
@@ -243,11 +250,11 @@ public abstract class CursorEntity extends Entity
 
             // If we can't find a target, finish
             if (target.equals(BlockPos.ZERO)) {
-                state = State.FINISHED;
+                setState(state = State.FINISHED);
             }
             else // If we find target, start infecting
             {
-                state = State.EXPLORING;
+                setState(state = State.EXPLORING);
                 visitedPositons.clear();
             }
         }
@@ -297,7 +304,7 @@ public abstract class CursorEntity extends Entity
                 }
 
                 currentTransformations++;
-                state = State.SEARCHING;
+                setState(State.SEARCHING);
                 visitedPositons.clear();
                 queue.clear();
                 queue.add(this.blockPosition());

@@ -113,7 +113,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
         cursor.setMaxTransformations(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);
-        cursor.setSearchIterationsPerTick(10);
+        cursor.setSearchIterationsPerTick(20);
         level().addFreshEntity(cursor);
     }
 

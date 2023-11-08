@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EntityType;
@@ -11,8 +12,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.common.IPlantable;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Predicate;
 
 public class CursorSurfacePurifierEntity extends CursorEntity{
@@ -50,7 +53,15 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     protected void transformBlock(BlockPos pos)
     {
         SculkHorde.blockInfestationTable.cureBlock((ServerLevel) this.level(), pos);
+
         if(shouldBeRemovedFromAboveBlock.test(this.level().getBlockState(pos.above())))
+        {
+            this.level().setBlockAndUpdate(pos.above(), Blocks.AIR.defaultBlockState());
+        }
+
+        boolean canCuredBlockSustatinPlant = this.level().getBlockState(pos).canSustainPlant(this.level(), pos, Direction.UP, (IPlantable) Blocks.POPPY);
+        Random rand = new Random();
+        if(rand.nextBoolean() && canCuredBlockSustatinPlant && this.level().getBlockState(pos.above()).isAir())
         {
             this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
         }

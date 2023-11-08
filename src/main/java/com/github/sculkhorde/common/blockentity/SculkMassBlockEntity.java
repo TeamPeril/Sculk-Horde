@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -23,6 +24,10 @@ public class SculkMassBlockEntity extends BlockEntity {
      */
     protected int storedSculkMass = 0;
     protected String storedSculkMassIdentifier = "storedSculkMass";
+
+    protected long lastTickTime = 0;
+
+    protected int tickInterval = TickUnits.convertSecondsToTicks(1);
 
 
     /**
@@ -61,12 +66,12 @@ public class SculkMassBlockEntity extends BlockEntity {
 
     public void setStoredSculkMass(int value)
     {
-        storedSculkMass = value;
+        storedSculkMass = Math.max(0, value);
     }
 
     public void addStoredSculkMass(int value)
     {
-        storedSculkMass += value;
+        storedSculkMass = Math.max(0, storedSculkMass + value);
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassBlockEntity blockEntity)
@@ -77,22 +82,11 @@ public class SculkMassBlockEntity extends BlockEntity {
             return;
         }
         // Tick every 10 seconds
-        if(level.getGameTime() % 2000 != 0)
+        if(level.getGameTime() - blockEntity.lastTickTime < blockEntity.tickInterval)
         {
             return;
         }
-
-        // If the tile entity at this location is not a sculk mass tile, return
-        if(!(blockEntity instanceof SculkMassBlockEntity))
-        {
-            return;
-        }
-
-        //Destroy if run out of sculk mass
-        if(blockEntity.getStoredSculkMass() <= 0)
-        {
-            level.destroyBlock(blockPos, false);
-        }
+        blockEntity.lastTickTime = level.getGameTime();
 
         EntityFactory entityFactory = SculkHorde.entityFactory;
         ReinforcementRequest context = new ReinforcementRequest((ServerLevel) level, blockPos);
@@ -105,19 +99,26 @@ public class SculkMassBlockEntity extends BlockEntity {
         if(context.isRequestViewed && context.isRequestApproved)
         {
             blockEntity.setStoredSculkMass(context.remaining_balance);
-
-            // Do not spawn infectors if infection not enabled.
-            if(!ModConfig.SERVER.block_infestation_enabled.get())
-            {
-                return;
-            }
-
-            // Spawn Block Traverser
-            CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
-            cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            cursor.setMaxTransformations(blockEntity.getStoredSculkMass() * 10);
-            cursor.setMaxRange(blockEntity.getStoredSculkMass());
-            level.addFreshEntity(cursor);
         }
+
+        // Do not spawn infectors if infection not enabled.
+        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        {
+            return;
+        }
+
+        // Destroy if no more mass
+        if(blockEntity.getStoredSculkMass() <= 0)
+        {
+            level.destroyBlock(blockPos, false);
+            return;
+        }
+
+        // Spawn Block Traverser
+        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
+        cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        cursor.setMaxTransformations(blockEntity.getStoredSculkMass() * 10);
+        cursor.setMaxRange(blockEntity.getStoredSculkMass()* 10);
+        level.addFreshEntity(cursor);
     }
 }

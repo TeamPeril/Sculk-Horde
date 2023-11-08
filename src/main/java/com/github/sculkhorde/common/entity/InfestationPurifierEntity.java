@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -172,7 +173,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
         return this.cache;
     }
 
-
     //Every tick, spawn a short range cursor
     @Override
     public void aiStep()
@@ -247,7 +247,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor1 = new CursorSurfacePurifierEntity(level());
                 cursor1.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor1.setMaxTransformations(100);
-                cursor1.setMaxRange(48);
+                cursor1.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor1.setSearchIterationsPerTick(2);
                 cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor1.setTickIntervalMilliseconds(20);
@@ -260,7 +260,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor2 = new CursorSurfacePurifierEntity(level());
                 cursor2.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor2.setMaxTransformations(100);
-                cursor2.setMaxRange(48);
+                cursor2.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor2.setSearchIterationsPerTick(2);
                 cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor2.setTickIntervalMilliseconds(20);
@@ -273,7 +273,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor3 = new CursorSurfacePurifierEntity(level());
                 cursor3.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor3.setMaxTransformations(100);
-                cursor3.setMaxRange(48);
+                cursor3.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor3.setSearchIterationsPerTick(2);
                 cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor3.setTickIntervalMilliseconds(20);
@@ -286,7 +286,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor4 = new CursorSurfacePurifierEntity(level());
                 cursor4.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor4.setMaxTransformations(100);
-                cursor4.setMaxRange(48);
+                cursor4.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor4.setSearchIterationsPerTick(2);
                 cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor4.setTickIntervalMilliseconds(20);

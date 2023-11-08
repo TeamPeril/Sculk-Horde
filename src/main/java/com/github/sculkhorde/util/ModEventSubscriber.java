@@ -42,12 +42,6 @@ public class ModEventSubscriber {
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
 
-        // Experimental
-        if(ModConfig.SERVER.experimental_features_enabled.get() && ModConfig.SERVER.sculk_phantoms_enabled.get() && ModConfig.SERVER.sculk_phantoms_spawn_from_summoners.get())
-        {
-            SculkHorde.entityFactory.addEntry(ModEntities.SCULK_PHANTOM.get(),(int) SculkPhantomEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature);
-        }
-
         SculkHorde.blockInfestationTable = new BlockInfestationTable();
 
         // Add Log Tag
