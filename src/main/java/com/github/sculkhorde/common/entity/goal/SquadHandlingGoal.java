@@ -64,7 +64,7 @@ public class SquadHandlingGoal extends Goal {
 
             if(squad.isSquadLeader())
             {
-                MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(1), 0, false, false);
+                MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0, false, false);
                 getMob().addEffect(effect);
             }
 
