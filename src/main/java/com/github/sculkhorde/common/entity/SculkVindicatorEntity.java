@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -183,7 +182,8 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        new TargetAttacker(this).setAlertAllies(),
+                        //new TargetAttacker(this).setAlertAllies(),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
 
                 };

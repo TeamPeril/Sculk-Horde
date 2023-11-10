@@ -1,23 +1,15 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.phys.AABB;
 
 import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
 
-public class TargetSquadLeaderTarget extends TargetGoal {
+public class FocusSquadTarget extends TargetGoal {
 
-    public TargetSquadLeaderTarget(Mob sourceEntity) {
+    public FocusSquadTarget(Mob sourceEntity) {
         super(sourceEntity, true);
         this.setFlags(EnumSet.of(Flag.TARGET));
     }
