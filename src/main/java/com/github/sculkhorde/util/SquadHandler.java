@@ -31,7 +31,7 @@ public class SquadHandler {
         {
             return false;
         }
-        return squad.isSquadLeaderDead();
+        return !squad.isSquadLeaderDead();
     }
 
     public boolean isSquadLeader() {
