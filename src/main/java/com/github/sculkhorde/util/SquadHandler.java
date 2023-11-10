@@ -75,8 +75,6 @@ public class SquadHandler {
 
     public void createSquad() {
         squadLeader = Optional.ofNullable(sculkSmartEntity);
-        MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, 1000000, 0, false, false);
-        getMob().addEffect(effect);
     }
 
     public void disbandSquad() {

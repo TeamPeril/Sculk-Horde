@@ -3,6 +3,8 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.AABB;
@@ -59,6 +61,13 @@ public class SquadHandlingGoal extends Goal {
             {
                 squad.disbandSquad();
             }
+
+            if(squad.isSquadLeader())
+            {
+                MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(1), 0, false, false);
+                getMob().addEffect(effect);
+            }
+
             return;
         }
 

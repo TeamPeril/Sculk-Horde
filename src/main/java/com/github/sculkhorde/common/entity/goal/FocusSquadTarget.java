@@ -47,7 +47,7 @@ public class FocusSquadTarget extends TargetGoal {
         boolean doesSquadExist = SquadHandler.doesSquadExist(squad);
         boolean isSquadLeader = squad.isSquadLeader();
         boolean isSquadLeaderNullOrDead = squad.isSquadLeaderDead();
-        if(doesSquadExist || isSquadLeader || isSquadLeaderNullOrDead)
+        if(!doesSquadExist || isSquadLeader || isSquadLeaderNullOrDead)
         {
             return;
         }
