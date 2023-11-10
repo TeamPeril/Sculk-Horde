@@ -1124,7 +1124,7 @@ public class ModSavedData extends SavedData {
          */
         public void setParentNodeToClosest()
         {
-            //Make sure nodeEntries isnt null and nodeEntries isnt empty
+            //Make sure nodeEntries isn't null and nodeEntries isn't empty
             if(getGravemindMemory().getNodeEntries() != null && !getGravemindMemory().getNodeEntries().isEmpty())
             {
                 Optional<NodeEntry> closestEntry = Optional.empty();
@@ -1136,7 +1136,7 @@ public class ModSavedData extends SavedData {
                         continue;
                     }
 
-                    if(Optional.of(entry).get() == null)
+                    if(Optional.of(entry).isEmpty())
                     {
                         SculkHorde.LOGGER.error("Failed To Set Parent Node To Closest. Node Entry was null.");
                         continue;
@@ -1152,7 +1152,8 @@ public class ModSavedData extends SavedData {
                         closestEntry = Optional.of(entry);
                     }
                 }
-                parentNodePosition = closestEntry.get().position;
+
+                if(closestEntry.isPresent() && closestEntry.get().getPosition() != null) { parentNodePosition = closestEntry.get().getPosition(); }
             }
         }
 

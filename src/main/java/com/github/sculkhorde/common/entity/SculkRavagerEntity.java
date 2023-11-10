@@ -4,6 +4,7 @@ import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.EntityType;
@@ -71,7 +72,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -94,6 +95,12 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
+
     @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
@@ -151,8 +158,10 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(5)),
                 //SwimGoal(mob)
                 new FloatGoal(this),
+                new SquadHandlingGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
+                new FollowSquadLeader(this),
                 new PathFindToRaidLocation<>(this),
                 //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                 new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),

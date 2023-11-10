@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.attack.AcidAttack;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -115,6 +116,11 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     private boolean isParticipatingInRaid = false;
 
     @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
+
+    @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
     }
@@ -128,7 +134,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
     }
-
+    private SquadHandler squad = new SquadHandler(this);
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
@@ -167,10 +173,13 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
+                        new MountNearestRavager(this),
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
                                 .setProjectileOriginOffset(0.8, 0.9, 0.8)
                                 .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         //new MoveTowardsTargetGoal(this, 0.8F, 20F),

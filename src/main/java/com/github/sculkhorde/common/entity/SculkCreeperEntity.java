@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.client.renderer.EffectInstance;
@@ -57,6 +58,11 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     @Override
     public void checkDespawn() {}
+
+    @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {

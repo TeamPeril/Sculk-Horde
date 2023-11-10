@@ -14,7 +14,6 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -106,6 +105,17 @@ public class RaidHandler {
         return raidData.getRaidState() == RaidState.INACTIVE;
     }
 
+    private String getFormattedCoordinates(BlockPos pos)
+    {
+        return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
+    }
+
+    private String getFormattedDimension(ResourceKey<Level> dimension)
+    {
+        String languageKey = dimension.location().toShortLanguageKey();
+        return Component.translatable(languageKey).getString();
+    }
+
     private void announceToPlayersInRange(Component message, int range)
     {
         raidData.getDimension().players().forEach((player) ->
@@ -119,7 +129,7 @@ public class RaidHandler {
 
     public void announceToAllPlayers(Component message)
     {
-        raidData.getDimension().players().forEach((player) -> player.displayClientMessage(message, false));
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach((player) -> player.displayClientMessage(message, false));
     }
 
 
@@ -248,7 +258,7 @@ public class RaidHandler {
         ResourceKey<Level> dimensionResourceKey = dimension.dimension();
         raidData.setDimension(dimensionResourceKey);
 
-        SculkHorde.LOGGER.debug("RaidHandler | Investigating Location at: " + areaOfInterestEntry.getPosition() + " in dimension " + dimensionResourceKey.location() + ".");
+        SculkHorde.LOGGER.debug("RaidHandler | Investigating Location at: " + getFormattedCoordinates(areaOfInterestEntry.getPosition()) + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
 
         raidData.setBlockSearcher(new BlockSearcher(dimension, areaOfInterestEntry.getPosition()));
         raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
@@ -318,8 +328,8 @@ public class RaidHandler {
             raidData.setScoutEnderman(new SculkEndermanEntity(raidData.getDimension(), raidData.getAreaOfInterestEntry().getPosition()));
             raidData.getDimension().addFreshEntity(raidData.getScoutEnderman());
             raidData.getScoutEnderman().setScouting(true);
-            SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + raidData.getAreaOfInterestEntry().getPosition() + " in " + raidData.getDimensionResourceKey() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
-            announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location. Keep an eye out."), raidData.getCurrentRaidRadius() * 8);
+            SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + raidData.getDimensionResourceKey() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
+            announceToAllPlayers(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"));
         }
 
         if(!raidData.getScoutEnderman().isAlive())
@@ -394,7 +404,7 @@ public class RaidHandler {
             raidData.setCurrentRaidRadius(raidData.getDistanceOfFurthestObjective());
             SculkHorde.LOGGER.debug("RaidHandler | Current Raid Radius: " + raidData.getCurrentRaidRadius());
 
-            announceToPlayersInRange(Component.literal("Sculk Raid Commencing at: " + raidData.getRaidLocation() + " in dimension " + raidData.getDimension().dimension()), raidData.getCurrentRaidRadius() * 8);
+            announceToAllPlayers(Component.literal("The Sculk Horde is Raiding " + getFormattedCoordinates(raidData.getRaidLocation()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) + "!"));
 
         }
         // If not successful
@@ -499,8 +509,6 @@ public class RaidHandler {
         if(isCurrentObjectiveCompleted())
         {
             raidData.setNextObjectiveLocation();
-
-            announceToAllPlayers(Component.literal("The Sculk Horde has Successfully Destroyed an Objective!"));
 
             raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.BELL_RESONATE, SoundSource.AMBIENT, 1.0F, 1.0F));
         }

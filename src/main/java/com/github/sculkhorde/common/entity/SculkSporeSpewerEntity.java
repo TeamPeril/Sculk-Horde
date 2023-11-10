@@ -8,6 +8,7 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
@@ -117,6 +118,11 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {

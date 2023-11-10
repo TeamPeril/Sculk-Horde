@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -35,6 +36,12 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     @Override
     public boolean canUse()
     {
+        boolean doesSquadExist = SquadHandler.doesSquadExist(((ISculkSmartEntity)this.mob).getSquad());
+        if(doesSquadExist)
+        {
+            return false;
+        }
+
 
         boolean canWeUse = !((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
         // If the mob is already targeting something valid, don't bother

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -58,7 +59,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -93,6 +94,11 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -147,14 +153,15 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                         new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkZombieAttackGoal(this, 1.0D, true),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        //new RangedAttackGoal(this, new AcidAttack(this), 20),
                         //LookAtGoal(mob, targetType, lookDistance)
                         new LookAtPlayerGoal(this, Pig.class, 8.0F),
                         //LookRandomlyGoal(mob)

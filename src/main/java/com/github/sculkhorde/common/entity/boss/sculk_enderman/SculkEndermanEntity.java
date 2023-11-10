@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -147,6 +148,11 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {

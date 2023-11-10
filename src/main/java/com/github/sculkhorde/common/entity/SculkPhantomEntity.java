@@ -218,6 +218,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     private boolean isParticipatingInRaid = false;
 
     @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
+
+    @Override
     public boolean isParticipatingInRaid() {
         return false;
     }
