@@ -59,7 +59,14 @@ public class SquadHandlingGoal extends Goal {
         {
             if(squad.isSquadLeaderDead())
             {
-                squad.disbandSquad();
+                ISculkSmartEntity mobWithMostHealth = squad.getMobMemberWithMostMaxHealth();
+                if(mobWithMostHealth == null)
+                {
+                    squad.disbandSquad();
+                    return;
+                }
+
+                SquadHandler.promoteToLeaderOfSquad(mobWithMostHealth, squad);
             }
 
             if(squad.isSquadLeader())

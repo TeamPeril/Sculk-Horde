@@ -9,6 +9,8 @@ public class FollowSquadLeader extends Goal {
     private final ISculkSmartEntity sculkSmartEntity; // the skeleton mob
     private int timeToRecalcPath;
 
+    private final int FOLLOW_RANGE = 20;
+
     public FollowSquadLeader(ISculkSmartEntity mob) {
         this.sculkSmartEntity = mob;
     }
@@ -31,6 +33,11 @@ public class FollowSquadLeader extends Goal {
             return false;
         }
 
+        if(!sculkSmartEntity.getSquad().isSquadLeaderDead() && getMob().distanceToSqr((Entity) sculkSmartEntity.getSquad().squadLeader.get()) < FOLLOW_RANGE)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -49,13 +56,14 @@ public class FollowSquadLeader extends Goal {
             return;
         }
 
-        if (getMob().distanceToSqr((Entity) sculkSmartEntity.getSquad().squadLeader.get()) < 8) {
+        if (getMob().distanceToSqr((Entity) sculkSmartEntity.getSquad().squadLeader.get()) < FOLLOW_RANGE) {
             // stop the navigation
             getMob().getNavigation().stop();
+
         }
 
         if (--this.timeToRecalcPath <= 0) {
-            this.timeToRecalcPath = this.adjustedTickDelay(10);
+            this.timeToRecalcPath = this.adjustedTickDelay(20);
             this.getMob().getNavigation().moveTo((Entity) sculkSmartEntity.getSquad().squadLeader.get(), 1.0);
         }
     }

@@ -36,8 +36,10 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     @Override
     public boolean canUse()
     {
-        boolean doesSquadExist = SquadHandler.doesSquadExist(((ISculkSmartEntity)this.mob).getSquad());
-        if(doesSquadExist)
+        ISculkSmartEntity sculkMob = ((ISculkSmartEntity)this.mob);
+        boolean doesSquadExist = SquadHandler.doesSquadExist(sculkMob.getSquad());
+        boolean isLeaderOfSquad = sculkMob.getSquad().isSquadLeader();
+        if(doesSquadExist && !isLeaderOfSquad)
         {
             return false;
         }
