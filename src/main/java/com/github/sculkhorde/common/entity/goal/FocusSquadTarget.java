@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.SquadHandler;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -21,6 +22,13 @@ public class FocusSquadTarget extends TargetGoal {
      */
     public boolean canUse()
     {
+        boolean experiementalFeaturesEnabled = ModConfig.SERVER.experimental_features_enabled.get();
+        boolean squadMechanicsEnabled = ModConfig.SERVER.squad_mechanics_enabled.get();
+        if(!experiementalFeaturesEnabled || !squadMechanicsEnabled)
+        {
+            return false;
+        }
+
         ISculkSmartEntity sculkSmartEntity = (ISculkSmartEntity) this.mob;
 
         boolean squadDoesntExist = !SquadHandler.doesSquadExist(((ISculkSmartEntity)this.mob).getSquad());

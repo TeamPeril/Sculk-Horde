@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
@@ -183,7 +184,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        //new HurtByTargetGoal(this).setAlertOthers(),
+                        new HurtByTargetGoal(this),
                         new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };

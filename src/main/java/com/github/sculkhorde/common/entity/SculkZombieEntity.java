@@ -184,7 +184,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        //new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
                         new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
 

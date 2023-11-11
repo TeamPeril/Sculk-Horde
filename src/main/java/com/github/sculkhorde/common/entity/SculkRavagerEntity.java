@@ -183,7 +183,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     {
         return new Goal[]{
                 new InvalidateTargetGoal(this),
-                //new TargetAttacker(this).setAlertAllies(),
+                new TargetAttacker(this),
                 new FocusSquadTarget(this),
                 new NearestLivingEntityTargetGoal<>(this, true, true)
         };

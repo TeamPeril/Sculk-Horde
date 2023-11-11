@@ -36,6 +36,7 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> sculk_phantoms_enabled;
+        public final ForgeConfigSpec.ConfigValue<Boolean> squad_mechanics_enabled;
 
 
         public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
@@ -77,6 +78,7 @@ public class ModConfig {
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
             sculk_phantoms_enabled = builder.comment("Should sculk phantoms be enabled? (Default true)").define("sculk_phantoms_enabled",true);
+            squad_mechanics_enabled = builder.comment("Should squad mechanics be enabled? (Default true)").define("squad_mechanics_enabled",true);
             builder.pop();
 
             builder.push("Sculk Raid Variables");

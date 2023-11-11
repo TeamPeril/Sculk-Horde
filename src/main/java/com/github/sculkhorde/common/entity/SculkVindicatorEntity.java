@@ -182,7 +182,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        //new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
                         new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
 

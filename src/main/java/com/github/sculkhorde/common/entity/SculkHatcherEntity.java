@@ -195,7 +195,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         Goal[] goals =
                 {
                         new InvalidateTargetGoal(this),
-                        //new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
                         new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
