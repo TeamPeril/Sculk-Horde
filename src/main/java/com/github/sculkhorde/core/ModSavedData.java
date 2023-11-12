@@ -243,7 +243,10 @@ public class ModSavedData extends SavedData {
     }
 
     public boolean isNodeSpawnCooldownOver() {
-        return getTicksElapsedForNodeSpawningCooldown() >= Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+        long ticksElapsed = getTicksElapsedForNodeSpawningCooldown();
+        long ticksNeeded = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+        boolean result = ticksElapsed >= ticksNeeded;
+        return ticksElapsed >= ticksNeeded;
     }
 
     public int getTicksElapsedForNodeSpawningCooldown() {

@@ -78,7 +78,8 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		SculkPhantomEntity.spawnPhantom(worldIn, playerIn.blockPosition());
+		boolean result = SculkHorde.savedData.isNodeSpawnCooldownOver();
+		SculkHorde.LOGGER.info("Is Node Spawn Cooldown Over: " + result);
 
 		return InteractionResultHolder.pass(itemstack);
 	}
