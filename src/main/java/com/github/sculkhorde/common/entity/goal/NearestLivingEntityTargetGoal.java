@@ -37,13 +37,14 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     public boolean canUse()
     {
         ISculkSmartEntity sculkMob = ((ISculkSmartEntity)this.mob);
-        boolean doesSquadExist = SquadHandler.doesSquadExist(sculkMob.getSquad());
-        boolean isLeaderOfSquad = sculkMob.getSquad().isSquadLeader();
-        if(doesSquadExist && !isLeaderOfSquad)
-        {
-            return false;
-        }
+        if(sculkMob.getSquad() != null) {
 
+            boolean doesSquadExist = SquadHandler.doesSquadExist(sculkMob.getSquad());
+            boolean isLeaderOfSquad = sculkMob.getSquad().isSquadLeader();
+            if (doesSquadExist && !isLeaderOfSquad) {
+                return false;
+            }
+        }
 
         boolean canWeUse = !((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
         // If the mob is already targeting something valid, don't bother

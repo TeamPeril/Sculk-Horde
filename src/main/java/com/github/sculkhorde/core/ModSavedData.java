@@ -62,7 +62,7 @@ public class ModSavedData extends SavedData {
     // used to write/read nbt data to/from the world.
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
     // The amount of ticks since sculk node destruction
-    private int ticksSinceSculkNodeDestruction = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+    private int noNodeSpawningTicksElapsed = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
     // The amount of ticks since last raid
     private int ticksSinceLastRaid = TickUnits.convertHoursToTicks(8);
@@ -106,7 +106,7 @@ public class ModSavedData extends SavedData {
         SculkHorde.savedData.getAreasOfInterestEntries().clear();
 
         SculkHorde.savedData.setSculkAccumulatedMass(nbt.getInt(sculkAccumulatedMassIdentifier));
-        SculkHorde.savedData.setTicksSinceSculkNodeDestruction(nbt.getInt(ticksSinceSculkNodeDestructionIdentifier));
+        SculkHorde.savedData.setNoNodeSpawningTicksElapsed(nbt.getInt(ticksSinceSculkNodeDestructionIdentifier));
 
         SculkHorde.savedData.setTicksSinceLastRaid(nbt.getInt(ticksSinceLastRaidIdentifier));
 
@@ -175,7 +175,7 @@ public class ModSavedData extends SavedData {
         CompoundTag gravemindData = new CompoundTag();
 
         nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
-        nbt.putInt(ticksSinceSculkNodeDestructionIdentifier, ticksSinceSculkNodeDestruction);
+        nbt.putInt(ticksSinceSculkNodeDestructionIdentifier, noNodeSpawningTicksElapsed);
         nbt.putInt(ticksSinceLastRaidIdentifier, ticksSinceLastRaid);
         nbt.putBoolean(debugModeIdentifier, SculkHorde.isDebugMode());
 
@@ -242,28 +242,28 @@ public class ModSavedData extends SavedData {
         setDirty();
     }
 
-    public boolean isSculkNodeCooldownOver() {
-        return ticksSinceSculkNodeDestruction >= Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+    public boolean isNodeSpawnCooldownOver() {
+        return getTicksElapsedForNodeSpawningCooldown() >= Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     }
 
-    public int getTicksSinceSculkNodeDestruction() {
+    public int getTicksElapsedForNodeSpawningCooldown() {
         setDirty();
-        return ticksSinceSculkNodeDestruction;
+        return noNodeSpawningTicksElapsed;
     }
 
-    public void setTicksSinceSculkNodeDestruction(int ticksSinceSculkNodeDestruction) {
-        this.ticksSinceSculkNodeDestruction = ticksSinceSculkNodeDestruction;
-        setDirty();
-    }
-
-    public void incrementTicksSinceSculkNodeDestruction() {
-        this.ticksSinceSculkNodeDestruction++;
+    public void setNoNodeSpawningTicksElapsed(int noNodeSpawningTicksElapsed) {
+        this.noNodeSpawningTicksElapsed = noNodeSpawningTicksElapsed;
         setDirty();
     }
 
-    public void resetTicksSinceSculkNodeDestruction() {
+    public void incrementNoNodeSpawningTicksElapsed() {
+        this.noNodeSpawningTicksElapsed++;
+        setDirty();
+    }
+
+    public void resetNoNodeSpawningTicksElapsed() {
         //Send message to all players that node has spawned
-        this.ticksSinceSculkNodeDestruction = 0;
+        this.noNodeSpawningTicksElapsed = 0;
         setDirty();
     }
 
@@ -570,7 +570,7 @@ public class ModSavedData extends SavedData {
         long startTime = System.nanoTime();
         for (int index = 0; index < nodeEntries.size(); index++) {
             if (!getNodeEntries().get(index).isEntryValid()) {
-                resetTicksSinceSculkNodeDestruction();
+                resetNoNodeSpawningTicksElapsed();
                 getNodeEntries().remove(index);
                 index--;
                 setDirty();
@@ -727,7 +727,7 @@ public class ModSavedData extends SavedData {
             {
                 getNodeEntries().remove(i);
                 setDirty();
-                resetTicksSinceSculkNodeDestruction();
+                resetNoNodeSpawningTicksElapsed();
                 return;
             }
         }
@@ -965,6 +965,7 @@ public class ModSavedData extends SavedData {
          */
         public boolean isEntryValid()
         {
+            if(getDimension() == null) { return false; }
             return getDimension().getBlockState(position).getBlock().equals(ModBlocks.SCULK_NODE_BLOCK.get());
         }
 
@@ -1072,6 +1073,7 @@ public class ModSavedData extends SavedData {
          */
         public boolean isOccupantsExistingDisabled()
         {
+            if(getDimension() == null) { return true; }
             return SculkBeeNestBlock.isNestClosed(getDimension().getBlockState(position));
         }
 
@@ -1080,6 +1082,7 @@ public class ModSavedData extends SavedData {
          */
         public void disableOccupantsExiting()
         {
+            if(getDimension() == null) { return; }
             SculkBeeNestBlock.setNestClosed(getDimension(), getDimension().getBlockState(position), position);
         }
 
@@ -1089,6 +1092,7 @@ public class ModSavedData extends SavedData {
          */
         public void enableOccupantsExiting()
         {
+            if(getDimension() == null) { return; }
             SculkBeeNestBlock.setNestOpen(getDimension(), getDimension().getBlockState(position), position);
         }
 
@@ -1272,6 +1276,14 @@ public class ModSavedData extends SavedData {
             return position;
         }
 
+        public boolean isValid()
+        {
+            boolean isDimensionValid = getDimension() != null;
+            boolean isPositionValid = getPosition() != null;
+
+            return isDimensionValid && isPositionValid;
+        }
+
         /**
          * Making nbt to be stored in memory
          * @return The nbt with our data
@@ -1335,6 +1347,14 @@ public class ModSavedData extends SavedData {
                 }
             }
             return false;
+        }
+
+        public boolean isEntryValid()
+        {
+            boolean isDimensionValid = getDimension() != null;
+            boolean isPositionValid = getPosition() != null;
+
+            return isDimensionValid && isPositionValid;
         }
 
         /**

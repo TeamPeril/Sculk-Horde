@@ -72,7 +72,7 @@ public class ForgeEventSubscriber {
 
         // Run this stuff every tick
 
-        SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
+        SculkHorde.savedData.incrementNoNodeSpawningTicksElapsed();
 
         SculkHorde.raidHandler.raidTick(); // Tick the raid handler
         SculkHorde.deathAreaInvestigator.tick();

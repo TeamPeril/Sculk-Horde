@@ -205,16 +205,11 @@ public class CustomMeleeAttackGoal extends Goal{
     protected void checkAndPerformAttack(LivingEntity targetMob, double distanceFromTargetIn) {
         double attackReach = this.getAttackReachSqr(this.mob);
         boolean isTooFarFromTarget = distanceFromTargetIn > attackReach;
-        if (!isTimeToAttack())
+        boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(targetMob);
+        if (!isTimeToAttack() || isTooFarFromTarget || !canSeeTarget)
         {
             return;
         }
-        else if(isTooFarFromTarget)
-        {
-
-            return;
-        }
-
         triggerAnimation();
         delayedHurtScheduler.trigger(attackReach);
         resetAttackCooldown();

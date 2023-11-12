@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -69,7 +70,7 @@ public class SquadHandlingGoal extends Goal {
                 SquadHandler.promoteToLeaderOfSquad(mobWithMostHealth, squad);
             }
 
-            if(squad.isSquadLeader())
+            if(squad.isSquadLeader() && SculkHorde.isDebugMode())
             {
                 MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0, false, false);
                 getMob().addEffect(effect);
@@ -87,7 +88,7 @@ public class SquadHandlingGoal extends Goal {
 
     protected boolean tryToJoinNearBySquad()
     {
-        AABB boundingBox = getMob().getBoundingBox().inflate(32.0D, 8.0D, 32.0D);
+        AABB boundingBox = getMob().getBoundingBox().inflate(16.0D, 8.0D, 16.0D);
         // Get list of mobs in range
         List<? extends Mob> list = getMob().level().getEntitiesOfClass(Mob.class, boundingBox);
 

@@ -249,6 +249,12 @@ public class RaidHandler {
                 return;
             }
 
+            if(!possibleEntry.get().isEntryValid())
+            {
+                raidData.setFailure(failureType.FAILED_INITIALIZATION);
+                return;
+            }
+
             raidData.setAreaOfInterestEntry(possibleEntry.get());
 
         }

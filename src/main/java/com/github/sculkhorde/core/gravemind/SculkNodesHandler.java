@@ -43,6 +43,17 @@ public class SculkNodesHandler {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = null;
         for(ModSavedData.NodeEntry node : getNodes())
         {
+            ServerLevel dimension = node.getDimension();
+            // This is likely due to an old world that was created before multi-dimensional support was added.
+            if(dimension == null)
+            {
+                ModSavedData.NodeEntry nodeToRemove = node;
+                SculkHorde.LOGGER.warn("Removing Node at: " + nodeToRemove.getPosition().toString() + " due to it being in a null dimension.");
+                getNodes().remove(nodeToRemove);
+                continue;
+
+            }
+
             long currentTime = node.getDimension().getGameTime();
             long currentNodeDurationOfInactivity =  currentTime - node.getLastTimeWasActive();
             long nodeWithLongestTimeOfInactivityDuration = nodeWithLongestTimeOfInactivity == null ? 0 : currentTime - nodeWithLongestTimeOfInactivity.getLastTimeWasActive();
@@ -66,6 +77,17 @@ public class SculkNodesHandler {
     {
         for(ModSavedData.NodeEntry node : getNodes())
         {
+            ServerLevel dimension = node.getDimension();
+            // This is likely due to an old world that was created before multi-dimensional support was added.
+            if(dimension == null)
+            {
+                ModSavedData.NodeEntry nodeToRemove = node;
+                SculkHorde.LOGGER.warn("Removing Node at: " + nodeToRemove.getPosition().toString() + " due to it being in a null dimension.");
+                getNodes().remove(nodeToRemove);
+                continue;
+
+            }
+
             long currentNodeDurationOfInactivity =  node.getDimension().getGameTime() - node.getActivationTimeStamp();
             if(currentNodeDurationOfInactivity > TickUnits.convertHoursToTicks(1) && node.isActive())
             {
@@ -91,6 +113,7 @@ public class SculkNodesHandler {
     protected void ActivateNodeWithLongestDurationOfInactivity()
     {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
+        if(!nodeWithLongestTimeOfInactivity.isEntryValid()) { return; }
         nodeWithLongestTimeOfInactivity.setActive(true);
         nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
         SculkHorde.LOGGER.debug("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
@@ -100,6 +123,17 @@ public class SculkNodesHandler {
     {
         for(ModSavedData.NodeEntry node : getNodes())
         {
+            ServerLevel dimension = node.getDimension();
+            // This is likely due to an old world that was created before multi-dimensional support was added.
+            if(dimension == null)
+            {
+                ModSavedData.NodeEntry nodeToRemove = node;
+                SculkHorde.LOGGER.warn("Removing Node at: " + nodeToRemove.getPosition().toString() + " due to it being in a null dimension.");
+                getNodes().remove(nodeToRemove);
+                continue;
+
+            }
+
             if(!node.isActive()) { continue; }
             node.setActive(false);
             node.setLastTimeWasActive(node.getDimension().getGameTime());

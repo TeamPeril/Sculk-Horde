@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
@@ -114,7 +113,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         if(new Random().nextInt(1000) > 1 && enableChance) { return; }
 
         if(SculkHorde.savedData == null) { return;}
-        if(!SculkHorde.savedData.isSculkNodeCooldownOver())
+        if(!SculkHorde.savedData.isNodeSpawnCooldownOver())
         {
             return;
         }
@@ -155,6 +154,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
         for (ModSavedData.NodeEntry entry : SculkHorde.savedData.getNodeEntries())
         {
+            if(!entry.isEntryValid()) { continue; }
             if(!BlockAlgorithms.areTheseDimensionsEqual(entry.getDimension().dimension(), worldIn.dimension()))
             {
                 continue;
@@ -183,8 +183,8 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         BlockPos newOrigin = new BlockPos(searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ());
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(level, newOrigin);
+        SculkHorde.savedData.resetNoNodeSpawningTicksElapsed();
         EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
-
         //Send message to all players that node has spawned
         level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
         // Play sound for each player
