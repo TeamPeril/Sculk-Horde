@@ -203,6 +203,11 @@ public class CustomMeleeAttackGoal extends Goal{
     }
 
     protected void checkAndPerformAttack(LivingEntity targetMob, double distanceFromTargetIn) {
+        boolean isTargetNull = targetMob == null;
+        if (isTargetNull)
+        {
+            return;
+        }
         double attackReach = this.getAttackReachSqr(this.mob);
         boolean isTooFarFromTarget = distanceFromTargetIn > attackReach;
         boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(targetMob);
