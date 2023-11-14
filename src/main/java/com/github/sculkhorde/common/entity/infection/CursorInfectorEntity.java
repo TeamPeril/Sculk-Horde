@@ -35,47 +35,7 @@ public class CursorInfectorEntity extends CursorEntity
         creationTickTime = System.currentTimeMillis();
     }
 
-    /**
-     * Returns true if the block is considered obstructed.
-     * @param state the block state
-     * @param pos the block position
-     * @return true if the block is considered obstructed
-     */
-    @Override
-    protected boolean isObstructed(BlockState state, BlockPos pos)
-    {
-        if(!ModConfig.SERVER.block_infestation_enabled.get())
-        {
-            return true;
-        }
-        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
-        {
-            return true;
-        }
-        else if(!state.isSolidRender(this.level(), pos))
-        {
-            return true;
-        }
-        else if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
-        {
-            return true;
-        }
-        else if(state.isAir())
-        {
-            return true;
-        }
-        // Check if block is not beyond world border
-        else if(!level().isInWorldBounds(pos))
-        {
-            return true;
-        }
-        // This is to prevent the entity from getting stuck in a loop
-        else if(visitedPositons.containsKey(pos.asLong()))
-        {
-            return true;
-        }
-        return false;
-    }
+
 
     /**
      * Returns true if the block is considered a target.

@@ -6,7 +6,8 @@
   "refmap": "mixins.sculkhorde.refmap.json",
   "mixins": [
     "structures.StructureProcessorAccessor",
-    "structures.StructureTemplateMixin"
+    "structures.StructureTemplateMixin",
+    "structures.ForgeChunkManagerAccessor"
   ],
   "server": [],
   "injectors": {
