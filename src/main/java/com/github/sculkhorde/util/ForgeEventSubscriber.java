@@ -170,7 +170,6 @@ public class ForgeEventSubscriber {
         }
     }
 
-
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
@@ -183,24 +182,5 @@ public class ForgeEventSubscriber {
         {
             AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
         }
-    }
-
-    @SubscribeEvent
-    public static void OnServerStart(ServerStartedEvent event)
-    {
-        MinecraftServer server = event.getServer();
-
-        DimensionDataStorage dataStorage = server.getLevel(ServerLevel.OVERWORLD).getDataStorage();
-        if(dataStorage == null)
-        {
-            return;
-        }
-        dataStorage.get(nbt -> ForcedChunksSavedData.load(removeEntries(nbt)), "chunks");
-    }
-
-    public static CompoundTag removeEntries(CompoundTag originalNbt) {
-        // Modify originalNbt to remove specific parts
-        // ...
-        return originalNbt; // Return the modified NBT
     }
 }

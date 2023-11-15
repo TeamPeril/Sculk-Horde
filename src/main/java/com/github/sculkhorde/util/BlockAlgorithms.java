@@ -592,11 +592,19 @@ public class BlockAlgorithms {
 
     public static boolean areTheseDimensionsEqual(ResourceKey<Level> dimension1, ResourceKey<Level> dimension2)
     {
+        if(dimension1 == null || dimension2 == null)
+        {
+            return false;
+        }
         return dimension1.location().equals(dimension2.location());
     }
 
     public static boolean areTheseDimensionsEqual(ServerLevel dimension1, ServerLevel dimension2)
     {
+        if(dimension1 == null || dimension2 == null)
+        {
+            return false;
+        }
         return dimension1.dimension().location().equals(dimension2.dimension().location());
     }
 
