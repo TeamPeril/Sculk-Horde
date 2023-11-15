@@ -188,10 +188,14 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void OnServerStart(ServerStartedEvent event)
     {
-        //MinecraftServer server = event.getServer();
-        //server.getWorldData().get(ForcedChunksSavedData::load, "chunks");
-        //DimensionDataStorage dataStorage = server.getLevel(ServerLevel.OVERWORLD).getDataStorage();
-        //dataStorage.get(nbt -> ForcedChunksSavedData.load(removeEntries(nbt)), "chunks");
+        MinecraftServer server = event.getServer();
+
+        DimensionDataStorage dataStorage = server.getLevel(ServerLevel.OVERWORLD).getDataStorage();
+        if(dataStorage == null)
+        {
+            return;
+        }
+        dataStorage.get(nbt -> ForcedChunksSavedData.load(removeEntries(nbt)), "chunks");
     }
 
     public static CompoundTag removeEntries(CompoundTag originalNbt) {

@@ -1,4 +1,4 @@
-package com.github.sculkhorde.mixin.chunks;
+package com.github.sculkhorde.util.ChunkLoading;
 
 public interface IClearCache {
     private void clearCache() {

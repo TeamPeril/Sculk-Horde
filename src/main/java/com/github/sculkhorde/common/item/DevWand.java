@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.mixin.chunks.ClearCacheMixin;
-import com.github.sculkhorde.mixin.chunks.IClearCache;
+import com.github.sculkhorde.util.ChunkLoading.IClearCache;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.ForcedChunksSavedData;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.extensions.IForgeItem;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -74,18 +74,20 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		ServerLevel world = (ServerLevel) worldIn;
-		ServerChunkCache chunkCache = world.getChunkSource();
-		((IClearCache) chunkCache).publicClearCache();
+		/// Did not work. Does not do what I think it does
+		//ServerLevel world = (ServerLevel) worldIn;
+		//ServerChunkCache chunkCache = world.getChunkSource();
+		//((IClearCache) chunkCache).publicClearCache();
 
 
-		//announceToAllPlayers(Component.literal("Entity Forced Chunks Before Wipe: " + data.getEntityForcedChunks().getTickingChunks().size()));
-		//data.getEntityForcedChunks().getTickingChunks().clear();
-		//announceToAllPlayers(Component.literal("Entity Forced Chunks After Wipe: " + data.getEntityForcedChunks().getTickingChunks().size()));
+		/* Does not work because ticking chunks is an unmodifiable map
+		ForcedChunksSavedData data = ((ServerLevel)worldIn).getDataStorage().get(ForcedChunksSavedData::load, "chunks");
+		data.getEntityForcedChunks().getTickingChunks();
+		data.getEntityForcedChunks().getTickingChunks().clear(); */
 
-		//announceToAllPlayers(Component.literal("Block Entity Forced Chunks Before Wipe: " + data.getBlockForcedChunks().getTickingChunks().size()));
-		//data.getBlockForcedChunks().getTickingChunks().clear();
-		//announceToAllPlayers(Component.literal("Block Entity Forced Chunks After Wipe: " + data.getBlockForcedChunks().getTickingChunks().size()));
+
+
+
 
 		return InteractionResultHolder.pass(itemstack);
 	}

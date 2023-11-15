@@ -1,6 +1,7 @@
 package com.github.sculkhorde.mixin.chunks;
 
 
+import com.github.sculkhorde.util.ChunkLoading.IClearCache;
 import net.minecraft.server.level.ServerChunkCache;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
