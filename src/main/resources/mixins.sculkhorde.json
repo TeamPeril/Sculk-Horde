@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.sculkhorde.refmap.json",
   "mixins": [
+    "chunks.ClearCacheMixin",
+    "chunks.ServerChunkCacheAccessor",
     "structures.StructureProcessorAccessor",
-    "structures.StructureTemplateMixin",
-    "structures.ForgeChunkManagerAccessor"
+    "structures.StructureTemplateMixin"
   ],
   "server": [],
   "injectors": {

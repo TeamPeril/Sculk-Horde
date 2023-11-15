@@ -7,16 +7,21 @@ import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ForcedChunksSavedData;
+import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -178,5 +183,20 @@ public class ForgeEventSubscriber {
         {
             AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
         }
+    }
+
+    @SubscribeEvent
+    public static void OnServerStart(ServerStartedEvent event)
+    {
+        //MinecraftServer server = event.getServer();
+        //server.getWorldData().get(ForcedChunksSavedData::load, "chunks");
+        //DimensionDataStorage dataStorage = server.getLevel(ServerLevel.OVERWORLD).getDataStorage();
+        //dataStorage.get(nbt -> ForcedChunksSavedData.load(removeEntries(nbt)), "chunks");
+    }
+
+    public static CompoundTag removeEntries(CompoundTag originalNbt) {
+        // Modify originalNbt to remove specific parts
+        // ...
+        return originalNbt; // Return the modified NBT
     }
 }
