@@ -91,7 +91,7 @@ public abstract class CursorEntity extends Entity
     {
         this.state = state;
     }
-    
+
 
     /**
      * Returns true if the block is considered obstructed.

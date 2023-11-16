@@ -105,45 +105,16 @@ public class BlockEntityChunkLoaderHelper
     }
 
     public static void forceLoadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ) {
-
-        ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
+        // Old shit method that causes runaway chunks
+        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
+        world.setChunkForced(chunkX, chunkZ, true);
     }
 
     public static void unloadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ) {
-
-        ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
+        // Old shit method that causes runaway chunks
+        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
+        world.setChunkForced(chunkX, chunkZ, false);
     }
-
-    public void sortBlockChunkLoadRequests()
-    {
-        ArrayList<BlockEntityChunkLoadRequest> sortedBlockChunkLoadRequests = new ArrayList<>();
-        for(BlockEntityChunkLoadRequest request : blockChunkLoadRequests)
-        {
-            if(sortedBlockChunkLoadRequests.isEmpty())
-            {
-                sortedBlockChunkLoadRequests.add(request);
-                continue;
-            }
-
-            boolean isAdded = false;
-            for(int i = 0; i < sortedBlockChunkLoadRequests.size(); i++)
-            {
-                if(request.isHigherPriorityThan(sortedBlockChunkLoadRequests.get(i)))
-                {
-                    sortedBlockChunkLoadRequests.add(i, request);
-                    isAdded = true;
-                    break;
-                }
-            }
-            if(!isAdded)
-            {
-                sortedBlockChunkLoadRequests.add(request);
-            }
-        }
-        blockChunkLoadRequests = sortedBlockChunkLoadRequests;
-    }
-
-
     public void unloadAndRemoveChunksWithOwner(BlockPos owner, ServerLevel level)
     {
         for(int i = 0; i < blockChunkLoadRequests.size(); i++)
@@ -230,13 +201,6 @@ public class BlockEntityChunkLoaderHelper
             }
         }
         createChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUnitExpiration);
-    }
-
-    public void createChunkLoadRequestForChunkContainingOwner(BlockPos owner, int priority, long ticksUntilExpiration)
-    {
-        ChunkPos[] chunkPositionsToLoad = new ChunkPos[1];
-        chunkPositionsToLoad[0] = new ChunkPos(owner);
-        createChunkLoadRequest(owner, chunkPositionsToLoad, priority, generateRequestIDFromBlockPos(owner), ticksUntilExpiration);
     }
 
     private void createChunkLoadRequest(BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)

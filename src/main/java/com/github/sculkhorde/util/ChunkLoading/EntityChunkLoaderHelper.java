@@ -10,6 +10,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class EntityChunkLoaderHelper
@@ -105,85 +106,49 @@ public class EntityChunkLoaderHelper
         }
     }
 
-    private static void forceLoadChunk(ServerLevel world, UUID owner, int chunkX, int chunkZ) {
+    private static void forceLoadChunk(ServerLevel world, int chunkX, int chunkZ) {
 
-        ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
+        // Old shit method that causes runaway chunks
+        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
+        world.setChunkForced(chunkX, chunkZ, true);
+
     }
-    public static void unloadChunk(ServerLevel world, UUID owner, int chunkX, int chunkZ) {
+    public static void unloadChunk(ServerLevel world, int chunkX, int chunkZ) {
 
-        ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
+        // Old shit method that causes runaway chunks
+        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
+        world.setChunkForced(chunkX, chunkZ, false);
     }
-    public void sortEntityChunkLoadRequests()
-    {
-        ArrayList<EntityChunkLoadRequest> sortedEntityChunkLoadRequests = new ArrayList<>();
-        for(EntityChunkLoadRequest request : entityChunkLoadRequests)
-        {
-            if(sortedEntityChunkLoadRequests.isEmpty())
-            {
-                sortedEntityChunkLoadRequests.add(request);
-                continue;
-            }
-
-            boolean isAdded = false;
-            for(int i = 0; i < sortedEntityChunkLoadRequests.size(); i++)
-            {
-                if(request.isHigherPriorityThan(sortedEntityChunkLoadRequests.get(i)))
-                {
-                    sortedEntityChunkLoadRequests.add(i, request);
-                    isAdded = true;
-                    break;
-                }
-            }
-            if(!isAdded)
-            {
-                sortedEntityChunkLoadRequests.add(request);
-            }
-        }
-        entityChunkLoadRequests = sortedEntityChunkLoadRequests;
-    }
-
     public void unloadAndRemoveChunksWithOwner(UUID owner, ServerLevel level)
     {
-        for(int i = 0; i < entityChunkLoadRequests.size(); i++)
+        Iterator<EntityChunkLoadRequest> iterator = entityChunkLoadRequests.iterator();
+        while(iterator.hasNext())
         {
-            EntityChunkLoadRequest request = entityChunkLoadRequests.get(i);
+            EntityChunkLoadRequest request = iterator.next();
             if(request.isOwner(owner))
             {
                 for(ChunkPos chunkPos : request.getChunkPositionsToLoad())
                 {
-                    unloadChunk(level, owner, chunkPos.x, chunkPos.z);
+                    unloadChunk(level, chunkPos.x, chunkPos.z);
                 }
-                entityChunkLoadRequests.remove(i);
-                i--;
+                iterator.remove();
             }
         }
     }
     public void loadChunksWithOwner(UUID owner, ServerLevel level)
     {
-        for(int i = 0; i < entityChunkLoadRequests.size(); i++)
+        Iterator<EntityChunkLoadRequest> iterator = entityChunkLoadRequests.iterator();
+        while(iterator.hasNext())
         {
-            EntityChunkLoadRequest request = entityChunkLoadRequests.get(i);
+            EntityChunkLoadRequest request = iterator.next();
             if(request.isOwner(owner))
             {
                 for(ChunkPos chunkPos : request.getChunkPositionsToLoad())
                 {
-                    forceLoadChunk(level, owner, chunkPos.x, chunkPos.z);
+                    forceLoadChunk(level, chunkPos.x, chunkPos.z);
                 }
             }
         }
-    }
-
-    public void removeRequestsWithOwner(UUID owner)
-    {
-        ArrayList<EntityChunkLoadRequest> requestsToRemove = new ArrayList<>();
-        for(EntityChunkLoadRequest request : entityChunkLoadRequests)
-        {
-            if(request.isOwner(owner))
-            {
-                requestsToRemove.add(request);
-            }
-        }
-        entityChunkLoadRequests.removeAll(requestsToRemove);
     }
 
     public boolean doesChunkLoadRequestAlreadyExist(String requestID)
@@ -202,15 +167,6 @@ public class EntityChunkLoaderHelper
     {
         ChunkPos centerChunkPos = new ChunkPos(owner.blockPosition());
         return String.valueOf(centerChunkPos.x) + String.valueOf(centerChunkPos.z);
-    }
-
-    /**
-     * Create a chunkload request square with the owner of the entity at the center of the square.
-     */
-    public void createChunkLoadRequestSquareForEntityIfAbsent(Entity owner, int length, int priority)
-    {
-        ChunkPos centerChunkPos = new ChunkPos(owner.blockPosition());
-
     }
 
     public void createChunkLoadRequestSquareForEntityIfAbsent(Entity owner, int length, int priority, long ticksUnitExpiration)
@@ -237,13 +193,6 @@ public class EntityChunkLoaderHelper
         }
         createChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUnitExpiration);
 
-    }
-
-    public void createChunkLoadRequestForEntityIfAbsent(Entity owner, int priority, long ticksUntilExpiration)
-    {
-        ChunkPos[] chunkPositionsToLoad = new ChunkPos[1];
-        chunkPositionsToLoad[0] = new ChunkPos(owner.blockPosition());
-        createChunkLoadRequest(owner, chunkPositionsToLoad, priority, generateRequestIDFromEntity(owner), ticksUntilExpiration);
     }
 
     private void createChunkLoadRequest(Entity owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)
