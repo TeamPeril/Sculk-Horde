@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.CursorInfector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -11,7 +10,7 @@ public class DevInfectionTree {
     private boolean Active = false;
     private final Direction direction;
     private CursorProberEntity cursorProbe;
-    private CursorInfector cursorInfection;
+    private CursorSurfaceInfectorEntity cursorInfection;
     private final ServerLevel world;
     private state currentState = state.IDLE;
     private enum state {
@@ -50,7 +49,7 @@ public class DevInfectionTree {
         this.root = new TreeNode(rootPos);
         this.direction = direction;
         this.world = world;
-        SculkHorde.LOGGER.debug("DevInfectionTree (" + direction + ") | Created.");
+        SculkHorde.LOGGER.info("DevInfectionTree (" + direction + ") | Created.");
     }
 
     // Getters and Setters
@@ -60,7 +59,7 @@ public class DevInfectionTree {
     }
 
     public void activate() {
-        SculkHorde.LOGGER.debug("DevInfectionTree (" + direction + ") | Activated.");
+        SculkHorde.LOGGER.info("DevInfectionTree (" + direction + ") | Activated.");
         Active = true;
     }
 
@@ -103,19 +102,11 @@ public class DevInfectionTree {
      * @param maxInfections The maximum number of infections the cursor can perform
      */
     public void createInfectionCursor(int maxInfections) {
-        /*
         cursorInfection = new CursorSurfaceInfectorEntity(world);
         cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
         cursorInfection.setMaxRange(maxInfections);
         cursorInfection.setTickIntervalMilliseconds(2);
         this.world.addFreshEntity(cursorInfection);
-        */
-
-        cursorInfection = new CursorInfector(world);
-        cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
-        cursorInfection.setMaxRange(maxInfections);
-        cursorInfection.setTickIntervalMilliseconds(2);
-        cursorInfection.start();
     }
 
     /**
@@ -134,7 +125,7 @@ public class DevInfectionTree {
         {
             // Change State to Complete
             currentState = state.COMPLETE;
-            SculkHorde.LOGGER.debug("DevInfectionTree (" + direction + ")| Probe Failed Too Many Times. Changing State to Complete.");
+            SculkHorde.LOGGER.info("DevInfectionTree (" + direction + ")| Probe Failed Too Many Times. Changing State to Complete.");
         }
 
         // If the probe range is too large, reset it
@@ -142,7 +133,7 @@ public class DevInfectionTree {
         {
             // Reset the probe range
             currentProbeRange = MIN_PROBE_RANGE;
-            SculkHorde.LOGGER.debug("Probe Range Too Large. Resetting to Minimum.");
+            SculkHorde.LOGGER.info("Probe Range Too Large. Resetting to Minimum.");
         }
 
 
@@ -150,7 +141,7 @@ public class DevInfectionTree {
         if(currentState == state.IDLE)
         {
             currentState = state.PROBING;
-            SculkHorde.LOGGER.debug("Changing State to Probing.");
+            SculkHorde.LOGGER.info("Changing State to Probing.");
         }
         else if(currentState == state.PROBING)
         {
@@ -158,7 +149,7 @@ public class DevInfectionTree {
             if(cursorProbe == null)
             {
                 createProbeCursor(currentProbeRange);
-                SculkHorde.LOGGER.debug("Creating Probe Cursor.");
+                SculkHorde.LOGGER.info("Creating Probe Cursor.");
                 return;
             }
             // If the probe is still active, wait for it to finish
@@ -175,7 +166,7 @@ public class DevInfectionTree {
                 cursorProbe = null;
                 // Change State to Infection Mode
                 currentState = state.INFECTION;
-                SculkHorde.LOGGER.debug("Probe Successful. Changing State to Infection.");
+                SculkHorde.LOGGER.info("Probe Successful. Changing State to Infection.");
             }
             // If the probe is not successful, record the findings
             else
@@ -183,7 +174,7 @@ public class DevInfectionTree {
                 cursorProbe = null;
                 failedProbeAttempts++;
                 potentialNodePosition = BlockPos.ZERO;
-                SculkHorde.LOGGER.debug("Probe Failed. Failed Attempts is now " + failedProbeAttempts + ".");
+                SculkHorde.LOGGER.info("Probe Failed. Failed Attempts is now " + failedProbeAttempts + ".");
             }
         }
         else if(currentState == state.INFECTION)
@@ -194,29 +185,28 @@ public class DevInfectionTree {
             if(cursorInfection == null)
             {
                 createInfectionCursor(currentInfectRange);
-                SculkHorde.LOGGER.debug("Creating Infection Cursor.");
+                SculkHorde.LOGGER.info("Creating Infection Cursor.");
                 return;
             }
             // If the infection cursor is still active, wait for it to finish
-            else if(!cursorInfection.isToBeDeleted())
+            else if(cursorInfection.isAlive())
             {
-                cursorInfection.tick();
                 return;
             }
 
             // If the infection is successful, record the findings
-            if(cursorInfection.getCurrentTransformations() > 0)
+            if(cursorInfection.currentTransformations > 0)
             {
                 failedInfectionAttempts = 0;
                 cursorInfection = null;
-                SculkHorde.LOGGER.debug("Infection Successful.");
+                SculkHorde.LOGGER.info("Infection Successful.");
             }
             // If the infection is not successful, record the findings
             else
             {
                 failedInfectionAttempts++;
                 cursorInfection = null;
-                SculkHorde.LOGGER.debug("Infection Failed. Failed Infection Attempts is now " + failedInfectionAttempts + ".");
+                SculkHorde.LOGGER.info("Infection Failed. Failed Infection Attempts is now " + failedInfectionAttempts + ".");
             }
 
             // If failed infection attempts is too high, increase the infection range
@@ -224,7 +214,7 @@ public class DevInfectionTree {
             {
                 currentInfectRange += MAX_INFECTOR_RANGE_INCREMENT;
                 failedInfectionAttempts = 0;
-                SculkHorde.LOGGER.debug("Too Many Failed Infection Attempts. Increasing range to " + currentInfectRange + ".");
+                SculkHorde.LOGGER.info("Too Many Failed Infection Attempts. Increasing range to " + currentInfectRange + ".");
             }
 
             // If the infection range is too large, reset it and change state to complete
@@ -233,7 +223,7 @@ public class DevInfectionTree {
                 failedInfectionAttempts = 0;
                 currentInfectRange = MIN_INFECTOR_RANGE;
                 currentState = state.PROBING;
-                SculkHorde.LOGGER.debug("Infection Range Too Large. Resetting to Minimum.");
+                SculkHorde.LOGGER.info("Infection Range Too Large. Resetting to Minimum.");
             }
         }
         else if(currentState == state.COMPLETE)
@@ -243,7 +233,7 @@ public class DevInfectionTree {
                 currentProbeRange += PROBE_RANGE_INCREMENT;
                 failedProbeAttempts = 0;
                 currentState = state.IDLE;
-                SculkHorde.LOGGER.debug("Too Many Failed Probe Attempts. Increasing range to " + currentProbeRange + ".");
+                SculkHorde.LOGGER.info("Too Many Failed Probe Attempts. Increasing range to " + currentProbeRange + ".");
 
             }
 
@@ -251,7 +241,7 @@ public class DevInfectionTree {
             {
                 currentState = state.IDLE;
                 failedInfectionAttempts = 0;
-                SculkHorde.LOGGER.debug("Too Many Failed Infection Attempts. Resetting.");
+                SculkHorde.LOGGER.info("Too Many Failed Infection Attempts. Resetting.");
             }
         }
 
