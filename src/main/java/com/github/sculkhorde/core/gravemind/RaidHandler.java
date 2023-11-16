@@ -183,7 +183,7 @@ public class RaidHandler {
             ServerPlayer player = iterator.next();
             boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= raidData.getCurrentRaidRadius() * 2;
             if (!isPlayerInRangeOfRaid) {
-                iterator.remove();
+                raidData.getBossEvent().removePlayer(player);
             }
         }
 

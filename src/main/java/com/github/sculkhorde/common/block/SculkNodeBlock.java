@@ -284,7 +284,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         }
         SculkHorde.savedData.removeNodeFromMemory(pos);
         worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed!"), true));
-        worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
+        worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
 
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
