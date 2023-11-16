@@ -338,6 +338,7 @@ public class RaidHandler {
             SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + raidData.getDimensionResourceKey() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
             announceToAllPlayers(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"));
             raidData.getScoutEnderman().addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
+            playSoundForEveryPlayer(ModSounds.RAID_SCOUT_SOUND.get(), 1.0F, 1.0F);
         }
 
         if(!raidData.getScoutEnderman().isAlive())
@@ -433,6 +434,11 @@ public class RaidHandler {
                 raidData.getDimension().playSound(null, player.blockPosition(), soundEvent, SoundSource.HOSTILE, volume, pitch);
             }
         });
+    }
+
+    private void playSoundForEveryPlayer(SoundEvent soundEvent, float volume, float pitch)
+    {
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(player -> raidData.getDimension().playSound(null, player.blockPosition(), soundEvent, SoundSource.HOSTILE, volume, pitch));
     }
 
     private void spawnWaveParticipants(BlockPos spawnLocation)

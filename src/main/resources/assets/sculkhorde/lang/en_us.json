@@ -107,7 +107,7 @@
   "item.sculkhorde.pure_souls": "Pure Souls",
   "tooltip.sculkhorde.pure_souls": "Used to craft Infestation Purifiers and to deactivate the Ancient Sculk Node. Souls of the Assimilated that have been purified. You brought them peace and tranquility.",
   "block.sculkhorde.infestation_ward_block": "Infestation Ward Block",
-    "tooltip.sculkhorde.infestation_ward_block": "A block that prevents Sculk Infestation from spreading to any of it's neighboring blocks. This includes diagonals.",
+  "tooltip.sculkhorde.infestation_ward_block": "A block that prevents Sculk Infestation from spreading to any of it's neighboring blocks. This includes diagonals.",
   "block.sculkhorde.infested_mud": "Infested Mud",
   "block.sculkhorde.infested_packed_mud": "Infested Packed Mud",
   "block.sculkhorde.infested_mud_bricks": "Infested Mud Bricks",
@@ -130,6 +130,7 @@
   "item.sculkhorde.sculk_vindicator_spawn_egg": "Sculk Vindicator Spawn Egg",
   "item.sculkhorde.sculk_creeper_spawn_egg": "Sculk Creeper Spawn Egg",
   "item.sculkhorde.sculk_enderman_spawn_egg": "Sculk Enderman Spawn Egg",
+  "item.sculkhorde.sculk_phantom_spawn_egg": "Sculk Phantom Spawn Egg",
   "block.sculkhorde.dev_mass_infectinator_3000": "Dev Mass Infectinator 3000",
   "tooltip.sculkhorde.dev_mass_infectinator_3000": "Use at your own risk. A dev block that continuously infects an extremely large area. Made for Karat Feng's unquenchable conquest to infest everything he lays his eyes upon.",
 
@@ -147,5 +148,11 @@
   "item.sculkhorde.sculk_sweeper_sword": "The Sculk Sweeper",
   "tooltip.sculkhorde.sculk_sweeper_sword": "A special sword designed to kill swarms of Sculk Mobs. Has a large sweeping edge. Only does 50% damage to non-sculk mobs. Attacking Sculk Mobs builds up a charge that can be released with right-click. This special attack will spawn Sculk Spines at the feet of Sculk Mobs. The blade is forged from the cleaver of a Sculk Enderman.",
   "item.sculkhorde.sculk_enderman_cleaver": "Sculk Enderman Cleaver",
-  "tooltip.sculkhorde.sculk_enderman_cleaver": "The blade from the cleaver of a Sculk Enderman. It is used to craft The Sculk Sweeper. \nIt appears to be made of a sculk-ified bone-like material. Extremely sharp and tough like metal."
+  "tooltip.sculkhorde.sculk_enderman_cleaver": "The blade from the cleaver of a Sculk Enderman. It is used to craft The Sculk Sweeper. \nIt appears to be made of a sculk-ified bone-like material. Extremely sharp and tough like metal.",
+
+  "sounds.sculkhorde.horde_start_sound": "The Sculk Horde Awakens.",
+  "sounds.sculkhorde.raid_start_sound": "A Sculk Raid has started.",
+  "sounds.sculkhorde.raid_scout": "A distant Sculk Endemran scouting out a raid location.",
+  "sounds.node_spawn_sound": "A Sculk Node spawning",
+  "sounds.node_destroy_sound": "A Sculk Node being destroyed."
 }
