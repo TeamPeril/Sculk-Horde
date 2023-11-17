@@ -548,12 +548,20 @@ public class RaidHandler {
             case FAILED_OBJECTIVE_COMPLETION:
                 SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Objectives Not Destroyed.");
                 announceToAllPlayers(Component.literal("The Sculk Horde has failed to destroy all objectives!"));
-                raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
+                raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case ENDERMAN_DEFEATED:
                 SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Sculk Enderman Defeated.");
                 announceToAllPlayers(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"));
-                raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 1.0F));
+                raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
+                break;
+            case FAILED_INITIALIZATION:
+                SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Unable to Find Objective.");
+                announceToAllPlayers(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"));
+                raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
+                break;
+            case NONE:
+                SculkHorde.LOGGER.error("RaidHandler | Raid Failed. Unknown Reason.");
                 break;
         }
 

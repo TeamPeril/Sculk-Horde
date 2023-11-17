@@ -92,7 +92,7 @@ public class SculkTombStructure extends Structure {
         // Grabs the chunk position we are at
         ChunkPos chunkpos = context.chunkPos();
 
-        if(chunkpos.x >= -1 && chunkpos.x <= 1 && chunkpos.z >= -1 && chunkpos.z <= 1) {
+        if(chunkpos.x >= -4 && chunkpos.x <= 4 && chunkpos.z >= -4 && chunkpos.z <= 4) {
             spawnedStructure = true;
             return true;
         }
