@@ -153,6 +153,6 @@
   "sounds.sculkhorde.horde_start_sound": "The Sculk Horde Awakens.",
   "sounds.sculkhorde.raid_start_sound": "A Sculk Raid has started.",
   "sounds.sculkhorde.raid_scout": "A distant Sculk Endemran scouting out a raid location.",
-  "sounds.node_spawn_sound": "A Sculk Node spawning",
-  "sounds.node_destroy_sound": "A Sculk Node being destroyed."
+  "sounds.sculkhorde.node_spawn_sound": "A Sculk Node spawning",
+  "sounds.sculkhorde.node_destroy_sound": "A Sculk Node being destroyed."
 }
