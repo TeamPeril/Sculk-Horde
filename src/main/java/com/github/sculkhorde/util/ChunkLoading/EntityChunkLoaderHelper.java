@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
@@ -197,7 +198,7 @@ public class EntityChunkLoaderHelper
 
     private void createChunkLoadRequest(Entity owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)
     {
-        if(doesChunkLoadRequestAlreadyExist(requestID))
+        if(doesChunkLoadRequestAlreadyExist(requestID) || ModConfig.SERVER.chunk_loading_enabled.get())
         {
             return;
         }

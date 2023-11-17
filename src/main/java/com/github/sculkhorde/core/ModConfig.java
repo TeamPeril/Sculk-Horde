@@ -20,6 +20,9 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> target_faw_entities;
         public final ForgeConfigSpec.ConfigValue<Boolean> target_spore_entities;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
+        public final ForgeConfigSpec.ConfigValue<Boolean> chunk_loading_enabled;
+
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_immature_stage;
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_mature_stage;
 
@@ -34,7 +37,6 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_no_raid_zone_duration_minutes;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
-        public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> sculk_phantoms_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> squad_mechanics_enabled;
 
@@ -53,6 +55,7 @@ public class ModConfig {
 
             builder.push("General Variables");
             block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
+            chunk_loading_enabled = builder.comment("Should the Sculk Horde load chunks? If disabled, and will ruin the intended experience. For example, raids wont work properly (Default true)").define("chunk_loading_enabled",true);
             builder.pop();
 
             builder.push("Infestation / Purification Variables");

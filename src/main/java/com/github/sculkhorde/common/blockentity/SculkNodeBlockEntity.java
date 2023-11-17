@@ -38,7 +38,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     //Repair routine will restart after an hour
     private final long repairIntervalInMinutes = 60;
-    //Keep track of last time since repair so we know when to restart
+    //Keep track of last time since repair, so we know when to restart
     private long lastTimeSinceRepair = -1;
 
     public static final int tickIntervalSeconds = 1;
