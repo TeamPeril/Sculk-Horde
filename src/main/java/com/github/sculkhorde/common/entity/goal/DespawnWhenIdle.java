@@ -29,7 +29,7 @@ public class DespawnWhenIdle extends Goal {
     @Override
     public boolean canUse()
     {
-        if(!mob.isIdle() || mob.isParticipatingInRaid())
+        if(!mob.isIdle() || mob.isParticipatingInRaid() || ((Mob) mob).hasCustomName())
         {
             lastTimeSinceNotIdle = System.nanoTime();
         }

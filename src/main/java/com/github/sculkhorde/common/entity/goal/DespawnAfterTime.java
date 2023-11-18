@@ -35,7 +35,8 @@ public class DespawnAfterTime extends Goal {
     @Override
     public boolean canUse()
     {
-        if(level.getGameTime() - creationTime > ticksThreshold && !mob.isParticipatingInRaid())
+        boolean mobHasBeenNameTagged = ((Mob) mob).hasCustomName();
+        if(level.getGameTime() - creationTime > ticksThreshold && !mob.isParticipatingInRaid() && !mobHasBeenNameTagged)
         {
             return true;
         }
