@@ -198,7 +198,7 @@ public class EntityChunkLoaderHelper
 
     private void createChunkLoadRequest(Entity owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)
     {
-        if(doesChunkLoadRequestAlreadyExist(requestID) || ModConfig.SERVER.chunk_loading_enabled.get())
+        if(doesChunkLoadRequestAlreadyExist(requestID) || !ModConfig.SERVER.chunk_loading_enabled.get())
         {
             return;
         }

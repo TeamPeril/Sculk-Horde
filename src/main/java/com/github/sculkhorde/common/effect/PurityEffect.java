@@ -52,6 +52,11 @@ public class PurityEffect extends MobEffect {
             entity.removeEffect(ModMobEffects.SCULK_LURE.get());
         }
 
+        if(entity.hasEffect(ModMobEffects.DISEASED_CYSTS.get()))
+        {
+            entity.removeEffect(ModMobEffects.DISEASED_CYSTS.get());
+        }
+
         // If Sculk Living Entity, do damage
         if(EntityAlgorithms.isSculkLivingEntity.test(entity))
         {

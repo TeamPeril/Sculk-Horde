@@ -297,7 +297,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         {
             spawnPoint = new Vec3(getX(), getY(), getZ());
         }
-        // Disabling until i redo chunk system
         EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,2, 3, TickUnits.convertMinutesToTicks(1));
     }
 

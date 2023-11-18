@@ -1,7 +1,5 @@
 {
   "itemGroup.sculkhorde_tab": "Sculk Horde",
-  "effect.sculkhorde.sculk_infected": "Burrowed",
-  "effect.sculkhorde.sculk_lure": "Lure",
   "item.sculkhorde.sculk_matter": "Sculk Matter",
   "item.sculkhorde.dev_wand": "Dev Wand",
   "item.sculkhorde.dev_conversion_wand": "Dev Conversion Wand",
@@ -154,5 +152,9 @@
   "sounds.sculkhorde.raid_start_sound": "A Sculk Raid has started.",
   "sounds.sculkhorde.raid_scout": "A distant Sculk Endemran scouting out a raid location.",
   "sounds.sculkhorde.node_spawn_sound": "A Sculk Node spawning",
-  "sounds.sculkhorde.node_destroy_sound": "A Sculk Node being destroyed."
+  "sounds.sculkhorde.node_destroy_sound": "A Sculk Node being destroyed.",
+
+  "effect.sculkhorde.sculk_infected": "Burrowed",
+  "effect.sculkhorde.sculk_lure": "Lure",
+  "effect.sculkhorde.diseased_cysts": "Infested"
 }
