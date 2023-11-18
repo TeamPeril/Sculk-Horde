@@ -556,7 +556,7 @@ public class RaidHandler {
                 raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case FAILED_INITIALIZATION:
-                SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Unable to Find Objective.");
+                SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Unable to Initialize.");
                 announceToAllPlayers(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"));
                 raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
