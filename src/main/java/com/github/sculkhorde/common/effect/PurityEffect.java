@@ -41,6 +41,7 @@ public class PurityEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int amp) {
 
+        if(entity.level().isClientSide()) { return;}
         // IF entity has a sculk infection, remove it
         if(entity.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
         {

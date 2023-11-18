@@ -76,7 +76,7 @@ public class SculkInfectionEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
-
+        if(entity.level().isClientSide()) { return;}
         if(EntityAlgorithms.isSculkLivingEntity.test(entity))
         {
             // Remove effect

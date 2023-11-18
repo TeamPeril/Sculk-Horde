@@ -41,6 +41,7 @@ public class SculkLureEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int p_19468_) {
 
+        if(entity.level().isClientSide()) { return;}
         if(EntityAlgorithms.isSculkLivingEntity.test(entity))
         {
             // Remove effect
