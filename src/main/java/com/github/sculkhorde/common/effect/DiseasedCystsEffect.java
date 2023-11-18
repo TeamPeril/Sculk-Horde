@@ -22,6 +22,9 @@ public class DiseasedCystsEffect extends MobEffect {
     public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
     public long COOLDOWN = TickUnits.convertSecondsToTicks(5);
     public long cooldownTicksRemaining = COOLDOWN;
+    private Random random = new Random();
+
+    private int randomApplyEffectOffset;
 
 
     /**
@@ -38,6 +41,7 @@ public class DiseasedCystsEffect extends MobEffect {
      */
     public DiseasedCystsEffect() {
         this(effectType, liquidColor);
+        randomApplyEffectOffset = random.nextInt(TickUnits.convertSecondsToTicks(2));
     }
 
 
@@ -87,15 +91,12 @@ public class DiseasedCystsEffect extends MobEffect {
      */
     @Override
     public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
-
-        Random rand = new Random();
-        int randomOffset = rand.nextInt(5);
-        if(cooldownTicksRemaining + randomOffset > 0)
+        if(cooldownTicksRemaining > 0)
         {
             cooldownTicksRemaining--;
             return false;
         }
-        cooldownTicksRemaining = COOLDOWN;
+        cooldownTicksRemaining = COOLDOWN + randomApplyEffectOffset;
         return true;
 
     }

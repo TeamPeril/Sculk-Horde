@@ -182,17 +182,4 @@ public class StatisticsData {
         getStatsData().setTotalMassFromNodes(tag.getLong("totalMassFromNodes"));
         getStatsData().setTotalMassRemovedFromHorde(tag.getLong("totalMassRemovedFromHorde"));
     }
-
-    public String stringForChat()
-    {
-        return
-                "Total Units Spawned: " + getTotalUnitsSpawned() + "\n" +
-                "Total Victims Infested: " + getTotalVictimsInfested() + "\n" +
-                "Total Blocks Infested: " + getTotalBlocksInfested() + "\n" +
-                "Total Raids Occured: " + getTotalRaidsOccured() + "\n" +
-                "Total Mass From Bees: " + getTotalMassFromBees() + "\n" +
-                "Total Mass From Burrowed: " + getTotalMassFromBurrowed() + "\n" +
-                "Total Mass From Diseased Cysts: " + getTotalMassFromDiseasedCysts() + "\n" +
-                "Total Mass From Nodes: " + getTotalMassFromNodes() + "\n";
-    }
 }
