@@ -2,6 +2,7 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.core.*;
@@ -326,6 +327,24 @@ public class RaidHandler {
         raidData.setBlockSearcher(null);
     }
 
+    private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
+    {
+        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
+        ;
+        int spawnRange = 100;
+        int minimumSpawnRange = 50;
+        Random rng = new Random();
+        for(int i = 0; i < amount; i++)
+        {
+            int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int y = level.getMaxBuildHeight();
+            BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
+
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+
+        }
+    }
     private void endermanScoutingTick()
     {
         raidData.incrementTimeElapsedScouting();
@@ -339,6 +358,9 @@ public class RaidHandler {
             announceToAllPlayers(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"));
             raidData.getScoutEnderman().addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
             playSoundForEveryPlayer(ModSounds.RAID_SCOUT_SOUND.get(), 1.0F, 1.0F);
+
+            //Spawn Sculk Phantoms
+            spawnSculkPhantomsAtTopOfWorld(raidData.getDimension(), raidData.getAreaOfInterestEntry().getPosition(), 5);
         }
 
         if(!raidData.getScoutEnderman().isAlive())
@@ -443,6 +465,11 @@ public class RaidHandler {
 
     private void spawnWaveParticipants(BlockPos spawnLocation)
     {
+        // Spawn Sculk Spore Spewer
+        SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(ModEntities.SCULK_SPORE_SPEWER.get(), raidData.getDimension());
+        sporeSpewer.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
+        raidData.getDimension().addFreshEntity(sporeSpewer);
+
         raidData.getWaveParticipants().forEach((raidParticipant) ->
         {
             raidParticipant.setParticipatingInRaid(true);
