@@ -114,8 +114,14 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
                 return;
             }
 
-            // GIve effect
-            infector.addEffect(new MobEffectInstance(ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 1));
+            if(ModConfig.SERVER.experimental_features_enabled.get())
+            {
+                infector.addEffect(new MobEffectInstance(ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30)));
+                return;
+            }
+
+            infector.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30)));
+
         });
 
 
