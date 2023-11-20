@@ -285,9 +285,10 @@ public class ModSavedData extends SavedData {
      *
      * @param amount The amount you want to add
      */
-    public void addSculkAccumulatedMass(int amount) {
+    public int addSculkAccumulatedMass(int amount) {
         setDirty();
         sculkAccumulatedMass += amount;
+        return sculkAccumulatedMass;
     }
 
     /**
@@ -295,9 +296,10 @@ public class ModSavedData extends SavedData {
      *
      * @param amount The amount to substract
      */
-    public void subtractSculkAccumulatedMass(int amount) {
+    public int subtractSculkAccumulatedMass(int amount) {
         setDirty();
         sculkAccumulatedMass -= amount;
+        return sculkAccumulatedMass;
     }
 
     /**
@@ -305,9 +307,10 @@ public class ModSavedData extends SavedData {
      *
      * @param amount The amount to set it to.
      */
-    public void setSculkAccumulatedMass(int amount) {
+    public int setSculkAccumulatedMass(int amount) {
         setDirty();
         sculkAccumulatedMass = amount;
+        return sculkAccumulatedMass;
     }
 
     public ArrayList<NodeEntry> getNodeEntries() {
