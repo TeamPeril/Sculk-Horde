@@ -56,7 +56,7 @@ public class DiseasedCystsEffect extends MobEffect {
 
         // Create AABB bounding box around entity and check if there are any non-sculk entities inside
         AABB boundingBox = sourceEntity.getBoundingBox();
-        boundingBox = boundingBox.inflate(5.0D, 5.0D, 5.0D);
+        boundingBox = boundingBox.inflate(15.0D, 15.0D, 15.0D);
         List<LivingEntity> entities = sourceEntity.level().getEntitiesOfClass(LivingEntity.class, boundingBox);
         entities.removeIf(EntityAlgorithms.isSculkLivingEntity);
         if(!entities.isEmpty())
@@ -65,11 +65,11 @@ public class DiseasedCystsEffect extends MobEffect {
             // Also damage them and syphon mass from them to give to the horde
             for(LivingEntity e : entities)
             {
-                if(e.hasEffect(ModMobEffects.PURITY.get()) || e.getUUID().equals(sourceEntity.getUUID()))
+                if(e.hasEffect(ModMobEffects.PURITY.get()))
                 {
                     continue;
                 }
-                e.addEffect(new MobEffectInstance(ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0));
+                e.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(20), 0));
                 e.hurtMarked = true;
                 int damage = (int) (e.getMaxHealth() * 0.1F);
                 e.hurt(e.damageSources().generic(), damage);
