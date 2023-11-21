@@ -1,5 +1,8 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -7,6 +10,7 @@ import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import javax.swing.text.html.Option;
 import java.util.EnumSet;
 import java.util.Optional;
 
@@ -48,7 +52,7 @@ public class ImprovedRandomStrollGoal extends Goal{
 
     public boolean canUse()
     {
-        if (this.mob.isVehicle())
+        if (this.mob.isVehicle() || ((ISculkSmartEntity)mob).isParticipatingInRaid())
         {
             return false;
         }

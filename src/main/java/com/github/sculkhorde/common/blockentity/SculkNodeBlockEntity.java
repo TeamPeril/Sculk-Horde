@@ -197,7 +197,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         if(blockEntity.isActive())
         {
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) level, blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
         }
         else
         {

@@ -83,8 +83,8 @@ public class ForgeEventSubscriber {
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesHandler.tick();
 
-        SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests((ServerLevel) event.level);
-        SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests((ServerLevel) event.level);
+        SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests();
+        SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();
 
         // Only run stuff below every 5 minutes
         if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))

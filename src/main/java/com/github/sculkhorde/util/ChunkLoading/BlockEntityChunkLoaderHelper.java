@@ -81,7 +81,7 @@ public class BlockEntityChunkLoaderHelper
     }
 
 
-    public void processBlockChunkLoadRequests(ServerLevel world)
+    public void processBlockChunkLoadRequests()
     {
         if(!isTickCooldownFinished())
         {
@@ -95,13 +95,22 @@ public class BlockEntityChunkLoaderHelper
         {
             BlockEntityChunkLoadRequest request = blockChunkLoadRequests.get(i);
             request.decrementTicksUntilExpiration(TICKS_BETWEEN_PROCESSING);
+
+            if(request.getDimension() == null)
+            {
+                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.error("BlockEntityChunkLoader | Dimension is null, Removing");}
+                blockChunkLoadRequests.remove(i);
+                i--;
+                continue;
+            }
+
             if(request.isExpired())
             {
                 if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("BlockEntityChunkLoader | Chunk EXPIRED, Unloading and Removing");}
-                unloadAndRemoveChunksWithOwner(request.getOwner(), world);
+                unloadAndRemoveChunksWithOwner(request.getOwner(), request.getDimension());
             }
 
-            loadChunksWithOwner(request.getOwner(), world);
+            loadChunksWithOwner(request.getOwner(), request.getDimension());
         }
     }
 
@@ -179,7 +188,7 @@ public class BlockEntityChunkLoaderHelper
         return String.valueOf(centerChunkPos.x) + String.valueOf(centerChunkPos.z);
     }
 
-    public void createChunkLoadRequestSquare(BlockPos owner, int length, int priority, long ticksUnitExpiration)
+    public void createChunkLoadRequestSquare(ServerLevel level, BlockPos owner, int length, int priority, long ticksUnitExpiration)
     {
         if (length % 2 == 0) {
             length++; // Ensure the length is odd
@@ -201,16 +210,17 @@ public class BlockEntityChunkLoaderHelper
                 chunkPositionsToLoad[index++] = new ChunkPos(entityChunkPos.x + dx, entityChunkPos.z + dz);
             }
         }
-        createChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUnitExpiration);
+        createChunkLoadRequest(level, owner, chunkPositionsToLoad, priority, requestID, ticksUnitExpiration);
     }
 
-    private void createChunkLoadRequest(BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)
+    private void createChunkLoadRequest(ServerLevel level, BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)
     {
 
         if(!doesChunkLoadRequestAlreadyExist(requestID) && ModConfig.SERVER.chunk_loading_enabled.get())
         {
-            BlockEntityChunkLoadRequest request = new BlockEntityChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
+            BlockEntityChunkLoadRequest request = new BlockEntityChunkLoadRequest(level.dimension(), owner, chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
             blockChunkLoadRequests.add(request);
+            loadChunksWithOwner(request.getOwner(), request.getDimension());
         }
     }
 }

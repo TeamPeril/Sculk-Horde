@@ -272,7 +272,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 25);
 
-        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) level, blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
     }
 
     private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)

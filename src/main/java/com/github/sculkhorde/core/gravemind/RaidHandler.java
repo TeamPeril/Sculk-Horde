@@ -130,15 +130,6 @@ public class RaidHandler {
             }
         });
     }
-
-    public void announceToAllPlayers(Component message)
-    {
-        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach((player) -> player.displayClientMessage(message, false));
-    }
-
-
-
-
     public boolean isCurrentObjectiveCompleted()
     {
         if(raidData.getDimension().getBlockState(raidData.getObjectiveLocation()).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY))
@@ -356,7 +347,7 @@ public class RaidHandler {
             raidData.getDimension().addFreshEntity(raidData.getScoutEnderman());
             raidData.getScoutEnderman().setScouting(true);
             SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + raidData.getDimensionResourceKey() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
-            announceToAllPlayers(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"));
+            announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), raidData.getCurrentRaidRadius() * 8);
             raidData.getScoutEnderman().addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
             playSoundForEveryPlayer(ModSounds.RAID_SCOUT_SOUND.get(), 1.0F, 1.0F);
 
@@ -413,7 +404,7 @@ public class RaidHandler {
             initializeBlockSearcherForSpawnSearch(100, 1);
 
             // Load chunks
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getRaidLocation(), raidData.getCurrentRaidRadius() / 16, 2, TickUnits.convertHoursToTicks(1));
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getRaidLocation(), raidData.getCurrentRaidRadius() / 16, 2, TickUnits.convertHoursToTicks(1));
         }
 
         // Tick the Block Searcher
@@ -428,7 +419,10 @@ public class RaidHandler {
         if(raidData.getBlockSearcher().isSuccessful)
         {
             raidData.setRaidState(RaidState.INITIALIZING_WAVE);
-            SculkHorde.LOGGER.info("RaidHandler | Found Spawn Location in " + raidData.getBlockSearcher().getDimension().dimension() + ". Initializing Raid.");
+            SculkHorde.LOGGER.info("RaidHandler | Found Spawn Location at " + getFormattedCoordinates(raidData.getSpawnLocation()) + " in " + raidData.getBlockSearcher().getDimension().dimension() + ". Initializing Raid.");
+
+            // Chunk Load spawning location
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getSpawnLocation(), 1, 2, TickUnits.convertHoursToTicks(1));
 
             raidData.setNextObjectiveLocation();
             raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
@@ -436,7 +430,7 @@ public class RaidHandler {
             raidData.setCurrentRaidRadius(raidData.getDistanceOfFurthestObjective());
             SculkHorde.LOGGER.debug("RaidHandler | Current Raid Radius: " + raidData.getCurrentRaidRadius());
 
-            announceToAllPlayers(Component.literal("The Sculk Horde is Raiding " + getFormattedCoordinates(raidData.getRaidLocation()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) + "!"));
+            announceToPlayersInRange(Component.literal("The Sculk Horde is Raiding " + getFormattedCoordinates(raidData.getRaidLocation()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) + "!"), raidData.getCurrentRaidRadius() * 8);
 
         }
         // If not successful
@@ -560,7 +554,7 @@ public class RaidHandler {
     {
         SculkHorde.savedData.addNoRaidZoneToMemory(raidData.getDimension(), raidData.getRaidLocation());
         SculkHorde.LOGGER.info("RaidHandler | Raid Complete.");
-        announceToAllPlayers(Component.literal("The Sculk Horde's raid was successful!"));
+        announceToPlayersInRange(Component.literal("The Sculk Horde's raid was successful!"), raidData.getCurrentRaidRadius() * 8);
         // Summon Sculk Spore Spewer
         SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(ModEntities.SCULK_SPORE_SPEWER.get(), raidData.getDimension());
         sporeSpewer.setPos(raidData.getRaidLocation().getX(), raidData.getRaidLocation().getY(), raidData.getRaidLocation().getZ());
@@ -575,17 +569,17 @@ public class RaidHandler {
         {
             case FAILED_OBJECTIVE_COMPLETION:
                 SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Objectives Not Destroyed.");
-                announceToAllPlayers(Component.literal("The Sculk Horde has failed to destroy all objectives!"));
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to destroy all objectives!"), raidData.getCurrentRaidRadius() * 8);
                 raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case ENDERMAN_DEFEATED:
                 SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Sculk Enderman Defeated.");
-                announceToAllPlayers(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"));
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"), raidData.getCurrentRaidRadius() * 8);
                 raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case FAILED_INITIALIZATION:
                 SculkHorde.LOGGER.info("RaidHandler | Raid Failed. Unable to Initialize.");
-                announceToAllPlayers(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"));
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"), raidData.getCurrentRaidRadius() * 8);
                 raidData.getDimension().players().forEach((player) -> raidData.getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case NONE:

@@ -99,7 +99,7 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
         {
             return;
         }
-        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(pos, 16, 1, TickUnits.convertMinutesToTicks(15));
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) worldIn, pos, 16, 1, TickUnits.convertMinutesToTicks(15));
     }
 
     @Override

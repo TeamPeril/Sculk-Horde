@@ -1,7 +1,10 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
+import com.github.sculkhorde.core.SculkHorde;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 import java.util.Objects;
 
@@ -11,10 +14,11 @@ public abstract class ChunkLoadRequest {
     ChunkPos[] chunkPositionsToLoad;
     int priority; // Lower number means higher priority
     String requestID;
+    ResourceKey<Level> dimension;
 
     long ticksUntilExpiration = 0;
 
-    public ChunkLoadRequest(ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration) {
+    public ChunkLoadRequest(ResourceKey<Level> dimension, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration) {
         this.chunkPositionsToLoad = chunkPositionsToLoad;
         this.priority = priority;
         this.requestID = requestID;
@@ -27,6 +31,11 @@ public abstract class ChunkLoadRequest {
 
     public int getPriority() {
         return priority;
+    }
+
+    public ServerLevel getDimension()
+    {
+        return SculkHorde.savedData.level.getServer().getLevel(dimension);
     }
 
     public String getRequestID() {

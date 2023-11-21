@@ -82,7 +82,7 @@ public class EntityChunkLoaderHelper
     }
 
 
-    public void processEntityChunkLoadRequests(ServerLevel world)
+    public void processEntityChunkLoadRequests()
     {
         if(!isTickCooldownFinished())
         {
@@ -96,14 +96,23 @@ public class EntityChunkLoaderHelper
         {
             EntityChunkLoadRequest request = entityChunkLoadRequests.get(i);
             request.decrementTicksUntilExpiration(TICKS_BETWEEN_PROCESSING);
+
+            if(request.getDimension() == null)
+            {
+                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.error("EntityChunkLoader | Dimension is null, Removing");}
+                entityChunkLoadRequests.remove(i);
+                i--;
+                continue;
+            }
+
             if(request.isExpired())
             {
                 if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Chunk EXPIRED, Unloading and Removing");}
-                unloadAndRemoveChunksWithOwner(request.getOwner(), world);
+                unloadAndRemoveChunksWithOwner(request.getOwner(), request.getDimension());
                 return;
             }
             //if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Chunk OK, Making Sure Loaded");}
-            loadChunksWithOwner(request.getOwner(), world);
+            loadChunksWithOwner(request.getOwner(), request.getDimension());
         }
     }
 
@@ -202,7 +211,8 @@ public class EntityChunkLoaderHelper
         {
             return;
         }
-        EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
+        EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level().dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         entityChunkLoadRequests.add(request);
+        loadChunksWithOwner(request.getOwner(), request.getDimension());
     }
 }
