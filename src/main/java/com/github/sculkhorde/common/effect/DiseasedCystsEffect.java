@@ -48,8 +48,7 @@ public class DiseasedCystsEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity sourceEntity, int amp) {
 
-        // If Sculk Living Entity, do damage
-        if(EntityAlgorithms.isSculkLivingEntity.test(sourceEntity) || sourceEntity.level().isClientSide())
+        if(sourceEntity.level().isClientSide())
         {
             return;
         }
@@ -58,18 +57,33 @@ public class DiseasedCystsEffect extends MobEffect {
         AABB boundingBox = sourceEntity.getBoundingBox();
         boundingBox = boundingBox.inflate(15.0D, 15.0D, 15.0D);
         List<LivingEntity> entities = sourceEntity.level().getEntitiesOfClass(LivingEntity.class, boundingBox);
-        entities.removeIf(EntityAlgorithms.isSculkLivingEntity);
         if(!entities.isEmpty())
         {
             // If there are non-sculk entities inside, give them infection.
             // Also damage them and syphon mass from them to give to the horde
             for(LivingEntity e : entities)
             {
-                if(e.hasEffect(ModMobEffects.PURITY.get()))
+                if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
                 {
                     continue;
                 }
+
+                if(e.hasEffect(ModMobEffects.PURITY.get()))
+                {
+                    // Remove 20 seconds from the purity effect
+                    long oldDuration = e.getEffect(ModMobEffects.PURITY.get()).getDuration();
+                    int oldAmplifier = e.getEffect(ModMobEffects.PURITY.get()).getAmplifier();
+                    long newDuration = Math.max(oldDuration - TickUnits.convertSecondsToTicks(5),1);
+                    e.removeEffect(ModMobEffects.PURITY.get());
+                    e.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), (int)newDuration, oldAmplifier));
+                }
+
                 e.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(20), 0));
+
+                if(e.getHealth() <= e.getMaxHealth() * 0.5)
+                {
+                    continue;
+                }
                 e.hurtMarked = true;
                 int damage = (int) (e.getMaxHealth() * 0.1F);
                 e.hurt(e.damageSources().generic(), damage);
