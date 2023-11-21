@@ -22,6 +22,14 @@ public class MountNearestRavager extends Goal {
         this.mob = mob;
     }
 
+    protected boolean isViableTarget(Mob mob) {
+        boolean isRavager = mob instanceof SculkRavagerEntity;
+        boolean isBeingRidden = mob.hasControllingPassenger();
+        boolean isNotThisMob = mob != this.mob;
+
+        return isRavager && !isBeingRidden && isNotThisMob;
+    }
+
     protected Mob getNearestRavager()
     {
         // Use local variables for efficiency
@@ -36,14 +44,18 @@ public class MountNearestRavager extends Goal {
             return null;
         }
 
+        for (Mob mob : list) {
+
+        }
+
         // Use streams to find the closest mob, excluding 'this.mob'
         Mob closestMob = list.stream()
-                .filter(mob -> mob != this.mob) // Skip the current mob
+                .filter(this::isViableTarget) // Skip the current mob or if it is already being ridden
                 .min(Comparator.comparingDouble(this.mob::distanceToSqr))
                 .orElse(null);
 
         // Check distance condition
-        if (closestMob == null || this.mob.distanceToSqr(closestMob) < 9.0D) {
+        if (closestMob == null) {
             return null;
         }
 
