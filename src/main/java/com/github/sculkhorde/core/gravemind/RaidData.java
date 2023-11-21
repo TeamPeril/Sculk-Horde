@@ -150,6 +150,10 @@ public class RaidData {
         {
             BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), getDimension());
         }
+        if(getSpawnLocation() != null)
+        {
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getSpawnLocation(), getDimension());
+        }
         setBlockSearcher(null);
         setRaidState(RaidHandler.RaidState.INACTIVE);
         setRaidLocation(BlockPos.ZERO);
@@ -162,16 +166,14 @@ public class RaidData {
         setTimeElapsedScouting(0);
         setCurrentRaidRadius(MINIMUM_RAID_RADIUS);
         SculkHorde.savedData.setDirty();
-        if(bossEvent != null ) bossEvent.removeAllPlayers();
+        dimension = null;
+        if(bossEvent != null ) {bossEvent.removeAllPlayers();}
         bossEvent = null;
     }
 
     public void startRaidArtificially(ServerLevel level, BlockPos raidLocationIn)
     {
-        SculkHorde.setDebugMode(!SculkHorde.isDebugMode());
-        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Debug Mode is now: " + SculkHorde.isDebugMode()));
-        ModConfig.SERVER.experimental_features_enabled.set(true);
-        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Experimental Features is now: " + ModConfig.SERVER.experimental_features_enabled.get()));
+
         SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
         EntityAlgorithms.announceToAllPlayers(level, Component.literal("Mass is now: " + SculkHorde.savedData.getSculkAccumulatedMass()));
         SculkHorde.gravemind.calulateCurrentState();
