@@ -3,6 +3,8 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.util.SquadHandler;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -82,6 +84,11 @@ public class ImprovedRandomStrollGoal extends Goal{
         }
     }
 
+    protected ISculkSmartEntity getSculkMob()
+    {
+        return (ISculkSmartEntity)mob;
+    }
+
     @Nullable
     protected Optional<Vec3> getPosition()
     {
@@ -93,30 +100,64 @@ public class ImprovedRandomStrollGoal extends Goal{
     protected Optional<Vec3> getPositionAvoidWater()
     {
         Optional<Vec3> output = Optional.empty();
+        boolean doesSquadExist = SquadHandler.doesSquadExist(getSculkMob().getSquad());
+        boolean isInWater = this.mob.isInWaterOrBubble();
 
-        if (this.mob.isInWaterOrBubble())
+        if(!doesSquadExist)
         {
-            output = Optional.ofNullable(LandRandomPos.getPos(this.mob, 15, 7));
-            if(output.isPresent())
+            if (isInWater)
             {
-                return output;
+                output = Optional.ofNullable(LandRandomPos.getPos(this.mob, 15, 7));
+                if(output.isPresent())
+                {
+                    return output;
+                }
+                else
+                {
+                    return getPosition();
+                }
             }
             else
             {
-                return getPosition();
+                if(this.mob.getRandom().nextFloat() >= this.probability)
+                {
+                    output = Optional.ofNullable(LandRandomPos.getPos(this.mob, 20, 7));
+                }
+                else
+                {
+                    return getPosition();
+                }
             }
         }
         else
         {
-            if(this.mob.getRandom().nextFloat() >= this.probability)
+            Vec3 squadLeaderPos = ((Mob) getSculkMob().getSquad().squadLeader.get()).position();
+
+            if (isInWater)
             {
-                output = Optional.ofNullable(LandRandomPos.getPos(this.mob, 10, 7));
+                output = Optional.ofNullable(LandRandomPos.getPosTowards(this.mob, 15, 7, squadLeaderPos));
+                if(output.isPresent())
+                {
+                    return output;
+                }
+                else
+                {
+                    return getPosition();
+                }
             }
             else
             {
-                return getPosition();
+                if(this.mob.getRandom().nextFloat() >= this.probability)
+                {
+                    output = Optional.ofNullable(LandRandomPos.getPosTowards(this.mob, 10, 7, squadLeaderPos));
+                }
+                else
+                {
+                    return getPosition();
+                }
             }
         }
+
         return output;
     }
 

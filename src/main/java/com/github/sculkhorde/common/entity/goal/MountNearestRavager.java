@@ -82,7 +82,7 @@ public class MountNearestRavager extends Goal {
     @Override
     public boolean canContinueToUse() {
         // continue if the skeleton is not riding the pig and the pig is alive
-        return mob.getVehicle() == null && target.isAlive();
+        return mob.getVehicle() == null && target.isAlive() && !target.hasControllingPassenger();
     }
 
     @Override
