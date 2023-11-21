@@ -77,8 +77,10 @@ public class DiseasedCystsEffect extends MobEffect {
                     e.removeEffect(ModMobEffects.PURITY.get());
                     e.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), (int)newDuration, oldAmplifier));
                 }
-
-                e.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(20), 0));
+                if(!e.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
+                {
+                    e.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(20), 0));
+                }
 
                 if(e.getHealth() <= e.getMaxHealth() * 0.5)
                 {
