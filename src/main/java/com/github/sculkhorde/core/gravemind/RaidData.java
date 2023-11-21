@@ -174,10 +174,13 @@ public class RaidData {
     public void startRaidArtificially(ServerLevel level, BlockPos raidLocationIn)
     {
 
-        SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
-        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Mass is now: " + SculkHorde.savedData.getSculkAccumulatedMass()));
-        SculkHorde.gravemind.calulateCurrentState();
-        EntityAlgorithms.announceToAllPlayers(level, Component.literal("Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState()));
+        if(SculkHorde.savedData.getSculkAccumulatedMass() < ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
+            SculkHorde.gravemind.calulateCurrentState();
+            SculkHorde.LOGGER.info("Artificially Starting Raid. Mass is now: " + SculkHorde.savedData.getSculkAccumulatedMass());
+            SculkHorde.LOGGER.info("Artificially Starting Raid. Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState());
+        }
 
         Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(level, raidLocationIn);
         if(possibleAreaOfInterestEntry.isPresent())
@@ -628,7 +631,9 @@ public class RaidData {
         tag.putInt("currentRaidRadius", RaidHandler.raidData.getCurrentRaidRadius());
         tag.putInt("maxWaves", RaidHandler.raidData.getMaxWaves());
         tag.putInt("currentWave", RaidHandler.raidData.getCurrentWave());
-        tag.putString("dimension", RaidHandler.raidData.getDimensionResourceKey().location().toString());
+        if(RaidHandler.raidData.getDimensionResourceKey() != null){
+            tag.putString("dimension", RaidHandler.raidData.getDimensionResourceKey().location().toString());
+        }
         tag.putInt("remainingWaveParticipants", RaidHandler.raidData.getRemainingWaveParticipants());        // Save the wave participants as a list of UUIDs
         ListTag waveParticipantsTag = new ListTag();
         for (ISculkSmartEntity entity : RaidHandler.raidData.getWaveParticipants()) {
