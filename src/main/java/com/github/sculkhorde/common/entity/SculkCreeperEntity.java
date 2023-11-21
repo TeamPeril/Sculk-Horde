@@ -109,9 +109,19 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         //If the entity is a sculk creeper, don't infect it
         AABB aabb = this.getBoundingBox().inflate(5);
         this.level().getEntitiesOfClass(LivingEntity.class, aabb).forEach(infector -> {
-            if(EntityAlgorithms.isSculkLivingEntity.test(infector))
+            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(infector))
             {
                 return;
+            }
+
+            if(infector.hasEffect(ModMobEffects.PURITY.get()))
+            {
+                // Remove 20 seconds from the purity effect
+                long oldDuration = infector.getEffect(ModMobEffects.PURITY.get()).getDuration();
+                int oldAmplifier = infector.getEffect(ModMobEffects.PURITY.get()).getAmplifier();
+                long newDuration = Math.max(oldDuration - TickUnits.convertSecondsToTicks(30),1);
+                infector.removeEffect(ModMobEffects.PURITY.get());
+                infector.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), (int)newDuration, oldAmplifier));
             }
 
             if(ModConfig.SERVER.experimental_features_enabled.get())
@@ -119,9 +129,10 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
                 infector.addEffect(new MobEffectInstance(ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30)));
                 return;
             }
-
-            infector.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30)));
-
+            else
+            {
+                infector.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30)));
+            }
         });
 
 

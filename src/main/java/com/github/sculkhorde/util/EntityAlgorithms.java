@@ -100,6 +100,11 @@ public class EntityAlgorithms {
         return entity instanceof WaterAnimal;
     }
 
+    public static boolean isLivingEntityInvulnerable(LivingEntity entity)
+    {
+        return entity.isInvulnerable() || !entity.isAttackable();
+    }
+
     /**
      * Determines if we should avoid targeting an entity at all costs.
      * @param entity The Given Entity
