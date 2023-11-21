@@ -114,15 +114,31 @@ public class BlockEntityChunkLoaderHelper
         }
     }
 
-    public static void forceLoadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ) {
+    public static void forceLoadChunk(ServerLevel world, int chunkX, int chunkZ) {
+
+        if(world == null)
+        {
+            SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
+            return;
+        }
+
         // Old shit method that causes runaway chunks
         //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
+        SculkHorde.LOGGER.debug("Successfully Loaded Chunk");
         world.setChunkForced(chunkX, chunkZ, true);
     }
 
     public static void unloadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ) {
+
+        if(world == null)
+        {
+            SculkHorde.LOGGER.error("World is null. Cannot Force Unload Chunk");
+            return;
+        }
+
         // Old shit method that causes runaway chunks
         //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
+        SculkHorde.LOGGER.debug("Successfully Unloaded Chunk");
         world.setChunkForced(chunkX, chunkZ, false);
     }
     public void unloadAndRemoveChunksWithOwner(BlockPos owner, ServerLevel level)
@@ -151,7 +167,7 @@ public class BlockEntityChunkLoaderHelper
             {
                 for(ChunkPos chunkPos : request.getChunkPositionsToLoad())
                 {
-                    forceLoadChunk(level, owner, chunkPos.x, chunkPos.z);
+                    forceLoadChunk(level, chunkPos.x, chunkPos.z);
                 }
             }
         }

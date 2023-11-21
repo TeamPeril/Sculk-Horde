@@ -21,6 +21,11 @@ public class BlockEntityChunkLoadRequest extends ChunkLoadRequest {
         this.dimension = dimension;
     }
 
+    public ServerLevel getDimension()
+    {
+        return SculkHorde.savedData.level.getServer().getLevel(dimension);
+    }
+
     @Override
     public BlockPos getOwner() {
         return owner;

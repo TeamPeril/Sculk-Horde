@@ -22,6 +22,12 @@ public class EntityChunkLoadRequest extends ChunkLoadRequest {
         this.owner = owner;
         this.dimension = dimension;
     }
+
+    public ServerLevel getDimension()
+    {
+        return SculkHorde.savedData.level.getServer().getLevel(dimension);
+    }
+
     @Override
     public UUID getOwner() {
         return owner;

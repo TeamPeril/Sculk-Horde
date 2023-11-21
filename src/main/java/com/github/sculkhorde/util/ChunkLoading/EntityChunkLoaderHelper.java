@@ -118,12 +118,24 @@ public class EntityChunkLoaderHelper
 
     private static void forceLoadChunk(ServerLevel world, int chunkX, int chunkZ) {
 
+        if(world == null)
+        {
+            SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
+            return;
+        }
+
         // Old shit method that causes runaway chunks
         //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
         world.setChunkForced(chunkX, chunkZ, true);
 
     }
     public static void unloadChunk(ServerLevel world, int chunkX, int chunkZ) {
+
+        if(world == null)
+        {
+            SculkHorde.LOGGER.error("World is null. Cannot Force Unload Chunk");
+            return;
+        }
 
         // Old shit method that causes runaway chunks
         //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
