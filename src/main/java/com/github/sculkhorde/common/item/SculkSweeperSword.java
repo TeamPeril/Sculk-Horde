@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.item;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -14,6 +15,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.extensions.IForgeItem;
@@ -91,5 +94,15 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
     public float getXpRepairRatio(ItemStack stack)
     {
         return 0f;
+    }
+
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
+    {
+        if(enchantment == Enchantments.MENDING)
+        {
+            return false;
+        }
+
+        return enchantment.category.canEnchant(stack.getItem());
     }
 }
