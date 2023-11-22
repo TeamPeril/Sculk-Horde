@@ -184,6 +184,12 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
                     SculkAncientNodeBlockEntity::tickAwake);
         }
 
+        if (ModConfig.SERVER.trigger_ancient_node_automatically.get()) {
+            return BaseEntityBlock.createTickerHelper(blockEntityType,
+                    ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
+                    SculkAncientNodeBlockEntity::tickTriggerAutomatically);
+        }
+
         return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
             VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
         });
