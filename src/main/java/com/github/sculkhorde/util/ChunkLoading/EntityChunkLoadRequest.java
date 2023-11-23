@@ -15,17 +15,11 @@ public class EntityChunkLoadRequest extends ChunkLoadRequest {
 
     protected UUID owner;
 
-    protected ResourceKey<Level> dimension;
 
     public EntityChunkLoadRequest(ResourceKey<Level> dimension, UUID owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration) {
         super(dimension, chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         this.owner = owner;
         this.dimension = dimension;
-    }
-
-    public ServerLevel getDimension()
-    {
-        return SculkHorde.savedData.level.getServer().getLevel(dimension);
     }
 
     @Override

@@ -13,17 +13,11 @@ import net.minecraft.world.level.Level;
 public class BlockEntityChunkLoadRequest extends ChunkLoadRequest {
 
     protected BlockPos owner;
-    protected ResourceKey<Level> dimension;
 
     public BlockEntityChunkLoadRequest(ResourceKey<Level> dimension, BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration) {
         super(dimension, chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         this.owner = owner;
         this.dimension = dimension;
-    }
-
-    public ServerLevel getDimension()
-    {
-        return SculkHorde.savedData.level.getServer().getLevel(dimension);
     }
 
     @Override

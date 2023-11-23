@@ -124,7 +124,7 @@ public class BlockEntityChunkLoaderHelper
 
         // Old shit method that causes runaway chunks
         //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
-        SculkHorde.LOGGER.debug("Successfully Loaded Chunk");
+        //SculkHorde.LOGGER.debug("Successfully Loaded Chunk");
         world.setChunkForced(chunkX, chunkZ, true);
     }
 

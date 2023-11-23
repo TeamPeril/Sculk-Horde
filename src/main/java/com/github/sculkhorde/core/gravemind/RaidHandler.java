@@ -26,7 +26,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -42,6 +41,10 @@ public class RaidHandler {
 
     public static RaidData raidData;
 
+    private BlockPos scoutingLocation;
+
+    private int INITIAL_CHUNK_LOAD_RADIUS = 15;
+
 
     // The current status of the raid
     public enum RaidState {
@@ -54,7 +57,6 @@ public class RaidHandler {
         COMPLETE,
         FAILED
     }
-
     protected enum failureType {
         NONE,
         FAILED_INITIALIZATION,
@@ -67,6 +69,8 @@ public class RaidHandler {
         if(raidData == null) { raidData = new RaidData(); }
         raidData.setDimension(levelIn.dimension());
     }
+
+    // Getters and Setters
 
     public boolean canRaidStart()
     {
@@ -141,6 +145,47 @@ public class RaidHandler {
             return false;
         }
         else return !raidData.getDimension().getBlockState(raidData.getObjectiveLocation()).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY);
+    }
+
+    // Chunk Loading
+
+    public boolean isScoutingLocationLoaded()
+    {
+        return raidData.getDimension().isAreaLoaded(scoutingLocation, 3);
+    }
+
+    public boolean isInitialRaidLocationLoaded()
+    {
+        return raidData.getDimension().isAreaLoaded(raidData.getRaidLocation(), INITIAL_CHUNK_LOAD_RADIUS);
+    }
+
+    public boolean isRaidCenterLocationLoaded()
+    {
+        return raidData.getDimension().isAreaLoaded(raidData.getRaidLocation(), raidData.currentRaidRadius);
+    }
+
+    public boolean isSpawningLocationLoaded()
+    {
+        return raidData.getDimension().isAreaLoaded(raidData.getSpawnLocation(), 1);
+    }
+
+    public void loadRaidChunksCenter()
+    {
+        int distanceBetweenRaidCenterAndSpawnPos = (int) BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), raidData.getSpawnLocation());
+        int chunkLength = BlockAlgorithms.convertBlockLengthToChunkLength(distanceBetweenRaidCenterAndSpawnPos) *4;
+
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(raidData.getRaidCenter(), raidData.getDimension());
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getRaidCenter(), chunkLength, 2, TickUnits.convertHoursToTicks(1));
+    }
+
+    public void loadScoutingChunks()
+    {
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), scoutingLocation, 3, 2, TickUnits.convertHoursToTicks(1));
+    }
+
+    public void loadSpawningChunks()
+    {
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getSpawnLocation(), 5, 2, TickUnits.convertHoursToTicks(1));
     }
 
 
@@ -322,7 +367,6 @@ public class RaidHandler {
     private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
     {
         if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
-        ;
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
@@ -337,13 +381,31 @@ public class RaidHandler {
 
         }
     }
+
     private void endermanScoutingTick()
     {
+        if(scoutingLocation == null)
+        {
+            scoutingLocation = raidData.getAreaOfInterestEntry().getPosition();
+            loadScoutingChunks();
+            SculkHorde.LOGGER.info("RaidHandler | Scouting Location: " + getFormattedCoordinates(scoutingLocation));
+            SculkHorde.LOGGER.info("RaidHandler | Scouting Location Loaded: " + isScoutingLocationLoaded());
+
+        }
+
+        if(!isScoutingLocationLoaded())
+        {
+            loadScoutingChunks();
+            return;
+        }
+
         raidData.incrementTimeElapsedScouting();
 
         if(raidData.getScoutEnderman() == null)
         {
-            raidData.setScoutEnderman(new SculkEndermanEntity(raidData.getDimension(), raidData.getAreaOfInterestEntry().getPosition()));
+            SculkHorde.LOGGER.info("RaidHandler | Scouting Location Is Loaded. Continuing.");
+
+            raidData.setScoutEnderman(new SculkEndermanEntity(raidData.getDimension(), scoutingLocation));
             raidData.getDimension().addFreshEntity(raidData.getScoutEnderman());
             raidData.getScoutEnderman().setScouting(true);
             SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + raidData.getDimensionResourceKey() + " for " + raidData.getSCOUTING_DURATION() + " minutes");
@@ -379,6 +441,7 @@ public class RaidHandler {
     }
 
 
+
     /**
      * This function gets called when the raid is initialized.
      * It calculates the center of the raid, finds a spawn point
@@ -388,9 +451,10 @@ public class RaidHandler {
     {
         SculkHorde.savedData.setTicksSinceLastRaid(0);
 
-
         if(raidData.getBlockSearcher() == null)
         {
+            SculkHorde.LOGGER.info("RaidHandler | Raid Location Loaded: " + isInitialRaidLocationLoaded());
+
 
             if(raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size() <= 0)
             {
@@ -403,8 +467,17 @@ public class RaidHandler {
             // Initialize Block Searcher
             initializeBlockSearcherForSpawnSearch(100, 1);
 
-            // Load chunks
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getRaidLocation(), raidData.getCurrentRaidRadius() / 16, 2, TickUnits.convertHoursToTicks(1));
+
+            SculkHorde.LOGGER.info("RaidHandler | Initializing Block Searcher");
+        }
+
+        //This is just in case we load in the middle of the raid
+        scoutingLocation = raidData.getAreaOfInterestEntry().getPosition();
+
+        if(!isScoutingLocationLoaded())
+        {
+            loadScoutingChunks();
+            return;
         }
 
         // Tick the Block Searcher
@@ -421,14 +494,13 @@ public class RaidHandler {
             raidData.setRaidState(RaidState.INITIALIZING_WAVE);
             SculkHorde.LOGGER.info("RaidHandler | Found Spawn Location at " + getFormattedCoordinates(raidData.getSpawnLocation()) + " in " + raidData.getBlockSearcher().getDimension().dimension() + ". Initializing Raid.");
 
-            // Chunk Load spawning location
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getSpawnLocation(), 1, 2, TickUnits.convertHoursToTicks(1));
-
             raidData.setNextObjectiveLocation();
             raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
 
             raidData.setCurrentRaidRadius(raidData.getDistanceOfFurthestObjective());
-            SculkHorde.LOGGER.debug("RaidHandler | Current Raid Radius: " + raidData.getCurrentRaidRadius());
+            SculkHorde.LOGGER.info("RaidHandler | Current Raid Radius: " + raidData.getCurrentRaidRadius());
+
+            loadRaidChunksCenter();
 
             announceToPlayersInRange(Component.literal("The Sculk Horde is Raiding " + getFormattedCoordinates(raidData.getRaidLocation()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) + "!"), raidData.getCurrentRaidRadius() * 8);
 
@@ -437,7 +509,7 @@ public class RaidHandler {
         else
         {
             raidData.setRaidState(RaidState.FAILED);
-            SculkHorde.LOGGER.debug("RaidHandler | Unable to Find Spawn Location. Not Initializing Raid.");
+            SculkHorde.LOGGER.info("RaidHandler | Unable to Find Spawn Location. Not Initializing Raid.");
         }
     }
 
@@ -478,6 +550,17 @@ public class RaidHandler {
         raidData.setWaveDuration(0);
         raidData.setCurrentWavePattern(getWavePattern());
 
+        if(!isSpawningLocationLoaded())
+        {
+            loadSpawningChunks();
+            return;
+        }
+
+        if(!isRaidCenterLocationLoaded())
+        {
+            loadRaidChunksCenter();
+            return;
+        }
 
         populateRaidParticipants(raidData.getSpawnLocation());
 
@@ -525,6 +608,18 @@ public class RaidHandler {
 
     protected void activeWaveTick()
     {
+        if(!isSpawningLocationLoaded())
+        {
+            loadSpawningChunks();
+            return;
+        }
+
+        if(!isRaidCenterLocationLoaded())
+        {
+            loadRaidChunksCenter();
+            return;
+        }
+
         raidData.updateRemainingWaveParticipantsAmount();
 
         raidData.incrementWaveDuration();

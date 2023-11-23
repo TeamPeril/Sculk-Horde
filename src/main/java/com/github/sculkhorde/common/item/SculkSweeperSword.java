@@ -90,10 +90,16 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
         tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_sweeper_sword"));
     }
 
+    // Leave at 1f to prevent the sword from crashing the game when it is repaired
     @Override
     public float getXpRepairRatio(ItemStack stack)
     {
-        return 0f;
+        return 1f;
+    }
+
+    public boolean isRepairable(@NotNull ItemStack stack)
+    {
+        return false;
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)

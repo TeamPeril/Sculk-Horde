@@ -512,6 +512,12 @@ public class BlockAlgorithms {
         return points;
     }
 
+    public static int convertBlockLengthToChunkLength(int blockLength)
+    {
+        // Always make sure to round up in the calculation
+        return (int) Math.ceil((double) blockLength / 16);
+    }
+
     public static ArrayList<Vec3> getPointsOnCircumferenceVec3(Vec3 origin, int radiusOfCircle, int numberOfPositionsToCreate)
     {
         ArrayList<Vec3> positions = new ArrayList<Vec3>();

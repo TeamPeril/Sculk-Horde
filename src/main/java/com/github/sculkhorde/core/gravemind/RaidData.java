@@ -181,7 +181,7 @@ public class RaidData {
             SculkHorde.LOGGER.info("Artificially Starting Raid. Mass is now: " + SculkHorde.savedData.getSculkAccumulatedMass());
             SculkHorde.LOGGER.info("Artificially Starting Raid. Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState());
         }
-
+        removeNoRaidZoneAtBlockPos(level, raidLocationIn);
         Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(level, raidLocationIn);
         if(possibleAreaOfInterestEntry.isPresent())
         {
@@ -193,6 +193,11 @@ public class RaidData {
         {
             reset();
         }
+    }
+
+    public void removeNoRaidZoneAtBlockPos(ServerLevel level, BlockPos pos)
+    {
+        SculkHorde.savedData.getNoRaidZoneEntries().removeIf(entry -> entry.isBlockPosInRadius(level, pos));
     }
 
     public int getMAX_WAVE_DURATION() {
