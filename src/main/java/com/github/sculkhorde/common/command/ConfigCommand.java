@@ -40,8 +40,6 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                     .then(Commands.argument("value", IntegerArgumentType.integer(1))
                             .executes(context -> setConfigValue(context, configKey)));
         }
-
-
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> booleanConfigOption(String configKey) {

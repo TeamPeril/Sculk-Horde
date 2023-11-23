@@ -35,7 +35,6 @@ public class RaidData {
     protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
     protected int waveDuration = 0;
     private int timeElapsedScouting = 0;
-    private final int SCOUTING_DURATION = TickUnits.convertMinutesToTicks(8);
 
     // Raid Variables
     private ResourceKey<Level> dimension;
@@ -73,6 +72,9 @@ public class RaidData {
 
     // Block Searcher
     private BlockSearcher blockSearcher;
+    private int ticksSpentTryingToChunkLoad;
+
+    public int MAX_TICKS_SPENT_TRYING_TO_CHUNK_LOAD = TickUnits.convertMinutesToTicks(15);
 
     public ArrayList<BlockPos> getHighPriorityTargets()
     {
@@ -169,6 +171,7 @@ public class RaidData {
         dimension = null;
         if(bossEvent != null ) {bossEvent.removeAllPlayers();}
         bossEvent = null;
+        resetTicksSpentTryingToChunkLoad();
     }
 
     public void startRaidArtificially(ServerLevel level, BlockPos raidLocationIn)
@@ -198,6 +201,23 @@ public class RaidData {
     public void removeNoRaidZoneAtBlockPos(ServerLevel level, BlockPos pos)
     {
         SculkHorde.savedData.getNoRaidZoneEntries().removeIf(entry -> entry.isBlockPosInRadius(level, pos));
+    }
+
+    public int getTicksSpentTryingToChunkLoad()
+    {
+        return ticksSpentTryingToChunkLoad;
+    }
+
+    public void incrementTicksSpentTryingToChunkLoad()
+    {
+        ticksSpentTryingToChunkLoad++;
+        SculkHorde.savedData.setDirty();
+    }
+
+    public void resetTicksSpentTryingToChunkLoad()
+    {
+        ticksSpentTryingToChunkLoad = 0;
+        SculkHorde.savedData.setDirty();
     }
 
     public int getMAX_WAVE_DURATION() {
@@ -235,10 +255,6 @@ public class RaidData {
     public void setTimeElapsedScouting(int timeElapsedScouting) {
         this.timeElapsedScouting = timeElapsedScouting;
         SculkHorde.savedData.setDirty();
-    }
-
-    public int getSCOUTING_DURATION() {
-        return SCOUTING_DURATION;
     }
 
     public BlockPos getSpawnLocation() {
@@ -465,7 +481,6 @@ public class RaidData {
 
     public float getWaveProgress() {
         int aliveWaveParticipants = 0;
-        int deadWaveParticipants = 0;
         for(ISculkSmartEntity entity : waveParticipants)
         {
             if(entity == null)
@@ -477,13 +492,9 @@ public class RaidData {
             {
                 aliveWaveParticipants++;
             }
-            else
-            {
-                deadWaveParticipants++;
-            }
         }
 
-        return (float) remainingWaveParticipants / (float) getWaveParticipants().size();
+        return (float) aliveWaveParticipants / (float) waveParticipants.size();
     }
 
     protected void updateRemainingWaveParticipantsAmount()
