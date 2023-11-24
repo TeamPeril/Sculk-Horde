@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core;
 
+import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -22,6 +23,10 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> chunk_loading_enabled;
+
+        public final ForgeConfigSpec.ConfigValue<Boolean> trigger_ancient_node_automatically;
+        public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_wait_days;
+        public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_time_of_day;
 
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_immature_stage;
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_mature_stage;
@@ -48,6 +53,8 @@ public class ModConfig {
 
         public Server(ForgeConfigSpec.Builder builder) {
 
+            Config.setInsertionOrderPreserved(true);
+
             builder.push("Mod Compatability");
             target_faw_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'From Another World'? (Default false)").define("target_faw_entities",false);
             target_spore_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'? (Default false)").define("target_spore_entities",false);
@@ -56,6 +63,12 @@ public class ModConfig {
             builder.push("General Variables");
             block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
             chunk_loading_enabled = builder.comment("Should the Sculk Horde load chunks? If disabled, and will ruin the intended experience. For example, raids wont work properly (Default true)").define("chunk_loading_enabled",true);
+            builder.pop();
+
+            builder.push("Trigger Automatically Variables");
+            trigger_ancient_node_automatically = builder.comment("Should the Sculk Horde start automatically? Requires that chunk loading is enabled to work reliably, otherwise will only trigger if the ancient node's chunk is loaded. If enabled on a save where previously disabled, the node will trigger automatically if the time conditions are met. (Default false)").define("trigger_ancient_node_automatically", false);
+            trigger_ancient_node_wait_days = builder.comment("How many days to wait before triggering the ancient node? (Default 0)").defineInRange("trigger_ancient_node_wait_days", 0, 0, Integer.MAX_VALUE);
+            trigger_ancient_node_time_of_day = builder.comment("What time of day in ticks must pass before triggering the ancient node after the wait days have elapsed? If wait days is set to 0, set time of day to a time greater than 1000 ticks to allow for world startup and lag to finish (Default 2000)").defineInRange("trigger_ancient_node_time_of_day", 2000, 0, 23999);
             builder.pop();
 
             builder.push("Infestation / Purification Variables");

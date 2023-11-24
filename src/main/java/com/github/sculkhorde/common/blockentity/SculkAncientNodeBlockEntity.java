@@ -275,6 +275,20 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) level, blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
     }
 
+    public static void tickTriggerAutomatically(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+        // Should never get here but for safety's sake double verify
+        if (!ModConfig.SERVER.trigger_ancient_node_automatically.get()) { return; }
+
+        // Check elapsed days
+        if (level.getDayTime() < (ModConfig.SERVER.trigger_ancient_node_wait_days.get() * 24000)) { return; }
+
+        // Check time of current day
+        if ((level.getDayTime() % 24000) < (long)(ModConfig.SERVER.trigger_ancient_node_time_of_day.get())) { return; }
+
+        tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
+    }
+
     private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)
     {
         return level.players().stream().anyMatch((player) ->
