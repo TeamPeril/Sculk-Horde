@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -18,9 +19,10 @@ public class ConfigCommand implements Command<CommandSourceStack> {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         return Commands.literal("config")
                 .then(gravemindConfig(dispatcher))
-                .then(sculkRaidConfig(dispatcher))
                 .then(generalConfig(dispatcher))
-                .then(infestationPurificationConfig(dispatcher))
+                .then(triggerAutomaticallyConfig(dispatcher))
+                .then(sculkRaidConfig(dispatcher))
+                .then(infestationAndPurificationConfig(dispatcher))
                 .then(sculkMiteConfig(dispatcher))
                 .then(modCompatibilityConfig(dispatcher))
                 .then(sculkNodeConfig(dispatcher))
@@ -38,6 +40,21 @@ public class ConfigCommand implements Command<CommandSourceStack> {
         {
             return Commands.literal(configKey)
                     .then(Commands.argument("value", IntegerArgumentType.integer(1))
+                            .executes(context -> setConfigValue(context, configKey)));
+        }
+    }
+
+    private static ArgumentBuilder<CommandSourceStack, ?> doubleConfigOption(String configKey, double min, double max) {
+
+        String key;
+        if(min > max) {
+            return Commands.literal(configKey)
+                    .then(Commands.argument("value", DoubleArgumentType.doubleArg(1))
+                            .executes(context -> setConfigValue(context, "Invalid Argument")));
+        } else
+        {
+            return Commands.literal(configKey)
+                    .then(Commands.argument("value", DoubleArgumentType.doubleArg(1))
                             .executes(context -> setConfigValue(context, configKey)));
         }
     }
@@ -67,10 +84,10 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 .then(integerConfigOption("sculk_raid_no_raid_zone_duration_minutes", 0, Integer.MAX_VALUE));
     }
 
-    private static ArgumentBuilder<CommandSourceStack, ?> infestationPurificationConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
-        return Commands.literal("infestation_purification")
-                .then(integerConfigOption("infestation_speed_multiplier", -10, 10))
-                .then(integerConfigOption("purification_speed_multiplier", -10, 10))
+    private static ArgumentBuilder<CommandSourceStack, ?> infestationAndPurificationConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
+        return Commands.literal("infestation_and_purification")
+                .then(doubleConfigOption("infestation_speed_multiplier", -10, 10))
+                .then(doubleConfigOption("purification_speed_multiplier", -10, 10))
                 .then(integerConfigOption("purifier_range", 0, 100));
     }
 
@@ -96,6 +113,13 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 .then(booleanConfigOption("experimental_features_enabled"))
                 .then(booleanConfigOption("squad_mechanics_enabled"))
                 .then(booleanConfigOption("sculk_phantoms_enabled"));
+    }
+
+    private static ArgumentBuilder<CommandSourceStack, ?> triggerAutomaticallyConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
+        return Commands.literal("trigger_automatically")
+                .then(booleanConfigOption("trigger_ancient_node_automatically"))
+                .then(integerConfigOption("trigger_ancient_node_wait_days", 0, Integer.MAX_VALUE))
+                .then(integerConfigOption("trigger_ancient_node_time_of_day", 0, 24000));
     }
 
     // Repeat similar patterns for other config sections...
@@ -237,6 +261,28 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         success = true;
                     }
                     break;
+
+                // Trigger Automatically Config
+                case "trigger_ancient_node_automatically":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.trigger_ancient_node_automatically.set((Boolean) rawValue);
+                        success = true;
+                    }
+                    break;
+                case "trigger_ancient_node_wait_days":
+                    if (valueType.equals(Integer.class)) {
+                        ModConfig.SERVER.trigger_ancient_node_wait_days.set((Integer) rawValue);
+                        success = true;
+                    }
+                    break;
+                case "trigger_ancient_node_time_of_day":
+                    if (valueType.equals(Integer.class)) {
+                        ModConfig.SERVER.trigger_ancient_node_time_of_day.set((Integer) rawValue);
+                        success = true;
+                    }
+                    break;
+
+
                 case "Invalid Argument":
                     context.getSource().sendFailure(Component.literal("Invalid Arguments"));
                     break;
