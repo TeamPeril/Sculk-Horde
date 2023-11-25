@@ -5,8 +5,10 @@ import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoadRequest;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -59,6 +61,12 @@ public class ForgeEventSubscriber {
             }
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
+
+            // Check if chunk 0,0 is loaded. If not, load it.
+            if(!event.getLevel().getChunkSource().hasChunk(0,0))
+            {
+                BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(((ServerLevel)event.getLevel()), BlockPos.ZERO, 5, 0, TickUnits.convertMinutesToTicks(10));
+            }
         }
     }
 

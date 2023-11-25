@@ -437,7 +437,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 10))
+            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 15))
             {
                 tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
             }
