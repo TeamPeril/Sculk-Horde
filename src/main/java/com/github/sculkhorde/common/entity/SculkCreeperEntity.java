@@ -214,12 +214,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         //  Goes from 0 to 30. Vanilla mc mechanics, not mine
         float swellValue = this.getSwelling(1);
 
-        if(this.getSwellDir() > 0)
+        if(this.getSwellDir() > 0 && swellValue < 28)
         {
             state.setAnimation(CREEPER_SWELL_ANIMATION);
             return PlayState.CONTINUE;
         }
-        else if(this.getSwellDir() < 0)
+        else if(this.getSwellDir() < 0 && swellValue > 1)
         {
             state.setAnimation(CREEPER_DESWELL_ANIMATION);
             return PlayState.CONTINUE;
