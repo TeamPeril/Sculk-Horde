@@ -3,10 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModParticles;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
@@ -233,7 +230,13 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         }
 
         Random random = new Random();
-        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive()) && ModConfig.SERVER.block_infestation_enabled.get()) {
+        boolean passRandomChance = random.nextInt(100) == 0;
+        boolean isCursorNullOrDead = cursor == null || !cursor.isAlive();
+        boolean isBlockInfestationEnabled = ModConfig.SERVER.block_infestation_enabled.get();
+        boolean isTheHordeActive = SculkHorde.savedData.isHordeActive();
+        boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeActive;
+
+        if (canSpawnCursor) {
             // Spawn Block Traverser
             cursor = new CursorSurfaceInfectorEntity(level());
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());

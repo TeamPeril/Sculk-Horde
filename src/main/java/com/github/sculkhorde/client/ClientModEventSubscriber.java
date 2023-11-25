@@ -84,6 +84,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.SCULK_PHANTOM.get(), SculkPhantomRenderer::new);
 
+        event.registerEntityRenderer(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseRenderer::new);
+
         event.registerEntityRenderer(ModEntities.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
 
         event.registerEntityRenderer(ModEntities.CHAOS_TELEPORATION_RIFT.get(), ChaosTeleporationRiftRenderer::new);
@@ -95,27 +97,6 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenderers(final RegisterParticleProvidersEvent event)
     {
-       // Register renderer for sculk crust partcile
-       //event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new));
-        //Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
         event.registerSpriteSet(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
-    }
-
-
-
-
-    /**
-     * Used to register custom particle renders.
-     * Currently handles the Gorgon particle
-     *
-     * @param event the particle factory registry event
-     **/
-    @SubscribeEvent
-    public static void registerFactories(final FMLClientSetupEvent event)
-    {
-        ParticleEngine particles = Minecraft.getInstance().particleEngine;
-
-        //particles.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new);
-        
     }
 }

@@ -88,7 +88,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         }
 
 
-        if(playerIn.getMainHandItem().is(ModItems.PURE_SOULS.get()) && !level.getBlockState(pos).getValue(CURED))
+        if(playerIn.getMainHandItem().is(ModItems.PURE_SOULS.get()) && !level.getBlockState(pos).getValue(AWAKE))
         {
             if(!areAllNodesDestroyed())
             {
@@ -98,7 +98,9 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             }
 
 
-            level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CURED, true));
+            SculkAncientNodeBlockEntity sculkAncientNodeBlockEntity = (SculkAncientNodeBlockEntity) level.getBlockEntity(pos);
+            assert sculkAncientNodeBlockEntity != null;
+            sculkAncientNodeBlockEntity.setAwake(false);
             level.players().forEach(player -> player.displayClientMessage(Component.literal("The Ancient Sculk Node has been Defeated!"), true));
             level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
 
@@ -108,9 +110,11 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             return InteractionResult.CONSUME;
         }
 
-        if(playerIn.getMainHandItem().is(ModItems.CRYING_SOULS.get()) && level.getBlockState(pos).getValue(CURED))
+        if(playerIn.getMainHandItem().is(ModItems.CRYING_SOULS.get()) && level.getBlockState(pos).getValue(AWAKE))
         {
-            level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CURED, false));
+            SculkAncientNodeBlockEntity sculkAncientNodeBlockEntity = (SculkAncientNodeBlockEntity) level.getBlockEntity(pos);
+            assert sculkAncientNodeBlockEntity != null;
+            sculkAncientNodeBlockEntity.setAwake(true);
             return InteractionResult.CONSUME;
         }
 

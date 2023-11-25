@@ -171,16 +171,11 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     /** Setters **/
 
-    public void setAwake()
+    public void setAwake(boolean awake)
     {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AWAKE, true));
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AWAKE, awake));
+        SculkHorde.savedData.setHordeActive(awake);
     }
-
-    public void setTriggering(boolean value)
-    {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(CURED, value));
-    }
-
 
     /** Events **/
 
@@ -328,13 +323,15 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         int MAX_SPAWNED_SPORE_SPEWERS = 10;
 
-        blockEntity.setAwake();
+        blockEntity.setAwake(true);
         // If the horde has no mass, give it some
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             SculkHorde.savedData.addSculkAccumulatedMass(1000);
             SculkHorde.statisticsData.addTotalMassFromNodes(1000);
         }
+
+        SculkHorde.savedData.setHordeActive(true);
 
         announceToAllPlayers((ServerLevel)level, Component.literal("The Sculk Horde has been awakened!"));
 

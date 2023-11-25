@@ -149,6 +149,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_CREEPER.get(), SculkCreeperEntity.createAttributes().build());
         event.put(ModEntities.SCULK_ENDERMAN.get(), SculkEndermanEntity.createAttributes().build());
         event.put(ModEntities.SCULK_PHANTOM.get(), SculkPhantomEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseEntity.createAttributes().build());
     }
 }
 

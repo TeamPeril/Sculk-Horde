@@ -42,6 +42,15 @@ public class ModSavedData extends SavedData {
 
     //The world
     public final ServerLevel level;
+
+    boolean isHordeActive = false;
+    public boolean isHordeActive() {
+        return isHordeActive;
+    }
+    public void setHordeActive(boolean hordeActive) {
+        isHordeActive = hordeActive;
+    }
+
     // List of all known positions of nodes.
     private final ArrayList<NodeEntry> nodeEntries = new ArrayList<>();
     // List of all known positions of bee nests
@@ -105,6 +114,7 @@ public class ModSavedData extends SavedData {
         SculkHorde.savedData.getDeathAreaEntries().clear();
         SculkHorde.savedData.getAreasOfInterestEntries().clear();
 
+        SculkHorde.savedData.setHordeActive(nbt.getBoolean("isHordeActive"));
         SculkHorde.savedData.setSculkAccumulatedMass(nbt.getInt(sculkAccumulatedMassIdentifier));
         SculkHorde.savedData.setNoNodeSpawningTicksElapsed(nbt.getInt(ticksSinceSculkNodeDestructionIdentifier));
 
@@ -174,6 +184,7 @@ public class ModSavedData extends SavedData {
     public @NotNull CompoundTag save(CompoundTag nbt) {
         CompoundTag gravemindData = new CompoundTag();
 
+        nbt.putBoolean("isHordeActive", isHordeActive);
         nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
         nbt.putInt(ticksSinceSculkNodeDestructionIdentifier, noNodeSpawningTicksElapsed);
         nbt.putInt(ticksSinceLastRaidIdentifier, ticksSinceLastRaid);

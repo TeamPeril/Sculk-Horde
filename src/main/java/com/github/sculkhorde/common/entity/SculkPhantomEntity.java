@@ -1,15 +1,14 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -24,18 +23,16 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -52,8 +49,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
      * Edited core/ EntityRegistry.java<br>
      * Edited util/ ModEventSubscriber.java<br>
      * Edited client/ ClientModEventSubscriber.java<br>
-     * Added client/model/entity/ SculkBlightwingModel.java<br>
-     * Added client/renderer/entity/ SculkBlightwingRenderer.java
+     * Added client/model/entity/ SculkPhantomModel.java<br>
+     * Added client/renderer/entity/ SculkPhantomRenderer.java
      */
 
     //The Health
@@ -70,15 +67,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
 
     //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private AttackPhase attackPhase = AttackPhase.CIRCLE;
     private BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
-    private static final EntityDataAccessor<Integer> ID_SIZE = SynchedEntityData.defineId(Phantom.class, EntityDataSerializers.INT);
-
     Vec3 moveTargetPoint = new Vec3(anchorPoint.getX(), anchorPoint.getY(), anchorPoint.getZ());
 
     Vec3 spawnPoint = null;
@@ -96,13 +91,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         this.lookControl = new PhantomLookControl(this);
     }
 
-    public static LivingEntity spawnPhantom(Level worldIn, BlockPos spawnPos)
+    public static void spawnPhantom(Level worldIn, BlockPos spawnPos)
     {
         SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);
+        assert phantom != null;
         phantom.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         phantom.spawnPoint = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         worldIn.addFreshEntity(phantom);
-        return phantom;
     }
 
     /**
@@ -153,16 +148,15 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
      */
     public Goal[] goalSelectorPayload()
     {
-        Goal[] goals =
-                {
-                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new explodeAndDropSporeSpewer(),
-                        new selectRandomLocationToVisit(),
-                        new AttackStrategyGoal(),
-                        new SweepAttackGoal(),
-                        new CircleAroundAnchorGoal(),
-                };
-        return goals;
+        return new Goal[]{
+                //new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(1)),
+                new FallToTheGroundIfMobsUnder(),
+                new selectRandomLocationToVisit(),
+                new AttackStrategyGoal(),
+                new SweepAttackGoal(),
+                new CircleAroundAnchorGoal(),
+        };
     }
 
     /**
@@ -175,20 +169,18 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
      */
     public Goal[] targetSelectorPayload()
     {
-        Goal[] goals =
-                {
-                        new InvalidateTargetGoal(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
-                };
-        return goals;
+        return new Goal[]{
+                new InvalidateTargetGoal(this),
+                new NearestLivingEntityTargetGoal<>(this, true, true)
+        };
     }
 
 
 
-    static enum AttackPhase {
+    enum AttackPhase {
         CIRCLE,
         SWOOP,
-        INFECT;
+        INFECT
     }
     /** Getters and Setters **/
 
@@ -197,20 +189,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return true;
     }
 
-    protected Vec3 getRandomTravelLocationVec3()
-    {
-        int radius = 300;
-        int x = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
-        int z = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
-        BlockPos travelLocation = blockPosition().offset(x,0,z);
-
-        BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
-        int groundYLevel = groundBlockPos.getY();
-        return new Vec3(travelLocation.getX(), groundYLevel + 50, travelLocation.getZ());
-    }
-
-
-    private boolean isParticipatingInRaid = false;
 
     @Override
     public SquadHandler getSquad() {
@@ -224,7 +202,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     @Override
     public void setParticipatingInRaid(boolean isParticipatingInRaidIn) {
-        this.isParticipatingInRaid = isParticipatingInRaidIn;
     }
 
     @Override
@@ -233,7 +210,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     }
 
     public double getPassengersRidingOffset() {
-        return (double)this.getEyeHeight();
+        return this.getEyeHeight();
     }
 
     @Override
@@ -260,12 +237,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return (this.getUniqueFlapTickOffset() + this.tickCount) % TICKS_PER_FLAP == 0;
     }
 
-    private void updatePhantomSizeInfo() {
-        this.refreshDimensions();
-        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((6.0));
-    }
-
-    protected float getStandingEyeHeight(Pose p_33136_, EntityDimensions p_33137_) {
+    protected float getStandingEyeHeight(@NotNull Pose p_33136_, EntityDimensions p_33137_) {
         return p_33137_.height * 0.35F;
     }
 
@@ -300,36 +272,26 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,2, 3, TickUnits.convertMinutesToTicks(1));
     }
 
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_33126_, DifficultyInstance p_33127_, MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33126_, @NotNull DifficultyInstance p_33127_, @NotNull MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {
         this.anchorPoint = this.blockPosition().above(5);
         return super.finalizeSpawn(p_33126_, p_33127_, p_33128_, p_33129_, p_33130_);
     }
 
-    protected BodyRotationControl createBodyControl() {
+    protected @NotNull BodyRotationControl createBodyControl() {
         return new PhantomBodyRotationControl(this);
     }
 
 
     /** Save Data **/
 
-
-    public void onSyncedDataUpdated(EntityDataAccessor<?> p_33134_) {
-        if (ID_SIZE.equals(p_33134_)) {
-            this.updatePhantomSizeInfo();
-        }
-
-        super.onSyncedDataUpdated(p_33134_);
-    }
-
-
-    public void readAdditionalSaveData(CompoundTag p_33132_) {
+    public void readAdditionalSaveData(@NotNull CompoundTag p_33132_) {
         super.readAdditionalSaveData(p_33132_);
         if (p_33132_.contains("AX")) {
             this.anchorPoint = new BlockPos(p_33132_.getInt("AX"), p_33132_.getInt("AY"), p_33132_.getInt("AZ"));
         }
     }
 
-    public void addAdditionalSaveData(CompoundTag p_33141_) {
+    public void addAdditionalSaveData(@NotNull CompoundTag p_33141_) {
         super.addAdditionalSaveData(p_33141_);
         p_33141_.putInt("AX", this.anchorPoint.getX());
         p_33141_.putInt("AY", this.anchorPoint.getY());
@@ -352,7 +314,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return SoundEvents.SILVERFISH_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
         return SoundEvents.SILVERFISH_HURT;
     }
 
@@ -360,11 +322,22 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return SoundEvents.SILVERFISH_DEATH;
     }
 
-    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
+    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pBlock) {
         this.playSound(SoundEvents.SILVERFISH_STEP, 0.15F, 1.0F);
     }
 
-    protected class explodeAndDropSporeSpewer extends Goal
+    protected void dieAndSpawnCorpse()
+    {
+        SculkPhantomEntity.this.hurt(SculkPhantomEntity.this.damageSources().genericKill(), Float.MAX_VALUE);
+        SculkPhantomCorpseEntity corpse = new SculkPhantomCorpseEntity(ModEntities.SCULK_PHANTOM_CORPSE.get(), level());
+        corpse.setPos(SculkPhantomEntity.this.getX(), SculkPhantomEntity.this.getY(), SculkPhantomEntity.this.getZ());
+        level().addFreshEntity(corpse);
+
+        // Give spore spewer slow falling
+        corpse.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 1));
+    }
+
+    protected class FallToTheGroundIfMobsUnder extends Goal
     {
         protected long lastTimeOfCheck = 0;
         protected long checkCooldown = TickUnits.convertSecondsToTicks(15);
@@ -421,15 +394,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public void start()
         {
-
-            // Die and spawn spore spewer
-            SculkPhantomEntity.this.hurt(SculkPhantomEntity.this.damageSources().genericKill(), Float.MAX_VALUE);
-            SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(ModEntities.SCULK_SPORE_SPEWER.get(), level());
-            sporeSpewer.setPos(SculkPhantomEntity.this.getX(), SculkPhantomEntity.this.getY(), SculkPhantomEntity.this.getZ());
-            level().addFreshEntity(sporeSpewer);
-
-            // Give spore spewer slow falling
-            sporeSpewer.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 1));
+            dieAndSpawnCorpse();
         }
     }
 
@@ -437,6 +402,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         protected long lastTimeOfExecution = 0;
         protected long executionCooldown = TickUnits.convertSecondsToTicks(60);
+
+        protected int circleRadiusVariance = 50;
+        protected int circleRadius = 300 + circleRadiusVariance;
+
 
         public boolean canUse()
         {
@@ -451,6 +420,18 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         public boolean canContinueToUse()
         {
             return false;
+        }
+
+        public Vec3 getRandomTravelLocationVec3()
+        {
+            int radius = circleRadius + random.nextInt(circleRadiusVariance) * (random.nextBoolean() ? 1 : -1);
+            int x = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
+            int z = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
+            BlockPos travelLocation = blockPosition().offset(x,0,z);
+
+            BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
+            int groundYLevel = groundBlockPos.getY();
+            return new Vec3(travelLocation.getX(), groundYLevel + 50, travelLocation.getZ());
         }
 
         public void start()
@@ -603,75 +584,73 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             }
 
             this.angle += this.clockwise * 15.0F * ((float)Math.PI / 180F);
-            SculkPhantomEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(SculkPhantomEntity.this.anchorPoint).add((double)(this.distance * Mth.cos(this.angle)), (double)(-4.0F + this.height), (double)(this.distance * Mth.sin(this.angle)));
+            SculkPhantomEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(SculkPhantomEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle), -4.0F + this.height, this.distance * Mth.sin(this.angle));
         }
     }
 
     class SweepAttackGoal extends MoveTargetGoal {
-        private static final int CAT_SEARCH_TICK_DELAY = 20;
-        private boolean isScaredOfCat;
-        private int catSearchTick;
-
         public boolean canUse() {
+
             return SculkPhantomEntity.this.getTarget() != null && SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.SWOOP;
         }
 
-        public boolean canContinueToUse() {
-            LivingEntity livingentity = SculkPhantomEntity.this.getTarget();
-            if (livingentity == null) {
+        public boolean canContinueToUse()
+        {
+            LivingEntity target = SculkPhantomEntity.this.getTarget();
+            if (target == null)
+            {
                 return false;
-            } else if (!livingentity.isAlive()) {
-                return false;
-            } else {
-                if (livingentity instanceof Player) {
-                    Player player = (Player)livingentity;
-                    if (livingentity.isSpectator() || player.isCreative()) {
-                        return false;
-                    }
-                }
-
-                if (!this.canUse()) {
-                    return false;
-                } else {
-                    if (SculkPhantomEntity.this.tickCount > this.catSearchTick) {
-                        this.catSearchTick = SculkPhantomEntity.this.tickCount + 20;
-                        List<Cat> list = SculkPhantomEntity.this.level().getEntitiesOfClass(Cat.class, SculkPhantomEntity.this.getBoundingBox().inflate(16.0D), EntitySelector.ENTITY_STILL_ALIVE);
-
-                        for(Cat cat : list) {
-                            cat.hiss();
-                        }
-
-                        this.isScaredOfCat = !list.isEmpty();
-                    }
-
-                    return !this.isScaredOfCat;
-                }
             }
-        }
 
-        public void start() {
+            if (!target.isAlive())
+            {
+                return false;
+            }
+
+            return this.canUse();
         }
 
         public void stop() {
-            SculkPhantomEntity.this.setTarget((LivingEntity)null);
+            SculkPhantomEntity.this.setTarget(null);
             SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
         }
 
         public void tick() {
-            LivingEntity livingentity = SculkPhantomEntity.this.getTarget();
-            if (livingentity != null) {
-                SculkPhantomEntity.this.moveTargetPoint = new Vec3(livingentity.getX(), livingentity.getY(0.5D), livingentity.getZ());
-                if (SculkPhantomEntity.this.getBoundingBox().inflate((double)0.2F).intersects(livingentity.getBoundingBox())) {
-                    SculkPhantomEntity.this.doHurtTarget(livingentity);
-                    SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
-                    if (!SculkPhantomEntity.this.isSilent()) {
-                        SculkPhantomEntity.this.level().levelEvent(1039, SculkPhantomEntity.this.blockPosition(), 0);
-                    }
-                } else if (SculkPhantomEntity.this.horizontalCollision || SculkPhantomEntity.this.hurtTime > 0) {
-                    SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
-                }
+            LivingEntity target = SculkPhantomEntity.this.getTarget();
+            boolean isPhantomNull = target == null;
 
+            if(isPhantomNull)
+            {
+                return;
             }
+
+            SculkPhantomEntity.this.moveTargetPoint = new Vec3(target.getX(), target.getY(0.5D), target.getZ());
+            AABB boundingBox = SculkPhantomEntity.this.getBoundingBox().inflate(0.2F);
+            boolean doesPhantomIntersectTarget = boundingBox.intersects(target.getBoundingBox());
+
+            if (doesPhantomIntersectTarget)
+            {
+                SculkPhantomEntity.this.doHurtTarget(target);
+                SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
+                return;
+            }
+
+            if (SculkPhantomEntity.this.horizontalCollision || SculkPhantomEntity.this.hurtTime > 0) {
+                SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
+            }
+        }
+    }
+
+    class FallToGroundAfterTime extends DespawnAfterTime
+    {
+        public FallToGroundAfterTime(ISculkSmartEntity mob, int ticksThreshold) {
+            super(mob, ticksThreshold);
+        }
+
+        @Override
+        public void start()
+        {
+            dieAndSpawnCorpse();
         }
     }
 
@@ -686,7 +665,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
     }
 
-    protected class PhantomLookControl extends LookControl {
+    protected static class PhantomLookControl extends LookControl {
         public PhantomLookControl(Mob p_33235_) {
             super(p_33235_);
         }
