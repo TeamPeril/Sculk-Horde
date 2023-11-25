@@ -104,13 +104,13 @@ public class Gravemind
         if(evolution_state == evolution_states.Immature)
         {
             SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get()/2);
-            calulateCurrentState();
         }
         else if(evolution_state == evolution_states.Mature)
         {
-            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() - 1);
-            calulateCurrentState();
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get()/2);
+
         }
+        calulateCurrentState();
     }
 
     public void enableAmountOfBeeHives(int amount)
