@@ -108,30 +108,21 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         //For each entity, infect them
         //If the entity is a sculk creeper, don't infect it
         AABB aabb = this.getBoundingBox().inflate(5);
-        this.level().getEntitiesOfClass(LivingEntity.class, aabb).forEach(infector -> {
-            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(infector))
+        this.level().getEntitiesOfClass(LivingEntity.class, aabb).forEach(victim -> {
+            if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
             {
                 return;
             }
 
-            if(infector.hasEffect(ModMobEffects.PURITY.get()))
-            {
-                // Remove 20 seconds from the purity effect
-                long oldDuration = infector.getEffect(ModMobEffects.PURITY.get()).getDuration();
-                int oldAmplifier = infector.getEffect(ModMobEffects.PURITY.get()).getAmplifier();
-                long newDuration = Math.max(oldDuration - TickUnits.convertSecondsToTicks(30),1);
-                infector.removeEffect(ModMobEffects.PURITY.get());
-                infector.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), (int)newDuration, oldAmplifier));
-            }
+            EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(5));
 
             if(ModConfig.SERVER.experimental_features_enabled.get())
             {
-                infector.addEffect(new MobEffectInstance(ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30)));
-                return;
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), 0);
             }
             else
             {
-                infector.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30)));
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
             }
         });
 

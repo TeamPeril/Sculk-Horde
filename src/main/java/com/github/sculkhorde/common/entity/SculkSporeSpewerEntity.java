@@ -253,17 +253,17 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             lastInfectionTime = level().getGameTime();
             // Any entity within 10 blocks of the spewer will be infected
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), this.blockPosition(), 10);
-            for (LivingEntity entity : entities)
+            for (LivingEntity victim : entities)
             {
-                if(entity instanceof Player && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
+                if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
                 {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertMinutesToTicks(10), 3));
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 1));
+                    return;
                 }
-                else if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
-                {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertMinutesToTicks(1), 3));
-                }
+
+                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+
             }
         }
     }

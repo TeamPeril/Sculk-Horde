@@ -49,12 +49,12 @@ public class ConfigCommand implements Command<CommandSourceStack> {
         String key;
         if(min > max) {
             return Commands.literal(configKey)
-                    .then(Commands.argument("value", DoubleArgumentType.doubleArg(1))
+                    .then(Commands.argument("value", DoubleArgumentType.doubleArg(-10))
                             .executes(context -> setConfigValue(context, "Invalid Argument")));
         } else
         {
             return Commands.literal(configKey)
-                    .then(Commands.argument("value", DoubleArgumentType.doubleArg(1))
+                    .then(Commands.argument("value", DoubleArgumentType.doubleArg(-10))
                             .executes(context -> setConfigValue(context, configKey)));
         }
     }
