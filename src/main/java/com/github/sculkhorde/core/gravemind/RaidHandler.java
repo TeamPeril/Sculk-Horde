@@ -43,7 +43,7 @@ public class RaidHandler {
 
     private BlockPos scoutingLocation;
 
-    private int INITIAL_CHUNK_LOAD_RADIUS = 15;
+    private long MINIMUM_WAVE_LENGTH_TICKS = TickUnits.convertMinutesToTicks(2);
 
 
     // The current status of the raid
@@ -637,7 +637,7 @@ public class RaidHandler {
         raidData.incrementWaveDuration();
 
         // If wave has been going on for too long, end it
-        if(raidData.getWaveDuration() >= raidData.getMAX_WAVE_DURATION())
+        if(raidData.getWaveDuration() >= raidData.getMAX_WAVE_DURATION() && raidData.getWaveDuration() >= MINIMUM_WAVE_LENGTH_TICKS)
         {
             endWave();
             raidData.removeWaveParticipantsFromList();
