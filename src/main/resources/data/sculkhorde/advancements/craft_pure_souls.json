@@ -15,7 +15,7 @@
       "trigger": "minecraft:recipe_crafted",
       "conditions": {
         "player": [],
-        "recipe_id": "minecraft:pure_souls"
+        "recipe_id": "sculkhorde:pure_souls"
       }
     }
   }

@@ -64,7 +64,7 @@ public class DiseasedCystsEffect extends MobEffect {
             // Also damage them and syphon mass from them to give to the horde
             for(LivingEntity victim : entities)
             {
-                if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
+                if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(victim))
                 {
                     continue;
                 }
