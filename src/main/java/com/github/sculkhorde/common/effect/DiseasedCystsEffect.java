@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.effect;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -61,34 +62,23 @@ public class DiseasedCystsEffect extends MobEffect {
         {
             // If there are non-sculk entities inside, give them infection.
             // Also damage them and syphon mass from them to give to the horde
-            for(LivingEntity e : entities)
+            for(LivingEntity victim : entities)
             {
-                if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
+                if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
                 {
                     continue;
                 }
 
-                if(e.hasEffect(ModMobEffects.PURITY.get()))
-                {
-                    // Remove 20 seconds from the purity effect
-                    long oldDuration = e.getEffect(ModMobEffects.PURITY.get()).getDuration();
-                    int oldAmplifier = e.getEffect(ModMobEffects.PURITY.get()).getAmplifier();
-                    long newDuration = Math.max(oldDuration - TickUnits.convertSecondsToTicks(5),1);
-                    e.removeEffect(ModMobEffects.PURITY.get());
-                    e.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), (int)newDuration, oldAmplifier));
-                }
-                if(!e.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
-                {
-                    e.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(20), 0));
-                }
+                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertSecondsToTicks(60));
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0);
 
-                if(e.getHealth() <= e.getMaxHealth() * 0.5)
+                if(victim.getHealth() <= victim.getMaxHealth() * 0.4)
                 {
                     continue;
                 }
-                e.hurtMarked = true;
-                int damage = (int) (e.getMaxHealth() * 0.1F);
-                e.hurt(e.damageSources().generic(), damage);
+                victim.hurtMarked = true;
+                int damage = (int) (victim.getMaxHealth() * 0.1F);
+                victim.hurt(victim.damageSources().generic(), damage);
                 SculkHorde.savedData.addSculkAccumulatedMass(damage);
                 SculkHorde.statisticsData.addTotalMassFromDiseasedCysts(damage);
             }
