@@ -169,7 +169,7 @@ public class Gravemind
         // If Overpopulated, and its a summoner, do not approve.
         if(isSenderTypeSummoner && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
         {
-            BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.positions[0]).getPosition();
+            BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.dimension, context.positions[0]).getPosition();
             Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
             if(nodeBlockEntity.isPresent())
             {

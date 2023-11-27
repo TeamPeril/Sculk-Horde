@@ -180,7 +180,7 @@ public class EntityAlgorithms {
                 return true;
             }
 
-            if(player.getEffect(ModMobEffects.PURITY.get()) != null && player.getEffect(ModMobEffects.PURITY.get()).getAmplifier() > 50)
+            if(player.hasEffect(ModMobEffects.SCULK_VESSEL.get()))
             {
                 return true;
             }

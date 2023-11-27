@@ -8,6 +8,7 @@ import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface ISculkSmartEntity {
     }
 
     default ModSavedData.NodeEntry getClosestNode() {
-        return SculkHorde.savedData.getClosestNodeEntry(((Mob) this).blockPosition());
+        return SculkHorde.savedData.getClosestNodeEntry((ServerLevel) ((Mob) this).level(), ((Mob) this).blockPosition());
     }
 
     default BlockPos getClosestNodePosition() {

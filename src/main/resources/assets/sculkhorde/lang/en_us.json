@@ -156,5 +156,6 @@
 
   "effect.sculkhorde.sculk_infected": "Burrowed",
   "effect.sculkhorde.sculk_lure": "Lure",
-  "effect.sculkhorde.diseased_cysts": "Diseased Cysts"
+  "effect.sculkhorde.diseased_cysts": "Diseased Cysts",
+  "effect.sculkhorde.sculk_vessel": "Sculk Vessel"
 }

@@ -685,7 +685,7 @@ public class ModSavedData extends SavedData {
      * Will check the positons of all entries to see
      * if they match the parameter.
      *
-     * @param position The position to cross reference
+     * @param position The position to cross-reference
      * @return true if in memory, false otherwise
      */
     public boolean isNodePositionInMemory(BlockPos position) {
@@ -702,7 +702,7 @@ public class ModSavedData extends SavedData {
      *
      * @return The Closest TreeNode
      */
-    public NodeEntry getClosestNodeEntry(BlockPos pos) {
+    public NodeEntry getClosestNodeEntry(ServerLevel dimension, BlockPos pos) {
         NodeEntry closestNode = null;
         double closestDistance = Double.MAX_VALUE;
         for (NodeEntry node : getNodeEntries()) {
@@ -712,22 +712,6 @@ public class ModSavedData extends SavedData {
             }
         }
         return closestNode;
-    }
-
-
-    public boolean isInRangeOfNode(BlockPos pos, int distance) {
-
-        if(getBlockDistanceXZ(BlockPos.ZERO, pos) > distance)
-        {
-            return false;
-        }
-
-        if (getNodeEntries().isEmpty()) {
-            return false;
-        }
-
-        return getBlockDistanceXZ(getClosestNodeEntry(pos).position, pos) <= distance;
-
     }
 
     public void removeNodeFromMemory(BlockPos positionIn)
