@@ -309,7 +309,7 @@ public class RaidHandler {
         ResourceKey<Level> dimensionResourceKey = dimension.dimension();
         raidData.setDimension(dimensionResourceKey);
 
-        SculkHorde.LOGGER.debug("RaidHandler | Investigating Location at: " + getFormattedCoordinates(areaOfInterestEntry.getPosition()) + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
+        SculkHorde.LOGGER.info("RaidHandler | Investigating Location at: " + getFormattedCoordinates(areaOfInterestEntry.getPosition()) + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
 
         raidData.setBlockSearcher(new BlockSearcher(dimension, areaOfInterestEntry.getPosition()));
         raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
@@ -359,13 +359,13 @@ public class RaidHandler {
             raidData.getFoundTargetsFromBlockSearcher(raidData.getBlockSearcher().foundTargets);
             raidData.setMaxWaves(10);
             raidData.setRaidLocation(raidData.getAreaOfInterestEntry().getPosition());
-            SculkHorde.LOGGER.debug("RaidHandler | Found " + (raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size()) + " objective targets in " + raidData.getAreaOfInterestEntry().getPosition() + " in dimension " + raidData.getDimension().dimension());
+            SculkHorde.LOGGER.info("RaidHandler | Found " + (raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size()) + " objective targets in " + raidData.getAreaOfInterestEntry().getPosition() + " in dimension " + raidData.getDimension().dimension());
             raidData.setRaidState(RaidState.ENDERMAN_SCOUTING);
         }
         else
         {
             raidData.setFailure(failureType.FAILED_INITIALIZATION);
-            SculkHorde.LOGGER.debug("RaidHandler | Found no objective targets in dimension" + raidData.getDimensionResourceKey() +". Not Initializing Raid.");
+            SculkHorde.LOGGER.info("RaidHandler | Found no objective targets in dimension" + raidData.getDimensionResourceKey() +". Not Initializing Raid.");
         }
         raidData.setBlockSearcher(null);
     }
@@ -585,7 +585,7 @@ public class RaidHandler {
             raidData.setNextObjectiveLocation();
         }
         raidData.setObjectiveLocationAtStartOfWave(raidData.getObjectiveLocation());
-        SculkHorde.LOGGER.debug("RaidHandler | Spawning mobs at: " + raidData.getSpawnLocation());
+        SculkHorde.LOGGER.info("RaidHandler | Spawning mobs at: " + raidData.getSpawnLocation());
         raidData.setRaidState(RaidState.ACTIVE_WAVE);
     }
 
@@ -726,7 +726,7 @@ public class RaidHandler {
             Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
             if(randomEntry.isEmpty())
             {
-                SculkHorde.LOGGER.debug("RaidHandler | Unable to find valid entity for raid.");
+                SculkHorde.LOGGER.info("RaidHandler | Unable to find valid entity for raid.");
                 raidData.setRaidState(RaidState.INITIALIZING_RAID);
                 return;
             }
