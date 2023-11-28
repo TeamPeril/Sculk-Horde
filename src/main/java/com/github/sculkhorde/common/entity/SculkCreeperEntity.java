@@ -132,6 +132,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     @Override
     public void tick() {
         super.tick();
+        if(level().isClientSide()) { return; }
+
         // The reason I do this is because I need my custom explode function to run before the regular creeper one does.
         // This shit honestly sucks ass, but it works.
         // Creeper expodes when get swelling is 1.1, but if we run it at 1.0, should hopefully work.

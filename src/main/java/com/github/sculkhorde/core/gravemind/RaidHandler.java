@@ -207,7 +207,7 @@ public class RaidHandler {
         while (iterator.hasNext()) {
             ServerPlayer player = iterator.next();
             boolean isPlayerInListAlready = raidData.getBossEvent().getPlayers().contains(player);
-            boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= raidData.getCurrentRaidRadius() * 2;
+            boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= Math.max(100, raidData.getCurrentRaidRadius() * 2);
             if (!isPlayerInListAlready && isPlayerInRangeOfRaid) {
                 raidData.getBossEvent().addPlayer(player);
             }
@@ -217,7 +217,7 @@ public class RaidHandler {
         iterator = raidData.getBossEvent().getPlayers().iterator();
         while (iterator.hasNext()) {
             ServerPlayer player = iterator.next();
-            boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= raidData.getCurrentRaidRadius() * 2;
+            boolean isPlayerInRangeOfRaid = BlockAlgorithms.getBlockDistanceXZ(raidData.getRaidLocation(), player.blockPosition()) <= Math.max(100, raidData.getCurrentRaidRadius() * 2);
             if (!isPlayerInRangeOfRaid) {
                 raidData.getBossEvent().removePlayer(player);
                 break;
