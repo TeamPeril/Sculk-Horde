@@ -151,13 +151,19 @@ public class Gravemind
     {
         context.isRequestViewed = true;
 
+
+        boolean isSenderDeveloper = context.sender == ReinforcementRequest.senderType.Developer;
+        boolean isSenderSculkMassBlock = context.sender == ReinforcementRequest.senderType.SculkMass;
+        boolean isThereNoMass = SculkHorde.savedData.getSculkAccumulatedMass() <= 0;
+        boolean isHordeDeactivated = !SculkHorde.savedData.isHordeActive();
+
         //Auto approve is this reinforcement is requested by a developer or sculk mass
-        if(context.sender == ReinforcementRequest.senderType.Developer || context.sender == ReinforcementRequest.senderType.SculkMass)
+        if(isSenderDeveloper || isSenderSculkMassBlock)
         {
             context.isRequestApproved = true;
         }
 
-        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
+        if(isHordeDeactivated || isThereNoMass)
         {
             return;
         }
@@ -180,7 +186,6 @@ public class Gravemind
                 }
             }
         }
-
 
 
         //If gravemind is undeveloped, just auto approve all requests
@@ -207,9 +212,6 @@ public class Gravemind
                 context.isRequestApproved = true;
             }
         }
-        //TODO: Add functionality for mature state
-
-
     }
 
     /**
@@ -235,16 +237,4 @@ public class Gravemind
         }
         return false;
     }
-
-
-
-
-
-
-
-    /** ######## Classes ######## **/
-
-    /** ######## CLASSES ######### **/
-
-
 }

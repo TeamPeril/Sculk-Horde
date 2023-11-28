@@ -95,6 +95,10 @@ public class SculkNodeInfectionHandler {
             return false;
         }
 
+        if(!SculkHorde.savedData.isHordeActive()) {
+            timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
+            return false;
+        }
 
         if(parent == null || world == null || origin == null)
         {

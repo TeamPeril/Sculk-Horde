@@ -76,33 +76,15 @@ public class RaidHandler {
 
     public boolean canRaidStart()
     {
-        if(!ModConfig.SERVER.sculk_raid_enabled.get())
-        {
-            return false;
-        }
+        boolean areRaidsDisabled = !ModConfig.SERVER.sculk_raid_enabled.get();
+        boolean isTheHordeDeactivated = !SculkHorde.savedData.isHordeActive();
+        boolean isRaidCooldownOver = SculkHorde.savedData.isRaidCooldownOver();
+        boolean isTheGravemindInUndevelopedState = gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped;
+        boolean areThereNoAreasOfInterest = SculkHorde.savedData.getAreasOfInterestEntries().isEmpty();
+        boolean areThereNoAreasOfInterestNotInNoRaidZone = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone().isEmpty();
+        boolean areThereNoPlayersOnServer = ServerLifecycleHooks.getCurrentServer().getPlayerCount() <= 0;
 
-        if(gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
-        {
-            return false;
-        }
-
-        if(!SculkHorde.savedData.isRaidCooldownOver())
-        {
-            return false;
-        }
-
-        if(SculkHorde.savedData.getAreasOfInterestEntries().isEmpty())
-        {
-            return false;
-        }
-
-        if(SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone().isEmpty())
-        {
-            return false;
-        }
-
-        //If there are players on server
-        if(ServerLifecycleHooks.getCurrentServer().getPlayerCount() <= 0)
+        if(areRaidsDisabled || isTheHordeDeactivated || !isRaidCooldownOver || isTheGravemindInUndevelopedState || areThereNoAreasOfInterest || areThereNoAreasOfInterestNotInNoRaidZone || areThereNoPlayersOnServer)
         {
             return false;
         }

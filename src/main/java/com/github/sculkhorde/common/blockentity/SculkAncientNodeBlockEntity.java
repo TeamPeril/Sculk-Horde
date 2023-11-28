@@ -237,6 +237,23 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     }
 
     /**
+     * If this block is awake, but horde is not awake according to saved data, then sync.
+     * This can occur if a world was made before the update that allows for auto horde start.
+     * @param blockEntity
+     */
+    public static void handleHordeAwakeningDesync(SculkAncientNodeBlockEntity blockEntity)
+    {
+        if(blockEntity.isAwake() && !SculkHorde.savedData.isHordeActive())
+        {
+            SculkHorde.savedData.setHordeActive(true);
+        }
+        else if(!blockEntity.isAwake() && SculkHorde.savedData.isHordeActive())
+        {
+            SculkHorde.savedData.setHordeActive(false);
+        }
+    }
+
+    /**
      * Gets called on server when the block is awake
      * @param level The level
      * @param blockPos The position
@@ -246,6 +263,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     public static void tickAwake(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+
+        handleHordeAwakeningDesync(blockEntity);
 
         // Initialize the infection handler
         if(blockEntity.infectionHandler == null)

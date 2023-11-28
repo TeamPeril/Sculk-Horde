@@ -148,8 +148,9 @@ public class SculkNodesHandler {
         long timeElapsedSinceLastTick = getLevel().getGameTime() - lastTimeSinceTick;
         boolean isCooldownStillActive = timeElapsedSinceLastTick < TICK_COOLDOWN;
         boolean areThereNoNodes = getNodes().isEmpty();
+        boolean isHordeDeactivated = !getSavedData().isHordeActive();
 
-        if(isSculkNodeHandlerNotActive || isSaveDataNull || areThereNoNodes || isCooldownStillActive)
+        if(isHordeDeactivated || isSculkNodeHandlerNotActive || isSaveDataNull || areThereNoNodes || isCooldownStillActive)
         {
             return;
         }
