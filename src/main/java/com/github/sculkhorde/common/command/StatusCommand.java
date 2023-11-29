@@ -25,7 +25,9 @@ public class StatusCommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context)
     {
         context.getSource().sendSuccess(()->Component.literal(
-                "Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString()
+                "Horde State: " + SculkHorde.savedData.getHordeState().toString()
+                        + "\n"
+                        + "Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString()
                         + "\n"
                         + "Sculk Mass Accumulated: " + SculkHorde.savedData.getSculkAccumulatedMass()
                         + "\n"

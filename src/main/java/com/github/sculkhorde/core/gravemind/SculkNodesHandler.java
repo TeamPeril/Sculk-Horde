@@ -116,7 +116,7 @@ public class SculkNodesHandler {
         if(!nodeWithLongestTimeOfInactivity.isEntryValid()) { return; }
         nodeWithLongestTimeOfInactivity.setActive(true);
         nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
-        SculkHorde.LOGGER.debug("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
+        SculkHorde.LOGGER.info("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
     }
 
     protected void DeactivateAllNodes()
@@ -137,7 +137,7 @@ public class SculkNodesHandler {
             if(!node.isActive()) { continue; }
             node.setActive(false);
             node.setLastTimeWasActive(node.getDimension().getGameTime());
-            SculkHorde.LOGGER.debug("Deactivating Node at: " + node.getPosition().toString());
+            SculkHorde.LOGGER.info("Deactivating Node at: " + node.getPosition().toString());
         }
     }
 

@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
-import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistanceXZ;
 
 /**
  * This class handels all data that gets saved to and loaded from the world. <br>
@@ -43,37 +42,46 @@ public class ModSavedData extends SavedData {
     //The world
     public final ServerLevel level;
 
-    boolean isHordeActive = false;
-    public boolean isHordeActive() {
-        return isHordeActive;
+    public static enum HordeState {
+        UNACTIVATED,
+        ACTIVE,
+        DEFEATED
     }
-    public void setHordeActive(boolean hordeActive) {
-        isHordeActive = hordeActive;
+    HordeState hordeState = HordeState.UNACTIVATED;
+
+    public boolean hasHordeNeverBeenActivated() {
+        return hordeState == HordeState.UNACTIVATED;
     }
 
-    // List of all known positions of nodes.
+    public boolean isHordeActive() {
+        return hordeState == HordeState.ACTIVE;
+    }
+
+    public boolean isHordeDefeated() {
+        return hordeState == HordeState.DEFEATED;
+    }
+
+    public HordeState getHordeState() {
+        return hordeState;
+    }
+
+    public void setHordeState(HordeState hordeState) {
+        this.hordeState = hordeState;
+        setDirty();
+    }
+
     private final ArrayList<NodeEntry> nodeEntries = new ArrayList<>();
-    // List of all known positions of bee nests
     private final ArrayList<BeeNestEntry> beeNestEntries = new ArrayList<>();
-    // List of all known hostile entity types
     private final Map<String, HostileEntry> hostileEntries = new HashMap<>();
-    // List of all known priority blocks
     private final ArrayList<PriorityBlockEntry> priorityBlockEntries = new ArrayList<>();
-    // List of areas where sculk mobs have died.
     private final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
-    // List of areas of interests
     private final ArrayList<AreaofInterestEntry> areasOfInterestEntries = new ArrayList<>();
-    // List of No Raid Zone Areas
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
 
-    // the amount of mass that the sculk hoard has accumulated.
     private int sculkAccumulatedMass = 0;
-    // used to write/read nbt data to/from the world.
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
-    // The amount of ticks since sculk node destruction
     private int noNodeSpawningTicksElapsed = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
     private static final String ticksSinceSculkNodeDestructionIdentifier = "ticksSinceSculkNodeDestruction";
-    // The amount of ticks since last raid
     private int ticksSinceLastRaid = TickUnits.convertHoursToTicks(8);
     private static final String ticksSinceLastRaidIdentifier = "ticksSinceLastRaid";
 
@@ -114,7 +122,7 @@ public class ModSavedData extends SavedData {
         SculkHorde.savedData.getDeathAreaEntries().clear();
         SculkHorde.savedData.getAreasOfInterestEntries().clear();
 
-        SculkHorde.savedData.setHordeActive(nbt.getBoolean("isHordeActive"));
+        SculkHorde.savedData.setHordeState(HordeState.values()[nbt.getInt("hordeState")]);
         SculkHorde.savedData.setSculkAccumulatedMass(nbt.getInt(sculkAccumulatedMassIdentifier));
         SculkHorde.savedData.setNoNodeSpawningTicksElapsed(nbt.getInt(ticksSinceSculkNodeDestructionIdentifier));
 
@@ -184,7 +192,7 @@ public class ModSavedData extends SavedData {
     public @NotNull CompoundTag save(CompoundTag nbt) {
         CompoundTag gravemindData = new CompoundTag();
 
-        nbt.putBoolean("isHordeActive", isHordeActive);
+        nbt.putInt("hordeState", hordeState.ordinal());
         nbt.putInt(sculkAccumulatedMassIdentifier, sculkAccumulatedMass);
         nbt.putInt(ticksSinceSculkNodeDestructionIdentifier, noNodeSpawningTicksElapsed);
         nbt.putInt(ticksSinceLastRaidIdentifier, ticksSinceLastRaid);

@@ -1,15 +1,10 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
-import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
-import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
@@ -42,9 +37,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.AWAKE;
-import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.CURED;
-
 /**
  * Chunkloader code created by SuperMartijn642
  */
@@ -72,15 +64,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     /** Getters **/
 
-    public boolean isTriggering()
-    {
-        return this.getBlockState().getValue(SculkAncientNodeBlock.CURED);
-    }
-
-    public boolean isAwake()
-    {
-        return this.getBlockState().getValue(AWAKE);
-    }
 
     /**
      * Returns true if the block below is a sculk block,
@@ -171,11 +154,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     /** Setters **/
 
-    public void setAwake(boolean awake)
-    {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AWAKE, awake));
-        SculkHorde.savedData.setHordeActive(awake);
-    }
 
     /** Events **/
 
@@ -197,29 +175,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         });
     }
 
-    private static void spawnInfectorOnSurface(ServerLevel level, int x, int z, int rangeOfInfector, int maxInfectionsOfInfector)
-    {
-        // Do ray trace from top of world to bottom to find the surface
-        BlockPos.MutableBlockPos spawnPosition = new BlockPos.MutableBlockPos(x, level.getMaxBuildHeight(), z);
-        while(!level.getBlockState(spawnPosition).isSolid() && spawnPosition.getY() > level.getMinBuildHeight())
-        {
-            spawnPosition.setY(spawnPosition.getY() - 1);
-        }
-
-        // If the block is not air, spawn the infector
-        if(!level.getBlockState(spawnPosition).isAir())
-        {
-            // Spawn the infector
-            CursorSurfaceInfectorEntity infectorEntity = new CursorSurfaceInfectorEntity(level);
-            infectorEntity.setPos(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
-            infectorEntity.setMaxRange(rangeOfInfector);
-            infectorEntity.setMaxTransformations(maxInfectionsOfInfector);
-            infectorEntity.setSearchIterationsPerTick(20);
-            infectorEntity.setTickIntervalMilliseconds(10);
-            level.addFreshEntity(infectorEntity);
-        }
-    }
-
     /**
      * Gets called on the client to do heartbeat sounds
      * @param level The level
@@ -237,34 +192,15 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     }
 
     /**
-     * If this block is awake, but horde is not awake according to saved data, then sync.
-     * This can occur if a world was made before the update that allows for auto horde start.
-     * @param blockEntity
-     */
-    public static void handleHordeAwakeningDesync(SculkAncientNodeBlockEntity blockEntity)
-    {
-        if(blockEntity.isAwake() && !SculkHorde.savedData.isHordeActive())
-        {
-            SculkHorde.savedData.setHordeActive(true);
-        }
-        else if(!blockEntity.isAwake() && SculkHorde.savedData.isHordeActive())
-        {
-            SculkHorde.savedData.setHordeActive(false);
-        }
-    }
-
-    /**
      * Gets called on server when the block is awake
      * @param level The level
      * @param blockPos The position
      * @param blockState The blockstate
      * @param blockEntity The block entity
      */
-    public static void tickAwake(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    public static void tickActive(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
-
-        handleHordeAwakeningDesync(blockEntity);
 
         // Initialize the infection handler
         if(blockEntity.infectionHandler == null)
@@ -338,11 +274,10 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     public static void tryInitializeHorde(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
-        if(blockEntity.isAwake()) { return; }
+        if(!SculkHorde.savedData.hasHordeNeverBeenActivated()) { return; }
 
         int MAX_SPAWNED_SPORE_SPEWERS = 10;
 
-        blockEntity.setAwake(true);
         // If the horde has no mass, give it some
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
@@ -350,7 +285,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             SculkHorde.statisticsData.addTotalMassFromNodes(1000);
         }
 
-        SculkHorde.savedData.setHordeActive(true);
+        SculkHorde.savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
 
         announceToAllPlayers((ServerLevel)level, Component.literal("The Sculk Horde has been awakened!"));
 
