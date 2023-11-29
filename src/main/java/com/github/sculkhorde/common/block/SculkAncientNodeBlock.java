@@ -82,7 +82,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         boolean ItemIsCryingSouls = playerIn.getMainHandItem().is(ModItems.CRYING_SOULS.get());
 
 
-        if(ItemIsPureSouls && savedData.isHordeActive())
+        if(ItemIsPureSouls && !savedData.isHordeDefeated())
         {
             if(!areAllNodesDestroyed())
             {
@@ -100,21 +100,17 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
             //Spawn Explosion that Does No Damage
             level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
-
             return InteractionResult.CONSUME;
         }
 
-        if(ItemIsCryingSouls && savedData.isHordeDefeated())
+        if(ItemIsCryingSouls && !savedData.isHordeActive())
         {
             SculkAncientNodeBlockEntity sculkAncientNodeBlockEntity = (SculkAncientNodeBlockEntity) level.getBlockEntity(pos);
             assert sculkAncientNodeBlockEntity != null;
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
             return InteractionResult.CONSUME;
         }
-
-
         return InteractionResult.FAIL;
-
     }
 
     public boolean areAllNodesDestroyed()
@@ -180,7 +176,9 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
                     SculkAncientNodeBlockEntity::tickTriggerAutomatically);
         }
 
-        if(!savedData.isHordeActive()) {
+        boolean isHordeActive = savedData.isHordeActive();
+
+        if(!isHordeActive) {
             BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
                 VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
             });
