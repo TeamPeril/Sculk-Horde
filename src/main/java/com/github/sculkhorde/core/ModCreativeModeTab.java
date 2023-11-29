@@ -26,7 +26,8 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_NODE_SPAWNER.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_RAID_WAND.get());
-                if(!FMLLoader.isProduction()) event.accept(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get());
+                event.accept(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get());
+                event.accept(ModBlocks.SCULK_NODE_BLOCK.get());
                 event.accept(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get());
                 event.accept(ModItems.SCULK_SPORE_SPEWER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_MITE_SPAWN_EGG.get());
@@ -45,12 +46,15 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.PURITY_SPLASH_POTION.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());
                 event.accept(ModBlocks.INFESTATION_WARD_BLOCK.get());
+                event.accept(ModItems.CRYING_SOULS.get());
                 event.accept(ModItems.PURE_SOULS.get());
+                event.accept(ModItems.CHUNK_O_BRAIN.get());
+                event.accept(ModItems.DORMANT_HEART_OF_THE_HORDE.get());
+                event.accept(ModItems.HEART_OF_THE_HORDE.get());
                 event.accept(ModItems.SCULK_ACIDIC_PROJECTILE.get());
                 event.accept(ModItems.SCULK_RESIN.get());
                 event.accept(ModItems.CALCITE_CLUMP.get());
                 event.accept(ModItems.SCULK_MATTER.get());
-                event.accept(ModItems.CRYING_SOULS.get());
                 event.accept(ModBlocks.SCULK_NODE_BLOCK.get());
                 event.accept(ModBlocks.SCULK_ARACHNOID.get());
                 event.accept(ModBlocks.SCULK_DURA_MATTER.get());

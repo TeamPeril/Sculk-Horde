@@ -101,6 +101,10 @@
   "tooltip.sculkhorde.pure_souls": "Used to craft Infestation Purifiers and to deactivate the Ancient Sculk Node. Souls of the Assimilated that have been purified. You brought them peace and tranquility.",
   "item.sculkhorde.chunk_o_brain": "Chunk o' Brain",
   "tooltip.sculkhorde.chunk_o_brain": "A chunk of brain that is obtained from destroying the core ofSculk Nodes.",
+  "item.sculkhorde.dormant_heart_of_the_horde": "Dormant Heart of the Horde",
+  "tooltip.sculkhorde.dormant_heart_of_the_horde": "A dormant heart.",
+  "item.sculkhorde.heart_of_the_horde": "Heart of the Horde",
+  "tooltip.sculkhorde.heart_of_the_horde": "The heart of the Sculk Horde.",
 
   "block.sculkhorde.infestation_ward_block": "Infestation Ward Block",
   "tooltip.sculkhorde.infestation_ward_block": "A block that prevents Sculk Infestation from spreading to any of it's neighboring blocks. This includes diagonals.",
