@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
 
-    //Method to Register Blocks & Register them as items
+	//Method to Register Blocks & Register them as items
 	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
 	{
 		RegistryObject<T> toReturn = BLOCKS.register(name, block);
@@ -586,6 +586,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<DevMassInfectinator3000Block> DEV_MASS_INFECTINATOR_3000_BLOCK =
 			registerBlock("dev_mass_infectinator_3000", () -> new DevMassInfectinator3000Block());
+
+	public static final RegistryObject<SoulHarvesterBlock> SOUL_HARVESTER_BLOCK =
+			registerBlock("soul_harvester", () -> new SoulHarvesterBlock());
 
 	public static class BlockTags
 	{
