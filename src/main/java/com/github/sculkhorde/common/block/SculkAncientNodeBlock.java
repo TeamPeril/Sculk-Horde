@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.MapColor;
@@ -56,12 +57,15 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static float BLAST_RESISTANCE = 3600000.0F;
 
-    /**
-     * The Constructor that takes in properties
-     * @param prop The Properties
-     */
+    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
+    public static final int STATE_RECIEVE_VIBRATION = 0;
+    public static final int STATE_ACTIVE = 1;
+    public static final int STATE_DEFEATED = 2;
+
     public SculkAncientNodeBlock(Properties prop) {
         super(prop);
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(STATE, STATE_RECIEVE_VIBRATION));
     }
 
     /**
@@ -71,6 +75,23 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     public SculkAncientNodeBlock() {
         this(getProperties());
     }
+
+    public static void setStateToRecieveVibration(Level level, BlockPos pos)
+    {
+        level.setBlockAndUpdate(pos, ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get().defaultBlockState().setValue(STATE, STATE_ACTIVE));
+    }
+
+    public static void setStateToActive(Level level, BlockPos pos)
+    {
+        level.setBlockAndUpdate(pos, ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get().defaultBlockState().setValue(STATE, STATE_ACTIVE));
+    }
+
+    public static void setStateToDefeated(Level level, BlockPos pos)
+    {
+        level.setBlockAndUpdate(pos, ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get().defaultBlockState().setValue(STATE, STATE_DEFEATED));
+    }
+
+
 
     public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide)
@@ -100,6 +121,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
             //Spawn Explosion that Does No Damage
             level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
+            setStateToDefeated(level, pos);
             return InteractionResult.CONSUME;
         }
 
@@ -108,6 +130,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             SculkAncientNodeBlockEntity sculkAncientNodeBlockEntity = (SculkAncientNodeBlockEntity) level.getBlockEntity(pos);
             assert sculkAncientNodeBlockEntity != null;
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
+            setStateToActive(level, pos);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.FAIL;
@@ -145,6 +168,16 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         return prop;
     }
 
+    public BlockState getStateForPlacement(BlockPlaceContext context)
+    {
+        return this.defaultBlockState()
+                .setValue(STATE, STATE_RECIEVE_VIBRATION);
+    }
+
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(STATE);
+    }
+
     /**
      * Gets ticked whenever it recieves a vibration. <br>
      * Note: I want to make it so this block ticks on a regular basis, but also when it recieves a vibration.
@@ -170,18 +203,22 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
                     SculkAncientNodeBlockEntity::tickClient);
         }
 
-        if (isAutoStartOn && savedData.hasHordeNeverBeenActivated()) {
+        if (isAutoStartOn && savedData.isHordeUnactivated()) {
             return BaseEntityBlock.createTickerHelper(blockEntityType,
                     ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
                     SculkAncientNodeBlockEntity::tickTriggerAutomatically);
         }
 
-        boolean isHordeActive = savedData.isHordeActive();
+        ModSavedData.HordeState isHordeActive = savedData.getHordeState();
 
-        if(!isHordeActive) {
-            BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+        if(savedData.isHordeUnactivated()) {
+            return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
                 VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
             });
+        }
+        else if(savedData.isHordeDefeated())
+        {
+            return null;
         }
 
         return BaseEntityBlock.createTickerHelper(blockEntityType,

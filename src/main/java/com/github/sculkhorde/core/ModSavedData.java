@@ -49,7 +49,7 @@ public class ModSavedData extends SavedData {
     }
     HordeState hordeState = HordeState.UNACTIVATED;
 
-    public boolean hasHordeNeverBeenActivated() {
+    public boolean isHordeUnactivated() {
         return hordeState == HordeState.UNACTIVATED;
     }
 

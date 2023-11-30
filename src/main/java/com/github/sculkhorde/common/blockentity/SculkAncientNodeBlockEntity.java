@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
+import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
@@ -274,7 +275,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     public static void tryInitializeHorde(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
-        if(!SculkHorde.savedData.hasHordeNeverBeenActivated()) { return; }
+        if(!SculkHorde.savedData.isHordeUnactivated()) { return; }
 
         int MAX_SPAWNED_SPORE_SPEWERS = 10;
 
@@ -320,6 +321,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
 
         if(ModConfig.SERVER.experimental_features_enabled.get()) {spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);}
+
+        SculkAncientNodeBlock.setStateToActive(level, blockPos);
     }
 
     // Data
