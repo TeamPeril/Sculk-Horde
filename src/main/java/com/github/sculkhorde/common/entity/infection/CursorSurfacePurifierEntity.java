@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EntityType;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.IPlantable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -68,7 +70,13 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
 
         // Get all infector cursor entities in area and kill them
         Predicate<CursorInfectorEntity> isCursor = Objects::nonNull;
-        level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor).forEach(entity -> entity.discard());
+        List<CursorInfectorEntity> Infectors = level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
+        for(CursorInfectorEntity infector : Infectors)
+        {
+            infector.discard();
+            this.discard();
+            break;
+        }
     }
 
     @Override
