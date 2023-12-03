@@ -76,23 +76,6 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         this(getProperties());
     }
 
-    public static void setStateToRecieveVibration(Level level, BlockPos pos)
-    {
-        level.setBlockAndUpdate(pos, ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get().defaultBlockState().setValue(STATE, STATE_ACTIVE));
-    }
-
-    public static void setStateToActive(Level level, BlockPos pos)
-    {
-        level.setBlockAndUpdate(pos, ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get().defaultBlockState().setValue(STATE, STATE_ACTIVE));
-    }
-
-    public static void setStateToDefeated(Level level, BlockPos pos)
-    {
-        level.setBlockAndUpdate(pos, ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get().defaultBlockState().setValue(STATE, STATE_DEFEATED));
-    }
-
-
-
     public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide)
         {
@@ -112,25 +95,18 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
                 return InteractionResult.FAIL;
             }
 
-
-            SculkAncientNodeBlockEntity sculkAncientNodeBlockEntity = (SculkAncientNodeBlockEntity) level.getBlockEntity(pos);
-            assert sculkAncientNodeBlockEntity != null;
             savedData.setHordeState(ModSavedData.HordeState.DEFEATED);
             level.players().forEach(player -> player.displayClientMessage(Component.literal("The Ancient Sculk Node has been Defeated!"), true));
             level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
 
             //Spawn Explosion that Does No Damage
             level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
-            setStateToDefeated(level, pos);
             return InteractionResult.CONSUME;
         }
 
         if(ItemIsCryingSouls && !savedData.isHordeActive())
         {
-            SculkAncientNodeBlockEntity sculkAncientNodeBlockEntity = (SculkAncientNodeBlockEntity) level.getBlockEntity(pos);
-            assert sculkAncientNodeBlockEntity != null;
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
-            setStateToActive(level, pos);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.FAIL;
@@ -190,40 +166,9 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-
-        boolean isClient = level.isClientSide();
-        boolean isAutoStartOn = ModConfig.SERVER.trigger_ancient_node_automatically.get();
-
-        //Client Side does not tick
-        if(isClient)
-        {
-
-            return BaseEntityBlock.createTickerHelper(blockEntityType,
-                    ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
-                    SculkAncientNodeBlockEntity::tickClient);
-        }
-
-        if (isAutoStartOn && savedData.isHordeUnactivated()) {
-            return BaseEntityBlock.createTickerHelper(blockEntityType,
-                    ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
-                    SculkAncientNodeBlockEntity::tickTriggerAutomatically);
-        }
-
-        ModSavedData.HordeState isHordeActive = savedData.getHordeState();
-
-        if(savedData.isHordeUnactivated()) {
-            return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
-                VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
-            });
-        }
-        else if(savedData.isHordeDefeated())
-        {
-            return null;
-        }
-
         return BaseEntityBlock.createTickerHelper(blockEntityType,
                 ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(),
-                SculkAncientNodeBlockEntity::tickActive);
+                SculkAncientNodeBlockEntity::tick);
     }
 
     @Nullable
@@ -244,10 +189,5 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     @Override
     public RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.MODEL;
-    }
-
-    @Override
-    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
-        return silkTouchLevel == 0 ? 5 : 0;
     }
 }

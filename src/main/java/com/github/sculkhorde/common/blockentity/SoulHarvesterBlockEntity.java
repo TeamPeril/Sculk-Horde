@@ -110,17 +110,6 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
-    private boolean isActive()
-    {
-        return getBlockState().getValue(SculkSummonerBlock.IS_ACTIVE);
-    }
-
-    private void setActive(boolean value)
-    {
-        assert level != null;
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.IS_ACTIVE, value));
-    }
-
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if(cap == ForgeCapabilities.ITEM_HANDLER) {

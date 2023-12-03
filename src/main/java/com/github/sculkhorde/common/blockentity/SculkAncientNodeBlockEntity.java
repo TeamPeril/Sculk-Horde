@@ -183,12 +183,63 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
      * @param blockState The blockstate
      * @param blockEntity The block entity
      */
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+        if(level.isClientSide())
+        {
+            tickClient(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeUnactivated() && ModConfig.SERVER.trigger_ancient_node_automatically.get())
+        {
+            tickTriggerAutomatically(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeUnactivated() && !ModConfig.SERVER.trigger_ancient_node_automatically.get())
+        {
+            tickUnactivated(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeActive())
+        {
+            tickActive(level, blockPos, blockState, blockEntity);
+        }
+
+    }
+
+    /**
+     * Gets called on the client to do heartbeat sounds
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
     public static void tickClient(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
         if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
         {
             blockEntity.lastHeartBeat = System.currentTimeMillis();
             level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);
+        }
+    }
+
+    /**
+     * Gets called on the client to do heartbeat sounds
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
+    public static void tickUnactivated(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+
+        // If the time elapsed is less than the tick interval, return
+        if(timeElapsed < tickIntervalSeconds) { return; }
+
+        // Update the tickedAt time
+        blockEntity.tickedAt = System.nanoTime();
+
+        if(areAnyPlayersInRange((ServerLevel) level, blockPos, 15))
+        {
+            tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
         }
     }
 
@@ -201,6 +252,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
      */
     public static void tickActive(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
+
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
         // Initialize the infection handler
@@ -321,8 +373,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
 
         if(ModConfig.SERVER.experimental_features_enabled.get()) {spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);}
-
-        SculkAncientNodeBlock.setStateToActive(level, blockPos);
     }
 
     // Data

@@ -103,14 +103,21 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()) {
+
+        if (pLevel.isClientSide())
+        {
+            return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        }
+            /*
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof SoulHarvesterBlockEntity) {
                 NetworkHooks.openScreen(((ServerPlayer)pPlayer), (SoulHarvesterBlockEntity)entity, pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }
-        }
+             */
+        BlockEntity entity = pLevel.getBlockEntity(pPos);
+        //entity.
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
@@ -156,4 +163,9 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
     }
 
     /* Animation */
+
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
 }

@@ -115,8 +115,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
-
-
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
@@ -174,8 +172,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 new NearestLivingEntityTargetGoal<>(this, true, true)
         };
     }
-
-
 
     enum AttackPhase {
         CIRCLE,
@@ -402,9 +398,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         protected long lastTimeOfExecution = 0;
         protected long executionCooldown = TickUnits.convertSecondsToTicks(60);
-
         protected int circleRadiusVariance = 50;
-        protected int circleRadius = 300 + circleRadiusVariance;
+        protected final int BASE_CIRCLE_RADIUS = 300;
+
+        protected final int CIRCLE_RADIUS_INCREASE = 100;
+        protected int currentCircleRadius = BASE_CIRCLE_RADIUS + circleRadiusVariance;
 
 
         public boolean canUse()
@@ -422,16 +420,32 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             return false;
         }
 
+        private boolean isGroundPosValid(BlockPos pos)
+        {
+            // As long as its not a fluid, its valid
+            return !level().getFluidState(pos).isEmpty() && !level().getFluidState(pos.below()).isEmpty();
+        }
+
         public Vec3 getRandomTravelLocationVec3()
         {
-            int radius = circleRadius + random.nextInt(circleRadiusVariance) * (random.nextBoolean() ? 1 : -1);
-            int x = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
-            int z = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
-            BlockPos travelLocation = blockPosition().offset(x,0,z);
+            int MAX_ATTEMPTS = 10;
 
-            BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
-            int groundYLevel = groundBlockPos.getY();
-            return new Vec3(travelLocation.getX(), groundYLevel + 50, travelLocation.getZ());
+            for(int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
+
+                int radius = currentCircleRadius + random.nextInt(circleRadiusVariance) * (random.nextBoolean() ? 1 : -1);
+                int x = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
+                int z = random.nextInt(radius) * (random.nextBoolean() ? 1 : -1);
+                BlockPos travelLocation = blockPosition().offset(x, 0, z);
+                BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
+                if(isGroundPosValid(groundBlockPos))
+                {
+                    int groundYLevel = groundBlockPos.getY();
+                    return new Vec3(travelLocation.getX(), groundYLevel + 50, travelLocation.getZ());
+                }
+            }
+            // If we find no valid location, just return the current location and increase range
+            currentCircleRadius += CIRCLE_RADIUS_INCREASE;
+            return moveTargetPoint;
         }
 
         public void start()
