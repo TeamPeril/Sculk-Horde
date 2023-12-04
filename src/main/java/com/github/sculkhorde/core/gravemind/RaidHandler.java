@@ -77,14 +77,14 @@ public class RaidHandler {
     public boolean canRaidStart()
     {
         boolean areRaidsDisabled = !ModConfig.SERVER.sculk_raid_enabled.get();
-        boolean isTheHordeDeactivated = !SculkHorde.savedData.isHordeActive();
+        boolean isTheHordeNotDefeated = !SculkHorde.savedData.isHordeDefeated();
         boolean isRaidCooldownOver = SculkHorde.savedData.isRaidCooldownOver();
         boolean isTheGravemindInUndevelopedState = gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped;
         boolean areThereNoAreasOfInterest = SculkHorde.savedData.getAreasOfInterestEntries().isEmpty();
         boolean areThereNoAreasOfInterestNotInNoRaidZone = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone().isEmpty();
         boolean areThereNoPlayersOnServer = ServerLifecycleHooks.getCurrentServer().getPlayerCount() <= 0;
 
-        if(areRaidsDisabled || isTheHordeDeactivated || !isRaidCooldownOver || isTheGravemindInUndevelopedState || areThereNoAreasOfInterest || areThereNoAreasOfInterestNotInNoRaidZone || areThereNoPlayersOnServer)
+        if(areRaidsDisabled || isTheHordeNotDefeated || !isRaidCooldownOver || isTheGravemindInUndevelopedState || areThereNoAreasOfInterest || areThereNoAreasOfInterestNotInNoRaidZone || areThereNoPlayersOnServer)
         {
             return false;
         }
@@ -354,7 +354,7 @@ public class RaidHandler {
 
     private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
     {
-        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
+        if(!ModConfig.SERVER.experimental_features_enabled.get() || !ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
@@ -428,8 +428,6 @@ public class RaidHandler {
         allTargets.addAll(raidData.getMediumPriorityTargets());
         raidData.setRaidCenter(BlockAlgorithms.getCentroid(allTargets));
     }
-
-
 
     /**
      * This function gets called when the raid is initialized.

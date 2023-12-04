@@ -46,7 +46,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
 
     private long tickedAt = System.nanoTime();
-    public static final int tickIntervalSeconds = 10;
+    public static final int tickIntervalSeconds = 5;
     private long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(5);
     private long lastHeartBeat = System.currentTimeMillis();
 
@@ -270,6 +270,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         // If the time elapsed is less than the tick interval, return
         if(timeElapsed < tickIntervalSeconds) { return; }
 
+        AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
+
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();
 
@@ -302,7 +304,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     private static void spawnSculkPhantomsAtTopOfWorld(SculkAncientNodeBlockEntity blockEntity, int amount)
     {
-        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
+        if(!ModConfig.SERVER.experimental_features_enabled.get() || !ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
 
         ServerLevel level = (ServerLevel) blockEntity.level;
         int spawnRange = 100;
@@ -370,9 +372,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         level.players().forEach((player) -> level.playSound(null, player.blockPosition(), ModSounds.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
 
-        AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
-
-        if(ModConfig.SERVER.experimental_features_enabled.get()) {spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);}
+        spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);
     }
 
     // Data
@@ -441,7 +441,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 15))
+            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 20))
             {
                 tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
             }

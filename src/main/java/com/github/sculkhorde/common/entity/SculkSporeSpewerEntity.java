@@ -233,8 +233,10 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         boolean passRandomChance = random.nextInt(100) == 0;
         boolean isCursorNullOrDead = cursor == null || !cursor.isAlive();
         boolean isBlockInfestationEnabled = ModConfig.SERVER.block_infestation_enabled.get();
-        boolean isTheHordeActive = SculkHorde.savedData.isHordeActive();
-        boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeActive;
+        // The reason we do this instead of just checking if the horde is active is because sometimes people will spawn these
+        // without activating the horde.
+        boolean isTheHordeNotDefeated = !SculkHorde.savedData.isHordeDefeated();
+        boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeNotDefeated;
 
         if (canSpawnCursor) {
             // Spawn Block Traverser

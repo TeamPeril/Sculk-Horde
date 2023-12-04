@@ -109,23 +109,17 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         final int SPAWN_NODE_COST = 3000;
         final int SPAWN_NODE_BUFFER = 1000;
 
-        //Random Chance to Place TreeNode
-        if(new Random().nextInt(1000) > 1 && enableChance) { return; }
+        boolean failRandomChance = new Random().nextInt(1000) > 1 && enableChance;
+        boolean isSavedDataNull = SculkHorde.savedData == null;
+        if(isSavedDataNull || failRandomChance) { return;}
 
-        if(SculkHorde.savedData == null) { return;}
-        if(!SculkHorde.savedData.isNodeSpawnCooldownOver())
-        {
-            return;
-        }
+        boolean isTheHordeDefeated = SculkHorde.savedData.isHordeDefeated();
+        boolean isNodeSpawnOnCooldown = !SculkHorde.savedData.isNodeSpawnCooldownOver();
+        boolean isNotValidPositionForSculkNode = !isValidPositionForSculkNode(worldIn, targetPos);
+        boolean isNotEnoughMass = SculkHorde.savedData.getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER;
+        boolean doNotSpawnNode = isTheHordeDefeated || isNodeSpawnOnCooldown || isNotValidPositionForSculkNode || isNotEnoughMass;
 
-        //If we are too close to another node, do not create one
-        if(!isValidPositionForSculkNode(worldIn, targetPos)) { return; }
-
-        if(SculkHorde.savedData == null) { return;}
-        if(SculkHorde.savedData.getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
-        {
-            return;
-        }
+        if(doNotSpawnNode) { return; }
 
         SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
         SculkHorde.savedData.subtractSculkAccumulatedMass(SPAWN_NODE_COST);
