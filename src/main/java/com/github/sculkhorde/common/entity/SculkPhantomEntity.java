@@ -148,7 +148,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         return new Goal[]{
                 //new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(1)),
+                new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(30)),
                 new FallToTheGroundIfMobsUnder(),
                 new selectRandomLocationToVisit(),
                 new AttackStrategyGoal(),

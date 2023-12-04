@@ -81,6 +81,10 @@ public class Gravemind
         {
             evolution_state = evolution_states.Immature;
             sculk_node_limit = 4;
+            if(SculkHorde.savedData.isHordeUnactivated())
+            {
+                SculkHorde.savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
+            }
         }
 
     }
@@ -155,7 +159,7 @@ public class Gravemind
         boolean isSenderDeveloper = context.sender == ReinforcementRequest.senderType.Developer;
         boolean isSenderSculkMassBlock = context.sender == ReinforcementRequest.senderType.SculkMass;
         boolean isThereNoMass = SculkHorde.savedData.getSculkAccumulatedMass() <= 0;
-        boolean isHordeDeactivated = !SculkHorde.savedData.isHordeActive();
+        boolean isHordeDefeated = SculkHorde.savedData.isHordeDefeated();
 
         //Auto approve is this reinforcement is requested by a developer or sculk mass
         if(isSenderDeveloper || isSenderSculkMassBlock)
@@ -163,7 +167,7 @@ public class Gravemind
             context.isRequestApproved = true;
         }
 
-        if(isHordeDeactivated || isThereNoMass)
+        if(isHordeDefeated || isThereNoMass)
         {
             return;
         }
