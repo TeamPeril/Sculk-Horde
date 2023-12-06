@@ -34,6 +34,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -69,8 +70,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     // Controls what types of entities this mob can target
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
 
-    //factory The animation factory used for animations
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private AttackPhase attackPhase = AttackPhase.CIRCLE;
     private BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
@@ -295,8 +294,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     }
 
     /** Animation **/
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericWalkIdleController(this));
     }
 
     @Override
@@ -324,7 +326,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     protected void dieAndSpawnCorpse()
     {
-        SculkPhantomEntity.this.hurt(SculkPhantomEntity.this.damageSources().genericKill(), Float.MAX_VALUE);
+        SculkPhantomEntity.this.discard();
         SculkPhantomCorpseEntity corpse = new SculkPhantomCorpseEntity(ModEntities.SCULK_PHANTOM_CORPSE.get(), level());
         corpse.setPos(SculkPhantomEntity.this.getX(), SculkPhantomEntity.this.getY(), SculkPhantomEntity.this.getZ());
         level().addFreshEntity(corpse);
