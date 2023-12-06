@@ -62,7 +62,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     //The armor of the mob
     public static final float ARMOR = 4F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 18F;
+    public static final float ATTACK_DAMAGE = 8F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 5F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies

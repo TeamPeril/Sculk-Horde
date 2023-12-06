@@ -9,6 +9,7 @@ import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -19,26 +20,22 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ForgeBlockTagsProvider;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -76,11 +73,9 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
     private CursorSurfaceInfectorEntity cursor;
 
-    private long INFECTION_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(5);
+    private long INFECTION_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(2);
     private long lastInfectionTime = 0;
 
     public static final EntityDataAccessor<Integer> DATA_TICKS_ALIVE = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.INT);
@@ -201,16 +196,6 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
                 };
         return goals;
     }
-    //Animation Related Functions
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
 
 
     //Every tick, spawn a short range cursor
@@ -223,8 +208,12 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         if (level().isClientSide)
         {
             Random random = new Random();
-            for (int i = 0; i < 1; i++) {
-                level().addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+            //Choose a random position in the hitbox
+            Vec3 randomPos = new Vec3(position().x + random.nextFloat(0.5F), position().y + random.nextFloat(0.5F), position().z + random.nextFloat(0.5F));
+
+            for (int i = 0; i < 1; i++)
+            {
+                level().addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), randomPos.x, randomPos.y, randomPos.z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
             return;
         }
@@ -277,6 +266,29 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
 
     protected SoundEvent getDeathSound() {
         return SoundEvents.PHANTOM_DEATH;
+    }
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private static final RawAnimation CORPSE_IDLE_ANIMATION = RawAnimation.begin().thenLoop("corpse");
+
+    private static final RawAnimation SPREAD_ANIMATION = RawAnimation.begin().thenPlay("corpse.spread");
+    private final AnimationController<SculkPhantomCorpseEntity> SPREAD_ANIMATION_CONTROLLER = new AnimationController<>(this, "spread_controller", state -> PlayState.STOP)
+            .triggerableAnim("spread_animation", SPREAD_ANIMATION).transitionLength(5);
+    protected PlayState pose(AnimationState<SculkPhantomCorpseEntity> state)
+    {
+        state.setAnimation(CORPSE_IDLE_ANIMATION);
+        return PlayState.CONTINUE;
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "body", 5, this::pose));
+        controllers.add(SPREAD_ANIMATION_CONTROLLER);
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     /**

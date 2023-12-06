@@ -154,7 +154,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkZombieAttackGoal(this, 1.0D, true),
+                        new AttackGoal(),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
@@ -198,14 +198,18 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
     private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
     private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
-    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "Legs", 5, this::poseLegs),
                 new AnimationController<>(this, "Body", 5, this::poseBody),
-                new AnimationController<>(this, "Arms", 5, this::poseArms)
+                new AnimationController<>(this, "Arms", 5, this::poseArms),
+                ATTACK_ANIMATION_CONTROLLER
         );
     }
 
@@ -243,19 +247,10 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     // Create the animation handler for the arm segment
     protected PlayState poseArms(AnimationState<SculkZombieEntity> state)
     {
-        if(state.getAnimatable().swinging)
-        {
-            state.setAnimation(ARMS_ATTACK_ANIMATION);
-        }
-        else if(state.isMoving())
+        if(state.isMoving())
         {
             state.setAnimation(ARMS_WALK_ANIMATION);
         }
-        else
-        {
-            state.setAnimation(ARMS_IDLE_ANIMATION);
-        }
-
 
         return PlayState.CONTINUE;
     }
@@ -295,4 +290,42 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         super.onRemovedFromWorld();
     }
     */
+
+    class AttackGoal extends CustomMeleeAttackGoal
+    {
+
+        public AttackGoal()
+        {
+            super(SculkZombieEntity.this, 1.0D, true, 10);
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            // If the mob is already targeting something valid, don't bother
+            return canWeUse;
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return canUse();
+        }
+
+        protected double getAttackReachSqr(LivingEntity pAttackTarget)
+        {
+            return 3.5F;
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(0.5F);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkZombieEntity)mob).triggerAnim("attack_controller", "attack_animation");
+        }
+    }
 }

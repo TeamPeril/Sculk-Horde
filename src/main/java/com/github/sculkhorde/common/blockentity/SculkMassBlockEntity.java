@@ -27,7 +27,7 @@ public class SculkMassBlockEntity extends BlockEntity {
 
     protected long lastTickTime = 0;
 
-    protected int tickInterval = TickUnits.convertSecondsToTicks(1);
+    protected int tickInterval = TickUnits.convertSecondsToTicks(3);
 
 
     /**

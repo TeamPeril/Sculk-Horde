@@ -37,6 +37,10 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -295,10 +299,18 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     /** Animation **/
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private static final RawAnimation TUMOR_IDLE_ANIMATION = RawAnimation.begin().thenLoop("tumor");
+
+    protected PlayState poseTumorCycle(AnimationState<SculkPhantomEntity> state)
+    {
+        state.setAnimation(TUMOR_IDLE_ANIMATION);
+        return PlayState.CONTINUE;
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        controllers.add(DefaultAnimations.genericWalkIdleController(this).transitionLength(5));
+        controllers.add(new AnimationController<>(this, "blob_idle", 5, this::poseTumorCycle));
     }
 
     @Override
@@ -425,7 +437,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         private boolean isGroundPosValid(BlockPos pos)
         {
             // As long as its not a fluid, its valid
-            return !level().getFluidState(pos).isEmpty() && !level().getFluidState(pos.below()).isEmpty();
+            return level().getFluidState(pos).isEmpty() && level().getFluidState(pos.below()).isEmpty();
         }
 
         public Vec3 getRandomTravelLocationVec3()
