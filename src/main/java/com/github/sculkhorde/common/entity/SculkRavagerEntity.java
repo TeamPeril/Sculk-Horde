@@ -227,7 +227,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
         public AttackGoal()
         {
-            super(SculkRavagerEntity.this, 1.0D, true, 10);
+            super(SculkRavagerEntity.this, 1.0D, false, 10);
         }
 
         @Override
