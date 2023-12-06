@@ -1160,7 +1160,8 @@ public class ModSavedData extends SavedData {
                         closestEntry = Optional.of(entry);
                     }
                     //If entry is closer than our current closest entry
-                    else if(getBlockDistance(position, entry.position) < getBlockDistance(position, closestEntry.get().position))
+                    // NOTE: We shouldnt need the isPresent() check here but it was throwing an exception
+                    else if(closestEntry.isPresent() && getBlockDistance(position, entry.position) < getBlockDistance(position, closestEntry.get().position))
                     {
                         closestEntry = Optional.of(entry);
                     }
