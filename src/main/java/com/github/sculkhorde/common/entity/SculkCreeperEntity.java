@@ -115,15 +115,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
             }
 
             EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(5));
-
-            if(ModConfig.SERVER.experimental_features_enabled.get())
-            {
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), 0);
-            }
-            else
-            {
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
-            }
+            EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), 0);
         });
 
 

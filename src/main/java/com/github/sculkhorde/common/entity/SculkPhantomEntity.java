@@ -390,22 +390,14 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     /** Sounds **/
 
-    protected SoundEvent getAmbientSound() {
-        return SoundEvents.SILVERFISH_AMBIENT;
-    }
-
     protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
-        return SoundEvents.SILVERFISH_HURT;
+        return SoundEvents.PHANTOM_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.SILVERFISH_DEATH;
+        return SoundEvents.PHANTOM_DEATH;
     }
-
-    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pBlock) {
-        this.playSound(SoundEvents.SILVERFISH_STEP, 0.15F, 1.0F);
-    }
-
+    
     protected void dieAndSpawnCorpse()
     {
         SculkPhantomEntity.this.discard();
