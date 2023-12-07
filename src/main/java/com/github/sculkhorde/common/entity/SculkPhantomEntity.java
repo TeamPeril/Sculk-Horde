@@ -1,8 +1,10 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
 import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.SculkPhantomGoToAnchor;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
@@ -21,9 +23,11 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -72,10 +76,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
 
-    private AttackPhase attackPhase = AttackPhase.CIRCLE;
-    private BlockPos anchorPoint = BlockPos.ZERO;
+    protected AttackPhase attackPhase = AttackPhase.CIRCLE;
+    protected BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
     Vec3 moveTargetPoint = new Vec3(anchorPoint.getX(), anchorPoint.getY(), anchorPoint.getZ());
 
@@ -90,8 +94,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         super(type, worldIn);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
-        this.moveControl = new PhantomMoveControl(this);
-        this.lookControl = new PhantomLookControl(this);
+        //this.moveControl = new PhantomMoveControl(this);
+        this.moveControl = new FlyingMoveControl(this, 20, true);
+        //this.lookControl = new PhantomLookControl(this);
     }
 
     public static void spawnPhantom(Level worldIn, BlockPos spawnPos)
@@ -115,7 +120,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
-                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(Attributes.FLYING_SPEED, 3F)
+                .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
     }
 
     /**
@@ -151,12 +158,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         return new Goal[]{
                 //new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(30)),
-                new FallToTheGroundIfMobsUnder(),
+                //new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(30)),
+                //new FallToTheGroundIfMobsUnder(),
                 new selectRandomLocationToVisit(),
-                new AttackStrategyGoal(),
-                new SweepAttackGoal(),
-                new CircleAroundAnchorGoal(),
+                new SculkPhantomGoToAnchor(this, 1),
+                //new AttackStrategyGoal(),
+                //new SweepAttackGoal(),
+                //new CircleAroundAnchorGoal(),
         };
     }
 
@@ -176,6 +184,14 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         };
     }
 
+    protected PathNavigation createNavigation(Level level) {
+        ImprovedFlyingNavigator flyingpathnavigation = new ImprovedFlyingNavigator(this, level);
+        flyingpathnavigation.setCanOpenDoors(false);
+        flyingpathnavigation.setCanFloat(true);
+        flyingpathnavigation.setCanPassDoors(true);
+        return flyingpathnavigation;
+    }
+
     enum AttackPhase {
         CIRCLE,
         SWOOP,
@@ -188,6 +204,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return true;
     }
 
+    public Vec3 getAnchorPoint() {
+        return this.anchorPoint.getCenter();
+    }
 
     @Override
     public SquadHandler getSquad() {
@@ -219,6 +238,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return getTarget() == null;
     }
 
+    // Properties
+    protected void checkFallDamage(double p_29370_, boolean p_29371_, BlockState p_29372_, BlockPos p_29373_) {
+    }
 
     /**
      * @return if this entity may not naturally despawn.
@@ -703,53 +725,81 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     }
 
     protected class PhantomMoveControl extends MoveControl {
-        private float speed = 0.1F;
+        private static final float MAX_SPEED = 1.8F;
+        private static final float MIN_SPEED = 0.2F;
+        private static final float TURN_RATE = 4.0F;
+        private static final float COLLISION_SPEED_RESET = 0.1F;
+
+        private float speed = COLLISION_SPEED_RESET;
 
         public PhantomMoveControl(Mob mob) {
             super(mob);
         }
 
         public void tick() {
-            if (SculkPhantomEntity.this.horizontalCollision) {
-                SculkPhantomEntity.this.setYRot(SculkPhantomEntity.this.getYRot() + 180.0F);
-                this.speed = 0.1F;
+            if (hasCollidedHorizontally()) {
+                turnAround();
+                resetSpeed();
             }
 
-            double d0 = SculkPhantomEntity.this.moveTargetPoint.x - SculkPhantomEntity.this.getX();
-            double d1 = SculkPhantomEntity.this.moveTargetPoint.y - SculkPhantomEntity.this.getY();
-            double d2 = SculkPhantomEntity.this.moveTargetPoint.z - SculkPhantomEntity.this.getZ();
-            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            if (Math.abs(d3) > (double)1.0E-5F) {
-                double d4 = 1.0D - Math.abs(d1 * (double)0.7F) / d3;
-                d0 *= d4;
-                d2 *= d4;
-                d3 = Math.sqrt(d0 * d0 + d2 * d2);
-                double d5 = Math.sqrt(d0 * d0 + d2 * d2 + d1 * d1);
-                float f = SculkPhantomEntity.this.getYRot();
-                float f1 = (float)Mth.atan2(d2, d0);
-                float f2 = Mth.wrapDegrees(SculkPhantomEntity.this.getYRot() + 90.0F);
-                float f3 = Mth.wrapDegrees(f1 * (180F / (float)Math.PI));
-                SculkPhantomEntity.this.setYRot(Mth.approachDegrees(f2, f3, 4.0F) - 90.0F);
-                SculkPhantomEntity.this.yBodyRot = SculkPhantomEntity.this.getYRot();
-                if (Mth.degreesDifferenceAbs(f, SculkPhantomEntity.this.getYRot()) < 3.0F)
-                {
-                    this.speed = Mth.approach(this.speed, 1.8F, 0.005F * (1.8F / this.speed));
-                }
-                else
-                {
-                    this.speed = Mth.approach(this.speed, 0.2F, 0.025F);
-                }
-
-                float f4 = (float)(-(Mth.atan2(-d1, d3) * (double)(180F / (float)Math.PI)));
-                SculkPhantomEntity.this.setXRot(f4);
-                float f5 = SculkPhantomEntity.this.getYRot() + 90.0F;
-                double d6 = (double)(this.speed * Mth.cos(f5 * ((float)Math.PI / 180F))) * Math.abs(d0 / d5);
-                double d7 = (double)(this.speed * Mth.sin(f5 * ((float)Math.PI / 180F))) * Math.abs(d2 / d5);
-                double d8 = (double)(this.speed * Mth.sin(f4 * ((float)Math.PI / 180F))) * Math.abs(d1 / d5);
-                Vec3 vec3 = SculkPhantomEntity.this.getDeltaMovement();
-                SculkPhantomEntity.this.setDeltaMovement(vec3.add((new Vec3(d6, d8, d7)).subtract(vec3).scale(0.2D)));
+            if (!hasTargetPoint()) {
+                return;
             }
 
+            updateRotation();
+            adjustSpeedBasedOnRotation();
+
+            // Calculate desired movement vector
+            Vec3 targetVector = getTargetDirectionVector();
+            targetVector.normalize().scale(speed);
+
+            // Update entity's movement
+            Vec3 currentMovement = mob.getDeltaMovement();
+            mob.setDeltaMovement(currentMovement.add(targetVector.subtract(currentMovement).scale(0.2D)));
+        }
+
+        private boolean hasCollidedHorizontally() {
+            return mob.horizontalCollision;
+        }
+
+        private void turnAround() {
+            mob.setYRot(mob.getYRot() + 180.0F);
+        }
+
+        private void resetSpeed() {
+            speed = COLLISION_SPEED_RESET;
+        }
+
+        private boolean hasTargetPoint() {
+            return SculkPhantomEntity.this.moveTargetPoint != null;
+        }
+
+        private Vec3 getTargetDirectionVector() {
+            Vec3 targetPosition = SculkPhantomEntity.this.moveTargetPoint;
+            Vec3 currentPosition = SculkPhantomEntity.this.position();
+            return targetPosition.subtract(currentPosition);
+        }
+
+        private void updateRotation() {
+            float targetRotation = getAngleTowardsTarget();
+            float currentRotation = mob.getYRot();
+            float smoothTargetRotation = Mth.approachDegrees(currentRotation + 90.0F, targetRotation, TURN_RATE);
+            mob.setYRot(smoothTargetRotation - 90.0F);
+            mob.yBodyRot = mob.getYRot();
+        }
+
+        private void adjustSpeedBasedOnRotation() {
+            float angleDifference = Math.abs(Mth.degreesDifferenceAbs(mob.getYRot(), getAngleTowardsTarget()));
+            if (angleDifference < 3.0F) {
+                speed = Mth.approach(speed, MAX_SPEED, 0.005F * (MAX_SPEED / speed));
+            } else {
+                speed = Mth.approach(speed, MIN_SPEED, 0.025F);
+            }
+        }
+
+        private float getAngleTowardsTarget() {
+            Vec3 targetDirection = getTargetDirectionVector();
+            return (float) Math.toDegrees(Math.atan2(targetDirection.z, targetDirection.x));
         }
     }
 }
