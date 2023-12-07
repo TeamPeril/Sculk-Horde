@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.SculkPhantomGoToAnchor;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
@@ -63,22 +64,22 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
      */
 
     //The Health
-    public static final float MAX_HEALTH = 5F;
+    public static final float MAX_HEALTH = 15F;
     //The armor of the mob
     public static final float ARMOR = 1F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 1F;
+    public static final float ATTACK_DAMAGE = 5F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 30F;
+    public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.3F;
+    public static final float MOVEMENT_SPEED = 1.0F;
 
     // Controls what types of entities this mob can target
     protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
 
-    protected AttackPhase attackPhase = AttackPhase.CIRCLE;
+    public AttackPhase attackPhase = AttackPhase.CIRCLE;
     protected BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
     Vec3 moveTargetPoint = new Vec3(anchorPoint.getX(), anchorPoint.getY(), anchorPoint.getZ());
@@ -158,13 +159,16 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         return new Goal[]{
                 //new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                //new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(30)),
-                //new FallToTheGroundIfMobsUnder(),
-                new selectRandomLocationToVisit(),
-                new SculkPhantomGoToAnchor(this, 1),
+                new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                new FallToTheGroundIfMobsUnder(),
                 //new AttackStrategyGoal(),
-                //new SweepAttackGoal(),
+                new SweepAttackGoal(),
+                new selectRandomLocationToVisit(),
                 //new CircleAroundAnchorGoal(),
+
+                new SculkPhantomGoToAnchor(this),
+
+
         };
     }
 
@@ -192,17 +196,12 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return flyingpathnavigation;
     }
 
-    enum AttackPhase {
+    public enum AttackPhase {
         CIRCLE,
         SWOOP,
         INFECT
     }
     /** Getters and Setters **/
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double distance) {
-        return true;
-    }
 
     public Vec3 getAnchorPoint() {
         return this.anchorPoint.getCenter();
@@ -231,20 +230,47 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return this.getEyeHeight();
     }
 
-    @Override
-    public void checkDespawn() {}
-
     public boolean isIdle() {
         return getTarget() == null;
     }
 
-    // Properties
+
+
+    /** Attributes **/
+
+    @Override
+    public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+        // Calculate the difference between the entity's position and the camera's position
+        double deltaX = this.getX() - cameraX;
+        double deltaY = this.getY() - cameraY;
+        double deltaZ = this.getZ() - cameraZ;
+        // Calculate the squared distance between the entity and the camera
+        double squaredDistance = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+        // Return true if the entity is within the rendering distance, false otherwise
+        return this.shouldRenderAtSqrDistance(squaredDistance);
+    }
+    @Override
+    public boolean shouldRenderAtSqrDistance(double squaredDistance) {
+
+        // Get the size of the entity's bounding box
+        double size = this.getBoundingBox().getSize();
+        // If the size is not a valid number, set it to 1.0
+        if (Double.isNaN(size)) {
+            size = 1.0D;
+        }
+
+        // Multiply the size by a constant factor and the view scale
+        size *= 64.0D * getViewScale();
+        // Return true if the squared distance is less than the cubed of the size, false otherwise
+        return squaredDistance < size * size * size;
+    }
+
+    @Override
+    public void checkDespawn() {}
+
     protected void checkFallDamage(double p_29370_, boolean p_29371_, BlockState p_29372_, BlockPos p_29373_) {
     }
 
-    /**
-     * @return if this entity may not naturally despawn.
-     */
     @Override
     public boolean isPersistenceRequired() {
         return true;
@@ -266,7 +292,30 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return this.getId() * 3;
     }
 
+    // This method allows the entity to travel in a given direction
+    @Override
+    public void travel(Vec3 direction) {
+        // If the entity is controlled by the local player
+        if (this.isControlledByLocalInstance()) {
+            // Move the entity relative to its orientation and the direction vector
+            this.moveRelative(getTarget() == null ? 0.01F : 0.03F, direction);
+            // Move the entity according to its current velocity
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            // If the entity is in water, reduce its velocity by 10%
+            if (this.isInWater()) {
+                this.setDeltaMovement(this.getDeltaMovement().scale((double)0.9F));
+                // If the entity is in lava, reduce its velocity by 40%
+            } else if (this.isInLava()) {
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.6D));
+            }
+        }
+
+        // Update the entity's animation based on its movement
+        this.calculateEntityAnimation(false);
+    }
+
     /** Events **/
+
     public void tick()
     {
         super.tick();
@@ -301,7 +350,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     protected @NotNull BodyRotationControl createBodyControl() {
         return new PhantomBodyRotationControl(this);
     }
-
 
     /** Save Data **/
 
@@ -388,11 +436,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return false;
             }
 
-            if(!level().canSeeSky(blockPosition().above()))
-            {
-                return false;
-            }
-
             // If less than 300 blocks from spawn point, do not explode.
             if(BlockAlgorithms.getBlockDistanceXZ(blockPosition(), BlockPos.containing(spawnPoint)) < 300)
             {
@@ -448,6 +491,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return false;
             }
 
+            if(getTarget() !=  null)
+            {
+                return false;
+            }
+
             return level().canSeeSky(blockPosition().above());
         }
 
@@ -492,156 +540,25 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
     }
 
-    protected class AttackStrategyGoal extends Goal {
-        private int nextSweepTick;
-
-        public boolean canUse() {
-            LivingEntity target = getTarget();
-
-            if(target == null)
-            {
-                return false;
-            }
-            else if(!canAttack(target, TargetingConditions.DEFAULT))
-            {
-                return false;
-            }
-
-
-            return true;
-        }
-
-        public void start() {
-
-            if(level().canSeeSky(blockPosition().above()))
-            {
-                SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.INFECT;
-                return;
-            }
-
-            this.nextSweepTick = this.adjustedTickDelay(10);
-            SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
-            this.setAnchorAboveTarget();
-        }
-
-        public void stop() {
-            if(SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.INFECT)
-            {
-                return;
-            }
-            SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, SculkPhantomEntity.this.anchorPoint).above(10 + SculkPhantomEntity.this.random.nextInt(20));
-        }
-
-        public void tick() {
-            if(SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.INFECT)
-            {
-                return;
-            }
-
-
-            if (SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.CIRCLE) {
-                --this.nextSweepTick;
-                if (this.nextSweepTick <= 0) {
-                    SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.SWOOP;
-                    this.setAnchorAboveTarget();
-                    this.nextSweepTick = this.adjustedTickDelay((8 + SculkPhantomEntity.this.random.nextInt(4)) * 20);
-                    SculkPhantomEntity.this.playSound(SoundEvents.PHANTOM_SWOOP, 10.0F, 0.95F + SculkPhantomEntity.this.random.nextFloat() * 0.1F);
-                }
-            }
-
-        }
-
-        private void setAnchorAboveTarget() {
-            SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.getTarget().blockPosition().above(20 + SculkPhantomEntity.this.random.nextInt(20));
-            if (SculkPhantomEntity.this.anchorPoint.getY() < SculkPhantomEntity.this.level().getSeaLevel()) {
-                SculkPhantomEntity.this.anchorPoint = new BlockPos(SculkPhantomEntity.this.anchorPoint.getX(), SculkPhantomEntity.this.level().getSeaLevel() + 1, SculkPhantomEntity.this.anchorPoint.getZ());
-            }
-
-        }
-    }
-
     abstract class MoveTargetGoal extends Goal {
         public MoveTargetGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
-
-        protected boolean touchingTarget() {
-            return SculkPhantomEntity.this.moveTargetPoint.distanceToSqr(SculkPhantomEntity.this.getX(), SculkPhantomEntity.this.getY(), SculkPhantomEntity.this.getZ()) < 4.0D;
-        }
-    }
-
-    protected class CircleAroundAnchorGoal extends MoveTargetGoal {
-        private float angle;
-        private float distance;
-        private float height;
-        private float clockwise;
-
-        public boolean canUse() {
-            return (SculkPhantomEntity.this.getTarget() == null || SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.CIRCLE)
-                    && SculkPhantomEntity.this.attackPhase != SculkPhantomEntity.AttackPhase.INFECT;
-        }
-
-        public void start() {
-            this.distance = 5.0F + SculkPhantomEntity.this.random.nextFloat() * 10.0F;
-            this.height = -4.0F + SculkPhantomEntity.this.random.nextFloat() * 9.0F;
-            this.clockwise = SculkPhantomEntity.this.random.nextBoolean() ? 1.0F : -1.0F;
-            this.selectNext();
-        }
-
-        @Override
-        public void stop() {
-            super.stop();
-        }
-
-        public void tick() {
-            if (SculkPhantomEntity.this.random.nextInt(this.adjustedTickDelay(350)) == 0) {
-                //this.height = -4.0F + SculkPhantomEntity.this.random.nextFloat() * 9.0F;
-                this.height = -4.0F + SculkPhantomEntity.this.random.nextFloat() * 9.0F;
-            }
-
-            if (SculkPhantomEntity.this.random.nextInt(this.adjustedTickDelay(250)) == 0) {
-                ++this.distance;
-                if (this.distance > 15.0F) {
-                    this.distance = 5.0F;
-                    this.clockwise = -this.clockwise;
-                }
-            }
-
-            if (SculkPhantomEntity.this.random.nextInt(this.adjustedTickDelay(450)) == 0) {
-                this.angle = SculkPhantomEntity.this.random.nextFloat() * 2.0F * (float)Math.PI;
-                this.selectNext();
-            }
-
-            if (this.touchingTarget()) {
-                this.selectNext();
-            }
-
-            if (SculkPhantomEntity.this.moveTargetPoint.y < SculkPhantomEntity.this.getY() && !SculkPhantomEntity.this.level().isEmptyBlock(SculkPhantomEntity.this.blockPosition().below(1))) {
-                this.height = Math.max(1.0F, this.height);
-                this.selectNext();
-            }
-
-            if (SculkPhantomEntity.this.moveTargetPoint.y > SculkPhantomEntity.this.getY() && !SculkPhantomEntity.this.level().isEmptyBlock(SculkPhantomEntity.this.blockPosition().above(1))) {
-                this.height = Math.min(-1.0F, this.height);
-                this.selectNext();
-            }
-
-        }
-
-        private void selectNext() {
-            if (BlockPos.ZERO.equals(SculkPhantomEntity.this.anchorPoint)) {
-                SculkPhantomEntity.this.anchorPoint = SculkPhantomEntity.this.blockPosition();
-            }
-
-            this.angle += this.clockwise * 15.0F * ((float)Math.PI / 180F);
-            SculkPhantomEntity.this.moveTargetPoint = Vec3.atLowerCornerOf(SculkPhantomEntity.this.anchorPoint).add(this.distance * Mth.cos(this.angle), -4.0F + this.height, this.distance * Mth.sin(this.angle));
-        }
     }
 
     class SweepAttackGoal extends MoveTargetGoal {
+
+        private long lastTimeOfAttack = 0;
+        private int COOLDOWN = TickUnits.convertSecondsToTicks(5);
+
         public boolean canUse() {
 
-            return SculkPhantomEntity.this.getTarget() != null && SculkPhantomEntity.this.attackPhase == SculkPhantomEntity.AttackPhase.SWOOP;
+            if(level().getGameTime() - lastTimeOfAttack < COOLDOWN)
+            {
+                return false;
+            }
+
+            return SculkPhantomEntity.this.getTarget() != null;
         }
 
         public boolean canContinueToUse()
@@ -662,7 +579,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public void stop() {
             SculkPhantomEntity.this.setTarget(null);
-            SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
         }
 
         public void tick() {
@@ -674,19 +590,21 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return;
             }
 
-            SculkPhantomEntity.this.moveTargetPoint = new Vec3(target.getX(), target.getY(0.5D), target.getZ());
+            SculkPhantomEntity.this.getNavigation().moveTo(target, 2.0D);
             AABB boundingBox = SculkPhantomEntity.this.getBoundingBox().inflate(0.2F);
             boolean doesPhantomIntersectTarget = boundingBox.intersects(target.getBoundingBox());
 
             if (doesPhantomIntersectTarget)
             {
                 SculkPhantomEntity.this.doHurtTarget(target);
-                SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
+                EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(10));
+                EntityAlgorithms.applyDebuffEffect(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
+                lastTimeOfAttack = level().getGameTime();
                 return;
             }
 
             if (SculkPhantomEntity.this.horizontalCollision || SculkPhantomEntity.this.hurtTime > 0) {
-                SculkPhantomEntity.this.attackPhase = SculkPhantomEntity.AttackPhase.CIRCLE;
+                lastTimeOfAttack = level().getGameTime();
             }
         }
     }

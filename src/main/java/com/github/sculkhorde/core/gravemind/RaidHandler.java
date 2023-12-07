@@ -354,7 +354,6 @@ public class RaidHandler {
 
     private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
     {
-        if(!ModConfig.SERVER.experimental_features_enabled.get() || !ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();

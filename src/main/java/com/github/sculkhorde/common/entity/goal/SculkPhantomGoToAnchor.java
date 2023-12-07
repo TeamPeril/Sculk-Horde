@@ -12,16 +12,23 @@ public class SculkPhantomGoToAnchor extends Goal {
     private final SculkPhantomEntity sculkPhantom; // the skeleton mob
     private int timeToRecalcPath;
 
-    private final int FOLLOW_RANGE = 20;
+    private final int FOLLOW_RANGE = 64;
 
-    private float speedModifier = 1.0F;
 
-    public SculkPhantomGoToAnchor(SculkPhantomEntity mob, float speedModifier) {
+    private float speedModifier = 1.0F; // Doesn't actually do anything
+
+    private final int IN_RANGE_OF_ANCHOR = 20;
+    public SculkPhantomGoToAnchor(SculkPhantomEntity mob) {
         this.sculkPhantom = mob;
     }
 
     private Mob getMob() {
         return (Mob) this.sculkPhantom;
+    }
+
+    public boolean isInRangeOfAnchor()
+    {
+        return getMob().distanceToSqr(sculkPhantom.getAnchorPoint()) < IN_RANGE_OF_ANCHOR;
     }
 
     @Override
@@ -34,7 +41,23 @@ public class SculkPhantomGoToAnchor extends Goal {
             return false;
         }
 
+        if (isInRangeOfAnchor()) {
+            // stop the navigation
+            getMob().getNavigation().stop();
+            return false;
+        }
+
+        if(sculkPhantom.attackPhase == SculkPhantomEntity.AttackPhase.SWOOP)
+        {
+            return false;
+        }
+
         return true;
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return canUse();
     }
 
     @Override
@@ -62,5 +85,10 @@ public class SculkPhantomGoToAnchor extends Goal {
             Path path =sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
             this.getMob().getNavigation().moveTo(path, speedModifier);
         }
+    }
+
+    @Override
+    public void stop() {
+        this.getMob().getNavigation().stop();
     }
 }

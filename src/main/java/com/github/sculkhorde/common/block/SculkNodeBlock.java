@@ -188,8 +188,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
     private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
     {
-        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
-        ;
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
