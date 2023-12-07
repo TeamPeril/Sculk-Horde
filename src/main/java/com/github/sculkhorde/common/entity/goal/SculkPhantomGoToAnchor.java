@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -81,8 +82,8 @@ public class SculkPhantomGoToAnchor extends Goal {
         }
 
         if (--this.timeToRecalcPath <= 0) {
-            this.timeToRecalcPath = this.adjustedTickDelay(20);
-            Path path =sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
+            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(3));
+            Path path = sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
             this.getMob().getNavigation().moveTo(path, speedModifier);
         }
     }

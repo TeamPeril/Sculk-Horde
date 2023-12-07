@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.SquadHandler;
@@ -42,7 +43,7 @@ public class SquadHandlingGoal extends Goal {
     @Override
     public boolean canUse()
     {
-        return !SculkHorde.gravemind.getEvolutionState().equals(Gravemind.evolution_states.Mature) || getMob().level().getGameTime() - timeOfLastSquadUpdate > SQUAD_UPDATE_DELAY;
+        return !SculkHorde.gravemind.getEvolutionState().equals(Gravemind.evolution_states.Immature) || getMob().level().getGameTime() - timeOfLastSquadUpdate > SQUAD_UPDATE_DELAY;
     }
 
     @Override

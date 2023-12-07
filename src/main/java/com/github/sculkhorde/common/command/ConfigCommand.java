@@ -110,9 +110,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
     private static ArgumentBuilder<CommandSourceStack, ?> experimentalFeaturesConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("experimental_features")
-                .then(booleanConfigOption("experimental_features_enabled"))
-                .then(booleanConfigOption("squad_mechanics_enabled"))
-                .then(booleanConfigOption("sculk_phantoms_enabled"));
+                .then(booleanConfigOption("experimental_features_enabled"));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> triggerAutomaticallyConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -246,18 +244,6 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 case "experimental_features_enabled":
                     if (valueType.equals(Boolean.class)) {
                         ModConfig.SERVER.experimental_features_enabled.set((Boolean) rawValue);
-                        success = true;
-                    }
-                    break;
-                case "squad_mechanics_enabled":
-                    if (valueType.equals(Boolean.class)) {
-                        ModConfig.SERVER.squad_mechanics_enabled.set((Boolean) rawValue);
-                        success = true;
-                    }
-                    break;
-                case "sculk_phantoms_enabled":
-                    if (valueType.equals(Boolean.class)) {
-                        ModConfig.SERVER.sculk_phantoms_enabled.set((Boolean) rawValue);
                         success = true;
                     }
                     break;
