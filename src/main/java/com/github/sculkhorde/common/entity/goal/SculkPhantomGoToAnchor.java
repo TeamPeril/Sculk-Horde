@@ -12,10 +12,6 @@ import net.minecraft.world.level.pathfinder.Path;
 public class SculkPhantomGoToAnchor extends Goal {
     private final SculkPhantomEntity sculkPhantom; // the skeleton mob
     private int timeToRecalcPath;
-
-    private final int FOLLOW_RANGE = 64;
-
-
     private float speedModifier = 1.0F; // Doesn't actually do anything
 
     private final int IN_RANGE_OF_ANCHOR = 20;
@@ -75,14 +71,8 @@ public class SculkPhantomGoToAnchor extends Goal {
             return;
         }
 
-        if (getMob().distanceToSqr(sculkPhantom.getAnchorPoint()) < FOLLOW_RANGE) {
-            // stop the navigation
-            getMob().getNavigation().stop();
-
-        }
-
         if (--this.timeToRecalcPath <= 0) {
-            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(3));
+            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(10));
             Path path = sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
             this.getMob().getNavigation().moveTo(path, speedModifier);
         }

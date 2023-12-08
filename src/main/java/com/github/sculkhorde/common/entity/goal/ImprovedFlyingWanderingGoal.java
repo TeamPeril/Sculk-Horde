@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.goal;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ClipContext;
@@ -19,7 +20,7 @@ public class ImprovedFlyingWanderingGoal extends Goal {
     private static final double MAX_RANDOM_DISTANCE = 10.0;
 
     // Fields
-    private final PathfinderMob mob;
+    private final Mob mob;
     private final double speedModifier;
     private long intervalTicks;
     private long lastTimeExecuted;
@@ -32,7 +33,7 @@ public class ImprovedFlyingWanderingGoal extends Goal {
         this(mob, speedModifier, DEFAULT_INTERVAL);
     }
 
-    public ImprovedFlyingWanderingGoal(PathfinderMob mob, double speedModifier, long interval) {
+    public ImprovedFlyingWanderingGoal(Mob mob, double speedModifier, long interval) {
         this.mob = mob;
         this.speedModifier = speedModifier;
         this.intervalTicks = interval;

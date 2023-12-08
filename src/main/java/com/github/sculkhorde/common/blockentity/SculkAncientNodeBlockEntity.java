@@ -370,7 +370,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         level.players().forEach((player) -> level.playSound(null, player.blockPosition(), ModSounds.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
 
-        spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);
+        spawnSculkPhantomsAtTopOfWorld(blockEntity, 10);
     }
 
     // Data
