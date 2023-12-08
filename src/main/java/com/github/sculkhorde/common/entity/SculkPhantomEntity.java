@@ -74,10 +74,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 1.0F;
+    public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth().disableTargetingEntitiesInWater();
 
     public AttackPhase attackPhase = AttackPhase.CIRCLE;
     protected BlockPos anchorPoint = BlockPos.ZERO;
@@ -292,21 +292,38 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return this.getId() * 3;
     }
 
+    public static Vec3 clamp(Vec3 vec, double min, double max) {
+        double length = vec.length();
+        vec = vec.normalize();
+        if (length < min) {
+            return vec.scale(min);
+        } else if (length > max) {
+            return vec.scale(max);
+        }
+        return vec;
+    }
+
     // This method allows the entity to travel in a given direction
     @Override
     public void travel(Vec3 direction) {
         // If the entity is controlled by the local player
         if (this.isControlledByLocalInstance()) {
             // Move the entity relative to its orientation and the direction vector
-            this.moveRelative(getTarget() == null ? 0.01F : 0.03F, direction);
+            this.moveRelative(getTarget() == null ? 0.04F : 0.05F, direction);
+
             // Move the entity according to its current velocity
             this.move(MoverType.SELF, this.getDeltaMovement());
+
             // If the entity is in water, reduce its velocity by 10%
             if (this.isInWater()) {
                 this.setDeltaMovement(this.getDeltaMovement().scale((double)0.9F));
                 // If the entity is in lava, reduce its velocity by 40%
             } else if (this.isInLava()) {
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.6D));
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.6F));
+            }
+            else
+            {
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95F));
             }
         }
 
@@ -397,7 +414,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     protected SoundEvent getDeathSound() {
         return SoundEvents.PHANTOM_DEATH;
     }
-    
+
     protected void dieAndSpawnCorpse()
     {
         SculkPhantomEntity.this.discard();

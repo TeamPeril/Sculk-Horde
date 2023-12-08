@@ -25,6 +25,7 @@ public class TargetParameters
     private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
     private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
     private boolean targetSwimmers = false; //Should we target entities that can swim?
+    private boolean targetEntitiesInWater = true; //Should we target entities that are in water?
     private boolean mustSeeTarget = false; //Should we only target entities we can see?
     private long lastTargetSeenTime = System.currentTimeMillis(); //The last time we saw the target
     private long MAX_TARGET_UNSEEN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30); //The max time we can go without seeing the target
@@ -102,6 +103,12 @@ public class TargetParameters
 
         //If we do not attack swimmers and target is a swimmer
         if(!targetSwimmers && isLivingEntitySwimmer(e))
+        {
+            return false;
+        }
+
+        //If we do not attack entities in water and target is in water
+        if(!targetEntitiesInWater && e.isInWater())
         {
             return false;
         }
@@ -195,6 +202,17 @@ public class TargetParameters
     public boolean isTargetingSwimmers()
     {
         return targetSwimmers;
+    }
+
+    public TargetParameters disableTargetingEntitiesInWater()
+    {
+        targetEntitiesInWater = false;
+        return this;
+    }
+
+    public boolean isTargetingEntitiesInWater()
+    {
+        return targetEntitiesInWater;
     }
 
     public TargetParameters enableMustSeeTarget()
