@@ -364,7 +364,7 @@ public class RaidHandler {
             int y = level.getMaxBuildHeight();
             BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
 
         }
     }

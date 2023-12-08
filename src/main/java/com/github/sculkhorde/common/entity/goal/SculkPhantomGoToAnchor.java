@@ -32,20 +32,14 @@ public class SculkPhantomGoToAnchor extends Goal {
     public boolean canUse() {
 
         boolean isAnchorNull = sculkPhantom.getAnchorPoint() == null;
+        boolean isNotScouting = !sculkPhantom.isScouter();
 
-        if(isAnchorNull)
+        if(isAnchorNull || isNotScouting)
         {
             return false;
         }
 
         if (isInRangeOfAnchor()) {
-            // stop the navigation
-            getMob().getNavigation().stop();
-            return false;
-        }
-
-        if(sculkPhantom.attackPhase == SculkPhantomEntity.AttackPhase.SWOOP)
-        {
             return false;
         }
 

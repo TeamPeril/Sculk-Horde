@@ -29,9 +29,6 @@ public class ImprovedFlyingWanderingGoal extends Goal {
     private boolean forceTrigger;
 
     // Constructor
-    public ImprovedFlyingWanderingGoal(PathfinderMob mob, double speedModifier) {
-        this(mob, speedModifier, DEFAULT_INTERVAL);
-    }
 
     public ImprovedFlyingWanderingGoal(Mob mob, double speedModifier, long interval) {
         this.mob = mob;
@@ -54,6 +51,11 @@ public class ImprovedFlyingWanderingGoal extends Goal {
             if (mob.level().getGameTime() - lastTimeExecuted < intervalTicks) {
                 return false;
             }
+        }
+
+        if(mob.getTarget() != null)
+        {
+            return false;
         }
 
         targetPosition = getRandomPosition();

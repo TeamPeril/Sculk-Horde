@@ -315,7 +315,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             int y = level.getMaxBuildHeight();
             BlockPos spawnPosition = new BlockPos(blockEntity.getBlockPos().getX() + x, y, blockEntity.getBlockPos().getZ() + z);
 
-            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
 
         }
     }

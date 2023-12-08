@@ -9,6 +9,9 @@ import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -27,6 +30,7 @@ import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -69,7 +73,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
     public static final float ATTACK_DAMAGE = 5F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 1F;
+    public static final float ATTACK_KNOCKBACK = 2F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
@@ -78,7 +82,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     // Controls what types of entities this mob can target
     protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth().disableTargetingEntitiesInWater();
 
-    public AttackPhase attackPhase = AttackPhase.CIRCLE;
     protected BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);
     Vec3 moveTargetPoint = new Vec3(anchorPoint.getX(), anchorPoint.getY(), anchorPoint.getZ());
@@ -86,6 +89,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     ArrayList<BlockPos> searchPositions = new ArrayList<>();
     Vec3 spawnPoint = null;
 
+    protected boolean isScouter = false;
+
+    private static final EntityDataAccessor<Boolean> DATA_SCOUTER = SynchedEntityData.defineId(SculkPhantomEntity.class, EntityDataSerializers.BOOLEAN);
     /**
      * The Constructor
      * @param type The Mob Type
@@ -98,10 +104,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
-    public static void spawnPhantom(Level worldIn, BlockPos spawnPos)
+    public static void spawnPhantom(Level worldIn, BlockPos spawnPos, boolean isScouter)
     {
         SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);
         assert phantom != null;
+        phantom.setScouter(isScouter);
         phantom.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         phantom.spawnPoint = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         worldIn.addFreshEntity(phantom);
@@ -123,6 +130,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(Attributes.FLYING_SPEED, 3F)
                 .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
     }
+
+
 
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
@@ -156,15 +165,12 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public Goal[] goalSelectorPayload()
     {
         return new Goal[]{
-                //new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                 new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                 new FallToTheGroundIfMobsUnder(),
                 new SweepAttackGoal(),
                 new selectRandomLocationToVisit(),
                 new SculkPhantomGoToAnchor(this),
                 new ImprovedFlyingWanderingGoal(this, 1.0F, TickUnits.convertSecondsToTicks(3))
-
-
         };
     }
 
@@ -230,7 +236,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return getTarget() == null;
     }
 
+    public boolean isScouter() {
+        return isScouter;
+    }
 
+    public void setScouter(boolean isScouter) {
+        this.isScouter = isScouter;
+    }
 
     /** Attributes **/
 
@@ -286,17 +298,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     public int getUniqueFlapTickOffset() {
         return this.getId() * 3;
-    }
-
-    public static Vec3 clamp(Vec3 vec, double min, double max) {
-        double length = vec.length();
-        vec = vec.normalize();
-        if (length < min) {
-            return vec.scale(min);
-        } else if (length > max) {
-            return vec.scale(max);
-        }
-        return vec;
     }
 
     // This method allows the entity to travel in a given direction
@@ -366,18 +367,21 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     /** Save Data **/
 
-    public void readAdditionalSaveData(@NotNull CompoundTag p_33132_) {
-        super.readAdditionalSaveData(p_33132_);
-        if (p_33132_.contains("AX")) {
-            this.anchorPoint = new BlockPos(p_33132_.getInt("AX"), p_33132_.getInt("AY"), p_33132_.getInt("AZ"));
+    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("AX")) {
+            this.anchorPoint = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
         }
+        isScouter = tag.getBoolean("scouter");
     }
 
-    public void addAdditionalSaveData(@NotNull CompoundTag p_33141_) {
-        super.addAdditionalSaveData(p_33141_);
-        p_33141_.putInt("AX", this.anchorPoint.getX());
-        p_33141_.putInt("AY", this.anchorPoint.getY());
-        p_33141_.putInt("AZ", this.anchorPoint.getZ());
+    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("AX", this.anchorPoint.getX());
+        tag.putInt("AY", this.anchorPoint.getY());
+        tag.putInt("AZ", this.anchorPoint.getZ());
+        tag.putBoolean("scouter", isScouter);
+
     }
 
     /** Animation **/
@@ -431,12 +435,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public boolean canUse()
         {
-            if(level().getGameTime() - lastTimeOfCheck < checkCooldown)
-            {
-                return false;
-            }
+            boolean cooldownNotMet = level().getGameTime() - lastTimeOfCheck < checkCooldown;
+            boolean isNotScouter = !isScouter();
+            boolean spawnPointIsNull = spawnPoint == null;
 
-            if(spawnPoint == null)
+            if(cooldownNotMet || isNotScouter || spawnPointIsNull)
             {
                 return false;
             }
@@ -490,12 +493,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public boolean canUse()
         {
-            if(level().getGameTime() - lastTimeOfExecution < executionCooldown)
-            {
-                return false;
-            }
+            boolean cooldownNotMet = level().getGameTime() - lastTimeOfExecution < executionCooldown;
+            boolean isNotScouter = !isScouter();
+            boolean hasTarget = getTarget() != null;
 
-            if(getTarget() !=  null)
+            if(cooldownNotMet || isNotScouter || hasTarget)
             {
                 return false;
             }
