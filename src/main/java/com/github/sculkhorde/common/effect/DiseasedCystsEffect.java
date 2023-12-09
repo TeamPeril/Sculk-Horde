@@ -56,7 +56,7 @@ public class DiseasedCystsEffect extends MobEffect {
 
         // Create AABB bounding box around entity and check if there are any non-sculk entities inside
         AABB boundingBox = sourceEntity.getBoundingBox();
-        boundingBox = boundingBox.inflate(15.0D, 15.0D, 15.0D);
+        boundingBox = boundingBox.inflate(10.0D, 10.0D, 10.0D);
         List<LivingEntity> entities = sourceEntity.level().getEntitiesOfClass(LivingEntity.class, boundingBox);
         if(!entities.isEmpty())
         {

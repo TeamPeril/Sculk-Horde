@@ -353,7 +353,12 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         {
             spawnPoint = new Vec3(getX(), getY(), getZ());
         }
-        EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,2, 3, TickUnits.convertMinutesToTicks(1));
+
+        // If this phantom is not scouting, dont bother chunkloading.
+        if(isScouter())
+        {
+            EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,2, 3, TickUnits.convertMinutesToTicks(1));
+        }
     }
 
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33126_, @NotNull DifficultyInstance p_33127_, @NotNull MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {
@@ -603,13 +608,15 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             }
 
             SculkPhantomEntity.this.getNavigation().moveTo(target, 2.0D);
-            AABB boundingBox = SculkPhantomEntity.this.getBoundingBox().inflate(0.2F);
-            boolean doesPhantomIntersectTarget = boundingBox.intersects(target.getBoundingBox());
+            //AABB boundingBox = SculkPhantomEntity.this.getBoundingBox().inflate(0.2F);
+            float attackReach = (getBbWidth()/2) + 2;
+            //boolean doesPhantomIntersectTarget = boundingBox.intersects(target.getBoundingBox());
+            boolean doesPhantomIntersectTarget = SculkPhantomEntity.this.distanceTo(target) <= attackReach;
 
             if (doesPhantomIntersectTarget)
             {
                 SculkPhantomEntity.this.doHurtTarget(target);
-                EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(10));
+                EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(5));
                 EntityAlgorithms.applyDebuffEffect(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
                 lastTimeOfAttack = level().getGameTime();
                 return;
