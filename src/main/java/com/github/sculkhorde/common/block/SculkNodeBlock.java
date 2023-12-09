@@ -8,7 +8,6 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -104,14 +103,24 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      * @param worldIn The World to place it in
      * @param targetPos The position to place it in
      */
-    public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
+    public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean forcePlace)
     {
         final int SPAWN_NODE_COST = 3000;
         final int SPAWN_NODE_BUFFER = 1000;
 
-        boolean failRandomChance = new Random().nextInt(1000) > 1 && enableChance;
+        boolean failRandomChance = new Random().nextInt(1000) > 1;
         boolean isSavedDataNull = SculkHorde.savedData == null;
-        if(isSavedDataNull || failRandomChance) { return;}
+        if(isSavedDataNull) {
+            SculkHorde.LOGGER.error("Tried to place Node. SculkHorde.savedData is null");
+            return;
+        }
+
+        if(forcePlace) {
+            SculkNodeBlock.PlaceNode(worldIn, targetPos);
+            return;
+        }
+
+        if(failRandomChance) { return; }
 
         boolean isTheHordeDefeated = SculkHorde.savedData.isHordeDefeated();
         boolean isNodeSpawnOnCooldown = !SculkHorde.savedData.isNodeSpawnCooldownOver();
@@ -121,7 +130,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
         if(doNotSpawnNode) { return; }
 
-        SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
+        SculkNodeBlock.PlaceNode(worldIn, targetPos);
         SculkHorde.savedData.subtractSculkAccumulatedMass(SPAWN_NODE_COST);
 
     }
@@ -172,9 +181,9 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         return true;
     }
 
-    public static void FindAreaAndPlaceNode(ServerLevel level, BlockPos searchOrigin)
+    public static void PlaceNode(ServerLevel level, BlockPos blockPos)
     {
-        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ());
+        BlockPos newOrigin = new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(level, newOrigin);
         SculkHorde.savedData.resetNoNodeSpawningTicksElapsed();
