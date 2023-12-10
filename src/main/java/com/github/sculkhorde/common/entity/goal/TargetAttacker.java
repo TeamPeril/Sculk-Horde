@@ -27,7 +27,7 @@ public class TargetAttacker extends TargetGoal {
     private final Class<?>[] toIgnoreDamage;
     private Class<?>[] toIgnoreAlert;
 
-    public TargetAttacker(PathfinderMob sourceEntity, Class<?>... p_i50317_2_) {
+    public TargetAttacker(Mob sourceEntity, Class<?>... p_i50317_2_) {
         super(sourceEntity, true);
         this.toIgnoreDamage = p_i50317_2_;
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));

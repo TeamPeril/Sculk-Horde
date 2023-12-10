@@ -25,18 +25,12 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -75,7 +69,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 2F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 64F;
+    public static final float FOLLOW_RANGE = 32F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.35F;
 
@@ -167,10 +161,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return new Goal[]{
                 new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                 new FallToTheGroundIfMobsUnder(),
-                //new SweepAttackGoal(),
+                new SweepAttackGoal(),
                 new selectRandomLocationToVisit(),
                 new SculkPhantomGoToAnchor(this),
-                //new ImprovedFlyingWanderingGoal(this, 1.0F, TickUnits.convertSecondsToTicks(3), 20)
+                new SculkPhantomWanderGoal(this, 1.0F, TickUnits.convertSecondsToTicks(3), 10)
         };
     }
 
@@ -186,7 +180,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         return new Goal[]{
                 new InvalidateTargetGoal(this),
-                new NearestLivingEntityTargetGoal<>(this, true, true)
+                new TargetAttacker(this),
+                new NearestLivingEntityTargetGoal<>(this, true, false)
         };
     }
 

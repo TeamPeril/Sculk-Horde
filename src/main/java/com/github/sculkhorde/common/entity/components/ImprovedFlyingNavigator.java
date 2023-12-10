@@ -48,4 +48,9 @@ public class ImprovedFlyingNavigator extends FlyingPathNavigation {
         }
     }
 
+    @Override
+    protected void doStuckDetection(Vec3 p_26539_) {
+
+    }
+
 }

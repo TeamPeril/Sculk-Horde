@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
@@ -12,14 +13,14 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
-public class ImprovedFlyingWanderingGoal extends Goal {
+public class SculkPhantomWanderGoal extends Goal {
 
     // Constants
     public static final int DEFAULT_INTERVAL = 120;
     private static final double MAX_RANDOM_DISTANCE = 10.0;
 
     // Fields
-    private final Mob mob;
+    private final SculkPhantomEntity mob;
     private final double speedModifier;
     private long intervalTicks;
     private long lastTimeExecuted;
@@ -31,7 +32,7 @@ public class ImprovedFlyingWanderingGoal extends Goal {
 
     // Constructor
 
-    public ImprovedFlyingWanderingGoal(Mob mob, double speedModifier, long interval, int maxHeightOffGround) {
+    public SculkPhantomWanderGoal(SculkPhantomEntity mob, double speedModifier, long interval, int maxHeightOffGround) {
         this.mob = mob;
         this.speedModifier = speedModifier;
         this.intervalTicks = interval;
@@ -53,6 +54,11 @@ public class ImprovedFlyingWanderingGoal extends Goal {
         }
 
         if(mob.getTarget() != null)
+        {
+            return false;
+        }
+
+        if(mob.isScouter())
         {
             return false;
         }
