@@ -15,6 +15,8 @@ public class SculkPhantomGoToAnchor extends Goal {
     private float speedModifier = 1.0F; // Doesn't actually do anything
 
     private final int IN_RANGE_OF_ANCHOR = 20;
+
+    Path path;
     public SculkPhantomGoToAnchor(SculkPhantomEntity mob) {
         this.sculkPhantom = mob;
     }
@@ -65,11 +67,13 @@ public class SculkPhantomGoToAnchor extends Goal {
             return;
         }
 
-        if (--this.timeToRecalcPath <= 0) {
-            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(10));
-            Path path = sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
+        if (--this.timeToRecalcPath <= 0 || path == null)
+        {
+            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(5));
+            path = sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
             this.getMob().getNavigation().moveTo(path, speedModifier);
         }
+
     }
 
     @Override
