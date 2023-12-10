@@ -167,10 +167,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return new Goal[]{
                 new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                 new FallToTheGroundIfMobsUnder(),
-                new SweepAttackGoal(),
+                //new SweepAttackGoal(),
                 new selectRandomLocationToVisit(),
                 new SculkPhantomGoToAnchor(this),
-                new ImprovedFlyingWanderingGoal(this, 1.0F, TickUnits.convertSecondsToTicks(3))
+                //new ImprovedFlyingWanderingGoal(this, 1.0F, TickUnits.convertSecondsToTicks(3), 20)
         };
     }
 

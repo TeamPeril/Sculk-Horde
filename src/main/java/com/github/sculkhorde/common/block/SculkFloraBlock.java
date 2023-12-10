@@ -88,7 +88,8 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
                 .noCollission()
-                .instabreak();
+                .instabreak()
+                .requiresCorrectToolForDrops();
 
     }
 

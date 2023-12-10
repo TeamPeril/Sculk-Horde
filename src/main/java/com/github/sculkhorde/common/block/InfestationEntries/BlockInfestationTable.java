@@ -181,7 +181,7 @@ public class BlockInfestationTable{
         placeSculkFlora(world, targetPos);
 
         // Chance to place a sculk node above the block
-        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, true);
+        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, false);
 
         // Chance to place a sculk bee hive above the block
         BlockAlgorithms.tryPlaceSculkBeeHive(world, targetPos.above());

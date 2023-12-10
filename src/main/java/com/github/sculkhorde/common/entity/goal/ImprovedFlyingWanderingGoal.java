@@ -3,15 +3,14 @@ package com.github.sculkhorde.common.entity.goal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.Random;
 
 public class ImprovedFlyingWanderingGoal extends Goal {
 
@@ -28,19 +27,19 @@ public class ImprovedFlyingWanderingGoal extends Goal {
     private Vec3 targetPosition;
     private boolean forceTrigger;
 
+    protected int maxHeightOffGround;
+
     // Constructor
 
-    public ImprovedFlyingWanderingGoal(Mob mob, double speedModifier, long interval) {
+    public ImprovedFlyingWanderingGoal(Mob mob, double speedModifier, long interval, int maxHeightOffGround) {
         this.mob = mob;
         this.speedModifier = speedModifier;
         this.intervalTicks = interval;
+        this.maxHeightOffGround = maxHeightOffGround;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
     // Accessors and Mutators
-    public void setIntervalTicks(int interval) {
-        this.intervalTicks = interval;
-    }
 
     // Goal Methods
     @Override
@@ -87,10 +86,9 @@ public class ImprovedFlyingWanderingGoal extends Goal {
     @Override
     public void tick() {
         if (targetPosition != null && !mob.getNavigation().isDone() && !mob.isVehicle()) {
-            Vec3 delta = targetPosition.subtract(mob.position());
-            if (delta.lengthSqr() < 1.0) {
-                navigateToTarget();
-            }
+
+            navigateToTarget();
+
         }
     }
 
@@ -106,6 +104,19 @@ public class ImprovedFlyingWanderingGoal extends Goal {
         }
     }
 
+    public static Vec3 getGroundPos(Level level, Vec3 origin)
+    {
+        // Shoot ray cast downward to find ground
+        ClipContext context = new ClipContext(origin, origin.add(0, level.getMaxBuildHeight() * -1, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null);
+        BlockHitResult optional = level.clip(context);
+        if(optional.getType() == BlockHitResult.Type.MISS)
+        {
+            return origin;
+        }
+
+        return optional.getLocation();
+    }
+
     private Vec3 getRandomPosition() {
         RandomSource random = mob.getRandom();
         double angle = random.nextDouble() * 2.0 * Math.PI;
@@ -116,6 +127,14 @@ public class ImprovedFlyingWanderingGoal extends Goal {
         double dz = Math.sin(angle) * distance;
 
         Vec3 currentPosition = mob.position();
-        return currentPosition.add(dx, dy, dz);
+        Vec3 targetPosition = currentPosition.add(dx, dy, dz);
+        Vec3 groundPosition = getGroundPos(mob.level(), targetPosition);
+
+        if(groundPosition.distanceTo(currentPosition) > maxHeightOffGround)
+        {
+            return groundPosition.add(0, maxHeightOffGround, 0);
+        }
+
+        return targetPosition;
     }
 }
