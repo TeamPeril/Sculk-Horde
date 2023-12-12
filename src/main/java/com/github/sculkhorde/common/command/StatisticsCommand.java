@@ -5,6 +5,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +23,7 @@ public class StatisticsCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context)
     {
-        context.getSource().sendSuccess(()->Component.literal(
+        context.getSource().sendSuccess(Component.literal(
                 printIfNotZero("Total Blocks Infested", SculkHorde.statisticsData.getTotalBlocksInfested())
                         + printIfNotZero("Total Units Spawned", SculkHorde.statisticsData.getTotalUnitsSpawned())
                         + printIfNotZero("Total Units Killed", SculkHorde.statisticsData.getTotalUnitDeaths())

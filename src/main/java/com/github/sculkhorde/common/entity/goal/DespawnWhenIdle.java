@@ -1,12 +1,13 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-
-import java.util.concurrent.TimeUnit;
 
 public class DespawnWhenIdle extends Goal {
 

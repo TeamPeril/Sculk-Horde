@@ -1,14 +1,16 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.target.TargetGoal;
-import net.minecraft.world.phys.AABB;
-
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.phys.AABB;
 
 public class NearestLivingEntityTargetEndermanGoal<T extends SculkEndermanEntity> extends TargetGoal {
 
@@ -49,7 +51,7 @@ public class NearestLivingEntityTargetEndermanGoal<T extends SculkEndermanEntity
     protected void findTarget()
     {
         possibleTargets =
-                this.mob.level().getEntitiesOfClass(
+                this.mob.level.getEntitiesOfClass(
                 LivingEntity.class,
                 this.getTargetSearchArea(this.getFollowDistance()),
                         ((ISculkSmartEntity)this.mob).getTargetParameters().isPossibleNewTargetValid);

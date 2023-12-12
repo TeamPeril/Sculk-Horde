@@ -1,13 +1,14 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import java.util.ArrayList;
+
+import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
-import net.minecraft.world.level.block.state.BlockState;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-
-import java.util.ArrayList;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class SculkBeeNestProceduralStructure extends ProceduralStructure
 {

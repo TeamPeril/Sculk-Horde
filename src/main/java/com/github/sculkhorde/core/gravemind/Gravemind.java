@@ -1,6 +1,8 @@
 package com.github.sculkhorde.core.gravemind;
 
 
+import java.util.Optional;
+
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
@@ -9,10 +11,8 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 
-import java.util.*;
+import net.minecraft.core.BlockPos;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.

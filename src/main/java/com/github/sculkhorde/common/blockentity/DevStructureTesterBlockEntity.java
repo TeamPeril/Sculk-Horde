@@ -1,16 +1,17 @@
 package com.github.sculkhorde.common.blockentity;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.structures.procedural.ProceduralStructure;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642

@@ -1,11 +1,12 @@
 package com.github.sculkhorde.common.structures.procedural;
 
-import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
+
+import com.github.sculkhorde.util.BlockAlgorithms;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 
 public class ProceduralStructure
 {

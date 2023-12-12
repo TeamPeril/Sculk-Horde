@@ -1,10 +1,13 @@
 package com.github.sculkhorde.common.block.InfestationEntries;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -14,12 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.IPlantable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BlockInfestationTable{
 
@@ -181,7 +179,7 @@ public class BlockInfestationTable{
         placeSculkFlora(world, targetPos);
 
         // Chance to place a sculk node above the block
-        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, true);
+        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, false);
 
         // Chance to place a sculk bee hive above the block
         BlockAlgorithms.tryPlaceSculkBeeHive(world, targetPos.above());

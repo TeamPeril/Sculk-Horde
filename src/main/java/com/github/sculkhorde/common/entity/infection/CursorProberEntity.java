@@ -1,13 +1,16 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Stack;
+
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
-import java.util.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -53,7 +56,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             BlockPos currentBlock = stack.pop();
 
             // If the current block is a target, return it
-            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
                 isSuccessful = true;
                 target = currentBlock;
                 return true;
@@ -67,7 +70,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to stack
-                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level().getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     stack.add(neighbor);
                     visitedPositons.put(neighbor.asLong(), true);
                 }
@@ -88,7 +91,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
 
 
         // Play Particles on Client
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
@@ -147,7 +150,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }

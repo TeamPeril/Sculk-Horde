@@ -1,21 +1,20 @@
 package com.github.sculkhorde.common.effect;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.world.damagesource.DamageSources;
+
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class DiseasedCystsEffect extends MobEffect {
 
@@ -49,15 +48,15 @@ public class DiseasedCystsEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity sourceEntity, int amp) {
 
-        if(sourceEntity.level().isClientSide())
+        if(sourceEntity.level.isClientSide())
         {
             return;
         }
 
         // Create AABB bounding box around entity and check if there are any non-sculk entities inside
         AABB boundingBox = sourceEntity.getBoundingBox();
-        boundingBox = boundingBox.inflate(15.0D, 15.0D, 15.0D);
-        List<LivingEntity> entities = sourceEntity.level().getEntitiesOfClass(LivingEntity.class, boundingBox);
+        boundingBox = boundingBox.inflate(10.0D, 10.0D, 10.0D);
+        List<LivingEntity> entities = sourceEntity.level.getEntitiesOfClass(LivingEntity.class, boundingBox);
         if(!entities.isEmpty())
         {
             // If there are non-sculk entities inside, give them infection.
@@ -78,7 +77,7 @@ public class DiseasedCystsEffect extends MobEffect {
                 }
                 victim.hurtMarked = true;
                 int damage = (int) (victim.getMaxHealth() * 0.1F);
-                victim.hurt(victim.damageSources().generic(), damage);
+                victim.hurt(DamageSource.GENERIC, damage);
                 SculkHorde.savedData.addSculkAccumulatedMass(damage);
                 SculkHorde.statisticsData.addTotalMassFromDiseasedCysts(damage);
             }

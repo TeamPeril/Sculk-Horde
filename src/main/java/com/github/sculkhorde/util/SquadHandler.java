@@ -1,13 +1,12 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-
 import java.util.ArrayList;
 import java.util.Optional;
+
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 
 public class SquadHandler {
 

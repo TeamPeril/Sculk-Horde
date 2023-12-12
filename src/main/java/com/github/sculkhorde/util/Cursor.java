@@ -1,19 +1,22 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.infection.CursorEntity;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Cursor {
 
@@ -219,7 +222,7 @@ public class Cursor {
             BlockPos currentBlock = queue.poll();
 
             // If the current block is a target, return it
-            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
                 isSuccessful = true;
                 setTarget(currentBlock);
                 return true;
@@ -233,7 +236,7 @@ public class Cursor {
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
-                if (!visitedPositons.containsKey(neighbor.asLong()) && isNotObstructed(this.level().getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && isNotObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     queue.add(neighbor);
                     visitedPositons.put(neighbor.asLong(), true);
                 }
@@ -255,7 +258,7 @@ public class Cursor {
 
         // Play Particles on Client
         // Play Particles on Client
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
@@ -318,7 +321,7 @@ public class Cursor {
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (isNotObstructed(level().getBlockState(neighbor), neighbor)) {
+                if (isNotObstructed(level.getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }
@@ -345,7 +348,7 @@ public class Cursor {
             if (this.blockPosition().equals(target))
             {
                 setTarget(BlockPos.ZERO);
-                BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
+                BlockState stateOfCurrentBlock = level.getBlockState(this.blockPosition());
 
                 boolean isTarget = isTarget(stateOfCurrentBlock, this.blockPosition());
                 boolean isNotObstructed = isNotObstructed(stateOfCurrentBlock, this.blockPosition());

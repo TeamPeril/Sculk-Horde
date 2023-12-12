@@ -1,20 +1,38 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.entity.*;
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
+import com.github.sculkhorde.common.entity.SculkCreeperEntity;
+import com.github.sculkhorde.common.entity.SculkHatcherEntity;
+import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
+import com.github.sculkhorde.common.entity.SculkMiteEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomCorpseEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+import com.github.sculkhorde.common.entity.SculkRavagerEntity;
+import com.github.sculkhorde.common.entity.SculkSpitterEntity;
+import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
+import com.github.sculkhorde.common.entity.SculkVindicatorEntity;
+import com.github.sculkhorde.common.entity.SculkZombieEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporationRiftEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
-import com.github.sculkhorde.common.entity.infection.*;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
+import com.github.sculkhorde.common.entity.infection.CursorBridgerEntity;
+import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorProberEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.PurificationFlaskProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporationRiftEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import net.minecraft.core.registries.Registries;
+
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -48,7 +66,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SculkSporeSpewerEntity>> SCULK_SPORE_SPEWER = registerMob("sculk_spore_spewer", SculkSporeSpewerEntity::new, 1f, 2f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkRavagerEntity>> SCULK_RAVAGER = registerMob("sculk_ravager", SculkRavagerEntity::new, 1.95f, 2.2f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkCreeperEntity>> SCULK_CREEPER = registerMob("sculk_creeper", SculkCreeperEntity::new, 0.6f, 1.95f, 0x000000, 0x000000);
-    public static final RegistryObject<EntityType<SculkPhantomEntity>> SCULK_PHANTOM = registerMob("sculk_phantom", SculkPhantomEntity::new, 2.5f, 0.5f, 0x000000, 0x000000);
+    public static final RegistryObject<EntityType<SculkPhantomEntity>> SCULK_PHANTOM = registerMob("sculk_phantom", SculkPhantomEntity::new, 2.5f, 1f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkPhantomCorpseEntity>> SCULK_PHANTOM_CORPSE = registerMob("sculk_phantom_corpse", SculkPhantomCorpseEntity::new, 1f, 1f, 0x000000, 0x000000);
 
     public static final RegistryObject<EntityType<SculkEndermanEntity>> SCULK_ENDERMAN = registerMob("sculk_enderman", SculkEndermanEntity::new, 0.6f, 3f, 0x000000, 0x000000);
@@ -74,7 +92,7 @@ public class ModEntities {
         public static TagKey<EntityType<?>> SCULK_ENTITY = create("sculk_entity");
 
         private static TagKey<EntityType<?>> create(String string) {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SculkHorde.MOD_ID, string));
+            return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(SculkHorde.MOD_ID, string));
         }
     }
 }

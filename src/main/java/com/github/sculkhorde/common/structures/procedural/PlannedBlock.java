@@ -1,14 +1,14 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.core.SculkHorde;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
-import java.util.function.Predicate;
 
 public class PlannedBlock
 {
@@ -46,7 +46,7 @@ public class PlannedBlock
         if(
                 SculkHorde.blockInfestationTable.isInfectable(validBlocksPredicate)
                 || SculkHorde.blockInfestationTable.isCurable(validBlocksPredicate)
-                || validBlocksPredicate.is(BlockTags.REPLACEABLE)
+                || validBlocksPredicate.getMaterial().isReplaceable()
                 || validBlocksPredicate.is(BlockTags.NEEDS_IRON_TOOL)
                 || validBlocksPredicate.is(BlockTags.NEEDS_STONE_TOOL)
                 || validBlocksPredicate.getDestroySpeed(world, targetPos) <= 3.0F

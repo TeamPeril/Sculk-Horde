@@ -1,12 +1,13 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
+import java.util.Objects;
+
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-
-import java.util.Objects;
 
 
 public abstract class ChunkLoadRequest {

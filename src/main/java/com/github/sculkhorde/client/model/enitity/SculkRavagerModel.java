@@ -2,8 +2,9 @@ package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.core.SculkHorde;
+
+import mod.azure.azurelib.model.DefaultedEntityGeoModel;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SculkRavagerModel extends DefaultedEntityGeoModel<SculkRavagerEntity> {
 

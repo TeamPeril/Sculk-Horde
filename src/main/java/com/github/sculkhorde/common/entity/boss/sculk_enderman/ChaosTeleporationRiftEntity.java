@@ -1,13 +1,25 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.List;
+
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -17,16 +29,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.List;
 
 /**
  * The following java files were created/edited for this entity.<br>
@@ -60,7 +62,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
     public void tick() {
         super.tick();
 
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         if (getOwner() != null && !getOwner().isAlive()) {
             this.discard();
@@ -103,21 +105,21 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
             for(int i = 0; i < 16; ++i)
             {
                 double d3 = entity.getX() + (entity.getRandom().nextDouble() - 0.5D) * 16.0D;
-                double d4 = Mth.clamp(entity.getY() + (double)(entity.getRandom().nextInt(16) - 8), (double)level().getMinBuildHeight(), (double)(level().getMinBuildHeight() + ((ServerLevel)level()).getLogicalHeight() - 1));
+                double d4 = Mth.clamp(entity.getY() + (double)(entity.getRandom().nextInt(16) - 8), (double)level.getMinBuildHeight(), (double)(level.getMinBuildHeight() + ((ServerLevel)level).getLogicalHeight() - 1));
                 double d5 = entity.getZ() + (entity.getRandom().nextDouble() - 0.5D) * 16.0D;
                 if (entity.isPassenger()) {
                     entity.stopRiding();
                 }
 
                 Vec3 vec3 = entity.position();
-                level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(entity));
+                level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(entity));
                 net.minecraftforge.event.entity.EntityTeleportEvent.ChorusFruit event = net.minecraftforge.event.ForgeEventFactory.onChorusFruitTeleport(entity, d3, d4, d5);
                 if (event.isCanceled()) return;
                 if (entity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {
                     SoundEvent soundevent = entity instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;
-                    level().playSound((Player)null, d0, d1, d2, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    level.playSound((Player)null, d0, d1, d2, soundevent, SoundSource.PLAYERS, 1.0F, 1.0F);
                     entity.playSound(soundevent, 1.0F, 1.0F);
-                    entity.hurt(this.damageSources().magic(), 2.0F);
+                    entity.hurt(DamageSource.MAGIC, 2.0F);
                     // Give entity darkness potion effect
                     entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, TickUnits.convertSecondsToTicks(5), 0));
                     break;
@@ -137,7 +139,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
 
     // Animation Code
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     private static final RawAnimation SPIN_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
 

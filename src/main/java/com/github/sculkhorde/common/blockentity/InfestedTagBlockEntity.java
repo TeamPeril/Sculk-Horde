@@ -2,13 +2,10 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,8 +43,7 @@ public class InfestedTagBlockEntity extends BlockEntity implements ITagInfestedB
         }
         // This insufferable piece of code gave me a fucking headache. I borrowed this from piston code. For whatever reason, it works.
         // This is needed because level is null on load and this allows it to save data properly
-        HolderGetter<Block> holdergetter = (HolderGetter<Block>)(this.level != null ? this.level.holderLookup(Registries.BLOCK) : BuiltInRegistries.BLOCK.asLookup());
-        setNormalBlockState(NbtUtils.readBlockState(holdergetter, compoundNBT.getCompound(storedNormalVariantIdentifier)));
+        setNormalBlockState(NbtUtils.readBlockState(compoundNBT.getCompound(storedNormalVariantIdentifier)));
         //SculkHorde.LOGGER.debug("Infested Log Loaded State: " + storedNormalVariant.toString());
     }
 

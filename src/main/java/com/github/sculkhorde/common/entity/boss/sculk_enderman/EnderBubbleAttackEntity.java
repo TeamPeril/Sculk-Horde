@@ -1,21 +1,23 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * The following java files were created/edited for this entity.<br>
@@ -50,7 +52,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
     private void pullInEntities(double range)
     {
-        if(level().isClientSide()) return;
+        if(level.isClientSide()) return;
 
         Predicate<LivingEntity> predicate = (entity) -> {
             if(entity == null) {return false;}
@@ -62,7 +64,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
             return true;
         };
 
-        List<LivingEntity> pullInHitList = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(range, range, range), predicate);
+        List<LivingEntity> pullInHitList = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(range, range, range), predicate);
 
         for(LivingEntity entity : pullInHitList)
         {
@@ -96,11 +98,11 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
             if(getOwner() != null)
             {
-                entity.hurt(damageSources().indirectMagic(entity, getOwner()), 5);
+                entity.hurt(DamageSource.indirectMagic(entity, getOwner()), 5);
             }
             else
             {
-                entity.hurt(damageSources().indirectMagic(entity, this), 5);
+                entity.hurt(DamageSource.indirectMagic(entity, this), 5);
             }
         }
 
@@ -108,7 +110,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     }
 
     // ### GECKOLIB Animation Code ###
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

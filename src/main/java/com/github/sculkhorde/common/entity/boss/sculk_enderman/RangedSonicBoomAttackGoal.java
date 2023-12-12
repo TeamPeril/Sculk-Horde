@@ -1,18 +1,20 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.EnumSet;
+
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.EnumSet;
 
 public class RangedSonicBoomAttackGoal extends Goal
 {
@@ -112,12 +114,12 @@ public class RangedSonicBoomAttackGoal extends Goal
 
         for(int i = 1; i < Mth.floor(vec31.length()) + 7; ++i) {
             Vec3 vec33 = vec3.add(vec32.scale((double)i));
-            ((ServerLevel)mob.level()).sendParticles(ParticleTypes.SONIC_BOOM, vec33.x, vec33.y, vec33.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            ((ServerLevel)mob.level).sendParticles(ParticleTypes.SONIC_BOOM, vec33.x, vec33.y, vec33.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
         float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5F ? (targetEntity.getMaxHealth()/4F) + 10.0F : 10.0F;
-        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().explosion(null, mob), damage);
+        targetEntity.hurt(DamageSource.explosion(mob), damage);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);

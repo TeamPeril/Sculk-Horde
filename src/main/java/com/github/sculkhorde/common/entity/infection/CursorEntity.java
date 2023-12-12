@@ -1,9 +1,17 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -12,9 +20,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -106,7 +111,7 @@ public abstract class CursorEntity extends Entity
             return false;
         }
 
-        if(!state.isSolidRender(this.level(), pos))
+        if(!state.isSolidRender(this.level, pos))
         {
             return true;
         }
@@ -143,12 +148,12 @@ public abstract class CursorEntity extends Entity
      */
     protected void transformBlock(BlockPos pos)
     {
-        level().setBlockAndUpdate(pos, Blocks.DIAMOND_BLOCK.defaultBlockState());
+        level.setBlockAndUpdate(pos, Blocks.DIAMOND_BLOCK.defaultBlockState());
     }
 
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
+        this.level.addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
     }
 
     /**
@@ -171,7 +176,7 @@ public abstract class CursorEntity extends Entity
             BlockPos currentBlock = queue.poll();
 
             // If the current block is a target, return it
-            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
                 isSuccessful = true;
                 target = currentBlock;
                 return true;
@@ -185,7 +190,7 @@ public abstract class CursorEntity extends Entity
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to queue
-                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level().getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     queue.add(neighbor);
                     visitedPositons.put(neighbor.asLong(), true);
                 }
@@ -209,7 +214,7 @@ public abstract class CursorEntity extends Entity
 
         // Play Particles on Client
         // Play Particles on Client
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
@@ -268,7 +273,7 @@ public abstract class CursorEntity extends Entity
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }
@@ -295,7 +300,7 @@ public abstract class CursorEntity extends Entity
             if (this.blockPosition().equals(target))
             {
                 target = BlockPos.ZERO;
-                BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
+                BlockState stateOfCurrentBlock = level.getBlockState(this.blockPosition());
 
                 boolean isTarget = isTarget(stateOfCurrentBlock, this.blockPosition());
                 boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());

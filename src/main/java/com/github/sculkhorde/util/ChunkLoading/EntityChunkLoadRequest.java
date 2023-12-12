@@ -1,15 +1,13 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
-import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.core.registries.Registries;
+import java.util.UUID;
+
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-
-import java.util.UUID;
 
 public class EntityChunkLoadRequest extends ChunkLoadRequest {
 
@@ -58,7 +56,7 @@ public class EntityChunkLoadRequest extends ChunkLoadRequest {
         String requestID = compound.getString("requestID");
         long ticksUntilExpiration = compound.getLong("ticksUntilExpiration");
         ChunkPos[] chunkPositionsToLoad = new ChunkPos[chunkPositionsToLoadLength];
-        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("dimension")));
+        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(compound.getString("dimension")));
         for(int i = 0; i < chunkPositionsToLoadLength; i++)
         {
             chunkPositionsToLoad[i] = new ChunkPos(compound.getLong("chunkPositionsToLoad" + i));

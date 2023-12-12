@@ -1,31 +1,42 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * In order to create a mob, the following java files were created/edited.<br>
@@ -73,7 +84,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * Determines & registers the attributes of the mob.

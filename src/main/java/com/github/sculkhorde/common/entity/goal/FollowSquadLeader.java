@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.ModConfig;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -22,13 +22,6 @@ public class FollowSquadLeader extends Goal {
 
     @Override
     public boolean canUse() {
-
-        boolean experiementalFeaturesEnabled = ModConfig.SERVER.experimental_features_enabled.get();
-        boolean squadMechanicsEnabled = ModConfig.SERVER.squad_mechanics_enabled.get();
-        if(!experiementalFeaturesEnabled || !squadMechanicsEnabled)
-        {
-            return false;
-        }
 
         // check if the entity is riding something
         boolean isRiding = getMob().isPassenger();

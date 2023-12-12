@@ -1,16 +1,17 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.ArrayList;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.ArrayList;
-import java.util.function.Predicate;
 
 public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
 {
@@ -42,7 +43,7 @@ public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 13.0D) || !mob.getTarget().onGround())
+        if(!mob.closerThan(mob.getTarget(), 13.0D) || !mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -64,15 +65,15 @@ public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
 
         // If air or water or lava, return false
-        if(mob.level().getBlockState(pos).isAir() || mob.level().getBlockState(pos).getFluidState().isSource())
+        if(mob.level.getBlockState(pos).isAir() || mob.level.getBlockState(pos).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level().getBlockState(pos.above()).canBeReplaced() || mob.level().getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).getMaterial().isReplaceable() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level().getBlockState(pos.above().above()).canBeReplaced() || mob.level().getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).getMaterial().isReplaceable() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -107,7 +108,7 @@ public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
 
             iterationsElapsed++;
 
-            if(!mob.level().getBlockState(mutablePos).canBeReplaced())
+            if(!mob.level.getBlockState(mutablePos).getMaterial().isReplaceable())
             {
                 continue;
             }
@@ -124,13 +125,13 @@ public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
         for(int i = 0; i < possibleSpawns.size(); i++)
         {
             Vec3 spawnPos = possibleSpawns.get(i);
-            SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+            SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level);
             assert entity != null;
 
-            double spawnHeight = getSpawnHeight(BlockPos.containing(spawnPos));
+            double spawnHeight = getSpawnHeight(new BlockPos(spawnPos));
             Vec3 possibleSpawnPosition = new Vec3(spawnPos.x(), spawnHeight, spawnPos.z());
             // If the block below our spawn is solid, spawn the entity
-            if(!mob.level().getBlockState(BlockPos.containing(possibleSpawnPosition).below()).canBeReplaced())
+            if(!mob.level.getBlockState(new BlockPos(possibleSpawnPosition).below()).getMaterial().isReplaceable())
             {
                 entity.setPos(possibleSpawnPosition.x(), possibleSpawnPosition.y(), possibleSpawnPosition.z());
                 entities.add(entity);
@@ -139,7 +140,7 @@ public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
         }
 
         for (SculkSpineSpikeAttackEntity entity : entities) {
-            mob.level().addFreshEntity(entity);
+            mob.level.addFreshEntity(entity);
         }
     }
 
@@ -151,28 +152,28 @@ public class SculkSpineSpikeLineAttack extends MeleeAttackGoal
         Vec3 left = new Vec3(origin.z(), 0, -origin.x());
         Vec3 right = new Vec3(-origin.z(), 0, origin.x());
 
-        left = new Vec3(middle.x() + left.x(), getSpawnHeight(BlockPos.containing(middle)), middle.z() + left.z());
-        right = new Vec3(middle.x() + right.x(), getSpawnHeight(BlockPos.containing(middle)), middle.z() + right.z());
+        left = new Vec3(middle.x() + left.x(), getSpawnHeight(new BlockPos(middle)), middle.z() + left.z());
+        right = new Vec3(middle.x() + right.x(), getSpawnHeight(new BlockPos(middle)), middle.z() + right.z());
 
 
         // Spawn left, right, and middle entity
-        SculkSpineSpikeAttackEntity leftEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+        SculkSpineSpikeAttackEntity leftEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level);
         assert leftEntity != null;
         leftEntity.setPos(left.x(), left.y(), left.z());
         leftEntity.setOwner(mob);
-        mob.level().addFreshEntity(leftEntity);
+        mob.level.addFreshEntity(leftEntity);
 
-        SculkSpineSpikeAttackEntity rightEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+        SculkSpineSpikeAttackEntity rightEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level);
         assert rightEntity != null;
         rightEntity.setPos(right.x(), right.y(),  right.z());
         rightEntity.setOwner(mob);
-        mob.level().addFreshEntity(rightEntity);
+        mob.level.addFreshEntity(rightEntity);
 
-        SculkSpineSpikeAttackEntity middleEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
+        SculkSpineSpikeAttackEntity middleEntity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level);
         assert middleEntity != null;
         middleEntity.setPos(middle.x(), middle.y(), middle.z());
         middleEntity.setOwner(mob);
-        mob.level().addFreshEntity(middleEntity);
+        mob.level.addFreshEntity(middleEntity);
 
 
     }

@@ -1,6 +1,6 @@
 package com.github.sculkhorde.util;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -23,7 +23,7 @@ public class ModColaborationHelper {
             return false;
         }
 
-        TagKey<EntityType<?>> fromAnotherWorldEntityTagKey = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("fromanotherworld:things"));
+        TagKey<EntityType<?>> fromAnotherWorldEntityTagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation("fromanotherworld:things"));
 
         return entity.getType().is(fromAnotherWorldEntityTagKey);
     }
@@ -41,7 +41,7 @@ public class ModColaborationHelper {
             return false;
         }
 
-        TagKey<EntityType<?>> sporeEntityTagKey = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("spore:fungus_entities"));
+        TagKey<EntityType<?>> sporeEntityTagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation("spore:fungus_entities"));
 
         boolean isSporeEntity = entity.getType().is(sporeEntityTagKey);
         return isSporeEntity;

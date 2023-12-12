@@ -3,7 +3,14 @@ package com.github.sculkhorde.common.entity.projectile;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,18 +19,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ITeleporter;
@@ -100,7 +99,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      * @return The Packet
      */
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -147,7 +146,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         }
 
 
-        raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
+        raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
 
         if(raytrace.getEntity() instanceof LivingEntity)
@@ -171,8 +170,8 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         if (random.nextFloat() < 0.028F && !(getOwner() instanceof Player && ((Player) getOwner()).isCreative()))
         {
             final Vec3 vec = raytrace.getLocation();
-            final ItemEntity item = new ItemEntity(this.level(), vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
-            this.level().addFreshEntity(item);
+            final ItemEntity item = new ItemEntity(this.level, vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
+            this.level.addFreshEntity(item);
         }
         else
         {
@@ -192,7 +191,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
     public Entity changeDimension(ServerLevel serverWorld, ITeleporter iTeleporter)
     {
         Entity entity = this.getOwner();
-        if (entity != null && entity.level().dimension() != serverWorld.dimension())
+        if (entity != null && entity.level.dimension() != serverWorld.dimension())
         {
             setOwner(null);
         }
@@ -209,7 +208,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
             ParticleOptions iparticledata = this.getParticle();
 
             for(int i = 0; i < 8; ++i) {
-                this.level().addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
 

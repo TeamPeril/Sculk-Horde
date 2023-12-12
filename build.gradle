@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20.1-0.7.24'
+version = '1.19.2-0.8.0-PreRelease-6'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -14,7 +14,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.20.1'
+    mappings channel: 'official', version: '1.19.2'
    
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -94,25 +94,27 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-	maven {
-			url 'https://www.cursemaven.com'
-			// FG4: It's recommended to uncomment the following block
-			content {
-				includeGroup "curse.maven"
-			}
-		}
+        maven {url 'https://libs.azuredoom.com:4443/mods'}
+}
+
+repositories {
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.1.0'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.3')
+    minecraft 'net.minecraftforge:forge:1.19.2-43.3.0'
+    implementation fg.deobf("curse.maven:azurelib-817423:4930993")
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:jei-238222:4712868")
-	implementation fg.deobf("curse.maven:spore-678295:4764840")
-	implementation fg.deobf("curse.maven:spark-361579:4738952")
-	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
+	implementation fg.deobf("curse.maven:jei-238222:4712866")
+	implementation fg.deobf("curse.maven:spore-678295:4765189")
+	implementation fg.deobf("curse.maven:spark-361579:4505309")
+	implementation fg.deobf("curse.maven:crash-utilities-371813:4406293")
 }
 
 mixin {

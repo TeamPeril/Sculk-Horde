@@ -1,11 +1,12 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import java.util.ArrayList;
+
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-
-import java.util.ArrayList;
 
 public class SculkLivingRockProceduralStructure extends ProceduralStructure
 {

@@ -1,6 +1,11 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.effect.*;
+import com.github.sculkhorde.common.effect.DiseasedCystsEffect;
+import com.github.sculkhorde.common.effect.PurityEffect;
+import com.github.sculkhorde.common.effect.SculkInfectionEffect;
+import com.github.sculkhorde.common.effect.SculkLureEffect;
+import com.github.sculkhorde.common.effect.SculkVesselEffect;
+
 import net.minecraft.world.effect.MobEffect;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

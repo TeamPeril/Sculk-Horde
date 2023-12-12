@@ -1,14 +1,25 @@
 package com.github.sculkhorde.common.block;
 
+import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
+
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,17 +40,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Random;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 
 
 /**
@@ -104,14 +110,24 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      * @param worldIn The World to place it in
      * @param targetPos The position to place it in
      */
-    public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
+    public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean forcePlace)
     {
         final int SPAWN_NODE_COST = 3000;
         final int SPAWN_NODE_BUFFER = 1000;
 
-        boolean failRandomChance = new Random().nextInt(1000) > 1 && enableChance;
+        boolean failRandomChance = new Random().nextInt(1000) > 1;
         boolean isSavedDataNull = SculkHorde.savedData == null;
-        if(isSavedDataNull || failRandomChance) { return;}
+        if(isSavedDataNull) {
+            SculkHorde.LOGGER.error("Tried to place Node. SculkHorde.savedData is null");
+            return;
+        }
+
+        if(forcePlace) {
+            SculkNodeBlock.PlaceNode(worldIn, targetPos);
+            return;
+        }
+
+        if(failRandomChance) { return; }
 
         boolean isTheHordeDefeated = SculkHorde.savedData.isHordeDefeated();
         boolean isNodeSpawnOnCooldown = !SculkHorde.savedData.isNodeSpawnCooldownOver();
@@ -121,7 +137,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
         if(doNotSpawnNode) { return; }
 
-        SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
+        SculkNodeBlock.PlaceNode(worldIn, targetPos);
         SculkHorde.savedData.subtractSculkAccumulatedMass(SPAWN_NODE_COST);
 
     }
@@ -172,24 +188,22 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         return true;
     }
 
-    public static void FindAreaAndPlaceNode(ServerLevel level, BlockPos searchOrigin)
+    public static void PlaceNode(ServerLevel level, BlockPos blockPos)
     {
-        BlockPos newOrigin = new BlockPos(searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ());
+        BlockPos newOrigin = new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(level, newOrigin);
         SculkHorde.savedData.resetNoNodeSpawningTicksElapsed();
-        EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
+        EntityType.LIGHTNING_BOLT.spawn(level, null, null, null, newOrigin, MobSpawnType.SPAWNER, false, false);
         //Send message to all players that node has spawned
         level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
         // Play sound for each player
         level.players().forEach(player -> level.playSound(null, player.blockPosition(), ModSounds.NODE_SPAWN_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
-        spawnSculkPhantomsAtTopOfWorld(level, newOrigin, 20);
+        spawnSculkPhantomsAtTopOfWorld(level, newOrigin, 10);
     }
 
     private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
     {
-        if(!ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
-        ;
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
@@ -200,7 +214,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             int y = level.getMaxBuildHeight();
             BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
 
         }
     }
@@ -244,8 +258,8 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_BLUE)
+        Properties prop = Properties.of(Material.STONE)
+                .color(MaterialColor.COLOR_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS);
         return prop;

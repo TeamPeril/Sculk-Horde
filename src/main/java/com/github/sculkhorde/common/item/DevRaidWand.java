@@ -1,11 +1,14 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import com.github.sculkhorde.core.ModEntities;
+import java.util.List;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -18,14 +21,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DevRaidWand extends Item implements IForgeItem {
 
@@ -53,7 +51,7 @@ public class DevRaidWand extends Item implements IForgeItem {
 	{
 		return new Properties()
 				.rarity(Rarity.EPIC)
-				.fireResistant();
+				.fireResistant().tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
 	}
 

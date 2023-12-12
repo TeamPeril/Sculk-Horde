@@ -1,9 +1,13 @@
 package com.github.sculkhorde.common.effect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -11,9 +15,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SculkVesselEffect extends MobEffect {
 
@@ -42,20 +43,20 @@ public class SculkVesselEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amp) {
-        if(entity.level().isClientSide())
+        if(entity.level.isClientSide())
         {
             return;
         }
 
         // Give strength and speed to the player if near sculk node
-        ModSavedData.NodeEntry nearestNode = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
+        ModSavedData.NodeEntry nearestNode = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) entity.level, entity.blockPosition());
 
         if(nearestNode == null)
         {
             return;
         }
 
-        boolean isInSameDimension = BlockAlgorithms.areTheseDimensionsEqual((ServerLevel) entity.level(), nearestNode.getDimension());
+        boolean isInSameDimension = BlockAlgorithms.areTheseDimensionsEqual((ServerLevel) entity.level, nearestNode.getDimension());
         boolean inRangeOfNode = BlockAlgorithms.getBlockDistance(entity.blockPosition(), nearestNode.getPosition()) <= 200;
         if(isInSameDimension && inRangeOfNode)
         {

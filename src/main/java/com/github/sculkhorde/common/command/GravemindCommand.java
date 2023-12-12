@@ -3,10 +3,10 @@ package com.github.sculkhorde.common.command;
 import com.github.sculkhorde.core.SculkHorde;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -46,7 +46,7 @@ public class GravemindCommand implements Command<CommandSourceStack> {
             }
         }
 
-        context.getSource().sendSuccess(()->Component.literal("Gravemind is in the state: " + SculkHorde.gravemind.getEvolutionState().toString()), true);
+        context.getSource().sendSuccess(Component.literal("Gravemind is in the state: " + SculkHorde.gravemind.getEvolutionState().toString()), true);
         return 0;
     }
 

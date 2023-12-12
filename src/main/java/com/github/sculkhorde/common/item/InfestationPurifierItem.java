@@ -1,40 +1,33 @@
 package com.github.sculkhorde.common.item;
 
+import java.util.List;
+
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-
-import java.util.List;
-import java.util.Objects;
 
 public class InfestationPurifierItem extends Item implements IForgeItem {
 
@@ -65,7 +58,7 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
     {
         return new Item.Properties()
                 .rarity(Rarity.EPIC)
-                .stacksTo(8);
+                .stacksTo(8).tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     //This changes the text you see when hovering over an item
@@ -116,7 +109,7 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
             }
 
             purifier = new InfestationPurifierEntity(level);
-            purifier.setPos(spawnPosition.getCenter().x, spawnPosition.getCenter().y, spawnPosition.getCenter().z);
+            purifier.setPos(Vec3.atCenterOf(spawnPosition).x, Vec3.atCenterOf(spawnPosition).y, Vec3.atCenterOf(spawnPosition).z);
             level.addFreshEntity(purifier);
 
             if (purifier == null)

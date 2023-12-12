@@ -1,18 +1,30 @@
 package com.github.sculkhorde.core;
 
+import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
-import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.StatisticsData;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -23,12 +35,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 
 /**
  * This class handels all data that gets saved to and loaded from the world. <br>
@@ -1000,7 +1006,7 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry serialize(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
@@ -1192,7 +1198,7 @@ public class ModSavedData extends SavedData {
          */
         public static BeeNestEntry serialize(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(nbt.getString("dimension")));
 
             return new BeeNestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
         }
@@ -1313,7 +1319,7 @@ public class ModSavedData extends SavedData {
          */
         public static DeathAreaEntry serialize(CompoundTag nbt) {
 
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(nbt.getString("dimension")));
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
         }
     }
@@ -1385,7 +1391,7 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static AreaofInterestEntry serialize(CompoundTag nbt) {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(nbt.getString("dimension")));
             return new AreaofInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
@@ -1482,7 +1488,7 @@ public class ModSavedData extends SavedData {
          */
         public static NoRaidZoneEntry serialize(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }

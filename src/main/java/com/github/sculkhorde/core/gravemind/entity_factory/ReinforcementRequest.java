@@ -1,10 +1,10 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
+import java.util.ArrayList;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.core.BlockPos;
-
-import java.util.ArrayList;
 
 public class ReinforcementRequest {
 

@@ -595,6 +595,11 @@
 							"easing": "easeInOutSine"
 						}
 					}
+				},
+				"root": {
+					"position": {
+						"vector": [0, 15, 0]
+					}
 				}
 			}
 		},
@@ -1353,6 +1358,11 @@
 							"vector": [-1.91757, 4.61854, -40.07734],
 							"easing": "easeInOutSine"
 						}
+					}
+				},
+				"root": {
+					"position": {
+						"vector": [0, 16, 0]
 					}
 				}
 			}

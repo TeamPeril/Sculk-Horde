@@ -1,34 +1,47 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.concurrent.TimeUnit;
 
 public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -60,7 +73,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -195,15 +208,15 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     private static final RawAnimation TUMOR_ANIMATION = RawAnimation.begin().thenLoop("tumor");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("jaw.attack");
 
-    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", 5, state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", ATTACK_ANIMATION);
 
 
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                DefaultAnimations.genericWalkRunIdleController(this).transitionLength(5),
+                DefaultAnimations.genericWalkRunIdleController(this),
                 ATTACK_ANIMATION_CONTROLLER,
                 new AnimationController<>(this, "Legs", 5, this::poseJawCycle),
                 new AnimationController<>(this, "Tumor", 5, this::poseTumorCycle)

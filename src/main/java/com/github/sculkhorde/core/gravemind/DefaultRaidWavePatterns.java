@@ -1,10 +1,10 @@
 package com.github.sculkhorde.core.gravemind;
 
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-
+import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory.StrategicValues.Infector;
 import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory.StrategicValues.Melee;
 import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory.StrategicValues.Ranged;
-import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory.StrategicValues.Infector;
+
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 
 public class DefaultRaidWavePatterns {
 

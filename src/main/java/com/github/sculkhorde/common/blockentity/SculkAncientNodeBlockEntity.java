@@ -1,15 +1,26 @@
 package com.github.sculkhorde.common.blockentity;
 
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
-import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.AdvancementUtil;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.mojang.serialization.Dynamic;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -29,19 +40,13 @@ import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem
+public class SculkAncientNodeBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig
 {
 
 
@@ -53,9 +58,10 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     private SculkNodeInfectionHandler infectionHandler;
 
     // Vibration Code
-    private final VibrationSystem.User vibrationUser = new SculkAncientNodeBlockEntity.VibrationUser(this);
-    private VibrationSystem.Data vibrationData = new VibrationSystem.Data();
-    private final VibrationSystem.Listener vibrationListener = new VibrationSystem.Listener(this);
+
+    private static final int LISTENER_RADIUS = 24;
+    private final PositionSource positionSource = new BlockPositionSource(this.worldPosition);
+    private VibrationListener listener = new VibrationListener(this.positionSource, LISTENER_RADIUS, this, (VibrationListener.ReceivingEvent)null, 0.0F, 0);
 
     public SculkAncientNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
@@ -75,7 +81,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.below()).isSolid()  &&
+        return worldIn.getBlockState(pos.below()).getMaterial().isSolid()  &&
                 worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
                 worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
                 worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
@@ -304,8 +310,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     private static void spawnSculkPhantomsAtTopOfWorld(SculkAncientNodeBlockEntity blockEntity, int amount)
     {
-        if(!ModConfig.SERVER.experimental_features_enabled.get() || !ModConfig.SERVER.sculk_phantoms_enabled.get()) { return; }
-
         ServerLevel level = (ServerLevel) blockEntity.level;
         int spawnRange = 100;
         int minimumSpawnRange = 50;
@@ -317,7 +321,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             int y = level.getMaxBuildHeight();
             BlockPos spawnPosition = new BlockPos(blockEntity.getBlockPos().getX() + x, y, blockEntity.getBlockPos().getZ() + z);
 
-            SculkPhantomEntity.spawnPhantom(level, spawnPosition);
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
 
         }
     }
@@ -372,7 +376,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         level.players().forEach((player) -> level.playSound(null, player.blockPosition(), ModSounds.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
 
-        spawnSculkPhantomsAtTopOfWorld(blockEntity, 20);
+        spawnSculkPhantomsAtTopOfWorld(blockEntity, 10);
     }
 
     // Data
@@ -381,8 +385,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         super.load(nbt);
 
         if (nbt.contains("listener", 10)) {
-            VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
-                this.vibrationData = data;
+        	VibrationListener.codec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+                this.listener = data;
             });
         }
 
@@ -391,70 +395,39 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     protected void saveAdditional(CompoundTag nbt)
     {
         super.saveAdditional(nbt);
-        VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+        VibrationListener.codec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
     }
 
     // Vibration System
     /** ~~~~~~~~ Vibration Events ~~~~~~~~  **/
-    public VibrationSystem.Listener getListener() {
-        return this.vibrationListener;
+    public VibrationListener getListener() {
+        return this.listener;
     }
 
-    public VibrationSystem.Data getVibrationData() {
-        return this.vibrationData;
+    @Override
+    public TagKey<GameEvent> getListenableEvents() {
+        return GameEventTags.SHRIEKER_CAN_LISTEN;
     }
 
-    public VibrationSystem.User getVibrationUser() {
-        return this.vibrationUser;
+    @Override
+    public boolean shouldListen(ServerLevel level, GameEventListener listener, BlockPos blockPos, GameEvent gameEvent, GameEvent.Context context) {
+        return true;
     }
 
-    /**
-     * The listener for the block entity.
-     */
-    class VibrationUser implements VibrationSystem.User
+    @Override
+    public void onSignalReceive(ServerLevel level, GameEventListener listener, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
     {
-        private static final int LISTENER_RADIUS = 24;
-        private final PositionSource positionSource = new BlockPositionSource(SculkAncientNodeBlockEntity.this.worldPosition);
-        private SculkAncientNodeBlockEntity blockEntity;
-
-        public VibrationUser(SculkAncientNodeBlockEntity ancientNodeBlockEntity) {
-            this.blockEntity = ancientNodeBlockEntity;
-        }
-
-        public int getListenerRadius() {
-            return LISTENER_RADIUS;
-        }
-
-        public PositionSource getPositionSource() {
-            return this.positionSource;
-        }
-
-        public TagKey<GameEvent> getListenableEvents() {
-            return GameEventTags.SHRIEKER_CAN_LISTEN;
-        }
-
-        public boolean canReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, GameEvent.Context context) {
-            return true;
-        }
-
-        public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
+        if(areAnyPlayersInRange(level, this.getBlockPos(), 20))
         {
-            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 20))
-            {
-                tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
-            }
-        }
-
-        public void onDataChanged()
-        {
-            setChanged();
-        }
-
-        public boolean requiresAdjacentChunksToBeTicking() {
-            return false;
+            tryInitializeHorde(level, this.getBlockPos(), this.getBlockState(), this);
         }
     }
-
+    
+    @Override
+    public void onSignalSchedule()
+    {
+        setChanged();
+    }
 }

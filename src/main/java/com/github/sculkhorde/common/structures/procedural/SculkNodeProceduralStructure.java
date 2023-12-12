@@ -1,13 +1,14 @@
 package com.github.sculkhorde.common.structures.procedural;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
 import java.util.Optional;
+
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.util.BlockAlgorithms;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.material.Fluids;
 
 public class SculkNodeProceduralStructure extends ProceduralStructure
 {

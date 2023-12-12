@@ -1,14 +1,22 @@
 package com.github.sculkhorde.common.entity.boss;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
@@ -16,13 +24,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-public abstract class SpecialEffectEntity extends Entity implements TraceableEntity
+public abstract class SpecialEffectEntity extends Entity
 {
     private static final EntityDataAccessor<Optional<UUID>> SOURCE_ENTITY = SynchedEntityData.defineId(SpecialEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     @Nullable
@@ -42,8 +45,8 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -67,7 +70,7 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     public void push(Entity entityIn) {
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket()
+    public Packet<?> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
@@ -92,7 +95,7 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     }
 
     public static SpecialEffectEntity spawn(Level world, LivingEntity owner, BlockPos pos, EntityType<?> type) {
-        SpecialEffectEntity entity = (SpecialEffectEntity) type.spawn((ServerLevel) world, pos, MobSpawnType.REINFORCEMENT);
+        SpecialEffectEntity entity = (SpecialEffectEntity) type.spawn((ServerLevel) world, null, null, null, pos, MobSpawnType.REINFORCEMENT, false, false);
         assert entity != null;
         entity.setOwner(owner);
         world.addFreshEntity(entity);
@@ -100,11 +103,11 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     }
 
     public <T extends Entity> List<T> getEntitiesNearby(Class<T> entityClass, double r) {
-        return level().getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this && distanceTo(e) <= r + e.getBbWidth() / 2f);
+        return level.getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this && distanceTo(e) <= r + e.getBbWidth() / 2f);
     }
 
     public <T extends Entity> List<T> getEntitiesNearbyCube(Class<T> entityClass, double r) {
-        return level().getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this);
+        return level.getEntitiesOfClass(entityClass, getBoundingBox().inflate(r, r, r), e -> e != this);
     }
 
     public boolean raytraceCheckEntity(Entity entity) {
@@ -113,7 +116,7 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
         for (int i = 0; i < numChecks; i++) {
             float increment = entity.getBbHeight() / (numChecks + 1);
             Vec3 to = entity.position().add(0, increment * (i + 1), 0);
-            BlockHitResult result = level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            BlockHitResult result = level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             if (result.getType() != HitResult.Type.BLOCK)
             {
                 return true;

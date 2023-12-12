@@ -1,9 +1,9 @@
 package com.github.sculkhorde.core.gravemind;
 
+import java.util.logging.Level;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
-
-import java.util.logging.Level;
 
 public class Event {
 

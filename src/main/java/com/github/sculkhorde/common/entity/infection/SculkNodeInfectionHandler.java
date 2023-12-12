@@ -3,8 +3,9 @@ package com.github.sculkhorde.common.entity.infection;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.Direction;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -72,7 +73,7 @@ public class SculkNodeInfectionHandler {
         while(checkPosition.getY() < world.getMaxBuildHeight())
         {
             checkPosition.setY(checkPosition.getY() + 1);
-            if(world.getBlockState(checkPosition).isSolid() && world.getBlockState(checkPosition).canOcclude())
+            if(world.getBlockState(checkPosition).getMaterial().isSolid() && world.getBlockState(checkPosition).canOcclude())
             {
                 lastKnownSolidBlock = checkPosition.immutable();
             }

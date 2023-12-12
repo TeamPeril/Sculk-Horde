@@ -10,12 +10,11 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.renderer.EffectInstance;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -54,7 +53,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
         }
         else
         {
-            context.getSource().sendSuccess(()->Component.literal("Syntax Error"), false);
+            context.getSource().sendSuccess(Component.literal("Syntax Error"), false);
         }
 
         switch (operation) {
@@ -82,9 +81,9 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
                 }
                 else if(value == 782)
                 {
-                    Entity spore = ModEntities.SCULK_SPORE_SPEWER.get().create(player.level());
+                    Entity spore = ModEntities.SCULK_SPORE_SPEWER.get().create(player.level);
                     spore.moveTo(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
-                    player.level().addFreshEntity(spore);
+                    player.level.addFreshEntity(spore);
                 }
             }
             case "set" -> {

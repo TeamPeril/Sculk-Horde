@@ -49,6 +49,7 @@ public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
         return Properties.copy(Blocks.RED_MUSHROOM)
                 .sound(SoundType.SLIME_BLOCK)
                 .noCollission()
-                .instabreak();
+                .instabreak()
+                .requiresCorrectToolForDrops();
     }
 }

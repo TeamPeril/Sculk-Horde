@@ -1,10 +1,18 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -14,13 +22,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.function.Predicate;
 
 public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements GeoEntity {
 
@@ -41,7 +42,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     //MOVEMENT_SPEED determines how fast this mob moves
     public static final float MOVEMENT_SPEED = 0.5F;
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -72,18 +73,18 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     }
 
     private final Predicate<BlockPos> IS_VALID_FLOWER = (blockPos) -> {
-        BlockState blockState = level().getBlockState(blockPos);
+        BlockState blockState = level.getBlockState(blockPos);
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED))
         {
             return false;
         }
 
-        if(!SculkHorde.blockInfestationTable.isInfectable(level().getBlockState(blockPos)))
+        if(!SculkHorde.blockInfestationTable.isInfectable(level.getBlockState(blockPos)))
         {
             return false;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level(), blockPos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) level, blockPos))
         {
             return false;
         }
@@ -108,13 +109,13 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
             return;
         }
 
-        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
+        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
         cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
         cursor.setMaxTransformations(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);
         cursor.setSearchIterationsPerTick(20);
-        level().addFreshEntity(cursor);
+        level.addFreshEntity(cursor);
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/

@@ -70,6 +70,7 @@ public class SculkShroomCultureBlock extends SculkFloraBlock implements IForgeBl
         return Properties.copy(Blocks.RED_MUSHROOM)
                 .sound(SoundType.GRASS)
                 .noCollission()
-                .instabreak();
+                .instabreak()
+                .requiresCorrectToolForDrops();
     }
 }

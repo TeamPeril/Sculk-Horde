@@ -2,9 +2,10 @@ package com.github.sculkhorde.client.model.block;
 
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.SculkHorde;
+
+import mod.azure.azurelib.model.DefaultedBlockGeoModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 
 public class SculkSummonerModel extends DefaultedBlockGeoModel<SculkSummonerBlockEntity>
 {

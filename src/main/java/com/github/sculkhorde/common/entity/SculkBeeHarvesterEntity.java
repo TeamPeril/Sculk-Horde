@@ -1,11 +1,24 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,7 +33,11 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -46,17 +63,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * A lot of this is copied from BeeEntity.java.
@@ -81,7 +87,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.25F;
 
-    protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    protected final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     public static final float FLAP_DEGREES_PER_TICK = 120.32113F;
     public static final int TICKS_PER_FLAP = Mth.ceil(1.4959966F);
@@ -217,7 +223,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     /** ~~~~~~~~ ACCESSORS & Modifiers ~~~~~~~~ **/
 
     private final Predicate<BlockPos> IS_VALID_FLOWER = (blockPos) -> {
-        BlockState blockState = this.level().getBlockState(blockPos);
+        BlockState blockState = this.level.getBlockState(blockPos);
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
             return false;
         }
@@ -315,7 +321,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     }
 
     protected boolean wantsToEnterHive() {
-        if (this.isTiredOfLookingForNectar() || this.level().isRaining() || this.hasNectar() || this.hivePos == null || this.hivePos == BlockPos.ZERO)
+        if (this.isTiredOfLookingForNectar() || this.level.isRaining() || this.hasNectar() || this.hivePos == null || this.hivePos == BlockPos.ZERO)
         {
             return !isHiveNearFire();
         } else {
@@ -327,13 +333,13 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         if (this.hivePos == null) {
             return false;
         } else {
-            BlockEntity blockentity = this.level().getBlockEntity(this.hivePos);
+            BlockEntity blockentity = this.level.getBlockEntity(this.hivePos);
             return blockentity instanceof SculkBeeNestBlockEntity && ((SculkBeeNestBlockEntity)blockentity).isFireNearby();
         }
     }
 
     protected boolean doesHiveHaveSpace(BlockPos blockPos) {
-        BlockEntity blockentity = this.level().getBlockEntity(blockPos);
+        BlockEntity blockentity = this.level.getBlockEntity(blockPos);
         if (blockentity instanceof SculkBeeNestBlockEntity) {
             return !((SculkBeeNestBlockEntity)blockentity).isFull();
         } else {
@@ -347,7 +353,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         } else if (this.isTooFarAway(this.hivePos)) {
             return false;
         } else {
-            BlockEntity blockentity = this.level().getBlockEntity(this.hivePos);
+            BlockEntity blockentity = this.level.getBlockEntity(this.hivePos);
             return blockentity instanceof SculkBeeNestBlockEntity;
         }
     }
@@ -383,7 +389,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
 
     protected boolean isFlowerValid(BlockPos pos)
     {
-        return this.level().isLoaded(pos) && getIsFlowerValidPredicate().test(pos);
+        return this.level.isLoaded(pos) && getIsFlowerValidPredicate().test(pos);
     }
 
 
@@ -399,7 +405,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         super.tick();
         if (this.hasNectar() && this.getCropsGrownSincePollination() < MAX_CROPS_GROWABLE && this.random.nextFloat() < 0.05F) {
             for(int i = 0; i < this.random.nextInt(2) + 1; ++i) {
-                this.spawnFluidParticle(this.level(), this.getX() - (double)0.3F, this.getX() + (double)0.3F, this.getZ() - (double)0.3F, this.getZ() + (double)0.3F, this.getY(0.5D), ParticleTypes.FALLING_NECTAR);
+                this.spawnFluidParticle(this.level, this.getX() - (double)0.3F, this.getX() + (double)0.3F, this.getZ() - (double)0.3F, this.getZ() + (double)0.3F, this.getY(0.5D), ParticleTypes.FALLING_NECTAR);
             }
         }
 
@@ -409,7 +415,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     @Override
     public void aiStep() {
         super.aiStep();
-        if (!this.level().isClientSide)
+        if (!this.level.isClientSide)
         {
 
             if (this.remainingCooldownBeforeLocatingNewHive > 0) {
@@ -439,13 +445,13 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         }
 
         if (this.underWaterTicks > 20) {
-            this.hurt(this.damageSources().drown(), 1.0F);
+            this.hurt(DamageSource.DROWN, 1.0F);
         }
 
         if (flag) {
             ++this.timeSinceSting;
             if (this.timeSinceSting % 5 == 0 && this.random.nextInt(Mth.clamp(1200 - this.timeSinceSting, 1, 1200)) == 0) {
-                this.hurt(this.damageSources().generic(), this.getHealth());
+                this.hurt(DamageSource.GENERIC, this.getHealth());
             }
         }
 
@@ -502,7 +508,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         if (this.isInvulnerableTo(p_27762_)) {
             return false;
         } else {
-            if (!this.level().isClientSide) {
+            if (!this.level.isClientSide) {
                 this.beePollinateGoal.stopPollinating();
             }
 
@@ -630,7 +636,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
                     .hivePos.closerToCenterThan(SculkBeeHarvesterEntity.this
                             .position(), 2.0D)) {
                 BlockEntity blockentity = SculkBeeHarvesterEntity.this
-                        .level().getBlockEntity(SculkBeeHarvesterEntity.this
+                        .level.getBlockEntity(SculkBeeHarvesterEntity.this
                                 .hivePos);
                 if (blockentity instanceof SculkBeeNestBlockEntity) {
                     SculkBeeNestBlockEntity SculkBeeNestBlockEntity = (SculkBeeNestBlockEntity)blockentity;
@@ -652,7 +658,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
 
         public void start() {
             BlockEntity blockentity = SculkBeeHarvesterEntity.this
-                    .level().getBlockEntity(SculkBeeHarvesterEntity.this
+                    .level.getBlockEntity(SculkBeeHarvesterEntity.this
                             .hivePos);
             if (blockentity instanceof SculkBeeNestBlockEntity SculkBeeNestBlockEntity)
             {
@@ -669,7 +675,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     public class BeeGoToHiveGoal extends SculkBeeHarvesterEntity.BaseBeeGoal {
         public static final int MAX_TRAVELLING_TICKS = TickUnits.convertMinutesToTicks(2);
         int travellingTicks = SculkBeeHarvesterEntity.this
-                .level().random.nextInt(10);
+                .level.random.nextInt(10);
         protected static final int MAX_BLACKLISTED_TARGETS = 3;
         final List<BlockPos> blacklistedTargets = Lists.newArrayList();
         @Nullable
@@ -698,7 +704,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
                 return false;
             }
 
-            if(!SculkBeeHarvesterEntity.this.level().getBlockState(SculkBeeHarvesterEntity.this.hivePos).is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
+            if(!SculkBeeHarvesterEntity.this.level.getBlockState(SculkBeeHarvesterEntity.this.hivePos).is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
             {
                 return false;
             }
@@ -825,7 +831,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
 
     public class BeeGoToKnownFlowerGoal extends BaseBeeGoal {
         protected static final int MAX_TRAVELLING_TICKS = TickUnits.convertMinutesToTicks(1);
-        int travellingTicks = level().random.nextInt(10);
+        int travellingTicks = level.random.nextInt(10);
 
         BeeGoToKnownFlowerGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -910,7 +916,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         protected List<BlockPos> findNearbyHivesWithSpace()
         {
             List<BlockPos> list = BlockAlgorithms.getBlocksInArea(
-                    (ServerLevel) SculkBeeHarvesterEntity.this.level(),
+                    (ServerLevel) SculkBeeHarvesterEntity.this.level,
                     SculkBeeHarvesterEntity.this.blockPosition(),
                     VALID_HIVE_BLOCKS,
                     TOO_FAR_DISTANCE - 1
@@ -969,7 +975,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
                 return false;
             } else if (hasNectar()) {
                 return false;
-            } else if (level().isRaining()) {
+            } else if (level.isRaining()) {
                 return false;
             } else {
                 Optional<BlockPos> optional = this.findNearbyFlower();
@@ -991,7 +997,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
                 return false;
             } else if (!hasSavedFlowerPos()) {
                 return false;
-            } else if (level().isRaining()) {
+            } else if (level.isRaining()) {
                 return false;
             } else if (this.hasPollinatedLongEnough()) {
                 return random.nextFloat() < 0.2F;
@@ -1093,7 +1099,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         }
 
         protected Optional<BlockPos> findNearbyFlower() {
-            return BlockAlgorithms.findBlockInCubeBlockPosPredicate((ServerLevel) level(), blockPosition(), getIsFlowerValidPredicate(), 5);
+            return BlockAlgorithms.findBlockInCubeBlockPosPredicate((ServerLevel) level, blockPosition(), getIsFlowerValidPredicate(), 5);
         }
 
     }
@@ -1116,7 +1122,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         public void start() {
             Vec3 vec3 = this.findPos();
             if (vec3 != null) {
-                navigation.moveTo(navigation.createPath(BlockPos.containing(vec3), 1), 1.0D);
+                navigation.moveTo(navigation.createPath(new BlockPos(vec3), 1), 1.0D);
             }
 
         }
