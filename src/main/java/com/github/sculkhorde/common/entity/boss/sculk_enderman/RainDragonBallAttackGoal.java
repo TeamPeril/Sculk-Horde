@@ -1,12 +1,13 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.EnumSet;
+
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.projectile.DragonFireball;
-
-import java.util.EnumSet;
 
 public class RainDragonBallAttackGoal extends Goal
 {
@@ -39,7 +40,7 @@ public class RainDragonBallAttackGoal extends Goal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
@@ -49,7 +50,7 @@ public class RainDragonBallAttackGoal extends Goal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 10.0F))
+        if(!mob.closerThan(mob.getTarget(), 10.0F) || !mob.getTarget().isOnGround())
         {
             return false;
         }

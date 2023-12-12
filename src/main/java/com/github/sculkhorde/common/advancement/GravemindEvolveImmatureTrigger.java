@@ -3,10 +3,13 @@ package com.github.sculkhorde.common.advancement;
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.*;
+
+import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.GsonHelper;
 
 public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<GravemindEvolveImmatureTrigger.GravemindEvoleImmatureCriterion> implements CustomCriterionTrigger{
 
@@ -18,19 +21,19 @@ public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<Grave
         return ID;
     }
 
+    @Override
+    public GravemindEvoleImmatureCriterion createInstance(JsonObject jsonObject, EntityPredicate.Composite awarePredicate, DeserializationContext deserializationContext) {
+        return new GravemindEvoleImmatureCriterion(awarePredicate);
+    }
+
     public void trigger(ServerPlayer player) {
         this.trigger(player, Predicates.alwaysTrue());
     }
 
-    @Override
-    protected GravemindEvoleImmatureCriterion createInstance(JsonObject pJson, EntityPredicate.Composite pPlayer, DeserializationContext pContext) {
-        return new GravemindEvoleImmatureCriterion(pPlayer);
-    }
-
     public static class GravemindEvoleImmatureCriterion extends AbstractCriterionTriggerInstance {
 
-        public GravemindEvoleImmatureCriterion(EntityPredicate.Composite pPlayer) {
-            super(ID, pPlayer);
+        public GravemindEvoleImmatureCriterion(EntityPredicate.Composite awarePredicate) {
+            super(ID, awarePredicate);
         }
     }
 }

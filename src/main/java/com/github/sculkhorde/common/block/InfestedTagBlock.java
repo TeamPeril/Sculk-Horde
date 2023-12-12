@@ -3,9 +3,11 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
 import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeBlock;

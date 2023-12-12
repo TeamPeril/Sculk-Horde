@@ -1,16 +1,15 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import java.util.EnumSet;
+
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.InteractionHand;
+
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
-
-import java.util.EnumSet;
 
 public class CustomMeleeAttackGoal extends Goal{
     protected final PathfinderMob mob;
@@ -132,7 +131,7 @@ public class CustomMeleeAttackGoal extends Goal{
         }
 
         this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
-
+        
         double perceivedTargetDistanceSquareForMeleeAttack = this.mob.distanceToSqr(target.getX(), target.getY(), target.getZ());
 
         this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
@@ -203,18 +202,18 @@ public class CustomMeleeAttackGoal extends Goal{
     }
 
     protected void checkAndPerformAttack(LivingEntity targetMob, double distanceFromTargetIn) {
+        boolean isTargetNull = targetMob == null;
+        if (isTargetNull)
+        {
+            return;
+        }
         double attackReach = this.getAttackReachSqr(this.mob);
         boolean isTooFarFromTarget = distanceFromTargetIn > attackReach;
-        if (!isTimeToAttack())
+        boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(targetMob);
+        if (!isTimeToAttack() || isTooFarFromTarget || !canSeeTarget)
         {
             return;
         }
-        else if(isTooFarFromTarget)
-        {
-
-            return;
-        }
-
         triggerAnimation();
         delayedHurtScheduler.trigger(attackReach);
         resetAttackCooldown();

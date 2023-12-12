@@ -1,39 +1,40 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
-import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModItems;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.util.EntityAlgorithms;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
-public class InfestationPurifierEntity extends PathfinderMob implements IAnimatable, IAnimationTickable {
+public class InfestationPurifierEntity extends PathfinderMob implements GeoEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -57,6 +58,8 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
     public static final float FOLLOW_RANGE = 0F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0F;
+
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     private int MAX_TARGET_FIND_FAILS = 32;
     private int targetFindFails = 0;
@@ -159,6 +162,17 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
     @Override
     public void checkDespawn() {} // Do nothing because we do not want this mob to despawn
 
+    // Add our animations
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericLivingController(this));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
     //Every tick, spawn a short range cursor
     @Override
     public void aiStep()
@@ -233,7 +247,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
                 cursor1 = new CursorSurfacePurifierEntity(level);
                 cursor1.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor1.setMaxTransformations(100);
-                cursor1.setMaxRange(48);
+                cursor1.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor1.setSearchIterationsPerTick(2);
                 cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor1.setTickIntervalMilliseconds(20);
@@ -246,7 +260,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
                 cursor2 = new CursorSurfacePurifierEntity(level);
                 cursor2.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor2.setMaxTransformations(100);
-                cursor2.setMaxRange(48);
+                cursor2.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor2.setSearchIterationsPerTick(2);
                 cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor2.setTickIntervalMilliseconds(20);
@@ -259,7 +273,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
                 cursor3 = new CursorSurfacePurifierEntity(level);
                 cursor3.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor3.setMaxTransformations(100);
-                cursor3.setMaxRange(48);
+                cursor3.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor3.setSearchIterationsPerTick(2);
                 cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor3.setTickIntervalMilliseconds(20);
@@ -272,7 +286,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
                 cursor4 = new CursorSurfacePurifierEntity(level);
                 cursor4.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor4.setMaxTransformations(100);
-                cursor4.setMaxRange(48);
+                cursor4.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor4.setSearchIterationsPerTick(2);
                 cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor4.setTickIntervalMilliseconds(20);
@@ -303,25 +317,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements IAnimata
             this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
         }
         return InteractionResult.SUCCESS;
-    }
-
-    // Add our animations
-
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
-    @Override
-    public void registerControllers(AnimationData data) {
-        //controllers.add(DefaultAnimations.genericLivingController(this));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
-
-    @Override
-    public int tickTimer() {
-        return tickCount;
     }
 
     protected SoundEvent getAmbientSound() {

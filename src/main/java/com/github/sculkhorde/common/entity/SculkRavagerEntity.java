@@ -1,27 +1,42 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * In order to create a mob, the following java files were created/edited.<br>
@@ -34,7 +49,7 @@ import java.util.concurrent.TimeUnit;
  * Added {@link SculkRavagerModel} <br>
  * Added {@link SculkRavagerRenderer}
  */
-public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
+public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmartEntity {
 
 
     /**
@@ -58,7 +73,7 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
     //The armor of the mob
     public static final float ARMOR = 4F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 18F;
+    public static final float ATTACK_DAMAGE = 8F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 5F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
@@ -68,6 +83,8 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
+    private SquadHandler squad = new SquadHandler(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * Determines & registers the attributes of the mob.
@@ -89,6 +106,12 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
+
     @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
@@ -146,8 +169,10 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
                 new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(5)),
                 //SwimGoal(mob)
                 new FloatGoal(this),
+                new SquadHandlingGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
+                new FollowSquadLeader(this),
                 new PathFindToRaidLocation<>(this),
                 //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                 new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
@@ -169,7 +194,8 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
     {
         return new Goal[]{
                 new InvalidateTargetGoal(this),
-                new TargetAttacker(this).setAlertAllies(),
+                new TargetAttacker(this),
+                new FocusSquadTarget(this),
                 new NearestLivingEntityTargetGoal<>(this, true, true)
         };
     }
@@ -188,14 +214,14 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
     */
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
-    /*
+
     private static final RawAnimation HEAD_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("head.attack");
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", HEAD_ATTACK_ANIMATION);
 
     // Add our animations
     @Override
-    public void registerControllers(AnimationData data) {
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(DefaultAnimations.genericWalkIdleController(this));
         controllers.add(ATTACK_ANIMATION_CONTROLLER);
     }
@@ -205,23 +231,6 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
         return this.cache;
     }
 
-     */
-
-    // Add our animations
-    @Override
-    public void registerControllers(AnimationData data) {
-    }
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
-    @Override
-    public int tickTimer() {
-        return tickCount;
-    }
-
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
 
     class AttackGoal extends CustomMeleeAttackGoal
@@ -229,7 +238,7 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
 
         public AttackGoal()
         {
-            super(SculkRavagerEntity.this, 1.0D, true, 10);
+            super(SculkRavagerEntity.this, 1.0D, false, 10);
         }
 
         @Override
@@ -259,7 +268,7 @@ public class SculkRavagerEntity extends Ravager implements IAnimatable, IAnimati
 
         @Override
         protected void triggerAnimation() {
-            //((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
+            ((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
     }
 

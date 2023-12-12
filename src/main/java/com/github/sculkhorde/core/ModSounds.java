@@ -14,6 +14,11 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> RAID_START_SOUND = registerSoundEvent("raid_start_sound");
     public static final RegistryObject<SoundEvent> HORDE_START_SOUND = registerSoundEvent("horde_start_sound");
 
+    public static final RegistryObject<SoundEvent> RAID_SCOUT_SOUND = registerSoundEvent("raid_scout_sound");
+    public static final RegistryObject<SoundEvent> NODE_SPAWN_SOUND = registerSoundEvent("node_spawn_sound");
+    public static final RegistryObject<SoundEvent> NODE_DESTROY_SOUND = registerSoundEvent("node_destroy_sound");
+
+
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = new ResourceLocation(SculkHorde.MOD_ID, name);
         return SOUND_EVENTS.register(name, () -> new SoundEvent(id));

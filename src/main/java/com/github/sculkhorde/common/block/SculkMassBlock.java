@@ -1,8 +1,11 @@
 package com.github.sculkhorde.common.block;
 
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -20,8 +23,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import javax.annotation.Nullable;
 
 public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
     /**
@@ -80,7 +81,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(Material.SCULK, MaterialColor.COLOR_BLACK)
+        return Properties.of(Material.STONE)
+                .color(MaterialColor.CLAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.SLIME_BLOCK)
                 .noOcclusion();

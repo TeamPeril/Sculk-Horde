@@ -1,14 +1,16 @@
 package com.github.sculkhorde.util;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.function.Predicate;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.block.Blocks;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 public class BlockSearcher
 {
@@ -54,6 +56,11 @@ public class BlockSearcher
         this.level = level;
         this.origin = origin;
         currentPosition = origin;
+    }
+
+    public ServerLevel getDimension()
+    {
+        return level;
     }
 
     public BlockSearcher setMaxDistance(int maxDistance)

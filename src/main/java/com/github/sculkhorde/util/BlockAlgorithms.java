@@ -1,20 +1,24 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.block.TendrilsBlock;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 public class BlockAlgorithms {
 
@@ -61,10 +65,6 @@ public class BlockAlgorithms {
         list.addAll(getNeighborsXZPlane(origin, false));
         list.addAll(getNeighborsXZPlane(origin.above(), true));
         list.addAll(getNeighborsXZPlane(origin.below(), true));
-        //list.addAll(getNeighborsXZPlane(origin.north(), true));
-        //list.addAll(getNeighborsXZPlane(origin.east(), true));
-        //list.addAll(getNeighborsXZPlane(origin.south(), true));
-        //list.addAll(getNeighborsXZPlane(origin.west(), true));
         return list;
     }
 
@@ -434,10 +434,6 @@ public class BlockAlgorithms {
      */
     public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos)
     {
-        if(!world.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
-        {
-            return;
-        }
 
         //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
@@ -455,20 +451,6 @@ public class BlockAlgorithms {
     }
 
     /**
-     * Checks if near sculk node, if true, spawns structure.
-     * @param targetPos The BlockPos to spawn it at
-     * @param world The world to spawn it in.
-     */
-    public static void tryPlaceLivingRockRoot(BlockPos targetPos, ServerLevel world)
-    {
-        //If block below target is valid and the target can be replaced by water
-        if(SculkHorde.savedData.isInRangeOfNode(targetPos, 100) && world.getBlockState(targetPos).isAir())
-        {
-            world.setBlockAndUpdate(targetPos, ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState());
-        }
-    }
-
-    /**
      * A Jank solution to spawning flora. Given a random chance, spawn flora.
      * @param targetPos The BlockPos to spawn it at
      * @param world The world to spawn it in.
@@ -477,69 +459,12 @@ public class BlockAlgorithms {
     {
         BlockState blockState = SculkHorde.randomSculkFlora.getRandomEntry().defaultBlockState();
 
-        //If block below target is valid and the target can be replaced by water
+        //If block below target is valid and the target can be replaced by water and target is not waterloggable
         if(blockState.canSurvive(world, targetPos)
-                && world.getBlockState(targetPos).canBeReplaced(Fluids.WATER)
-                && !world.getBlockState(targetPos).is(Blocks.WATER)
-                && !world.getBlockState(targetPos).is(Blocks.LAVA))
+                && (world.getBlockState(targetPos).isAir()
+                || world.getBlockState(targetPos).is(Blocks.SNOW)))
         {
             world.setBlockAndUpdate(targetPos, blockState);
-        }
-    }
-
-    /**
-     * Will place random flora attached to a given position.
-     * @param serverWorld the world
-     * @param origin the position
-     */
-    public static void placeFloraAroundLog(ServerLevel serverWorld, BlockPos origin) {
-        TendrilsBlock vein = ModBlocks.TENDRILS.get();
-
-        BlockPos[] possiblePositions = {
-                origin.north(),
-                origin.east(),
-                origin.south(),
-                origin.west()
-        };
-
-        //50% chance to place sculk vein for each face
-        for(BlockPos pos : possiblePositions)
-        {
-            if(serverWorld.random.nextInt(10) < 3 &&
-                    serverWorld.getBlockState(pos).isAir())
-            {
-                vein.placeBlock(serverWorld, pos);
-            }
-        }
-    }
-
-    /**
-     * Places a line of sculk vein above a block. Length and height of line is random.
-     * @param serverWorld the world
-     * @param origin the block we want to place these above
-     */
-    public static void placePatchesOfVeinAbove(ServerLevel serverWorld, BlockPos origin)
-    {
-        int OFFSET_MAX = 3;
-        int LENGTH_MAX = 5;
-        int LENGTH_MIN = 3;
-
-        Random rng = new Random();
-        int offset = rng.nextInt(OFFSET_MAX);
-        int length = rng.nextInt(LENGTH_MAX - LENGTH_MIN) + LENGTH_MIN;
-        TendrilsBlock vein = ModBlocks.TENDRILS.get();
-
-        //Attempt to place sculk vein in a straight line above origin
-        BlockPos indexPos = origin.above(offset);
-        for(int i = 0; i < length; i++)
-        {
-            indexPos = indexPos.above();
-
-            //75% chance to place vein
-            if(serverWorld.random.nextInt(4) <= 2)
-            {
-                vein.placeBlock(serverWorld, indexPos);
-            }
         }
     }
 
@@ -582,6 +507,12 @@ public class BlockAlgorithms {
             points.add(new BlockPos(x, origin.getY(), z));
         }
         return points;
+    }
+
+    public static int convertBlockLengthToChunkLength(int blockLength)
+    {
+        // Always make sure to round up in the calculation
+        return (int) Math.ceil((double) blockLength / 16);
     }
 
     public static ArrayList<Vec3> getPointsOnCircumferenceVec3(Vec3 origin, int radiusOfCircle, int numberOfPositionsToCreate)
@@ -627,7 +558,7 @@ public class BlockAlgorithms {
     }
 
     public static boolean isSolid(BlockState state) {
-        return !state.canBeReplaced(Fluids.WATER);
+        return !state.getMaterial().isReplaceable();
     }
 
     private static boolean isBlockFlat(ServerLevel level, BlockPos pos) {
@@ -646,6 +577,48 @@ public class BlockAlgorithms {
         else if(isSolid(level.getBlockState(pos)) && isSolid(level.getBlockState(pos.above())) && !isSolid(level.getBlockState(pos.above().above())))
         {
             return true;
+        }
+
+        return false;
+    }
+
+
+    public static BlockPos getGroundBlockPos(Level level, BlockPos origin, int startHeight)
+    {
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(origin.getX(), startHeight, origin.getZ());
+        while(mutable.getY() > level.getMinBuildHeight() && level.isEmptyBlock(mutable))
+        {
+            mutable.move(Direction.DOWN);
+        }
+        return mutable;
+    }
+
+    public static boolean areTheseDimensionsEqual(ResourceKey<Level> dimension1, ResourceKey<Level> dimension2)
+    {
+        if(dimension1 == null || dimension2 == null)
+        {
+            return false;
+        }
+        return dimension1.location().equals(dimension2.location());
+    }
+
+    public static boolean areTheseDimensionsEqual(ServerLevel dimension1, ServerLevel dimension2)
+    {
+        if(dimension1 == null || dimension2 == null)
+        {
+            return false;
+        }
+        return dimension1.dimension().location().equals(dimension2.dimension().location());
+    }
+
+    public static boolean isNearFluid(ServerLevel level, BlockPos origin, int range)
+    {
+        for(BlockPos pos : getBlockPosInCube(origin, range, true))
+        {
+            if(level.getFluidState(pos).getType() != Fluids.EMPTY)
+            {
+                return true;
+            }
         }
 
         return false;

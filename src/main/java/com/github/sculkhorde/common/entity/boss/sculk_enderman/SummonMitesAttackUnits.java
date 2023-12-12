@@ -1,20 +1,18 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkMiteEntity;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Predicate;
 
 public class SummonMitesAttackUnits extends MeleeAttackGoal
 {
@@ -38,12 +36,17 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
 
         if(ticksElapsed < executionCooldown)
+        {
+            return false;
+        }
+
+        if(!mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -64,11 +67,11 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).getMaterial().isReplaceable() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).getMaterial().isReplaceable() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -104,7 +107,6 @@ public class SummonMitesAttackUnits extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override

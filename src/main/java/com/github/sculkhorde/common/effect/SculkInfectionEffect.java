@@ -1,11 +1,15 @@
 package com.github.sculkhorde.common.effect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.sculkhorde.common.block.SculkMassBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,9 +20,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SculkInfectionEffect extends MobEffect {
 
@@ -62,7 +63,7 @@ public class SculkInfectionEffect extends MobEffect {
         float entityHealth = entity.getMaxHealth();
 
         //Spawn Mite
-        ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, null, null, entityPosition, MobSpawnType.SPAWNER, false, false);
+        ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level, null, null, null, entityPosition, MobSpawnType.SPAWNER, false, false);
 
         //Spawn Sculk Mass
         SculkMassBlock sculkMass = ModBlocks.SCULK_MASS.get();
@@ -74,7 +75,7 @@ public class SculkInfectionEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
-
+        if(entity.level.isClientSide()) { return;}
         if(EntityAlgorithms.isSculkLivingEntity.test(entity))
         {
             // Remove effect
@@ -109,4 +110,6 @@ public class SculkInfectionEffect extends MobEffect {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;
     }
+
+
 }

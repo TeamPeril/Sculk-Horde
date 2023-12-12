@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -29,7 +30,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canUse()
     {
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
@@ -39,7 +40,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 3.0D))
+        if(!mob.closerThan(mob.getTarget(), 5.0D) && mob.getTarget().isOnGround())
         {
             return false;
         }

@@ -1,13 +1,30 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.Random;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -23,10 +40,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -34,17 +56,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
 
-import java.util.Random;
-
-import static net.minecraft.world.entity.ai.behavior.BehaviorUtils.canSee;
-
-public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
+public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -57,20 +70,20 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
      */
 
     //The Health
-    public static final float MAX_HEALTH = 100F;
+    public static final float MAX_HEALTH = 200F;
     //The armor of the mob
-    public static final float ARMOR = 20F;
+    public static final float ARMOR = 5F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 7F;
+    public static final float ATTACK_DAMAGE = 20F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 3F;
+    public static final float ATTACK_KNOCKBACK = 5F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
 
     // Timing Variables
     public boolean canTeleport = true;
@@ -86,6 +99,8 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
     public static final EntityDataAccessor<Boolean> DATA_AGGRO = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> DATA_SCOUTING = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
 
+    // Animation
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -94,9 +109,16 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
      */
     public SculkEndermanEntity(EntityType<? extends SculkEndermanEntity> type, Level worldIn) {
         super(type, worldIn);
+        //handled in getStepHeight()
+        //this.setMaxUpStep(1.0F);
         this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+    }
+    
+    @Override
+    public float getStepHeight() {
+    	return 1.0F;
     }
 
     public SculkEndermanEntity(Level level, BlockPos pos)
@@ -123,8 +145,8 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
 
     // Accessors and Modifiers
 
-    public boolean isSpecialAttackReady() {
-        return ticksSinceLastSpecialAttack >= SPECIAL_ATTACK_COOLDOWN;
+    public boolean isSpecialAttackOnCooldown() {
+        return ticksSinceLastSpecialAttack < SPECIAL_ATTACK_COOLDOWN;
     }
 
     public void incrementSpecialAttackCooldown() {
@@ -140,6 +162,11 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -198,22 +225,21 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
         this.goalSelector.addGoal(0, new FloatGoal(this));
 
 
-        //All Phases
+        //All Phase Attacks
         this.goalSelector.addGoal(1, new ChaosRiftAttackGoal(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(1, new SculkSpineSpikeRadialAttack(this));
+        //this.goalSelector.addGoal(1, new SculkSpineSpikeLineAttack(this));
+        this.goalSelector.addGoal(1, new SummonSkeletonsAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
+        this.goalSelector.addGoal(1, new RangedSonicBoomAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
         this.goalSelector.addGoal(2, new SummonRandomAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
         this.goalSelector.addGoal(2, new SummonMitesAttackUnits(this, TickUnits.convertSecondsToTicks(3)));
-        this.goalSelector.addGoal(3, new AttackGoal());
 
-        // Phase 2
+        // Phase 2 Attacks
         this.goalSelector.addGoal(1, new RainDragonBallAttackGoal(this, TickUnits.convertSecondsToTicks(5)));
         this.goalSelector.addGoal(1, new EnderBubbleAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(2, new SummonCreepersAttackUnits(this, TickUnits.convertSecondsToTicks(5)));
 
-        // Phase 1
-        this.goalSelector.addGoal(1, new RangedSonicBoomAttackGoal(this, TickUnits.convertSecondsToTicks(1)));
-
-
+        this.goalSelector.addGoal(3, new AttackGoal());
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 1.0F, 20F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
@@ -231,7 +257,10 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
             return false;
         }
 
-        teleportRandomly(32);
+        // 50% chance to teleport randomly
+        if(this.random.nextInt(2) == 0) {
+            teleportRandomly(32);
+        }
 
         setAggro();
         return super.hurt(damageSource, amount);
@@ -248,14 +277,14 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
             }
         }
         // IF target isnt null and we cannot see them, teleport to them
-        if(this.getTarget() != null && !canSee(this, this.getTarget()))
+        if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget())
         {
-            stayInSpecificRangeOfTarget(1, 32);
+            teleportBehindEntity(getTarget());
         }
 
-        if(this.getTarget() != null && getHealth() >= getMaxHealth() * 0.5)
+        if(this.getTarget() != null && !this.getTarget().isOnGround())
         {
-            stayInSpecificRangeOfTarget(8, 27);
+            stayInSpecificRangeOfTarget(16, 32);
         }
 
         this.jumping = false;
@@ -321,32 +350,31 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
 
     /**
      * Teleports the entity to a random position within 64 blocks of the entity
-     * @return Returns true if the teleport was successful
      */
-    protected boolean teleportRandomly(int distance)
+    protected void teleportRandomly(int distance)
     {
         if (this.level.isClientSide() || !this.isAlive() || !canTeleport)
         {
-            return false;
+            return;
         }
 
         double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * distance;
         double d1 = this.getY() + (int)(this.random.nextDouble() - 0.5D) * distance;
         double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * distance;
-        return this.teleport(d0, d1, d2);
+        this.teleport(d0, d1, d2);
 
     }
 
     /**
      * Teleports the entity towards the given entity
+     *
      * @param entity The entity to teleport towards
-     * @return Returns true if the teleport was successful
      */
-    public boolean teleportTowardsEntity(Entity entity)
+    public void teleportTowardsEntity(Entity entity)
     {
         if(!canTeleport || !isTeleportCooldownOver())
         {
-            return false;
+            return;
         }
 
         ticksSinceLastTeleport = 0;
@@ -357,7 +385,7 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
         double d1 = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * teleportDistance;
         double d2 = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3.y * teleportDistance;
         double d3 = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * teleportDistance;
-        return this.teleport(d1, d2, d3);
+        this.teleport(d1, d2, d3);
     }
 
     /**
@@ -402,6 +430,16 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
         return this.teleport(d1, d2, d3);
     }
 
+    protected void teleportBehindEntity(Entity entity)
+    {
+        if(!canTeleport)
+        {
+            return;
+        }
+
+        this.teleport(entity.getX(), entity.getY(), entity.getZ());
+    }
+
     /**
      * Teleport the enderman to a random nearby position
      * @param x The x position
@@ -418,28 +456,38 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).getMaterial().blocksMotion()) {
+        while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).getMaterial().blocksMotion())
+        {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
         BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
-        boolean flag = blockstate.getMaterial().blocksMotion();
-        boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
-        if (flag && !flag1) {
+        boolean isMotionBlockFlag = false; blockstate.getMaterial().blocksMotion();
+        boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
+        if (!isWaterFlag)
+        {
             net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, x, y, z);
-            if (event.isCanceled()) return false;
+            if (event.isCanceled())
+            {
+                return false;
+            }
             Vec3 vec3 = this.position();
-            boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
-            if (flag2) {
+            boolean ifCanRandomTeleport = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
+            if (ifCanRandomTeleport)
+            {
                 this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
-                if (!this.isSilent()) {
+                if (!this.isSilent())
+                {
                     this.level.playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                    ticksSinceLastTeleport = 0;
                 }
             }
 
-            return flag2;
-        } else {
+            return ifCanRandomTeleport;
+        }
+        else
+        {
             return false;
         }
     }
@@ -485,8 +533,13 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
         this.entityData.set(DATA_AGGRO, nbt.getBoolean(DATA_IS_AGGRO_IDENTIFIER));
     }
 
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        return source == DamageSource.DROWN;
+    }
+
     // ####### Animation Code ###########
-    /*
+
     private static final RawAnimation IDLE_BODY_ANIMATION = RawAnimation.begin().thenPlay("idle");
     private static final RawAnimation IDLE_TWITCH_ANIMATION = RawAnimation.begin().thenPlay("idle.twitch");
     private static final RawAnimation IDLE_TENDRILS_ANIMATION = RawAnimation.begin().thenPlay("idle.tendrils");
@@ -508,11 +561,7 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
     private static final RawAnimation COMBAT_BUBBLE = RawAnimation.begin().thenPlay("combat.forcefieldbubble.activate");
     private static final RawAnimation COMBAT_BUBBLE_TWITCH = RawAnimation.begin().thenPlay("combat.forcefieldbubble.twitch");
 
-
-
-
-    private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .transitionLength(5)
+    private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", 5, state -> PlayState.STOP)
             .triggerableAnim("melee_attack_animation_1", COMBAT_ATTACK_ANIMATION_1)
             .triggerableAnim("melee_attack_animation_2", COMBAT_ATTACK_ANIMATION_2)
             .triggerableAnim("melee_attack_animation_3", COMBAT_ATTACK_ANIMATION_3)
@@ -525,35 +574,26 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
             .triggerableAnim("spike_radial_animation", COMBAT_SPIKE_RADIAL)
             .triggerableAnim("bubble_animation", COMBAT_BUBBLE);
 
-    private final AnimationController COMBAT_TWITCH_ANIMATION_CONTROLLER = new AnimationController<>(this, "twitch_controller", state -> PlayState.STOP)
-            .transitionLength(5)
+    private final AnimationController COMBAT_TWITCH_ANIMATION_CONTROLLER = new AnimationController<>(this, "twitch_controller", 5, state -> PlayState.STOP)
             .triggerableAnim("fireball_sky_twitch_animation", COMBAT_FIREBALL_SKY_TWITCH_ANIMATION)
             .triggerableAnim("summon_twitch_animation", COMBAT_SUMMON_TWITCH_ANIMATION)
             .triggerableAnim("spike_line_twitch_animation", COMBAT_SPIKE_TWITCH)
             .triggerableAnim("spike_radial_twitch_animation", COMBAT_SPIKE_RADIAL_TWITCH)
             .triggerableAnim("bubble_twitch_animation", COMBAT_BUBBLE_TWITCH);
-    */
+
     @Override
-    public void registerControllers(AnimationData data)
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
     {
-        /*
         controllers.add(
                 new AnimationController<>(this, "walk_cycle", 5, this::poseWalk),
                 new AnimationController<>(this, "twitch", 5, this::poseTwitch),
                 new AnimationController<>(this, "tendrils", 5, this::poseTendrils),
-                COMBAT_ATTACK_ANIMATION_CONTROLLER,
-                COMBAT_TWITCH_ANIMATION_CONTROLLER
+                COMBAT_ATTACK_ANIMATION_CONTROLLER
+                //COMBAT_TWITCH_ANIMATION_CONTROLLER
         );
-         */
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return factory;
     }
 
     // Create the animation handler for the leg segment
-    /*
     protected PlayState poseWalk(AnimationState<SculkEndermanEntity> state)
     {
         if(state.isMoving() && state.getAnimatable().isAggro())
@@ -587,8 +627,10 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
         return 2.55F;
     }
 
-     */
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
 
     // ####### Sound Code ###########
 
@@ -610,11 +652,6 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
 
     public boolean dampensVibrations() {
         return true;
-    }
-
-    @Override
-    public int tickTimer() {
-        return tickCount;
     }
 
 
@@ -643,7 +680,7 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
         @Override
         protected float getMinimumDistanceToTarget()
         {
-            return getHealth() >= getMaxHealth()/2 ? 16F : 0.5F;
+            return 0.5F;
         }
 
         @Override
@@ -653,15 +690,15 @@ public class SculkEndermanEntity extends Monster implements IAnimatable, IAnimat
             int random = new Random().nextInt(3);
             if(random == 0)
             {
-                //((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_1");
+                ((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_1");
             }
             else if(random == 1)
             {
-                //((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_2");
+                ((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_2");
             }
             else
             {
-                //((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_3");
+                ((SculkEndermanEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_3");
             }
         }
     }

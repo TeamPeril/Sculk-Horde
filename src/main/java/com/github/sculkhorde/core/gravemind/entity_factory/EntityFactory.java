@@ -1,15 +1,6 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.Gravemind;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +8,22 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.core.SculkHorde.gravemind;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * The Entity Provider is a data structure that serves as a way for the sculk to
@@ -105,10 +111,7 @@ public class EntityFactory {
         Optional<EntityFactoryEntry> entry = getEntry(entityType);
         if(entry.isPresent())
         {
-            Entity entity = entry.get().getEntity().create(level);
-            entity.setPos(pos.getX(), pos.getY(), pos.getZ());
-            level.addFreshEntity(entity);
-
+            entry.get().getEntity().spawn((ServerLevel) level, (CompoundTag)null, (Component)null, (Player)null, pos, MobSpawnType.SPAWNER, false, false);
             SculkHorde.statisticsData.incrementTotalUnitsSpawned();
         }
     }
@@ -187,11 +190,7 @@ public class EntityFactory {
             if(mobsToSpawn[i] == null) { continue; }
 
             EntityFactoryEntry mob = mobsToSpawn[i];
-            Entity entity = mob.getEntity().create(world);
-            entity.setPos(context.positions[i].getX(), context.positions[i].getY(), context.positions[i].getZ());
-            world.addFreshEntity(entity);
-            context.spawnedEntities[i] = (LivingEntity) entity;
-
+            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, (CompoundTag)null, (Component)null, (Player)null, context.positions[i], MobSpawnType.SPAWNER, false, false);
             ((ServerLevel)world).sendParticles(ParticleTypes.SCULK_SOUL, context.positions[i].getX() + 0.5D, context.positions[i].getY() + 1.15D, context.positions[i].getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
             ((ServerLevel)world).playSound((Player)null, context.positions[i], SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
             if (!noCost)
@@ -252,9 +251,7 @@ public class EntityFactory {
             //Set Remaining Balance
             context.remaining_balance = context.budget - randomEntry.getCost();
             //Spawn Mob
-            randomEntry.getEntity()
-                    .create(world)
-                    .setPos(pos.getX(), pos.getY(), pos.getZ());
+            randomEntry.getEntity().spawn((ServerLevel) world, (CompoundTag)null, (Component)null, (Player)null, pos, MobSpawnType.SPAWNER, false, false);
             ((ServerLevel)world).sendParticles(ParticleTypes.SCULK_SOUL, pos.getX() + 0.5D, pos.getY() + 1.15D, pos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
             ((ServerLevel)world).playSound((Player)null, pos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
         }

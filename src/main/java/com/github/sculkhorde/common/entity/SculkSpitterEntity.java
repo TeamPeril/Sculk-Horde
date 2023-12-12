@@ -1,40 +1,57 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.entity.attack.AcidAttack;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.MountNearestRavager;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 
-import java.util.concurrent.TimeUnit;
-
-public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimationTickable,ISculkSmartEntity {
+public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -65,6 +82,8 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
 
     private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
+
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -107,6 +126,11 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
     private boolean isParticipatingInRaid = false;
 
     @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
+
+    @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
     }
@@ -120,7 +144,7 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
     }
-
+    private SquadHandler squad = new SquadHandler(this);
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
@@ -159,10 +183,13 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
                         new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
+                        new MountNearestRavager(this),
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
                                 .setProjectileOriginOffset(0.8, 0.9, 0.8)
                                 .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         //new MoveTowardsTargetGoal(this, 0.8F, 20F),
@@ -190,7 +217,8 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
         Goal[] goals =
                 {
                         new InvalidateTargetGoal(this),
-                        new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
@@ -215,17 +243,30 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
 
 
     // ANIMATIONS
-    /*
     private static final RawAnimation STRAFE_ANIMATION = RawAnimation.begin().thenPlay("move.strafe");
     private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", ATTACK_ANIMATION);
-
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(
+                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
+                DefaultAnimations.genericLivingController(this),
+                ATTACK_ANIMATION_CONTROLLER
+        );
+    }
 
     protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
     {
+        /*
+        if(state.getAnimatable().isStrafing())
+        {
+            state.setAnimation(STRAFE_ANIMATION);
+        }
+         */
+
         if(state.isMoving())
         {
             state.setAnimation(WALK_ANIMATION);
@@ -237,29 +278,11 @@ public class SculkSpitterEntity extends Monster implements IAnimatable, IAnimati
 
         return PlayState.CONTINUE;
     }
-    */
+
 
     @Override
-    public void registerControllers(AnimationData data) {
-        /*
-        controllers.add(
-                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
-                DefaultAnimations.genericLivingController(this),
-                ATTACK_ANIMATION_CONTROLLER
-        );
-
-         */
-    }
-
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
-
-    @Override
-    public int tickTimer() {
-        return tickCount;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     protected SoundEvent getAmbientSound() {

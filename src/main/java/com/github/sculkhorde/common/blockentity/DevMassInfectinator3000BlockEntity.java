@@ -1,33 +1,16 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.entity.infection.DevInfectionHandler;
-import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
-import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.core.ModConfig;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-
-/**
- * Chunkloader code created by SuperMartijn642
- */
 public class DevMassInfectinator3000BlockEntity extends BlockEntity
 {
 
@@ -91,7 +74,7 @@ public class DevMassInfectinator3000BlockEntity extends BlockEntity
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, DevMassInfectinator3000BlockEntity blockEntity)
     {
-        if(level.isClientSide)
+        if(level.isClientSide || !ModConfig.SERVER.block_infestation_enabled.get())
         {
             return;
         }

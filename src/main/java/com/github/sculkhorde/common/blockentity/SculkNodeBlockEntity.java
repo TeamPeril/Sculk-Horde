@@ -1,13 +1,23 @@
 package com.github.sculkhorde.common.blockentity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -16,27 +26,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
 public class SculkNodeBlockEntity extends BlockEntity
 {
-
     private long tickedAt = System.nanoTime();
 
     private SculkNodeProceduralStructure nodeProceduralStructure;
 
     //Repair routine will restart after an hour
     private final long repairIntervalInMinutes = 60;
-    //Keep track of last time since repair so we know when to restart
+    //Keep track of last time since repair, so we know when to restart
     private long lastTimeSinceRepair = -1;
 
     public static final int tickIntervalSeconds = 1;
@@ -45,17 +48,27 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
+
     }
 
     private final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
     private long lastHeartBeat = System.currentTimeMillis();
-
     private long lastPopulationUpdate = 0;
     private final long populationUpdateIntervalMillis = TickUnits.convertMinutesToTicks(3);
     public final int MAX_POPULATION = 100;
     Collection<ISculkSmartEntity> sculkEntitiesBelongingToThisNode = new ArrayList<>();
 
     /** Accessors **/
+
+    public boolean isActive()
+    {
+        return this.getBlockState().getValue(SculkNodeBlock.ACTIVE);
+    }
+
+    public void setActive(boolean active)
+    {
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkNodeBlock.ACTIVE, active), 3);
+    }
 
     public void updateListOfSculkEntitiesBelongingToThisNode()
     {
@@ -138,6 +151,7 @@ public class SculkNodeBlockEntity extends BlockEntity
         if(infectionHandler == null)
         {
             infectionHandler = new SculkNodeInfectionHandler(this, getBlockPos());
+            infectionHandler.spawnOnSurface = false;
         }
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
@@ -158,22 +172,39 @@ public class SculkNodeBlockEntity extends BlockEntity
             blockEntity.initializeInfectionHandler();
         }
 
-        if(blockEntity.infectionHandler.canBeActivated())
+        if(blockEntity.infectionHandler.canBeActivated() && blockEntity.isActive())
         {
             blockEntity.infectionHandler.activate();
         }
+
+        if(!blockEntity.isActive())
+        {
+            blockEntity.infectionHandler.deactivate();
+        }
+
+        blockEntity.infectionHandler.tick();
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
         // If the time elapsed is less than the tick interval, return
         if(timeElapsed < tickIntervalSeconds) { return; }
 
-        blockEntity.infectionHandler.tick();
-
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 50);
+
+        /** Chunkloading **/
+
+        if(blockEntity.isActive())
+        {
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) level, blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
+        }
+        else
+        {
+            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(blockPos, (ServerLevel) level);
+        }
+
 
         /** Building Shell Process **/
         long repairTimeElapsed = TimeUnit.MINUTES.convert(System.nanoTime() - blockEntity.lastTimeSinceRepair, TimeUnit.NANOSECONDS);
@@ -197,19 +228,5 @@ public class SculkNodeBlockEntity extends BlockEntity
         {
             blockEntity.nodeProceduralStructure.startBuildProcedure();
         }
-
-
-        /** Infection Routine **/
-        /*
-        if(blockEntity.infectionHandler == null)
-        {
-            blockEntity.infectionHandler = new SculkNodeInfectionHandler(blockEntity);
-        }
-        else
-        {
-            blockEntity.infectionHandler.tick();
-        }
-
-         */
     }
 }

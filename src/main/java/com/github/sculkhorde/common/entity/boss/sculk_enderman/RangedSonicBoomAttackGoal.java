@@ -1,6 +1,9 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.EnumSet;
+
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -12,8 +15,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.EnumSet;
 
 public class RangedSonicBoomAttackGoal extends Goal
 {
@@ -44,17 +45,12 @@ public class RangedSonicBoomAttackGoal extends Goal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
 
         if(ticksElapsed < executionCooldown)
-        {
-            return false;
-        }
-
-        if(mob.getHealth() < mob.getMaxHealth()/2)
         {
             return false;
         }
@@ -76,7 +72,7 @@ public class RangedSonicBoomAttackGoal extends Goal
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
         getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
-        // TODO PORT TO 1.19.2 getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
+        getSculkEnderman().triggerAnim("attack_controller", "fireball_shoot_animation");
         mob.playSound(SoundEvents.WARDEN_SONIC_CHARGE, 3.0F, 1.0F);
     }
 
@@ -122,26 +118,10 @@ public class RangedSonicBoomAttackGoal extends Goal
         }
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-        float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5 ? targetEntity.getMaxHealth() : 10.0F;
-        targetEntity.hurt(DamageSource.sonicBoom(mob), damage);
+        float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5F ? (targetEntity.getMaxHealth()/4F) + 10.0F : 10.0F;
+        targetEntity.hurt(DamageSource.explosion(mob), damage);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);
-
-        /*
-        double xSpawn = mob.getX();
-        double ySpawn = mob.getY() + mob.getEyeHeight();
-        double zSpawn = mob.getZ();
-
-        double xDirection = targetEntity.getX() - xSpawn;
-        double yDirection = targetEntity.getY(0.5D) - ySpawn;
-        double zDirection = targetEntity.getZ() - zSpawn;
-
-        DragonFireball dragonfireball = new DragonFireball(mob.level, mob, xDirection, yDirection, zDirection);
-        dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
-        mob.level.addFreshEntity(dragonfireball);
-        //Play blaze shoot sound
-        mob.level.playLocalSound(xSpawn, ySpawn, zSpawn, SoundEvents.ENDER_DRAGON_SHOOT, mob.getSoundSource(), 1.0F, 1.0F, false);
-        */
     }
 }

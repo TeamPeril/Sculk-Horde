@@ -1,20 +1,18 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.common.entity.SculkCreeperEntity;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.level.material.Fluids;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Predicate;
 
 public class SummonCreepersAttackUnits extends MeleeAttackGoal
 {
@@ -38,7 +36,7 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
     {
         ticksElapsed++;
 
-        if(!getSculkEnderman().isSpecialAttackReady() || mob.getTarget() == null)
+        if(getSculkEnderman().isSpecialAttackOnCooldown() || mob.getTarget() == null)
         {
             return false;
         }
@@ -49,6 +47,11 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
         }
 
         if(getSculkEnderman().getHealth() > 0.5F * getSculkEnderman().getMaxHealth())
+        {
+            return false;
+        }
+
+        if(!mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -69,11 +72,11 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).getMaterial().isReplaceable() || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).getMaterial().isReplaceable() || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -109,7 +112,6 @@ public class SummonCreepersAttackUnits extends MeleeAttackGoal
     {
         super.tick();
         elapsedAttackDuration++;
-        getSculkEnderman().stayInSpecificRangeOfTarget(16, 32);
     }
 
     @Override

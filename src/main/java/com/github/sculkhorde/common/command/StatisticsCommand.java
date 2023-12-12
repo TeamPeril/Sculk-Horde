@@ -5,6 +5,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -28,6 +29,7 @@ public class StatisticsCommand implements Command<CommandSourceStack> {
                         + printIfNotZero("Total Units Killed", SculkHorde.statisticsData.getTotalUnitDeaths())
                         + printIfNotZero("Total Victims Infested", SculkHorde.statisticsData.getTotalVictimsInfested())
                         + printIfNotZero("Total Mass Gained From Burrowed", SculkHorde.statisticsData.getTotalMassFromBurrowed())
+                        + printIfNotZero("Total Mass Gained From Diseased Cysts", SculkHorde.statisticsData.getTotalMassFromDiseasedCysts())
                         + printIfNotZero("Total Mass Gained From Bees", SculkHorde.statisticsData.getTotalMassFromBees())
                         + printIfNotZero("Total Mass From Nodes", SculkHorde.statisticsData.getTotalMassFromNodes())
                 ), false);

@@ -2,13 +2,11 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.server.level.ServerLevel;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
-
-import java.util.concurrent.TimeUnit;
 
 public class DespawnAfterTime extends Goal {
 
@@ -35,7 +33,8 @@ public class DespawnAfterTime extends Goal {
     @Override
     public boolean canUse()
     {
-        if(level.getGameTime() - creationTime > ticksThreshold && !mob.isParticipatingInRaid())
+        boolean mobHasBeenNameTagged = ((Mob) mob).hasCustomName();
+        if(level.getGameTime() - creationTime > ticksThreshold && !mob.isParticipatingInRaid() && !mobHasBeenNameTagged)
         {
             return true;
         }

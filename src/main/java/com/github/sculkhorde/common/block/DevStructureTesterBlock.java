@@ -1,30 +1,32 @@
 package com.github.sculkhorde.common.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -112,7 +114,8 @@ public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBl
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BLUE)
+        Properties prop = Properties.of(Material.STONE)
+                .color(MaterialColor.TERRACOTTA_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .sound(SoundType.ANCIENT_DEBRIS);

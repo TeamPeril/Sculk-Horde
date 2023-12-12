@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.advancement;
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
+
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
 import net.minecraft.advancements.critereon.DeserializationContext;
 import net.minecraft.advancements.critereon.EntityPredicate;
@@ -21,8 +22,8 @@ public class SculkHordeStartTrigger extends SimpleCriterionTrigger<SculkHordeSta
     }
 
     @Override
-    public SculkHordeStartCriterion createInstance(JsonObject pJson, EntityPredicate.Composite pPlayer, DeserializationContext pContext) {
-        return new SculkHordeStartCriterion(pPlayer);
+    public SculkHordeStartCriterion createInstance(JsonObject jsonObject, EntityPredicate.Composite awarePredicate, DeserializationContext deserializationContext) {
+        return new SculkHordeStartCriterion(awarePredicate);
     }
 
     public void trigger(ServerPlayer player) {
@@ -31,8 +32,8 @@ public class SculkHordeStartTrigger extends SimpleCriterionTrigger<SculkHordeSta
 
     public static class SculkHordeStartCriterion extends AbstractCriterionTriggerInstance {
 
-        public SculkHordeStartCriterion(EntityPredicate.Composite pPlayer) {
-            super(ID, pPlayer);
+        public SculkHordeStartCriterion(EntityPredicate.Composite awarePredicate) {
+            super(ID, awarePredicate);
         }
     }
 }

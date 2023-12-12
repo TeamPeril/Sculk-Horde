@@ -1,12 +1,24 @@
 package com.github.sculkhorde.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,19 +27,50 @@ import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-
 public class EntityAlgorithms {
+
+    public static boolean canApplyDebuffEffect(LivingEntity entity, MobEffect debuff)
+    {
+        boolean isEntityNull = entity == null;
+        boolean isEntityDead = entity.isDeadOrDying();
+        if(isEntityNull || isEntityDead)
+        {
+            return false;
+        }
+
+        boolean isEntityInvulnerable = entity.isInvulnerable();
+        boolean isEntityAttackable = entity.isAttackable();
+        boolean doesEntityHaveDebuffAlready = entity.hasEffect(debuff);
+        if(isEntityInvulnerable || !isEntityAttackable || doesEntityHaveDebuffAlready)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static void applyDebuffEffect(LivingEntity entity, MobEffect debuff, int duration, int amplifier)
+    {
+        if(canApplyDebuffEffect(entity, debuff))
+        {
+            entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
+        }
+    }
+
+    public static void reducePurityEffectDuration(LivingEntity entity, int amountInTicks)
+    {
+        if(entity.hasEffect(ModMobEffects.PURITY.get()))
+        {
+            MobEffectInstance purityEffect = entity.getEffect(ModMobEffects.PURITY.get());
+            int newDuration = Math.max(purityEffect.getDuration() - amountInTicks, 0);
+            entity.removeEffect(ModMobEffects.PURITY.get());
+            entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), newDuration, purityEffect.getAmplifier()));
+        }
+    }
+
     /**
      * Returns the block position a player is staring at
      * @param player The player to check
@@ -100,6 +143,11 @@ public class EntityAlgorithms {
         return entity instanceof WaterAnimal;
     }
 
+    public static boolean isLivingEntityInvulnerable(LivingEntity entity)
+    {
+        return entity.isInvulnerable() || !entity.isAttackable();
+    }
+
     /**
      * Determines if we should avoid targeting an entity at all costs.
      * @param entity The Given Entity
@@ -130,6 +178,11 @@ public class EntityAlgorithms {
             {
                 return true;
             }
+
+            if(player.hasEffect(ModMobEffects.SCULK_VESSEL.get()))
+            {
+                return true;
+            }
         }
 
         if(entity instanceof Creeper)
@@ -147,12 +200,12 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity) && ModConfig.SERVER.target_faw_entities.get())
+        if(ModColaborationHelper.isThisAFromAnotherWorldEntity(entity) && !ModConfig.SERVER.target_faw_entities.get())
         {
             return true;
         }
 
-        if(ModColaborationHelper.isThisASporeEntity(entity) && ModConfig.SERVER.target_spore_entities.get())
+        if(ModColaborationHelper.isThisASporeEntity(entity) && !ModConfig.SERVER.target_spore_entities.get())
         {
             return true;
         }
@@ -192,9 +245,53 @@ public class EntityAlgorithms {
                 return true;
             }
         });
-        return livingEntitiesInRange;
+                  return livingEntitiesInRange;
 
     }
+
+    /**
+     * Gets all living entities in the given bounding box.
+     * @param serverLevel The given world
+     * @param boundingBox The given bounding box to search for a target
+     * @param predicate The given predicate to filter the results
+     * @return A list of valid targets
+     */
+    public static List<LivingEntity> getLivingEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox, Predicate<LivingEntity> predicate)
+    {
+        List<LivingEntity> livingEntitiesInRange = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, predicate);
+        return livingEntitiesInRange;
+    }
+
+    public static AABB createBoundingBoxCubeAtBlockPos(Vec3 origin, int squareLength)
+    {
+        double halfLength = squareLength/2;
+        AABB boundingBox = new AABB(origin.x() - halfLength, origin.y() - halfLength, origin.z() - halfLength, origin.x() + halfLength, origin.y() + halfLength, origin.z() + halfLength);
+        return boundingBox;
+    }
+
+    public static AABB createBoundingBoxRectableAtBlockPos(Vec3 origin, int width, int height, int length)
+    {
+        double halfWidth = width/2;
+        double halfHeight = height/2;
+        double halfLength = length/2;
+
+        AABB boundingBox = new AABB(origin.x() - halfWidth, origin.y() - halfHeight, origin.z() - halfLength, origin.x() + halfWidth, origin.y() + halfHeight, origin.z() + halfLength);
+        return boundingBox;
+    }
+
+    public static List<LivingEntity> getNonSculkEntitiesAtBlockPos(ServerLevel level, BlockPos origin, int squareLength)
+    {
+        AABB boundingBox = createBoundingBoxCubeAtBlockPos(Vec3.atCenterOf(origin), squareLength);
+        List<LivingEntity> livingEntitiesInRange = level.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
+            @Override
+            public boolean test(LivingEntity livingEntity) {
+                return !EntityAlgorithms.isSculkLivingEntity.test(livingEntity);
+            }
+        });
+        return livingEntitiesInRange;
+    }
+
+
 
     public static void announceToAllPlayers(ServerLevel level, Component message)
     {

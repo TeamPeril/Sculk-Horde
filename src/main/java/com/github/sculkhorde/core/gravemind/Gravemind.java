@@ -1,7 +1,8 @@
 package com.github.sculkhorde.core.gravemind;
 
 
-import com.github.sculkhorde.common.block.SculkNodeBlock;
+import java.util.Optional;
+
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
@@ -9,14 +10,9 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
-import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
-import java.util.*;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.
@@ -41,7 +37,7 @@ public class Gravemind
     public static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
     public int sculk_node_limit = 1;
 
-    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(8);
+    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(ModConfig.SERVER.sculk_node_spawn_cooldown_hours.get());
 
     /**
      * Default Constructor <br>
@@ -79,12 +75,16 @@ public class Gravemind
         if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
         {
             evolution_state = evolution_states.Mature;
-            sculk_node_limit = 2;
+            sculk_node_limit = 8;
         }
         else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
         {
             evolution_state = evolution_states.Immature;
-            sculk_node_limit = 1;
+            sculk_node_limit = 4;
+            if(SculkHorde.savedData.isHordeUnactivated())
+            {
+                SculkHorde.savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
+            }
         }
 
     }
@@ -108,16 +108,16 @@ public class Gravemind
         if(evolution_state == evolution_states.Immature)
         {
             SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get()/2);
-            calulateCurrentState();
         }
         else if(evolution_state == evolution_states.Mature)
         {
-            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() - 1);
-            calulateCurrentState();
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get()/2);
+
         }
+        calulateCurrentState();
     }
 
-    public void enableAmountOfBeeHives(ServerLevel worldIn, int amount)
+    public void enableAmountOfBeeHives(int amount)
     {
         if(SculkHorde.savedData == null) { return; }
 
@@ -128,11 +128,11 @@ public class Gravemind
         {
             ModSavedData.BeeNestEntry entry = SculkHorde.savedData.getBeeNestEntries().get(i);
 
-            if(!entry.isEntryValid(worldIn)) { continue; }
+            if(!entry.isEntryValid()) { continue; }
 
-            if (!entry.isOccupantsExistingDisabled(worldIn))
+            if (!entry.isOccupantsExistingDisabled())
             {
-                entry.disableOccupantsExiting(worldIn);
+                entry.disableOccupantsExiting();
                 lastEnabledIndex = i;
             }
         }
@@ -145,9 +145,9 @@ public class Gravemind
         {
             int index = i % SculkHorde.savedData.getBeeNestEntries().size();
 
-            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid(worldIn)) { continue; }
+            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid()) { continue; }
 
-            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting(worldIn);
+            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting();
         }
     }
 
@@ -155,13 +155,19 @@ public class Gravemind
     {
         context.isRequestViewed = true;
 
+
+        boolean isSenderDeveloper = context.sender == ReinforcementRequest.senderType.Developer;
+        boolean isSenderSculkMassBlock = context.sender == ReinforcementRequest.senderType.SculkMass;
+        boolean isThereNoMass = SculkHorde.savedData.getSculkAccumulatedMass() <= 0;
+        boolean isHordeDefeated = SculkHorde.savedData.isHordeDefeated();
+
         //Auto approve is this reinforcement is requested by a developer or sculk mass
-        if(context.sender == ReinforcementRequest.senderType.Developer || context.sender == ReinforcementRequest.senderType.SculkMass)
+        if(isSenderDeveloper || isSenderSculkMassBlock)
         {
             context.isRequestApproved = true;
         }
 
-        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
+        if(isHordeDefeated || isThereNoMass)
         {
             return;
         }
@@ -173,7 +179,7 @@ public class Gravemind
         // If Overpopulated, and its a summoner, do not approve.
         if(isSenderTypeSummoner && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
         {
-            BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.positions[0]).getPosition();
+            BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.dimension, context.positions[0]).getPosition();
             Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
             if(nodeBlockEntity.isPresent())
             {
@@ -184,7 +190,6 @@ public class Gravemind
                 }
             }
         }
-
 
 
         //If gravemind is undeveloped, just auto approve all requests
@@ -211,9 +216,6 @@ public class Gravemind
                 context.isRequestApproved = true;
             }
         }
-        //TODO: Add functionality for mature state
-
-
     }
 
     /**
@@ -239,16 +241,4 @@ public class Gravemind
         }
         return false;
     }
-
-
-
-
-
-
-
-    /** ######## Classes ######## **/
-
-    /** ######## CLASSES ######### **/
-
-
 }

@@ -1,6 +1,17 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.blockentity.*;
+import com.github.sculkhorde.common.blockentity.DevMassInfectinator3000BlockEntity;
+import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
+import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkLivingRockRootBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
+import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
+
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -8,6 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockEntities {
+
 
     public static DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, SculkHorde.MOD_ID);
@@ -55,6 +67,10 @@ public class ModBlockEntities {
     public static RegistryObject<BlockEntityType<InfestedTagBlockEntity>> INFESTED_WOOD_MASS_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("infested_wood_mass_block_entity", () -> BlockEntityType.Builder.of(
                     InfestedTagBlockEntity::new, ModBlocks.INFESTED_WOOD_MASS.get()).build(null));
+
+    public static RegistryObject<BlockEntityType<SoulHarvesterBlockEntity>> SOUL_HARVESTER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("soul_harvester_block_entity", () -> BlockEntityType.Builder.of(
+                    SoulHarvesterBlockEntity::new, ModBlocks.SOUL_HARVESTER_BLOCK.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

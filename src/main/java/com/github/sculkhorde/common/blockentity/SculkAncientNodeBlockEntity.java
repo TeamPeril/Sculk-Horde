@@ -1,15 +1,26 @@
 package com.github.sculkhorde.common.blockentity;
 
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
-import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.mojang.serialization.Dynamic;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -32,15 +43,6 @@ import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-
-import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.AWAKE;
-import static com.github.sculkhorde.common.block.SculkAncientNodeBlock.CURED;
-
 /**
  * Chunkloader code created by SuperMartijn642
  */
@@ -49,12 +51,18 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
 
 
     private long tickedAt = System.nanoTime();
-    public static final int tickIntervalSeconds = 10;
+    public static final int tickIntervalSeconds = 5;
     private long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(5);
     private long lastHeartBeat = System.currentTimeMillis();
 
+    private SculkNodeInfectionHandler infectionHandler;
+
     // Vibration Code
-    private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.worldPosition), 16, this, (VibrationListener.ReceivingEvent)null, 0.0F, 0);
+
+    private static final int LISTENER_RADIUS = 24;
+    private final PositionSource positionSource = new BlockPositionSource(this.worldPosition);
+    private VibrationListener listener = new VibrationListener(this.positionSource, LISTENER_RADIUS, this, (VibrationListener.ReceivingEvent)null, 0.0F, 0);
+
     public SculkAncientNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_ANCIENT_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
@@ -63,15 +71,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
 
     /** Getters **/
 
-    public boolean isTriggering()
-    {
-        return this.getBlockState().getValue(SculkAncientNodeBlock.CURED);
-    }
-
-    public boolean isAwake()
-    {
-        return this.getBlockState().getValue(AWAKE);
-    }
 
     /**
      * Returns true if the block below is a sculk block,
@@ -82,7 +81,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.below()).isSolidRender(worldIn, pos)  &&
+        return worldIn.getBlockState(pos.below()).getMaterial().isSolid()  &&
                 worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
                 worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
                 worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
@@ -162,18 +161,16 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
 
     /** Setters **/
 
-    public void setAwake()
-    {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AWAKE, true));
-    }
-
-    public void setTriggering(boolean value)
-    {
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(CURED, value));
-    }
-
 
     /** Events **/
+
+    private void initializeInfectionHandler()
+    {
+        if(infectionHandler == null)
+        {
+            infectionHandler = new SculkNodeInfectionHandler(this, getBlockPos());
+        }
+    }
 
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
@@ -185,26 +182,32 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
         });
     }
 
-    private static void spawnInfectorOnSurface(ServerLevel level, int x, int z, int rangeOfInfector, int maxInfectionsOfInfector)
+    /**
+     * Gets called on the client to do heartbeat sounds
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
-        // Do ray trace from top of world to bottom to find the surface
-        BlockPos.MutableBlockPos spawnPosition = new BlockPos.MutableBlockPos(x, level.getMaxBuildHeight(), z);
-        while(!level.getBlockState(spawnPosition).isSolidRender(level, spawnPosition) && spawnPosition.getY() > level.getMinBuildHeight())
+        if(level.isClientSide())
         {
-            spawnPosition.setY(spawnPosition.getY() - 1);
+            tickClient(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeUnactivated() && ModConfig.SERVER.trigger_ancient_node_automatically.get())
+        {
+            tickTriggerAutomatically(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeUnactivated() && !ModConfig.SERVER.trigger_ancient_node_automatically.get())
+        {
+            tickUnactivated(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeActive())
+        {
+            tickActive(level, blockPos, blockState, blockEntity);
         }
 
-        // If the block is not air, spawn the infector
-        if(!level.getBlockState(spawnPosition).isAir())
-        {
-            // Spawn the infector
-            CursorSurfaceInfectorEntity infectorEntity = new CursorSurfaceInfectorEntity(level);
-            infectorEntity.setPos(spawnPosition.getX(), spawnPosition.getY(), spawnPosition.getZ());
-            infectorEntity.setMaxRange(rangeOfInfector);
-            infectorEntity.setMaxTransformations(maxInfectionsOfInfector);
-            infectorEntity.setSearchIterationsPerTick(20);
-            level.addFreshEntity(infectorEntity);
-        }
     }
 
     /**
@@ -224,13 +227,13 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
     }
 
     /**
-     * Gets called on server when the block is awake
+     * Gets called on the client to do heartbeat sounds
      * @param level The level
      * @param blockPos The position
      * @param blockState The blockstate
      * @param blockEntity The block entity
      */
-    public static void tickAwake(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    public static void tickUnactivated(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
@@ -240,13 +243,61 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();
 
+        if(areAnyPlayersInRange((ServerLevel) level, blockPos, 15))
+        {
+            tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
+        }
+    }
+
+    /**
+     * Gets called on server when the block is awake
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
+    public static void tickActive(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+
+        // Initialize the infection handler
+        if(blockEntity.infectionHandler == null)
+        {
+            blockEntity.initializeInfectionHandler();
+        }
+        if(blockEntity.infectionHandler.canBeActivated())
+        {
+            blockEntity.infectionHandler.activate();
+        }
+
+        blockEntity.infectionHandler.tick();
+
+        // If the time elapsed is less than the tick interval, return
+        if(timeElapsed < tickIntervalSeconds) { return; }
+
+        AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
+
+        // Update the tickedAt time
+        blockEntity.tickedAt = System.nanoTime();
+
         addDarknessEffectToNearbyPlayers(level, blockPos, 25);
-        // Spawn in random x and z position
-        Random rng = new Random();
-        int spawnRange = 100;
-        int x = rng.nextInt(spawnRange) - (spawnRange/2);
-        int z = rng.nextInt(spawnRange) - (spawnRange/2);
-        spawnInfectorOnSurface((ServerLevel)level, blockPos.getX() + x, blockPos.getZ() + z, 100, 50);
+
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) level, blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
+    }
+
+    public static void tickTriggerAutomatically(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+        // Should never get here but for safety's sake double verify
+        if (!ModConfig.SERVER.trigger_ancient_node_automatically.get()) { return; }
+
+        // Check elapsed days
+        if (level.getDayTime() < (ModConfig.SERVER.trigger_ancient_node_wait_days.get() * 24000)) { return; }
+
+        // Check time of current day
+        if ((level.getDayTime() % 24000) < (long)(ModConfig.SERVER.trigger_ancient_node_time_of_day.get())) { return; }
+
+        tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
     }
 
     private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)
@@ -257,6 +308,24 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
                 );
     }
 
+    private static void spawnSculkPhantomsAtTopOfWorld(SculkAncientNodeBlockEntity blockEntity, int amount)
+    {
+        ServerLevel level = (ServerLevel) blockEntity.level;
+        int spawnRange = 100;
+        int minimumSpawnRange = 50;
+        Random rng = new Random();
+        for(int i = 0; i < amount; i++)
+        {
+            int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+            int y = level.getMaxBuildHeight();
+            BlockPos spawnPosition = new BlockPos(blockEntity.getBlockPos().getX() + x, y, blockEntity.getBlockPos().getZ() + z);
+
+            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
+
+        }
+    }
+
     public static void announceToAllPlayers(ServerLevel level, Component message)
     {
         level.players().forEach((player) -> player.displayClientMessage(message, false));
@@ -264,17 +333,18 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
 
     public static void tryInitializeHorde(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
-        if(blockEntity.isAwake()) { return; }
+        if(!SculkHorde.savedData.isHordeUnactivated()) { return; }
 
-        int MAX_SPAWNED_SPORE_SPEWERS = 50;
+        int MAX_SPAWNED_SPORE_SPEWERS = 10;
 
-        blockEntity.setAwake();
         // If the horde has no mass, give it some
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             SculkHorde.savedData.addSculkAccumulatedMass(1000);
             SculkHorde.statisticsData.addTotalMassFromNodes(1000);
         }
+
+        SculkHorde.savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
 
         announceToAllPlayers((ServerLevel)level, Component.literal("The Sculk Horde has been awakened!"));
 
@@ -306,7 +376,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
 
         level.players().forEach((player) -> level.playSound(null, player.blockPosition(), ModSounds.HORDE_START_SOUND.get(), SoundSource.AMBIENT, 1.0F, 1.0F));
 
-        AdvancementUtil.giveAdvancementToAllPlayers((ServerLevel) level, SculkHordeStartTrigger.INSTANCE);
+        spawnSculkPhantomsAtTopOfWorld(blockEntity, 10);
     }
 
     // Data
@@ -315,8 +385,8 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
         super.load(nbt);
 
         if (nbt.contains("listener", 10)) {
-            VibrationListener.codec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((nbtListener) -> {
-                this.vibrationListener = nbtListener;
+        	VibrationListener.codec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+                this.listener = data;
             });
         }
 
@@ -325,35 +395,39 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements Vibratio
     protected void saveAdditional(CompoundTag nbt)
     {
         super.saveAdditional(nbt);
-        VibrationListener.codec(this).encodeStart(NbtOps.INSTANCE, this.vibrationListener).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((nbtListener) -> {
-            nbt.put("listener", nbtListener);
+        VibrationListener.codec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+            nbt.put("listener", p_222871_);
         });
     }
 
     // Vibration System
     /** ~~~~~~~~ Vibration Events ~~~~~~~~  **/
+    public VibrationListener getListener() {
+        return this.listener;
+    }
 
+    @Override
     public TagKey<GameEvent> getListenableEvents() {
         return GameEventTags.SHRIEKER_CAN_LISTEN;
     }
 
-    public VibrationListener getListener() {
-        return this.vibrationListener;
-    }
-
-    public void onSignalSchedule() {
-        this.setChanged();
-    }
-
-    public boolean shouldListen(ServerLevel pLevel, GameEventListener pListener, BlockPos pPos, GameEvent pGameEvent, GameEvent.Context pContext) {
+    @Override
+    public boolean shouldListen(ServerLevel level, GameEventListener listener, BlockPos blockPos, GameEvent gameEvent, GameEvent.Context context) {
         return true;
     }
 
-    public void onSignalReceive(ServerLevel pLevel, GameEventListener pListener, BlockPos blockPos, GameEvent pGameEvent, @Nullable Entity pSourceEntity, @Nullable Entity pProjectileOwner, float pDistance)
+    @Override
+    public void onSignalReceive(ServerLevel level, GameEventListener listener, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
     {
-        if(areAnyPlayersInRange((ServerLevel) level, blockPos, 32))
+        if(areAnyPlayersInRange(level, this.getBlockPos(), 20))
         {
-            tryInitializeHorde(level, blockPos, getBlockState(), this);
+            tryInitializeHorde(level, this.getBlockPos(), this.getBlockState(), this);
         }
+    }
+    
+    @Override
+    public void onSignalSchedule()
+    {
+        setChanged();
     }
 }

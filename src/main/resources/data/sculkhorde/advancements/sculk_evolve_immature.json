@@ -6,7 +6,7 @@
     "title": "A Developed Threat",
     "description": "Have the Gravemind evolve from the undeveloped stage into the immature stage.",
     "background": "sculkhorde:textures/block/infested_stone.png",
-    "frame": "gaol",
+    "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true
   },

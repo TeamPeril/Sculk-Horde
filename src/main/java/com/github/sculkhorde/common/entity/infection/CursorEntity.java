@@ -1,8 +1,17 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -11,9 +20,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -86,6 +92,12 @@ public abstract class CursorEntity extends Entity
         this.tickIntervalMilliseconds = milliseconds;
     }
 
+    public void setState(State state)
+    {
+        this.state = state;
+    }
+
+
     /**
      * Returns true if the block is considered obstructed.
      * @param state the block state
@@ -151,7 +163,7 @@ public abstract class CursorEntity extends Entity
     protected boolean searchTick()
     {
         // Complete 20 times.
-        for (int i = 0; i < searchIterationsPerTick; i++)
+        for (int i = 0; i < Math.max(searchIterationsPerTick, 1); i++)
         {
             // Breadth-First Search
 
@@ -193,13 +205,14 @@ public abstract class CursorEntity extends Entity
         super.tick();
 
         float timeElapsedMilliSeconds = System.currentTimeMillis() - lastTickTime;
-
-        if (timeElapsedMilliSeconds < tickIntervalMilliseconds) {
+        double tickIntervalMillisecondsAfterMultiplier = tickIntervalMilliseconds - (tickIntervalMilliseconds * (ModConfig.SERVER.infestation_speed_multiplier.get()));
+        if (timeElapsedMilliSeconds < Math.max(tickIntervalMillisecondsAfterMultiplier, 1)) {
             return;
         }
+
         lastTickTime = System.currentTimeMillis();
 
-
+        // Play Particles on Client
         // Play Particles on Client
         if (this.level.isClientSide) {
             for (int i = 0; i < 2; ++i) {
@@ -220,17 +233,17 @@ public abstract class CursorEntity extends Entity
         // If entity has lived too long, remove it
         if (currentLifeTimeMilliseconds >= MAX_LIFETIME_MILLIS)
         {
-            state = State.FINISHED;
+            setState(State.FINISHED);
         }
         else if (currentTransformations >= MAX_TRANSFORMATIONS)
         {
-            state = State.FINISHED;
+            setState(State.FINISHED);
         }
 
         if(state == State.IDLE)
         {
             queue.add(this.blockPosition());
-            state = State.SEARCHING;
+            setState(State.SEARCHING);
         }
         else if (state == State.SEARCHING)
         {
@@ -243,11 +256,11 @@ public abstract class CursorEntity extends Entity
 
             // If we can't find a target, finish
             if (target.equals(BlockPos.ZERO)) {
-                state = State.FINISHED;
+                setState(state = State.FINISHED);
             }
             else // If we find target, start infecting
             {
-                state = State.EXPLORING;
+                setState(state = State.EXPLORING);
                 visitedPositons.clear();
             }
         }
@@ -281,21 +294,32 @@ public abstract class CursorEntity extends Entity
 
 
             // Move to the closest block
-            this.setPos(closest.getX(), closest.getY(), closest.getZ());
-            visitedPositons.put(closest.asLong(), true);
+            this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
 
             // If we've reached the target block, find a new target
             if (this.blockPosition().equals(target))
             {
                 target = BlockPos.ZERO;
-                // Infect the block and increase the infection count
-                transformBlock(this.blockPosition());
-                currentTransformations++;
-                state = State.SEARCHING;
+                BlockState stateOfCurrentBlock = level.getBlockState(this.blockPosition());
+
+                boolean isTarget = isTarget(stateOfCurrentBlock, this.blockPosition());
+                boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());
+                // If the block is not obstructed, infect it
+                if(isTarget && isNotObstructed)
+                {
+                    // Infect the block and increase the infection count
+                    transformBlock(this.blockPosition());
+                    currentTransformations++;
+                }
+
+                setState(State.SEARCHING);
                 visitedPositons.clear();
                 queue.clear();
                 queue.add(this.blockPosition());
             }
+
+            // Mark position as visited
+            visitedPositons.put(closest.asLong(), true);
         }
         else if (state == State.FINISHED)
         {

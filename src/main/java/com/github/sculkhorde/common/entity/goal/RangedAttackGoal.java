@@ -1,11 +1,12 @@
 package com.github.sculkhorde.common.entity.goal;
+import java.util.EnumSet;
+
 import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.entity.attack.RangedAttack;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-
-import java.util.EnumSet;
 
 public class RangedAttackGoal extends Goal {
 

@@ -1,15 +1,19 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * This class is only used in the EntityFactory class which stores a list
@@ -131,6 +135,6 @@ public class EntityFactoryEntry {
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
         SculkHorde.statisticsData.incrementTotalUnitsSpawned();
-        return (Mob) getEntity().spawn(level, null, null, pos, MobSpawnType.EVENT, false, false);
+        return (Mob) getEntity().spawn(level, (CompoundTag)null, (Component)null, (Player)null, pos, MobSpawnType.EVENT, false, false);
     }
 }

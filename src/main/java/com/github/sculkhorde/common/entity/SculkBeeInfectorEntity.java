@@ -1,9 +1,18 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -13,15 +22,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
 
-import java.util.function.Predicate;
-
-public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements IAnimatable, IAnimationTickable {
+public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements GeoEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -39,6 +41,8 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how fast this mob moves
     public static final float MOVEMENT_SPEED = 0.5F;
+
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -100,32 +104,36 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements I
     @Override
     protected void executeCodeOnPollination()
     {
+        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        {
+            return;
+        }
+
         CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
         cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
         cursor.setMaxTransformations(100);
         cursor.setMaxRange(100);
         cursor.setTickIntervalMilliseconds(500);
-        cursor.setSearchIterationsPerTick(10);
+        cursor.setSearchIterationsPerTick(20);
         level.addFreshEntity(cursor);
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
     @Override
-    public void registerControllers(AnimationData data) {
-        //controllers.add(DefaultAnimations.genericFlyController(this));
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericFlyController(this));
     }
 
     @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
+
     @Override
-    public int tickTimer() {
-        return tickCount;
+    public boolean isFlying() {
+        return true;
     }
 
     public boolean dampensVibrations() {

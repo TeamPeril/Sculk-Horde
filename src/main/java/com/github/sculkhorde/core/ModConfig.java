@@ -1,11 +1,14 @@
 package com.github.sculkhorde.core;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraftforge.common.ForgeConfigSpec;
+import java.io.File;
+
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.File;
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
+
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ModConfig {
 
@@ -18,33 +21,59 @@ public class ModConfig {
     public static class Server {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> target_faw_entities;
-
         public final ForgeConfigSpec.ConfigValue<Boolean> target_spore_entities;
 
-        public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_immature_stage;
+        public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
+        public final ForgeConfigSpec.ConfigValue<Boolean> chunk_loading_enabled;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> trigger_ancient_node_automatically;
+        public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_wait_days;
+        public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_time_of_day;
+
+        public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_immature_stage;
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_mature_stage;
 
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
+        public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_spawn_cooldown_hours;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> sculk_raid_enabled;
-
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_enderman_scouting_duration_minutes;
-
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_global_cooldown_between_raids_minutes;
-
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_no_raid_zone_duration_minutes;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
 
+        public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
+        public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
+        public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
+
 
         public Server(ForgeConfigSpec.Builder builder) {
+
+            Config.setInsertionOrderPreserved(true);
 
             builder.push("Mod Compatability");
             target_faw_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'From Another World'? (Default false)").define("target_faw_entities",false);
             target_spore_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'? (Default false)").define("target_spore_entities",false);
+            builder.pop();
+
+            builder.push("General Variables");
+            block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
+            chunk_loading_enabled = builder.comment("Should the Sculk Horde load chunks? If disabled, and will ruin the intended experience. For example, raids wont work properly (Default true)").define("chunk_loading_enabled",true);
+            builder.pop();
+
+            builder.push("Trigger Automatically Variables");
+            trigger_ancient_node_automatically = builder.comment("Should the Sculk Horde start automatically? Requires that chunk loading is enabled to work reliably, otherwise will only trigger if the ancient node's chunk is loaded. If enabled on a save where previously disabled, the node will trigger automatically if the time conditions are met. (Default false)").define("trigger_ancient_node_automatically", false);
+            trigger_ancient_node_wait_days = builder.comment("How many days to wait before triggering the ancient node? (Default 0)").defineInRange("trigger_ancient_node_wait_days", 0, 0, Integer.MAX_VALUE);
+            trigger_ancient_node_time_of_day = builder.comment("What time of day in ticks must pass before triggering the ancient node after the wait days have elapsed? If wait days is set to 0, set time of day to a time greater than 1000 ticks to allow for world startup and lag to finish (Default 2000)").defineInRange("trigger_ancient_node_time_of_day", 2000, 0, 23999);
+            builder.pop();
+
+            builder.push("Infestation / Purification Variables");
+            infestation_speed_multiplier = builder.comment("How much faster or slower should infestation spread? (Default 0)").defineInRange("infestation_speed_multiplier",0f, -10f, 10f);
+            purification_speed_multiplier = builder.comment("How much faster or slower should purification spread? (Default 0)").defineInRange("purification_speed_multiplier",0f, -10f, 10f);
+            infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             builder.pop();
 
             builder.push("Gravemind Variables");
@@ -54,6 +83,7 @@ public class ModConfig {
 
             builder.push("Sculk Node Variables");
             sculk_node_chunkload_radius = builder.comment("How many chunks should be loaded around a sculk node? (Default 15)").defineInRange("sculk_node_chunkload_radius",15, 0, 15);
+            sculk_node_spawn_cooldown_hours = builder.comment("How many hours should pass before another Sculk node can spawn? (Default 8)").defineInRange("sculk_node_spawn_cooldown_hours",8, 0, Integer.MAX_VALUE);
             builder.pop();
 
             builder.push("Sculk Mite Variables");

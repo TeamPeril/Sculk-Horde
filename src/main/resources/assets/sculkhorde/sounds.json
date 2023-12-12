@@ -10,5 +10,23 @@
     "sounds": [
       "sculkhorde:horde_start_sound"
     ]
-  }
+  },
+  "raid_scout_sound": {
+    "subtitle": "sounds.sculkhorde.raid_scout_sound",
+    "sounds": [
+      "sculkhorde:raid_scout_sound"
+    ]
+  },
+  "node_spawn_sound": {
+    "subtitle": "sounds.sculkhorde.node_spawn_sound",
+    "sounds": [
+      "sculkhorde:node_spawn_sound"
+    ]
+  },
+    "node_destroy_sound": {
+        "subtitle": "sounds.sculkhorde.node_destroy_sound",
+        "sounds": [
+        "sculkhorde:node_destroy_sound"
+        ]
+    }
 }

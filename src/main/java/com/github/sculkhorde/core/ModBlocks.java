@@ -1,25 +1,42 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.block.*;
+import java.util.function.Supplier;
+
+import com.github.sculkhorde.common.block.DevMassInfectinator3000Block;
+import com.github.sculkhorde.common.block.DevStructureTesterBlock;
+import com.github.sculkhorde.common.block.InfestedTagBlock;
+import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
+import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
+import com.github.sculkhorde.common.block.SculkFloraBlock;
+import com.github.sculkhorde.common.block.SculkLivingRockBlock;
+import com.github.sculkhorde.common.block.SculkLivingRockRootBlock;
+import com.github.sculkhorde.common.block.SculkMassBlock;
+import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.common.block.SculkShroomCultureBlock;
+import com.github.sculkhorde.common.block.SculkSummonerBlock;
+import com.github.sculkhorde.common.block.SmallShroomBlock;
+import com.github.sculkhorde.common.block.SoulHarvesterBlock;
+import com.github.sculkhorde.common.block.SpikeBlock;
+import com.github.sculkhorde.common.block.TendrilsBlock;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.function.Supplier;
-
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
 
-    //Method to Register Blocks & Register them as items
+	//Method to Register Blocks & Register them as items
 	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
 	{
 		RegistryObject<T> toReturn = BLOCKS.register(name, block);
@@ -31,7 +48,7 @@ public class ModBlocks {
 	private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block)
 	{
 		ModItems.ITEMS.register(name, () -> new BlockItem(block.get(),
-				new Item.Properties()));
+				new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 	}
 
     //NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
@@ -49,7 +66,7 @@ public class ModBlocks {
     //Ancient Large Tile
     public static final RegistryObject<Block> ANCIENT_LARGE_TILE =
 			registerBlock("ancient_large_tile", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
-						.color(MaterialColor.TERRACOTTA_BLUE)
+							.color(MaterialColor.TERRACOTTA_BLUE)
 							.strength(15f, 30f)//Hardness & Resistance
 							.requiresCorrectToolForDrops()
 							.destroyTime(10f)
@@ -58,7 +75,7 @@ public class ModBlocks {
 
 	//Sculk Arachnoid
 	public static final RegistryObject<Block> SCULK_ARACHNOID =
-			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of(Material.DIRT)
+			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
 						.color(MaterialColor.COLOR_CYAN)
 						.strength(10f, 6f)//Hardness & Resistance
 						.requiresCorrectToolForDrops()
@@ -94,7 +111,7 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_LOG =
-			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of(Material.WOOD)
+			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of(Material.STONE)
 					.color(MaterialColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -103,7 +120,7 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<Block> INFESTED_SAND =
-			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of(Material.SAND)
+			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
 					.color(MaterialColor.TERRACOTTA_BLACK)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -112,7 +129,7 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<Block> INFESTED_RED_SAND =
-			registerBlock("infested_red_sand", () -> new Block(BlockBehaviour.Properties.of(Material.SAND)
+			registerBlock("infested_red_sand", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
 					.color(MaterialColor.TERRACOTTA_BLACK)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -192,7 +209,7 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<Block> INFESTED_GRAVEL =
-			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of(Material.SAND)
+			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
 					.color(MaterialColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -201,7 +218,7 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<Block> INFESTED_MOSS =
-			registerBlock("infested_moss", () -> new Block(BlockBehaviour.Properties.of(Material.MOSS)
+			registerBlock("infested_moss", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
 					.color(MaterialColor.GRASS)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -210,7 +227,7 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<Block> INFESTED_SNOW =
-			registerBlock("infested_snow", () -> new Block(BlockBehaviour.Properties.of(Material.SNOW)
+			registerBlock("infested_snow", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)
 					.color(MaterialColor.SNOW)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -587,6 +604,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<DevMassInfectinator3000Block> DEV_MASS_INFECTINATOR_3000_BLOCK =
 			registerBlock("dev_mass_infectinator_3000", () -> new DevMassInfectinator3000Block());
+
+	public static final RegistryObject<SoulHarvesterBlock> SOUL_HARVESTER_BLOCK =
+			registerBlock("soul_harvester", () -> new SoulHarvesterBlock());
 
 	public static class BlockTags
 	{

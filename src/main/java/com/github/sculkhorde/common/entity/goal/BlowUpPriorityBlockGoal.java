@@ -1,5 +1,8 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.Optional;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.ModBlocks;
@@ -7,6 +10,7 @@ import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,9 +25,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     protected final TagKey<Block> blockWithTagToRemove = ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY;

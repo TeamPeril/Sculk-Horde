@@ -1,20 +1,25 @@
 package com.github.sculkhorde.core;
 
+import org.slf4j.Logger;
+//HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
+
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.github.sculkhorde.util.StatisticsData;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.mojang.logging.LogUtils;
+
+import mod.azure.azurelib.AzureLib;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.slf4j.Logger;
-import software.bernie.geckolib3.GeckoLib;
-//HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
 //It takes in our mod id so it knows what mod it is loading.
@@ -34,7 +39,10 @@ public class SculkHorde {
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;
+    public static SculkNodesHandler sculkNodesHandler;
     public static StatisticsData statisticsData;
+    public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper;
+    public static EntityChunkLoaderHelper entityChunkLoaderHelper = new EntityChunkLoaderHelper();
     public static final Logger LOGGER = LogUtils.getLogger();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
@@ -45,23 +53,22 @@ public class SculkHorde {
 
         ModConfig.loadConfig(ModConfig.SERVER_SPEC, FMLPaths.CONFIGDIR.get().resolve(MOD_ID + "_config.toml").toString());
 
-        GeckoLib.initialize();
+        AzureLib.initialize();
         ModItems.ITEMS.register(bus); //Load Items
         ModBlockEntities.register(bus); //Load Tile Entities
         ModBlocks.BLOCKS.register(bus); //Load Blocks
         ModEntities.register(bus); //Load Entities (this may not be necessary anymore)
         bus.register(ModEntities.class); //Load Entities
-        //TODO PORT 1.19.2 ModStructures.STRUCTURES.register(bus); //Load Structures
-        //TODO PORT 1.19.2 ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
-        //TODO PORT 1.19.2 ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
+        ModStructures.STRUCTURES.register(bus); //Load Structures
+        ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
+        ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
         ModCommands.init();
         ModPotions.register(bus); //Load Potions
 
+        ModMenuTypes.register(bus); //Load Menus
         ModMobEffects.EFFECTS.register(bus); //Load Effects
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
-
-        //TODO PORT 1.19.2 ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
     }
 
     public static boolean isDebugMode() {

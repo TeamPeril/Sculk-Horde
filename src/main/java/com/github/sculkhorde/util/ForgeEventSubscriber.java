@@ -1,12 +1,24 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.effect.SculkInfectionEffect;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
-import net.minecraft.world.effect.MobEffectInstance;
+import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -36,14 +48,23 @@ public class ForgeEventSubscriber {
         {
             SculkHorde.savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID); //Initialize Saved Data
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
-            SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator((ServerLevel) event.getLevel()); //Initialize Death Area Investigator
+            SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator(); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
+            SculkHorde.sculkNodesHandler = new SculkNodesHandler(); //Initialize Sculk Nodes Handler
+            SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper(); //Initialize Entity Chunk Loader Helper
+            SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper(); //Initialize Block Entity Chunk Loader Helper
             if(SculkHorde.statisticsData == null)
             {
                 SculkHorde.statisticsData = new StatisticsData();
             }
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
+
+            // Check if chunk 0,0 is loaded. If not, load it.
+            if(!event.getLevel().getChunkSource().hasChunk(0,0))
+            {
+                BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(((ServerLevel)event.getLevel()), BlockPos.ZERO, 5, 0, TickUnits.convertMinutesToTicks(10));
+            }
         }
     }
 
@@ -62,13 +83,14 @@ public class ForgeEventSubscriber {
 
         // Run this stuff every tick
 
-        SculkHorde.savedData.incrementTicksSinceSculkNodeDestruction();
+        SculkHorde.savedData.incrementNoNodeSpawningTicksElapsed();
 
-        if(ModConfig.SERVER.experimental_features_enabled.get())
-        {
-            SculkHorde.raidHandler.raidTick(); // Tick the raid handler
-            SculkHorde.deathAreaInvestigator.tick();
-        }
+        SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+        SculkHorde.deathAreaInvestigator.tick();
+        SculkHorde.sculkNodesHandler.tick();
+
+        SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests();
+        SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();
 
         // Only run stuff below every 5 minutes
         if (event.level.getGameTime() - time_save_point < TickUnits.convertMinutesToTicks(5))
@@ -77,8 +99,7 @@ public class ForgeEventSubscriber {
         }
 
         time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
-
-        SculkHorde.gravemind.enableAmountOfBeeHives((ServerLevel) event.level, 20);
+        SculkHorde.gravemind.enableAmountOfBeeHives(20);
 
         //Verification Processes to ensure our data is accurate
         SculkHorde.savedData.validateNodeEntries();
@@ -105,7 +126,7 @@ public class ForgeEventSubscriber {
 
         if(EntityAlgorithms.isSculkLivingEntity.test(event.getEntity()))
         {
-            SculkHorde.savedData.reportDeath(event.getEntity().blockPosition());
+            SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level, event.getEntity().blockPosition());
             SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
 
         }
@@ -114,7 +135,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(event.getEntity().level.isClientSide() || SculkHorde.gravemind == null || !event.getEntity().level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.getEntity().level.isClientSide() || SculkHorde.gravemind == null)
         {
             return;
         }
@@ -133,6 +154,27 @@ public class ForgeEventSubscriber {
 
     }
 
+    @SubscribeEvent
+    public static void OnLivingDamageEvent(LivingDamageEvent event)
+    {
+        // Get Item being used to attack
+        ItemStack itemStack = ItemStack.EMPTY;
+        Entity damageSourceEntity = event.getSource().getEntity();
+        LivingEntity targetEntity = event.getEntity();
+        if(damageSourceEntity instanceof LivingEntity attackingEntity)
+        {
+            itemStack = attackingEntity.getMainHandItem();
+            if(!itemStack.getItem().equals(ModItems.SCULK_SWEEPER_SWORD.get()))
+            {
+               return;
+            }
+
+            if(!EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
+            {
+                event.setAmount(event.getAmount()/2);
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)

@@ -1,13 +1,16 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Stack;
+
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
-import java.util.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -167,7 +170,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             }
 
             // Move to the closest block
-            this.setPos(closest.getX(), closest.getY(), closest.getZ());
+            this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
             visitedPositons.put(closest.asLong(), true);
 
             // If we've reached the target block, die then report successful

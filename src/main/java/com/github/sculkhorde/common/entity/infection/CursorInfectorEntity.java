@@ -1,9 +1,8 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.BlockAlgorithms;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
@@ -11,8 +10,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkHooks;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -39,43 +36,7 @@ public class CursorInfectorEntity extends CursorEntity
         creationTickTime = System.currentTimeMillis();
     }
 
-    /**
-     * Returns true if the block is considered obstructed.
-     * @param state the block state
-     * @param pos the block position
-     * @return true if the block is considered obstructed
-     */
-    @Override
-    protected boolean isObstructed(BlockState state, BlockPos pos)
-    {
-        if(isExposedToInfestationWardBlock((ServerLevel) this.level, pos))
-        {
-            return true;
-        }
-        else if(!state.isSolidRender(this.level, pos))
-        {
-            return true;
-        }
-        else if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
-        {
-            return true;
-        }
-        else if(state.isAir())
-        {
-            return true;
-        }
-        // Check if block is not beyond world border
-        else if(!level.isInWorldBounds(pos))
-        {
-            return true;
-        }
-        // This is to prevent the entity from getting stuck in a loop
-        else if(visitedPositons.containsKey(pos.asLong()))
-        {
-            return true;
-        }
-        return false;
-    }
+
 
     /**
      * Returns true if the block is considered a target.
@@ -104,8 +65,8 @@ public class CursorInfectorEntity extends CursorEntity
     {
     }
 
-    @Override
-    public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+	@Override
+	public Packet<?> getAddEntityPacket() {
+		return NetworkHooks.getEntitySpawningPacket(this);
+	}
 }

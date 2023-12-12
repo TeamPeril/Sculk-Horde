@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.nbt.CompoundTag;
 
 public class StatisticsData {
@@ -12,6 +13,8 @@ public class StatisticsData {
     private long totalRaidsOccured;
     private long totalMassFromBees;
     private long totalMassFromBurrowed;
+
+    private long totalMassFromDiseasedCysts;
     private long totalMassFromNodes;
     private long totalMassRemovedFromHorde;
 
@@ -23,6 +26,7 @@ public class StatisticsData {
         this.totalRaidsOccured = 0;
         this.totalMassFromBees = 0;
         this.totalMassFromBurrowed = 0;
+        this.totalMassFromDiseasedCysts = 0;
         this.totalMassFromNodes = 0;
         this.totalMassRemovedFromHorde = 0;
     }
@@ -111,6 +115,18 @@ public class StatisticsData {
         this.totalMassFromBurrowed += value;
     }
 
+    public long getTotalMassFromDiseasedCysts() {
+        return totalMassFromDiseasedCysts;
+    }
+
+    public void setTotalMassFromDiseasedCysts(long totalMassFromDiseasedCysts) {
+        this.totalMassFromDiseasedCysts = totalMassFromDiseasedCysts;
+    }
+
+    public void addTotalMassFromDiseasedCysts(int value) {
+        this.totalMassFromDiseasedCysts += value;
+    }
+
     public long getTotalMassFromNodes() {
         return totalMassFromNodes;
     }
@@ -149,6 +165,7 @@ public class StatisticsData {
         tag.putLong("totalRaidsOccured", getStatsData().getTotalRaidsOccured());
         tag.putLong("totalMassFromBees", getStatsData().getTotalMassFromBees());
         tag.putLong("totalMassFromBurrowed", getStatsData().getTotalMassFromBurrowed());
+        tag.putLong("totalMassFromDiseasedCysts", getStatsData().getTotalMassFromDiseasedCysts());
         tag.putLong("totalMassFromNodes", getStatsData().getTotalMassFromNodes());
         tag.putLong("totalMassRemovedFromHorde", getStatsData().getTotalMassRemovedFromHorde());
     }
@@ -162,19 +179,8 @@ public class StatisticsData {
         getStatsData().setTotalRaidsOccured(tag.getLong("totalRaidsOccured"));
         getStatsData().setTotalMassFromBees(tag.getLong("totalMassFromBees"));
         getStatsData().setTotalMassFromBurrowed(tag.getLong("totalMassFromBurrowed"));
+        getStatsData().setTotalMassFromDiseasedCysts(tag.getLong("totalMassFromDiseasedCysts"));
         getStatsData().setTotalMassFromNodes(tag.getLong("totalMassFromNodes"));
         getStatsData().setTotalMassRemovedFromHorde(tag.getLong("totalMassRemovedFromHorde"));
-    }
-
-    public String stringForChat()
-    {
-        return
-                "Total Units Spawned: " + getTotalUnitsSpawned() + "\n" +
-                "Total Victims Infested: " + getTotalVictimsInfested() + "\n" +
-                "Total Blocks Infested: " + getTotalBlocksInfested() + "\n" +
-                "Total Raids Occured: " + getTotalRaidsOccured() + "\n" +
-                "Total Mass From Bees: " + getTotalMassFromBees() + "\n" +
-                "Total Mass From Burrowed: " + getTotalMassFromBurrowed() + "\n" +
-                "Total Mass From Nodes: " + getTotalMassFromNodes() + "\n";
     }
 }

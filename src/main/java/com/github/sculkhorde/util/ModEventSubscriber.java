@@ -4,15 +4,28 @@ import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
-import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
-import com.github.sculkhorde.common.entity.*;
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhorde.common.entity.SculkBeeInfectorEntity;
+import com.github.sculkhorde.common.entity.SculkCreeperEntity;
+import com.github.sculkhorde.common.entity.SculkHatcherEntity;
+import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
+import com.github.sculkhorde.common.entity.SculkMiteEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomCorpseEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+import com.github.sculkhorde.common.entity.SculkRavagerEntity;
+import com.github.sculkhorde.common.entity.SculkSpitterEntity;
+import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
+import com.github.sculkhorde.common.entity.SculkVindicatorEntity;
+import com.github.sculkhorde.common.entity.SculkZombieEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.common.pools.PoolBlocks;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -30,13 +43,14 @@ public class ModEventSubscriber {
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
-        //Add entries to the entity factory (please add them in order, I don't want to sort)
+        //Add entries to the entity factory (please add them in order of cost, I don't want to sort)
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPORE_SPEWER.get(), (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature).setLimit(1);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_PHANTOM.get(), (int) SculkPhantomEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Mature).setLimit(1);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_RAVAGER.get(), (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature).setLimit(1);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_HATCHER.get(), (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_HATCHER.get(), (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped).setLimit(1);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_CREEPER.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Undeveloped);
+        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_VINDICATOR.get(), (int) SculkVindicatorEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
@@ -48,6 +62,7 @@ public class ModEventSubscriber {
         SculkHorde.blockInfestationTable.addEntry(Blocks.COARSE_DIRT, Blocks.SCULK.defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.GRASS_BLOCK, Blocks.SCULK.defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.PODZOL, Blocks.SCULK.defaultBlockState());
+        SculkHorde.blockInfestationTable.addEntry(Blocks.CLAY, ModBlocks.INFESTED_CLAY.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.STONE, ModBlocks.INFESTED_STONE.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.DEEPSLATE, ModBlocks.INFESTED_DEEPSLATE.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.COBBLED_DEEPSLATE, ModBlocks.INFESTED_COBBLED_DEEPSLATE.get().defaultBlockState());
@@ -93,10 +108,13 @@ public class ModEventSubscriber {
         SculkHorde.blockInfestationTable.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
+
+
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_MASS.get());
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get());
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
+
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
@@ -143,6 +161,8 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_VINDICATOR.get(), SculkVindicatorEntity.createAttributes().build());
         event.put(ModEntities.SCULK_CREEPER.get(), SculkCreeperEntity.createAttributes().build());
         event.put(ModEntities.SCULK_ENDERMAN.get(), SculkEndermanEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_PHANTOM.get(), SculkPhantomEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseEntity.createAttributes().build());
     }
 }
 

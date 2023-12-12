@@ -1,14 +1,29 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModParticles;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -17,7 +32,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,19 +39,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAnimationTickable, ISculkSmartEntity {
+public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -65,12 +69,13 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAni
     public static final float MOVEMENT_SPEED = 0F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
 
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     private CursorSurfaceInfectorEntity cursor;
 
-    private long INFECTION_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(20);
+    private long INFECTION_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(5);
     private long lastInfectionTime = 0;
 
     public static final EntityDataAccessor<Integer> DATA_TICKS_ALIVE = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.INT);
@@ -112,6 +117,11 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAni
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -187,30 +197,21 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAni
     }
     //Animation Related Functions
 
-    /*
     private static final RawAnimation SPREAD_ANIMATION = RawAnimation.begin().thenPlay("spread");
     private final AnimationController SPREAD_ANIMATION_CONTROLLER = new AnimationController<>(this, "spread_controller", state -> PlayState.STOP)
             .triggerableAnim("spread_animation", SPREAD_ANIMATION);
-    */
+
     // Add our animations
     @Override
-    public void registerControllers(AnimationData data) {
-        /*
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 DefaultAnimations.genericLivingController(this),
                 SPREAD_ANIMATION_CONTROLLER);
-
-         */
     }
 
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
     @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
-    @Override
-    public int tickTimer() {
-        return tickCount;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
 
@@ -231,7 +232,15 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAni
         }
 
         Random random = new Random();
-        if (random.nextInt(100) == 0 && (cursor == null || !cursor.isAlive())) {
+        boolean passRandomChance = random.nextInt(100) == 0;
+        boolean isCursorNullOrDead = cursor == null || !cursor.isAlive();
+        boolean isBlockInfestationEnabled = ModConfig.SERVER.block_infestation_enabled.get();
+        // The reason we do this instead of just checking if the horde is active is because sometimes people will spawn these
+        // without activating the horde.
+        boolean isTheHordeNotDefeated = !SculkHorde.savedData.isHordeDefeated();
+        boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeNotDefeated;
+
+        if (canSpawnCursor) {
             // Spawn Block Traverser
             cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
@@ -240,25 +249,25 @@ public class SculkSporeSpewerEntity extends Monster implements IAnimatable, IAni
             cursor.setTickIntervalMilliseconds(50);
             cursor.setSearchIterationsPerTick(1);
             level.addFreshEntity(cursor);
-            //triggerAnim("spread_controller", "spread_animation");
+            triggerAnim("spread_controller", "spread_animation");
         }
 
-        if (System.currentTimeMillis() - lastInfectionTime > INFECTION_INTERVAL_MILLIS)
+        if (level.getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
         {
-            lastInfectionTime = System.currentTimeMillis();
+            lastInfectionTime = level.getGameTime();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
-            for (LivingEntity entity : entities)
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level, this.blockPosition(), 10);
+            for (LivingEntity victim : entities)
             {
-                if(entity instanceof Player && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
+                if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
                 {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertMinutesToTicks(10), 3));
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 1));
+                    return;
                 }
-                else if (entity instanceof LivingEntity && ((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(entity, false))
-                {
-                    entity.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertMinutesToTicks(1), 3));
-                }
+
+                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+
             }
         }
     }

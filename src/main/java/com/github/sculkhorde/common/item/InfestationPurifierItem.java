@@ -1,21 +1,33 @@
 package com.github.sculkhorde.common.item;
 
+import java.util.List;
+
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
-import net.minecraft.world.item.TooltipFlag;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-
-import java.util.List;
 
 public class InfestationPurifierItem extends Item implements IForgeItem {
 
@@ -46,7 +58,7 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
     {
         return new Item.Properties()
                 .rarity(Rarity.EPIC)
-                .stacksTo(8);
+                .stacksTo(8).tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     //This changes the text you see when hovering over an item
@@ -61,38 +73,65 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
 
     @Override
     public Rarity getRarity(ItemStack itemStack) {
-        return Rarity.EPIC;
+        return Rarity.RARE;
     }
+
 
     /**
      * This function occurs when the item is right-clicked on a block.
      * This will then add every block within a sphere of a specified radius if it isnt air
      * and then add it to the convversion queue to be processed in {@link ForgeEventSubscriber#WorldTickEvent}
-     * @param worldIn The world
+     * @param level The world
      * @param playerIn The player entity who used it
      * @param handIn The hand they used it in
      * @return
      */
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
+    public InteractionResultHolder<ItemStack> use(Level level, Player playerIn, InteractionHand handIn)
     {
-        //Get the item the player is holding
         ItemStack itemstack = playerIn.getItemInHand(handIn);
+        BlockHitResult blockhitresult = getPlayerPOVHitResult(level, playerIn, ClipContext.Fluid.SOURCE_ONLY);
 
-        //If Item not on cool down
-        if(playerIn.getCooldowns().isOnCooldown(this) || worldIn.isClientSide())
+        if(level.isClientSide) {return InteractionResultHolder.success(itemstack);}
+        if (blockhitresult.getType() != HitResult.Type.BLOCK) {return InteractionResultHolder.pass(itemstack);}
+        
+        BlockPos spawnPosition = blockhitresult.getBlockPos();
+        if ((level.getBlockState(spawnPosition).getBlock() instanceof LiquidBlock))
+        {
+            return InteractionResultHolder.pass(itemstack);
+        }
+        else if (level.mayInteract(playerIn, spawnPosition) && playerIn.mayUseItemAt(spawnPosition, blockhitresult.getDirection(), itemstack))
+        {
+            BlockState blockstate = level.getBlockState(spawnPosition);
+            Direction direction = blockhitresult.getDirection();
+            if (!blockstate.getCollisionShape(level, spawnPosition).isEmpty()) {
+                spawnPosition = spawnPosition.relative(direction);
+            }
+
+            purifier = new InfestationPurifierEntity(level);
+            purifier.setPos(Vec3.atCenterOf(spawnPosition).x, Vec3.atCenterOf(spawnPosition).y, Vec3.atCenterOf(spawnPosition).z);
+            level.addFreshEntity(purifier);
+
+            if (purifier == null)
+            {
+                return InteractionResultHolder.pass(itemstack);
+            }
+            else
+            {
+                if (!playerIn.getAbilities().instabuild)
+                {
+                    itemstack.shrink(1);
+                }
+
+                playerIn.awardStat(Stats.ITEM_USED.get(this));
+                level.gameEvent(playerIn, GameEvent.ENTITY_PLACE, purifier.position());
+                return InteractionResultHolder.consume(itemstack);
+            }
+        }
+        else
         {
             return InteractionResultHolder.fail(itemstack);
         }
-
-        //Spawn the Purifier Cursor
-        purifier = new InfestationPurifierEntity(worldIn);
-        purifier.setPos(playerIn.position().x(), playerIn.position().y(), playerIn.position().z());
-        worldIn.addFreshEntity(purifier);
-
-        // Consume Item
-        itemstack.shrink(1);
-        return InteractionResultHolder.sidedSuccess(itemstack, worldIn.isClientSide());
-
+        
     }
 }

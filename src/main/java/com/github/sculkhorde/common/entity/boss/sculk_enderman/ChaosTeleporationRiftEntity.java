@@ -1,8 +1,19 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.List;
+
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -18,12 +29,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
-
-import java.util.List;
 
 /**
  * The following java files were created/edited for this entity.<br>
@@ -33,7 +38,8 @@ import java.util.List;
  * Added {@link com.github.sculkhorde.client.model.enitity.ChaosTeleporationRiftModel}<br>
  * Added {@link com.github.sculkhorde.client.renderer.entity.ChaosTeleporationRiftRenderer}
  */
-public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements IAnimatable {
+public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements GeoEntity
+{
     public static int LIFE_TIME = TickUnits.convertSecondsToTicks(10);
     public int currentLifeTicks = 0;
 
@@ -132,26 +138,19 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
     // Data Code
 
     // Animation Code
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
 
-    //private static final RawAnimation SPIN_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+
+    private static final RawAnimation SPIN_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
 
     @Override
-    public void registerControllers(AnimationData data) {
-        /*
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(
                 new AnimationController<>(this, "base_animation", 0, this::pose)
         );
-
-         */
     }
 
     // Create the animation handler for the leg segment
-    /*
     protected PlayState pose(AnimationState<ChaosTeleporationRiftEntity> state)
     {
         state.setAnimation(SPIN_ANIMATION);
@@ -162,6 +161,4 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-
-     */
 }

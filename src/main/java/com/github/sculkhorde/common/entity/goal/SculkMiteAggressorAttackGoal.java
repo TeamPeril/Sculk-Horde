@@ -1,12 +1,11 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-
 import java.util.EnumSet;
 
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkMiteAggressorEntity;
+
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 public class SculkMiteAggressorAttackGoal extends MeleeAttackGoal {
 

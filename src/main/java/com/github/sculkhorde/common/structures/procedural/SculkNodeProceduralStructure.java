@@ -1,13 +1,14 @@
 package com.github.sculkhorde.common.structures.procedural;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
 import java.util.Optional;
+
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.util.BlockAlgorithms;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.material.Fluids;
 
 public class SculkNodeProceduralStructure extends ProceduralStructure
 {
@@ -124,9 +125,7 @@ public class SculkNodeProceduralStructure extends ProceduralStructure
             }
         }
 
-        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 5, SHELL_RADIUS *3);
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 10, SHELL_RADIUS *6));
-        surroundingLivingRock.addAll(BlockAlgorithms.getPointsOnCircumference(this.origin, 20, SHELL_RADIUS *9));
+        ArrayList<BlockPos> surroundingLivingRock = BlockAlgorithms.getPointsOnCircumference(this.origin, 10, SHELL_RADIUS *6);
         for(BlockPos position : surroundingLivingRock)
         {
             plannedBlockQueue.add(new PlannedBlock(this.world, ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get().defaultBlockState(), findLivingRockPlacementPosition(this.world, position)));

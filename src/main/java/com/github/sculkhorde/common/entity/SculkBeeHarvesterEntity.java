@@ -1,11 +1,24 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,7 +33,11 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -46,23 +63,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * A lot of this is copied from BeeEntity.java.
  * I do not want to learn how to use mixins, so I am just copying the code.
  */
-public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, IAnimationTickable, FlyingAnimal {
+public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, FlyingAnimal {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -80,6 +86,10 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, IAn
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.25F;
+
+    protected final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+
+    public static final float FLAP_DEGREES_PER_TICK = 120.32113F;
     public static final int TICKS_PER_FLAP = Mth.ceil(1.4959966F);
     public static final String TAG_CROPS_GROWN_SINCE_POLLINATION = "CropsGrownSincePollination";
     public static final String TAG_CANNOT_ENTER_HIVE_TICKS = "CannotEnterHiveTicks";
@@ -544,6 +554,22 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, IAn
         this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.01D, 0.0D));
     }
 
+    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
+    // Add our animations
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(DefaultAnimations.genericFlyController(this));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
+    boolean closerThan(BlockPos p_27817_, int p_27818_) {
+        return p_27817_.closerThan(this.blockPosition(), (double)p_27818_);
+    }
+
     /**
      * We override this and keep it blank so that this mob doesnt not despawn
      */
@@ -568,28 +594,6 @@ public class SculkBeeHarvesterEntity extends Monster implements IAnimatable, IAn
     @Override
     public boolean isFlying() {
         return true;
-    }
-
-    /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
-    // Add our animations
-    @Override
-    public void registerControllers(AnimationData data) {
-        //controllers.add(DefaultAnimations.genericFlyController(this));
-    }
-
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
-    @Override
-    public int tickTimer() {
-        return tickCount;
-    }
-
-    boolean closerThan(BlockPos p_27817_, int p_27818_) {
-        return p_27817_.closerThan(this.blockPosition(), (double)p_27818_);
     }
 
     /* ~~~~~~~~ Classes ~~~~~~~~ */

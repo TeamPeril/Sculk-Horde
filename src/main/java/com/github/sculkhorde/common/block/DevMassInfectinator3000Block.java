@@ -1,20 +1,18 @@
 package com.github.sculkhorde.common.block;
 
+import static com.github.sculkhorde.core.ModBlockEntities.DEV_MASS_INFECTINATOR_3000_BLOCK_ENTITY;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.DevMassInfectinator3000BlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.core.*;
-import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.ChunkLoaderHelper;
+import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -31,11 +29,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import javax.annotation.Nullable;
-import java.util.List;
-
-import static com.github.sculkhorde.core.ModBlockEntities.DEV_MASS_INFECTINATOR_3000_BLOCK_ENTITY;
 
 
 /**
@@ -95,7 +88,8 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(Material.STONE, MaterialColor.COLOR_BLUE)
+        Properties prop = Properties.of(Material.STONE)
+                .color(MaterialColor.COLOR_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
         return prop;
@@ -104,13 +98,22 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
 
-        ChunkLoaderHelper.forceLoadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, 16);
+        if(worldIn.isClientSide())
+        {
+            return;
+        }
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) worldIn, pos, 16, 1, TickUnits.convertMinutesToTicks(15));
     }
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
-        ChunkLoaderHelper.unloadChunksInRadius((ServerLevel) worldIn, pos, worldIn.getChunk(pos).getPos().x, worldIn.getChunk(pos).getPos().z, ModConfig.SERVER.sculk_node_chunkload_radius.get());
+        if(worldIn.isClientSide())
+        {
+            return;
+        }
+
+        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(pos, (ServerLevel) worldIn);
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

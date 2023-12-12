@@ -1,11 +1,11 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class Line3D {
     private Vec3 start; // The starting point of the line

@@ -1,12 +1,40 @@
 package com.github.sculkhorde.client;
 
+import java.util.Map;
+
 import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
-import com.github.sculkhorde.client.renderer.entity.*;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.client.renderer.entity.ChaosTeleporationRiftRenderer;
+import com.github.sculkhorde.client.renderer.entity.CursorBridgerRenderer;
+import com.github.sculkhorde.client.renderer.entity.CursorInfectorRenderer;
+import com.github.sculkhorde.client.renderer.entity.CursorProberRenderer;
+import com.github.sculkhorde.client.renderer.entity.CursorSurfacePurifierRenderer;
+import com.github.sculkhorde.client.renderer.entity.EnderBubbleAttackRenderer;
+import com.github.sculkhorde.client.renderer.entity.InfestationPurifierRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkBeeHarvesterRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkBeeInfectorRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkCreeperRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkEndermanRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkHatcherRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkMiteAggressorRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkMiteRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkPhantomCorpseRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkPhantomRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkSpineSpikeAttackRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkSpitterRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkSporeSpewerRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkVindicatorRenderer;
+import com.github.sculkhorde.client.renderer.entity.SculkZombieRenderer;
+import com.github.sculkhorde.common.screen.SoulHarvesterScreen;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMenuTypes;
+import com.github.sculkhorde.core.ModParticles;
+import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.collect.Maps;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleEngine;
+
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.world.entity.Entity;
@@ -18,8 +46,6 @@ import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-
-import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEventSubscriber {
@@ -73,13 +99,17 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.INFESTATION_PURIFIER.get(), InfestationPurifierRenderer::new);
 
-        event.registerBlockEntityRenderer(ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(),SculkSummonerBlockRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), context -> new SculkSummonerBlockRenderer());
 
         event.registerEntityRenderer(ModEntities.SCULK_VINDICATOR.get(), SculkVindicatorRenderer::new);
 
         event.registerEntityRenderer(ModEntities.SCULK_CREEPER.get(), SculkCreeperRenderer::new);
 
         event.registerEntityRenderer(ModEntities.SCULK_ENDERMAN.get(), SculkEndermanRenderer::new);
+
+        event.registerEntityRenderer(ModEntities.SCULK_PHANTOM.get(), SculkPhantomRenderer::new);
+
+        event.registerEntityRenderer(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseRenderer::new);
 
         event.registerEntityRenderer(ModEntities.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
 
@@ -92,27 +122,16 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenderers(final RegisterParticleProvidersEvent event)
     {
-       // Register renderer for sculk crust partcile
-        //event.enqueueWork(() -> Minecraft.getInstance().particleEngine.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new));
-        Minecraft.getInstance().particleEngine.register(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
-        // 1.20 event.registerSpriteSet(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
+        event.register(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
     }
 
+    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
+    @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
 
-
-
-    /**
-     * Used to register custom particle renders.
-     * Currently handles the Gorgon particle
-     *
-     * @param event the particle factory registry event
-     **/
-    @SubscribeEvent
-    public static void registerFactories(final FMLClientSetupEvent event)
-    {
-        ParticleEngine particles = Minecraft.getInstance().particleEngine;
-
-        //particles.register(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), Provider::new);
-        
+            MenuScreens.register(ModMenuTypes.SOUL_HARVESTER_MENU.get(), SoulHarvesterScreen::new);
+        }
     }
 }

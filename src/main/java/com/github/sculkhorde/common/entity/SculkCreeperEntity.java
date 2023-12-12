@@ -1,30 +1,50 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.BlowUpPriorityBlockGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.SwellGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import net.minecraft.world.phys.AABB;
 
-import java.util.concurrent.TimeUnit;
-
-public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IAnimatable, IAnimationTickable
+public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, GeoEntity
 {
     private boolean isParticipatingInRaid = false;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
+
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     public SculkCreeperEntity(EntityType<? extends Creeper> entityType, Level level) {
         super(entityType, level);
@@ -46,6 +66,11 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IA
 
     @Override
     public void checkDespawn() {}
+
+    @Override
+    public SquadHandler getSquad() {
+        return null;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -85,14 +110,36 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IA
         }
     }
 
+    public void infectEntitiesAroundMe()
+    {
+        //Create a list of all entities within a 5 block radius
+        //For each entity, infect them
+        //If the entity is a sculk creeper, don't infect it
+        AABB aabb = this.getBoundingBox().inflate(5);
+        this.level.getEntitiesOfClass(LivingEntity.class, aabb).forEach(victim -> {
+            if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
+            {
+                return;
+            }
+
+            EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(5));
+            EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), 0);
+        });
+
+
+    }
+
     @Override
     public void tick() {
         super.tick();
+        if(level.isClientSide()) { return; }
+
         // The reason I do this is because I need my custom explode function to run before the regular creeper one does.
         // This shit honestly sucks ass, but it works.
         // Creeper expodes when get swelling is 1.1, but if we run it at 1.0, should hopefully work.
         if(getSwelling(1) >= 1.0)
         {
+            infectEntitiesAroundMe();
             explodeSculkCreeper();
         }
     }
@@ -106,11 +153,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IA
         if(!isParticipatingInRaid())
         {
             this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Explosion.BlockInteraction.NONE);
-            spawnInfectors();
+            if(ModConfig.SERVER.block_infestation_enabled.get()) {spawnInfectors();}
         }
         else
         {
-            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Explosion.BlockInteraction.DESTROY);
+            Explosion.BlockInteraction explosion$blockinteraction = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.NONE;
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, explosion$blockinteraction);
         }
         this.dead = true;
 
@@ -118,39 +166,21 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IA
 
     }
 
-    /*
     private static final RawAnimation CREEPER_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.idle");
     private static final RawAnimation BLOB_IDLE_ANIMATION = RawAnimation.begin().thenLoop("sculk_blob.idle");
     private static final RawAnimation CREEPER_WALK_ANIMATION = RawAnimation.begin().thenLoop("sculk_creeper.walk");
     private static final RawAnimation CREEPER_SWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack");
     private static final RawAnimation CREEPER_DESWELL_ANIMATION = RawAnimation.begin().thenPlay("sculk_creeper.attack.cancel");
-    */
-
-    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
-    }
-
-    @Override
-    public int tickTimer() {
-        return tickCount;
-    }
-
-    @Override
-    public void registerControllers(AnimationData data) {
-        /*
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
                 new AnimationController<>(this, "attack_cycle", 5, this::poseAttackCycle),
                 new AnimationController<>(this, "blob_idle", 5, this::poseBlobIdleCycle)
         );
-
-         */
     }
 
-    /*
     protected PlayState poseBlobIdleCycle(AnimationState<SculkCreeperEntity> state)
     {
         state.setAnimation(BLOB_IDLE_ANIMATION);
@@ -178,12 +208,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IA
         //  Goes from 0 to 30. Vanilla mc mechanics, not mine
         float swellValue = this.getSwelling(1);
 
-        if(this.getSwellDir() > 0)
+        if(this.getSwellDir() > 0 && swellValue < 28)
         {
             state.setAnimation(CREEPER_SWELL_ANIMATION);
             return PlayState.CONTINUE;
         }
-        else if(this.getSwellDir() < 0)
+        else if(this.getSwellDir() < 0 && swellValue > 1)
         {
             state.setAnimation(CREEPER_DESWELL_ANIMATION);
             return PlayState.CONTINUE;
@@ -191,5 +221,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, IA
         return PlayState.CONTINUE;
     }
 
-     */
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
 }
