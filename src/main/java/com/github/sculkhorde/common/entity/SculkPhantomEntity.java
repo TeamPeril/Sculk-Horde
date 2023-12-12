@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
@@ -116,6 +119,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         super(type, worldIn);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
         this.moveControl = new FlyingMoveControl(this, 20, true);
+        this.lookControl = new PhantomLookControl(this);
     }
 
     public static void spawnPhantom(Level worldIn, BlockPos spawnPos, boolean isScouter)
@@ -141,8 +145,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
-                .add(Attributes.FLYING_SPEED, 3F)
-                .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
+                .add(Attributes.FLYING_SPEED, 3F);
+                //.add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
     }
 
 
@@ -207,6 +211,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     protected PathNavigation createNavigation(Level level) {
         ImprovedFlyingNavigator flyingpathnavigation = new ImprovedFlyingNavigator(this, level);
+        //FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, level);
         flyingpathnavigation.setCanOpenDoors(false);
         flyingpathnavigation.setCanFloat(true);
         flyingpathnavigation.setCanPassDoors(true);
@@ -318,26 +323,25 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     // This method allows the entity to travel in a given direction
     @Override
     public void travel(Vec3 direction) {
-        // If the entity is controlled by the local player
-        if (this.isControlledByLocalInstance()) {
-            // Move the entity relative to its orientation and the direction vector
-            this.moveRelative(getTarget() == null ? 0.04F : 0.05F, direction);
 
-            // Move the entity according to its current velocity
-            this.move(MoverType.SELF, this.getDeltaMovement());
+        // Move the entity relative to its orientation and the direction vector
+        this.moveRelative(getTarget() == null ? 0.04F : 0.05F, direction);
 
-            // If the entity is in water, reduce its velocity by 10%
-            if (this.isInWater()) {
-                this.setDeltaMovement(this.getDeltaMovement().scale((double)0.9F));
-                // If the entity is in lava, reduce its velocity by 40%
-            } else if (this.isInLava()) {
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.6F));
-            }
-            else
-            {
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95F));
-            }
+        // Move the entity according to its current velocity
+        this.move(MoverType.SELF, this.getDeltaMovement());
+
+        // If the entity is in water, reduce its velocity by 10%
+        if (this.isInWater()) {
+            this.setDeltaMovement(this.getDeltaMovement().scale((double)0.9F));
+            // If the entity is in lava, reduce its velocity by 40%
+        } else if (this.isInLava()) {
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.6F));
         }
+        else
+        {
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.95F));
+        }
+
 
         // Update the entity's animation based on its movement
         this.calculateEntityAnimation(this, false);
@@ -664,6 +668,63 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         public void clientTick() {
             SculkPhantomEntity.this.yHeadRot = SculkPhantomEntity.this.yBodyRot;
             SculkPhantomEntity.this.yBodyRot = SculkPhantomEntity.this.getYRot();
+        }
+    }
+
+    protected static class PhantomLookControl extends LookControl {
+        public PhantomLookControl(Mob p_33235_) {
+            super(p_33235_);
+        }
+
+        public void tick() {
+        }
+    }
+
+    protected class PhantomMoveControl extends MoveControl {
+        private float speed = 0.1F;
+
+        public PhantomMoveControl(Mob mob) {
+            super(mob);
+        }
+
+        public void tick() {
+            if (SculkPhantomEntity.this.horizontalCollision) {
+                SculkPhantomEntity.this.setYRot(SculkPhantomEntity.this.getYRot() + 180.0F);
+                this.speed = 0.1F;
+            }
+
+            double d0 = SculkPhantomEntity.this.moveTargetPoint.x - SculkPhantomEntity.this.getX();
+            double d1 = SculkPhantomEntity.this.moveTargetPoint.y - SculkPhantomEntity.this.getY();
+            double d2 = SculkPhantomEntity.this.moveTargetPoint.z - SculkPhantomEntity.this.getZ();
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            if (Math.abs(d3) > (double) 1.0E-5F) {
+                double d4 = 1.0D - Math.abs(d1 * (double) 0.7F) / d3;
+                d0 *= d4;
+                d2 *= d4;
+                d3 = Math.sqrt(d0 * d0 + d2 * d2);
+                double d5 = Math.sqrt(d0 * d0 + d2 * d2 + d1 * d1);
+                float f = SculkPhantomEntity.this.getYRot();
+                float f1 = (float) Mth.atan2(d2, d0);
+                float f2 = Mth.wrapDegrees(SculkPhantomEntity.this.getYRot() + 90.0F);
+                float f3 = Mth.wrapDegrees(f1 * (180F / (float) Math.PI));
+                SculkPhantomEntity.this.setYRot(Mth.approachDegrees(f2, f3, 4.0F) - 90.0F);
+                SculkPhantomEntity.this.yBodyRot = SculkPhantomEntity.this.getYRot();
+                if (Mth.degreesDifferenceAbs(f, SculkPhantomEntity.this.getYRot()) < 3.0F) {
+                    this.speed = Mth.approach(this.speed, 1.8F, 0.005F * (1.8F / this.speed));
+                } else {
+                    this.speed = Mth.approach(this.speed, 0.2F, 0.025F);
+                }
+
+                float f4 = (float) (-(Mth.atan2(-d1, d3) * (double) (180F / (float) Math.PI)));
+                SculkPhantomEntity.this.setXRot(f4);
+                float f5 = SculkPhantomEntity.this.getYRot() + 90.0F;
+                double d6 = (double) (this.speed * Mth.cos(f5 * ((float) Math.PI / 180F))) * Math.abs(d0 / d5);
+                double d7 = (double) (this.speed * Mth.sin(f5 * ((float) Math.PI / 180F))) * Math.abs(d2 / d5);
+                double d8 = (double) (this.speed * Mth.sin(f4 * ((float) Math.PI / 180F))) * Math.abs(d1 / d5);
+                Vec3 vec3 = SculkPhantomEntity.this.getDeltaMovement();
+                SculkPhantomEntity.this.setDeltaMovement(vec3.add((new Vec3(d6, d8, d7)).subtract(vec3).scale(0.2D)));
+            }
+
         }
     }
 }
