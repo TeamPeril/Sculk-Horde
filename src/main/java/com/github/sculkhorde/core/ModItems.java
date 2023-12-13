@@ -59,9 +59,6 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<PuritySplashPotionItem> PURITY_SPLASH_POTION = ITEMS.register("purity_splash_potion",
-			PuritySplashPotionItem::new);
-
     public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand",
 			DevWand::new);
 
@@ -103,21 +100,21 @@ public class ModItems {
 	public static final RegistryObject<WardenBeefItem> WARDEN_BEEF = ITEMS.register("warden_beef",
 			WardenBeefItem::new);
 
-	public static final RegistryObject<Item> CHUNK_O_BRAIN = ITEMS.register("chunk_o_brain", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
+	public static final RegistryObject<Item> CHUNK_O_BRAIN = ITEMS.register("chunk_o_brain", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 			tooltip.add(Component.translatable("tooltip.sculkhorde.chunk_o_brain"));
 		}
 	});
 
-	public static final RegistryObject<Item> DORMANT_HEART_OF_THE_HORDE = ITEMS.register("dormant_heart_of_the_horde", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
+	public static final RegistryObject<Item> DORMANT_HEART_OF_THE_HORDE = ITEMS.register("dormant_heart_of_the_horde", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 			tooltip.add(Component.translatable("tooltip.sculkhorde.dormant_heart_of_the_horde"));
 		}
 	});
 
-	public static final RegistryObject<Item> HEART_OF_THE_HORDE = ITEMS.register("heart_of_the_horde", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
+	public static final RegistryObject<Item> HEART_OF_THE_HORDE = ITEMS.register("heart_of_the_horde", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 			tooltip.add(Component.translatable("tooltip.sculkhorde.heart_of_the_horde"));
@@ -135,4 +132,7 @@ public class ModItems {
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_RAVAGER_SPAWN_EGG = ITEMS.register("sculk_ravager_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_RAVAGER, 0x5B5049, 0x062E37, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ENDERMAN_SPAWN_EGG = ITEMS.register("sculk_enderman_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ENDERMAN, 0x111B21, 0xE079FA, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_PHANTOM_SPAWN_EGG = ITEMS.register("sculk_phantom_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_PHANTOM, 0x88FF00, 0x062E37, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+
+	public static final RegistryObject<PuritySplashPotionItem> PURITY_SPLASH_POTION = ITEMS.register("purity_splash_potion",
+			PuritySplashPotionItem::new);
 }

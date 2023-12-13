@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.potion;
 
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -28,7 +29,8 @@ public class PuritySplashPotionItem extends PurityThrowablePotionItem {
     public static Properties getProperties()
     {
         return new Properties()
-                .rarity(Rarity.EPIC);
+                .rarity(Rarity.EPIC)
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     @Override
