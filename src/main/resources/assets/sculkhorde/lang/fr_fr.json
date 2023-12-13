@@ -136,8 +136,8 @@
 
   "item.sculkhorde.infestation_purifier": "Purificateurs D'infestation",
   "tooltip.sculkhorde.infestation_purifier": "Faites un clic droit pour le faire revenir en objet.\nÀ la mort, l'objet ne tombe pas.\nUne entité qui, lorsqu'elle apparaît, supprime l'infestation de Sculk de la zone. S'il ne trouve plus d'infestation dans son rayon d'action, retournera en Objet. La Horde Sculk l'attaquera.",
-  "item.sculkhorde.purity_splash_potion": "Flasque de Purification",
-  "tooltip.sculkhorde.purity_splash_potion": "Lancez-le sur l'infestation pour l'éliminer. Guérit les effets des statuts Enfoui et Leurre.",
+  "item.sculkhorde.purification_flask_item": "Flasque de Purification",
+  "tooltip.sculkhorde.purification_flask_item": "Lancez-le sur l'infestation pour l'éliminer. Guérit les effets des statuts Enfoui et Leurre.",
   "effect.sculkhorde.purity": "Pureté",
 
   "block.sculkhorde.infested_sturdy_mass": "Masse Robuste Infestée",

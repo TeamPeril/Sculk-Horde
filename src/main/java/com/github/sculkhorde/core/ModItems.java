@@ -3,15 +3,7 @@ package com.github.sculkhorde.core;
 
 import java.util.List;
 
-import com.github.sculkhorde.common.item.CustomItemProjectile;
-import com.github.sculkhorde.common.item.DevConversionWand;
-import com.github.sculkhorde.common.item.DevNodeSpawner;
-import com.github.sculkhorde.common.item.DevRaidWand;
-import com.github.sculkhorde.common.item.DevWand;
-import com.github.sculkhorde.common.item.InfestationPurifierItem;
-import com.github.sculkhorde.common.item.SculkResinItem;
-import com.github.sculkhorde.common.item.SculkSweeperSword;
-import com.github.sculkhorde.common.item.WardenBeefItem;
+import com.github.sculkhorde.common.item.*;
 import com.github.sculkhorde.common.potion.PuritySplashPotionItem;
 
 import net.minecraft.network.chat.Component;
@@ -133,6 +125,6 @@ public class ModItems {
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ENDERMAN_SPAWN_EGG = ITEMS.register("sculk_enderman_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ENDERMAN, 0x111B21, 0xE079FA, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_PHANTOM_SPAWN_EGG = ITEMS.register("sculk_phantom_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_PHANTOM, 0x88FF00, 0x062E37, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 
-	public static final RegistryObject<PuritySplashPotionItem> PURITY_SPLASH_POTION = ITEMS.register("purity_splash_potion",
-			PuritySplashPotionItem::new);
+	public static final RegistryObject<PurificationFlaskItem> PURIFICATION_FLASK = ITEMS.register("purification_flask_item",
+			PurificationFlaskItem::new);
 }

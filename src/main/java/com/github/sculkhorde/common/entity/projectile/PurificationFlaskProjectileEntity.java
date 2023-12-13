@@ -52,7 +52,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     /** ACCESSORS **/
 
     protected Item getDefaultItem() {
-        return ModItems.PURITY_SPLASH_POTION.get();
+        return ModItems.PURIFICATION_FLASK.get();
     }
 
 

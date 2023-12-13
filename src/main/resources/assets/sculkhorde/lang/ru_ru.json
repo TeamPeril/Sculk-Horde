@@ -137,8 +137,8 @@
 
   "item.sculkhorde.infestation_purifier": "Очиститель инфекции",
   "tooltip.sculkhorde.infestation_purifier": "Щёлкните ПКМ, чтобы вернуться к предмету.\nНе выпадает после смерти.\nСущность при появлении удаляет скалковое заражение из области. Если она больше не может найти заражение в пределах своего диапазона, она выпадает. Скалковая орда будет нападать на него.",
-  "item.sculkhorde.purity_splash_potion": "Колба для очистки",
-  "tooltip.sculkhorde.purity_splash_potion": "Throw at Infestation to clear it up. Cures Burrowed and Lure status effects.",
+  "item.sculkhorde.purification_flask_item": "Колба для очистки",
+  "tooltip.sculkhorde.purification_flask_item": "Throw at Infestation to clear it up. Cures Burrowed and Lure status effects.",
   "effect.sculkhorde.purity": "Чистота",
 
   "block.sculkhorde.infested_sturdy_mass": "Инфецированная прочная масса",
