@@ -1,22 +1,24 @@
 package com.github.sculkhorde.core;
 
+import org.slf4j.Logger;
+
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
-import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.github.sculkhorde.util.StatisticsData;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.mojang.logging.LogUtils;
+
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import software.bernie.geckolib.GeckoLib;
-import org.slf4j.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
@@ -67,8 +69,6 @@ public class SculkHorde {
         ModMobEffects.EFFECTS.register(bus); //Load Effects
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
-
-        ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
     }
 
     public static boolean isDebugMode() {

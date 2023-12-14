@@ -1,12 +1,13 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.EnumSet;
+
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.projectile.DragonFireball;
-
-import java.util.EnumSet;
 
 public class RainDragonBallAttackGoal extends Goal
 {
@@ -49,7 +50,7 @@ public class RainDragonBallAttackGoal extends Goal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 10.0F) || !mob.getTarget().onGround())
+        if(!mob.closerThan(mob.getTarget(), 10.0F) || !mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -120,7 +121,7 @@ public class RainDragonBallAttackGoal extends Goal
         }
 
         double xSpawn = mob.getTarget().getX() + (mob.getTarget().getRandom().nextInt(range) - ((double) range / 2));
-        double ySpawn = mob.getTarget().level().getMaxBuildHeight();
+        double ySpawn = mob.getTarget().level.getMaxBuildHeight();
         double zSpawn = mob.getTarget().getZ() + (mob.getTarget().getRandom().nextInt(range) - ((double) range / 2));
 
         // Spawn going downwards
@@ -128,9 +129,9 @@ public class RainDragonBallAttackGoal extends Goal
         double yDirection = -3;
         double zDirection = 0;
 
-        DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
+        DragonFireball dragonfireball = new DragonFireball(mob.level, mob, xDirection, yDirection, zDirection);
         dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
-        mob.level().addFreshEntity(dragonfireball);
+        mob.level.addFreshEntity(dragonfireball);
 
         attackkIntervalCooldown = attackIntervalTicks;
     }

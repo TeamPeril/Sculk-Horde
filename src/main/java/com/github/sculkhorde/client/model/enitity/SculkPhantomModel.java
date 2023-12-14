@@ -1,8 +1,8 @@
 package com.github.sculkhorde.client.model.enitity;
 
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
-import com.github.sculkhorde.common.entity.SculkZombieEntity;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;

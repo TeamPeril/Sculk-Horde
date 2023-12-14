@@ -1,20 +1,22 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.util.Mth;
+import static com.github.sculkhorde.util.EntityAlgorithms.isLivingEntityHostile;
+import static com.github.sculkhorde.util.EntityAlgorithms.isLivingEntityInfected;
+import static com.github.sculkhorde.util.EntityAlgorithms.isLivingEntitySwimmer;
 
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.util.EntityAlgorithms.*;
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 
 public class TargetParameters
 {

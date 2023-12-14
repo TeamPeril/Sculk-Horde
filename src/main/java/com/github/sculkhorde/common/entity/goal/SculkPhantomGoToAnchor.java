@@ -1,10 +1,8 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
-import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.world.entity.Entity;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.pathfinder.Path;

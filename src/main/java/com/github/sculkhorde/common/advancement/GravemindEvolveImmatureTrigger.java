@@ -3,8 +3,11 @@ package com.github.sculkhorde.common.advancement;
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
-import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.advancements.critereon.*;
+
+import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -19,7 +22,7 @@ public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<Grave
     }
 
     @Override
-    public GravemindEvoleImmatureCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
+    public GravemindEvoleImmatureCriterion createInstance(JsonObject jsonObject, EntityPredicate.Composite awarePredicate, DeserializationContext deserializationContext) {
         return new GravemindEvoleImmatureCriterion(awarePredicate);
     }
 
@@ -29,7 +32,7 @@ public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<Grave
 
     public static class GravemindEvoleImmatureCriterion extends AbstractCriterionTriggerInstance {
 
-        public GravemindEvoleImmatureCriterion(ContextAwarePredicate awarePredicate) {
+        public GravemindEvoleImmatureCriterion(EntityPredicate.Composite awarePredicate) {
             super(ID, awarePredicate);
         }
     }

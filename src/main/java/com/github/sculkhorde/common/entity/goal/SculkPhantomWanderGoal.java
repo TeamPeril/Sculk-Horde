@@ -1,17 +1,17 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.EnumSet;
+
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.EnumSet;
 
 public class SculkPhantomWanderGoal extends Goal {
 
@@ -48,7 +48,7 @@ public class SculkPhantomWanderGoal extends Goal {
         if (mob.isVehicle()) {
             return false;
         } else if (!forceTrigger) {
-            if (mob.level().getGameTime() - lastTimeExecuted < intervalTicks) {
+            if (mob.level.getGameTime() - lastTimeExecuted < intervalTicks) {
                 return false;
             }
         }
@@ -79,7 +79,7 @@ public class SculkPhantomWanderGoal extends Goal {
 
     @Override
     public void start() {
-        lastTimeExecuted = mob.level().getGameTime();
+        lastTimeExecuted = mob.level.getGameTime();
         navigateToTarget();
     }
 
@@ -134,7 +134,7 @@ public class SculkPhantomWanderGoal extends Goal {
 
         Vec3 currentPosition = mob.position();
         Vec3 targetPosition = currentPosition.add(dx, dy, dz);
-        Vec3 groundPosition = getGroundPos(mob.level(), targetPosition);
+        Vec3 groundPosition = getGroundPos(mob.level, targetPosition);
 
         if(groundPosition.distanceTo(currentPosition) > maxHeightOffGround)
         {

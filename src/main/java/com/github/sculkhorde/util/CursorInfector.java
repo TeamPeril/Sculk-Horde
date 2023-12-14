@@ -35,11 +35,11 @@ public class CursorInfector extends Cursor{
         {
             return false;
         }
-        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        else if(isExposedToInfestationWardBlock((ServerLevel) this.level, pos))
         {
             return false;
         }
-        else if(!state.isSolidRender(this.level(), pos))
+        else if(!state.isSolidRender(this.level, pos))
         {
             return false;
         }
@@ -52,7 +52,7 @@ public class CursorInfector extends Cursor{
             return false;
         }
         // Check if block is not beyond world border
-        else if(!level().isInWorldBounds(pos))
+        else if(!level.isInWorldBounds(pos))
         {
             return false;
         }

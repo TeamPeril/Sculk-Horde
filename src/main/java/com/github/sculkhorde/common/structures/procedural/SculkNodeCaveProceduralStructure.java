@@ -1,15 +1,16 @@
 package com.github.sculkhorde.common.structures.procedural;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
 import java.util.ArrayList;
 import java.util.function.Predicate;
+
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.util.BlockAlgorithms;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class SculkNodeCaveProceduralStructure extends ProceduralStructure
 {

@@ -1,13 +1,21 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModParticles;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -16,7 +24,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +31,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -34,10 +40,6 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -220,11 +222,11 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level().isClientSide)
+        if (level.isClientSide)
         {
             Random random = new Random();
             for (int i = 0; i < 1; i++) {
-                level().addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level.addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), this.position().x, this.position().y + 1.7, this.position().z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
             return;
         }
@@ -240,21 +242,21 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         if (canSpawnCursor) {
             // Spawn Block Traverser
-            cursor = new CursorSurfaceInfectorEntity(level());
+            cursor = new CursorSurfaceInfectorEntity(level);
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
             cursor.setMaxTransformations(100);
             cursor.setMaxRange(100);
             cursor.setTickIntervalMilliseconds(50);
             cursor.setSearchIterationsPerTick(1);
-            level().addFreshEntity(cursor);
+            level.addFreshEntity(cursor);
             triggerAnim("spread_controller", "spread_animation");
         }
 
-        if (level().getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
+        if (level.getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
         {
-            lastInfectionTime = level().getGameTime();
+            lastInfectionTime = level.getGameTime();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), this.blockPosition(), 10);
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level, this.blockPosition(), 10);
             for (LivingEntity victim : entities)
             {
                 if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
@@ -306,7 +308,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         @Override
         public void tick()
         {
-            if(level().isClientSide())
+            if(level.isClientSide())
             {
                 return;
             }

@@ -1,19 +1,28 @@
 package com.github.sculkhorde.core;
 
 
-import com.github.sculkhorde.common.item.*;
+import java.util.List;
+
+import com.github.sculkhorde.common.item.CustomItemProjectile;
+import com.github.sculkhorde.common.item.DevConversionWand;
+import com.github.sculkhorde.common.item.DevNodeSpawner;
+import com.github.sculkhorde.common.item.DevRaidWand;
+import com.github.sculkhorde.common.item.DevWand;
+import com.github.sculkhorde.common.item.InfestationPurifierItem;
+import com.github.sculkhorde.common.item.SculkResinItem;
+import com.github.sculkhorde.common.item.SculkSweeperSword;
+import com.github.sculkhorde.common.item.WardenBeefItem;
 import com.github.sculkhorde.common.potion.PuritySplashPotionItem;
-import net.minecraft.world.item.TooltipFlag;
+
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.List;
 
 public class ModItems {
     //https://www.mr-pineapple.co.uk/tutorials/items

@@ -1,11 +1,12 @@
 package com.github.sculkhorde.core.gravemind;
 
+import java.util.ArrayList;
+
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.server.level.ServerLevel;
 
-import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
 
 public class SculkNodesHandler {
 

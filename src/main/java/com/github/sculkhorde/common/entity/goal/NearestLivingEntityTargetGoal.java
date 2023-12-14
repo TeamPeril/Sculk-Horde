@@ -1,17 +1,19 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.phys.AABB;
-
-import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.function.Predicate;
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
     //protected EntityPredicate targetConditions;
@@ -58,15 +60,15 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     protected void findTarget()
     {
-        if(this.mob.level().getGameTime() - lastTimeSinceTargetSearch < targetSearchInterval)
+        if(this.mob.level.getGameTime() - lastTimeSinceTargetSearch < targetSearchInterval)
         {
             return;
         }
 
-        lastTimeSinceTargetSearch = this.mob.level().getGameTime();
+        lastTimeSinceTargetSearch = this.mob.level.getGameTime();
 
         possibleTargets =
-                this.mob.level().getEntitiesOfClass(
+                this.mob.level.getEntitiesOfClass(
                 LivingEntity.class,
                 this.getTargetSearchArea(this.getFollowDistance()),
                         ((ISculkSmartEntity)this.mob).getTargetParameters().isPossibleNewTargetValid);

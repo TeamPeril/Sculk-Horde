@@ -1,17 +1,31 @@
 package com.github.sculkhorde.core.gravemind;
 
+import static com.github.sculkhorde.core.SculkHorde.gravemind;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockSearcher;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -28,14 +42,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Predicate;
-
-import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 public class RaidHandler {
 

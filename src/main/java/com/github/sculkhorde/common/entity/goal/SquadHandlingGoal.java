@@ -1,21 +1,20 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.AABB;
-
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
 
 public class SquadHandlingGoal extends Goal {
 
@@ -43,13 +42,13 @@ public class SquadHandlingGoal extends Goal {
     @Override
     public boolean canUse()
     {
-        return !SculkHorde.gravemind.getEvolutionState().equals(Gravemind.evolution_states.Immature) || getMob().level().getGameTime() - timeOfLastSquadUpdate > SQUAD_UPDATE_DELAY;
+        return !SculkHorde.gravemind.getEvolutionState().equals(Gravemind.evolution_states.Immature) || getMob().level.getGameTime() - timeOfLastSquadUpdate > SQUAD_UPDATE_DELAY;
     }
 
     @Override
     public void start()
     {
-        timeOfLastSquadUpdate = getMob().level().getGameTime();
+        timeOfLastSquadUpdate = getMob().level.getGameTime();
     }
 
     @Override
@@ -92,7 +91,7 @@ public class SquadHandlingGoal extends Goal {
     {
         AABB boundingBox = getMob().getBoundingBox().inflate(16.0D, 8.0D, 16.0D);
         // Get list of mobs in range
-        List<? extends Mob> list = getMob().level().getEntitiesOfClass(Mob.class, boundingBox);
+        List<? extends Mob> list = getMob().level.getEntitiesOfClass(Mob.class, boundingBox);
 
 
         // Early exit if list is empty

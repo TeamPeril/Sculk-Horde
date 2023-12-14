@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -39,7 +40,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 5.0D) && mob.getTarget().onGround())
+        if(!mob.closerThan(mob.getTarget(), 5.0D) && mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -65,7 +66,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
 
         //Spawn Ender Attack Bubble entity
         BlockPos spawnPos = new BlockPos((int) this.mob.getX(), (int) (this.mob.getY() + (this.mob.getBbHeight() / 2)), (int) this.mob.getZ());
-        attackBubble = EnderBubbleAttackEntity.spawn( (ServerLevel) mob.level(), mob, spawnPos, ModEntities.ENDER_BUBBLE_ATTACK.get());
+        attackBubble = EnderBubbleAttackEntity.spawn( (ServerLevel) mob.level, mob, spawnPos, ModEntities.ENDER_BUBBLE_ATTACK.get());
         attackBubble.setOwner(mob);
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);

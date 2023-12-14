@@ -1,12 +1,12 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.EnumSet;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.SquadHandler;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
-
-import java.util.EnumSet;
 
 public class FocusSquadTarget extends TargetGoal {
 

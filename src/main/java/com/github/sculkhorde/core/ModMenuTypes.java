@@ -1,6 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
+
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;

@@ -1,7 +1,16 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
+import static com.github.sculkhorde.core.SculkHorde.gravemind;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -13,14 +22,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Predicate;
-
-import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 /**
  * The Entity Provider is a data structure that serves as a way for the sculk to

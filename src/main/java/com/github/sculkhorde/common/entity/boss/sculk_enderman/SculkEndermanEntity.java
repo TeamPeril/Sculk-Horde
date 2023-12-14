@@ -1,7 +1,14 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.Random;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
@@ -9,6 +16,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -26,7 +34,11 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -46,8 +58,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.Random;
 
 public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -257,9 +267,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public void aiStep()
     {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+                this.level.addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
         // IF target isnt null and we cannot see them, teleport to them
@@ -268,7 +278,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             teleportBehindEntity(getTarget());
         }
 
-        if(this.getTarget() != null && !this.getTarget().onGround())
+        if(this.getTarget() != null && !this.getTarget().isOnGround())
         {
             stayInSpecificRangeOfTarget(16, 32);
         }
@@ -339,7 +349,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected void teleportRandomly(int distance)
     {
-        if (this.level().isClientSide() || !this.isAlive() || !canTeleport)
+        if (this.level.isClientSide() || !this.isAlive() || !canTeleport)
         {
             return;
         }
@@ -442,13 +452,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while(blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion())
+        while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).getMaterial().blocksMotion())
         {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
-        BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
-        boolean isMotionBlockFlag = false; blockstate.blocksMotion();
+        BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
+        boolean isMotionBlockFlag = false; blockstate.getMaterial().blocksMotion();
         boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
         if (!isWaterFlag)
         {
@@ -461,10 +471,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             boolean ifCanRandomTeleport = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
             if (ifCanRandomTeleport)
             {
-                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+                this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (!this.isSilent())
                 {
-                    this.level().playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+                    this.level.playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                     ticksSinceLastTeleport = 0;
                 }

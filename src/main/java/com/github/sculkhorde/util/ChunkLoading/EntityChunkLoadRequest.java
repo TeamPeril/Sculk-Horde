@@ -1,15 +1,13 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.UUID;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-
-import java.util.UUID;
 
 public class EntityChunkLoadRequest extends ChunkLoadRequest {
 

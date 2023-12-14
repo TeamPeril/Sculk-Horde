@@ -1,24 +1,24 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.IPlantable;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Predicate;
+
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.BlockAlgorithms;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.IPlantable;
 
 public class CursorSurfacePurifierEntity extends CursorEntity{
 
@@ -54,23 +54,23 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.blockInfestationTable.cureBlock((ServerLevel) this.level(), pos);
+        SculkHorde.blockInfestationTable.cureBlock((ServerLevel) this.level, pos);
 
-        if(shouldBeRemovedFromAboveBlock.test(this.level().getBlockState(pos.above())))
+        if(shouldBeRemovedFromAboveBlock.test(this.level.getBlockState(pos.above())))
         {
-            this.level().setBlockAndUpdate(pos.above(), Blocks.AIR.defaultBlockState());
+            this.level.setBlockAndUpdate(pos.above(), Blocks.AIR.defaultBlockState());
         }
 
-        boolean canCuredBlockSustatinPlant = this.level().getBlockState(pos).canSustainPlant(this.level(), pos, Direction.UP, (IPlantable) Blocks.POPPY);
+        boolean canCuredBlockSustatinPlant = this.level.getBlockState(pos).canSustainPlant(this.level, pos, Direction.UP, (IPlantable) Blocks.POPPY);
         Random rand = new Random();
-        if(rand.nextBoolean() && canCuredBlockSustatinPlant && this.level().getBlockState(pos.above()).isAir())
+        if(rand.nextBoolean() && canCuredBlockSustatinPlant && this.level.getBlockState(pos.above()).isAir())
         {
-            this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
+            this.level.setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
         }
 
         // Get all infector cursor entities in area and kill them
         Predicate<CursorInfectorEntity> isCursor = Objects::nonNull;
-        List<CursorInfectorEntity> Infectors = level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
+        List<CursorInfectorEntity> Infectors = level.getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
         for(CursorInfectorEntity infector : Infectors)
         {
             infector.discard();
@@ -82,7 +82,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
+        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
     }
 
     /**
@@ -94,7 +94,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(!state.isSolidRender(this.level(), pos))
+        if(!state.isSolidRender(this.level, pos))
         {
             return true;
         }
@@ -115,7 +115,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos))
         {
             return true;
         }

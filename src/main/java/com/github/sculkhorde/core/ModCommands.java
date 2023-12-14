@@ -1,8 +1,16 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.command.*;
+import com.github.sculkhorde.common.command.ConfigCommand;
+import com.github.sculkhorde.common.command.GravemindCommand;
+import com.github.sculkhorde.common.command.MassCommand;
+import com.github.sculkhorde.common.command.PlayerStatusCommand;
+import com.github.sculkhorde.common.command.RaidCommand;
+import com.github.sculkhorde.common.command.StatisticsCommand;
+import com.github.sculkhorde.common.command.StatusAllCommand;
+import com.github.sculkhorde.common.command.StatusCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

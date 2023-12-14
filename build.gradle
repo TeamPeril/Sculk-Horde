@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20.1-0.8.0-PreRelease-6'
+version = '1.19.4-0.8.0-PreRelease-6'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -14,7 +14,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.20.1'
+    mappings channel: 'official', version: '1.19.4'
    
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -105,14 +105,14 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.1.0'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.3')
+    minecraft 'net.minecraftforge:forge:1.19.4-45.2.6'
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.19.4:4.2')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:jei-238222:4712868")
-	implementation fg.deobf("curse.maven:spore-678295:4764840")
-	implementation fg.deobf("curse.maven:spark-361579:4738952")
-	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
+	implementation fg.deobf("curse.maven:jei-238222:4712556")
+	//implementation fg.deobf("curse.maven:spore-678295:4764840")
+	implementation fg.deobf("curse.maven:spark-361579:4505309")
+	//implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
 }
 
 mixin {

@@ -1,20 +1,19 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.EnumSet;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.SquadHandler;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nullable;
-import javax.swing.text.html.Option;
-import java.util.EnumSet;
-import java.util.Optional;
 
 public class ImprovedRandomStrollGoal extends Goal{
     public static final int DEFAULT_INTERVAL = 120;

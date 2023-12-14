@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.nbt.CompoundTag;
 
 public class StatisticsData {

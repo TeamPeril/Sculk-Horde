@@ -1,25 +1,24 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.block.TendrilsBlock;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 public class BlockAlgorithms {
 

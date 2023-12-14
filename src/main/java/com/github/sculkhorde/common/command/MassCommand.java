@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -61,7 +62,7 @@ public class MassCommand implements Command<CommandSourceStack> {
                 SculkHorde.gravemind.calulateCurrentState();
             }
         }
-        context.getSource().sendSuccess(()->Component.literal("Sculk Mass is Now: " + SculkHorde.savedData.getSculkAccumulatedMass()), false);
+        context.getSource().sendSuccess(Component.literal("Sculk Mass is Now: " + SculkHorde.savedData.getSculkAccumulatedMass()), false);
         return 0;
     }
 }

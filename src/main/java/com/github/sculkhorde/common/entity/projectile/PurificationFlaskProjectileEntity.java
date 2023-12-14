@@ -1,30 +1,25 @@
 package com.github.sculkhorde.common.entity.projectile;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
-import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 
 public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntity {
@@ -65,8 +60,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
     public void tick() {
         super.tick();
-        if (this.level().isClientSide) {
-            this.level().addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            this.level.addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -76,7 +71,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         super.onHit(result);
 
         // If any entities are close to the impact, remove the infection from them.
-        for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
+        for(LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
         {
             entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertMinutesToTicks(15)));
         }
@@ -87,11 +82,11 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
         ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(BlockPos.containing(result.getLocation()), 3, true);
         Collections.shuffle(list);
-        list.removeIf(pos -> !level().getBlockState(pos).isSolidRender(level(), pos));
+        list.removeIf(pos -> !level.getBlockState(pos).isSolidRender(level, pos));
 
         for(int i = 0; i < 5 && i < list.size(); i++)
         {
-            CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(level());
+            CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(level);
             // Spawn Infestation Purifier Cursors
             // Spawn Block Traverser
             cursor.setPos(list.get(i).getX(), list.get(i).getY(), list.get(i).getZ());
@@ -100,7 +95,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             cursor.setSearchIterationsPerTick(5);
             cursor.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(1));
             cursor.setTickIntervalMilliseconds(150);
-            level().addFreshEntity(cursor);
+            level.addFreshEntity(cursor);
 
         }
     }

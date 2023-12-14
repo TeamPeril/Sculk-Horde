@@ -1,5 +1,8 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.Optional;
+import java.util.function.Predicate;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.ModBlocks;
@@ -7,6 +10,7 @@ import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,9 +25,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     protected final TagKey<Block> blockWithTagToRemove = ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY;
@@ -52,7 +53,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
             searchCoolDownTicksRemaining = searchCoolDownTicks;
         }
 
-        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level(), this.removerMob))
+        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level, this.removerMob))
         {
             return false;
         }
@@ -85,7 +86,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     public void tick() {
         super.tick();
-        Level level = this.removerMob.level();
+        Level level = this.removerMob.level;
         BlockPos mobPosition = this.removerMob.blockPosition();
         BlockPos blockPosition = this.blockPos;
         RandomSource randomsource = this.removerMob.getRandom();
@@ -188,15 +189,15 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     // New Predicate for isValidTarget
     public final Predicate<BlockState> IS_VALID_TARGET = (blockState) -> {
-        return isValidTarget(this.mob.level(), blockState);
+        return isValidTarget(this.mob.level, blockState);
     };
 
     @Override
     protected boolean findNearestBlock() {
-        Optional<BlockPos> optionalTargetBlock = BlockAlgorithms.findBlockInCube((ServerLevel) this.mob.level(), this.mob.blockPosition(), IS_VALID_TARGET, 16);
+        Optional<BlockPos> optionalTargetBlock = BlockAlgorithms.findBlockInCube((ServerLevel) this.mob.level, this.mob.blockPosition(), IS_VALID_TARGET, 16);
         optionalTargetBlock.ifPresent((blockPos) -> {
             this.blockPos = blockPos;
-            SculkHorde.LOGGER.debug("Sculk Creeper New Raid Target: " + this.mob.level().getBlockState(this.blockPos).toString());
+            SculkHorde.LOGGER.debug("Sculk Creeper New Raid Target: " + this.mob.level.getBlockState(this.blockPos).toString());
         });
 
         return optionalTargetBlock.isPresent();

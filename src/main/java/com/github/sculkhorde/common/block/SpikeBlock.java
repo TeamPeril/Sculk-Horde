@@ -1,26 +1,29 @@
 package com.github.sculkhorde.common.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.item.TooltipFlag;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -89,8 +92,8 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of()
-                .mapColor(MapColor.QUARTZ)
+        return Properties.of(Material.STONE)
+                .color(MaterialColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.SLIME_BLOCK)

@@ -1,9 +1,14 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -12,7 +17,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -21,8 +25,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.keyframe.event.CustomInstructionKeyframeEvent;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.UUID;
 
 public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements TraceableEntity, GeoEntity {
 
@@ -42,7 +44,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     }
 
     public SculkSpineSpikeAttackEntity(LivingEntity owner, double x, double y, double z) {
-        super(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), owner.level());
+        super(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), owner.level);
         this.setPos(x, y, z);
         this.owner = owner;
         this.ownerUUID = owner.getUUID();
@@ -85,7 +87,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
     public void hurtTouchingEntities()
     {
-        for(LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5D)))
+        for(LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5D)))
         {
             if(livingEntity != this.getOwner())
             {
@@ -105,7 +107,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
         }
 
         this.lifeTicks++;
-        if (this.level().isClientSide)
+        if (this.level.isClientSide)
         {
             if (this.clientSideAttackStarted)
             {
@@ -130,7 +132,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
         super.handleEntityEvent(b);
         this.clientSideAttackStarted = true;
         if (!this.isSilent()) {
-            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
         }
     }
 
@@ -155,7 +157,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     private <ENTITY extends GeoEntity> void instructionListener(CustomInstructionKeyframeEvent<ENTITY> event) {
         if(event.getKeyframeData().getInstructions().contains("DoDamageInstruction"))
         {
-            if(this.level().isClientSide())
+            if(this.level.isClientSide())
             {
                 for(int i = 0; i < 12; ++i)
                 {
@@ -165,7 +167,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
                     double d3 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
                     double d4 = 0.3D + this.random.nextDouble() * 0.3D;
                     double d5 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
-                    this.level().addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
+                    this.level.addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
                 }
             }
         }

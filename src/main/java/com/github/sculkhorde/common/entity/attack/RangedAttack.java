@@ -2,9 +2,10 @@ package com.github.sculkhorde.common.entity.attack;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.util.ProjectileHelper;
-import net.minecraft.world.entity.LivingEntity;
+
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
@@ -56,7 +57,7 @@ public abstract class RangedAttack {
     public void shoot()
     {
         LivingEntity targetEntity = this.thisMob.getTarget();
-        CustomItemProjectileEntity projectile = getProjectile(this.thisMob.level(), this.thisMob, this.damage);
+        CustomItemProjectileEntity projectile = getProjectile(this.thisMob.level, this.thisMob, this.damage);
 
         double d0 = targetEntity.getX() - this.thisMob.getX();
         double d1 = targetEntity.getEyeY() - projectile.getY();
@@ -70,7 +71,7 @@ public abstract class RangedAttack {
 
         projectile.shoot(d0, d1, d2, (float) velocity, inaccuracy);
         this.thisMob.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1.0F);
-        this.thisMob.level().addFreshEntity(projectile);
+        this.thisMob.level.addFreshEntity(projectile);
         /*
         //Math Stuff
         double d0 = (targetEntity.getEyeY()- targetEntity.getY()) / 2 + targetEntity.getY();

@@ -1,15 +1,16 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is only used in the EntityFactory class which stores a list

@@ -1,29 +1,27 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.effect.SculkInfectionEffect;
-import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoadRequest;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ForcedChunksSavedData;
-import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -121,14 +119,14 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onLivingEntityDeathEvent(LivingDeathEvent event)
     {
-        if(event.getEntity().level().isClientSide())
+        if(event.getEntity().level.isClientSide())
         {
             return;
         }
 
         if(EntityAlgorithms.isSculkLivingEntity.test(event.getEntity()))
         {
-            SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
+            SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level, event.getEntity().blockPosition());
             SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
 
         }
@@ -137,7 +135,7 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(event.getEntity().level().isClientSide() || SculkHorde.gravemind == null)
+        if(event.getEntity().level.isClientSide() || SculkHorde.gravemind == null)
         {
             return;
         }
@@ -179,16 +177,16 @@ public class ForgeEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event)	
     {
-        if(event.player.level().isClientSide())
+        if(event.player.level.isClientSide())
         {
             return;
         }
 
         if(event.player.tickCount % 20 == 0)
         {
-            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
+            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level);
         }
     }
 }

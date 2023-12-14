@@ -1,9 +1,9 @@
 package com.github.sculkhorde.common.pools;
 
-import net.minecraft.world.level.block.Block;
-
 import java.util.ArrayList;
 import java.util.Random;
+
+import net.minecraft.world.level.block.Block;
 
 /**
  * This class is used to randomly select a block from a given pool. <br>

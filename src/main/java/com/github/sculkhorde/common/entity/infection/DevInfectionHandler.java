@@ -1,7 +1,5 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

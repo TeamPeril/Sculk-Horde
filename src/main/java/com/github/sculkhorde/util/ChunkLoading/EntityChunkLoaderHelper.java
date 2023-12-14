@@ -1,18 +1,18 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.UUID;
+
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.common.world.ForgeChunkManager;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
 
 public class EntityChunkLoaderHelper
 {
@@ -223,7 +223,7 @@ public class EntityChunkLoaderHelper
         {
             return;
         }
-        EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level().dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
+        EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level.dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         entityChunkLoadRequests.add(request);
         loadChunksWithOwner(request.getOwner(), request.getDimension());
     }

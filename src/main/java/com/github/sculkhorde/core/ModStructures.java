@@ -1,15 +1,16 @@
 package com.github.sculkhorde.core;
 
+import java.util.Locale;
+
 import com.github.sculkhorde.common.structures.SculkTombStructure;
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.Locale;
 
 
 public class ModStructures {

@@ -1,16 +1,15 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import java.util.EnumSet;
+
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.InteractionHand;
+
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
-
-import java.util.EnumSet;
 
 public class CustomMeleeAttackGoal extends Goal{
     protected final PathfinderMob mob;
@@ -46,7 +45,7 @@ public class CustomMeleeAttackGoal extends Goal{
     }
 
     public boolean canUse() {
-        long i = this.mob.level().getGameTime();
+        long i = this.mob.level.getGameTime();
         if (i - this.lastCanUseCheck < COOLDOWN_BETWEEN_CAN_USE_CHECKS)
         {
             return false;

@@ -1,22 +1,19 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.TargetGoal;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.level.GameRules;
-
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.world.entity.EntityType;
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.EntityAlgorithms;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.phys.AABB;
 
 public class TargetAttacker extends TargetGoal {
 
@@ -112,7 +109,7 @@ public class TargetAttacker extends TargetGoal {
         boolean DEBUG_THIS = false;
         double d0 = this.getFollowDistance();
         AABB axisalignedbb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0D, d0);
-        List<Mob> list = this.mob.level().getEntitiesOfClass(Mob.class, axisalignedbb);
+        List<Mob> list = this.mob.level.getEntitiesOfClass(Mob.class, axisalignedbb);
         Iterator iterator = list.iterator();
 
         while(true)

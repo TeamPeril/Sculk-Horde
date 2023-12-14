@@ -2,12 +2,13 @@ package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
+
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -62,13 +63,13 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     protected void onHitEntity(EntityHitResult raytrace) {
         super.onHitEntity(raytrace);
-        this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
     }
 
     @Override
     protected void onHitBlock(BlockHitResult raytrace) {
         super.onHitBlock(raytrace);
-        this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
     }
 
     /** EVENTS **/
@@ -78,8 +79,8 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide) {
-            this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 }

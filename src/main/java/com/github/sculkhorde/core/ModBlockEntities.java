@@ -1,7 +1,17 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.blockentity.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import com.github.sculkhorde.common.blockentity.DevMassInfectinator3000BlockEntity;
+import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
+import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkLivingRockRootBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
+import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
+
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

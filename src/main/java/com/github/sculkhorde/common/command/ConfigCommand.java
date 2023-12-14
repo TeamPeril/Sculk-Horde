@@ -9,6 +9,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -280,7 +281,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
         // Provide feedback to the player
         if (success) {
-            context.getSource().sendSuccess(() -> Component.literal("Config option updated successfully. " + configKey + " is now: " + rawValue), false);
+            context.getSource().sendSuccess(Component.literal("Config option updated successfully. " + configKey + " is now: " + rawValue), false);
         } else {
             context.getSource().sendFailure(Component.literal("Failed to update config option. Check your input."));
         }

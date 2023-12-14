@@ -1,15 +1,16 @@
 package com.github.sculkhorde.common.entity.infection;
 
+import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
+
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 
-import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
     /**
@@ -39,11 +40,11 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         {
             return true;
         }
-        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        else if(isExposedToInfestationWardBlock((ServerLevel) this.level, pos))
         {
             return true;
         }
-        else if(!state.isSolidRender(this.level(), pos))
+        else if(!state.isSolidRender(this.level, pos))
         {
             return true;
         }
@@ -59,7 +60,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         }
 
         // Check if block is not beyond world border
-        if(!level().isInWorldBounds(pos))
+        if(!level.isInWorldBounds(pos))
         {
             return true;
         }
@@ -70,7 +71,7 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos) && !state.is(ModBlocks.SCULK_ARACHNOID.get()) && !state.is(ModBlocks.SCULK_DURA_MATTER.get()))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos) && !state.is(ModBlocks.SCULK_ARACHNOID.get()) && !state.is(ModBlocks.SCULK_DURA_MATTER.get()))
         {
             return true;
         }

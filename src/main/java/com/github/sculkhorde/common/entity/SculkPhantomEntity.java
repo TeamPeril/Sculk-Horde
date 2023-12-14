@@ -1,11 +1,30 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.SculkPhantomGoToAnchor;
+import com.github.sculkhorde.common.entity.goal.SculkPhantomWanderGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.util.*;
+import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +39,15 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
@@ -32,7 +59,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -42,12 +68,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
 
 public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSmartEntity {
 
@@ -328,19 +348,19 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public void tick()
     {
         super.tick();
-        if (this.level().isClientSide)
+        if (this.level.isClientSide)
         {
             float f = Mth.cos((float)(this.getUniqueFlapTickOffset() + this.tickCount) * 7.448451F * ((float)Math.PI / 180F) + (float)Math.PI);
             float f1 = Mth.cos((float)(this.getUniqueFlapTickOffset() + this.tickCount + 1) * 7.448451F * ((float)Math.PI / 180F) + (float)Math.PI);
             if (f > 0.0F && f1 <= 0.0F) {
-                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PHANTOM_FLAP, this.getSoundSource(), 0.95F + this.random.nextFloat() * 0.05F, 0.95F + this.random.nextFloat() * 0.05F, false);
+                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PHANTOM_FLAP, this.getSoundSource(), 0.95F + this.random.nextFloat() * 0.05F, 0.95F + this.random.nextFloat() * 0.05F, false);
             }
 
             float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F);
             float f3 = Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F);
             float f4 = (0.3F + f * 0.45F) * (0.2F + 1.0F);
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
             return;
         }
 
@@ -418,9 +438,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     protected void dieAndSpawnCorpse()
     {
         SculkPhantomEntity.this.discard();
-        SculkPhantomCorpseEntity corpse = new SculkPhantomCorpseEntity(ModEntities.SCULK_PHANTOM_CORPSE.get(), level());
+        SculkPhantomCorpseEntity corpse = new SculkPhantomCorpseEntity(ModEntities.SCULK_PHANTOM_CORPSE.get(), level);
         corpse.setPos(SculkPhantomEntity.this.getX(), SculkPhantomEntity.this.getY(), SculkPhantomEntity.this.getZ());
-        level().addFreshEntity(corpse);
+        level.addFreshEntity(corpse);
 
         // Give spore spewer slow falling
         corpse.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 1));
@@ -435,7 +455,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public boolean canUse()
         {
-            boolean cooldownNotMet = level().getGameTime() - lastTimeOfCheck < checkCooldown;
+            boolean cooldownNotMet = level.getGameTime() - lastTimeOfCheck < checkCooldown;
             boolean isNotScouter = !isScouter();
             boolean spawnPointIsNull = spawnPoint == null;
 
@@ -450,13 +470,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return false;
             }
 
-            lastTimeOfCheck = level().getGameTime();
+            lastTimeOfCheck = level.getGameTime();
 
             //Spawn Bounding Box on floor and check for mobs
-            BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
+            BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level, blockPosition(), level.getMaxBuildHeight());
 
             // Find any non-sculk mobs in the area
-            List<LivingEntity> nearbyMobs = EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), groundBlockPos, mobCheckRadius);
+            List<LivingEntity> nearbyMobs = EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level, groundBlockPos, mobCheckRadius);
 
             for(LivingEntity mob : nearbyMobs)
             {
@@ -493,7 +513,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public boolean canUse()
         {
-            boolean cooldownNotMet = level().getGameTime() - lastTimeOfExecution < executionCooldown;
+            boolean cooldownNotMet = level.getGameTime() - lastTimeOfExecution < executionCooldown;
             boolean isNotScouter = !isScouter();
             boolean hasTarget = getTarget() != null;
 
@@ -502,7 +522,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return false;
             }
 
-            return level().canSeeSky(blockPosition().above());
+            return level.canSeeSky(blockPosition().above());
         }
 
         public boolean canContinueToUse()
@@ -513,7 +533,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         private boolean isGroundPosValid(BlockPos pos)
         {
             // As long as its not a fluid, its valid
-            return level().getFluidState(pos).isEmpty() && level().getFluidState(pos.below()).isEmpty();
+            return level.getFluidState(pos).isEmpty() && level.getFluidState(pos.below()).isEmpty();
         }
 
         public Vec3 getRandomTravelLocationVec3()
@@ -529,7 +549,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
             for(BlockPos searchPos : searchPositions)
             {
-                BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), searchPos, level().getMaxBuildHeight());
+                BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level, searchPos, level.getMaxBuildHeight());
                 if(isGroundPosValid(groundBlockPos))
                 {
                     int groundYLevel = groundBlockPos.getY();
@@ -546,7 +566,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public void start()
         {
-            lastTimeOfExecution = level().getGameTime();
+            lastTimeOfExecution = level.getGameTime();
             moveTargetPoint = getRandomTravelLocationVec3();
             anchorPoint = BlockPos.containing(moveTargetPoint);
         }
@@ -565,7 +585,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public boolean canUse() {
 
-            if(level().getGameTime() - lastTimeOfAttack < COOLDOWN)
+            if(level.getGameTime() - lastTimeOfAttack < COOLDOWN)
             {
                 return false;
             }
@@ -613,12 +633,12 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 SculkPhantomEntity.this.doHurtTarget(target);
                 EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(5));
                 EntityAlgorithms.applyDebuffEffect(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
-                lastTimeOfAttack = level().getGameTime();
+                lastTimeOfAttack = level.getGameTime();
                 return;
             }
 
             if (SculkPhantomEntity.this.horizontalCollision || SculkPhantomEntity.this.hurtTime > 0) {
-                lastTimeOfAttack = level().getGameTime();
+                lastTimeOfAttack = level.getGameTime();
             }
         }
     }

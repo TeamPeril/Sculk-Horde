@@ -1,16 +1,14 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.Comparator;
+import java.util.List;
+
 import com.github.sculkhorde.common.entity.SculkRavagerEntity;
-import net.minecraft.world.entity.LivingEntity;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.phys.AABB;
-
-import java.util.Comparator;
-import java.util.List;
 
 public class MountNearestRavager extends Goal {
     private final Mob mob; // the skeleton mob
@@ -37,7 +35,7 @@ public class MountNearestRavager extends Goal {
         AABB boundingBox = this.mob.getBoundingBox().inflate(8.0D, 4.0D, 8.0D);
 
         // Get list of mobs in range
-        List<? extends Mob> list = this.mob.level().getEntitiesOfClass(mobClass, boundingBox);
+        List<? extends Mob> list = this.mob.level.getEntitiesOfClass(mobClass, boundingBox);
 
         // Early exit if list is empty
         if (list.isEmpty()) {
