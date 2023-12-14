@@ -81,7 +81,7 @@ public class ModConfig {
 
             builder.push("Sculk Node Variables");
             sculk_node_chunkload_radius = builder.comment("How many chunks should be loaded around a sculk node? (Default 15)").defineInRange("sculk_node_chunkload_radius",15, 0, 15);
-            sculk_node_spawn_cooldown_hours = builder.comment("How many hours should pass before another Sculk node can spawn? (Default 8)").defineInRange("sculk_node_spawn_cooldown_hours",8, 0, Integer.MAX_VALUE);
+            sculk_node_spawn_cooldown_hours = builder.comment("How many hours should pass before another Sculk node can spawn? (Default 2)").defineInRange("sculk_node_spawn_cooldown_hours",2, 0, Integer.MAX_VALUE);
             builder.pop();
 
             builder.push("Sculk Mite Variables");
