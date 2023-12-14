@@ -1,12 +1,11 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkZombieEntity;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-
 import java.util.EnumSet;
 
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkZombieEntity;
+
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 public class SculkZombieAttackGoal extends MeleeAttackGoal
 {
@@ -20,6 +19,13 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     public SculkZombieAttackGoal(SculkZombieEntity mob, double speedModifier, boolean followTargetIfNotSeen) {
         super(mob, speedModifier, followTargetIfNotSeen);
         this.setFlags(EnumSet.of(Flag.MOVE));
+    }
+
+    @Override
+    public void start()
+    {
+        super.start();
+        ((SculkZombieEntity)mob).triggerAnim("attack_controller", "attack_animation");
     }
 
     @Override

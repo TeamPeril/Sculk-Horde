@@ -1,33 +1,44 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SculkMiteAggressorAttackGoal;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.level.block.state.BlockState;
+import com.github.sculkhorde.util.TickUnits;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class SculkMiteAggressorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -57,7 +68,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -93,6 +104,11 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -142,11 +158,14 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     {
         Goal[] goals =
                 {
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkMiteAggressorAttackGoal(this, 1.0D, true),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
@@ -174,7 +193,8 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        new HurtByTargetGoal(this).setAlertOthers(),
+                        new HurtByTargetGoal(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
@@ -215,12 +235,5 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     }
 
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
-    @Override
-    public void onRemovedFromWorld() {
-        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
-    }
+
 }

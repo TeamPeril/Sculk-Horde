@@ -1,25 +1,48 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.entity.attack.AcidAttack;
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.MountNearestRavager;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.RangedAttackGoal;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.level.block.state.BlockState;
+import com.github.sculkhorde.util.TickUnits;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -27,13 +50,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
 public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
 
@@ -65,6 +81,8 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
 
+    private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -81,7 +99,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkSpitterEntity(Level worldIn) {super(EntityRegistry.SCULK_SPITTER.get(), worldIn);}
+    public SculkSpitterEntity(Level worldIn) {super(ModEntities.SCULK_SPITTER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -108,6 +126,11 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     private boolean isParticipatingInRaid = false;
 
     @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
+
+    @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
     }
@@ -121,8 +144,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
     }
-
-
+    private SquadHandler squad = new SquadHandler(this);
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
@@ -157,13 +179,17 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     {
         Goal[] goals =
                 {
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
+                        new MountNearestRavager(this),
                         //
                         new RangedAttackGoal(this, new AcidAttack(this)
                                 .setProjectileOriginOffset(0.8, 0.9, 0.8)
                                 .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         //new MoveTowardsTargetGoal(this, 0.8F, 20F),
@@ -191,77 +217,68 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         Goal[] goals =
                 {
                         new InvalidateTargetGoal(this),
-                        new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
     }
 
+    // Synced Data
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(IS_STRAFING, false);
+    }
+
+    public boolean isStrafing()
+    {
+        return this.entityData.get(IS_STRAFING);
+    }
+
+    public void setStrafing(boolean value)
+    {
+        this.entityData.set(IS_STRAFING, value);
+    }
+
+
+
     // ANIMATIONS
-
-    private static final RawAnimation BODY_IDLE_ANIMATION = RawAnimation.begin().thenPlay("body.idle");
-    private static final RawAnimation BODY_WALK_ANIMATION = RawAnimation.begin().thenPlay("body.walk");
-    private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs.idle");
-    private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
-    private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
-    private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
-    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
-
+    private static final RawAnimation STRAFE_ANIMATION = RawAnimation.begin().thenPlay("move.strafe");
+    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", ATTACK_ANIMATION);
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                new AnimationController<>(this, "Legs", 5, this::poseLegs),
-                new AnimationController<>(this, "Body", 5, this::poseBody),
-                new AnimationController<>(this, "Arms", 5, this::poseArms)
+                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle),
+                DefaultAnimations.genericLivingController(this),
+                ATTACK_ANIMATION_CONTROLLER
         );
     }
 
-    // Create the animation handler for the leg segment
-    protected PlayState poseLegs(AnimationState<SculkSpitterEntity> state)
+    protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
     {
+        /*
+        if(state.getAnimatable().isStrafing())
+        {
+            state.setAnimation(STRAFE_ANIMATION);
+        }
+         */
+
         if(state.isMoving())
         {
-            state.setAnimation(LEGS_WALK_ANIMATION);
+            state.setAnimation(WALK_ANIMATION);
         }
         else
         {
-            //state.setAnimation(LEGS_IDLE_ANIMATION);
-            state.setAnimation(LEGS_IDLE_ANIMATION);
+            state.setAnimation(IDLE_ANIMATION);
         }
+
         return PlayState.CONTINUE;
     }
 
-    // Create the animation handler for the body segment
-    protected PlayState poseBody(AnimationState<SculkSpitterEntity> state)
-    {
-        if(state.isMoving())
-        {
-            state.setAnimation(BODY_WALK_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(BODY_IDLE_ANIMATION);
-        }
-        return PlayState.CONTINUE;
-    }
-
-    // Create the animation handler for the arm segment
-    protected PlayState poseArms(AnimationState<SculkSpitterEntity> state)
-    {
-        if(state.getAnimatable().swinging)
-        {
-            state.setAnimation(ARMS_ATTACK_ANIMATION);
-        }
-        else if(state.isMoving())
-        {
-            state.setAnimation(ARMS_WALK_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(ARMS_IDLE_ANIMATION);
-        }
-        return PlayState.CONTINUE;
-    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -286,15 +303,5 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     public boolean dampensVibrations() {
         return true;
-    }
-
-
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
-    @Override
-    public void onRemovedFromWorld() {
-        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
     }
 }

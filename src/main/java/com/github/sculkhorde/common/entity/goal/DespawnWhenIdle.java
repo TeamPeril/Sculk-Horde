@@ -1,11 +1,13 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-
-import java.util.concurrent.TimeUnit;
 
 public class DespawnWhenIdle extends Goal {
 
@@ -14,7 +16,7 @@ public class DespawnWhenIdle extends Goal {
     long secondsIdleThreshold;
     ISculkSmartEntity mob;
 
-    public DespawnWhenIdle(ISculkSmartEntity mob, int secondsIdleThreshold)
+    public DespawnWhenIdle(ISculkSmartEntity mob, long secondsIdleThreshold)
     {
         super();
         this.mob = mob;
@@ -28,7 +30,7 @@ public class DespawnWhenIdle extends Goal {
     @Override
     public boolean canUse()
     {
-        if(!mob.isIdle())
+        if(!mob.isIdle() || mob.isParticipatingInRaid() || ((Mob) mob).hasCustomName())
         {
             lastTimeSinceNotIdle = System.nanoTime();
         }
@@ -41,5 +43,6 @@ public class DespawnWhenIdle extends Goal {
     public void start()
     {
         ((Mob)mob).remove(Entity.RemovalReason.DISCARDED);
+        if(SculkHorde.savedData != null) { SculkHorde.savedData.addSculkAccumulatedMass((int) ((Mob) mob).getHealth()); }
     }
 }

@@ -1,13 +1,14 @@
 package com.github.sculkhorde.common.entity.attack;
 
+import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
+
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
 public class AcidAttack extends RangedAttack{
 
-    public AcidAttack(Mob thisMob) {
+    public AcidAttack(SculkSpitterEntity thisMob) {
         super(thisMob);
     }
 
@@ -21,5 +22,11 @@ public class AcidAttack extends RangedAttack{
         return new SculkAcidicProjectileEntity(worldIn, shooterIn, damageIn);
 
 
+    }
+
+    @Override
+    public void triggerAttackAnimation()
+    {
+        ((SculkSpitterEntity)thisMob).triggerAnim("attack_controller", "attack_animation");
     }
 }

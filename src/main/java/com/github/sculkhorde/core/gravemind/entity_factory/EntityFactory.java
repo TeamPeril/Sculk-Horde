@@ -1,17 +1,6 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.Gravemind;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +8,20 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.core.SculkHorde.gravemind;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * The Entity Provider is a data structure that serves as a way for the sculk to
@@ -86,6 +88,31 @@ public class EntityFactory {
         return output;
     }
 
+    public static Optional<EntityFactoryEntry> getEntry(EntityType<Mob> entityType)
+    {
+        Optional<EntityFactoryEntry> output = Optional.empty();
+
+        for(EntityFactoryEntry entry : entries)
+        {
+            if(entry.getEntity() == entityType)
+            {
+                output = Optional.of(entry);
+                break;
+            }
+        }
+
+        return output;
+    }
+
+    public static void spawnReinforcementOfThisEntityType(EntityType entityType, Level level, BlockPos pos)
+    {
+        Optional<EntityFactoryEntry> entry = getEntry(entityType);
+        if(entry.isPresent())
+        {
+            entry.get().getEntity().spawn((ServerLevel) level, pos, MobSpawnType.SPAWNER);
+            SculkHorde.statisticsData.incrementTotalUnitsSpawned();
+        }
+    }
 
     /**
      * Will spawn a reinforcement based on the budget given. Prioritizes spawning the highest costing reinforcement.
@@ -98,6 +125,8 @@ public class EntityFactory {
         boolean DEBUG_THIS = false;
         if(DEBUG_THIS) System.out.println("Reinforcement Request Recieved.");
         //Only continue if Sculk Mass > 0, the entries list is not empty, and if we have a budget
+
+        if(SculkHorde.savedData == null) { return; }
 
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
@@ -120,7 +149,7 @@ public class EntityFactory {
             }
         }
 
-        if(possibleReinforcements.size() == 0)
+        if(possibleReinforcements.isEmpty())
         {
             return;
         }
@@ -177,6 +206,8 @@ public class EntityFactory {
      */
     public void requestReinforcementSculkMass(Level world, BlockPos pos, ReinforcementRequest context)
     {
+        if(SculkHorde.savedData == null) { return; }
+
         if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             return;

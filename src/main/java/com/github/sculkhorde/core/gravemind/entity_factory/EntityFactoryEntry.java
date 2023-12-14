@@ -1,15 +1,16 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.gravemind.Gravemind;
+import javax.annotation.Nullable;
+
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is only used in the EntityFactory class which stores a list
@@ -114,7 +115,7 @@ public class EntityFactoryEntry {
             return false;
         }
         // These sculk spore spewers get spammed to hell if they spawn in sculk masses
-        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == EntityRegistry.SCULK_SPORE_SPEWER.get())
+        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == ModEntities.SCULK_SPORE_SPEWER.get())
         {
             return false;
         }
@@ -130,20 +131,7 @@ public class EntityFactoryEntry {
     public Mob spawnEntity(ServerLevel level, BlockPos pos)
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
+        SculkHorde.statisticsData.incrementTotalUnitsSpawned();
         return (Mob) getEntity().spawn(level, pos, MobSpawnType.EVENT);
-    }
-
-    /**
-     * Will create entity and subtract the cost of spawning it.
-     * @param level The level to spawn the entity in
-     * @param pos The position to spawn the entity at
-     * @return The entity that was created
-     */
-    public Mob createEntity(ServerLevel level, BlockPos pos)
-    {
-        SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
-        Mob mob = (Mob) getEntity().create(level);
-        mob.setPos(pos.getX(), pos.getY(), pos.getZ());
-        return mob;
     }
 }

@@ -2,9 +2,10 @@ package com.github.sculkhorde.common.entity.attack;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.util.ProjectileHelper;
-import net.minecraft.world.entity.LivingEntity;
+
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
@@ -104,6 +105,11 @@ public abstract class RangedAttack {
                 this.thisMob.getY(entityHeightFraction), this.thisMob.getZ() + vector3d.z * zOffSetModifier);
         world.addFreshEntity(projectile);
          */
+
+    }
+
+    public void triggerAttackAnimation()
+    {
 
     }
 }

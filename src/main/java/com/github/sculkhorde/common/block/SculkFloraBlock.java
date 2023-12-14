@@ -1,41 +1,33 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.ParticleRegistry;
-import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.extensions.IForgeBlock;
-
 import java.util.Random;
 
+import com.github.sculkhorde.core.ModParticles;
+import com.github.sculkhorde.core.SculkHorde;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+
 //Not an actual block, just a parent class
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.extensions.IForgeBlock;
 
 public class SculkFloraBlock extends BushBlock implements IForgeBlock {
-
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_BLUE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -92,11 +84,13 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.copy(Blocks.POPPY)
+                .color(MaterialColor.TERRACOTTA_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
                 .noCollission()
-                .instabreak();
+                .instabreak()
+                .requiresCorrectToolForDrops();
 
     }
 
@@ -110,7 +104,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
             Random random = new Random();
             if (random.nextInt(10) == 0)
             {
-                worldIn.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                worldIn.addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), pos.getX(), pos.getY(), pos.getZ(), (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
         }
 
@@ -130,7 +124,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     @Override
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
 
-        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(blockState);
+        return SculkHorde.blockInfestationTable.isCurable(blockState);
     }
 
 
@@ -200,6 +194,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return SculkHorde.infestationConversionTable.infestationTable.isInfectedVariant(levelReader.getBlockState(blockPos.below()));
+        return SculkHorde.blockInfestationTable.isCurable(levelReader.getBlockState(blockPos.below()));
     }
 }

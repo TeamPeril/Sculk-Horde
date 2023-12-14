@@ -1,12 +1,19 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -17,12 +24,15 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -42,11 +52,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
@@ -55,12 +63,6 @@ import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * A lot of this is copied from BeeEntity.java.
@@ -158,7 +160,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
      */
     public SculkBeeHarvesterEntity(Level worldIn)
     {
-        this(EntityRegistry.SCULK_BEE_HARVESTER.get(), worldIn);
+        this(ModEntities.SCULK_BEE_HARVESTER.get(), worldIn);
     }
 
     protected void defineSynchedData() {
@@ -186,35 +188,35 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     public void addAdditionalSaveData(CompoundTag compoundTag) {
         super.addAdditionalSaveData(compoundTag);
         if (this.hasHive()) {
-            compoundTag.put("HivePos", NbtUtils.writeBlockPos(this.getHivePos()));
+            compoundTag.put(TAG_HIVE_POS, NbtUtils.writeBlockPos(this.getHivePos()));
         }
 
         if (this.hasSavedFlowerPos()) {
-            compoundTag.put("FlowerPos", NbtUtils.writeBlockPos(this.getSavedFlowerPos()));
+            compoundTag.put(TAG_FLOWER_POS, NbtUtils.writeBlockPos(this.getSavedFlowerPos()));
         }
 
-        compoundTag.putBoolean("HasNectar", this.hasNectar());
-        compoundTag.putBoolean("HasStung", this.hasStung());
-        compoundTag.putInt("TicksSincePollination", this.ticksWithoutNectarSinceExitingHive);
-        compoundTag.putInt("CropsGrownSincePollination", this.numCropsGrownSincePollination);
+        compoundTag.putBoolean(TAG_HAS_NECTAR, this.hasNectar());
+        compoundTag.putBoolean(TAG_HAS_STUNG, this.hasStung());
+        compoundTag.putInt(TAG_TICKS_SINCE_POLLINATION, this.ticksWithoutNectarSinceExitingHive);
+        compoundTag.putInt(TAG_CROPS_GROWN_SINCE_POLLINATION, this.numCropsGrownSincePollination);
     }
 
     public void readAdditionalSaveData(CompoundTag compoundTag) {
         this.hivePos = null;
-        if (compoundTag.contains("HivePos")) {
-            this.hivePos = NbtUtils.readBlockPos(compoundTag.getCompound("HivePos"));
+        if (compoundTag.contains(TAG_HIVE_POS)) {
+            this.hivePos = NbtUtils.readBlockPos(compoundTag.getCompound(TAG_HIVE_POS));
         }
 
         this.savedFlowerPos = null;
-        if (compoundTag.contains("FlowerPos")) {
-            this.savedFlowerPos = NbtUtils.readBlockPos(compoundTag.getCompound("FlowerPos"));
+        if (compoundTag.contains(TAG_FLOWER_POS)) {
+            this.savedFlowerPos = NbtUtils.readBlockPos(compoundTag.getCompound(TAG_FLOWER_POS));
         }
 
         super.readAdditionalSaveData(compoundTag);
-        this.setHasNectar(compoundTag.getBoolean("HasNectar"));
-        this.setHasStung(compoundTag.getBoolean("HasStung"));
-        this.ticksWithoutNectarSinceExitingHive = compoundTag.getInt("TicksSincePollination");
-        this.numCropsGrownSincePollination = compoundTag.getInt("CropsGrownSincePollination");
+        this.setHasNectar(compoundTag.getBoolean(TAG_HAS_NECTAR));
+        this.setHasStung(compoundTag.getBoolean(TAG_HAS_STUNG));
+        this.ticksWithoutNectarSinceExitingHive = compoundTag.getInt(TAG_TICKS_SINCE_POLLINATION);
+        this.numCropsGrownSincePollination = compoundTag.getInt(TAG_CROPS_GROWN_SINCE_POLLINATION);
     }
 
 
@@ -225,7 +227,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED)) {
             return false;
         }
-        else if (blockState.is(BlockRegistry.SMALL_SHROOM.get()))
+        else if (blockState.is(ModBlocks.BlockTags.SCULK_BEE_HARVESTABLE))
         {
             return true;
         }
@@ -468,9 +470,8 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         this.goalSelector.addGoal(5, this.goToHiveGoal);
         this.goToKnownFlowerGoal = new SculkBeeHarvesterEntity.BeeGoToKnownFlowerGoal();
         this.goalSelector.addGoal(6, this.goToKnownFlowerGoal);
-        this.goalSelector.addGoal(7, new SculkBeeHarvesterEntity.BeeGrowCropGoal());
-        this.goalSelector.addGoal(8, new SculkBeeHarvesterEntity.BeeWanderGoal());
-        this.goalSelector.addGoal(9, new FloatGoal(this));
+        this.goalSelector.addGoal(7, new SculkBeeHarvesterEntity.BeeWanderGoal());
+        this.goalSelector.addGoal(8, new FloatGoal(this));
         //this.targetSelector.addGoal(1, (new SculkBeeHarvesterEntity.BeeHurtByOtherGoal(this)).setAlertOthers(new Class[0]));
     }
 
@@ -582,14 +583,13 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     protected void checkFallDamage(double p_27754_, boolean p_27755_, BlockState p_27756_, BlockPos p_27757_) {
     }
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
+    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override
     public void onRemovedFromWorld() {
         SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
+    */
 
     @Override
     public boolean isFlying() {
@@ -704,7 +704,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
                 return false;
             }
 
-            if(!SculkBeeHarvesterEntity.this.level.getBlockState(SculkBeeHarvesterEntity.this.hivePos).is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+            if(!SculkBeeHarvesterEntity.this.level.getBlockState(SculkBeeHarvesterEntity.this.hivePos).is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
             {
                 return false;
             }
@@ -876,66 +876,6 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         }
     }
 
-    protected class BeeGrowCropGoal extends BaseBeeGoal {
-        protected static final int GROW_CHANCE = 30;
-
-        public boolean canBeeUse() {
-            if (getCropsGrownSincePollination() >= 10) {
-                return false;
-            } else if (random.nextFloat() < 0.3F) {
-                return false;
-            } else {
-                return hasNectar() && isHiveValid();
-            }
-        }
-
-        public boolean canBeeContinueToUse() {
-            return this.canBeeUse();
-        }
-
-        public void tick() {
-            if (random.nextInt(this.adjustedTickDelay(GROW_CHANCE)) == 0) {
-                for(int i = 1; i <= 2; ++i) {
-                    BlockPos blockpos = blockPosition().below(i);
-                    BlockState blockstate = level.getBlockState(blockpos);
-                    Block block = blockstate.getBlock();
-                    boolean flag = false;
-                    IntegerProperty integerproperty = null;
-                    if (blockstate.is(BlockTags.BEE_GROWABLES)) {
-                        if (block instanceof CropBlock) {
-                            CropBlock cropblock = (CropBlock)block;
-                            if (!cropblock.isMaxAge(blockstate)) {
-                                flag = true;
-                                integerproperty = cropblock.getAgeProperty();
-                            }
-                        } else if (block instanceof StemBlock) {
-                            int k = blockstate.getValue(StemBlock.AGE);
-                            if (k < 7) {
-                                flag = true;
-                                integerproperty = StemBlock.AGE;
-                            }
-                        } else if (blockstate.is(Blocks.SWEET_BERRY_BUSH)) {
-                            int j = blockstate.getValue(SweetBerryBushBlock.AGE);
-                            if (j < 3) {
-                                flag = true;
-                                integerproperty = SweetBerryBushBlock.AGE;
-                            }
-                        } else if (blockstate.is(Blocks.CAVE_VINES) || blockstate.is(Blocks.CAVE_VINES_PLANT)) {
-                            ((BonemealableBlock)blockstate.getBlock()).performBonemeal((ServerLevel)level, random, blockpos, blockstate);
-                        }
-
-                        if (flag) {
-                            level.levelEvent(2005, blockpos, 0);
-                            level.setBlockAndUpdate(blockpos, blockstate.setValue(integerproperty, Integer.valueOf(blockstate.getValue(integerproperty) + 1)));
-                            incrementNumCropsGrownSincePollination();
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
     protected class BeeLocateHiveGoal extends BaseBeeGoal {
         public boolean canBeeUse() {
             return remainingCooldownBeforeLocatingNewHive == 0 && !hasHive() && wantsToEnterHive();
@@ -965,7 +905,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
 
         private final Predicate<BlockState> VALID_HIVE_BLOCKS = (validBlocksPredicate) ->
         {
-            if (validBlocksPredicate.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()))
+            if (validBlocksPredicate.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()))
             {
                 return true;
             }

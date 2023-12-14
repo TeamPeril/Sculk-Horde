@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    " C ",
+    "SES",
+    " E "
+  ],
+
+  "key":
+  {
+    "C":
+    {
+      "item": "sculkhorde:sculk_enderman_cleaver"
+    },
+    "S":
+    {
+      "item": "sculkhorde:crying_souls"
+    },
+    "E":
+    {
+      "item": "minecraft:echo_shard"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:sculk_sweeper_sword",
+    "count": 1
+  }
+}

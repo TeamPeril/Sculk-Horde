@@ -1,14 +1,13 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkMiteEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.effect.MobEffectInstance;
-
 import java.util.EnumSet;
 
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkMiteEntity;
+
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 public class SculkMiteInfectGoal extends MeleeAttackGoal {
 
@@ -51,6 +50,11 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
     @Override
     public void tick()
     {
+        if(!canContinueToUse())
+        {
+            return;
+        }
+
         SculkMiteEntity thisMob = this.mob;
         LivingEntity target = this.mob.getTarget();
         super.tick();
@@ -63,12 +67,12 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
         double targetZ = thisMob.getTarget().getZ();
         double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
         //If in infect range & not client side & current mob health is less than or equal to 50% of max health
-        if(distance <= thisMob.INFECT_RANGE && !(this.mob.level.isClientSide))
+        if(distance <= SculkMiteEntity.INFECT_RANGE && !(this.mob.level.isClientSide))
         {
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
-            if(targetMobRemainingHealth <= 0.5)
+            if(targetMobRemainingHealth <= 0.5 && !target.hasEffect(SculkMiteEntity.INFECT_EFFECT))
             {
-                target.addEffect(new MobEffectInstance(thisMob.INFECT_EFFECT, thisMob.INFECT_DURATION, thisMob.INFECT_LEVEL));
+                target.addEffect(new MobEffectInstance(SculkMiteEntity.INFECT_EFFECT, SculkMiteEntity.INFECT_DURATION, SculkMiteEntity.INFECT_LEVEL));
 
                 //Kill The Bastard
                 /**

@@ -3,7 +3,7 @@
   // If two or more structures in this list can spawn in a biome at a spot, a random one based on weight is chosen to spawn
   "structures": [
     {
-      "structure": "sculkhorde:sculk_tomb",
+      "structure": "sculkhorde:sculk_tomb_main",
       "weight": 1
     }
   ],
@@ -12,13 +12,13 @@
     "type": "minecraft:random_spread",
 
     // Make sure this is unique and does not match any other structure set's salt
-    "salt": 1794999080,
+    "salt": 1794999667,
 
     // The average distance apart in chunks for spawn attempts
-    "spacing": 20,
+    "spacing": 1,
 
     // Minimum distance apart in chunks for spawn attempts
     // MUST ALWAYS BE SMALLER THAN spacing ABOVE
-    "separation": 10
+    "separation": 0
   }
 }

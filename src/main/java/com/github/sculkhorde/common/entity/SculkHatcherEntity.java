@@ -1,9 +1,22 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -14,7 +27,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
@@ -39,7 +58,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
-     * Edited {@link EntityRegistry}<br>
+     * Edited {@link ModEntities}<br>
      * Edited {@link com.github.sculkhorde.util.ModEventSubscriber}<br>
      * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
      * Edited {@link com.github.sculkhorde.common.world.ModWorldEvents} (this might not be necessary)<br>
@@ -64,7 +83,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().ignoreTargetBelow50PercentHealth().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -82,7 +101,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkHatcherEntity(Level worldIn) {super(EntityRegistry.SCULK_HATCHER.get(), worldIn);}
+    public SculkHatcherEntity(Level worldIn) {super(ModEntities.SCULK_HATCHER.get(), worldIn);}
 
     /**
      * Determines & registers the attributes of the mob.
@@ -156,11 +175,14 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     {
         Goal[] goals =
                 {
-                        new DespawnWhenIdle(this, 30),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkHatcherAttackGoal(this, 1.0D, true),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
@@ -189,7 +211,8 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         Goal[] goals =
                 {
                         new InvalidateTargetGoal(this),
-                        new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
@@ -249,6 +272,11 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -321,7 +349,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 {
                     ticksInCooldown = 0;
                     BlockPos spawnPos = new BlockPos(thisMob.blockPosition());
-                    EntityRegistry.SCULK_MITE.get().spawn((ServerLevel) thisMob.level, spawnPos, MobSpawnType.SPAWNER);
+                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level, spawnPos, MobSpawnType.SPAWNER);
                     thisMob.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
                 }
                 else
@@ -337,12 +365,11 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     }
 
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
+    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override
     public void onRemovedFromWorld() {
         SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
+    */
 }

@@ -1,16 +1,17 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.TargetParameters;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.core.BlockPos;
-
 import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.TargetParameters;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 public class InvalidateTargetGoal extends Goal {
 

@@ -1,13 +1,14 @@
 package com.github.sculkhorde.common.entity.projectile;
 
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ItemRegistry;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModItems;
+
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -34,7 +35,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
      * @param worldIn The World to spawn the projectile in
      */
     public SculkAcidicProjectileEntity(Level worldIn,  LivingEntity shooterIn, float damageIn) {
-        this(EntityRegistry.SCULK_ACIDIC_PROJECTILE_ENTITY.get(), worldIn);
+        this(ModEntities.SCULK_ACIDIC_PROJECTILE_ENTITY.get(), worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
         this.setDamage(damageIn);
@@ -46,7 +47,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     /** ACCESSORS **/
     @Override
     protected Item getDefaultItem() {
-        return ItemRegistry.SCULK_ACIDIC_PROJECTILE.get();
+        return ModItems.SCULK_ACIDIC_PROJECTILE.get();
     }
 
     /**
@@ -56,7 +57,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     protected ParticleOptions getParticle()
     {
-        return new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.SCULK_ACIDIC_PROJECTILE.get()));
+        return new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.SCULK_ACIDIC_PROJECTILE.get()));
     }
 
     @Override

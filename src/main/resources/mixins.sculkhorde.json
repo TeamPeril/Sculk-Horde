@@ -3,6 +3,13 @@
   "minVersion": "0.8",
   "package": "com.github.sculkhorde.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.sculkhorde.refmap.json",
   "mixins": [
-  ]
+    "structures.StructureProcessorAccessor",
+    "structures.StructureTemplateMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

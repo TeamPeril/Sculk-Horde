@@ -1,46 +1,39 @@
 package com.github.sculkhorde.common.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
-
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.VEGETABLE;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_BLUE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -73,9 +66,8 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static int HARVEST_LEVEL = -1;
 
-    // 0 = Cooldown
-    // 1 = ReadyToSpawn
-    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
+    public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
+    public static final BooleanProperty VIBRATION_COOLDOWN = BooleanProperty.create("vibration_cooldown");
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -83,7 +75,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public SculkSummonerBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(STATE, 0));
+                .setValue(IS_ACTIVE, false).setValue(VIBRATION_COOLDOWN, false));
     }
 
     /**
@@ -103,11 +95,11 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+        Properties prop = Properties.copy(Blocks.SCULK_SHRIEKER)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .noOcclusion()
-                .sound(SoundType.SLIME_BLOCK);
+                .sound(SoundType.SCULK_SHRIEKER);
         return prop;
     }
 
@@ -120,12 +112,13 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(STATE, 0);
+                .setValue(IS_ACTIVE, false)
+                .setValue(VIBRATION_COOLDOWN, false);
 
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(STATE);
+        pBuilder.add(IS_ACTIVE).add(VIBRATION_COOLDOWN);
     }
 
     /**
@@ -173,9 +166,22 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return !level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
-            ((SculkSummonerBlockEntity) entity).getListener().tick(level1);
-        }) : null;
+
+        if(level.isClientSide)
+        {
+            return null;
+        }
+
+
+        if(blockState.getValue(VIBRATION_COOLDOWN) || !blockState.getValue(IS_ACTIVE))
+        {
+            return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::tickOnCoolDown);
+        }
+
+
+        return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+        	entity.getListener().tick(level1);
+        });
     }
 
     @org.jetbrains.annotations.Nullable

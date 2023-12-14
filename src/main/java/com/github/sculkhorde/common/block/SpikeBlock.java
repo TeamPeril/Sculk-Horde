@@ -1,29 +1,29 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.EffectRegistry;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.item.TooltipFlag;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import javax.annotation.Nullable;
-import java.util.List;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
 
@@ -33,13 +33,6 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      *      edit ClientModEventSubscriber.java to tell Minecraft
      *      to render this like a cutout.
      */
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.STONE;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_WHITE;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -99,7 +92,8 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.of(Material.STONE)
+                .color(MaterialColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.SLIME_BLOCK)
@@ -120,7 +114,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
         }
 
         // If the entity is a sculk, don't do anything
-        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
+        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget((LivingEntity) entity))
         {
             return;
         }
@@ -134,7 +128,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
             if (d0 >= (double)0.003F || d1 >= (double)0.003F)
             {
                 entity.hurt(entity.damageSources().generic(), 1.0F);
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(EffectRegistry.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
                 world.destroyBlock(blockPos, false);
             }
         }

@@ -1,35 +1,28 @@
 package com.github.sculkhorde.common.block;
 
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkLivingRockRootBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
-
-import javax.annotation.Nullable;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
  */
 
 public class SculkLivingRockRootBlock extends BaseEntityBlock implements IForgeBlock {
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.STONE;
-    public static MaterialColor MAP_COLOR = MaterialColor.TERRACOTTA_BLUE;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -95,7 +88,8 @@ public class SculkLivingRockRootBlock extends BaseEntityBlock implements IForgeB
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of(MATERIAL, MAP_COLOR)
+        Properties prop = Properties.copy(Blocks.STONE)
+                .color(MaterialColor.TERRACOTTA_GRAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
         return prop;
@@ -105,7 +99,7 @@ public class SculkLivingRockRootBlock extends BaseEntityBlock implements IForgeB
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), SculkLivingRockRootBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_LIVING_ROCK_ROOT_BLOCK_ENTITY.get(), SculkLivingRockRootBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable

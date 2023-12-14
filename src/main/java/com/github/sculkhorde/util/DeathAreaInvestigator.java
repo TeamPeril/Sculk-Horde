@@ -1,19 +1,18 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.core.BlockRegistry;
+import java.util.Optional;
+
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
+
 import net.minecraft.server.level.ServerLevel;
-
-import java.util.Optional;
-
-import static com.github.sculkhorde.core.SculkHorde.DEBUG_MODE;
 
 public class DeathAreaInvestigator {
 
     private BlockSearcher blockSearcher;
-    private ServerLevel level;
     private Optional<ModSavedData.DeathAreaEntry> searchEntry;
     private int ticksSinceLastSuccessfulFind = 0;
     private final int tickIntervalsBetweenSuccessfulFinds = TickUnits.convertMinutesToTicks(1);
@@ -30,9 +29,9 @@ public class DeathAreaInvestigator {
 
     State state = State.IDLE;
 
-    public DeathAreaInvestigator(ServerLevel level)
+    public DeathAreaInvestigator()
     {
-        this.level = level;
+
     }
 
     public State getState()
@@ -52,15 +51,10 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(!DEBUG_MODE)
-        {
-            return;
-        }
-
-        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !SculkHorde.raidHandler.isRaidActive())
+        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
         {
             ticksSinceLastSearch = 0;
-            searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();
+            if(SculkHorde.savedData != null) {searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();}
             if(searchEntry.isPresent())
             {
                 setState(State.INITIALIZING);
@@ -70,15 +64,24 @@ public class DeathAreaInvestigator {
 
     public void initializeTick()
     {
+        ServerLevel level = searchEntry.get().getDimension();
+
+        if(level == null)
+        {
+            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Unable to Locate Dimension " + searchEntry.get().getDimension());
+            setState(State.FINISHED);
+            return;
+        }
+
         blockSearcher = new BlockSearcher(level, searchEntry.get().getPosition());
         blockSearcher.setMaxDistance(25);
         blockSearcher.setObstructionPredicate((pos) -> {
             return level.getBlockState(pos).isAir();
         });
         blockSearcher.setTargetBlockPredicate((pos) -> {
-            return level.getBlockState(pos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_HIGH_PRIORITY)
-            || level.getBlockState(pos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_LOW_PRIORITY)
-            || level.getBlockState(pos).is(BlockRegistry.Tags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
+            return level.getBlockState(pos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY)
+            || level.getBlockState(pos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY)
+            || level.getBlockState(pos).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
         });
         setState(State.SEARCHING);
     }
@@ -92,21 +95,21 @@ public class DeathAreaInvestigator {
             ticksSinceLastSuccessfulFind = 0;
             setState(State.FINISHED);
             //Send message to all players
-            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition());
+            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
             // Add to Area of Interest Memory
-            SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getPosition());
+            if(SculkHorde.savedData != null) {SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getDimension(), searchEntry.get().getPosition());}
         }
         else if(blockSearcher.isFinished && !blockSearcher.isSuccessful)
         {
             setState(State.FINISHED);
             blockSearcher = null;
-            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition());
+            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
         }
     }
 
     public void finishedTick()
     {
-        SculkHorde.savedData.removeDeathAreaFromMemory(searchEntry.get().getPosition());
+        if(SculkHorde.savedData != null) { SculkHorde.savedData.removeDeathAreaFromMemory(searchEntry.get().getPosition()); }
         ticksSinceLastSearch = 0;
         setState(State.IDLE);
         blockSearcher = null;

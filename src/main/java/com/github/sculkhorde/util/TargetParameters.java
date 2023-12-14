@@ -1,20 +1,22 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.util.Mth;
+import static com.github.sculkhorde.util.EntityAlgorithms.isLivingEntityHostile;
+import static com.github.sculkhorde.util.EntityAlgorithms.isLivingEntityInfected;
+import static com.github.sculkhorde.util.EntityAlgorithms.isLivingEntitySwimmer;
 
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.util.EntityAlgorithms.*;
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 
 public class TargetParameters
 {
@@ -25,6 +27,7 @@ public class TargetParameters
     private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
     private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
     private boolean targetSwimmers = false; //Should we target entities that can swim?
+    private boolean targetEntitiesInWater = true; //Should we target entities that are in water?
     private boolean mustSeeTarget = false; //Should we only target entities we can see?
     private long lastTargetSeenTime = System.currentTimeMillis(); //The last time we saw the target
     private long MAX_TARGET_UNSEEN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30); //The max time we can go without seeing the target
@@ -55,24 +58,7 @@ public class TargetParameters
 
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
-        if(e == null)
-        {
-            return false;
-        }
-
-        if(!(e instanceof Mob) && !(e instanceof Player))
-        {
-            return false;
-        }
-
-        //If passes sculk predicate
-        if(isSculkLivingEntity.test(e))
-        {
-            return false;
-        }
-
-        //Do not attack creepers
-        if(e instanceof Creeper)
+        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
         {
             return false;
         }
@@ -80,12 +66,6 @@ public class TargetParameters
         if(e instanceof InfestationPurifierEntity)
         {
             return true;
-        }
-
-        //If not attackable or invulnerable or is dead/dying
-        if(!e.isAttackable() || e.isInvulnerable() || !e.isAlive() || e.isSpectator())
-        {
-            return false;
         }
 
         //If player is in creative or spectator
@@ -125,6 +105,12 @@ public class TargetParameters
 
         //If we do not attack swimmers and target is a swimmer
         if(!targetSwimmers && isLivingEntitySwimmer(e))
+        {
+            return false;
+        }
+
+        //If we do not attack entities in water and target is in water
+        if(!targetEntitiesInWater && e.isInWater())
         {
             return false;
         }
@@ -218,6 +204,45 @@ public class TargetParameters
     public boolean isTargetingSwimmers()
     {
         return targetSwimmers;
+    }
+
+    public TargetParameters disableTargetingEntitiesInWater()
+    {
+        targetEntitiesInWater = false;
+        return this;
+    }
+
+    public boolean isTargetingEntitiesInWater()
+    {
+        return targetEntitiesInWater;
+    }
+
+    public TargetParameters enableMustSeeTarget()
+    {
+        if(this.mob == null)
+        {
+            throw new IllegalStateException("Cannot enable must reach target without a mob");
+        }
+        mustSeeTarget = true;
+        return this;
+    }
+
+    public boolean isMustSeeTarget()
+    {
+        return mustSeeTarget;
+    }
+
+    public boolean canSeeTarget()
+    {
+        if(this.mob == null)
+        {
+            throw new IllegalStateException("Cannot enable must reach target without a mob");
+        }
+        if(mob.getTarget() == null)
+        {
+            return false;
+        }
+        return mob.getSensing().hasLineOfSight(mob.getTarget());
     }
 
     public TargetParameters enableMustReachTarget()

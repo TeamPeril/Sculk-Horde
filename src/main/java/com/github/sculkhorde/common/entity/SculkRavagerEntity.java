@@ -1,19 +1,31 @@
 package com.github.sculkhorde.common.entity;
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -21,12 +33,14 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * In order to create a mob, the following java files were created/edited.<br>
- * Edited {@link EntityRegistry}<br>
+ * Edited {@link ModEntities}<br>
  * Edited {@link com.github.sculkhorde.util.ModEventSubscriber}<br>
  * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
  * Edited {@link com.github.sculkhorde.common.world.ModWorldEvents} (this might not be necessary)<br>
@@ -52,14 +66,14 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public SculkRavagerEntity(Level worldIn) {super(EntityRegistry.SCULK_RAVAGER.get(), worldIn);}
+    public SculkRavagerEntity(Level worldIn) {super(ModEntities.SCULK_RAVAGER.get(), worldIn);}
 
     //The Health
     public static final float MAX_HEALTH = 50F;
     //The armor of the mob
     public static final float ARMOR = 4F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 18F;
+    public static final float ATTACK_DAMAGE = 8F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 5F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
@@ -69,7 +83,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -92,6 +106,12 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
+
     @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
@@ -145,11 +165,14 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     {
         return new Goal[]{
 
-                new DespawnWhenIdle(this, 120),
+                new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(5)),
                 //SwimGoal(mob)
                 new FloatGoal(this),
+                new SquadHandlingGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
+                new FollowSquadLeader(this),
                 new PathFindToRaidLocation<>(this),
                 //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                 new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
@@ -171,30 +194,36 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     {
         return new Goal[]{
                 new InvalidateTargetGoal(this),
-                new TargetAttacker(this).setAlertAllies(),
+                new TargetAttacker(this),
+                new FocusSquadTarget(this),
                 new NearestLivingEntityTargetGoal<>(this, true, true)
         };
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+    }
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
+    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override
     public void onRemovedFromWorld() {
         SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
+    */
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
 
     private static final RawAnimation HEAD_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("head.attack");
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", HEAD_ATTACK_ANIMATION);
 
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(DefaultAnimations.genericWalkIdleController(this));
-        controllers.add(DefaultAnimations.genericAttackAnimation(this, HEAD_ATTACK_ANIMATION));
+        controllers.add(ATTACK_ANIMATION_CONTROLLER);
     }
 
     @Override
@@ -204,11 +233,12 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
 
-    class AttackGoal extends MeleeAttackGoal
+    class AttackGoal extends CustomMeleeAttackGoal
     {
+
         public AttackGoal()
         {
-            super(SculkRavagerEntity.this, 1.0D, true);
+            super(SculkRavagerEntity.this, 1.0D, false, 10);
         }
 
         @Override
@@ -229,6 +259,16 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         {
             float f = SculkRavagerEntity.this.getBbWidth() - 0.1F;
             return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(2);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
     }
 

@@ -1,10 +1,17 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.List;
+
+import org.lwjgl.glfw.GLFW;
+
 import com.github.sculkhorde.core.gravemind.RaidHandler;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -16,9 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.List;
 
 public class DevRaidWand extends Item implements IForgeItem {
 
@@ -70,17 +74,18 @@ public class DevRaidWand extends Item implements IForgeItem {
 		return Rarity.EPIC;
 	}
 
+
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
+		BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
 
 		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide())
+		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
 		{
-			SculkHorde.raidHandler.setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
-			playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-
+			RaidHandler.raidData.startRaidArtificially((ServerLevel) worldIn, targetPos);
+			playerIn.getCooldowns().addCooldown(this, 5); //Cool down for second (20 ticks per second)
 			return InteractionResultHolder.pass(itemstack);
 		}
 		return InteractionResultHolder.fail(itemstack);

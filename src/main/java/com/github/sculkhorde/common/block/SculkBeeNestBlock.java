@@ -1,49 +1,48 @@
 package com.github.sculkhorde.common.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
-import com.github.sculkhorde.core.BlockEntityRegistry;
-import com.github.sculkhorde.core.BlockRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.world.level.block.*;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nullable;
-import java.util.List;
-
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class SculkBeeNestBlock extends BaseEntityBlock
 {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty CLOSED = BooleanProperty.create("closed");
     public static final IntegerProperty HONEY_LEVEL = BlockStateProperties.LEVEL_HONEY;
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_CYAN;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -101,25 +100,25 @@ public class SculkBeeNestBlock extends BaseEntityBlock
      */
     public static BlockBehaviour.Properties getProperties()
     {
-        return BlockBehaviour.Properties.of(MATERIAL, MAP_COLOR)
+        return BlockBehaviour.Properties.copy(Blocks.BEE_NEST)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.SLIME_BLOCK);
     }
 
     public static boolean isNestClosed(BlockState blockState)
     {
-        return blockState.hasProperty(CLOSED) && blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
+        return blockState.hasProperty(CLOSED) && blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get()) && blockState.getValue(CLOSED);
     }
 
     public static void setNestClosed(ServerLevel world, BlockState blockState, BlockPos position)
     {
-        if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
+        if(!blockState.hasProperty(CLOSED) || !blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get())) { return; }
         world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(true)), 3);
     }
 
     public static void setNestOpen(ServerLevel world, BlockState blockState, BlockPos position)
     {
-        if(!blockState.hasProperty(CLOSED) || !blockState.is(BlockRegistry.SCULK_BEE_NEST_BLOCK.get())) { return; }
+        if(!blockState.hasProperty(CLOSED) || !blockState.is(ModBlocks.SCULK_BEE_NEST_BLOCK.get())) { return; }
         world.setBlock(position, blockState.setValue(CLOSED, Boolean.valueOf(false)), 3);
     }
 
@@ -128,10 +127,10 @@ public class SculkBeeNestBlock extends BaseEntityBlock
     {
         super.onPlace(state, level, pos, oldState, isMoving);
 
-        //If world isnt client side and we are in the overworld
-        if(!level.isClientSide() && level.dimension() == Level.OVERWORLD)
+        //If world isn't client side and saved data exists, add this node to memory
+        if(!level.isClientSide() && SculkHorde.savedData != null)
         {
-            SculkHorde.savedData.addBeeNestToMemory(pos);
+            SculkHorde.savedData.addBeeNestToMemory((ServerLevel) level, pos);
         }
     }
 
@@ -195,7 +194,7 @@ public class SculkBeeNestBlock extends BaseEntityBlock
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_BEE_NEST_BLOCK_ENTITY.get(), SculkBeeNestBlockEntity::serverTick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_BEE_NEST_BLOCK_ENTITY.get(), SculkBeeNestBlockEntity::serverTick);
     }
 
     @org.jetbrains.annotations.Nullable

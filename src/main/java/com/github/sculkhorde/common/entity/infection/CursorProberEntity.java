@@ -1,243 +1,194 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.BlockRegistry;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Stack;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.BlockAlgorithms;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
  * Once it has found a block to infect, it will infect it and then move on to the next block.
  * This will continue until it has either reached its max distance or max infections.
  */
-public class CursorProberEntity extends Entity {
-    private int MAX_DISTANCE = 1000;
-    private int distanceTraveled = 0;
+public class CursorProberEntity extends CursorSurfaceInfectorEntity {
 
-    private BlockPos target = BlockPos.ZERO;
-    private Direction direction = Direction.DOWN;
-
-    private long MAX_LIFETIME_SECONDS = 10;
-    private long creationTickTime = System.nanoTime();
-    private long lastTickTime = 0;
-    private long TICK_INVTERVAL_SECONDS = 5;
-
-    public BlockPos lastKnownBlockPos = BlockPos.ZERO;
-    public boolean isSuccessful = false;
+    Direction preferedDirection = Direction.NORTH;
+    Stack<BlockPos> stack = new Stack<>();
 
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorProberEntity(Level worldIn) {super(EntityRegistry.CURSOR_PROBER.get(), worldIn);}
+    public CursorProberEntity(Level worldIn) {super(ModEntities.CURSOR_PROBER.get(), worldIn);}
 
     public CursorProberEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
-        this.distanceTraveled = 0;
-        /**
-         * BUG: This is not working properly. The entity is not being removed after 30 seconds.
-         * When the entity is spawned, the creationTickTime is not altered in the statement below.
-         * TODO Fix this bug.
-         */
-        creationTickTime = System.nanoTime();
     }
 
-    public void setMAX_DISTANCE(int MAX_DISTANCE) {
-        this.MAX_DISTANCE = MAX_DISTANCE;
-    }
-
-    public void setDirection(Direction direction)
-    {
-        this.direction = direction;
-    }
-
-    @Override
-    protected void defineSynchedData() {
-
+    protected void setPreferedDirection(Direction direction) {
+        this.preferedDirection = direction;
     }
 
     /**
      * Use Depth-First Search to find the nearest infectable block within a certain maximum distance.
      * @return the position of the nearest infectable block, or null if none is found
      */
-    private BlockPos findNearestTargetBlockDepthFirstSearch(Direction direction) {
-        BlockPos origin = this.blockPosition();
-        int nodesVisited = 0;
-        // Breadth-First Search
-        Stack<BlockPos> stack = new Stack<>();
-        Set<BlockPos> visited = new HashSet<>();
-        stack.push(origin);
-        visited.add(origin);
-
-        while (!stack.isEmpty())
+    protected boolean searchTick()
+    {
+        // Complete 20 times.
+        for (int i = 0; i < searchIterationsPerTick; i++)
         {
+            // Breadth-First Search
+
+            if (stack.isEmpty()) {
+                isSuccessful = false;
+                target = BlockPos.ZERO;
+                return true;
+            }
+
             BlockPos currentBlock = stack.pop();
-            nodesVisited++; // Keep track of how many nodes we've visited
 
-            if (SculkHorde.infestationConversionTable.infestationTable.isNormalVariant(this.level.getBlockState(currentBlock))) {
-                return currentBlock;
+            // If the current block is a target, return it
+            if (isTarget(this.level.getBlockState(currentBlock), currentBlock)) {
+                isSuccessful = true;
+                target = currentBlock;
+                return true;
             }
 
-            // If we've visited too many nodes, return ZERO
-            if (BlockAlgorithms.getBlockDistance(currentBlock, origin) > MAX_DISTANCE) {
-                break;
-            }
+            // Get all possible directions
+            ArrayList<BlockPos> possiblePaths = BlockAlgorithms.getNeighborsCube(currentBlock, false);
+            Collections.shuffle(possiblePaths);
 
-            // Will have bias for specific direction specified in the parameter
-            ArrayList<Direction> possibleDirections = new ArrayList<>();
+            // Add all neighbors to the stack
+            for (BlockPos neighbor : possiblePaths) {
 
-            // 25% chance to just add specific direction if it is a solid block
-            if(Math.random() < 0.25 && this.level.getBlockState(currentBlock.relative(direction)).isSolidRender(this.level, currentBlock.relative(direction)))
-            {
-                possibleDirections.add(direction);
-            }
-            else
-            {
-                possibleDirections.addAll(Arrays.asList(Direction.values()));
-                // Remove any directions that are not solid blocks
-                possibleDirections.removeIf(dir -> !this.level.getBlockState(currentBlock.relative(dir)).isSolidRender(this.level, currentBlock.relative(dir)));
-            }
-
-            // Add all neighbors to the queue
-            for (Direction dir : possibleDirections) {
-                BlockPos neighbor = currentBlock.relative(dir);
-
-                // If not visited and is a solid block, add to queue
-                if (!visited.contains(neighbor)) {
-                    stack.push(neighbor);
-                    visited.add(neighbor);
+                // If not visited and is a solid block, add to stack
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
+                    stack.add(neighbor);
+                    visitedPositons.put(neighbor.asLong(), true);
                 }
             }
         }
-
-        this.remove(RemovalReason.DISCARDED);
-        isSuccessful = false;
-        return BlockPos.ZERO;
+        return false;
     }
 
     @Override
-    public void tick()
-    {
-        super.tick();
+    public void tick() {
 
-        float timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - lastTickTime, TimeUnit.NANOSECONDS);
+        float timeElapsedMilliSeconds = System.currentTimeMillis() - lastTickTime;
 
-        if(timeElapsed < TICK_INVTERVAL_SECONDS)
-        {
-            //return;
+        if (timeElapsedMilliSeconds < tickIntervalMilliseconds) {
+            return;
         }
-        lastTickTime = System.nanoTime();
+        lastTickTime = System.currentTimeMillis();
+
 
         // Play Particles on Client
-        if (this.level.isClientSide)
-        {
-            for(int i = 0; i < 2; ++i)
-            {
-                //TODO PORT
-                //this.level.addParticle(ParticleRegistry.SCULK_CRUST_PARTICLE.get(), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            for (int i = 0; i < 2; ++i) {
+                spawnParticleEffects();
             }
             return;
         }
 
+        // Keep track of the origin
+        if (origin == BlockPos.ZERO)
+        {
+            origin = this.blockPosition();
+        }
 
-        long currentLifeTime = TimeUnit.SECONDS.convert(System.nanoTime() - creationTickTime, TimeUnit.NANOSECONDS);
+        long currentLifeTimeMilliseconds = System.currentTimeMillis() - creationTickTime;
+
+        // Convert to seconds
         // If entity has lived too long, remove it
-        if(currentLifeTime >= MAX_LIFETIME_SECONDS || this.distanceTraveled >= MAX_DISTANCE) {
-            this.remove(RemovalReason.DISCARDED);
-            return;
-        }
-
-        // If we don't have a target, find one
-        if(target.equals(BlockPos.ZERO)) {
-            // Find nearest target with random direction
-            target = findNearestTargetBlockDepthFirstSearch(direction);
-        }
-
-        // Get the neighbors of the current block
-        ArrayList<BlockPos> neighbors = BlockAlgorithms.getAdjacentNeighbors(blockPosition());
-
-        // Find the block that is cloest to target in neighbors
-        BlockPos closest = neighbors.get(0);
-        for (BlockPos pos : neighbors)
+        if (currentLifeTimeMilliseconds >= MAX_LIFETIME_MILLIS)
         {
-            if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target))
+            state = State.FINISHED;
+        }
+        else if (currentTransformations >= MAX_TRANSFORMATIONS)
+        {
+            state = State.FINISHED;
+        }
+
+        if(state == State.IDLE)
+        {
+            stack.add(this.blockPosition());
+            state = State.SEARCHING;
+        }
+        else if (state == State.SEARCHING)
+        {
+
+            // IF not complete, just return;
+            if(!searchTick())
             {
-                closest = pos;
+                return;
+            }
+
+            // If we can't find a target, finish
+            if (target.equals(BlockPos.ZERO)) {
+                state = State.FINISHED;
+            }
+            else // If we find target, start infecting
+            {
+                state = State.EXPLORING;
+                visitedPositons.clear();
             }
         }
-
-        // If the closest block is air, infect it
-        // This is kind of a bs hack. The problem with spawning this entity in the sculk node, is that when the
-        // node caves spawns, the sculk node is surrounded by air and is unable to infect the blocks around it.
-        // This should allow the probes to build bridges in the air surrounding the node.
-        // Maybe in the future I could just have the probes place down this stuff everywhere they go, only if they are succcessful?
-        if(this.level.getBlockState(this.blockPosition()).isAir())
+        else if (state == State.EXPLORING)
         {
-            this.level.setBlockAndUpdate(this.blockPosition(), BlockRegistry.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
-        }
+            // Get Neighbors of Each Block
+            ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition(), false);
+            // Create a new list to store unobstructed neighbors
+            ArrayList<BlockPos> unobstructedNeighbors = new ArrayList<>();
+            // Check each neighbor for obstructions and add unobstructed neighbors to the new list
+            for (BlockPos neighbor : neighbors)
+            {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
+                    unobstructedNeighbors.add(neighbor);
+                }
+            }
 
-        // If we can't find a target, return;
-        if(target.equals(BlockPos.ZERO))
+            // If there are no non-obstructed neighbors, return
+            if (neighbors.size() == 0) {
+                return;
+            }
+
+            // Find the block that is closest to target in neighbors
+            BlockPos closest = neighbors.get(0);
+            for (BlockPos pos : neighbors)
+            {
+                if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target)) {
+                    closest = pos;
+                }
+            }
+
+            // Move to the closest block
+            this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
+            visitedPositons.put(closest.asLong(), true);
+
+            // If we've reached the target block, die then report successful
+            if (this.blockPosition().equals(target))
+            {
+                target = BlockPos.ZERO;
+                // Infect the block and increase the infection count
+                transformBlock(this.blockPosition());
+                currentTransformations++;
+                state = State.SEARCHING;
+                visitedPositons.clear();
+                queue.clear();
+                queue.add(this.blockPosition());
+            }
+        }
+        else if (state == State.FINISHED)
         {
-            this.isSuccessful = false;
-            return;
+            this.remove(RemovalReason.DISCARDED);
         }
-
-        // Move to the closest block
-        this.setPos(closest.getX(), closest.getY(), closest.getZ());
-
-        // Keep track of last known position
-        lastKnownBlockPos = this.blockPosition();
-        SculkHorde.infestationConversionTable.infectBlock((ServerLevel) this.level, this.blockPosition());
-        // Keep track of how far we've traveled
-        distanceTraveled++;
-
-        // If we've reached the target block, find a new target
-        if (this.blockPosition().equals(target)) {
-
-            isSuccessful = true;
-            remove(RemovalReason.DISCARDED);
-        }
-
-
     }
-
-    /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
-     *
-     * @param pCompound
-     */
-    @Override
-    protected void readAdditionalSaveData(CompoundTag pCompound) {
-
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag pCompound) {
-
-    }
-
-    /*
-    @Override
-    public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-     */
-
-    public void setTarget(BlockPos target) {
-        this.target = target;
-    }
-
-
 }

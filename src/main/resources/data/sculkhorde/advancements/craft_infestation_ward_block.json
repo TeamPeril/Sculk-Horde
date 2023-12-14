@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:infestation_ward_block"
+    },
+    "title": "Stopping the Spread, Dead in its Tracks",
+    "description": "Craft a Infestation Ward Block. It can be used to stop the spread of the Sculk across blocks.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:craft_essence_of_purity",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "sculkhorde:infestation_ward_block"
+      }
+    }
+  }
+}

@@ -1,16 +1,17 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.procedural.structures.ProceduralStructure;
-import com.github.sculkhorde.common.procedural.structures.SculkNodeCaveHallwayProceduralStructure;
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.structures.procedural.ProceduralStructure;
+import com.github.sculkhorde.common.structures.procedural.SculkNodeCaveHallwayProceduralStructure;
+import com.github.sculkhorde.core.ModBlockEntities;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Chunkloader code created by SuperMartijn642
@@ -30,7 +31,7 @@ public class DevStructureTesterBlockEntity extends BlockEntity
      */
     public DevStructureTesterBlockEntity(BlockPos blockPos, BlockState blockState)
     {
-        super(BlockEntityRegistry.DEV_STRUCTURE_TESTER_BLOCK_ENTITY.get(), blockPos, blockState);
+        super(ModBlockEntities.DEV_STRUCTURE_TESTER_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     /** Accessors **/

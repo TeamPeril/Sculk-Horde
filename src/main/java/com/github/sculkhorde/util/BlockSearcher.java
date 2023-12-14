@@ -1,13 +1,16 @@
 package com.github.sculkhorde.util;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.function.Predicate;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.decoration.ArmorStand;
-
-import java.util.*;
-import java.util.function.Predicate;
+import net.minecraft.world.level.block.Blocks;
 
 public class BlockSearcher
 {
@@ -48,12 +51,16 @@ public class BlockSearcher
 
     State state = State.IDLE;
 
-
     public BlockSearcher(ServerLevel level, BlockPos origin)
     {
         this.level = level;
         this.origin = origin;
         currentPosition = origin;
+    }
+
+    public ServerLevel getDimension()
+    {
+        return level;
     }
 
     public BlockSearcher setMaxDistance(int maxDistance)
@@ -104,6 +111,8 @@ public class BlockSearcher
 
     protected void searchTick()
     {
+        boolean debugObstruction = false;
+
         // Complete 20 times.
         for (int i = 0; i < searchIterationsPerTick; i++)
         {
@@ -143,15 +152,19 @@ public class BlockSearcher
             // Pop the next block off the stack
             BlockPos currentBlock = queue.get(0);
             queue.remove(0);
+            if(debugObstruction) { level.setBlockAndUpdate(currentBlock, Blocks.GREEN_STAINED_GLASS.defaultBlockState()); }
+
             if(debugMode)
             {
                 debugStand.teleportTo(currentBlock.getX() + 0.5, currentBlock.getY(), currentBlock.getZ() + 0.5);
+
             }
 
             // If the current block is a target, return true
             if (!ignoreBlocksNearTargets && isValidTargetBlock.test(currentBlock) || (ignoreBlocksNearTargets && isValidTargetBlock.test(currentBlock) && !isNearOtherTargets(currentBlock)))
             {
                 foundTargets.add(currentBlock);
+
             }
 
             // Get all possible directions

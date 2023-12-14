@@ -1,21 +1,25 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.world.item.TooltipFlag;
+import java.util.List;
+
+import com.github.sculkhorde.common.block.SculkNodeBlock;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
-
-import java.util.List;
 
 public class DevNodeSpawner extends Item implements IForgeItem {
 
@@ -58,9 +62,14 @@ public class DevNodeSpawner extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
+		// Do Clip Ray cast from player's eyes to block location
 
-		SculkHorde.gravemind.placeSculkNode((ServerLevel) level, playerIn.blockPosition(), false);
-		level.players().forEach(player -> player.displayClientMessage(Component.literal("Admin Attempting to Spawn Node."), true));
+		ClipContext rayTrace = new ClipContext(playerIn.getEyePosition(1.0F), playerIn.getEyePosition(1.0F).add(playerIn.getLookAngle().scale(5)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, playerIn);
+
+		//IF successful, try to place a node
+		Vec3 result = rayTrace.getTo();
+
+		SculkNodeBlock.tryPlaceSculkNode((ServerLevel) level, BlockPos.containing(result), true);
 		return InteractionResultHolder.pass(itemstack);
 	}
 

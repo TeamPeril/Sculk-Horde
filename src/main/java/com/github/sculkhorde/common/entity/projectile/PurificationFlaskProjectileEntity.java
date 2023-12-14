@@ -1,26 +1,25 @@
 package com.github.sculkhorde.common.entity.projectile;
 
-import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
-import com.github.sculkhorde.core.EntityRegistry;
-import com.github.sculkhorde.core.ItemRegistry;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
 
 
 public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntity {
@@ -41,7 +40,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
      * @param worldIn The World to spawn the projectile in
      */
     public PurificationFlaskProjectileEntity(Level worldIn, LivingEntity shooterIn, float damageIn) {
-        this(EntityRegistry.PURIFICATION_FLASK_PROJECTILE_ENTITY.get(), worldIn);
+        this(ModEntities.PURIFICATION_FLASK_PROJECTILE_ENTITY.get(), worldIn);
         this.setPos(shooterIn.getX(), shooterIn.getEyeY(), shooterIn.getZ());
         this.setOwner(shooterIn);
         this.setDamage(damageIn);
@@ -53,7 +52,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     /** ACCESSORS **/
 
     protected Item getDefaultItem() {
-        return ItemRegistry.PURIFICATION_FLASK_ITEM.get();
+        return ModItems.PURITY_SPLASH_POTION.get();
     }
 
 
@@ -67,52 +66,21 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     }
 
 
-    /**
-     * Gets called when this projectile hits an entity.
-     * @param raytrace The resulting raytrace object that contains the context
-     */
     @Override
-    protected void onHitEntity(EntityHitResult raytrace)
-    {
-        super.onHitEntity(raytrace);
+    protected void onHit(HitResult result) {
+        super.onHit(result);
 
-        if(level.isClientSide) {return;}
-
-        // This is a safety check to make sure the entity is a living entity.
-        // Mutant mobs previously caused a crash related to this, though
-        // I'm confident that this is an oversight on my part.
-        if(!(raytrace.getEntity() instanceof LivingEntity))
+        // If any entities are close to the impact, remove the infection from them.
+        for(LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
         {
-            return;
+            entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertMinutesToTicks(15)));
         }
-
-        // If the entity is a sculk or if the entity it hit was the owner, do nothing.
-        if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) raytrace.getEntity()) || getOwner() == raytrace.getEntity())
-        {
-            return;
-        }
-
-        this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
-        ((ServerLevel)level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ItemRegistry.PURIFICATION_FLASK_ITEM.get())), (double)raytrace.getEntity().getX() + 0.5D, (double)raytrace.getEntity().getY() + 0.7D, (double)raytrace.getEntity().getZ() + 0.5D, 3, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, ((double)((LivingEntity) raytrace.getEntity()).getRandom().nextFloat() - 0.5D) * 0.08D, (double)0.15F);
-
-        remove(RemovalReason.DISCARDED);
-
-    }
-
-    /**
-     * Gets called whenever the projectile hits a block.
-     * Has a chance to drop the item it represents.
-     * @param raytrace The context
-     */
-    @Override
-    protected void onHitBlock(BlockHitResult raytrace)
-    {
 
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
         //this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
         this.remove(RemovalReason.DISCARDED);
 
-        ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(raytrace.getBlockPos(), 3, true);
+        ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(BlockPos.containing(result.getLocation()), 3, true);
         Collections.shuffle(list);
         list.removeIf(pos -> !level.getBlockState(pos).isSolidRender(level, pos));
 
@@ -122,8 +90,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             // Spawn Infestation Purifier Cursors
             // Spawn Block Traverser
             cursor.setPos(list.get(i).getX(), list.get(i).getY(), list.get(i).getZ());
-            cursor.setMaxInfections(5);
-            cursor.setMaxRange(10);
+            cursor.setMaxTransformations(200);
+            cursor.setMaxRange(100);
             cursor.setSearchIterationsPerTick(5);
             cursor.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(1));
             cursor.setTickIntervalMilliseconds(150);

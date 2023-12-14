@@ -1,38 +1,30 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.BlockEntityRegistry;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.extensions.IForgeBlock;
-
 import javax.annotation.Nullable;
 
+import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.SculkHorde;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.extensions.IForgeBlock;
+
 public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_CYAN;
-
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -89,7 +81,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
+        return Properties.of(Material.STONE)
+                .color(MaterialColor.CLAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.SLIME_BLOCK)
                 .noOcclusion();
@@ -132,10 +125,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
                 thisTile.setStoredSculkMass(totalRemainingMass);
 
                 //Pay Mass Tax to the Sculk Hoard
-                SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);
-
-                //Replace Block Under sculk mass with infested variant if possible
-                SculkHorde.infestationConversionTable.infectBlock((ServerLevel) world, originPos.below());
+                if(SculkHorde.savedData != null) {SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);}
+                if(SculkHorde.statisticsData != null) {SculkHorde.statisticsData.addTotalMassFromBurrowed(totalMassTax);}
             }
         }
     }
@@ -209,7 +200,7 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockEntityRegistry.SCULK_MASS_BLOCK_ENTITY.get(), SculkMassBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_MASS_BLOCK_ENTITY.get(), SculkMassBlockEntity::tick);
     }
 
 

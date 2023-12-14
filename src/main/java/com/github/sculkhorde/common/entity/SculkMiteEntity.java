@@ -1,9 +1,23 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.EffectRegistry;
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.SculkMiteInfectGoal;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -17,7 +31,11 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
@@ -59,11 +77,11 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked
-    public static MobEffect INFECT_EFFECT = EffectRegistry.SCULK_INFECTION.get();
+    public static MobEffect INFECT_EFFECT = ModMobEffects.SCULK_INFECTION.get();
     //INFECT_DURATION The duration of the effect
     public static int INFECT_DURATION = 500;
     //INFECT_LEVEL The level of the effect
@@ -137,7 +155,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
      * @param random ???
      * @return Returns a boolean determining if it is a suitable spawn location
      */
-    public static boolean passSpawnCondition(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random)
+    public static boolean additionalSpawnCheck(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random)
     {
         // If peaceful, return false
         if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
@@ -149,7 +167,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
         if(pos.getY() > 50) return false;
 
-        if(!world.getBiome(pos).is(Biomes.DEEP_DARK))
+        if(world.getBiome(pos).is(Biomes.DEEP_DARK) && !ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get())
         {
             return false;
         }
@@ -190,11 +208,14 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     {
         Goal[] goals =
                 {
-                        new DespawnWhenIdle(this, 60),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(1)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkMiteInfectGoal(this, 1.0D, true),
+                        new FollowSquadLeader(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -220,7 +241,8 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
         Goal[] goals =
                 {
                         new InvalidateTargetGoal(this),
-                        new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
@@ -240,6 +262,11 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {

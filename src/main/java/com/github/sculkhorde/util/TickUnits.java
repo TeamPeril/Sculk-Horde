@@ -2,6 +2,7 @@ package com.github.sculkhorde.util;
 
 public class TickUnits {
 
+
     public static final int TICKS_PER_SECOND = 20;
 
     public static final int TICKS_PER_MINUTE = TICKS_PER_SECOND * 60;
@@ -15,6 +16,10 @@ public class TickUnits {
     public static final int TICKS_PER_MONTH = TICKS_PER_DAY * 30;
 
     public static final int TICKS_PER_YEAR = TICKS_PER_DAY * 365;
+
+    public static int convertSecondsToTicks(float seconds) {
+        return (int) (seconds * TICKS_PER_SECOND);
+    }
 
     public static int convertSecondsToTicks(int seconds) {
         return seconds * TICKS_PER_SECOND;

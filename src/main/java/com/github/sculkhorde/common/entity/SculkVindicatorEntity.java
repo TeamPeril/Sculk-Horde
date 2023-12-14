@@ -1,18 +1,34 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,7 +62,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     //The armor of the mob
     public static final float ARMOR = 10F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 22F;
+    public static final float ATTACK_DAMAGE = 7F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
@@ -56,7 +72,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -91,6 +107,11 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -141,12 +162,15 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     {
         Goal[] goals =
                 {
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         new OpenDoorGoal(this, true),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkVindicatorAttackGoal(this, 1.0F, false),
+                        new SculkVindicatorAttackGoal(),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
@@ -171,45 +195,52 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
 
                 };
         return goals;
     }
 
-    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
-    private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenLoop("move.run");
-    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
-    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
-    private final AnimationController LIVING_CONTROLLER = DefaultAnimations.genericLivingController(this);
+    private static final RawAnimation JAW_IDLE_ANIMATION = RawAnimation.begin().thenLoop("jaw.idle");
+    private static final RawAnimation JAW_RUN_ANIMATION = RawAnimation.begin().thenLoop("jaw.run");
+    private static final RawAnimation TUMOR_ANIMATION = RawAnimation.begin().thenLoop("tumor");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("jaw.attack");
+
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
+
+
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        LIVING_CONTROLLER.setTransitionLength(5);
         controllers.add(
-                LIVING_CONTROLLER,
-                new AnimationController<>(this, "Walk_cycle", 5, this::poseWalkCycle),
-                DefaultAnimations.genericAttackAnimation(this, ATTACK_ANIMATION)
+                DefaultAnimations.genericWalkRunIdleController(this).transitionLength(5),
+                ATTACK_ANIMATION_CONTROLLER,
+                new AnimationController<>(this, "Legs", 5, this::poseJawCycle),
+                new AnimationController<>(this, "Tumor", 5, this::poseTumorCycle)
         );
     }
 
     // Create the animation handler for the body segment
-    protected PlayState poseWalkCycle(AnimationState<SculkVindicatorEntity> state)
+    protected PlayState poseJawCycle(AnimationState<SculkVindicatorEntity> state)
     {
         if(!state.isMoving())
         {
-            state.setAnimation(IDLE_ANIMATION);
+            state.setAnimation(JAW_IDLE_ANIMATION);
         }
-        else if(!state.getAnimatable().isSprinting())
+        else
         {
-            state.setAnimation(WALK_ANIMATION);
-        }
-        else if(state.getAnimatable().isSprinting())
-        {
-            state.setAnimation(RUN_ANIMATION);
+            state.setAnimation(JAW_RUN_ANIMATION);
         }
 
+        return PlayState.CONTINUE;
+    }
+
+    protected PlayState poseTumorCycle(AnimationState<SculkVindicatorEntity> state)
+    {
+        state.setAnimation(TUMOR_ANIMATION);
         return PlayState.CONTINUE;
     }
 
@@ -217,8 +248,6 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-
 
     protected SoundEvent getAmbientSound() {
         return SoundEvents.PILLAGER_AMBIENT;
@@ -241,21 +270,36 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
+    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override
     public void onRemovedFromWorld() {
         SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
     }
+    */
 
 
-    public class SculkVindicatorAttackGoal extends MeleeAttackGoal
+    public class SculkVindicatorAttackGoal extends CustomMeleeAttackGoal
     {
 
-        public SculkVindicatorAttackGoal(PathfinderMob p_25552_, double p_25553_, boolean p_25554_) {
-            super(p_25552_, p_25553_, p_25554_);
+        public SculkVindicatorAttackGoal()
+        {
+            super(SculkVindicatorEntity.this, 1.0D, false, 10);
+        }
+
+        protected double getAttackReachSqr(LivingEntity pAttackTarget)
+        {
+            return 3.5F;
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(2);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkVindicatorEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
 
         @Override
@@ -271,5 +315,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
             super.start();
             setSprinting(false);
         }
+
+
     }
 }

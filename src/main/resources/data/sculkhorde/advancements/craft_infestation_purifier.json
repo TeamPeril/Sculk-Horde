@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:infestation_purifier"
+    },
+    "title": "Extreme Measures",
+    "description": "Craft an Infestation Purifier",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:craft_pure_souls",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "sculkhorde:infestation_purifier"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sculkhorde:infested_crying_obsidian"
+    }
+  ],
+  "result": {
+    "item": "sculkhorde:crying_souls",
+    "count": 1
+  }
+}

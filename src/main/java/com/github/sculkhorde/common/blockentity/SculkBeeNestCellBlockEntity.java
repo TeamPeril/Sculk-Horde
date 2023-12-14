@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.core.BlockEntityRegistry;
+import com.github.sculkhorde.core.ModBlockEntities;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,7 +19,7 @@ public class SculkBeeNestCellBlockEntity extends BlockEntity {
      */
     public SculkBeeNestCellBlockEntity(BlockPos pos, BlockState state)
     {
-        super(BlockEntityRegistry.SCULK_BEE_NEST_CELL_BLOCK_ENTITY.get(), pos, state);
+        super(ModBlockEntities.SCULK_BEE_NEST_CELL_BLOCK_ENTITY.get(), pos, state);
     }
 
     /** Accessors **/

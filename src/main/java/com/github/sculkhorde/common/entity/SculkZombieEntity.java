@@ -1,8 +1,22 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.SculkHorde;
+import java.util.concurrent.TimeUnit;
+
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.DespawnAfterTime;
+import com.github.sculkhorde.common.entity.goal.DespawnWhenIdle;
+import com.github.sculkhorde.common.entity.goal.FocusSquadTarget;
+import com.github.sculkhorde.common.entity.goal.FollowSquadLeader;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PathFindToRaidLocation;
+import com.github.sculkhorde.common.entity.goal.SquadHandlingGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -11,7 +25,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
@@ -55,7 +74,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-
+    private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -90,6 +109,11 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;
+
+    @Override
+    public SquadHandler getSquad() {
+        return squad;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -140,17 +164,19 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     {
         Goal[] goals =
                 {
-                        new DespawnWhenIdle(this, 120),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkZombieAttackGoal(this, 1.0D, true),
+                        new AttackGoal(),
+                        new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        //new RangedAttackGoal(this, new AcidAttack(this), 20),
                         //LookAtGoal(mob, targetType, lookDistance)
                         new LookAtPlayerGoal(this, Pig.class, 8.0F),
                         //LookRandomlyGoal(mob)
@@ -174,7 +200,8 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
-                        new TargetAttacker(this).setAlertAllies(),
+                        new TargetAttacker(this),
+                        new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
 
                 };
@@ -187,14 +214,18 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
     private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
     private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
-    private static final RawAnimation ARMS_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "Legs", 5, this::poseLegs),
                 new AnimationController<>(this, "Body", 5, this::poseBody),
-                new AnimationController<>(this, "Arms", 5, this::poseArms)
+                new AnimationController<>(this, "Arms", 5, this::poseArms),
+                ATTACK_ANIMATION_CONTROLLER
         );
     }
 
@@ -232,19 +263,10 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     // Create the animation handler for the arm segment
     protected PlayState poseArms(AnimationState<SculkZombieEntity> state)
     {
-        if(state.getAnimatable().swinging)
-        {
-            state.setAnimation(ARMS_ATTACK_ANIMATION);
-        }
-        else if(state.isMoving())
+        if(state.isMoving())
         {
             state.setAnimation(ARMS_WALK_ANIMATION);
         }
-        else
-        {
-            state.setAnimation(ARMS_IDLE_ANIMATION);
-        }
-
 
         return PlayState.CONTINUE;
     }
@@ -277,12 +299,49 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     }
 
 
-    /**
-     * If a sculk living entity despawns, refund it's current health to the sculk hoard
-     */
+    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override
     public void onRemovedFromWorld() {
         SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
         super.onRemovedFromWorld();
+    }
+    */
+
+    class AttackGoal extends CustomMeleeAttackGoal
+    {
+
+        public AttackGoal()
+        {
+            super(SculkZombieEntity.this, 1.0D, true, 10);
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            // If the mob is already targeting something valid, don't bother
+            return canWeUse;
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return canUse();
+        }
+
+        protected double getAttackReachSqr(LivingEntity pAttackTarget)
+        {
+            return 3.5F;
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(0.5F);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkZombieEntity)mob).triggerAnim("attack_controller", "attack_animation");
+        }
     }
 }

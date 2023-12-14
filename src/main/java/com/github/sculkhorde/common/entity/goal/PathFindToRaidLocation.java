@@ -1,7 +1,8 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.RaidHandler;
+
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -54,13 +55,13 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
     {
         if (!getPathFinderMob().isPathFinding())
         {
-            getPathFinderMob().getNavigation().moveTo(SculkHorde.raidHandler.getObjectiveLocationVec3().x, SculkHorde.raidHandler.getObjectiveLocationVec3().y, SculkHorde.raidHandler.getObjectiveLocationVec3().z, 1.5D);
+            getPathFinderMob().getNavigation().moveTo(RaidHandler.raidData.getObjectiveLocationVec3().x, RaidHandler.raidData.getObjectiveLocationVec3().y, RaidHandler.raidData.getObjectiveLocationVec3().z, 1.5D);
         }
     }
 
     private boolean isCloseEnoughToObjective()
     {
-        if(SculkHorde.raidHandler.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
+        if(RaidHandler.raidData.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
         {
             hasReachedLocationOnce = true;
             return true;

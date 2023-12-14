@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:sculk"
+    },
+    "title": "Dug too Deep",
+    "description": "Locate the Sculk Tomb",
+    "background": "sculkhorde:textures/block/infested_stone.png",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "structure": "sculkhorde:sculk_tomb_main"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

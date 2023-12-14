@@ -1,8 +1,7 @@
 package com.github.sculkhorde.common.block;
 
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 public class SculkShroomCultureBlock extends SculkFloraBlock implements IForgeBlock {
@@ -13,13 +12,6 @@ public class SculkShroomCultureBlock extends SculkFloraBlock implements IForgeBl
      *      edit ClientModEventSubscriber.java to tell Minecraft
      *      to render this like a cutout.
      */
-
-    /**
-     * MATERIAL is simply what the block is made up. This affects its behavior & interactions.<br>
-     * MAP_COLOR is the color that will show up on a map to represent this block
-     */
-    public static Material MATERIAL = Material.PLANT;
-    public static MaterialColor MAP_COLOR = MaterialColor.COLOR_CYAN;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -75,10 +67,10 @@ public class SculkShroomCultureBlock extends SculkFloraBlock implements IForgeBl
      */
     public static Properties getProperties()
     {
-        return Properties.of(MATERIAL, MAP_COLOR)
-                .strength(HARDNESS, BLAST_RESISTANCE)
+        return Properties.copy(Blocks.RED_MUSHROOM)
                 .sound(SoundType.GRASS)
                 .noCollission()
-                .instabreak();
+                .instabreak()
+                .requiresCorrectToolForDrops();
     }
 }

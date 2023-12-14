@@ -1,18 +1,18 @@
 package com.github.sculkhorde.core.gravemind;
 
 
-import com.github.sculkhorde.common.block.SculkNodeBlock;
+import java.util.Optional;
+
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-
-import java.util.*;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.
@@ -26,7 +26,7 @@ import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
  */
 public class Gravemind
 {
-    public enum evolution_states {Undeveloped, Immature, Mature}
+    public static enum evolution_states {Undeveloped, Immature, Mature}
 
     private evolution_states evolution_state;
 
@@ -34,14 +34,10 @@ public class Gravemind
     public static EntityFactory entityFactory;
     //This is a list of all known positions of sculkNodes.
     //We do not want to put them too close to each other.
-    private static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
-    private final int SCULK_NODE_INFECT_RADIUS_UNDEVELOPED = 10;
-
-    //Determines the range which a sculk node can infect land around it
-    public int sculk_node_infect_radius = SCULK_NODE_INFECT_RADIUS_UNDEVELOPED;
+    public static final int MINIMUM_DISTANCE_BETWEEN_NODES = 300;
     public int sculk_node_limit = 1;
 
-    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(1);
+    public static int TICKS_BETWEEN_NODE_SPAWNS = TickUnits.convertHoursToTicks(ModConfig.SERVER.sculk_node_spawn_cooldown_hours.get());
 
     /**
      * Default Constructor <br>
@@ -72,26 +68,59 @@ public class Gravemind
     {
 
         //This is how much mass is needed to go from undeveloped to immature
-        int MASS_GOAL_FOR_IMMATURE = 5000;
+        int MASS_GOAL_FOR_IMMATURE = ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get();
         //This is how much mass is needed to go from immature to mature
-        int MASS_GOAL_FOR_MATURE = 100000000;
-        if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
+        int MASS_GOAL_FOR_MATURE = ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get();
+
+        if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
         {
-            //The radius that sculk nodes can infect in the immature state
-            sculk_node_infect_radius = 20;
-            evolution_state = evolution_states.Immature;
-        }
-        else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_MATURE)
-        {
-            //The radius that sculk nodes can infect in the mature state
-            sculk_node_infect_radius = 50;
             evolution_state = evolution_states.Mature;
-            sculk_node_limit = 2;
+            sculk_node_limit = 8;
+        }
+        else if(SculkHorde.savedData.getSculkAccumulatedMass() >= MASS_GOAL_FOR_IMMATURE)
+        {
+            evolution_state = evolution_states.Immature;
+            sculk_node_limit = 4;
+            if(SculkHorde.savedData.isHordeUnactivated())
+            {
+                SculkHorde.savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
+            }
+        }
+
+    }
+
+    public void advanceState()
+    {
+        if(evolution_state == evolution_states.Undeveloped)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get());
+            calulateCurrentState();
+        }
+        else if(evolution_state == evolution_states.Immature)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get());
+            calulateCurrentState();
         }
     }
 
-    public void enableAmountOfBeeHives(ServerLevel worldIn, int amount)
+    public void deadvanceState()
     {
+        if(evolution_state == evolution_states.Immature)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get()/2);
+        }
+        else if(evolution_state == evolution_states.Mature)
+        {
+            SculkHorde.savedData.setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_mature_stage.get()/2);
+
+        }
+        calulateCurrentState();
+    }
+
+    public void enableAmountOfBeeHives(int amount)
+    {
+        if(SculkHorde.savedData == null) { return; }
+
         if(SculkHorde.savedData.getBeeNestEntries().size() <= 0) { return; }
 
         int lastEnabledIndex = -1;
@@ -99,11 +128,11 @@ public class Gravemind
         {
             ModSavedData.BeeNestEntry entry = SculkHorde.savedData.getBeeNestEntries().get(i);
 
-            if(!entry.isEntryValid(worldIn)) { continue; }
+            if(!entry.isEntryValid()) { continue; }
 
-            if (!entry.isOccupantsExistingDisabled(worldIn))
+            if (!entry.isOccupantsExistingDisabled())
             {
-                entry.disableOccupantsExiting(worldIn);
+                entry.disableOccupantsExiting();
                 lastEnabledIndex = i;
             }
         }
@@ -116,9 +145,9 @@ public class Gravemind
         {
             int index = i % SculkHorde.savedData.getBeeNestEntries().size();
 
-            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid(worldIn)) { continue; }
+            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid()) { continue; }
 
-            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting(worldIn);
+            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting();
         }
     }
 
@@ -126,15 +155,40 @@ public class Gravemind
     {
         context.isRequestViewed = true;
 
+
+        boolean isSenderDeveloper = context.sender == ReinforcementRequest.senderType.Developer;
+        boolean isSenderSculkMassBlock = context.sender == ReinforcementRequest.senderType.SculkMass;
+        boolean isThereNoMass = SculkHorde.savedData.getSculkAccumulatedMass() <= 0;
+        boolean isHordeDefeated = SculkHorde.savedData.isHordeDefeated();
+
         //Auto approve is this reinforcement is requested by a developer or sculk mass
-        if(context.sender == ReinforcementRequest.senderType.Developer || context.sender == ReinforcementRequest.senderType.SculkMass)
+        if(isSenderDeveloper || isSenderSculkMassBlock)
         {
             context.isRequestApproved = true;
         }
 
-        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
+        if(isHordeDefeated || isThereNoMass)
         {
             return;
+        }
+
+        boolean isSenderTypeSummoner = context.sender == ReinforcementRequest.senderType.SculkCocoon;
+        boolean isThereAtLeastOneSpawnPoint = context.positions.length > 0;
+        boolean isThereSculkNodesInExistence = SculkHorde.savedData.getNodeEntries().size() > 0;
+
+        // If Overpopulated, and its a summoner, do not approve.
+        if(isSenderTypeSummoner && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
+        {
+            BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.dimension, context.positions[0]).getPosition();
+            Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+            if(nodeBlockEntity.isPresent())
+            {
+                if(nodeBlockEntity.get().isPopulationAtMax())
+                {
+                    context.isRequestApproved = false;
+                    return;
+                }
+            }
         }
 
 
@@ -143,7 +197,7 @@ public class Gravemind
         {
             context.isRequestApproved = true;
         }
-        else if(evolution_state == evolution_states.Immature)
+        else if(evolution_state == evolution_states.Immature || evolution_state == evolution_states.Mature)
         {
             //Spawn Combat Mobs to deal with player
             if(context.is_aggressor_nearby)
@@ -162,9 +216,6 @@ public class Gravemind
                 context.isRequestApproved = true;
             }
         }
-        //TODO: Add functionality for mature state
-
-
     }
 
     /**
@@ -190,76 +241,4 @@ public class Gravemind
         }
         return false;
     }
-
-    /**
-     * Will only place sculk nodes if sky is visible
-     * @param worldIn The World to place it in
-     * @param targetPos The position to place it in
-     */
-    public void placeSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean enableChance)
-    {
-        final int SPAWN_NODE_COST = 3000;
-        final int SPAWN_NODE_BUFFER = 1000;
-
-        //Random Chance to Place TreeNode
-        if(new Random().nextInt(1000) > 1 && enableChance) { return; }
-
-        if(!SculkHorde.savedData.isSculkNodeCooldownOver())
-        {
-            return;
-        }
-
-        //If we are too close to another node, do not create one
-        if(!SculkHorde.gravemind.isValidPositionForSculkNode(worldIn, targetPos)) { return; }
-
-
-        if(SculkHorde.savedData.getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
-        {
-            return;
-        }
-
-        SculkNodeBlock.FindAreaAndPlaceNode(worldIn, targetPos);
-        SculkHorde.savedData.subtractSculkAccumulatedMass(SPAWN_NODE_COST);
-
-    }
-
-
-    /**
-     * Will check each known node location in {@link ModSavedData}
-     * to see if there is one too close.
-     * @param positionIn The potential location of a new node
-     * @return true if creation of new node is approved, false otherwise.
-     */
-    public boolean isValidPositionForSculkNode(ServerLevel worldIn, BlockPos positionIn)
-    {
-        if(worldIn.canSeeSky(positionIn))
-        {
-            return false;
-        }
-
-        if(SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
-        {
-            return false;
-        }
-
-        for (ModSavedData.NodeEntry entry : SculkHorde.savedData.getNodeEntries())
-        {
-            //Get Distance from our potential location to the current index node position
-            int distanceFromPotentialToCurrentNode = (int) getBlockDistance(positionIn, entry.getPosition());
-
-            //if we find a single node that is too close, disapprove of creating a new one
-            if (distanceFromPotentialToCurrentNode < MINIMUM_DISTANCE_BETWEEN_NODES)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    /** ######## Classes ######## **/
-
-    /** ######## CLASSES ######### **/
-
-
 }
