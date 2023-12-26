@@ -27,6 +27,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.DeferredRegister;
@@ -390,6 +391,15 @@ public class ModBlocks {
 
 	public static final RegistryObject<Block> INFESTED_COBBLESTONE =
 			registerBlock("infested_cobblestone", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+	
+	public static final RegistryObject<StairBlock> INFESTED_COBBLESTONE_STAIRS =
+			registerBlock("infested_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)

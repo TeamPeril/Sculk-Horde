@@ -63,6 +63,7 @@ public class ModEventSubscriber {
         SculkHorde.blockInfestationTable.addEntry(Blocks.TUFF, ModBlocks.INFESTED_TUFF.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.CALCITE, ModBlocks.INFESTED_CALCITE.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.COBBLESTONE, ModBlocks.INFESTED_COBBLESTONE.get().defaultBlockState());
+        SculkHorde.blockInfestationTable.addEntry(Blocks.COBBLESTONE_STAIRS, ModBlocks.INFESTED_COBBLESTONE_STAIRS.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.MOSSY_COBBLESTONE, ModBlocks.INFESTED_MOSSY_COBBLESTONE.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.GRAVEL, ModBlocks.INFESTED_GRAVEL.get().defaultBlockState());
         SculkHorde.blockInfestationTable.addEntry(Blocks.MUD, ModBlocks.INFESTED_MUD.get().defaultBlockState());
