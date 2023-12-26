@@ -98,10 +98,12 @@ public class ModEventSubscriber {
         SculkHorde.blockInfestationTable.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
 
 
-        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_MASS.get());
+        SculkHorde.blockInfestationTable.addEntry(BlockTags.PLANKS, ModBlocks.INFESTED_WOOD_MASS.get());
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get());
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
         SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
+        
+        SculkHorde.blockInfestationTable.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get());
 
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
