@@ -110,6 +110,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.ANCIENT_DEBRIS)
 			));
+	
+	public static final RegistryObject<StairBlock> INFESTED_STONE_STAIRS =
+			registerBlock("infested_stone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.ANCIENT_DEBRIS)
+			));
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_LOG =
 			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
