@@ -40,7 +40,14 @@ public class BlockInfestationTableEntry implements IBlockInfestationEntry
 
     public BlockState getNormalVariant(Level level, BlockPos blockPos, BlockState blockState)
     {
-        return normalVariant.defaultBlockState();
+    	// In this case we need to copy all the properties again
+    	BlockState normalState = normalVariant.defaultBlockState();
+    	
+    	for(Property<?> prop : blockState.getProperties()) {
+    		normalState = copyBlockProperty(blockState, normalState, prop);
+    	}
+    	
+        return normalState;
     }
 
     public BlockState getInfectedVariant(Level level, BlockPos blockPos, BlockState blockState)
