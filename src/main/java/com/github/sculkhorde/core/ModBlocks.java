@@ -523,6 +523,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+	
+	public static final RegistryObject<StairBlock> INFESTED_MOSSY_COBBLESTONE_STAIRS =
+			registerBlock("infested_mossy_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
+					.mapColor(MapColor. STONE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
 
 	public static final RegistryObject<Block> INFESTED_CLAY =
 			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()
