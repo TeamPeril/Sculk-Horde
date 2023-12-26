@@ -94,10 +94,6 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
-        if(!state.isSolidRender(this.level(), pos))
-        {
-            return true;
-        }
 
         if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
         {

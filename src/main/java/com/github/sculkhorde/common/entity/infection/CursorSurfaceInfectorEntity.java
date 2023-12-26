@@ -43,10 +43,6 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         {
             return true;
         }
-        else if(!state.isSolidRender(this.level(), pos))
-        {
-            return true;
-        }
 
         if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
         {
