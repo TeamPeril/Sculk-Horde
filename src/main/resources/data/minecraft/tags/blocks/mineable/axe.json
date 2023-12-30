@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "sculkhorde:infested_log",
-    "sculkhorde:infested_wood_mass"
+    "sculkhorde:infested_wood_mass",
+    "sculkhorde:infested_wood_stairs"
   ]
 }

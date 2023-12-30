@@ -11,6 +11,9 @@ import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.github.sculkhorde.util.StatisticsData;
 import com.mojang.logging.LogUtils;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -33,7 +36,12 @@ public class SculkHorde {
     public static EntityFactory entityFactory = new EntityFactory();
     public static Gravemind gravemind;
     public static ModSavedData savedData;
-    public static BlockInfestationTable blockInfestationTable;
+    public static BlockInfestationTable explicitInfectableBlocks;
+    public static BlockInfestationTable tagInfectableBlocks;
+    public static BlockInfestationTable tagInfectableStairsAndSlabsBlocks;
+
+    public static BlockInfestationTable[] INFESTATION_TABLES;
+
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;
@@ -79,6 +87,5 @@ public class SculkHorde {
         DEBUG_MODE = debugMode;
         savedData.setDirty();
     }
-
 
 }

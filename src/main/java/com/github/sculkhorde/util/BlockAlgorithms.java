@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
@@ -397,7 +398,7 @@ public class BlockAlgorithms {
 
         for(BlockPos position : list)
         {
-            if(!serverWorld.getBlockState(position).isSolidRender(serverWorld, position))
+            if(BlockAlgorithms.isNotSolid(serverWorld, position))
             {
                 return true;
             }
@@ -427,29 +428,6 @@ public class BlockAlgorithms {
         return false;
     }
 
-
-    /**
-     * Will only place Sculk Bee Hives
-     * @param world The World to place it in
-     * @param targetPos The position to place it in
-     */
-    public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos)
-    {
-
-        //Given random chance and the target location can see the sky, create a sculk hive
-        if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
-        {
-            world.setBlockAndUpdate(targetPos, ModBlocks.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
-            SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
-
-            //Add bees
-            nest.addFreshInfectorOccupant();
-            nest.addFreshInfectorOccupant();
-            nest.addFreshHarvesterOccupant();
-            nest.addFreshHarvesterOccupant();
-        }
-
-    }
 
     /**
      * A Jank solution to spawning flora. Given a random chance, spawn flora.
@@ -558,24 +536,33 @@ public class BlockAlgorithms {
         return flatnessRatio >= flatnessThreshold;
     }
 
-    public static boolean isSolid(BlockState state) {
-        return !state.canBeReplaced();
+    public static boolean isSolid(ServerLevel level, BlockPos pos) {
+        return !isNotSolid(level, pos);
+    }
+
+    public static boolean isNotSolid(ServerLevel level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        boolean canNotOcclude = !state.canOcclude();
+        boolean isNotSolid = !state.isSolid();
+        boolean isAir = state.isAir();
+        boolean isNotSolidRender = !state.isSolidRender(level, pos);
+        return canNotOcclude || isNotSolid || isAir || isNotSolidRender;
     }
 
     private static boolean isBlockFlat(ServerLevel level, BlockPos pos) {
 
         // If block is not solid, but block below is, then it is flat
-        if(!isSolid(level.getBlockState(pos)) && isSolid(level.getBlockState(pos.below())))
+        if(!isSolid(level, pos) && isSolid(level, pos.below()))
         {
             return true;
         }
         // If block is solid, with space above, then it is flat
-        else if(isSolid(level.getBlockState(pos)) && !isSolid(level.getBlockState(pos.above())))
+        else if(isSolid(level, pos) && !isSolid(level, pos.above()))
         {
             return true;
         }
         // If block and block above are solid, but above that isnt, then it is flat.
-        else if(isSolid(level.getBlockState(pos)) && isSolid(level.getBlockState(pos.above())) && !isSolid(level.getBlockState(pos.above().above())))
+        else if(isSolid(level, pos) && isSolid(level, pos.above()) && !isSolid(level, pos.above().above()))
         {
             return true;
         }

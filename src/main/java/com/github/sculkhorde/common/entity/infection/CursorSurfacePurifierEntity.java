@@ -4,8 +4,8 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EntityType;
@@ -44,7 +44,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isTarget(BlockState state, BlockPos pos)
     {
-        return SculkHorde.blockInfestationTable.isCurable(state);
+        return BlockInfestationHelper.isCurable(state);
     }
 
     /**
@@ -54,23 +54,11 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.blockInfestationTable.cureBlock((ServerLevel) this.level(), pos);
-
-        if(shouldBeRemovedFromAboveBlock.test(this.level().getBlockState(pos.above())))
-        {
-            this.level().setBlockAndUpdate(pos.above(), Blocks.AIR.defaultBlockState());
-        }
-
-        boolean canCuredBlockSustatinPlant = this.level().getBlockState(pos).canSustainPlant(this.level(), pos, Direction.UP, (IPlantable) Blocks.POPPY);
-        Random rand = new Random();
-        if(rand.nextBoolean() && canCuredBlockSustatinPlant && this.level().getBlockState(pos.above()).isAir())
-        {
-            this.level().setBlockAndUpdate(pos.above(), Blocks.GRASS.defaultBlockState());
-        }
+        BlockInfestationHelper.tryToCureBlock((ServerLevel) this.level(), pos);
 
         // Get all infector cursor entities in area and kill them
         Predicate<CursorInfectorEntity> isCursor = Objects::nonNull;
-        List<CursorInfectorEntity> Infectors = level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
+        List<CursorInfectorEntity> Infectors = this.level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
         for(CursorInfectorEntity infector : Infectors)
         {
             infector.discard();
@@ -118,69 +106,4 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
 
         return false;
     }
-
-
-    /**
-     * Determines if a blockstate is considered to be sculk Flora
-     * @return True if Valid, False otherwise
-     */
-    public static Predicate<BlockState> shouldBeRemovedFromAboveBlock = (b) ->
-    {
-        if (b.is(ModBlocks.GRASS.get()))
-        {
-            return true;
-        }
-
-        if(b.is(ModBlocks.GRASS_SHORT.get()))
-        {
-            return true;
-        }
-
-        if( b.is(ModBlocks.SMALL_SHROOM.get()))
-        {
-            return true;
-        }
-
-        if( b.is(ModBlocks.SCULK_SHROOM_CULTURE.get()))
-        {
-            return true;
-        }
-
-        if( b.is(ModBlocks.SPIKE.get()))
-        {
-            return true;
-        }
-
-        if( b.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
-        {
-            return true;
-        }
-
-        if(b.is(Blocks.SCULK_CATALYST))
-        {
-            return true;
-        }
-
-        if(b.is(Blocks.SCULK_SHRIEKER))
-        {
-            return true;
-        }
-
-        if(b.is(Blocks.SCULK_VEIN))
-        {
-            return true;
-        }
-
-        if(b.is(Blocks.SCULK_SENSOR))
-        {
-            return true;
-        }
-
-        if(b.is(ModBlocks.TENDRILS.get()))
-        {
-            return true;
-        }
-
-        return false;
-    };
 }

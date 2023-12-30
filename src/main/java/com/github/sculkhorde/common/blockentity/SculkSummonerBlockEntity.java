@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.BlockInfestationHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
 import com.mojang.serialization.Dynamic;
@@ -308,7 +309,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return SculkHorde.blockInfestationTable.isCurable(worldIn.getBlockState(pos.below()))  &&
+        return BlockInfestationHelper.isCurable(worldIn.getBlockState(pos.below()))  &&
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
             worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 

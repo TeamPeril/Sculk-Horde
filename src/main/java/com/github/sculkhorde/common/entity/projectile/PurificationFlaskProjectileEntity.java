@@ -75,6 +75,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     protected void onHit(HitResult result) {
         super.onHit(result);
 
+        if(level().isClientSide()) { return; }
+
         // If any entities are close to the impact, remove the infection from them.
         for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
         {
@@ -87,7 +89,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
         ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(BlockPos.containing(result.getLocation()), 3, true);
         Collections.shuffle(list);
-        list.removeIf(pos -> !level().getBlockState(pos).isSolidRender(level(), pos));
+        list.removeIf(pos -> BlockAlgorithms.isNotSolid((ServerLevel) level(), pos));
 
         for(int i = 0; i < 5 && i < list.size(); i++)
         {

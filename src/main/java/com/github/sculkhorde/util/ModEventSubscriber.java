@@ -4,11 +4,9 @@ import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
-import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
@@ -43,70 +41,7 @@ public class ModEventSubscriber {
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
         SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
 
-        SculkHorde.blockInfestationTable = new BlockInfestationTable();
-
-        // Add Log Tag
-        SculkHorde.blockInfestationTable.addEntry(Blocks.DIRT, Blocks.SCULK.defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.COARSE_DIRT, Blocks.SCULK.defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.GRASS_BLOCK, Blocks.SCULK.defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.PODZOL, Blocks.SCULK.defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.CLAY, ModBlocks.INFESTED_CLAY.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.STONE, ModBlocks.INFESTED_STONE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.STONE_STAIRS, ModBlocks.INFESTED_STONE_STAIRS.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.DEEPSLATE, ModBlocks.INFESTED_DEEPSLATE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.COBBLED_DEEPSLATE, ModBlocks.INFESTED_COBBLED_DEEPSLATE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.SAND, ModBlocks.INFESTED_SAND.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.SANDSTONE, ModBlocks.INFESTED_SANDSTONE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.RED_SAND, ModBlocks.INFESTED_RED_SAND.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.DIORITE, ModBlocks.INFESTED_DIORITE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.GRANITE, ModBlocks.INFESTED_GRANITE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.ANDESITE, ModBlocks.INFESTED_ANDESITE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.TUFF, ModBlocks.INFESTED_TUFF.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.CALCITE, ModBlocks.INFESTED_CALCITE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.COBBLESTONE, ModBlocks.INFESTED_COBBLESTONE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.COBBLESTONE_STAIRS, ModBlocks.INFESTED_COBBLESTONE_STAIRS.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.MOSSY_COBBLESTONE, ModBlocks.INFESTED_MOSSY_COBBLESTONE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.MOSSY_COBBLESTONE_STAIRS, ModBlocks.INFESTED_MOSSY_COBBLESTONE_STAIRS.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.GRAVEL, ModBlocks.INFESTED_GRAVEL.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.MUD, ModBlocks.INFESTED_MUD.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.PACKED_MUD, ModBlocks.INFESTED_PACKED_MUD.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.MUD_BRICKS, ModBlocks.INFESTED_MUD_BRICKS.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.SNOW_BLOCK, ModBlocks.INFESTED_SNOW.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.MOSS_BLOCK, ModBlocks.INFESTED_MOSS.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.TERRACOTTA, ModBlocks.INFESTED_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.BLACK_TERRACOTTA, ModBlocks.INFESTED_BLACK_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.BLUE_TERRACOTTA, ModBlocks.INFESTED_BLUE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.BROWN_TERRACOTTA, ModBlocks.INFESTED_BROWN_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.CYAN_TERRACOTTA, ModBlocks.INFESTED_CYAN_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.GRAY_TERRACOTTA, ModBlocks.INFESTED_GRAY_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.GREEN_TERRACOTTA, ModBlocks.INFESTED_GREEN_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.LIGHT_BLUE_TERRACOTTA, ModBlocks.INFESTED_LIGHT_BLUE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.LIGHT_GRAY_TERRACOTTA, ModBlocks.INFESTED_LIGHT_GRAY_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.LIME_TERRACOTTA, ModBlocks.INFESTED_LIME_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.MAGENTA_TERRACOTTA, ModBlocks.INFESTED_MAGENTA_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.ORANGE_TERRACOTTA, ModBlocks.INFESTED_ORANGE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.PINK_TERRACOTTA, ModBlocks.INFESTED_PINK_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.PURPLE_TERRACOTTA, ModBlocks.INFESTED_PURPLE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.RED_TERRACOTTA, ModBlocks.INFESTED_RED_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.WHITE_TERRACOTTA, ModBlocks.INFESTED_WHITE_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.YELLOW_TERRACOTTA, ModBlocks.INFESTED_YELLOW_TERRACOTTA.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.CRYING_OBSIDIAN, ModBlocks.INFESTED_CRYING_OBSIDIAN.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.NETHERRACK, ModBlocks.INFESTED_NETHERRACK.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.CRIMSON_NYLIUM, ModBlocks.INFESTED_CRIMSON_NYLIUM.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.WARPED_NYLIUM, ModBlocks.INFESTED_WARPED_NYLIUM.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.BLACKSTONE, ModBlocks.INFESTED_BLACKSTONE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
-        SculkHorde.blockInfestationTable.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
-
-        SculkHorde.blockInfestationTable.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get());
-
-        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get());
-        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get());
-        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
-        SculkHorde.blockInfestationTable.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
-
+        BlockInfestationHelper.initializeInfestationTables();
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
         SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);

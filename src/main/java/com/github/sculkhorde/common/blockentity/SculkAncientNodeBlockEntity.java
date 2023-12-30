@@ -7,6 +7,7 @@ import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.AdvancementUtil;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
@@ -75,7 +76,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.below()).isSolid()  &&
+        return BlockAlgorithms.isSolid(worldIn, pos.below()) &&
                 worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
                 worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
                 worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);

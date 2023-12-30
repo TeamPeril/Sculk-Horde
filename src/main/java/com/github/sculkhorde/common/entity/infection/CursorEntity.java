@@ -106,11 +106,7 @@ public abstract class CursorEntity extends Entity
             return false;
         }
 
-        if(!state.isSolidRender(this.level(), pos))
-        {
-            return true;
-        }
-        else if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
+        if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
         {
             return true;
         }

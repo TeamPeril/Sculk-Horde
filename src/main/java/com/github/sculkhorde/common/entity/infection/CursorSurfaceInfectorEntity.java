@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.infection;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
@@ -39,17 +40,15 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         {
             return true;
         }
+        else if(state.isAir())
+        {
+            return true;
+        }
         else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
         {
             return true;
         }
-
-        if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
-        {
-            return true;
-        }
-
-        if(state.isAir())
+        else if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
         {
             return true;
         }
@@ -66,11 +65,14 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos) && !state.is(ModBlocks.SCULK_ARACHNOID.get()) && !state.is(ModBlocks.SCULK_DURA_MATTER.get()))
+        boolean isBlockNotExposedToAir = !BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos);
+        boolean isBlockNotSculkArachnoid = !state.is(ModBlocks.SCULK_ARACHNOID.get());
+        boolean isBlockNotSculkDuraMatter = !state.is(ModBlocks.SCULK_DURA_MATTER.get());
+
+        if(isBlockNotExposedToAir && isBlockNotSculkArachnoid && isBlockNotSculkDuraMatter)
         {
             return true;
         }
-
 
         return false;
     }
