@@ -67,7 +67,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
                 }
                 else if(value == 462)
                 {
-                    MobEffectInstance effect = new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertHoursToTicks(1), 60, false, false);
+                    MobEffectInstance effect = new MobEffectInstance(ModMobEffects.SCULK_VESSEL.get(), TickUnits.convertHoursToTicks(1), 60, false, false);
                     player.addEffect(effect);
 
                 }
