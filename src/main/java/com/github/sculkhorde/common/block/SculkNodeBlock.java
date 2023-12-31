@@ -74,7 +74,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public SculkNodeBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(ACTIVE, false));
+                .setValue(ACTIVE, true));
     }
 
     /**
@@ -89,7 +89,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(ACTIVE, false);
+                .setValue(ACTIVE, true);
 
     }
 
