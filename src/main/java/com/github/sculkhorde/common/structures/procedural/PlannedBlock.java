@@ -1,10 +1,10 @@
 package com.github.sculkhorde.common.structures.procedural;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 
@@ -44,8 +44,7 @@ public class PlannedBlock
         }
         // Explicit Allow
         if(
-                SculkHorde.blockInfestationTable.isInfectable(validBlocksPredicate)
-                || SculkHorde.blockInfestationTable.isCurable(validBlocksPredicate)
+                BlockInfestationHelper.isCurable(validBlocksPredicate)
                 || validBlocksPredicate.is(BlockTags.REPLACEABLE)
                 || validBlocksPredicate.is(BlockTags.NEEDS_IRON_TOOL)
                 || validBlocksPredicate.is(BlockTags.NEEDS_STONE_TOOL)

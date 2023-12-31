@@ -42,6 +42,9 @@
     "sculkhorde:infested_endstone",
     "sculkhorde:infested_mossy_cobblestone",
 
-    "sculkhorde:infested_sturdy_mass"
+    "sculkhorde:infested_sturdy_mass",
+    "sculkhorde:infested_mossy_cobblestone_stairs",
+    "sculkhorde:infested_cobblestone_stairs",
+    "sculkhorde:infested_stone_stairs"
   ]
 }

@@ -28,7 +28,9 @@
   "block.sculkhorde.infested_log": "Infested Log",
   "tooltip.sculkhorde.infested_log": "A material that deceivingly looks like wood, but is made of a strange, bone-like material.",
   "block.sculkhorde.infested_cobblestone": "Infested Cobblestone",
+  "block.sculkhorde.infested_cobblestone_stairs": "Infested Cobblestone Stairs",
   "block.sculkhorde.infested_stone": "Infested Stone",
+  "block.sculkhorde.infested_stone_stairs": "Infested Stone Stairs",
   "block.sculkhorde.infested_andesite": "Infested Andesite",
   "block.sculkhorde.infested_granite": "Infested Granite",
   "block.sculkhorde.infested_diorite": "Infested Diorite",
@@ -119,6 +121,7 @@
   "block.sculkhorde.infested_smooth_basalt": "Infested Smooth Basalt",
   "block.sculkhorde.infested_endstone": "Infested Endstone",
   "block.sculkhorde.infested_mossy_cobblestone": "Infested Mossy Cobblestone",
+  "block.sculkhorde.infested_mossy_cobblestone_stairs": "Infested Mossy Cobblestone Stairs",
 
   "item.sculkhorde.sculk_spore_spewer_spawn_egg": "Sculk Spore Spewer Spawn Egg",
   "item.sculkhorde.sculk_zombie_spawn_egg": "Sculk Zombie Spawn Egg",
@@ -144,6 +147,7 @@
   "block.sculkhorde.infested_crumpled_mass": "Infested Crumpled Mass",
   "block.sculkhorde.infested_compost_mass": "Infested Compost Mass",
   "block.sculkhorde.infested_wood_mass": "Infested Wood Mass",
+  "block.sculkhorde.infested_wood_stairs": "Infested Wood Stairs",
 
   "item.sculkhorde.sculk_sweeper_sword": "The Sculk Sweeper",
   "tooltip.sculkhorde.sculk_sweeper_sword": "A special sword designed to kill swarms of Sculk Mobs. Has a large sweeping edge. Only does 50% damage to non-sculk mobs. Attacking Sculk Mobs builds up a charge that can be released with right-click. This special attack will spawn Sculk Spines at the feet of Sculk Mobs. The blade is forged from the cleaver of a Sculk Enderman.",

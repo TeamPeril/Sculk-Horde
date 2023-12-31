@@ -1,19 +1,22 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.entity.infection.CursorEntity;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Cursor {
 
@@ -144,16 +147,12 @@ public class Cursor {
      */
     protected boolean isNotObstructed(BlockState state, BlockPos pos)
     {
-        if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
+      	if(SculkHorde.savedData.getSculkAccumulatedMass() <= 0)
         {
             return false;
         }
-
-        if(!state.isSolidRender(level, pos))
-        {
-            return false;
-        }
-        else if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
+      	
+        if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
         {
             return false;
         }

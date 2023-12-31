@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "sculkhorde:infested_log",
     "sculkhorde:infested_crying_obsidian",
     "sculkhorde:infested_cobblestone",
     "sculkhorde:infested_stone",
@@ -47,7 +46,16 @@
     "sculkhorde:infested_red_sand",
     "sculkhorde:infested_mud",
     "sculkhorde:infested_packed_mud",
+    "sculkhorde:infested_moss",
 
-    "sculkhorde:infested_moss"
+    "sculkhorde:infested_sturdy_mass",
+    "sculkhorde:infested_crumpled_mass",
+    "sculkhorde:infested_wood_mass",
+    "sculkhorde:infested_compost_mass",
+    "sculkhorde:infested_log",
+    "sculkhorde:infested_wood_stairs",
+    "sculkhorde:infested_mossy_cobblestone_stairs",
+    "sculkhorde:infested_cobblestone_stairs",
+    "sculkhorde:infested_stone_stairs"
   ]
 }

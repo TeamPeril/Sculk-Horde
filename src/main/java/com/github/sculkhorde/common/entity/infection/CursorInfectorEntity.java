@@ -1,14 +1,12 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.*;
-import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-
-import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -46,7 +44,7 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected boolean isTarget(BlockState state, BlockPos pos)
     {
-        return SculkHorde.blockInfestationTable.isInfectable(state);
+        return BlockInfestationHelper.isInfectable((ServerLevel) level(), pos);
     }
 
     /**
@@ -56,7 +54,7 @@ public class CursorInfectorEntity extends CursorEntity
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        SculkHorde.blockInfestationTable.infectBlock((ServerLevel) this.level(), pos);
+        BlockInfestationHelper.tryToInfestBlock((ServerLevel) level(), pos);
     }
 
     @Override

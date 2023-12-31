@@ -1,23 +1,42 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.block.*;
+import java.util.function.Supplier;
+
+import com.github.sculkhorde.common.block.DevMassInfectinator3000Block;
+import com.github.sculkhorde.common.block.DevStructureTesterBlock;
+import com.github.sculkhorde.common.block.InfestedStairBlock;
+import com.github.sculkhorde.common.block.InfestedTagBlock;
+import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
+import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
+import com.github.sculkhorde.common.block.SculkFloraBlock;
+import com.github.sculkhorde.common.block.SculkLivingRockBlock;
+import com.github.sculkhorde.common.block.SculkLivingRockRootBlock;
+import com.github.sculkhorde.common.block.SculkMassBlock;
+import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.common.block.SculkShroomCultureBlock;
+import com.github.sculkhorde.common.block.SculkSummonerBlock;
+import com.github.sculkhorde.common.block.SmallShroomBlock;
+import com.github.sculkhorde.common.block.SoulHarvesterBlock;
+import com.github.sculkhorde.common.block.SpikeBlock;
+import com.github.sculkhorde.common.block.TendrilsBlock;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.function.Supplier;
-
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
-
+    
 	//Method to Register Blocks & Register them as items
 	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
 	{
@@ -85,6 +104,15 @@ public class ModBlocks {
 
 	public static final RegistryObject<Block> INFESTED_STONE =
 			registerBlock("infested_stone", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.ANCIENT_DEBRIS)
+			));
+	
+	public static final RegistryObject<StairBlock> INFESTED_STONE_STAIRS =
+			registerBlock("infested_stone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
@@ -378,6 +406,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+	
+	public static final RegistryObject<StairBlock> INFESTED_COBBLESTONE_STAIRS =
+			registerBlock("infested_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
 
 	public static final RegistryObject<Block> INFESTED_CRYING_OBSIDIAN =
 			registerBlock("infested_crying_obsidian", () -> new Block(BlockBehaviour.Properties.of()
@@ -486,6 +523,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+	
+	public static final RegistryObject<StairBlock> INFESTED_MOSSY_COBBLESTONE_STAIRS =
+			registerBlock("infested_mossy_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
+					.mapColor(MapColor. STONE)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
 
 	public static final RegistryObject<Block> INFESTED_CLAY =
 			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()
@@ -498,6 +544,15 @@ public class ModBlocks {
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_WOOD_MASS =
 			registerBlock("infested_wood_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(15f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+	
+	public static final RegistryObject<InfestedStairBlock> INFESTED_WOOD_STAIRS =
+			registerBlock("infested_wood_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.QUARTZ)
 					.strength(15f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
