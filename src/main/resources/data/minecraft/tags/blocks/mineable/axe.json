@@ -3,6 +3,8 @@
   "values": [
     "sculkhorde:infested_log",
     "sculkhorde:infested_wood_mass",
-    "sculkhorde:infested_wood_stairs"
+    "sculkhorde:infested_wood_stairs",
+    "sculkhorde:sculk_bee_nest",
+    "sculkhorde:sculk_bee_nest_cell"
   ]
 }

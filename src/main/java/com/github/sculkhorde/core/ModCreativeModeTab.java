@@ -84,8 +84,11 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_GRAVEL.get());
                 event.accept(ModBlocks.INFESTED_CLAY.get());
                 event.accept(ModBlocks.INFESTED_STONE.get());
+                event.accept(ModBlocks.INFESTED_STONE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_COBBLESTONE.get());
+                event.accept(ModBlocks.INFESTED_COBBLESTONE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_MOSSY_COBBLESTONE.get());
+                event.accept(ModBlocks.INFESTED_MOSSY_COBBLESTONE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_DEEPSLATE.get());
                 event.accept(ModBlocks.INFESTED_COBBLED_DEEPSLATE.get());
                 event.accept(ModBlocks.INFESTED_ANDESITE.get());
@@ -121,6 +124,11 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_BLACKSTONE.get());
                 event.accept(ModBlocks.INFESTED_BASALT.get());
                 event.accept(ModBlocks.INFESTED_SMOOTH_BASALT.get());
+                event.accept(ModBlocks.INFESTED_WOOD_MASS.get());
+                event.accept(ModBlocks.INFESTED_WOOD_STAIRS.get());
+                event.accept(ModBlocks.INFESTED_CRUMPLED_MASS.get());
+                event.accept(ModBlocks.INFESTED_STURDY_MASS.get());
+                event.accept(ModBlocks.INFESTED_COMPOST_MASS.get());
             })
             .build());
 }

@@ -56,7 +56,10 @@
     "sculkhorde:infested_compost_mass",
     "sculkhorde:infested_sturdy_mass",
     "sculkhorde:infested_wood_mass",
-    "sculkhorde:infested_crumpled_mass"
+    "sculkhorde:infested_crumpled_mass",
+
+    "sculkhorde:sculk_bee_nest",
+    "sculkhorde:sculk_bee_nest_cell"
 
   ]
 }

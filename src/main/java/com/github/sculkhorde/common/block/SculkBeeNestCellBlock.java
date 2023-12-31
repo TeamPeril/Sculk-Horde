@@ -44,7 +44,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
      * 3f = iron ore<br>
      * 50f = obsidian
      */
-    public static float HARDNESS = 50f;
+    public static float HARDNESS = 4f;
 
     /**
      * BLAST_RESISTANCE determines how difficult a block is to blow up<br>
@@ -55,17 +55,6 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static float BLAST_RESISTANCE = 10f;
 
-    /**
-     *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
-     *
-     *  -1 = All<br>
-     *  0 = Wood<br>
-     *  1 = Stone<br>
-     *  2 = Iron<br>
-     *  3 = Diamond<br>
-     *  4 = Netherite
-     */
-    public static int HARVEST_LEVEL = -1;
 
     /**
      * This property mature represents different variants of this block. <br>
@@ -128,7 +117,8 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
         Properties prop = Properties.copy(Blocks.BEE_NEST)
                 .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .sound(SoundType.GRASS);
+                .sound(SoundType.GRASS)
+                .requiresCorrectToolForDrops();
         return prop;
     }
 

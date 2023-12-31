@@ -55,18 +55,6 @@ public class SculkBeeNestBlock extends BaseEntityBlock
     public static float BLAST_RESISTANCE = 0.5f;
 
     /**
-     *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
-     *
-     *  -1 = All<br>
-     *  0 = Wood<br>
-     *  1 = Stone<br>
-     *  2 = Iron<br>
-     *  3 = Diamond<br>
-     *  4 = Netherite
-     */
-    public static int HARVEST_LEVEL = -1;
-
-    /**
      * The Constructor that takes in properties
      * @param prop The Properties
      */
@@ -94,7 +82,8 @@ public class SculkBeeNestBlock extends BaseEntityBlock
     {
         return BlockBehaviour.Properties.copy(Blocks.BEE_NEST)
                 .strength(HARDNESS, BLAST_RESISTANCE)
-                .sound(SoundType.SLIME_BLOCK);
+                .sound(SoundType.SLIME_BLOCK)
+                .requiresCorrectToolForDrops();
     }
 
     public static boolean isNestClosed(BlockState blockState)
