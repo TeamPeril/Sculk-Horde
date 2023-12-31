@@ -263,6 +263,12 @@ public class EntityAlgorithms {
         return livingEntitiesInRange;
     }
 
+    public static List<Entity> getEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox, Predicate<Entity> predicate)
+    {
+        List<Entity> entities = serverLevel.getEntitiesOfClass(Entity.class, boundingBox, predicate);
+        return entities;
+    }
+
     public static AABB createBoundingBoxCubeAtBlockPos(Vec3 origin, int squareLength)
     {
         double halfLength = squareLength/2;

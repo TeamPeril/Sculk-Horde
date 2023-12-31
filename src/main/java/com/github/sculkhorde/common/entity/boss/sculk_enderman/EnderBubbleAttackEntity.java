@@ -5,9 +5,14 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -29,6 +34,10 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
     public static int LIFE_TIME = TickUnits.convertSecondsToTicks(10);
     public int currentLifeTicks = 0;
+
+    private final double orbitRadius = 5.0; // Radius at which entities start to orbit
+    private double pushStrength = 0.2; // Strength of the push effect
+    private double orbitStrength = 0.3; // Strength of the orbit effect
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -52,7 +61,9 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     {
         if(level().isClientSide()) return;
 
-        Predicate<LivingEntity> predicate = (entity) -> {
+        Predicate<Entity> predicate = (entity) -> {
+            if(entity instanceof Player) { return true;}
+
             if(entity == null) {return false;}
             else if(entity instanceof SculkEndermanEntity)
             {
@@ -62,15 +73,48 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
             return true;
         };
 
-        List<LivingEntity> pullInHitList = EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(range, range, range), predicate);
+        List<Entity> pushAwayList = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(range, range, range), predicate);
 
-        for(LivingEntity entity : pullInHitList)
+        for(Entity entity : pushAwayList)
         {
-            double forceAmount = 0.02;
-            double xDirection = this.getX() - entity.getX();
-            double yDirection = this.getY() - entity.getY();
-            double zDirection = this.getZ() - entity.getZ();
-            entity.push(xDirection * forceAmount, yDirection * forceAmount, zDirection * forceAmount);
+            // Push entities away
+            //float pushStrength = 0.1f;
+            //Vec3 vector = this.position().subtract(entity.position()).normalize();
+            //entity.push(vector.x * pushStrength, vector.y * pushStrength, vector.z * pushStrength);
+
+            // Give levetation for 1 second
+            if(entity instanceof LivingEntity e)
+            {
+                //e.addEffect(new MobEffectInstance(MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(2), 0, false, false));
+            }
+
+
+            // Calculate the vector from the black hole to the entity
+            double dx = entity.getX() - getX();
+            double dy = entity.getY() - getY();
+            double dz = entity.getZ() - getZ();
+
+            // Calculate the distance to the black hole
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+            // Normalize the vector
+            dx /= distance;
+            dy /= distance;
+            dz /= distance;
+
+            // Apply the push effect
+            //entity.push(dx * pushStrength, dy * pushStrength, dz * pushStrength);
+            entity.push(0, pushStrength, 0);
+
+
+            // Calculate the orbit vector (rotate the original vector 90 degrees)
+            double ox = -dz;
+            double oy = dy;
+            double oz = dx;
+
+            // Apply the orbit effect
+            entity.push(ox * orbitStrength, oy * orbitStrength, oz * orbitStrength);
+
         }
     }
 
@@ -83,7 +127,10 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         // If the entity is alive for more than LIFE_TIME, discard it
         if(currentLifeTicks >= LIFE_TIME && LIFE_TIME != -1) this.discard();
 
-        pullInEntities(10);
+        pullInEntities(20);
+
+        orbitStrength += 0.001;
+        pushStrength += 0.001;
 
         List<LivingEntity> damageHitList = getEntitiesNearbyCube(LivingEntity.class, 3);
 
