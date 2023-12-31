@@ -43,17 +43,6 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static float BLAST_RESISTANCE = 0.5f;
 
-    /**
-     *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
-     *
-     *  -1 = All<br>
-     *  0 = Wood<br>
-     *  1 = Stone<br>
-     *  2 = Iron<br>
-     *  3 = Diamond<br>
-     *  4 = Netherite
-     */
-    public static int HARVEST_LEVEL = -1;
     public static final float SCULK_HOARD_MASS_TAX = (float) (1.0 / 3.0);
     public static double HEALTH_ABSORB_MULTIPLIER = 3;
 
@@ -159,20 +148,6 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
             System.out.println(e);
         }
         return thisTile;
-    }
-
-    /**
-     * Determines what block the spike can be placed on <br>
-     * Goes through a list of valid blocks and checks if the
-     * given block is in that list.<br>
-     * @param blockState The block it is trying to be placed on
-     * @param iBlockReader ???
-     * @param pos The Position
-     * @return True/False
-     */
-    //TODO PORT
-    protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
-        return !blockState.canBeReplaced(Fluids.WATER);
     }
 
     @Override
