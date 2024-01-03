@@ -45,17 +45,17 @@ public class ToolTaglInfestationTableEntry implements IBlockInfestationEntry
         return ((Block)infectedVariant).defaultBlockState().is(blockState.getBlock());
     }
 
-    public BlockState getNormalVariant(Level level, BlockPos blockPos, BlockState blockState)
+    public BlockState getNormalVariant(Level level, BlockPos blockPos)
     {
         ITagInfestedBlockEntity blockEntity = infectedVariant.getTagInfestedBlockEntity(level, blockPos);
         if(blockEntity == null || blockEntity.getNormalBlockState() == null)
         {
-            return blockState;
+            return level.getBlockState(blockPos);
         }
         return infectedVariant.getTagInfestedBlockEntity(level, blockPos).getNormalBlockState();
     }
 
-    public BlockState getInfectedVariant(Level level, BlockPos blockPos, BlockState blockState)
+    public BlockState getInfectedVariant(Level level, BlockPos blockPos)
     {
         return ((Block)infectedVariant).defaultBlockState();
     }

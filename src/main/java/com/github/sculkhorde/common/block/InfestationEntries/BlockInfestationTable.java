@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.block.InfestationEntries;
 
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -49,34 +48,42 @@ public class BlockInfestationTable{
         entries.add(new BlockTagInfestationTableEntry(normalTag, infectedVariant));
     }
 
+    public void addEntry(String normalBlockID, String infectedBlockID)
+    {
+        entries.add(new BlockIDOnlyCurableTableEntry(normalBlockID, infectedBlockID));
+    }
+
     public void addEntry(TagKey<Block> toolRequired, Tier tier, ITagInfestedBlock infectedVariant)
     {
         entries.add(new ToolTaglInfestationTableEntry(toolRequired, tier, infectedVariant));
     }
 
-    public BlockState getInfestedVariant(Level level, BlockPos blockPos, BlockState blockState)
+    public BlockState getInfestedVariant(Level level, BlockPos blockPos)
     {
+        BlockState blockState = level.getBlockState(blockPos);
         for(IBlockInfestationEntry entry : entries)
         {
             if(entry.isNormalVariant(blockState))
             {
-                return entry.getInfectedVariant(level, blockPos, blockState);
+                return entry.getInfectedVariant(level, blockPos);
             }
         }
         return null;
     }
 
-    public BlockState getNormalVariant(Level level, BlockPos blockPos, BlockState blockState)
+    public BlockState getNormalVariant(Level level, BlockPos blockPos)
     {
+        BlockState blockState = level.getBlockState(blockPos);
         for(IBlockInfestationEntry entry : entries)
         {
             if(entry.isInfectedVariant(blockState))
             {
-                return entry.getNormalVariant(level, blockPos, blockState);
+                return entry.getNormalVariant(level, blockPos);
             }
         }
         return null;
     }
+
 
     /**
      * Checks if a block is a normal variant.
@@ -118,7 +125,7 @@ public class BlockInfestationTable{
         }
 
         BlockState oldBlock = world.getBlockState(targetPos);
-        BlockState newBlock = getInfestedVariant(world, targetPos, world.getBlockState(targetPos));
+        BlockState newBlock = getInfestedVariant(world, targetPos);
 
         if(newBlock == null)
         {

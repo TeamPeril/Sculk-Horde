@@ -37,12 +37,11 @@ public class CursorInfectorEntity extends CursorEntity
 
     /**
      * Returns true if the block is considered a target.
-     * @param state the block state
      * @param pos the block position
      * @return true if the block is considered a target
      */
     @Override
-    protected boolean isTarget(BlockState state, BlockPos pos)
+    protected boolean isTarget(BlockPos pos)
     {
         return BlockInfestationHelper.isInfectable((ServerLevel) level(), pos);
     }

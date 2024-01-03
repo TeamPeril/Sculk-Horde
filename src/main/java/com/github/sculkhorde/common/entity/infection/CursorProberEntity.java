@@ -53,7 +53,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             BlockPos currentBlock = stack.pop();
 
             // If the current block is a target, return it
-            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(currentBlock)) {
                 isSuccessful = true;
                 target = currentBlock;
                 return true;

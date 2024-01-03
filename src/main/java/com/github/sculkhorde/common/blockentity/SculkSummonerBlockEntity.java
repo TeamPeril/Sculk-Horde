@@ -309,7 +309,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return BlockInfestationHelper.isCurable(worldIn.getBlockState(pos.below()))  &&
+        return BlockInfestationHelper.isCurable(worldIn, pos)  &&
             worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
             worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 

@@ -124,13 +124,12 @@ public abstract class CursorEntity extends Entity
 
     /**
      * Returns true if the block is considered a target.
-     * @param state the block state
      * @param pos the block position
      * @return true if the block is considered a target
      */
-    protected boolean isTarget(BlockState state, BlockPos pos)
+    protected boolean isTarget(BlockPos pos)
     {
-        return state.equals(Blocks.DIAMOND_BLOCK.defaultBlockState());
+        return false;
     }
 
     /**
@@ -167,7 +166,7 @@ public abstract class CursorEntity extends Entity
             BlockPos currentBlock = queue.poll();
 
             // If the current block is a target, return it
-            if (isTarget(this.level().getBlockState(currentBlock), currentBlock)) {
+            if (isTarget(currentBlock)) {
                 isSuccessful = true;
                 target = currentBlock;
                 return true;
@@ -293,7 +292,7 @@ public abstract class CursorEntity extends Entity
                 target = BlockPos.ZERO;
                 BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
 
-                boolean isTarget = isTarget(stateOfCurrentBlock, this.blockPosition());
+                boolean isTarget = isTarget(this.blockPosition());
                 boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());
                 // If the block is not obstructed, infect it
                 if(isTarget && isNotObstructed)

@@ -86,6 +86,39 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
 
+        // Deeper and Darker Compatibility
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_stone");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_coal_ore", "deeperdarker:sculk_stone_coal_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_iron_ore", "deeperdarker:sculk_stone_iron_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_gold_ore", "deeperdarker:sculk_stone_gold_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_copper_ore", "deeperdarker:sculk_stone_copper_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_lapis_ore", "deeperdarker:sculk_stone_lapis_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_redstone_ore", "deeperdarker:sculk_stone_redstone_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_emerald_ore", "deeperdarker:sculk_stone_emerald_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_diamond_ore", "deeperdarker:sculk_stone_diamond_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:moss_block", "deeperdarker:echo_soil");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:flowering_azalea_leaves", "deeperdarker:echo_leaves");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:oak_log", "deeperdarker:echo_log");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:pearlescent_froglight", "deeperdarker:sculk_gleam");
+
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:blackstone", "deeperdarker:gloomslate");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_coal_ore", "deeperdarker:gloomslate_coal_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_iron_ore", "deeperdarker:gloomslate_iron_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_gold_ore", "deeperdarker:gloomslate_gold_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_copper_ore", "deeperdarker:gloomslate_copper_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_lapis_ore", "deeperdarker:gloomslate_lapis_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_redstone_ore", "deeperdarker:gloomslate_redstone_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_emerald_ore", "deeperdarker:gloomslate_emerald_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_diamond_ore", "deeperdarker:gloomslate_diamond_ore");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:lava", "deeperdarker:gloomy_geyser");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:smooth_basalt", "deeperdarker:gloomy_sculk");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:ochre_froglight", "deeperdarker:crystallized_amber");
+
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_grime");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "deeperdarker:sculk_tendrils");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:cave_vines", "deeperdarker:sculk_vines");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:mud", "deeperdarker:sculk_jaw");
+
 
 
         // Used to infect stairs and slabs. Order Matters
@@ -133,9 +166,17 @@ public class BlockInfestationHelper {
         return false;
     }
 
-    public static boolean isCurable(BlockState blockState)
+    public static boolean isCurable(ServerLevel level, BlockPos pos)
     {
-        return blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK);
+        for(BlockInfestationTable table : SculkHorde.INFESTATION_TABLES)
+        {
+            if(table.getNormalVariant(level, pos) != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void tryToInfestBlock(ServerLevel world, BlockPos targetPos)
@@ -180,15 +221,14 @@ public class BlockInfestationHelper {
 
     public static boolean tryToCureBlock(ServerLevel world, BlockPos targetPos)
     {
-        BlockState victimBlockState = world.getBlockState(targetPos);
         boolean wasAbleToCureBlock = false;
         BlockState getNormalVariant = null;
 
-        if(!isCurable(victimBlockState)) { return false; }
+        if(!isCurable(world, targetPos)) { return false; }
 
         for(BlockInfestationTable table : SculkHorde.INFESTATION_TABLES)
         {
-            getNormalVariant = table.getNormalVariant(world, targetPos, victimBlockState);
+            getNormalVariant = table.getNormalVariant(world, targetPos);
 
             if(getNormalVariant == null) { continue; }
 

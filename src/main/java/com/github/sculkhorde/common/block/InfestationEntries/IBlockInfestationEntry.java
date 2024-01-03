@@ -8,6 +8,6 @@ public interface IBlockInfestationEntry {
 
     boolean isNormalVariant(BlockState blockState);
     boolean isInfectedVariant(BlockState blockState);
-    BlockState getNormalVariant(Level level, BlockPos blockPos, BlockState blockState);
-    BlockState getInfectedVariant(Level level, BlockPos blockPos, BlockState blockState);
+    BlockState getNormalVariant(Level level, BlockPos blockPos);
+    BlockState getInfectedVariant(Level level, BlockPos blockPos);
 }

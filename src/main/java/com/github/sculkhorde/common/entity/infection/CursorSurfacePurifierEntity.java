@@ -42,9 +42,9 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
      * @return true if the block is considered obstructed
      */
     @Override
-    protected boolean isTarget(BlockState state, BlockPos pos)
+    protected boolean isTarget(BlockPos pos)
     {
-        return BlockInfestationHelper.isCurable(state);
+        return BlockInfestationHelper.isCurable((ServerLevel) level(), pos);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockInfestationHelper;
@@ -124,7 +125,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     @Override
     protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
 
-        return BlockInfestationHelper.isCurable(blockState);
+        return blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK);
     }
 
 
@@ -194,6 +195,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return BlockInfestationHelper.isCurable(levelReader.getBlockState(blockPos.below()));
+        return levelReader.getBlockState(blockPos.below()).is(ModBlocks.BlockTags.INFESTED_BLOCK);
     }
 }

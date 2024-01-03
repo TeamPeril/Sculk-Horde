@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.structures.procedural;
 
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.tags.BlockTags;
@@ -43,8 +44,7 @@ public class PlannedBlock
             return false;
         }
         // Explicit Allow
-        if(
-                BlockInfestationHelper.isCurable(validBlocksPredicate)
+        if(validBlocksPredicate.is(ModBlocks.BlockTags.INFESTED_BLOCK)
                 || validBlocksPredicate.is(BlockTags.REPLACEABLE)
                 || validBlocksPredicate.is(BlockTags.NEEDS_IRON_TOOL)
                 || validBlocksPredicate.is(BlockTags.NEEDS_STONE_TOOL)

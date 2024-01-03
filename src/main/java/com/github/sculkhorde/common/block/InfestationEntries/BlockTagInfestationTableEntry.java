@@ -41,25 +41,26 @@ public class BlockTagInfestationTableEntry implements IBlockInfestationEntry
         return ((Block)infectedVariant).defaultBlockState().is(blockState.getBlock());
     }
 
-    public BlockState getNormalVariant(Level level, BlockPos blockPos, BlockState blockState)
+    public BlockState getNormalVariant(Level level, BlockPos blockPos)
     {
         ITagInfestedBlockEntity blockEntity = infectedVariant.getTagInfestedBlockEntity(level, blockPos);
         if(blockEntity == null || blockEntity.getNormalBlockState() == null)
         {
-            return blockState;
+            return level.getBlockState(blockPos);
         }
         return infectedVariant.getTagInfestedBlockEntity(level, blockPos).getNormalBlockState();
     }
 
-    public BlockState getInfectedVariant(Level level, BlockPos blockPos, BlockState blockState)
+    public BlockState getInfectedVariant(Level level, BlockPos blockPos)
     {
-    	// copy block properties of normal block to infected block
-    	BlockState infectedState = ((Block)infectedVariant).defaultBlockState();
-    	
-    	for(Property<?> prop : blockState.getProperties()) {
-    		infectedState = copyBlockProperty(blockState, infectedState, prop);
-    	}
-    	
+        // copy block properties of normal block to infected block
+        BlockState infectedState = ((Block)infectedVariant).defaultBlockState();
+
+        for(Property<?> prop : level.getBlockState(blockPos).getProperties()) {
+            infectedState = copyBlockProperty(level.getBlockState(blockPos), infectedState, prop);
+        }
+
         return infectedState;
     }
+
 }
