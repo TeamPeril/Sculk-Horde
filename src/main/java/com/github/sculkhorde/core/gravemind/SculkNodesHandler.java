@@ -2,6 +2,8 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.events.Event;
+import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 
@@ -117,6 +119,11 @@ public class SculkNodesHandler {
         nodeWithLongestTimeOfInactivity.setActive(true);
         nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
         SculkHorde.LOGGER.info("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
+
+        Event phantomEvent = SpawnPhantomsEvent.createEvent(nodeWithLongestTimeOfInactivity.getDimension().dimension());
+        phantomEvent.setEventID(nodeWithLongestTimeOfInactivity.getPosition().asLong());
+        phantomEvent.setEventLocation(nodeWithLongestTimeOfInactivity.getPosition());
+        SculkHorde.eventHandler.addEvent(phantomEvent);
     }
 
     protected void DeactivateAllNodes()

@@ -1,5 +1,9 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.events.Event;
+import com.github.sculkhorde.core.gravemind.events.EventHandler;
+import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -70,20 +74,9 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		/// Did not work. Does not do what I think it does
-		//ServerLevel world = (ServerLevel) worldIn;
-		//ServerChunkCache chunkCache = world.getChunkSource();
-		//((IClearCache) chunkCache).publicClearCache();
-
-
-		/* Does not work because ticking chunks is an unmodifiable map
-		ForcedChunksSavedData data = ((ServerLevel)worldIn).getDataStorage().get(ForcedChunksSavedData::load, "chunks");
-		data.getEntityForcedChunks().getTickingChunks();
-		data.getEntityForcedChunks().getTickingChunks().clear(); */
-
-
-
-
+		Event phantom = SpawnPhantomsEvent.createEvent(worldIn.dimension());
+		phantom.setEventLocation(playerIn.blockPosition());
+		SculkHorde.eventHandler.addEvent(phantom);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhorde.core.gravemind.events.EventHandler;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
@@ -45,6 +46,7 @@ public class SculkHorde {
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;
+    public static EventHandler eventHandler;
     public static SculkNodesHandler sculkNodesHandler;
     public static StatisticsData statisticsData;
     public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper;

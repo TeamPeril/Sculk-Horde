@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
+import com.github.sculkhorde.core.gravemind.events.EventHandler;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoadRequest;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
@@ -55,6 +56,10 @@ public class ForgeEventSubscriber {
             SculkHorde.sculkNodesHandler = new SculkNodesHandler(); //Initialize Sculk Nodes Handler
             SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper(); //Initialize Entity Chunk Loader Helper
             SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper(); //Initialize Block Entity Chunk Loader Helper
+            SculkHorde.eventHandler = new EventHandler(); //Initialize Event Handler
+
+
+
             if(SculkHorde.statisticsData == null)
             {
                 SculkHorde.statisticsData = new StatisticsData();
@@ -90,6 +95,7 @@ public class ForgeEventSubscriber {
         SculkHorde.raidHandler.raidTick(); // Tick the raid handler
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesHandler.tick();
+        SculkHorde.eventHandler.serverTick();
 
         SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests();
         SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();

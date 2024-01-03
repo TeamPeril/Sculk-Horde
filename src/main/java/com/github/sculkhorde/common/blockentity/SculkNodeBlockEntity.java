@@ -3,11 +3,13 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -54,7 +56,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     private long lastHeartBeat = System.currentTimeMillis();
     private long lastPopulationUpdate = 0;
     private final long populationUpdateIntervalMillis = TickUnits.convertMinutesToTicks(3);
-    public final int MAX_POPULATION = 100;
+    public final int MAX_POPULATION = 64;
     Collection<ISculkSmartEntity> sculkEntitiesBelongingToThisNode = new ArrayList<>();
 
     /** Accessors **/
@@ -114,7 +116,9 @@ public class SculkNodeBlockEntity extends BlockEntity
     public boolean isPopulationAtMax()
     {
         tryCalculateSculkEntityPopulationForThisNode();
-        return sculkEntitiesBelongingToThisNode.size() > MAX_POPULATION;
+        // Population will be 200 / number of nodes
+
+        return sculkEntitiesBelongingToThisNode.size() > (MAX_POPULATION);
     }
 
     public void tryCalculateSculkEntityPopulationForThisNode()
