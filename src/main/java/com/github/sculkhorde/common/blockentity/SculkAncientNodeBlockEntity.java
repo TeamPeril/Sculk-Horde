@@ -6,6 +6,8 @@ import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.core.gravemind.events.Event;
+import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
@@ -255,6 +257,17 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     {
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+
+        if(!SculkHorde.eventHandler.doesEventExist("ancient_node_spawn_phantom".hashCode()))
+        {
+            Event phantomEvent = SpawnPhantomsEvent.createEvent(level.dimension());
+            phantomEvent.setEventID("ancient_node_spawn_phantom".hashCode());
+            phantomEvent.setEventLocation(blockPos);
+            phantomEvent.setEventReocurring(true);
+            phantomEvent.setEXECUTION_COOLDOWN(TickUnits.convertHoursToTicks(1));
+            SculkHorde.eventHandler.addEvent(phantomEvent);
+        }
+
 
         // Initialize the infection handler
         if(blockEntity.infectionHandler == null)

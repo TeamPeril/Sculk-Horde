@@ -75,6 +75,7 @@ public class DevWand extends Item implements IForgeItem {
 		}
 
 		Event phantom = SpawnPhantomsEvent.createEvent(worldIn.dimension());
+		phantom.setEventID("dev_wand".hashCode());
 		phantom.setEventLocation(playerIn.blockPosition());
 		SculkHorde.eventHandler.addEvent(phantom);
 

@@ -59,8 +59,6 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
     public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
     public static final int STATE_RECIEVE_VIBRATION = 0;
-    public static final int STATE_ACTIVE = 1;
-    public static final int STATE_DEFEATED = 2;
 
     public SculkAncientNodeBlock(Properties prop) {
         super(prop);

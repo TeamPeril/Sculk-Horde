@@ -10,17 +10,17 @@ import java.util.HashMap;
 public class EventHandler {
 
     //Hash Map of Events using event IDs as keys
-    private HashMap<Integer, Event> events;
+    private HashMap<Long, Event> events;
 
     private long lastGameTimeOfExecution;
     private final long EXECUTION_COOLDOWN_TICKS = TickUnits.convertMinutesToTicks(1);
 
     public EventHandler()
     {
-        events = new HashMap<Integer, Event>();
+        events = new HashMap<Long, Event>();
     }
 
-    public HashMap<Integer, Event> getEvents()
+    public HashMap<Long, Event> getEvents()
     {
         return events;
     }
@@ -31,9 +31,14 @@ public class EventHandler {
         return (ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - lastGameTimeOfExecution) > EXECUTION_COOLDOWN_TICKS;
     }
 
-    public Event getEvent(int eventID)
+    public Event getEvent(long eventID)
     {
         return events.get(eventID);
+    }
+
+    public boolean doesEventExist(long eventID)
+    {
+        return events.containsKey(eventID);
     }
 
     public void addEvent(Event event)
@@ -46,13 +51,20 @@ public class EventHandler {
         }
     }
 
-    public void removeEvent(int eventID)
+    public void removeEvent(long eventID)
     {
         events.remove(eventID);
     }
 
     public void serverTick()
     {
+        if(!canExecute())
+        {
+            return;
+        }
+
+        lastGameTimeOfExecution = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
+
         for(Event event : events.values())
         {
             if(event.isToBeRemoved())
