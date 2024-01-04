@@ -1,11 +1,9 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -16,18 +14,14 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -57,12 +51,23 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static float BLAST_RESISTANCE = 0.5f;
 
+    public static final BooleanProperty IS_PREPARED = BooleanProperty.create("is_prepared");
+
+    public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
+
+    public static final int MAX_EXPERIENCE = 100;
+    public static final IntegerProperty EXPERIENCE_HARVESTED = IntegerProperty.create("experience_harvested", 0, MAX_EXPERIENCE);
+
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
      */
     public SoulHarvesterBlock(Properties prop) {
         super(prop);
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(IS_PREPARED, false)
+                .setValue(IS_ACTIVE, false)
+                .setValue(EXPERIENCE_HARVESTED, 0));
     }
 
     /**
@@ -74,6 +79,21 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
     }
 
     /** ~~~~~~~~ Properties ~~~~~~~~ **/
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context)
+    {
+        return this.defaultBlockState()
+                .setValue(IS_PREPARED, false)
+                .setValue(IS_ACTIVE, false)
+                .setValue(EXPERIENCE_HARVESTED, 0);
+
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(IS_PREPARED).add(IS_ACTIVE).add(EXPERIENCE_HARVESTED);
+    }
 
     /**
      * Determines the properties of a block.<br>
@@ -147,18 +167,18 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level levelIn, BlockState blockStateIn, BlockEntityType<T> blockEntityTypeIn) {
-        return createSoulHarvesterTicker(levelIn, blockEntityTypeIn, ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get());
-    }
-
-    @Nullable
-    protected static <T extends BlockEntity> BlockEntityTicker<T> createSoulHarvesterTicker(Level p_151988_, BlockEntityType<T> p_151989_, BlockEntityType<? extends SoulHarvesterBlockEntity> p_151990_) {
-        return p_151988_.isClientSide ? null : createTickerHelper(p_151989_, p_151990_, SoulHarvesterBlockEntity::serverTick);
+        if(levelIn.isClientSide()) {
+            return null;
+        } else {
+            return createTickerHelper(blockEntityTypeIn, ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get(), SoulHarvesterBlockEntity::serverTick);
+        }
     }
 
     /* Animation */
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
+
 }

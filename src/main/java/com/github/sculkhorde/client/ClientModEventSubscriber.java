@@ -2,6 +2,7 @@ package com.github.sculkhorde.client;
 
 import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
+import com.github.sculkhorde.client.renderer.block.SoulHarvesterBlockRenderer;
 import com.github.sculkhorde.client.renderer.entity.*;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.screen.SoulHarvesterScreen;
@@ -77,6 +78,8 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(ModEntities.INFESTATION_PURIFIER.get(), InfestationPurifierRenderer::new);
 
         event.registerBlockEntityRenderer(ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), context -> new SculkSummonerBlockRenderer());
+
+        event.registerBlockEntityRenderer(ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get(), context -> new SoulHarvesterBlockRenderer());
 
         event.registerEntityRenderer(ModEntities.SCULK_VINDICATOR.get(), SculkVindicatorRenderer::new);
 

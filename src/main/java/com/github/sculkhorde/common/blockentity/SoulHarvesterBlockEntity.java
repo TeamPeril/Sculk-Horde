@@ -1,29 +1,27 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.SculkSummonerBlock;
+import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModItems;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TargetParameters;
-import com.mojang.serialization.Dynamic;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.GameEventTags;
-import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,14 +32,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -56,15 +54,12 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
+
+import static com.github.sculkhorde.common.block.SoulHarvesterBlock.MAX_EXPERIENCE;
 
 
-public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider
-{
+public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity, GameEventListener.Holder<SoulHarvesterBlockEntity.SoulHarvesterListener> {
+    private final SoulHarvesterListener soulHarvesterListener;
     private AABB searchArea;
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
@@ -81,7 +76,10 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
      */
     public SoulHarvesterBlockEntity(BlockPos blockPos, BlockState blockState)
     {
-        super(ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), blockPos, blockState);
+        super(ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get(), blockPos, blockState);
+
+        this.soulHarvesterListener = new SoulHarvesterListener(blockState, new BlockPositionSource(blockPos));
+
         searchArea = EntityAlgorithms.getSearchAreaRectangle(this.getBlockPos().getX(), this.getBlockPos().getY(), this.getBlockPos().getZ(), 10, 5, 10);
         this.data = new ContainerData() {
             @Override
@@ -108,7 +106,44 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         };
     }
 
-    /** ~~~~~~~~ Accessors ~~~~~~~~ **/
+    /* ~~~~~~~~~~~~ Properties ~~~~~~~~~~~~ */
+
+    public boolean isPrepared()
+    {
+        return this.getBlockState().getValue(SoulHarvesterBlock.IS_PREPARED);
+    }
+
+    public void setPrepared(boolean active)
+    {
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_PREPARED, active), 3);
+    }
+
+    public boolean isActive()
+    {
+        return this.getBlockState().getValue(SoulHarvesterBlock.IS_ACTIVE);
+    }
+
+    public void setActive(boolean active)
+    {
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_ACTIVE, active), 3);
+    }
+
+    public int getExperienceHarvested()
+    {
+        return this.getBlockState().getValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED);
+    }
+
+    public void setExperienceHarvested(int experienceHarvested)
+    {
+        int newTotal = Math.min(experienceHarvested, MAX_EXPERIENCE);
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED, newTotal), 3);
+    }
+
+    public void increaseExperienceHarvested(int experienceHarvested)
+    {
+        int newTotal = Math.min(this.getExperienceHarvested() + experienceHarvested, MAX_EXPERIENCE);
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED, newTotal), 3);
+    }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -120,81 +155,16 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-    }
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-    }
-
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for(int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
-    }
-
-    @Override
     public Component getDisplayName() {
         return Component.translatable("block.sculkhorde.soul_harvester");
     }
 
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new SoulHarvesterMenu(pContainerId, pPlayerInventory, this, this.data);
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        pTag.put("inventory", itemHandler.serializeNBT());
-        pTag.putInt("soul_harvester.progress", progress);
-
-        super.saveAdditional(pTag);
-    }
-
-    @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
-        progress = pTag.getInt("soul_harvester.progress");
-    }
-
-    public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, SoulHarvesterBlockEntity pBlockEntity) {
-        if(pBlockEntity.hasRecipe()) {
-            pBlockEntity.increaseCraftingProgress();
-            setChanged(pLevel, pPos, pState);
-
-            if(pBlockEntity.hasProgressFinished()) {
-                pBlockEntity.craftItem();
-                pBlockEntity.resetProgress();
-            }
-        } else {
-            pBlockEntity.resetProgress();
-        }
-    }
-
-    private void resetProgress() {
-        progress = 0;
-    }
-
-    private void craftItem() {
-        ItemStack result = new ItemStack(ModItems.DORMANT_HEART_OF_THE_HORDE.get(), 1);
-        this.itemHandler.extractItem(INPUT_SLOT, 1, false);
-
-        this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
-                this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
-    }
-
-    private boolean hasRecipe() {
-        boolean hasCraftingItem = this.itemHandler.getStackInSlot(INPUT_SLOT).getItem() == ModItems.HEART_OF_THE_HORDE.get();
+    private boolean canStartCrafting() {
+        boolean hasCraftingItem = this.itemHandler.getStackInSlot(INPUT_SLOT).getItem() == ModItems.DORMANT_HEART_OF_THE_HORDE.get();
         ItemStack result = new ItemStack(ModItems.HEART_OF_THE_HORDE.get());
+        boolean isExperienceMaxed = this.getExperienceHarvested() >= MAX_EXPERIENCE;
 
-        return hasCraftingItem && canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem());
+        return hasCraftingItem && canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem()) && isExperienceMaxed;
     }
 
     private boolean canInsertItemIntoOutputSlot(Item item) {
@@ -211,5 +181,198 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     private void increaseCraftingProgress() {
         progress++;
+    }
+
+
+    /* ~~~~~~~~~~~~ Events ~~~~~~~~~~~~ */
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return new SoulHarvesterMenu(pContainerId, pPlayerInventory, this, this.data);
+    }
+
+    public void drops() {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        for(int i = 0; i < itemHandler.getSlots(); i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
+        }
+        Containers.dropContents(this.level, this.worldPosition, inventory);
+    }
+
+    public boolean isAnyItemInInputSlot() {
+        return !this.itemHandler.getStackInSlot(INPUT_SLOT).isEmpty();
+    }
+
+
+    public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, SoulHarvesterBlockEntity pBlockEntity) {
+
+        if(pBlockEntity.isAnyItemInInputSlot()) {
+            pBlockEntity.setPrepared(true);
+        } else {
+            pBlockEntity.setPrepared(false);
+        }
+
+        if(pBlockEntity.canStartCrafting()) {
+            pBlockEntity.setActive(true);
+            pBlockEntity.increaseCraftingProgress();
+            setChanged(pLevel, pPos, pState);
+
+            if(pBlockEntity.hasProgressFinished()) {
+                pBlockEntity.craftItem();
+                pBlockEntity.resetProgress();
+            }
+        } else {
+            pBlockEntity.setActive(false);
+            pBlockEntity.resetProgress();
+        }
+    }
+
+    private void resetProgress() {
+        progress = 0;
+    }
+
+    private void craftItem() {
+        ItemStack result = new ItemStack(ModItems.HEART_OF_THE_HORDE.get(), 1);
+        this.itemHandler.extractItem(INPUT_SLOT, 1, false);
+
+        this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
+                this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
+        this.setExperienceHarvested(0);
+    }
+
+    public SoulHarvesterListener getListener() {
+        return this.soulHarvesterListener;
+    }
+    public static class SoulHarvesterListener implements GameEventListener {
+        private final BlockState blockState;
+        private final PositionSource positionSource;
+
+        public SoulHarvesterListener(BlockState blockStateIn, PositionSource positionSourceIn) {
+            this.blockState = blockStateIn;
+            this.positionSource = positionSourceIn;
+        }
+
+        public PositionSource getListenerSource() {
+            return this.positionSource;
+        }
+
+        public int getListenerRadius() {
+            return 8;
+        }
+
+        public GameEventListener.DeliveryMode getDeliveryMode() {
+            return GameEventListener.DeliveryMode.BY_DISTANCE;
+        }
+
+        public boolean handleGameEvent(ServerLevel ServerLevelIn, GameEvent gameEventIn, GameEvent.Context contextIn, Vec3 sourcePosition) {
+
+            // Only execute for entity death events
+            if (gameEventIn != GameEvent.ENTITY_DIE) { return false; }
+            Entity killedEntitiy = contextIn.sourceEntity();
+
+            // Do not accept xp from non-living entities
+            if (!(killedEntitiy instanceof LivingEntity)) { return false; }
+
+            // Do not accept xp from sculk entities
+            if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) killedEntitiy)) { return false; }
+
+            LivingEntity livingentity = (LivingEntity)killedEntitiy;
+
+            if (livingentity.wasExperienceConsumed()) { return false; }
+
+            int experienceAmount = livingentity.getExperienceReward();
+
+            // Get block entity
+            SoulHarvesterBlockEntity blockEntity = (SoulHarvesterBlockEntity) ServerLevelIn.getBlockEntity(BlockPos.containing(this.positionSource.getPosition(ServerLevelIn).get()));
+            blockEntity.increaseExperienceHarvested(experienceAmount);
+
+            livingentity.skipDropExperience();
+            this.positionSource.getPosition(ServerLevelIn).ifPresent((positionVec3) -> {
+                this.bloom(ServerLevelIn, BlockPos.containing(positionVec3), this.blockState, ServerLevelIn.getRandom());
+            });
+
+            return true;
+
+        }
+        private void bloom(ServerLevel p_281501_, BlockPos p_281448_, BlockState p_281966_, RandomSource p_283606_) {
+            p_281501_.sendParticles(ParticleTypes.SCULK_SOUL, (double)p_281448_.getX() + 0.5D, (double)p_281448_.getY() + 1.15D, (double)p_281448_.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+            p_281501_.playSound((Player)null, p_281448_, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + p_283606_.nextFloat() * 0.4F);
+        }
+
+        private void tryAwardItSpreadsAdvancement(Level levelIn, LivingEntity livingEntityIn) {
+            LivingEntity livingentity = livingEntityIn.getLastHurtByMob();
+            if (livingentity instanceof ServerPlayer serverplayer) {
+                DamageSource damagesource = livingEntityIn.getLastDamageSource() == null ? levelIn.damageSources().playerAttack(serverplayer) : livingEntityIn.getLastDamageSource();
+                CriteriaTriggers.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverplayer, livingEntityIn, damagesource);
+            }
+
+        }
+    }
+
+    /* ~~~~~~~~~~~~ Data ~~~~~~~~~~~~ */
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    }
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        lazyItemHandler.invalidate();
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag pTag) {
+        pTag.put("inventory", itemHandler.serializeNBT());
+        pTag.putInt("soul_harvester.progress", progress);
+        super.saveAdditional(pTag);
+    }
+
+    @Override
+    public void load(CompoundTag pTag) {
+        super.load(pTag);
+        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
+        progress = pTag.getInt("soul_harvester.progress");
+    }
+
+    /* ~~~~~~~~~~~~Animation~~~~~~~~~~~~~~~~~~~~ */
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlayAndHold("idle");
+    private static final RawAnimation READYUP_ANIMATION = RawAnimation.begin().thenPlayAndHold("item_inside");
+    private static final RawAnimation ACTIVE_ANIMATION = RawAnimation.begin().thenLoop("active");
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, state ->
+        {
+            BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
+
+            if(level.getBlockEntity(worldPosition) == null || level.getBlockEntity(worldPosition).getType() != ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get())
+            {
+                return null;
+            }
+
+            if(blockState.getValue(SoulHarvesterBlock.IS_ACTIVE))
+            {
+                return state.setAndContinue(ACTIVE_ANIMATION);
+            }
+            else if(blockState.getValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED) > 0)
+            {
+                return state.setAndContinue(READYUP_ANIMATION);
+            }
+            else
+            {
+                return state.setAndContinue(IDLE_ANIMATION);
+            }
+        }
+        ));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 }
