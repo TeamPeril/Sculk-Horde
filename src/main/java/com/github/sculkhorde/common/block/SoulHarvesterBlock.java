@@ -16,6 +16,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -108,16 +109,13 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
         {
             return InteractionResult.sidedSuccess(pLevel.isClientSide());
         }
-            /*
-            BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if(entity instanceof SoulHarvesterBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (SoulHarvesterBlockEntity)entity, pPos);
-            } else {
-                throw new IllegalStateException("Our Container provider is missing!");
-            }
-             */
+
         BlockEntity entity = pLevel.getBlockEntity(pPos);
-        //entity.
+        if(entity instanceof SoulHarvesterBlockEntity) {
+            NetworkHooks.openScreen(((ServerPlayer)pPlayer), (SoulHarvesterBlockEntity)entity, pPos);
+        } else {
+            throw new IllegalStateException("Our Container provider is missing!");
+        }
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
@@ -139,27 +137,22 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
         tooltip.add(Component.translatable("tooltip.sculkhorde.soul_harvester")); //Text that displays if not holding shift
 
     }
-
-
-    // Block Entity Related
-
-    @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-
-        if(level.isClientSide)
-        {
-            return null;
-        }
-
-
-        return createTickerHelper(blockEntityType, ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get(),
-                (pLevel1, pPos, pState1, pBlockEntity) -> pBlockEntity.tick(pLevel1, pPos, pState1));
-    }
+    
 
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
-        return new SculkSummonerBlockEntity(blockPos, state);
+        return new SoulHarvesterBlockEntity(blockPos, state);
+    }
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level levelIn, BlockState blockStateIn, BlockEntityType<T> blockEntityTypeIn) {
+        return createSoulHarvesterTicker(levelIn, blockEntityTypeIn, ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get());
+    }
+
+    @Nullable
+    protected static <T extends BlockEntity> BlockEntityTicker<T> createSoulHarvesterTicker(Level p_151988_, BlockEntityType<T> p_151989_, BlockEntityType<? extends SoulHarvesterBlockEntity> p_151990_) {
+        return p_151988_.isClientSide ? null : createTickerHelper(p_151989_, p_151990_, SoulHarvesterBlockEntity::serverTick);
     }
 
     /* Animation */

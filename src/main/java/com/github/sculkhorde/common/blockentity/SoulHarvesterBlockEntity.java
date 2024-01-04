@@ -164,17 +164,17 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         progress = pTag.getInt("soul_harvester.progress");
     }
 
-    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-        if(hasRecipe()) {
-            increaseCraftingProgress();
+    public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, SoulHarvesterBlockEntity pBlockEntity) {
+        if(pBlockEntity.hasRecipe()) {
+            pBlockEntity.increaseCraftingProgress();
             setChanged(pLevel, pPos, pState);
 
-            if(hasProgressFinished()) {
-                craftItem();
-                resetProgress();
+            if(pBlockEntity.hasProgressFinished()) {
+                pBlockEntity.craftItem();
+                pBlockEntity.resetProgress();
             }
         } else {
-            resetProgress();
+            pBlockEntity.resetProgress();
         }
     }
 
