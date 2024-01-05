@@ -1,10 +1,16 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +28,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -55,8 +62,8 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
 
     public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
 
-    public static final int MAX_EXPERIENCE = 100;
-    public static final IntegerProperty EXPERIENCE_HARVESTED = IntegerProperty.create("experience_harvested", 0, MAX_EXPERIENCE);
+    public static final int MAX_HEALTH = 1000;
+    public static final IntegerProperty HEALTH_HARVESTED = IntegerProperty.create("health_harvested", 0, MAX_HEALTH);
 
     /**
      * The Constructor that takes in properties
@@ -67,7 +74,7 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(IS_PREPARED, false)
                 .setValue(IS_ACTIVE, false)
-                .setValue(EXPERIENCE_HARVESTED, 0));
+                .setValue(HEALTH_HARVESTED, 0));
     }
 
     /**
@@ -86,13 +93,13 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
         return this.defaultBlockState()
                 .setValue(IS_PREPARED, false)
                 .setValue(IS_ACTIVE, false)
-                .setValue(EXPERIENCE_HARVESTED, 0);
+                .setValue(HEALTH_HARVESTED, 0);
 
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(IS_PREPARED).add(IS_ACTIVE).add(EXPERIENCE_HARVESTED);
+        pBuilder.add(IS_PREPARED).add(IS_ACTIVE).add(HEALTH_HARVESTED);
     }
 
     /**
@@ -116,6 +123,29 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity instanceof SoulHarvesterBlockEntity) {
                 ((SoulHarvesterBlockEntity) blockEntity).drops();
+
+                // Get the health harvested
+                int healthHarvested = ((SoulHarvesterBlockEntity) blockEntity).getHealthHarvested();
+
+                //Spawn 20 Infector Cursors and divide the mass evenly between them
+                int massPerCursor = healthHarvested / 10;
+
+                BlockPos groundPosition = BlockAlgorithms.getGroundBlockPos(pLevel, pPos, pPos.getY());
+
+                for (int i = 0; i < 10; i++) {
+
+                    Vec3 randomParticlePosition = new Vec3(groundPosition.getX() + pLevel.getRandom().nextDouble(), groundPosition.getY() + pLevel.getRandom().nextDouble(), groundPosition.getZ() + pLevel.getRandom().nextDouble());
+                    ((ServerLevel) pLevel).sendParticles(ParticleTypes.SCULK_SOUL, randomParticlePosition.x, randomParticlePosition.y, randomParticlePosition.z, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+                    pLevel.playSound(null, pPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + pLevel.getRandom().nextFloat() * 0.4F);
+
+                    //Spawn Infector Cursor
+                    CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(pLevel);
+                    cursor.setMaxRange(100);
+                    cursor.setMaxTransformations(massPerCursor);
+                    cursor.setTickIntervalMilliseconds(100);
+                    cursor.setPos(groundPosition.getX(), groundPosition.getY(), groundPosition.getZ());
+                    pLevel.addFreshEntity(cursor);
+                }
             }
         }
 

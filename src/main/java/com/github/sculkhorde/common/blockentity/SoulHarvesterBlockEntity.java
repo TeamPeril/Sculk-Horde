@@ -1,11 +1,11 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.block.SculkSummonerBlock;
+import com.github.sculkhorde.common.advancement.SoulHarvesterTrigger;
 import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -32,7 +32,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -55,7 +54,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-import static com.github.sculkhorde.common.block.SoulHarvesterBlock.MAX_EXPERIENCE;
+import static com.github.sculkhorde.common.block.SoulHarvesterBlock.MAX_HEALTH;
 
 
 public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity, GameEventListener.Holder<SoulHarvesterBlockEntity.SoulHarvesterListener> {
@@ -69,7 +68,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     protected final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 78;
+    private int maxProgress = 150;
 
     /**
      * The Constructor that takes in properties
@@ -128,21 +127,21 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_ACTIVE, active), 3);
     }
 
-    public int getExperienceHarvested()
+    public int getHealthHarvested()
     {
-        return this.getBlockState().getValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED);
+        return this.getBlockState().getValue(SoulHarvesterBlock.HEALTH_HARVESTED);
     }
 
-    public void setExperienceHarvested(int experienceHarvested)
+    public void setHealthHarvested(int amount)
     {
-        int newTotal = Math.min(experienceHarvested, MAX_EXPERIENCE);
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED, newTotal), 3);
+        int newTotal = Math.min(amount, MAX_HEALTH);
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.HEALTH_HARVESTED, newTotal), 3);
     }
 
-    public void increaseExperienceHarvested(int experienceHarvested)
+    public void increaseHealthHarvested(int amount)
     {
-        int newTotal = Math.min(this.getExperienceHarvested() + experienceHarvested, MAX_EXPERIENCE);
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED, newTotal), 3);
+        int newTotal = Math.min(this.getHealthHarvested() + amount, MAX_HEALTH);
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.HEALTH_HARVESTED, newTotal), 3);
     }
 
     @Override
@@ -162,7 +161,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     private boolean canStartCrafting() {
         boolean hasCraftingItem = this.itemHandler.getStackInSlot(INPUT_SLOT).getItem() == ModItems.DORMANT_HEART_OF_THE_HORDE.get();
         ItemStack result = new ItemStack(ModItems.HEART_OF_THE_HORDE.get());
-        boolean isExperienceMaxed = this.getExperienceHarvested() >= MAX_EXPERIENCE;
+        boolean isExperienceMaxed = this.getHealthHarvested() >= MAX_HEALTH;
 
         return hasCraftingItem && canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem()) && isExperienceMaxed;
     }
@@ -238,7 +237,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
         this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
                 this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
-        this.setExperienceHarvested(0);
+        this.setHealthHarvested(0);
     }
 
     public SoulHarvesterListener getListener() {
@@ -279,32 +278,31 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
             LivingEntity livingentity = (LivingEntity)killedEntitiy;
 
-            if (livingentity.wasExperienceConsumed()) { return false; }
-
-            int experienceAmount = livingentity.getExperienceReward();
+            int healthHarvested = (int) livingentity.getMaxHealth();
 
             // Get block entity
             SoulHarvesterBlockEntity blockEntity = (SoulHarvesterBlockEntity) ServerLevelIn.getBlockEntity(BlockPos.containing(this.positionSource.getPosition(ServerLevelIn).get()));
-            blockEntity.increaseExperienceHarvested(experienceAmount);
+            blockEntity.increaseHealthHarvested(healthHarvested);
 
             livingentity.skipDropExperience();
             this.positionSource.getPosition(ServerLevelIn).ifPresent((positionVec3) -> {
-                this.bloom(ServerLevelIn, BlockPos.containing(positionVec3), this.blockState, ServerLevelIn.getRandom());
+                this.spawnCoolParticles(ServerLevelIn, BlockPos.containing(positionVec3), this.blockState, ServerLevelIn.getRandom());
             });
+
+            tryAwardAdvancement(ServerLevelIn, livingentity);
 
             return true;
 
         }
-        private void bloom(ServerLevel p_281501_, BlockPos p_281448_, BlockState p_281966_, RandomSource p_283606_) {
+        private void spawnCoolParticles(ServerLevel p_281501_, BlockPos p_281448_, BlockState p_281966_, RandomSource p_283606_) {
             p_281501_.sendParticles(ParticleTypes.SCULK_SOUL, (double)p_281448_.getX() + 0.5D, (double)p_281448_.getY() + 1.15D, (double)p_281448_.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
             p_281501_.playSound((Player)null, p_281448_, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + p_283606_.nextFloat() * 0.4F);
         }
 
-        private void tryAwardItSpreadsAdvancement(Level levelIn, LivingEntity livingEntityIn) {
+        private void tryAwardAdvancement(Level levelIn, LivingEntity livingEntityIn) {
             LivingEntity livingentity = livingEntityIn.getLastHurtByMob();
             if (livingentity instanceof ServerPlayer serverplayer) {
-                DamageSource damagesource = livingEntityIn.getLastDamageSource() == null ? levelIn.damageSources().playerAttack(serverplayer) : livingEntityIn.getLastDamageSource();
-                CriteriaTriggers.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverplayer, livingEntityIn, damagesource);
+                AdvancementUtil.giveAdvancementToPlayer(serverplayer, SoulHarvesterTrigger.INSTANCE);
             }
 
         }
@@ -359,7 +357,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
             {
                 return state.setAndContinue(ACTIVE_ANIMATION);
             }
-            else if(blockState.getValue(SoulHarvesterBlock.EXPERIENCE_HARVESTED) > 0)
+            else if(blockState.getValue(SoulHarvesterBlock.HEALTH_HARVESTED) > 0)
             {
                 return state.setAndContinue(READYUP_ANIMATION);
             }

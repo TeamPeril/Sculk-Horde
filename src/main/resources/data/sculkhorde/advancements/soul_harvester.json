@@ -1,0 +1,18 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:soul_harvester"
+    },
+    "title": "Soul Stealer",
+    "description": "Harvest Souls using the soul harvester.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:sculk_horde_start",
+  "criteria": {
+    "soul_harvester": {
+      "trigger": "sculkhorde:soul_harvester"
+    }
+  }
+}

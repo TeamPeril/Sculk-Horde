@@ -42,6 +42,10 @@ public final class AdvancementUtil {
         }
     }
 
+    public static void giveAdvancementToPlayer(ServerPlayer player, CustomCriterionTrigger trigger) {
+        trigger.trigger(player);
+    }
+
 
     public static void advancementHandlingTick(ServerLevel level)
     {
