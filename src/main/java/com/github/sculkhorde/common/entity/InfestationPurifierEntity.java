@@ -186,13 +186,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
             return;
         }
 
-        // If targetFindFails is greater than MAX_TARGET_FIND_FAILS, then die and drop item
-        if(targetFindFails >= MAX_TARGET_FIND_FAILS)
-        {
-            this.remove(RemovalReason.DISCARDED);
-            this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
-        }
-
         Random random = new Random();
         if (random.nextInt(100) == 0)
         {
@@ -314,9 +307,14 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (!this.level().isClientSide) {
             this.remove(RemovalReason.DISCARDED);
-            this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void onRemovedFromWorld() {
+        if(level().isClientSide) { return; }
+        this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
     }
 
     protected SoundEvent getAmbientSound() {
