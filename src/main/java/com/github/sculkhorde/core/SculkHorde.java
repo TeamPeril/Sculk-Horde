@@ -79,6 +79,8 @@ public class SculkHorde {
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
 
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
+
+        ModRecipes.register(bus); //Load Recipes
     }
 
     public static boolean isDebugMode() {

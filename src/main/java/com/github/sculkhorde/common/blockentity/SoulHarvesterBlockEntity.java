@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SoulHarvesterTrigger;
 import com.github.sculkhorde.common.block.SoulHarvesterBlock;
+import com.github.sculkhorde.common.recipe.SoulHarvestingRecipe;
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModItems;
@@ -53,6 +54,8 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
+
+import java.util.Optional;
 
 import static com.github.sculkhorde.common.block.SoulHarvesterBlock.MAX_HEALTH;
 
@@ -159,11 +162,23 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     private boolean canStartCrafting() {
-        boolean hasCraftingItem = this.itemHandler.getStackInSlot(INPUT_SLOT).getItem() == ModItems.DORMANT_HEART_OF_THE_HORDE.get();
-        ItemStack result = new ItemStack(ModItems.HEART_OF_THE_HORDE.get());
         boolean isExperienceMaxed = this.getHealthHarvested() >= MAX_HEALTH;
+        Optional<SoulHarvestingRecipe> recipe = getCurrentRecipe();
 
-        return hasCraftingItem && canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem()) && isExperienceMaxed;
+        if(recipe.isEmpty()) { return false; }
+
+        ItemStack result = recipe.get().getResultItem(null);
+
+        return recipe.isPresent() && canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem()) && isExperienceMaxed;
+    }
+
+    private Optional<SoulHarvestingRecipe> getCurrentRecipe() {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        for(int i = 0; i < itemHandler.getSlots(); i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
+        }
+
+        return this.level.getRecipeManager().getRecipeFor(SoulHarvestingRecipe.Type.INSTANCE, inventory, level);
     }
 
     private boolean canInsertItemIntoOutputSlot(Item item) {
@@ -232,11 +247,14 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     private void craftItem() {
-        ItemStack result = new ItemStack(ModItems.HEART_OF_THE_HORDE.get(), 1);
+        Optional<SoulHarvestingRecipe> recipe = getCurrentRecipe();
+        ItemStack result = recipe.get().getResultItem(null);
+
         this.itemHandler.extractItem(INPUT_SLOT, 1, false);
 
         this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
                 this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
+
         this.setHealthHarvested(0);
     }
 

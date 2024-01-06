@@ -1,0 +1,12 @@
+{
+  "type": "sculkhorde:soul_harvesting",
+  "ingredients" : [
+    {
+      "item": "sculkhorde:dormant_heart_of_the_horde"
+    }
+  ],
+  "output": {
+    "count": 1,
+    "item": "sculkhorde:heart_of_the_horde"
+  }
+}
