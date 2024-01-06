@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.19.4-0.8.0'
+version = '1.19.4-0.8.1'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
