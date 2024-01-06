@@ -71,7 +71,9 @@ public class EventHandler {
             {
                 removeEvent(event.getEventID());
                 SculkHorde.LOGGER.info("Removed event " + event.getClass() + " with ID: " + event.getEventID());
-                continue;
+
+                // WE CANNOT CONTINUE, WE NEED TO RETURN AND START OVER SO WE DON'T GET A CONCURRENT MODIFICATION EXCEPTION
+                return;
             }
 
             if(!event.isEventActive() && event.canStart())

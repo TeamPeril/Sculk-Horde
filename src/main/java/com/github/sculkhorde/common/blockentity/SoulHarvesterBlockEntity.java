@@ -68,7 +68,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     protected final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 150;
+    private int maxProgress = 300;
 
     /**
      * The Constructor that takes in properties
