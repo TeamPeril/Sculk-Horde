@@ -80,13 +80,13 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             return InteractionResult.SUCCESS;
         }
 
-        boolean ItemIsPureSouls = playerIn.getMainHandItem().is(ModItems.PURE_SOULS.get());
-        boolean ItemIsCryingSouls = playerIn.getMainHandItem().is(ModItems.CRYING_SOULS.get());
+        boolean IsHordeCureItem = playerIn.getMainHandItem().is(ModItems.PURE_SOULS.get()) || (playerIn.getMainHandItem().is(ModItems.HEART_OF_PURITY.get()) && ModConfig.isNewEndingEnabled());
+        boolean IsHordeRevivalItem = playerIn.getMainHandItem().is(ModItems.CRYING_SOULS.get()) || (playerIn.getMainHandItem().is(ModItems.HEART_OF_THE_HORDE.get()) && ModConfig.isNewEndingEnabled());
 
 
-        if(ItemIsPureSouls && !savedData.isHordeDefeated())
+        if(IsHordeCureItem && !savedData.isHordeDefeated())
         {
-            if(!areAllNodesDestroyed())
+            if(!areAllNodesDestroyed() && !ModConfig.isNewEndingEnabled())
             {
                 playerIn.displayClientMessage(Component.literal("The Ancient Sculk Node cannot be destroyed until all remaining Sculk Nodes are!"), true);
                 level.playSound(playerIn, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.MASTER);
@@ -102,7 +102,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             return InteractionResult.CONSUME;
         }
 
-        if(ItemIsCryingSouls && !savedData.isHordeActive())
+        if(IsHordeRevivalItem && !savedData.isHordeActive())
         {
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
             return InteractionResult.CONSUME;

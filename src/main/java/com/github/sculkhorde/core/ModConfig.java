@@ -43,6 +43,8 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> new_ending_enabled;
+
         public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
@@ -90,6 +92,7 @@ public class ModConfig {
 
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
+            new_ending_enabled = builder.comment("Should the new ending be enabled? (Default false)").define("new_ending_enabled",false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");
@@ -99,6 +102,13 @@ public class ModConfig {
             sculk_raid_no_raid_zone_duration_minutes = builder.comment("How long should the no raid zone last at a location in minutes? This occurs when a raid succeeds or fails so that the same location is not raided for a while. (Default 480)").defineInRange("sculk_raid_no_raid_zone_duration_minutes", 480 , 0, Integer.MAX_VALUE);
             builder.pop();
         }
+    }
+
+    public static boolean isExperimentalFeaturesEnabled() {
+        return SERVER.experimental_features_enabled.get();
+    }
+    public static boolean isNewEndingEnabled() {
+        return SERVER.new_ending_enabled.get() && isExperimentalFeaturesEnabled();
     }
 
     public static class DataGen {

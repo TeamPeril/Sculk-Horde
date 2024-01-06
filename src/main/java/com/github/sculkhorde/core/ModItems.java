@@ -97,21 +97,28 @@ public class ModItems {
 	public static final RegistryObject<Item> CHUNK_O_BRAIN = ITEMS.register("chunk_o_brain", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.chunk_o_brain"));
+			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
 		}
 	});
 
 	public static final RegistryObject<Item> DORMANT_HEART_OF_THE_HORDE = ITEMS.register("dormant_heart_of_the_horde", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.dormant_heart_of_the_horde"));
+			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
 		}
 	});
 
 	public static final RegistryObject<Item> HEART_OF_THE_HORDE = ITEMS.register("heart_of_the_horde", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.heart_of_the_horde"));
+			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
+		}
+	});
+
+	public static final RegistryObject<Item> HEART_OF_PURITY = ITEMS.register("heart_of_purity", () -> new Item(new Item.Properties()){
+		@Override
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
 		}
 	});
 

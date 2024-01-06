@@ -1,6 +1,7 @@
 {
   "itemGroup.sculkhorde_tab": "Sculk Horde",
 
+  "tooltip.sculkhorde.in_development": "This Item is In Development. It is not meant to be used in survival. It is only meant for testing and development purposes.",
   "item.sculkhorde.dev_wand": "Dev Wand",
   "item.sculkhorde.dev_conversion_wand": "Dev Conversion Wand",
   "tooltip.sculkhorde.dev_conversion_wand": "Converts blocks to infected variants.",
@@ -107,6 +108,8 @@
   "tooltip.sculkhorde.dormant_heart_of_the_horde": "A dormant heart.",
   "item.sculkhorde.heart_of_the_horde": "Heart of the Horde",
   "tooltip.sculkhorde.heart_of_the_horde": "The heart of the Sculk Horde.",
+  "item.sculkhorde.heart_of_purity": "Heart of Purity",
+  "tooltip.sculkhorde.heart_of_purity": "WIP",
 
   "block.sculkhorde.infestation_ward_block": "Infestation Ward Block",
   "tooltip.sculkhorde.infestation_ward_block": "A block that prevents Sculk Infestation from spreading to any of it's neighboring blocks. This includes diagonals.",
