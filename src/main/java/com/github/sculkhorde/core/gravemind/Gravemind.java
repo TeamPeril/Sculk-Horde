@@ -172,7 +172,7 @@ public class Gravemind
             return;
         }
 
-        boolean isSenderTypeSummoner = context.sender == ReinforcementRequest.senderType.SculkCocoon;
+        boolean isSenderTypeSummoner = context.sender == ReinforcementRequest.senderType.Summoner;
         boolean isThereAtLeastOneSpawnPoint = context.positions.length > 0;
         boolean isThereSculkNodesInExistence = SculkHorde.savedData.getNodeEntries().size() > 0;
 

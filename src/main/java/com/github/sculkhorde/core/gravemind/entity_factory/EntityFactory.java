@@ -37,11 +37,6 @@ public class EntityFactory {
     //The List We Store all the entries in
     private static ArrayList<EntityFactoryEntry> entries;
 
-    //Used to stragecically select units
-    public enum StrategicValues {Infector, Melee, Ranged}
-    //TODO: Rename StrategicValues to be more descriptive
-
-    //Used to Randomly Select Units
     private static Random rng;
 
     /**
@@ -53,16 +48,18 @@ public class EntityFactory {
         rng = new Random();
     }
 
-    /**
-     * Adds an entry to the entries Array List
-     * @param entity The entity to add
-     * @param cost The cost of spawning the entity
-     */
-    public EntityFactoryEntry addEntry(EntityType entity, int cost, StrategicValues value, Gravemind.evolution_states minEvolution)
+    private EntityFactoryEntry addEntryToFactory(EntityFactoryEntry entry)
     {
-        EntityFactoryEntry entry = new EntityFactoryEntry(entity, cost, value, minEvolution);
         entries.add(entry);
         return entry;
+    }
+
+    public void addEntriesToFactory( EntityFactoryEntry[] entityFactoryEntries)
+    {
+        for(EntityFactoryEntry entry : entityFactoryEntries)
+        {
+            addEntryToFactory(entry);
+        }
     }
 
 

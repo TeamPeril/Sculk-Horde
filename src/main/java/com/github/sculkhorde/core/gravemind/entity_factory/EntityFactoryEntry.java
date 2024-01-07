@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 
@@ -18,67 +19,93 @@ import javax.annotation.Nullable;
  */
 public class EntityFactoryEntry {
 
+    public enum StrategicValues {Infector, Melee, Ranged, Boss, Support, Tank}
+
     private int orderCost = 0;
     private EntityType entity = null;
     private int limit = Integer.MAX_VALUE; // The limit of how many of this entity can be spawned
-    public EntityFactory.StrategicValues strategicValue = EntityFactory.StrategicValues.Melee;
-    public Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
+    private  StrategicValues[] strategicValues = new StrategicValues[]{};
 
-    public EntityFactoryEntry(EntityType entity, int orderCost, EntityFactory.StrategicValues value, Gravemind.evolution_states minEvolution)
+    private ReinforcementRequest.senderType explicitDeniedSenders[] = new ReinforcementRequest.senderType[]{};
+    private Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
+
+    public EntityFactoryEntry(EntityType entity)
     {
         this.entity = entity;
-        this.orderCost = orderCost;
-        this.strategicValue = value;
-        this.minEvolutionRequired = minEvolution;
+    }
+
+    public EntityType<Mob> getEntity()
+    {
+        return entity;
     }
 
     // Getters and Setters
+    public void setCost(int cost)
+    {
+        orderCost = cost;
+    }
 
-    /**
-     * Sets the cost of spawning this entity
-     * @return cost
-     */
     public int getCost()
     {
         return orderCost;
     }
 
-    /**
-     * Sets the limit of how many of this entity can be spawned
-     * @param limit The limit of how many of this entity can be spawned
-     */
     public void setLimit(int limit)
     {
         this.limit = limit;
     }
 
-    /**
-     * Returns the limit of how many of this entity can be spawned
-     * @return limit
-     */
     public int getLimit()
     {
         return limit;
     }
 
-
-    /**
-     * Returns the entity type
-     * @return entity
-     */
-    @Nullable
-    public EntityType getEntity()
+    public void addStrategicValues(StrategicValues... values)
     {
-        return entity;
+        strategicValues = values;
     }
 
-    /**
-     * Returns the strategic value of this entity
-     * @return strategicValue
-     */
-    public EntityFactory.StrategicValues getCategory()
+    public StrategicValues[] getStrategicValues()
     {
-        return strategicValue;
+        return strategicValues;
+    }
+
+    public StrategicValues getFirstStrategicValue()
+    {
+        return strategicValues[0];
+    }
+
+    public void setExplicitDeniedSenders(ReinforcementRequest.senderType... deniedSenders)
+    {
+        explicitDeniedSenders = deniedSenders;
+    }
+
+    public ReinforcementRequest.senderType[] getExplicitDeniedSenders()
+    {
+        return explicitDeniedSenders;
+    }
+
+    public void setMinEvolutionRequired(Gravemind.evolution_states minEvolutionRequired)
+    {
+        this.minEvolutionRequired = minEvolutionRequired;
+    }
+
+    public Gravemind.evolution_states getMinEvolutionRequired()
+    {
+        return minEvolutionRequired;
+    }
+
+    public boolean isSenderExplicitlyDenied(ReinforcementRequest.senderType sender)
+    {
+        for(ReinforcementRequest.senderType deniedSender : explicitDeniedSenders)
+        {
+            if(deniedSender == sender)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isEntryAppropriateMinimalCheck()
@@ -95,26 +122,48 @@ public class EntityFactoryEntry {
         return true;
     }
 
+    public boolean doesEntityContainAnyRequiredStrategicValues(StrategicValues[] requiredValues)
+    {
+        for(StrategicValues value : requiredValues)
+        {
+            for(StrategicValues entityValue : strategicValues)
+            {
+                if(entityValue == value)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public boolean isEntryAppropriate(ReinforcementRequest context)
     {
         if(context == null)
         {
             return false;
         }
-        else if(context.budget != -1 && context.budget < orderCost)
+
+        boolean isOverBudget = getCost() > context.budget;
+        boolean doesHordeNotHaveEnoughMass = getCost() <= SculkHorde.savedData.getSculkAccumulatedMass();
+        boolean isSenderExplicitlyDenied = isSenderExplicitlyDenied(context.sender);
+        boolean isEvolutionStateNotMet = !SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired);
+        boolean doesEntityNotContainAnyRequiredStrategicValues = !doesEntityContainAnyRequiredStrategicValues((StrategicValues[]) context.approvedMobTypes.toArray());
+
+        if(doesHordeNotHaveEnoughMass || isOverBudget)
         {
             return false;
         }
-        else if(!context.approvedMobTypes.contains(getCategory()) && !context.approvedMobTypes.isEmpty())
+        else if(doesEntityNotContainAnyRequiredStrategicValues && !context.approvedMobTypes.isEmpty())
         {
             return false;
         }
-        else if(!SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired))
+        else if(isEvolutionStateNotMet)
         {
             return false;
         }
-        // These sculk spore spewers get spammed to hell if they spawn in sculk masses
-        else if(context.sender == ReinforcementRequest.senderType.SculkMass && getEntity() == ModEntities.SCULK_SPORE_SPEWER.get())
+        else if(isSenderExplicitlyDenied)
         {
             return false;
         }
@@ -131,6 +180,6 @@ public class EntityFactoryEntry {
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
         SculkHorde.statisticsData.incrementTotalUnitsSpawned();
-        return (Mob) getEntity().spawn(level, pos, MobSpawnType.EVENT);
+        return getEntity().spawn(level, pos, MobSpawnType.EVENT);
     }
 }
