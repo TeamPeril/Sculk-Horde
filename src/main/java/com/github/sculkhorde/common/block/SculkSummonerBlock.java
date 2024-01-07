@@ -48,20 +48,6 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.5f;
-
-    /**
-     *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
-     *
-     *  -1 = All<br>
-     *  0 = Wood<br>
-     *  1 = Stone<br>
-     *  2 = Iron<br>
-     *  3 = Diamond<br>
-     *  4 = Netherite
-     */
-    public static int HARVEST_LEVEL = -1;
-
-    public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
     public static final BooleanProperty VIBRATION_COOLDOWN = BooleanProperty.create("vibration_cooldown");
     /**
      * The Constructor that takes in properties
@@ -70,7 +56,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public SculkSummonerBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(IS_ACTIVE, false).setValue(VIBRATION_COOLDOWN, false));
+                .setValue(VIBRATION_COOLDOWN, false));
     }
 
     /**
@@ -107,13 +93,12 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(IS_ACTIVE, false)
                 .setValue(VIBRATION_COOLDOWN, false);
 
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(IS_ACTIVE).add(VIBRATION_COOLDOWN);
+        pBuilder.add(VIBRATION_COOLDOWN);
     }
 
     /**
@@ -168,7 +153,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
         }
 
 
-        if(blockState.getValue(VIBRATION_COOLDOWN) || !blockState.getValue(IS_ACTIVE))
+        if(blockState.getValue(VIBRATION_COOLDOWN))
         {
             return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::tickOnCoolDown);
         }

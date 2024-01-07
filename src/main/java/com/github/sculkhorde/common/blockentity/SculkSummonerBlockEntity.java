@@ -8,6 +8,7 @@ import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -56,11 +57,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     //possibleAggressorTargets - A list of nearby targets which should be considered hostile.
     private List<LivingEntity> possibleAggressorTargets;
     private long lastTimeSinceVibrationRecieve = System.currentTimeMillis();
-    private long timeElapsedSinceVibrationRecieve = 0;
-    //Used to track the last time this tile was ticked
-    private long lastTimeOfSpawn = System.currentTimeMillis();
-    private long timeElapsedSinceSpawn = 0;
-    private final long spawningCoolDownMilis = TimeUnit.SECONDS.toMillis(20);
+    private long lastGameTimeOfVibrationRecieve = 0;
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
     private final TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
@@ -84,21 +81,13 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
-    private boolean isActive()
+    private boolean isVibrationCooldownOver()
     {
-        return getBlockState().getValue(SculkSummonerBlock.IS_ACTIVE);
+        return level.getGameTime() - lastGameTimeOfVibrationRecieve > TickUnits.convertSecondsToTicks(15);
     }
 
-    private void setActive(boolean value)
+    private boolean isBlockStateVibrationCooldownTrue()
     {
-        assert level != null;
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.IS_ACTIVE, value));
-    }
-
-
-    private boolean isOnVibrationCooldown()
-    {
-        assert level != null;
         return getBlockState().getValue(SculkSummonerBlock.VIBRATION_COOLDOWN);
     }
 
@@ -112,16 +101,6 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
 
     /** ~~~~~~~~ Boolean ~~~~~~~~  **/
-
-    /**
-     * Returns true if the time elapsed since the last alert is less than the length of the alert period.
-     * False otherwise
-     * @return True/False
-     */
-    public boolean hasSpawningCoolDownEnded()
-    {
-        return (timeElapsedSinceSpawn >= spawningCoolDownMilis);
-    }
 
 
     /**
@@ -178,12 +157,6 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     }
 
-    public void calculateTimeElapsed()
-    {
-        timeElapsedSinceSpawn = System.currentTimeMillis() - lastTimeOfSpawn;
-        timeElapsedSinceVibrationRecieve = System.currentTimeMillis() - lastTimeSinceVibrationRecieve;
-    }
-
     public void spawnReinforcements()
     {
         ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, this.getBlockPos().getX() + 0.5D, this.getBlockPos().getY() + 1.15D, this.getBlockPos().getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
@@ -210,11 +183,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
         if (this.possibleAggressorTargets.size() != 0) {
             this.request.is_aggressor_nearby = true;
-            this.lastTimeOfSpawn = System.currentTimeMillis();
         }
         if (this.possibleLivingEntityTargets.size() != 0) {
             this.request.is_non_sculk_mob_nearby = true;
-            this.lastTimeOfSpawn = System.currentTimeMillis();
         }
 
         //If there is some sort of enemy near by, request reinforcement
@@ -241,28 +212,19 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         if(blockEntity.areAnyTargetsNearBy(blockPos, blockEntity))
         {
             blockEntity.spawnReinforcements();
-            blockEntity.setActive(false);
         }
         blockEntity.setVibrationCooldown(true);
-        blockEntity.lastTimeSinceVibrationRecieve = System.currentTimeMillis();
+        blockEntity.lastGameTimeOfVibrationRecieve = level.getGameTime();
     }
 
     public static void tickOnCoolDown(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity) {
         if (level == null || level.isClientSide) {
             return;
         }
-
-        blockEntity.calculateTimeElapsed();
         
-        if(blockEntity.timeElapsedSinceVibrationRecieve >= TimeUnit.SECONDS.toMillis(10))
+        if(blockEntity.isVibrationCooldownOver())
         {
             blockEntity.setVibrationCooldown(false);
-        }
-
-
-        if (blockEntity.hasSpawningCoolDownEnded() && !blockEntity.isActive())
-        {
-            blockEntity.setActive(true);
         }
     }
 
@@ -309,9 +271,11 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        return BlockInfestationHelper.isCurable(worldIn, pos)  &&
-            worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER) &&
-            worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
+        boolean isBlockBleowCurable = BlockInfestationHelper.isCurable(worldIn, pos.below());
+        boolean isBaseBlockReplaceable = worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER);
+        boolean isBlockAboveReplaceable = worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
+
+        return isBlockBleowCurable && isBaseBlockReplaceable && isBlockAboveReplaceable;
 
     }
 
@@ -414,18 +378,15 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         }
 
         public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent event, GameEvent.Context context) {
-                return !isOnVibrationCooldown();
+                return !isBlockStateVibrationCooldownTrue();
         }
 
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
             recieveVibrationTick(level, blockPos, getBlockState(), summoner);
+            level.levelEvent(3007, worldPosition, 0);
+            level.gameEvent(GameEvent.SHRIEK, worldPosition, GameEvent.Context.of(entity));
 
-            if(!isActive())
-            {
-                level.levelEvent(3007, worldPosition, 0);
-                level.gameEvent(GameEvent.SHRIEK, worldPosition, GameEvent.Context.of(entity));
-            }
         }
 
         public void onDataChanged()
@@ -453,8 +414,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
                 BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
                 if(blockState.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
                 {
-                    if(!state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.IS_ACTIVE)
-                    || state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.VIBRATION_COOLDOWN))
+                    if(state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.VIBRATION_COOLDOWN))
                     {
                         return state.setAndContinue(SCULK_SUMMONER_COOLDOWN_ANIMATION);
                     }
