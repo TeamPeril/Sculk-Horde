@@ -3,6 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
+import com.github.sculkhorde.common.advancement.SoulHarvesterTrigger;
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
@@ -68,6 +69,7 @@ public class ModEventSubscriber {
         CriteriaTriggers.register(GravemindEvolveImmatureTrigger.INSTANCE);
         CriteriaTriggers.register(SculkHordeStartTrigger.INSTANCE);
         CriteriaTriggers.register(SculkNodeSpawnTrigger.INSTANCE);
+        CriteriaTriggers.register(SoulHarvesterTrigger.INSTANCE);
     }
 
     /* entityAttributes

@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:dormant_heart_of_the_horde"
+    },
+    "title": "A Life-less Heart",
+    "description": "Craft a Dormant Heart of the Horde.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:sculk_node_spawn",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "sculkhorde:dormant_heart_of_the_horde"
+      }
+    }
+  }
+}

@@ -13,7 +13,11 @@ import net.minecraft.server.level.ServerPlayer;
 public class SoulHarvesterTrigger extends SimpleCriterionTrigger<SoulHarvesterTrigger.SoulHarvesterCriterion> implements CustomCriterionTrigger{
 
     public static final SoulHarvesterTrigger INSTANCE = new SoulHarvesterTrigger();
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "soul_harvester");
+
+    /**
+     * Need to be registered in {@link com.github.sculkhorde.util.ModEventSubscriber}.
+     */
+    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "soul_harvester_trigger");
 
     @Override
     public ResourceLocation getId() {

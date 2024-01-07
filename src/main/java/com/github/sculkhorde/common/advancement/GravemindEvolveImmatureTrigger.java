@@ -11,7 +11,11 @@ import net.minecraft.server.level.ServerPlayer;
 public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<GravemindEvolveImmatureTrigger.GravemindEvoleImmatureCriterion> implements CustomCriterionTrigger{
 
     public static final GravemindEvolveImmatureTrigger INSTANCE = new GravemindEvolveImmatureTrigger();
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "gravemind_evolve_immature");
+
+    /**
+     * Need to be registered in {@link com.github.sculkhorde.util.ModEventSubscriber}.
+     */
+    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "gravemind_evolve_immature_trigger");
 
     @Override
     public ResourceLocation getId() {

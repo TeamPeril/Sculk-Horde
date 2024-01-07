@@ -9,10 +9,10 @@
     "show_toast": true,
     "announce_to_chat": false
   },
-  "parent": "sculkhorde:sculk_horde_start",
+  "parent": "sculkhorde:craft_dormant_heart_of_the_horde",
   "criteria": {
-    "soul_harvester": {
-      "trigger": "sculkhorde:soul_harvester"
+    "soul_harvester_trigger": {
+      "trigger": "sculkhorde:soul_harvester_trigger"
     }
   }
 }
