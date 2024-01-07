@@ -686,14 +686,14 @@ public class RaidHandler {
         raidData.reset();
     }
 
-    private Predicate<EntityFactoryEntry> isValidRaidParticipant(EntityFactory.StrategicValues strategicValue)
+    private Predicate<EntityFactoryEntry> isValidRaidParticipant(EntityFactoryEntry.StrategicValues strategicValue)
     {
-        return (entityFactoryEntry) -> entityFactoryEntry.getCategory() == strategicValue;
+        return (entityFactoryEntry) -> entityFactoryEntry.doesEntityContainAnyRequiredStrategicValues(new EntityFactoryEntry.StrategicValues[]{strategicValue});
     }
 
-    public EntityFactory.StrategicValues[] getWavePattern()
+    public EntityFactoryEntry.StrategicValues[] getWavePattern()
     {
-        EntityFactory.StrategicValues[][] possibleWavePatterns = {DefaultRaidWavePatterns.FIVE_RANGED_FIVE_MELEE, DefaultRaidWavePatterns.TEN_RANGED, DefaultRaidWavePatterns.TEN_MELEE};
+        EntityFactoryEntry.StrategicValues[][] possibleWavePatterns = {DefaultRaidWavePatterns.FIVE_RANGED_FIVE_MELEE, DefaultRaidWavePatterns.TEN_RANGED, DefaultRaidWavePatterns.TEN_MELEE};
         Random random = new Random();
         return possibleWavePatterns[random.nextInt(possibleWavePatterns.length)];
     }

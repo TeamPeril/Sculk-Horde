@@ -13,6 +13,8 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
+import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -31,16 +33,95 @@ public class ModEventSubscriber {
     public static void onCommonSetup(FMLCommonSetupEvent event)
     {
         //Add entries to the entity factory (please add them in order of cost, I don't want to sort)
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPORE_SPEWER.get(), (int) SculkSporeSpewerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Immature).setLimit(1);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_PHANTOM.get(), (int) SculkPhantomEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Mature).setLimit(1);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_RAVAGER.get(), (int) SculkRavagerEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature).setLimit(1);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_HATCHER.get(), (int) SculkHatcherEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped).setLimit(1);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_CREEPER.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_SPITTER.get(), 20, EntityFactory.StrategicValues.Ranged, Gravemind.evolution_states.Undeveloped);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_ZOMBIE.get(), 20, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_VINDICATOR.get(), (int) SculkVindicatorEntity.MAX_HEALTH, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Immature);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE_AGGRESSOR.get(), 6, EntityFactory.StrategicValues.Melee, Gravemind.evolution_states.Undeveloped);
-        SculkHorde.entityFactory.addEntry(ModEntities.SCULK_MITE.get(), (int) SculkMiteEntity.MAX_HEALTH, EntityFactory.StrategicValues.Infector, Gravemind.evolution_states.Undeveloped);
+        EntityFactoryEntry[] entries = {
+                new EntityFactoryEntry(ModEntities.SCULK_SPORE_SPEWER.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setCost((int) SculkSporeSpewerEntity.MAX_HEALTH)
+                        .setLimit(1)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
+                        .addStrategicValues(EntityFactoryEntry.StrategicValues.Infector),
+
+                new EntityFactoryEntry(ModEntities.SCULK_PHANTOM.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
+                        .setCost((int) SculkPhantomEntity.MAX_HEALTH)
+                        .setLimit(1)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Infector,
+                        EntityFactoryEntry.StrategicValues.Melee,
+                        EntityFactoryEntry.StrategicValues.Flying
+                ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_RAVAGER.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setCost((int) SculkRavagerEntity.MAX_HEALTH)
+                        .setLimit(1)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
+                        .addStrategicValues(
+                                EntityFactoryEntry.StrategicValues.Combat,
+                                EntityFactoryEntry.StrategicValues.Tank,
+                                EntityFactoryEntry.StrategicValues.Melee
+                        ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_HATCHER.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
+                        .setCost((int) SculkHatcherEntity.MAX_HEALTH)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
+                        .addStrategicValues(
+                                EntityFactoryEntry.StrategicValues.Combat,
+                                EntityFactoryEntry.StrategicValues.Melee
+                        ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_CREEPER.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setCost(20)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Combat,
+                        EntityFactoryEntry.StrategicValues.Melee
+                ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_SPITTER.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
+                        .setCost(20)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Combat,
+                        EntityFactoryEntry.StrategicValues.Ranged
+                ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_ZOMBIE.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
+                        .setCost(20)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Combat,
+                        EntityFactoryEntry.StrategicValues.Melee
+                ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_VINDICATOR.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setCost((int) SculkVindicatorEntity.MAX_HEALTH)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Combat,
+                        EntityFactoryEntry.StrategicValues.Melee
+                ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_MITE_AGGRESSOR.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
+                        .setCost(6)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Combat,
+                        EntityFactoryEntry.StrategicValues.Melee
+                ),
+
+                new EntityFactoryEntry(ModEntities.SCULK_MITE.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
+                        .setCost((int) SculkMiteEntity.MAX_HEALTH)
+                        .addStrategicValues(
+                        EntityFactoryEntry.StrategicValues.Infector,
+                        EntityFactoryEntry.StrategicValues.Melee
+                ),
+        };
+
+        SculkHorde.entityFactory.addEntriesToFactory(entries);
 
         BlockInfestationHelper.initializeInfestationTables();
 

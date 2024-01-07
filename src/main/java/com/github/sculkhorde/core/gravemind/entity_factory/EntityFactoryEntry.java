@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  */
 public class EntityFactoryEntry {
 
-    public enum StrategicValues {Infector, Melee, Ranged, Boss, Support, Tank}
+    public enum StrategicValues {Combat, Infector, Melee, Ranged, Boss, Support, Tank, Flying, Swimming}
 
     private int orderCost = 0;
     private EntityType entity = null;
@@ -40,9 +40,10 @@ public class EntityFactoryEntry {
     }
 
     // Getters and Setters
-    public void setCost(int cost)
+    public EntityFactoryEntry setCost(int cost)
     {
         orderCost = cost;
+        return this;
     }
 
     public int getCost()
@@ -50,9 +51,10 @@ public class EntityFactoryEntry {
         return orderCost;
     }
 
-    public void setLimit(int limit)
+    public EntityFactoryEntry setLimit(int limit)
     {
         this.limit = limit;
+        return this;
     }
 
     public int getLimit()
@@ -60,9 +62,10 @@ public class EntityFactoryEntry {
         return limit;
     }
 
-    public void addStrategicValues(StrategicValues... values)
+    public EntityFactoryEntry addStrategicValues(StrategicValues... values)
     {
         strategicValues = values;
+        return this;
     }
 
     public StrategicValues[] getStrategicValues()
@@ -75,9 +78,10 @@ public class EntityFactoryEntry {
         return strategicValues[0];
     }
 
-    public void setExplicitDeniedSenders(ReinforcementRequest.senderType... deniedSenders)
+    public EntityFactoryEntry setExplicitlyDeniedSenders(ReinforcementRequest.senderType... deniedSenders)
     {
         explicitDeniedSenders = deniedSenders;
+        return this;
     }
 
     public ReinforcementRequest.senderType[] getExplicitDeniedSenders()
@@ -85,9 +89,10 @@ public class EntityFactoryEntry {
         return explicitDeniedSenders;
     }
 
-    public void setMinEvolutionRequired(Gravemind.evolution_states minEvolutionRequired)
+    public EntityFactoryEntry setMinEvolutionRequired(Gravemind.evolution_states minEvolutionRequired)
     {
         this.minEvolutionRequired = minEvolutionRequired;
+        return this;
     }
 
     public Gravemind.evolution_states getMinEvolutionRequired()
@@ -145,17 +150,18 @@ public class EntityFactoryEntry {
             return false;
         }
 
-        boolean isOverBudget = getCost() > context.budget;
-        boolean doesHordeNotHaveEnoughMass = getCost() <= SculkHorde.savedData.getSculkAccumulatedMass();
+        boolean isOverBudget = getCost() > context.budget && context.budget != -1;
+        boolean doesHordeNotHaveEnoughMass = getCost() >= SculkHorde.savedData.getSculkAccumulatedMass();
         boolean isSenderExplicitlyDenied = isSenderExplicitlyDenied(context.sender);
         boolean isEvolutionStateNotMet = !SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired);
-        boolean doesEntityNotContainAnyRequiredStrategicValues = !doesEntityContainAnyRequiredStrategicValues((StrategicValues[]) context.approvedMobTypes.toArray());
+        boolean doesEntityNotContainAnyRequiredStrategicValues = !doesEntityContainAnyRequiredStrategicValues(context.approvedMobTypes);
+        boolean doesRequestSpecifyAnyApprovedMobTypes = context.approvedMobTypes.length > 0;
 
         if(doesHordeNotHaveEnoughMass || isOverBudget)
         {
             return false;
         }
-        else if(doesEntityNotContainAnyRequiredStrategicValues && !context.approvedMobTypes.isEmpty())
+        else if(doesEntityNotContainAnyRequiredStrategicValues && doesRequestSpecifyAnyApprovedMobTypes)
         {
             return false;
         }

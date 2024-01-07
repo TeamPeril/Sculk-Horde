@@ -7,12 +7,16 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.*;
+
+import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry.StrategicValues.Combat;
+import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry.StrategicValues.Infector;
 
 /**
  * This class represents the logistics for the Gravemind and is SEPARATE from the physical version.
@@ -173,11 +177,12 @@ public class Gravemind
         }
 
         boolean isSenderTypeSummoner = context.sender == ReinforcementRequest.senderType.Summoner;
+        boolean isSenderTypeMassBlock = context.sender == ReinforcementRequest.senderType.SculkMass;
         boolean isThereAtLeastOneSpawnPoint = context.positions.length > 0;
-        boolean isThereSculkNodesInExistence = SculkHorde.savedData.getNodeEntries().size() > 0;
+        boolean isThereSculkNodesInExistence = !SculkHorde.savedData.getNodeEntries().isEmpty();
 
         // If Overpopulated, and its a summoner, do not approve.
-        if(isSenderTypeSummoner && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
+        if( (isSenderTypeSummoner || isSenderTypeMassBlock) && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
         {
             BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.dimension, context.positions[0]).getPosition();
             Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
@@ -202,8 +207,7 @@ public class Gravemind
             //Spawn Combat Mobs to deal with player
             if(context.is_aggressor_nearby)
             {
-                context.approvedMobTypes.add(EntityFactory.StrategicValues.Melee);
-                context.approvedMobTypes.add(EntityFactory.StrategicValues.Ranged);
+                context.approvedMobTypes = new EntityFactoryEntry.StrategicValues[]{Combat};
                 context.isRequestApproved = true;
             }
             //Spawn infector mobs to infect
@@ -212,7 +216,7 @@ public class Gravemind
             //spawning aggressors if both are present
             else if(context.is_non_sculk_mob_nearby)
             {
-                context.approvedMobTypes.add(EntityFactory.StrategicValues.Infector);
+                context.approvedMobTypes = new EntityFactoryEntry.StrategicValues[]{Infector};
                 context.isRequestApproved = true;
             }
         }

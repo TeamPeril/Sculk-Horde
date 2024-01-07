@@ -22,6 +22,8 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(40);
     protected int ticksElapsed = executionCooldown;
 
+    protected EntityFactoryEntry.StrategicValues[] validStrategicValues = new EntityFactoryEntry.StrategicValues[]{EntityFactoryEntry.StrategicValues.Combat};
+
     public SummonRandomAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
@@ -78,12 +80,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     {
         return (entityFactoryEntry) ->
         {
-            if(entityFactoryEntry.getEntity() == ModEntities.SCULK_CREEPER.get() || entityFactoryEntry.getEntity() == ModEntities.SCULK_RAVAGER.get())
-            {
-                return false;
-            }
-
-            return entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Melee || entityFactoryEntry.getCategory() == EntityFactory.StrategicValues.Ranged;
+            return entityFactoryEntry.doesEntityContainAnyRequiredStrategicValues(validStrategicValues);
         };
     }
 

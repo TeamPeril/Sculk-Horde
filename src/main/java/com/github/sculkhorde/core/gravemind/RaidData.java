@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
@@ -59,7 +60,7 @@ public class RaidData {
     protected ServerBossEvent bossEvent;
 
     // Waves
-    protected EntityFactory.StrategicValues[] currentWavePattern;
+    protected EntityFactoryEntry.StrategicValues[] currentWavePattern;
     private int maxWaves = 2;
     private int currentWave = 1;
     private int remainingWaveParticipants = 0;
@@ -435,11 +436,11 @@ public class RaidData {
         SculkHorde.savedData.setDirty();
     }
 
-    public EntityFactory.StrategicValues[] getCurrentWavePattern() {
+    public EntityFactoryEntry.StrategicValues[] getCurrentWavePattern() {
         return currentWavePattern;
     }
 
-    public void setCurrentWavePattern(EntityFactory.StrategicValues[] currentWavePattern) {
+    public void setCurrentWavePattern(EntityFactoryEntry.StrategicValues[] currentWavePattern) {
         this.currentWavePattern = currentWavePattern;
         SculkHorde.savedData.setDirty();
     }
@@ -670,7 +671,7 @@ public class RaidData {
         if (RaidHandler.raidData.getCurrentWavePattern() != null) {
             // Save the current wave pattern as a list of strings
             ListTag currentWavePatternTag = new ListTag();
-            for (EntityFactory.StrategicValues value : RaidHandler.raidData.getCurrentWavePattern()) {
+            for (EntityFactoryEntry.StrategicValues value : RaidHandler.raidData.getCurrentWavePattern()) {
                 currentWavePatternTag.add(StringTag.valueOf(value.name()));
             }
             tag.put("currentWavePattern", currentWavePatternTag);
@@ -754,12 +755,12 @@ public class RaidData {
         if (tag.contains("currentWavePattern")) {
             // Load the current wave pattern from a list of strings
             ListTag currentWavePatternTag = tag.getList("currentWavePattern", 8);
-            RaidHandler.raidData.setCurrentWavePattern(new EntityFactory.StrategicValues[currentWavePatternTag.size()]);
+            RaidHandler.raidData.setCurrentWavePattern(new EntityFactoryEntry.StrategicValues[currentWavePatternTag.size()]);
             for (int i = 0; i < currentWavePatternTag.size(); i++) {
                 Tag t = currentWavePatternTag.get(i);
                 if (t instanceof StringTag) {
                     String s = ((StringTag) t).getAsString();
-                    RaidHandler.raidData.getCurrentWavePattern()[i] = EntityFactory.StrategicValues.valueOf(s);
+                    RaidHandler.raidData.getCurrentWavePattern()[i] = EntityFactoryEntry.StrategicValues.valueOf(s);
                 }
             }
         }
