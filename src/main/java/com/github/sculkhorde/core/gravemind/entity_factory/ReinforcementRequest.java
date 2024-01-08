@@ -13,7 +13,7 @@ public class ReinforcementRequest {
     public boolean is_non_sculk_mob_nearby; // Indicates if a possible infection target is near the sender.
     public BlockPos[] positions; // The positions of where the reinforcements is being requested.
     public long creationTime; // The time this request was created.
-    public enum senderType {Developer, SculkMass, Summoner, BossReinforcement} // All possible senders.
+    public enum senderType {Developer, SculkMass, Summoner, BossReinforcement, Raid} // All possible senders.
     public senderType sender; // The sender of the request.
     public boolean isRequestViewed = false; // If the Gravemind has viewed this request.
     public boolean isRequestApproved = false; // If the reinforcement request is approved.

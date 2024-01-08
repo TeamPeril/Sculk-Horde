@@ -19,7 +19,7 @@ public class SpawnPhantomsEvent extends Event{
         return new SpawnPhantomsEvent(dimension);
     }
 
-    private void spawnSculkPhantomsAtTopOfWorld(int amount)
+    private void spawnScoutPhantomsAtTopOfWorld(int amount)
     {
         int spawnRange = 100;
         int minimumSpawnRange = 50;
@@ -39,6 +39,6 @@ public class SpawnPhantomsEvent extends Event{
     public void start()
     {
         super.start();
-        spawnSculkPhantomsAtTopOfWorld(10);
+        spawnScoutPhantomsAtTopOfWorld(10);
     }
 }

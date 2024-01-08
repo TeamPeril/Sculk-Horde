@@ -78,7 +78,7 @@ public class DiseasedCystsEffect extends MobEffect {
                 }
                 victim.hurtMarked = true;
                 int damage = (int) (victim.getMaxHealth() * 0.1F);
-                victim.hurt(victim.damageSources().generic(), damage);
+                victim.hurt(victim.damageSources().magic(), damage);
                 SculkHorde.savedData.addSculkAccumulatedMass(damage);
                 SculkHorde.statisticsData.addTotalMassFromDiseasedCysts(damage);
             }

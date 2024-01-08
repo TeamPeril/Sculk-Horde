@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -14,7 +15,7 @@ public class SculkPhantomGoToAnchor extends Goal {
     private int timeToRecalcPath;
     private float speedModifier = 1.0F; // Doesn't actually do anything
 
-    private final int IN_RANGE_OF_ANCHOR = 20;
+    private final int IN_RANGE_OF_ANCHOR = 5;
 
     Path path;
     public SculkPhantomGoToAnchor(SculkPhantomEntity mob) {
@@ -41,7 +42,7 @@ public class SculkPhantomGoToAnchor extends Goal {
             return false;
         }
 
-        if (isInRangeOfAnchor()) {
+        if (!sculkPhantom.isAnchorPosValid(BlockPos.containing(sculkPhantom.getAnchorPoint()))) {
             return false;
         }
 
@@ -69,7 +70,7 @@ public class SculkPhantomGoToAnchor extends Goal {
 
         if (--this.timeToRecalcPath <= 0 || path == null)
         {
-            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(5));
+            this.timeToRecalcPath = this.adjustedTickDelay(TickUnits.convertSecondsToTicks(3));
             path = sculkPhantom.getNavigation().createPath(sculkPhantom.getAnchorPoint().x, sculkPhantom.getAnchorPoint().y, sculkPhantom.getAnchorPoint().z, 1);
             this.getMob().getNavigation().moveTo(path, speedModifier);
         }

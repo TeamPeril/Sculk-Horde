@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.events.Event;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
@@ -74,10 +75,11 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		Event phantom = SpawnPhantomsEvent.createEvent(worldIn.dimension());
-		phantom.setEventID("dev_wand".hashCode());
-		phantom.setEventLocation(playerIn.blockPosition());
-		SculkHorde.eventHandler.addEvent(phantom);
+		//Event phantom = SpawnPhantomsEvent.createEvent(worldIn.dimension());
+		//phantom.setEventID("dev_wand".hashCode());
+		//phantom.setEventLocation(playerIn.blockPosition());
+		//SculkHorde.eventHandler.addEvent(phantom);
+		SculkPhantomEntity.spawnPhantom(worldIn, playerIn.blockPosition(), true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

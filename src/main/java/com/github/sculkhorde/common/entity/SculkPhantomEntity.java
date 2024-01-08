@@ -9,9 +9,6 @@ import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -29,7 +26,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +61,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     //The armor of the mob
     public static final float ARMOR = 1F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 5F;
+    public static final float ATTACK_DAMAGE = 3F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 2F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
@@ -85,7 +81,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     protected boolean isScouter = false;
 
-    private static final EntityDataAccessor<Boolean> DATA_SCOUTER = SynchedEntityData.defineId(SculkPhantomEntity.class, EntityDataSerializers.BOOLEAN);
     /**
      * The Constructor
      * @param type The Mob Type
@@ -185,7 +180,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         };
     }
 
-    protected PathNavigation createNavigation(Level level) {
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
         ImprovedFlyingNavigator flyingpathnavigation = new ImprovedFlyingNavigator(this, level);
         flyingpathnavigation.setCanOpenDoors(false);
         flyingpathnavigation.setCanFloat(true);
@@ -193,11 +188,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         return flyingpathnavigation;
     }
 
-    public enum AttackPhase {
-        CIRCLE,
-        SWOOP,
-        INFECT
-    }
     /** Getters and Setters **/
 
     public Vec3 getAnchorPoint() {
@@ -271,9 +261,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     @Override
     public void checkDespawn() {}
 
-    protected void checkFallDamage(double p_29370_, boolean p_29371_, BlockState p_29372_, BlockPos p_29373_) {
-    }
-
     @Override
     public boolean isPersistenceRequired() {
         return true;
@@ -297,7 +284,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     // This method allows the entity to travel in a given direction
     @Override
-    public void travel(Vec3 direction) {
+    public void travel(@NotNull Vec3 direction) {
         // If the entity is controlled by the local player
         if (this.isControlledByLocalInstance()) {
             // Move the entity relative to its orientation and the direction vector
@@ -308,7 +295,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
             // If the entity is in water, reduce its velocity by 10%
             if (this.isInWater()) {
-                this.setDeltaMovement(this.getDeltaMovement().scale((double)0.9F));
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.9F));
                 // If the entity is in lava, reduce its velocity by 40%
             } else if (this.isInLava()) {
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.6F));
@@ -481,23 +468,42 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
     }
 
+    public boolean isAnchorPosValid(BlockPos pos)
+    {
+        boolean isThereIsNoFluid = level().getFluidState(pos).isEmpty() && level().getFluidState(pos.below()).isEmpty();
+        boolean isItFarEnoughAway = distanceToSqr(Vec3.atCenterOf(pos)) > 30;
+        // As long as its not a fluid, its valid
+        return isThereIsNoFluid && isItFarEnoughAway;
+    }
+
     protected class selectRandomLocationToVisit extends Goal
     {
         protected long lastTimeOfExecution = 0;
-        protected long executionCooldown = TickUnits.convertSecondsToTicks(15);
+        protected boolean hasExecutedOnce = false;
         protected int circleRadiusVariance = 50;
         protected final int BASE_CIRCLE_RADIUS = 200;
         protected final int CIRCLE_RADIUS_INCREASE = 100;
         protected int currentCircleRadius = BASE_CIRCLE_RADIUS + circleRadiusVariance;
 
+        protected long gameTimeOfFirstEnteringAreaOfAnchor = 0;
+        protected final long TIME_TO_WAIT_BEFORE_MOVING_ON = TickUnits.convertSecondsToTicks(60);
 
         public boolean canUse()
         {
-            boolean cooldownNotMet = level().getGameTime() - lastTimeOfExecution < executionCooldown;
+            //boolean cooldownNotMet = level().getGameTime() - lastTimeOfExecution < executionCooldown;
             boolean isNotScouter = !isScouter();
             boolean hasTarget = getTarget() != null;
+            boolean isWithin100BlocksOfAnchor = distanceToSqr(Vec3.atCenterOf(anchorPoint)) <= 100;
+            boolean isItTimeToMoveOn = level().getGameTime() - gameTimeOfFirstEnteringAreaOfAnchor > TIME_TO_WAIT_BEFORE_MOVING_ON && gameTimeOfFirstEnteringAreaOfAnchor != 0;
 
-            if(cooldownNotMet || isNotScouter || hasTarget)
+
+            // Remember when we first entered the area of the anchor
+            if(isWithin100BlocksOfAnchor && gameTimeOfFirstEnteringAreaOfAnchor == 0)
+            {
+                gameTimeOfFirstEnteringAreaOfAnchor = level().getGameTime();
+            }
+
+            if((!isItTimeToMoveOn || isNotScouter || hasTarget) && hasExecutedOnce)
             {
                 return false;
             }
@@ -510,15 +516,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             return false;
         }
 
-        private boolean isGroundPosValid(BlockPos pos)
-        {
-            // As long as its not a fluid, its valid
-            return level().getFluidState(pos).isEmpty() && level().getFluidState(pos.below()).isEmpty();
-        }
-
         public Vec3 getRandomTravelLocationVec3()
         {
-            int MAX_ATTEMPTS = 10;
+            int MAX_ATTEMPTS = 5;
 
             if(searchPositions.isEmpty())
             {
@@ -530,10 +530,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             for(BlockPos searchPos : searchPositions)
             {
                 BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), searchPos, level().getMaxBuildHeight());
-                if(isGroundPosValid(groundBlockPos))
+                BlockPos potentialNewAnchorPoint = groundBlockPos.above(20);
+                if(isAnchorPosValid(potentialNewAnchorPoint))
                 {
-                    int groundYLevel = groundBlockPos.getY();
-                    return new Vec3(searchPos.getX(), groundYLevel + 10, searchPos.getZ());
+                    gameTimeOfFirstEnteringAreaOfAnchor = 0;
+                    return potentialNewAnchorPoint.getCenter();
                 }
 
                 //Else remove it from the list
@@ -549,10 +550,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             lastTimeOfExecution = level().getGameTime();
             moveTargetPoint = getRandomTravelLocationVec3();
             anchorPoint = BlockPos.containing(moveTargetPoint);
+            hasExecutedOnce = true;
         }
     }
 
-    abstract class MoveTargetGoal extends Goal {
+    abstract static class MoveTargetGoal extends Goal {
         public MoveTargetGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
@@ -561,7 +563,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     class SweepAttackGoal extends MoveTargetGoal {
 
         private long lastTimeOfAttack = 0;
-        private int COOLDOWN = TickUnits.convertSecondsToTicks(5);
+        private final int COOLDOWN = TickUnits.convertSecondsToTicks(0);
 
         public boolean canUse() {
 

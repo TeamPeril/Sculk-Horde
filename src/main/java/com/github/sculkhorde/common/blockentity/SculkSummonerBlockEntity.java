@@ -56,7 +56,6 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private List<LivingEntity> possibleLivingEntityTargets;
     //possibleAggressorTargets - A list of nearby targets which should be considered hostile.
     private List<LivingEntity> possibleAggressorTargets;
-    private long lastTimeSinceVibrationRecieve = System.currentTimeMillis();
     private long lastGameTimeOfVibrationRecieve = 0;
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
@@ -197,24 +196,27 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
 
     /** ~~~~~~~~ Events ~~~~~~~~ **/
-    public static void recieveVibrationTick(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity)
+    public static void recieveVibrationTick(Level level, BlockPos vibrationSource, BlockState blockState, SculkSummonerBlockEntity blockEntity, Entity entity)
     {
         if(level == null || level.isClientSide)
         {
             return;
         }
 
+        blockEntity.setVibrationCooldown(true);
+        blockEntity.lastGameTimeOfVibrationRecieve = level.getGameTime();
+
         if(!blockEntity.areAllReinforcementsDead())
         {
             return;
         }
 
-        if(blockEntity.areAnyTargetsNearBy(blockPos, blockEntity))
+        if(blockEntity.areAnyTargetsNearBy(blockEntity.worldPosition, blockEntity))
         {
             blockEntity.spawnReinforcements();
+            level.levelEvent(3007, blockEntity.worldPosition, 0);
+            level.gameEvent(GameEvent.SHRIEK, blockEntity.worldPosition, GameEvent.Context.of(entity));
         }
-        blockEntity.setVibrationCooldown(true);
-        blockEntity.lastGameTimeOfVibrationRecieve = level.getGameTime();
     }
 
     public static void tickOnCoolDown(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity) {
@@ -383,10 +385,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            recieveVibrationTick(level, blockPos, getBlockState(), summoner);
-            level.levelEvent(3007, worldPosition, 0);
-            level.gameEvent(GameEvent.SHRIEK, worldPosition, GameEvent.Context.of(entity));
-
+            recieveVibrationTick(level, blockPos, getBlockState(), summoner, entity);
         }
 
         public void onDataChanged()
@@ -418,9 +417,6 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
                     {
                         return state.setAndContinue(SCULK_SUMMONER_COOLDOWN_ANIMATION);
                     }
-
-
-
                 }
                 return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
         }

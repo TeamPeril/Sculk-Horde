@@ -45,7 +45,7 @@ public class ModEventSubscriber {
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
                         .setCost((int) SculkPhantomEntity.MAX_HEALTH)
                         .setLimit(1)
-                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass, ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
