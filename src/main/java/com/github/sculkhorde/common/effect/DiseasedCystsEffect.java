@@ -69,18 +69,22 @@ public class DiseasedCystsEffect extends MobEffect {
                     continue;
                 }
 
-                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertSecondsToTicks(60));
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0);
+                victim.hurtMarked = true;
 
-                if(victim.getHealth() <= victim.getMaxHealth() * 0.4)
+                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertSecondsToTicks(60));
+                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), 0);
+
+
+                if(victim.getHealth() <= victim.getMaxHealth() * 0.5)
                 {
+                    EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0);
                     continue;
                 }
-                victim.hurtMarked = true;
-                int damage = (int) (victim.getMaxHealth() * 0.1F);
+                float damage = (victim.getMaxHealth() * 0.1F);
                 victim.hurt(victim.damageSources().magic(), damage);
-                SculkHorde.savedData.addSculkAccumulatedMass(damage);
-                SculkHorde.statisticsData.addTotalMassFromDiseasedCysts(damage);
+                SculkHorde.savedData.addSculkAccumulatedMass((int) damage);
+                SculkHorde.statisticsData.addTotalMassFromDiseasedCysts((int) damage);
+
             }
         }
 

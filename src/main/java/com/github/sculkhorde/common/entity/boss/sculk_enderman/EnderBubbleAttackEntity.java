@@ -60,7 +60,11 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         if(level().isClientSide()) return;
 
         Predicate<Entity> predicate = (entity) -> {
-            if(entity instanceof Player) { return true;}
+            if(entity instanceof Player p)
+            {
+                p.hurtMarked = true;
+                return true;
+            }
 
             if(entity == null) {return false;}
             else if(entity instanceof SculkEndermanEntity)
