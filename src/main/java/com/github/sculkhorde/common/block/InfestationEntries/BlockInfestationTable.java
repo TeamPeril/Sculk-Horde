@@ -3,7 +3,10 @@ package com.github.sculkhorde.common.block.InfestationEntries;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -133,6 +136,7 @@ public class BlockInfestationTable{
         }
 
         world.setBlockAndUpdate(targetPos, newBlock);
+        world.playSound(null, targetPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + world.getRandom().nextFloat() * 0.4F);
 
         if(newBlock.getBlock() instanceof ITagInfestedBlock)
         {

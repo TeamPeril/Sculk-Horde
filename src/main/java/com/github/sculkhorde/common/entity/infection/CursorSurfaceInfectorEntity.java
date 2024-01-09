@@ -4,6 +4,12 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
+import net.minecraft.client.particle.SculkChargeParticle;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SculkChargeParticleOptions;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
@@ -12,7 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 
 import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
 
-public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
+public class CursorSurfaceInfectorEntity extends CursorEntity{
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
      *
@@ -26,6 +32,26 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         super(pType, pLevel);
     }
 
+    /**
+     * Returns true if the block is considered a target.
+     * @param pos the block position
+     * @return true if the block is considered a target
+     */
+    @Override
+    protected boolean isTarget(BlockPos pos)
+    {
+        return BlockInfestationHelper.isInfectable((ServerLevel) level(), pos);
+    }
+
+    /**
+     * Transforms the block at the given position.
+     * @param pos the position of the block
+     */
+    @Override
+    protected void transformBlock(BlockPos pos)
+    {
+        BlockInfestationHelper.tryToInfestBlock((ServerLevel) level(), pos);
+    }
 
     /**
      * Returns true if the block is considered obstructed.
@@ -75,5 +101,11 @@ public class CursorSurfaceInfectorEntity extends CursorInfectorEntity{
         }
 
         return false;
+    }
+
+    @Override
+    protected void spawnParticleEffects()
+    {
+        this.level().addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(2.0D), this.getRandomY(), this.getRandomZ(2.0D), 0.0D, 0.0D, 0.0D);
     }
 }

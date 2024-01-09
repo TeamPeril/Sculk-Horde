@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.common.entity.infection.CursorInfectorEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
@@ -93,7 +93,7 @@ public class DevConversionWand extends Item implements IForgeItem {
 				if(!worldIn.isClientSide())
 				{
 					// Spawn a Block Traverser
-					CursorInfectorEntity cursor = new CursorInfectorEntity((ServerLevel) worldIn);
+					CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity((ServerLevel) worldIn);
 					cursor.setPos(targetPos.getX(), targetPos.getY(), targetPos.getZ());
 					worldIn.addFreshEntity(cursor);
 

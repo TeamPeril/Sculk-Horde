@@ -1,23 +1,17 @@
 package com.github.sculkhorde.common.entity.infection;
 
-import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.IPlantable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.function.Predicate;
 
 public class CursorSurfacePurifierEntity extends CursorEntity{
@@ -57,9 +51,9 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
         BlockInfestationHelper.tryToCureBlock((ServerLevel) this.level(), pos);
 
         // Get all infector cursor entities in area and kill them
-        Predicate<CursorInfectorEntity> isCursor = Objects::nonNull;
-        List<CursorInfectorEntity> Infectors = this.level().getEntitiesOfClass(CursorInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
-        for(CursorInfectorEntity infector : Infectors)
+        Predicate<CursorSurfaceInfectorEntity> isCursor = Objects::nonNull;
+        List<CursorSurfaceInfectorEntity> Infectors = this.level().getEntitiesOfClass(CursorSurfaceInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
+        for(CursorSurfaceInfectorEntity infector : Infectors)
         {
             infector.discard();
             this.discard();
@@ -70,7 +64,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
+        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
     }
 
     /**

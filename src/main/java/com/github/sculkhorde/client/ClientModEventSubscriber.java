@@ -4,13 +4,10 @@ import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
 import com.github.sculkhorde.client.renderer.block.SoulHarvesterBlockRenderer;
 import com.github.sculkhorde.client.renderer.entity.*;
-import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.screen.SoulHarvesterScreen;
 import com.github.sculkhorde.core.*;
 import com.google.common.collect.Maps;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.world.entity.Entity;
@@ -63,11 +60,9 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.CURSOR_PROBER.get(), CursorProberRenderer::new);
 
-        event.registerEntityRenderer(ModEntities.CURSOR_INFECTOR.get(), CursorInfectorRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CURSOR_BRIDGER.get(), CursorBridgerRenderer::new);
 
-        event.registerEntityRenderer(ModEntities.CURSOR_SURFACE_INFECTOR.get(), CursorInfectorRenderer::new);
+        event.registerEntityRenderer(ModEntities.CURSOR_SURFACE_INFECTOR.get(), CursorSurfaceInfectorRenderer::new);
 
         event.registerEntityRenderer(ModEntities.CURSOR_SURFACE_PURIFIER.get(), CursorSurfacePurifierRenderer::new);
 

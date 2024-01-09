@@ -55,7 +55,7 @@ public abstract class CursorEntity extends Entity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorEntity(Level worldIn) {super(ModEntities.CURSOR_INFECTOR.get(), worldIn);}
+    public CursorEntity(Level worldIn) {super(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn);}
 
     public CursorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -143,7 +143,7 @@ public abstract class CursorEntity extends Entity
 
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
+        //this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
     }
 
     /**
@@ -163,26 +163,35 @@ public abstract class CursorEntity extends Entity
                 return true;
             }
 
-            BlockPos currentBlock = queue.poll();
+            BlockPos searchBlockPos = queue.poll();
+            BlockState searchBlockState = level().getBlockState(searchBlockPos);
+
+            boolean isValidTarget = isTarget(searchBlockPos);
+            boolean isNotObstructed = !isObstructed(searchBlockState, searchBlockPos);
 
             // If the current block is a target, return it
-            if (isTarget(currentBlock)) {
+            if (isValidTarget && isNotObstructed) {
                 isSuccessful = true;
-                target = currentBlock;
+                target = searchBlockPos;
+                visitedPositons.put(target.asLong(), true);
                 return true;
             }
 
             // Get all possible directions
-            ArrayList<BlockPos> possiblePaths = BlockAlgorithms.getNeighborsCube(currentBlock, false);
+            ArrayList<BlockPos> possiblePaths = BlockAlgorithms.getNeighborsCube(searchBlockPos, false);
             Collections.shuffle(possiblePaths);
 
             // Add all neighbors to the queue
-            for (BlockPos neighbor : possiblePaths) {
+            for (BlockPos neighborPos : possiblePaths) {
+
+                BlockState neighborBlockState = level().getBlockState(neighborPos);
+
+                boolean hasPositionNotBeenVisitedBefore = !visitedPositons.containsKey(neighborPos.asLong());
+                boolean isBlockNotObstructed = !isObstructed(neighborBlockState, neighborPos);
 
                 // If not visited and is a solid block, add to queue
-                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level().getBlockState(neighbor), neighbor)) {
-                    queue.add(neighbor);
-                    visitedPositons.put(neighbor.asLong(), true);
+                if (hasPositionNotBeenVisitedBefore && isBlockNotObstructed) {
+                    queue.add(neighborPos);
                 }
             }
         }
@@ -202,7 +211,6 @@ public abstract class CursorEntity extends Entity
 
         lastTickTime = System.currentTimeMillis();
 
-        // Play Particles on Client
         // Play Particles on Client
         if (this.level().isClientSide) {
             for (int i = 0; i < 2; ++i) {
