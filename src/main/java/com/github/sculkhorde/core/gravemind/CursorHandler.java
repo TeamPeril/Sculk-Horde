@@ -2,9 +2,7 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.infection.CursorEntity;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 public class CursorHandler {
@@ -12,8 +10,10 @@ public class CursorHandler {
     private HashMap<UUID, CursorEntity> cursors = new HashMap<UUID, CursorEntity>();
     private int index = 0;
 
-    private int DELAY_BETWEEN_TICKS = 10;
+    private final int DELAY_BETWEEN_TICKS = 5;
     private int tickDelay = DELAY_BETWEEN_TICKS;
+
+    private final int CURSORS_TO_TICK_PER_INTERVAL = 10;
 
     public void addCursor(CursorEntity entity)
     {
@@ -63,24 +63,26 @@ public class CursorHandler {
 
         tickDelay = 0;
 
-
-        Object[] listOfCursors = cursors.values().toArray();
-        if(index >= listOfCursors.length)
+        for(int i = 0; i < CURSORS_TO_TICK_PER_INTERVAL; i++)
         {
-            index = 0;
-            return;
-        }
+            Object[] listOfCursors = cursors.values().toArray();
+            if(index >= listOfCursors.length)
+            {
+                index = 0;
+                continue;
+            }
 
-        CursorEntity cursorAtIndex = (CursorEntity) listOfCursors[index];
+            CursorEntity cursorAtIndex = (CursorEntity) listOfCursors[index];
 
-        if(shouldCursorBeDeleted(cursorAtIndex))
-        {
-            removeCursor(cursorAtIndex);
-        }
-        else
-        {
-            cursorAtIndex.cursorTick();
-            index++;
+            if(shouldCursorBeDeleted(cursorAtIndex))
+            {
+                removeCursor(cursorAtIndex);
+            }
+            else
+            {
+                cursorAtIndex.cursorTick();
+                index++;
+            }
         }
     }
 
