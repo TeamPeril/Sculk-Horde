@@ -2,6 +2,7 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.pools.PoolBlocks;
+import com.github.sculkhorde.core.gravemind.CursorHandler;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
@@ -47,6 +48,7 @@ public class SculkHorde {
     public static DeathAreaInvestigator deathAreaInvestigator;
     public static RaidHandler raidHandler;
     public static EventHandler eventHandler;
+    public static CursorHandler cursorHandler = new CursorHandler();
     public static SculkNodesHandler sculkNodesHandler;
     public static StatisticsData statisticsData;
     public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper;

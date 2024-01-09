@@ -55,15 +55,10 @@ public abstract class CursorEntity extends Entity
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
      */
-    public CursorEntity(Level worldIn) {super(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn);}
+    public CursorEntity(Level worldIn) { this(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn); }
 
     public CursorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
-        /*
-         * BUG: This is not working properly. The entity is not being removed after 30 seconds.
-         * When the entity is spawned, the creationTickTime is not altered in the statement below.
-         * TODO Fix this bug.
-         */
         creationTickTime = System.currentTimeMillis();
     }
 
@@ -199,10 +194,8 @@ public abstract class CursorEntity extends Entity
         return false;
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-
+    public void cursorTick()
+    {
         float timeElapsedMilliSeconds = System.currentTimeMillis() - lastTickTime;
         double tickIntervalMillisecondsAfterMultiplier = tickIntervalMilliseconds - (tickIntervalMilliseconds * (ModConfig.SERVER.infestation_speed_multiplier.get()));
         if (timeElapsedMilliSeconds < Math.max(tickIntervalMillisecondsAfterMultiplier, 1)) {
@@ -323,6 +316,13 @@ public abstract class CursorEntity extends Entity
         {
             this.remove(RemovalReason.DISCARDED);
         }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        SculkHorde.cursorHandler.computeIfAbsent(this);
 
     }
 

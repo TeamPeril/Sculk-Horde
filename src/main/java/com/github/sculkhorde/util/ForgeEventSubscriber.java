@@ -58,8 +58,6 @@ public class ForgeEventSubscriber {
             SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper(); //Initialize Block Entity Chunk Loader Helper
             SculkHorde.eventHandler = new EventHandler(); //Initialize Event Handler
 
-
-
             if(SculkHorde.statisticsData == null)
             {
                 SculkHorde.statisticsData = new StatisticsData();
@@ -96,6 +94,7 @@ public class ForgeEventSubscriber {
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesHandler.tick();
         SculkHorde.eventHandler.serverTick();
+        SculkHorde.cursorHandler.serverTick();
 
         SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests();
         SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.client.particle.SculkChargeParticle;
@@ -25,7 +26,7 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
      * @param worldIn The world to initialize this mob in
      */
     public CursorSurfaceInfectorEntity(Level worldIn) {
-        super(worldIn);
+        this(ModEntities.CURSOR_SURFACE_INFECTOR.get(), worldIn);
     }
 
     public CursorSurfaceInfectorEntity(EntityType<?> pType, Level pLevel) {

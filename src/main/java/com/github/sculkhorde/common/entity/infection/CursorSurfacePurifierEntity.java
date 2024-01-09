@@ -22,7 +22,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
      */
     public CursorSurfacePurifierEntity(Level worldIn)
     {
-        super(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn);
+        this(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn);
     }
 
     public CursorSurfacePurifierEntity(EntityType<?> pType, Level pLevel) {

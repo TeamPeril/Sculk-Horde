@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.blockentity;
 
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.structures.procedural.ProceduralStructure;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -22,6 +23,9 @@ public class DevStructureTesterBlockEntity extends BlockEntity
 
     private ProceduralStructure proceduralStructure;
 
+    private int spawnedCursors = 0;
+    private int maxSPawned = 1000;
+
 
     /**
      * The Constructor that takes in properties
@@ -43,32 +47,13 @@ public class DevStructureTesterBlockEntity extends BlockEntity
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, DevStructureTesterBlockEntity blockEntity)
     {
-
-        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
-        if(timeElapsed < 1) { return;}
-
-        blockEntity.tickedAt = System.nanoTime();
-
-        /** Building Process **/
-
-        //If the Structure hasnt been initialized yet, do it
-        if(blockEntity.proceduralStructure == null)
+        if(blockEntity.spawnedCursors < blockEntity.maxSPawned)
         {
-            //Create Structure
-            blockEntity.proceduralStructure = new SculkNodeCaveHallwayProceduralStructure((ServerLevel) level, blockPos, 5, 10, Direction.NORTH);
-            blockEntity.proceduralStructure.generatePlan();
-        }
-
-        //If currently building, call build tick.
-        if(!blockEntity.proceduralStructure.isStructureComplete() && blockEntity.proceduralStructure.isCurrentlyBuilding())
-        {
-            blockEntity.proceduralStructure.buildTick();
-        }
-
-        //If structure not complete, start build
-        if(!blockEntity.proceduralStructure.isStructureComplete() && !blockEntity.proceduralStructure.isCurrentlyBuilding())
-        {
-            blockEntity.proceduralStructure.startBuildProcedure();
+            CursorSurfaceInfectorEntity entity = new CursorSurfaceInfectorEntity(level);
+            entity.setPos(blockPos.getCenter());
+            entity.setMaxTransformations(100);
+            entity.setMaxRange(100);
+            level.addFreshEntity(entity);
         }
     }
 }
