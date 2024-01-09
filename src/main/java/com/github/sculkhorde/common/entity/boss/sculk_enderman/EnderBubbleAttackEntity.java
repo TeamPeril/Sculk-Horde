@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -32,9 +33,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
     public static int LIFE_TIME = TickUnits.convertSecondsToTicks(10);
     public int currentLifeTicks = 0;
-
-    private final double orbitRadius = 5.0; // Radius at which entities start to orbit
-    private double pushUpStrength = 0.2; // Strength of the push effect
+    private double pushUpStrength = 0.1; // Strength of the push effect
     private double orbitStrength = 0.5; // Strength of the orbit effect
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level) {
@@ -60,19 +59,22 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
         if(level().isClientSide()) return;
 
         Predicate<Entity> predicate = (entity) -> {
-            if(entity instanceof Player p)
+            if(entity == null) {return false;}
+
+            else if(entity instanceof Player p)
             {
-                p.hurtMarked = true;
-                return true;
+                //p.hurtMarked = true;
+                return false;
             }
 
-            if(entity == null) {return false;}
             else if(entity instanceof SculkEndermanEntity)
             {
                 return false;
             }
 
-            return true;
+            boolean entityIsPushable = !entity.noPhysics;
+
+            return entityIsPushable;
         };
 
         List<Entity> pushAwayList = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(range, range, range), predicate);
