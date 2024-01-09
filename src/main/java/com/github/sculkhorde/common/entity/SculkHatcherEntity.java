@@ -165,7 +165,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkHatcherAttackGoal(this, 1.0D, true),
+                        new AttackGoal(),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
@@ -356,4 +356,46 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         super.onRemovedFromWorld();
     }
     */
+
+
+    /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
+
+    class AttackGoal extends CustomMeleeAttackGoal
+    {
+
+        public AttackGoal()
+        {
+            super(SculkHatcherEntity.this, 1.0D, false, 10);
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            // If the mob is already targeting something valid, don't bother
+            return canWeUse;
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return canUse();
+        }
+
+        protected double getAttackReachSqr(LivingEntity pAttackTarget)
+        {
+            float f = SculkHatcherEntity.this.getBbWidth() - 0.1F;
+            return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(1);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            //((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
+        }
+    }
 }
