@@ -202,12 +202,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
             state.setAnimation(CREEPER_SWELL_ANIMATION);
             return PlayState.CONTINUE;
         }
-        else if(this.getSwellDir() < 0 && swellValue > 1)
+        else
         {
             state.setAnimation(CREEPER_DESWELL_ANIMATION);
             return PlayState.CONTINUE;
         }
-        return PlayState.CONTINUE;
+        //return PlayState.CONTINUE;
     }
 
     @Override

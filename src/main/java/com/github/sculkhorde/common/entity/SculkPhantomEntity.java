@@ -496,6 +496,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             boolean isWithin100BlocksOfAnchor = distanceToSqr(Vec3.atCenterOf(anchorPoint)) <= 100;
             boolean isItTimeToMoveOn = level().getGameTime() - gameTimeOfFirstEnteringAreaOfAnchor > TIME_TO_WAIT_BEFORE_MOVING_ON && gameTimeOfFirstEnteringAreaOfAnchor != 0;
 
+            if(isNotScouter)
+            {
+                return false;
+            }
 
             // Remember when we first entered the area of the anchor
             if(isWithin100BlocksOfAnchor && gameTimeOfFirstEnteringAreaOfAnchor == 0)
@@ -503,7 +507,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 gameTimeOfFirstEnteringAreaOfAnchor = level().getGameTime();
             }
 
-            if((!isItTimeToMoveOn || isNotScouter || hasTarget) && hasExecutedOnce)
+            if((!isItTimeToMoveOn || hasTarget) && hasExecutedOnce)
             {
                 return false;
             }

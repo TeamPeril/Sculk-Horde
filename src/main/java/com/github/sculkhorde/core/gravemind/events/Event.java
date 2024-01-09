@@ -48,7 +48,7 @@ public class Event {
 
     public boolean canStart()
     {
-        return true;
+        return getDimension().getGameTime() - lastGameTimeOfEventExecution > EXECUTION_COOLDOWN;
     }
 
     public boolean canContinue()

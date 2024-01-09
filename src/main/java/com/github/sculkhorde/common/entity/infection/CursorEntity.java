@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,6 +40,9 @@ public abstract class CursorEntity extends Entity
     protected long MAX_LIFETIME_MILLIS = TimeUnit.SECONDS.toMillis(60 * 5);
     protected long creationTickTime = System.currentTimeMillis();
     protected long lastTickTime = 0;
+
+    protected long ticksRemainingBeforeCheckingIfInCursorList = 0;
+    protected final long CHECK_DELAY_TICKS = TickUnits.convertSecondsToTicks(5);
 
     protected int searchIterationsPerTick = 20;
     protected long tickIntervalMilliseconds = 1000;
@@ -322,7 +326,14 @@ public abstract class CursorEntity extends Entity
     public void tick() {
         super.tick();
 
-        SculkHorde.cursorHandler.computeIfAbsent(this);
+        ticksRemainingBeforeCheckingIfInCursorList--;
+
+        if(ticksRemainingBeforeCheckingIfInCursorList <= 0)
+        {
+            SculkHorde.cursorHandler.computeIfAbsent(this);
+            ticksRemainingBeforeCheckingIfInCursorList = CHECK_DELAY_TICKS;
+        }
+
 
     }
 

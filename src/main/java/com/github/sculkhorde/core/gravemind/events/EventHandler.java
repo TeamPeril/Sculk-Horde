@@ -76,19 +76,23 @@ public class EventHandler {
                 return;
             }
 
-            if(!event.isEventActive() && event.canStart())
+            boolean isEventActive = event.isEventActive();
+            boolean canEventStart = event.canStart();
+            boolean canEventContinue = event.canContinue();
+
+            if(!isEventActive && canEventStart)
             {
                 event.start();
                 continue;
             }
 
-            if(event.isEventActive() && event.canContinue())
+            if(isEventActive && canEventContinue)
             {
                 event.serverTick();
                 continue;
             }
 
-            if(event.isEventActive() && !event.canContinue())
+            if(isEventActive && !canEventContinue)
             {
                 event.end();
                 continue;

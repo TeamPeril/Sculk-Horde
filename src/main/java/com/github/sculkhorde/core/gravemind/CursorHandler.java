@@ -48,6 +48,11 @@ public class CursorHandler {
         return entity == null || entity.isRemoved();
     }
 
+    public int getSizeOfCursorList()
+    {
+        return cursors.size();
+    }
+
     public void serverTick()
     {
         if(tickDelay < DELAY_BETWEEN_TICKS)

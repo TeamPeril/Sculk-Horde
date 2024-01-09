@@ -44,6 +44,10 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "Entity Chunk Load Requests: " + SculkHorde.entityChunkLoaderHelper.getEntityChunkLoadRequests().size()
                         + "\n"
                         + "BlockEntity Chunk load Requests: " + SculkHorde.blockEntityChunkLoaderHelper.getBlockChunkLoadRequests().size()
+                        + "\n"
+                        + "Events in Queue: " + SculkHorde.eventHandler.getEvents().size()
+                        + "\n"
+                        + "Cursors being Ticked: " + SculkHorde.cursorHandler.getSizeOfCursorList()
                 ), false);
         return 0;
     }
