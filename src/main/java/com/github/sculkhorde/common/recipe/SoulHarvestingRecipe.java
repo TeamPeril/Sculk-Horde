@@ -34,6 +34,12 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
+    public NonNullList<Ingredient> getIngredients()
+    {
+        return inputItems;
+    }
+
+    @Override
     public ItemStack assemble(SimpleContainer p_44001_, RegistryAccess p_267165_) {
         return output.copy();
     }
@@ -99,6 +105,9 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
 
             ItemStack output = bufferIn.readItem();
 
+            // Log the size of the data being read
+            System.out.println("SoulHarvesterRecipe | Data size being read: " + bufferIn.readableBytes());
+
             return new SoulHarvestingRecipe(inputItems, output, recipeIDIn);
         }
 
@@ -111,6 +120,9 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
             }
 
             bufferIn.writeItemStack(recipeIn.getResultItem(null), false);
+
+            // Log the size of the data being written
+            System.out.println("SoulHarvesterRecipe | Data size being written: " + bufferIn.writerIndex());
         }
     }
 }
