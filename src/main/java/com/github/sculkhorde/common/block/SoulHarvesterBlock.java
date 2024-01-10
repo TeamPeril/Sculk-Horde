@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -63,7 +62,6 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
     public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
 
     public static final int MAX_HEALTH = 1000;
-    public static final IntegerProperty HEALTH_HARVESTED = IntegerProperty.create("health_harvested", 0, MAX_HEALTH);
 
     /**
      * The Constructor that takes in properties
@@ -73,8 +71,7 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(IS_PREPARED, false)
-                .setValue(IS_ACTIVE, false)
-                .setValue(HEALTH_HARVESTED, 0));
+                .setValue(IS_ACTIVE, false));
     }
 
     /**
@@ -92,14 +89,13 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
     {
         return this.defaultBlockState()
                 .setValue(IS_PREPARED, false)
-                .setValue(IS_ACTIVE, false)
-                .setValue(HEALTH_HARVESTED, 0);
+                .setValue(IS_ACTIVE, false);
 
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(IS_PREPARED).add(IS_ACTIVE).add(HEALTH_HARVESTED);
+        pBuilder.add(IS_PREPARED).add(IS_ACTIVE);
     }
 
     /**

@@ -5,10 +5,8 @@ import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.recipe.SoulHarvestingRecipe;
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,7 +20,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -72,6 +69,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     protected final ContainerData data;
     private int progress = 0;
     private int maxProgress = 300;
+    private int healthHarvested = 0;
 
     /**
      * The Constructor that takes in properties
@@ -132,19 +130,19 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     public int getHealthHarvested()
     {
-        return this.getBlockState().getValue(SoulHarvesterBlock.HEALTH_HARVESTED);
+        return healthHarvested;
     }
 
     public void setHealthHarvested(int amount)
     {
         int newTotal = Math.min(amount, MAX_HEALTH);
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.HEALTH_HARVESTED, newTotal), 3);
+        healthHarvested = newTotal;
     }
 
     public void increaseHealthHarvested(int amount)
     {
         int newTotal = Math.min(this.getHealthHarvested() + amount, MAX_HEALTH);
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.HEALTH_HARVESTED, newTotal), 3);
+        setHealthHarvested(newTotal);
     }
 
     @Override
@@ -343,6 +341,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     protected void saveAdditional(CompoundTag pTag) {
         pTag.put("inventory", itemHandler.serializeNBT());
         pTag.putInt("soul_harvester.progress", progress);
+        pTag.putInt("soul_harvester.progress", progress);
         super.saveAdditional(pTag);
     }
 
@@ -375,7 +374,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
             {
                 return state.setAndContinue(ACTIVE_ANIMATION);
             }
-            else if(blockState.getValue(SoulHarvesterBlock.HEALTH_HARVESTED) > 0)
+            else if(blockState.getValue(SoulHarvesterBlock.IS_PREPARED))
             {
                 return state.setAndContinue(READYUP_ANIMATION);
             }

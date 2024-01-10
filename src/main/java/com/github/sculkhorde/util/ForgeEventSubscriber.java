@@ -93,6 +93,7 @@ public class ForgeEventSubscriber {
         SculkHorde.raidHandler.raidTick(); // Tick the raid handler
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesHandler.tick();
+        //TODO UNCOMMENT
         SculkHorde.eventHandler.serverTick();
         SculkHorde.cursorHandler.serverTick();
 

@@ -115,13 +115,13 @@ public class ModItems {
 		}
 	});
 
+
 	public static final RegistryObject<Item> HEART_OF_PURITY = ITEMS.register("heart_of_purity", () -> new Item(new Item.Properties()){
 		@Override
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
 		}
 	});
-
 	public static final RegistryObject<EyeOfPurityItem> EYE_OF_PURITY = ITEMS.register("eye_of_purity", () -> new EyeOfPurityItem());
 
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPORE_SPEWER_SPAWN_EGG = ITEMS.register("sculk_spore_spewer_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPORE_SPEWER, 0x111B21, 0xD1D6B6, new Item.Properties()));
