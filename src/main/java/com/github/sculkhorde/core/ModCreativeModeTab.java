@@ -53,7 +53,7 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.HEART_OF_THE_HORDE.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.HEART_OF_PURITY.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOUL_HARVESTER_BLOCK.get());
-                if(!FMLLoader.isProduction()) event.accept(ModItems.EYE_OF_PURITY.get());
+                event.accept(ModItems.EYE_OF_PURITY.get());
                 event.accept(ModItems.SCULK_ACIDIC_PROJECTILE.get());
                 event.accept(ModItems.SCULK_RESIN.get());
                 event.accept(ModItems.CALCITE_CLUMP.get());

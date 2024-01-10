@@ -110,6 +110,8 @@
   "tooltip.sculkhorde.heart_of_the_horde": "The heart of the Sculk Horde.",
   "item.sculkhorde.heart_of_purity": "Heart of Purity",
   "tooltip.sculkhorde.heart_of_purity": "WIP",
+  "item.sculkhorde.eye_of_purity": "Eye of Purity",
+  "tooltip.sculkhorde.eye_of_purity": "Used to locate Sculk Nodes. Right-click to throw it. If your in the same dimension as a node, it will head toward a node.",
 
   "block.sculkhorde.infestation_ward_block": "Infestation Ward Block",
   "tooltip.sculkhorde.infestation_ward_block": "A block that prevents Sculk Infestation from spreading to any of it's neighboring blocks. This includes diagonals.",

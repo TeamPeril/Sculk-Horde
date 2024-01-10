@@ -65,7 +65,7 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
     public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 
         super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.in_development")); //Text that displays if not holding shift
+        tooltip.add(Component.translatable("tooltip.sculkhorde.eye_of_purity")); //Text that displays if not holding shift
 
     }
 
@@ -86,6 +86,7 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
         ModSavedData.NodeEntry node = SculkHorde.savedData.getClosestNodeEntry(serverlevel, playerIn.blockPosition());
         if (node == null)
         {
+            playerIn.playSound(SoundEvents.BEACON_DEACTIVATE);
             return InteractionResultHolder.consume(itemstack);
         }
 
@@ -108,6 +109,7 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
 
         playerIn.awardStat(Stats.ITEM_USED.get(this));
         playerIn.swing(handIn, true);
+        playerIn.playSound(SoundEvents.ENCHANTMENT_TABLE_USE);
         return InteractionResultHolder.success(itemstack);
     }
 }
