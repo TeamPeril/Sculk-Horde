@@ -32,6 +32,7 @@ public abstract class CursorEntity extends Entity
         FINISHED
     }
 
+
     protected State state = State.IDLE;
 
     protected int MAX_TRANSFORMATIONS = 100;
@@ -55,11 +56,6 @@ public abstract class CursorEntity extends Entity
     //Create a hash map to store all visited nodes
     protected HashMap<Long, Boolean> visitedPositons = new HashMap<>();
 
-    /**
-     * An Easier Constructor where you do not have to specify the Mob Type
-     * @param worldIn  The world to initialize this mob in
-     */
-    public CursorEntity(Level worldIn) { this(ModEntities.CURSOR_SURFACE_PURIFIER.get(), worldIn); }
 
     public CursorEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
@@ -341,16 +337,53 @@ public abstract class CursorEntity extends Entity
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      *
-     * @param pCompound
+     * @param nbt
      */
     @Override
-    protected void readAdditionalSaveData(CompoundTag pCompound) {
+    protected void readAdditionalSaveData(CompoundTag nbt) {
+        nbt.putInt("MAX_TRANSFORMATIONS", MAX_TRANSFORMATIONS);
+        nbt.putInt("currentTransformations", currentTransformations);
+        nbt.putInt("MAX_RANGE", MAX_RANGE);
+        nbt.putLong("MAX_LIFETIME_MILLIS", MAX_LIFETIME_MILLIS);
+        nbt.putLong("creationTickTime", creationTickTime);
+        nbt.putLong("lastTickTime", lastTickTime);
+        nbt.putLong("ticksRemainingBeforeCheckingIfInCursorList", ticksRemainingBeforeCheckingIfInCursorList);
+        nbt.putLong("searchIterationsPerTick", searchIterationsPerTick);
+        nbt.putLong("tickIntervalMilliseconds", tickIntervalMilliseconds);
+
+        int stateValue;
+        switch (state)
+        {
+            case SEARCHING -> stateValue = 1;
+            case EXPLORING -> stateValue = 2;
+            case FINISHED -> stateValue = 3;
+            default -> stateValue = 0;
+        }
+        nbt.putInt("state", stateValue);
 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag pCompound) {
+    protected void addAdditionalSaveData(CompoundTag nbt) {
+        MAX_TRANSFORMATIONS = nbt.getInt("MAX_TRANSFORMATIONS");
+        currentTransformations = nbt.getInt("currentTransformations");
+        MAX_RANGE = nbt.getInt("MAX_RANGE");
+        MAX_LIFETIME_MILLIS = nbt.getLong("MAX_LIFETIME_MILLIS");
+        creationTickTime = nbt.getLong("creationTickTime");
+        lastTickTime = nbt.getLong("lastTickTime");
+        ticksRemainingBeforeCheckingIfInCursorList = nbt.getLong("ticksRemainingBeforeCheckingIfInCursorList");
+        searchIterationsPerTick = nbt.getInt("searchIterationsPerTick");
+        tickIntervalMilliseconds = nbt.getLong("tickIntervalMilliseconds");
 
+        State stateValue;
+        switch (nbt.getInt("state"))
+        {
+            case 1 -> stateValue = State.SEARCHING;
+            case 2 -> stateValue = State.EXPLORING;
+            case 3 -> stateValue = State.FINISHED;
+            default -> stateValue = State.IDLE;
+        }
+        state = State.IDLE;
     }
 
     @Override
@@ -362,4 +395,11 @@ public abstract class CursorEntity extends Entity
         this.target = target;
     }
 
+    @Override
+    public void onRemovedFromWorld() {
+        if(level().isClientSide()) { return; }
+
+        SculkHorde.cursorHandler.removeCursor(this);
+
+    }
 }

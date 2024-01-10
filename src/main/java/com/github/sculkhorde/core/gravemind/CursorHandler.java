@@ -10,10 +10,10 @@ public class CursorHandler {
     private HashMap<UUID, CursorEntity> cursors = new HashMap<UUID, CursorEntity>();
     private int index = 0;
 
-    private final int DELAY_BETWEEN_TICKS = 5;
+    private final int DELAY_BETWEEN_TICKS = 3;
     private int tickDelay = DELAY_BETWEEN_TICKS;
 
-    private final int CURSORS_TO_TICK_PER_INTERVAL = 10;
+    private final int CURSORS_TO_TICK_PER_INTERVAL = 30;
 
     public void addCursor(CursorEntity entity)
     {
@@ -61,11 +61,12 @@ public class CursorHandler {
             return;
         }
 
+        Object[] listOfCursors = cursors.values().toArray();
+
         tickDelay = 0;
 
         for(int i = 0; i < CURSORS_TO_TICK_PER_INTERVAL; i++)
         {
-            Object[] listOfCursors = cursors.values().toArray();
             if(index >= listOfCursors.length)
             {
                 index = 0;
