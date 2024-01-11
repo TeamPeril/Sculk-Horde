@@ -135,18 +135,6 @@ public class CursorHandler {
             list.add(positionToInsert, entity);
         }
 
-        public void removeCursor(CursorEntity entity)
-        {
-            Optional<Integer> position = getIndexOfCursor(entity);
-            if(position.isEmpty())
-            {
-                return;
-            }
-
-            // This is some weird fuck shit
-            list.remove(position.get().intValue());
-        }
-
         public Optional<Integer> getIndexOfCursor(CursorEntity entity) {
             UUID uuid = entity.getUUID();
 
