@@ -9,8 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CursorHandler {
-
-    //private HashMap<UUID, CursorEntity> cursors = new HashMap<UUID, CursorEntity>();
+    
     SortedCursorList cursors = new SortedCursorList();
     private int index = 0;
 
@@ -25,6 +24,11 @@ public class CursorHandler {
     {
         cursors.insertCursor(entity);
     }
+
+    /**
+     * Add a cursor to the list if it's not already in the list.
+     * @param entity
+     */
     public void computeIfAbsent(CursorEntity entity)
     {
         if(cursors.getIndexOfCursor(entity).isEmpty())
@@ -39,7 +43,9 @@ public class CursorHandler {
     }
 
 
-
+    /**
+     * Go through the list of cursors and tick them
+     */
     public void tickCursors()
     {
         ArrayList<CursorEntity> listOfCursors = cursors.getList();
@@ -64,8 +70,15 @@ public class CursorHandler {
         }
     }
 
+    /**
+     * This runs every tick the server runs.
+     * The purpose of this function is to manually tick all the cursors if it is enabled.
+     * It enables if the population of cursor entities are too high. That way we can control
+     * the rate they tick to conserve performance.
+     */
     public void serverTick()
     {
+        //Only Execute if the cooldown. Get the value from the config file.
         if(tickDelay < ModConfig.SERVER.delay_between_cursor_tick_interval.get())
         {
             tickDelay++;
@@ -73,7 +86,7 @@ public class CursorHandler {
         }
 
         tickDelay = 0;
-        cursors.clean();
+        cursors.clean(); // Clean the list before we start ticking cursors
         int cursorPopulationAmount = getSizeOfCursorList();
         int cursorPopulationThreshold = ModConfig.SERVER.cursors_threshold_for_activation.get();
 
@@ -91,21 +104,39 @@ public class CursorHandler {
     {
         private ArrayList<CursorEntity> list;
 
+        /**
+         * Default Constructor
+         */
         public SortedCursorList()
         {
             list = new ArrayList<>();
         }
 
+        /**
+         * Just get the list of cursors
+         * @return The Array List of cursors
+         */
         public ArrayList<CursorEntity> getList()
         {
             return list;
         }
 
+        /**
+         * Determines if a cursor entity should be deleted from the list.
+         * @param entity The Cursor entity
+         * @return True if the cursor should be deleted, false otherwise.
+         */
         public boolean shouldCursorBeDeleted(CursorEntity entity)
         {
             return entity == null || entity.isRemoved();
         }
 
+        /**
+         * Go through the list, look for cursors that should be deleted,
+         * then get rid of them from the list.
+         * Note: Doing it this way is sort of cheesy. Removing in the middle
+         * of a for loop is not advised.
+         */
         public void clean()
         {
             for(int i = 0; i < list.size(); i++)
@@ -118,6 +149,11 @@ public class CursorHandler {
             }
         }
 
+        /**
+         * Insert a cursor into the list based on the value of it's UUID.
+         * This list is sorted, so we need to insert it into the correct place.
+         * @param entity The Cursor to Insert.
+         */
         public void insertCursor(CursorEntity entity)
         {
             int positionToInsert = 0;
@@ -135,27 +171,34 @@ public class CursorHandler {
             list.add(positionToInsert, entity);
         }
 
+
+        /**
+         * Use Binary Search Algorithm to find the Cursor Entity we are looking for.
+         * @param entity The Cursor Entity
+         * @return The potential position of the cursor in the list.
+         */
         public Optional<Integer> getIndexOfCursor(CursorEntity entity) {
+            // We use the UUID to compare Cursor Entities
             UUID uuid = entity.getUUID();
 
-            int left = 0;
-            int right = list.size() - 1;
+            int leftIndex = 0;
+            int rightIndex = list.size() - 1;
 
-            while (left <= right) {
-                int mid = left + (right - left) / 2;
-                int res = list.get(mid).getUUID().compareTo(uuid);
+            while (leftIndex <= rightIndex) {
+                int midIndex = leftIndex + (rightIndex - leftIndex) / 2;
+                int compareValue = list.get(midIndex).getUUID().compareTo(uuid);
 
                 // Check if UUID is present at mid
-                if (res == 0)
-                    return Optional.of(mid);
+                if (compareValue == 0)
+                    return Optional.of(midIndex);
 
                 // If UUID greater, ignore left half
-                if (res > 0)
-                    left = mid + 1;
+                if (compareValue > 0)
+                    leftIndex = midIndex + 1;
 
                     // If UUID is smaller, ignore right half
                 else
-                    right = mid - 1;
+                    rightIndex = midIndex - 1;
             }
 
             return Optional.empty();
