@@ -29,9 +29,15 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
         super(pType, pLevel);
     }
 
+
+    @Override
+    public boolean canBeManuallyTicked()
+    {
+        return false; // Purifiers should never be manually ticked
+    }
+
     /**
      * Returns true if the block is considered obstructed.
-     * @param state the block state
      * @param pos the block position
      * @return true if the block is considered obstructed
      */

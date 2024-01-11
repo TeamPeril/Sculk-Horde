@@ -179,8 +179,8 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
                 currentTransformations++;
                 state = State.SEARCHING;
                 visitedPositons.clear();
-                queue.clear();
-                queue.add(this.blockPosition());
+                searchQueue.clear();
+                searchQueue.add(this.blockPosition());
             }
         }
         else if (state == State.FINISHED)

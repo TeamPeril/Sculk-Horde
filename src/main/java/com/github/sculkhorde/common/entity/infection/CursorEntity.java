@@ -1,12 +1,10 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -44,17 +42,20 @@ public abstract class CursorEntity extends Entity
 
     protected long ticksRemainingBeforeCheckingIfInCursorList = 0;
     protected final long CHECK_DELAY_TICKS = TickUnits.convertSecondsToTicks(5);
+    protected boolean canBeManuallyTicked = true;
 
     protected int searchIterationsPerTick = 20;
     protected long tickIntervalMilliseconds = 1000;
 
     protected BlockPos origin = BlockPos.ZERO;
     protected BlockPos target = BlockPos.ZERO;
-    Queue<BlockPos> queue = new LinkedList<>();
+    protected HashMap<Long, Boolean> positionsSearched = new HashMap<>();
+    Queue<BlockPos> searchQueue = new LinkedList<>();
     public boolean isSuccessful = false;
 
     //Create a hash map to store all visited nodes
     protected HashMap<Long, Boolean> visitedPositons = new HashMap<>();
+
 
 
     public CursorEntity(EntityType<?> pType, Level pLevel) {
@@ -81,6 +82,10 @@ public abstract class CursorEntity extends Entity
     public void setTickIntervalMilliseconds(long milliseconds) {
         this.tickIntervalMilliseconds = milliseconds;
     }
+
+    public void setCanBeManuallyTicked(boolean value) { canBeManuallyTicked = value; }
+
+    public boolean canBeManuallyTicked() { return canBeManuallyTicked; }
 
     public void setState(State state)
     {
@@ -141,57 +146,119 @@ public abstract class CursorEntity extends Entity
         //this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.1D, 0.0D);
     }
 
+    protected void resetSearchTick()
+    {
+        searchQueue.clear();
+        positionsSearched.clear();
+    }
+
+    protected void addPositionToQueueIfValid(BlockPos pos)
+    {
+        boolean isPositionNotVisited = !positionsSearched.containsKey(pos.asLong());
+        BlockState neighborBlockState = level().getBlockState(pos);
+        boolean isPositionNotObstructed = !isObstructed(neighborBlockState, pos);
+
+        // If not visited and is a valid block to navigate
+        if (isPositionNotVisited && isPositionNotObstructed) {
+            searchQueue.add(pos);
+            positionsSearched.put(pos.asLong(), true);
+        }
+    }
+
     /**
      * Use Breadth-First Search to find the nearest infectable block within a certain maximum distance.
      * @return true if complete. false if not complete.
      */
-    protected boolean searchTick()
-    {
+    protected boolean searchTick() {
+        // Initialize the visited positions map and the queue
         // Complete 20 times.
         for (int i = 0; i < Math.max(searchIterationsPerTick, 1); i++)
         {
             // Breadth-First Search
 
-            if (queue.isEmpty()) {
+            if (searchQueue.isEmpty()) {
                 isSuccessful = false;
                 target = BlockPos.ZERO;
                 return true;
             }
 
-            BlockPos searchBlockPos = queue.poll();
-            BlockState searchBlockState = level().getBlockState(searchBlockPos);
-
-            boolean isValidTarget = isTarget(searchBlockPos);
-            boolean isNotObstructed = !isObstructed(searchBlockState, searchBlockPos);
+            BlockPos currentBlock = searchQueue.poll();
 
             // If the current block is a target, return it
-            if (isValidTarget && isNotObstructed) {
+            if (isTarget(currentBlock)) {
                 isSuccessful = true;
-                target = searchBlockPos;
-                visitedPositons.put(target.asLong(), true);
+                target = currentBlock;
                 return true;
             }
 
             // Get all possible directions
-            ArrayList<BlockPos> possiblePaths = BlockAlgorithms.getNeighborsCube(searchBlockPos, false);
-            Collections.shuffle(possiblePaths);
+            ArrayList<BlockPos> possibleBlocksToVisit = BlockAlgorithms.getNeighborsCube(currentBlock, false);
+            Collections.shuffle(possibleBlocksToVisit);
 
             // Add all neighbors to the queue
-            for (BlockPos neighborPos : possiblePaths) {
-
-                BlockState neighborBlockState = level().getBlockState(neighborPos);
-
-                boolean hasPositionNotBeenVisitedBefore = !visitedPositons.containsKey(neighborPos.asLong());
-                boolean isBlockNotObstructed = !isObstructed(neighborBlockState, neighborPos);
-
-                // If not visited and is a solid block, add to queue
-                if (hasPositionNotBeenVisitedBefore && isBlockNotObstructed) {
-                    queue.add(neighborPos);
-                }
+            for (BlockPos neighbor : possibleBlocksToVisit) {
+                addPositionToQueueIfValid(neighbor);
             }
         }
 
         return false;
+    }
+
+    public void exploreTick()
+    {
+        // Get Neighbors of Each Block
+        ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition(), false);
+        // Create a new list to store unobstructed neighbors
+        ArrayList<BlockPos> unobstructedNeighbors = new ArrayList<>();
+        // Check each neighbor for obstructions and add unobstructed neighbors to the new list
+        for (BlockPos neighbor : neighbors)
+        {
+            if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+                unobstructedNeighbors.add(neighbor);
+            }
+        }
+
+        // If there are no non-obstructed neighbors, return
+        if (neighbors.size() == 0) {
+            return;
+        }
+
+        // Find the block that is closest to target in neighbors
+        BlockPos closest = neighbors.get(0);
+        for (BlockPos pos : neighbors)
+        {
+            if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target)) {
+                closest = pos;
+            }
+        }
+
+
+        // Move to the closest block
+        this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
+
+        // If we've reached the target block, find a new target
+        if (this.blockPosition().equals(target))
+        {
+            target = BlockPos.ZERO;
+            BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
+
+            boolean isTarget = isTarget(this.blockPosition());
+            boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());
+            // If the block is not obstructed, infect it
+            if(isTarget && isNotObstructed)
+            {
+                // Infect the block and increase the infection count
+                transformBlock(this.blockPosition());
+                currentTransformations++;
+            }
+
+            setState(State.SEARCHING);
+            resetSearchTick();
+            searchQueue.add(this.blockPosition());
+        }
+
+        // Mark position as visited
+        visitedPositons.put(closest.asLong(), true);
     }
 
     public void cursorTick()
@@ -233,7 +300,7 @@ public abstract class CursorEntity extends Entity
 
         if(state == State.IDLE)
         {
-            queue.add(this.blockPosition());
+            searchQueue.add(this.blockPosition());
             setState(State.SEARCHING);
         }
         else if (state == State.SEARCHING)
@@ -257,60 +324,7 @@ public abstract class CursorEntity extends Entity
         }
         else if (state == State.EXPLORING)
         {
-            // Get Neighbors of Each Block
-            ArrayList<BlockPos> neighbors = BlockAlgorithms.getNeighborsCube(this.blockPosition(), false);
-            // Create a new list to store unobstructed neighbors
-            ArrayList<BlockPos> unobstructedNeighbors = new ArrayList<>();
-            // Check each neighbor for obstructions and add unobstructed neighbors to the new list
-            for (BlockPos neighbor : neighbors)
-            {
-                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
-                    unobstructedNeighbors.add(neighbor);
-                }
-            }
-
-            // If there are no non-obstructed neighbors, return
-            if (neighbors.size() == 0) {
-                return;
-            }
-
-            // Find the block that is closest to target in neighbors
-            BlockPos closest = neighbors.get(0);
-            for (BlockPos pos : neighbors)
-            {
-                if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target)) {
-                    closest = pos;
-                }
-            }
-
-
-            // Move to the closest block
-            this.setPos(closest.getX() + 0.5, closest.getY(), closest.getZ() + 0.5);
-
-            // If we've reached the target block, find a new target
-            if (this.blockPosition().equals(target))
-            {
-                target = BlockPos.ZERO;
-                BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
-
-                boolean isTarget = isTarget(this.blockPosition());
-                boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());
-                // If the block is not obstructed, infect it
-                if(isTarget && isNotObstructed)
-                {
-                    // Infect the block and increase the infection count
-                    transformBlock(this.blockPosition());
-                    currentTransformations++;
-                }
-
-                setState(State.SEARCHING);
-                visitedPositons.clear();
-                queue.clear();
-                queue.add(this.blockPosition());
-            }
-
-            // Mark position as visited
-            visitedPositons.put(closest.asLong(), true);
+            exploreTick();
         }
         else if (state == State.FINISHED)
         {
@@ -322,14 +336,25 @@ public abstract class CursorEntity extends Entity
     public void tick() {
         super.tick();
 
-        ticksRemainingBeforeCheckingIfInCursorList--;
 
-        if(ticksRemainingBeforeCheckingIfInCursorList <= 0)
+        if(canBeManuallyTicked())
         {
-            SculkHorde.cursorHandler.computeIfAbsent(this);
-            ticksRemainingBeforeCheckingIfInCursorList = CHECK_DELAY_TICKS;
-        }
+            ticksRemainingBeforeCheckingIfInCursorList--;
 
+            if(ticksRemainingBeforeCheckingIfInCursorList <= 0)
+            {
+                SculkHorde.cursorHandler.computeIfAbsent(this);
+                ticksRemainingBeforeCheckingIfInCursorList = CHECK_DELAY_TICKS;
+            }
+        }
+        boolean canBeManuallyTickedAndManualControlIsNotOn = (canBeManuallyTicked() && !SculkHorde.cursorHandler.isManualControlOfTickingEnabled());
+        boolean cannotBeManuallyTicked = !canBeManuallyTicked();
+
+        boolean shouldTick = canBeManuallyTickedAndManualControlIsNotOn || cannotBeManuallyTicked;
+
+        if(shouldTick) {
+            cursorTick();
+        }
 
     }
 
@@ -341,6 +366,7 @@ public abstract class CursorEntity extends Entity
      */
     @Override
     protected void readAdditionalSaveData(CompoundTag nbt) {
+        /*
         nbt.putInt("MAX_TRANSFORMATIONS", MAX_TRANSFORMATIONS);
         nbt.putInt("currentTransformations", currentTransformations);
         nbt.putInt("MAX_RANGE", MAX_RANGE);
@@ -361,10 +387,13 @@ public abstract class CursorEntity extends Entity
         }
         nbt.putInt("state", stateValue);
 
+         */
+
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag nbt) {
+        /*
         MAX_TRANSFORMATIONS = nbt.getInt("MAX_TRANSFORMATIONS");
         currentTransformations = nbt.getInt("currentTransformations");
         MAX_RANGE = nbt.getInt("MAX_RANGE");
@@ -384,6 +413,8 @@ public abstract class CursorEntity extends Entity
             default -> stateValue = State.IDLE;
         }
         state = State.IDLE;
+
+         */
     }
 
     @Override
@@ -398,8 +429,16 @@ public abstract class CursorEntity extends Entity
     @Override
     public void onRemovedFromWorld() {
         if(level().isClientSide()) { return; }
+    }
 
-        SculkHorde.cursorHandler.removeCursor(this);
-
+    public void chanceToThanosSnapThisCursor()
+    {
+        if(ModConfig.SERVER.thanos_snap_cursors_after_reaching_threshold.get() && SculkHorde.cursorHandler.isManualControlOfTickingEnabled())
+        {
+            if(random.nextBoolean())
+            {
+                discard();
+            }
+        }
     }
 }

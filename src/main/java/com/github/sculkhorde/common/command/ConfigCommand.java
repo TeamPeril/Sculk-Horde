@@ -23,6 +23,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 .then(triggerAutomaticallyConfig(dispatcher))
                 .then(sculkRaidConfig(dispatcher))
                 .then(infestationAndPurificationConfig(dispatcher))
+                .then(emergencyManualCursorTickControl(dispatcher))
                 .then(sculkMiteConfig(dispatcher))
                 .then(modCompatibilityConfig(dispatcher))
                 .then(sculkNodeConfig(dispatcher))
@@ -89,6 +90,13 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 .then(doubleConfigOption("infestation_speed_multiplier", -10, 10))
                 .then(doubleConfigOption("purification_speed_multiplier", -10, 10))
                 .then(integerConfigOption("purifier_range", 0, 100));
+    }
+    private static ArgumentBuilder<CommandSourceStack, ?> emergencyManualCursorTickControl(CommandDispatcher<CommandSourceStack> dispatcher) {
+        return Commands.literal("emergency_manual_cursor_tick_control")
+                .then(integerConfigOption("cursors_threshold_for_activation", 0, Integer.MAX_VALUE))
+                .then(integerConfigOption("cursors_to_tick_per_tick", 0, 100))
+                .then(integerConfigOption("delay_between_cursor_tick_interval", 0, 100))
+                .then(booleanConfigOption("thanos_snap_cursors_after_reaching_threshold"));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> sculkMiteConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -203,6 +211,31 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 case "purifier_range":
                     if (valueType.equals(Integer.class)) {
                         ModConfig.SERVER.infestation_purifier_range.set((Integer) rawValue);
+                        success = true;
+                    }
+                    break;
+                // Emergency Cursor Ticking
+                case "cursors_threshold_for_activation":
+                    if (valueType.equals(Integer.class)) {
+                        ModConfig.SERVER.cursors_threshold_for_activation.set((Integer) rawValue);
+                        success = true;
+                    }
+                    break;
+                case "cursors_to_tick_per_tick":
+                    if (valueType.equals(Integer.class)) {
+                        ModConfig.SERVER.cursors_to_tick_per_tick.set((Integer) rawValue);
+                        success = true;
+                    }
+                    break;
+                case "delay_between_cursor_tick_interval":
+                    if (valueType.equals(Integer.class)) {
+                        ModConfig.SERVER.delay_between_cursor_tick_interval.set((Integer) rawValue);
+                        success = true;
+                    }
+                    break;
+                case "thanos_snap_cursors_after_reaching_threshold":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.thanos_snap_cursors_after_reaching_threshold.set((Boolean) rawValue);
                         success = true;
                     }
                     break;

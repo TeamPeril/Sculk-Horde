@@ -94,6 +94,7 @@ public class DevInfectionTree {
         cursorProbe.setPreferedDirection(direction);
         cursorProbe.setPos(this.root.blockPos.getX(), this.root.blockPos.getY(), this.root.blockPos.getZ());
         cursorProbe.setMaxTransformations(1);
+        cursorProbe.setCanBeManuallyTicked(false);
         this.world.addFreshEntity(cursorProbe);
     }
 
@@ -106,6 +107,7 @@ public class DevInfectionTree {
         cursorInfection.setPos(infectedTargetPosition.getX(), infectedTargetPosition.getY(), infectedTargetPosition.getZ());
         cursorInfection.setMaxRange(maxInfections);
         cursorInfection.setTickIntervalMilliseconds(2);
+        cursorInfection.setCanBeManuallyTicked(false);
         this.world.addFreshEntity(cursorInfection);
     }
 

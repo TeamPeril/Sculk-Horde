@@ -47,6 +47,8 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "\n"
                         + "Events in Queue: " + SculkHorde.eventHandler.getEvents().size()
                         + "\n"
+                        + "Emergency Manual Cursor Ticking Enabled?: " + SculkHorde.cursorHandler.isManualControlOfTickingEnabled()
+                        + "\n"
                         + "Cursors being Ticked: " + SculkHorde.cursorHandler.getSizeOfCursorList()
                 ), false);
         return 0;

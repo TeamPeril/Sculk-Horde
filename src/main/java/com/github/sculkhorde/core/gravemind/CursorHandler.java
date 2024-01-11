@@ -1,85 +1,62 @@
 package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.infection.CursorEntity;
+import com.github.sculkhorde.core.ModConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 public class CursorHandler {
 
-    private HashMap<UUID, CursorEntity> cursors = new HashMap<UUID, CursorEntity>();
+    //private HashMap<UUID, CursorEntity> cursors = new HashMap<UUID, CursorEntity>();
+    SortedCursorList cursors = new SortedCursorList();
     private int index = 0;
 
-    private final int DELAY_BETWEEN_TICKS = 3;
-    private int tickDelay = DELAY_BETWEEN_TICKS;
+    private int tickDelay = 3;
 
-    private final int CURSORS_TO_TICK_PER_INTERVAL = 30;
+    private boolean manualControlOfTickingEnabled = false;
+
+    public void setManualControlOfTickingEnabled(boolean value) { manualControlOfTickingEnabled = value; }
+    public boolean isManualControlOfTickingEnabled() { return manualControlOfTickingEnabled; }
 
     public void addCursor(CursorEntity entity)
     {
-        cursors.put(entity.getUUID(), entity);
+        cursors.insertCursor(entity);
     }
-
-    public void removeCursor(CursorEntity entity)
-    {
-        cursors.remove(entity.getUUID());
-    }
-
-    public boolean isCursorInList(CursorEntity entity)
-    {
-        return cursors.get(entity.getUUID()) != null;
-    }
-
     public void computeIfAbsent(CursorEntity entity)
     {
-        if(!isCursorInList(entity))
+        if(cursors.getIndexOfCursor(entity).isEmpty())
         {
             addCursor(entity);
         }
-        else
-        {
-            entity.cursorTick();
-        }
-
-    }
-
-    public boolean shouldCursorBeDeleted(CursorEntity entity)
-    {
-        return entity == null || entity.isRemoved();
     }
 
     public int getSizeOfCursorList()
     {
-        return cursors.size();
+        return cursors.list.size();
     }
 
-    public void serverTick()
+
+
+    public void tickCursors()
     {
-        if(tickDelay < DELAY_BETWEEN_TICKS)
+        ArrayList<CursorEntity> listOfCursors = cursors.getList();
+
+        for(int i = 0; i < ModConfig.SERVER.cursors_to_tick_per_tick.get(); i++)
         {
-            tickDelay++;
-            return;
-        }
-
-        Object[] listOfCursors = cursors.values().toArray();
-
-        tickDelay = 0;
-
-        for(int i = 0; i < CURSORS_TO_TICK_PER_INTERVAL; i++)
-        {
-            if(index >= listOfCursors.length)
+            if(index >= listOfCursors.size())
             {
                 index = 0;
                 continue;
             }
 
-            CursorEntity cursorAtIndex = (CursorEntity) listOfCursors[index];
+            CursorEntity cursorAtIndex = listOfCursors.get(index);
 
-            if(shouldCursorBeDeleted(cursorAtIndex))
-            {
-                removeCursor(cursorAtIndex);
-            }
-            else
+            cursorAtIndex.chanceToThanosSnapThisCursor();
+
+            if(cursorAtIndex.canBeManuallyTicked())
             {
                 cursorAtIndex.cursorTick();
                 index++;
@@ -87,4 +64,113 @@ public class CursorHandler {
         }
     }
 
+    public void serverTick()
+    {
+        if(tickDelay < ModConfig.SERVER.delay_between_cursor_tick_interval.get())
+        {
+            tickDelay++;
+            return;
+        }
+
+        tickDelay = 0;
+        cursors.clean();
+        int cursorPopulationAmount = getSizeOfCursorList();
+        int cursorPopulationThreshold = ModConfig.SERVER.cursors_threshold_for_activation.get();
+
+        if(cursorPopulationAmount >= cursorPopulationThreshold)
+        {
+            setManualControlOfTickingEnabled(true);
+            tickCursors();
+            return;
+        }
+
+        setManualControlOfTickingEnabled(false);
+    }
+
+    public class SortedCursorList
+    {
+        private ArrayList<CursorEntity> list;
+
+        public SortedCursorList()
+        {
+            list = new ArrayList<>();
+        }
+
+        public ArrayList<CursorEntity> getList()
+        {
+            return list;
+        }
+
+        public boolean shouldCursorBeDeleted(CursorEntity entity)
+        {
+            return entity == null || entity.isRemoved();
+        }
+
+        public void clean()
+        {
+            for(int i = 0; i < list.size(); i++)
+            {
+                if(shouldCursorBeDeleted(list.get(i)))
+                {
+                    list.remove(i);
+                    i--;
+                }
+            }
+        }
+
+        public void insertCursor(CursorEntity entity)
+        {
+            int positionToInsert = 0;
+
+            for(int index = 0; index < list.size(); index++)
+            {
+                CursorEntity cursorAtIndex = list.get(index);
+                positionToInsert = index;
+
+                if(entity.getUUID().compareTo(cursorAtIndex.getUUID()) >= 0)
+                {
+                    break;
+                }
+            }
+            list.add(positionToInsert, entity);
+        }
+
+        public void removeCursor(CursorEntity entity)
+        {
+            Optional<Integer> position = getIndexOfCursor(entity);
+            if(position.isEmpty())
+            {
+                return;
+            }
+
+            // This is some weird fuck shit
+            list.remove(position.get().intValue());
+        }
+
+        public Optional<Integer> getIndexOfCursor(CursorEntity entity) {
+            UUID uuid = entity.getUUID();
+
+            int left = 0;
+            int right = list.size() - 1;
+
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+                int res = list.get(mid).getUUID().compareTo(uuid);
+
+                // Check if UUID is present at mid
+                if (res == 0)
+                    return Optional.of(mid);
+
+                // If UUID greater, ignore left half
+                if (res > 0)
+                    left = mid + 1;
+
+                    // If UUID is smaller, ignore right half
+                else
+                    right = mid - 1;
+            }
+
+            return Optional.empty();
+        }
+    }
 }

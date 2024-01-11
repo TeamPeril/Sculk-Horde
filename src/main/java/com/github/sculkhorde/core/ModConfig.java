@@ -49,6 +49,11 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
 
+        public final ForgeConfigSpec.ConfigValue<Integer> cursors_threshold_for_activation;
+        public final ForgeConfigSpec.ConfigValue<Integer> cursors_to_tick_per_tick;
+        public final ForgeConfigSpec.ConfigValue<Integer> delay_between_cursor_tick_interval;
+        public final ForgeConfigSpec.ConfigValue<Boolean> thanos_snap_cursors_after_reaching_threshold;
+
 
         public Server(ForgeConfigSpec.Builder builder) {
 
@@ -75,6 +80,14 @@ public class ModConfig {
             purification_speed_multiplier = builder.comment("How much faster or slower should purification spread? (Default 0)").defineInRange("purification_speed_multiplier",0f, -10f, 10f);
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             builder.pop();
+
+            builder.push("Emergency Manual Cursor Tick Control. (An emergency system that kicks in if there are too many cursors, which can lag the game.)");
+            cursors_threshold_for_activation = builder.comment("How many cursors need to exist for this system to kick in. (Default 300)").defineInRange("cursors_threshold_for_activation", 300, 0, Integer.MAX_VALUE);
+            cursors_to_tick_per_tick = builder.comment("How many cursors should we tick, per in game tick. (Default 50)").defineInRange("cursors_to_tick_per_tick", 50, 0, 100);
+            delay_between_cursor_tick_interval = builder.comment("How many ticks should there be between intervals of ticking cursors. (Default 1)").defineInRange("delay_between_cursor_tick_interval", 1, 0, 100);
+            thanos_snap_cursors_after_reaching_threshold = builder.comment("50% Chance for cursors to discard themselves upon reaching threshold. (Default false)").define("thanos_snap_cursors_after_reaching_threshold", false);
+            builder.pop();
+
 
             builder.push("Gravemind Variables");
             gravemind_mass_goal_for_immature_stage = builder.comment("How much mass is needed for the Gravemind to enter the immature stage? (Default 5000)").defineInRange("gravemind_mass_goal_for_immature_stage",5000, 0, Integer.MAX_VALUE);
