@@ -51,7 +51,7 @@ public class SculkHorde {
     public static CursorHandler cursorHandler = new CursorHandler();
     public static SculkNodesHandler sculkNodesHandler;
     public static StatisticsData statisticsData;
-    public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper;
+    public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper();
     public static EntityChunkLoaderHelper entityChunkLoaderHelper = new EntityChunkLoaderHelper();
     public static final Logger LOGGER = LogUtils.getLogger();
 

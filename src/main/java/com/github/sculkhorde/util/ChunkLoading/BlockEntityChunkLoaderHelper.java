@@ -53,8 +53,8 @@ public class BlockEntityChunkLoaderHelper
 
         resetTickCooldown();
 
-        safelyCleanExpiredChunks();
-        loadChunksThatNeedToBeLoaded();
+        //safelyCleanExpiredChunks();
+        //loadChunksThatNeedToBeLoaded();
     }
 
     public void safelyRemoveChunksAtIndexes(ArrayList<Integer> indexesToRemove)
