@@ -8,7 +8,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +24,11 @@ public class EntityChunkLoaderHelper
     {
 
     }
+
+    public static EntityChunkLoaderHelper getEntityChunkLoaderHelper()
+    {
+        return SculkHorde.entityChunkLoaderHelper;
+    }
     public ArrayList<EntityChunkLoadRequest> getEntityChunkLoadRequests()
     {
         return entityChunkLoadRequests;
@@ -40,48 +44,6 @@ public class EntityChunkLoaderHelper
         tickCooldownRemaining = TICKS_BETWEEN_PROCESSING;
     }
 
-    public static void load(CompoundTag tag)
-    {
-        if(getEntityChunkLoaderHelper() == null)
-        {
-            SculkHorde.LOGGER.error("EntityChunkLoaderHelper is null. Cannot Load");
-            return;
-        }
-
-        getEntityChunkLoaderHelper().entityChunkLoadRequests.clear();
-        ListTag entityChunkLoadRequestsTag = tag.getList("entityChunkLoadRequests", 10);
-        for(int i = 0; i < entityChunkLoadRequestsTag.size(); i++)
-        {
-            CompoundTag requestTag = entityChunkLoadRequestsTag.getCompound(i);
-            EntityChunkLoadRequest request = EntityChunkLoadRequest.serialize(requestTag);
-            getEntityChunkLoaderHelper().entityChunkLoadRequests.add(request);
-        }
-    }
-
-    public static CompoundTag save(CompoundTag tag)
-    {
-        if(getEntityChunkLoaderHelper() == null)
-        {
-            SculkHorde.LOGGER.error("EntityChunkLoaderHelper is null. Cannot Save");
-            return tag;
-        }
-
-        ListTag entityChunkLoadRequestsTag = new ListTag();
-        for(EntityChunkLoadRequest request : getEntityChunkLoaderHelper().entityChunkLoadRequests)
-        {
-            entityChunkLoadRequestsTag.add(request.deserialize());
-        }
-        tag.put("entityChunkLoadRequests", entityChunkLoadRequestsTag);
-
-        return tag;
-    }
-
-    public static EntityChunkLoaderHelper getEntityChunkLoaderHelper()
-    {
-        return SculkHorde.entityChunkLoaderHelper;
-    }
-
-
     public void processEntityChunkLoadRequests()
     {
         if(!isTickCooldownFinished())
@@ -92,6 +54,35 @@ public class EntityChunkLoaderHelper
 
         resetTickCooldown();
 
+        safelyCleanExpiredChunks();
+        loadChunksThatNeedToBeLoaded();
+    }
+
+    public void safelyRemoveChunksAtIndexes(ArrayList<Integer> indexesToRemove)
+    {
+        // New List to reassign to entityChunkLoadRequests
+        ArrayList<EntityChunkLoadRequest> newList = new ArrayList<>();
+
+        for(int i = 0; i < entityChunkLoadRequests.size(); i++)
+        {
+            // Skip the index to remove
+            if(indexesToRemove.contains(i))
+            {
+                unloadChunksWithOwner(entityChunkLoadRequests.get(i).getOwner(), entityChunkLoadRequests.get(i).getDimension());
+                continue;
+            }
+
+            newList.add(entityChunkLoadRequests.get(i));
+        }
+
+        // Reassign the list
+        entityChunkLoadRequests = newList;
+    }
+
+    public void safelyCleanExpiredChunks()
+    {
+        ArrayList<Integer> indexesToRemove = new ArrayList<>();
+
         for(int i = 0; i < entityChunkLoadRequests.size(); i++)
         {
             EntityChunkLoadRequest request = entityChunkLoadRequests.get(i);
@@ -100,18 +91,26 @@ public class EntityChunkLoaderHelper
             if(request.getDimension() == null)
             {
                 if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.error("EntityChunkLoader | Dimension is null, Removing");}
-                entityChunkLoadRequests.remove(i);
-                i--;
+                indexesToRemove.add(i);
                 continue;
             }
 
             if(request.isExpired())
             {
                 if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Chunk EXPIRED, Unloading and Removing");}
-                unloadAndRemoveChunksWithOwner(request.getOwner(), request.getDimension());
+                indexesToRemove.add(i);
                 return;
             }
-            //if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Chunk OK, Making Sure Loaded");}
+        }
+
+        safelyRemoveChunksAtIndexes(indexesToRemove);
+    }
+
+    public void loadChunksThatNeedToBeLoaded()
+    {
+        for(int i = 0; i < entityChunkLoadRequests.size(); i++)
+        {
+            EntityChunkLoadRequest request = entityChunkLoadRequests.get(i);
             loadChunksWithOwner(request.getOwner(), request.getDimension());
         }
     }
@@ -123,11 +122,7 @@ public class EntityChunkLoaderHelper
             SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
             return;
         }
-
-        // Old shit method that causes runaway chunks
-        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
         world.setChunkForced(chunkX, chunkZ, true);
-
     }
     public static void unloadChunk(ServerLevel world, int chunkX, int chunkZ) {
 
@@ -136,24 +131,15 @@ public class EntityChunkLoaderHelper
             SculkHorde.LOGGER.error("World is null. Cannot Force Unload Chunk");
             return;
         }
-
-        // Old shit method that causes runaway chunks
-        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
         world.setChunkForced(chunkX, chunkZ, false);
     }
-    public void unloadAndRemoveChunksWithOwner(UUID owner, ServerLevel level)
+    public void unloadChunksWithOwner(UUID owner, ServerLevel level)
     {
-        Iterator<EntityChunkLoadRequest> iterator = entityChunkLoadRequests.iterator();
-        while(iterator.hasNext())
-        {
-            EntityChunkLoadRequest request = iterator.next();
-            if(request.isOwner(owner))
-            {
-                for(ChunkPos chunkPos : request.getChunkPositionsToLoad())
-                {
+        for (EntityChunkLoadRequest request : entityChunkLoadRequests) {
+            if (request.isOwner(owner)) {
+                for (ChunkPos chunkPos : request.getChunkPositionsToLoad()) {
                     unloadChunk(level, chunkPos.x, chunkPos.z);
                 }
-                iterator.remove();
             }
         }
     }
@@ -227,4 +213,41 @@ public class EntityChunkLoaderHelper
         entityChunkLoadRequests.add(request);
         loadChunksWithOwner(request.getOwner(), request.getDimension());
     }
+
+    public static void load(CompoundTag tag)
+    {
+        if(getEntityChunkLoaderHelper() == null)
+        {
+            SculkHorde.LOGGER.error("EntityChunkLoaderHelper is null. Cannot Load");
+            return;
+        }
+
+        getEntityChunkLoaderHelper().entityChunkLoadRequests.clear();
+        ListTag entityChunkLoadRequestsTag = tag.getList("entityChunkLoadRequests", 10);
+        for(int i = 0; i < entityChunkLoadRequestsTag.size(); i++)
+        {
+            CompoundTag requestTag = entityChunkLoadRequestsTag.getCompound(i);
+            EntityChunkLoadRequest request = EntityChunkLoadRequest.serialize(requestTag);
+            getEntityChunkLoaderHelper().entityChunkLoadRequests.add(request);
+        }
+    }
+
+    public static CompoundTag save(CompoundTag tag)
+    {
+        if(getEntityChunkLoaderHelper() == null)
+        {
+            SculkHorde.LOGGER.error("EntityChunkLoaderHelper is null. Cannot Save");
+            return tag;
+        }
+
+        ListTag entityChunkLoadRequestsTag = new ListTag();
+        for(EntityChunkLoadRequest request : getEntityChunkLoaderHelper().entityChunkLoadRequests)
+        {
+            entityChunkLoadRequestsTag.add(request.deserialize());
+        }
+        tag.put("entityChunkLoadRequests", entityChunkLoadRequestsTag);
+
+        return tag;
+    }
+
 }

@@ -13,10 +13,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BlockEntityChunkLoaderHelper
 {
-    private ArrayList<BlockEntityChunkLoadRequest> blockChunkLoadRequests = new ArrayList<>();
+    private CopyOnWriteArrayList<BlockEntityChunkLoadRequest> blockChunkLoadRequests = new CopyOnWriteArrayList<>();
     private int tickCooldownRemaining = 0;
     private final int TICKS_BETWEEN_PROCESSING = TickUnits.convertSecondsToTicks(10);
 
@@ -25,7 +26,7 @@ public class BlockEntityChunkLoaderHelper
 
     }
 
-    public ArrayList<BlockEntityChunkLoadRequest> getBlockChunkLoadRequests()
+    public CopyOnWriteArrayList<BlockEntityChunkLoadRequest> getBlockChunkLoadRequests()
     {
         return blockChunkLoadRequests;
     }

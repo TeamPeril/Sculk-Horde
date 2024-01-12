@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CursorHandler {
-    
+
     SortedCursorList cursors = new SortedCursorList();
     private int index = 0;
 
