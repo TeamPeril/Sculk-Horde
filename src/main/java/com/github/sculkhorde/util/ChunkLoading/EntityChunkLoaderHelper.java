@@ -211,7 +211,7 @@ public class EntityChunkLoaderHelper
         }
         EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level().dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         entityChunkLoadRequests.add(request);
-        loadChunksWithOwner(request.getOwner(), request.getDimension());
+        //loadChunksWithOwner(request.getOwner(), request.getDimension()); NOT THIS
     }
 
     public static void load(CompoundTag tag)

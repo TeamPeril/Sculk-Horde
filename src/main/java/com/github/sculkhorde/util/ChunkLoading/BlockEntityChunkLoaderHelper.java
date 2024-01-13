@@ -224,7 +224,7 @@ public class BlockEntityChunkLoaderHelper
         {
             BlockEntityChunkLoadRequest request = new BlockEntityChunkLoadRequest(level.dimension(), owner, chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
             blockChunkLoadRequests.add(request);
-            loadChunksWithOwner(request.getOwner(), request.getDimension());
+            //loadChunksWithOwner(request.getOwner(), request.getDimension()); NOT THIS
         }
     }
 
