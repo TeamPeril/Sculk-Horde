@@ -53,8 +53,8 @@ public class BlockEntityChunkLoaderHelper
 
         resetTickCooldown();
 
-        //safelyCleanExpiredChunks();
-        //loadChunksThatNeedToBeLoaded();
+        safelyCleanExpiredChunks();
+        loadChunksThatNeedToBeLoaded();
     }
 
     public void safelyRemoveChunksAtIndexes(ArrayList<Integer> indexesToRemove)
@@ -121,10 +121,6 @@ public class BlockEntityChunkLoaderHelper
             SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
             return;
         }
-
-        // Old shit method that causes runaway chunks
-        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, true, true);
-        //SculkHorde.LOGGER.debug("Successfully Loaded Chunk");
         world.setChunkForced(chunkX, chunkZ, true);
     }
 
@@ -136,8 +132,6 @@ public class BlockEntityChunkLoaderHelper
             return;
         }
 
-        // Old shit method that causes runaway chunks
-        //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
         SculkHorde.LOGGER.debug("Successfully Unloaded Chunk");
         world.setChunkForced(chunkX, chunkZ, false);
     }
