@@ -121,7 +121,14 @@ public class BlockEntityChunkLoaderHelper
             SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
             return;
         }
-        world.setChunkForced(chunkX, chunkZ, true);
+
+        if(world.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot forceLoadChunk on the client >:( Dont do that.");
+            return;
+        }
+
+        //world.setChunkForced(chunkX, chunkZ, true);
     }
 
     public static void unloadChunk(ServerLevel world, BlockPos owner, int chunkX, int chunkZ) {
@@ -132,11 +139,23 @@ public class BlockEntityChunkLoaderHelper
             return;
         }
 
+        if(world.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot unloadChunk on the client >:( Dont do that.");
+            return;
+        }
+
         SculkHorde.LOGGER.debug("Successfully Unloaded Chunk");
-        world.setChunkForced(chunkX, chunkZ, false);
+        //world.setChunkForced(chunkX, chunkZ, false);
     }
     public void unloadChunksWithOwner(BlockPos owner, ServerLevel level)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot unloadChunksWithOwner on the client >:( Dont do that.");
+            return;
+        }
+
         for (BlockEntityChunkLoadRequest request : blockChunkLoadRequests) {
             if (request.isOwner(owner)) {
                 for (ChunkPos chunkPos : request.getChunkPositionsToLoad()) {
@@ -148,6 +167,12 @@ public class BlockEntityChunkLoaderHelper
 
     public void loadChunksWithOwner(BlockPos owner, ServerLevel level)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot loadChunksWithOwner on the client >:( Dont do that.");
+            return;
+        }
+
         for(int i = 0; i < blockChunkLoadRequests.size(); i++)
         {
             BlockEntityChunkLoadRequest request = blockChunkLoadRequests.get(i);
@@ -163,6 +188,12 @@ public class BlockEntityChunkLoaderHelper
 
     public void removeRequestsWithOwner(BlockPos owner, ServerLevel level)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot removeRequestsWithOwner on the client >:( Dont do that.");
+            return;
+        }
+
         ArrayList<BlockEntityChunkLoadRequest> requestsToRemove = new ArrayList<>();
         for(BlockEntityChunkLoadRequest request : blockChunkLoadRequests)
         {
@@ -194,6 +225,12 @@ public class BlockEntityChunkLoaderHelper
 
     public void createChunkLoadRequestSquare(ServerLevel level, BlockPos owner, int length, int priority, long ticksUnitExpiration)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot createChunkLoadRequestSquare on the client >:( Dont do that.");
+            return;
+        }
+
         if (length % 2 == 0) {
             length++; // Ensure the length is odd
         }
@@ -219,6 +256,11 @@ public class BlockEntityChunkLoaderHelper
 
     private void createChunkLoadRequest(ServerLevel level, BlockPos owner, ChunkPos[] chunkPositionsToLoad, int priority, String requestID, long ticksUntilExpiration)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot createChunkLoadRequest on the client >:( Dont do that.");
+            return;
+        }
 
         if(!doesChunkLoadRequestAlreadyExist(requestID) && ModConfig.SERVER.chunk_loading_enabled.get())
         {

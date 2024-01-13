@@ -122,7 +122,13 @@ public class EntityChunkLoaderHelper
             SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
             return;
         }
-        world.setChunkForced(chunkX, chunkZ, true);
+        if(world.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot forceLoadChunk on the client >:( Dont do that.");
+            return;
+        }
+
+        //world.setChunkForced(chunkX, chunkZ, true);
     }
     public static void unloadChunk(ServerLevel world, int chunkX, int chunkZ) {
 
@@ -131,10 +137,16 @@ public class EntityChunkLoaderHelper
             SculkHorde.LOGGER.error("World is null. Cannot Force Unload Chunk");
             return;
         }
-        world.setChunkForced(chunkX, chunkZ, false);
+        //world.setChunkForced(chunkX, chunkZ, false);
     }
     public void unloadChunksWithOwner(UUID owner, ServerLevel level)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot unloadChunksWithOwner on the client >:( Dont do that.");
+            return;
+        }
+
         for (EntityChunkLoadRequest request : entityChunkLoadRequests) {
             if (request.isOwner(owner)) {
                 for (ChunkPos chunkPos : request.getChunkPositionsToLoad()) {
@@ -145,6 +157,12 @@ public class EntityChunkLoaderHelper
     }
     public void loadChunksWithOwner(UUID owner, ServerLevel level)
     {
+        if(level.isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot unloadChunksWithOwner on the client >:( Dont do that.");
+            return;
+        }
+
         Iterator<EntityChunkLoadRequest> iterator = entityChunkLoadRequests.iterator();
         while(iterator.hasNext())
         {
@@ -209,6 +227,12 @@ public class EntityChunkLoaderHelper
         {
             return;
         }
+        if(owner.level().isClientSide())
+        {
+            SculkHorde.LOGGER.error("You cannot createChunkLoadRequest on the client >:( Dont do that.");
+            return;
+        }
+
         EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level().dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         entityChunkLoadRequests.add(request);
         //loadChunksWithOwner(request.getOwner(), request.getDimension()); NOT THIS
