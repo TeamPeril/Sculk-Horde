@@ -92,6 +92,12 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     }
 
     @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
+    @Override
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;

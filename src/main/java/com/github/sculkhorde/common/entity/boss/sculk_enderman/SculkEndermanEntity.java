@@ -129,6 +129,12 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
     // Accessors and Modifiers
 
     public boolean isSpecialAttackOnCooldown() {

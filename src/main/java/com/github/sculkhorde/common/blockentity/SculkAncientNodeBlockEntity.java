@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
-import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
@@ -10,7 +9,6 @@ import com.github.sculkhorde.core.gravemind.events.Event;
 import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;

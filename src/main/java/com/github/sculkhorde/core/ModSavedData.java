@@ -5,12 +5,8 @@ import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
-import com.github.sculkhorde.core.gravemind.events.Event;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
-import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
-import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.StatisticsData;
 import com.github.sculkhorde.util.TickUnits;
@@ -174,8 +170,8 @@ public class ModSavedData extends SavedData {
 
         StatisticsData.load(nbt);
         RaidData.load(nbt);
-        BlockEntityChunkLoaderHelper.load(nbt);
-        EntityChunkLoaderHelper.load(nbt);
+        //BlockEntityChunkLoaderHelper.load(nbt);
+        //EntityChunkLoaderHelper.load(nbt);
         EventHandler.load(nbt);
 
         return getGravemindMemory();
@@ -236,8 +232,8 @@ public class ModSavedData extends SavedData {
 
         RaidData.save(nbt);
         StatisticsData.save(nbt);
-        BlockEntityChunkLoaderHelper.save(nbt);
-        EntityChunkLoaderHelper.save(nbt);
+        //BlockEntityChunkLoaderHelper.save(nbt);
+        //EntityChunkLoaderHelper.save(nbt);
         EventHandler.save(nbt);
 
         return nbt;

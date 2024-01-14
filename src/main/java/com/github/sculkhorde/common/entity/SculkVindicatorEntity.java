@@ -87,6 +87,12 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
     @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {

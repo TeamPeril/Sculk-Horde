@@ -90,6 +90,11 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     }
 
     @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+    @Override
     public void checkDespawn() {}
 
     private boolean isParticipatingInRaid = false;

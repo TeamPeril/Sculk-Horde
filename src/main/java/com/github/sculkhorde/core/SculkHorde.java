@@ -8,8 +8,6 @@ import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
-import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.github.sculkhorde.util.StatisticsData;
 import com.mojang.logging.LogUtils;
@@ -51,8 +49,8 @@ public class SculkHorde {
     public static CursorHandler cursorHandler = new CursorHandler();
     public static SculkNodesHandler sculkNodesHandler;
     public static StatisticsData statisticsData;
-    public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper();
-    public static EntityChunkLoaderHelper entityChunkLoaderHelper = new EntityChunkLoaderHelper();
+    //public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper();
+    //public static EntityChunkLoaderHelper entityChunkLoaderHelper = new EntityChunkLoaderHelper();
     public static final Logger LOGGER = LogUtils.getLogger();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).

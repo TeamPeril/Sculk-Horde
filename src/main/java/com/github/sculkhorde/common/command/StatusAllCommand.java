@@ -41,9 +41,9 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "\n"
                         + "No Raid Zone Entries Count: " + SculkHorde.savedData.getNoRaidZoneEntries().size()
                         + "\n"
-                        + "Entity Chunk Load Requests: " + SculkHorde.entityChunkLoaderHelper.getEntityChunkLoadRequests().size()
+                        //+ "Entity Chunk Load Requests: " + SculkHorde.entityChunkLoaderHelper.getEntityChunkLoadRequests().size()
                         + "\n"
-                        + "BlockEntity Chunk load Requests: " + SculkHorde.blockEntityChunkLoaderHelper.getBlockChunkLoadRequests().size()
+                        //+ "BlockEntity Chunk load Requests: " + SculkHorde.blockEntityChunkLoaderHelper.getBlockChunkLoadRequests().size()
                         + "\n"
                         + "Events in Queue: " + SculkHorde.eventHandler.getEvents().size()
                         + "\n"

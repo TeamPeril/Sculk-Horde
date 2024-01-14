@@ -103,6 +103,12 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     }
 
     @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {

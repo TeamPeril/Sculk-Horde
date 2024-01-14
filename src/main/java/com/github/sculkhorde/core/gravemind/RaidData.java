@@ -6,14 +6,11 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.*;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
@@ -151,11 +148,11 @@ public class RaidData {
         areaOfInterestEntry = null;
         if(getRaidLocation() != null)
         {
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), getDimension());
+            //BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getRaidLocation(), getDimension());
         }
         if(getSpawnLocation() != null)
         {
-            BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getSpawnLocation(), getDimension());
+            //BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(getSpawnLocation(), getDimension());
         }
         setBlockSearcher(null);
         setRaidState(RaidHandler.RaidState.INACTIVE);

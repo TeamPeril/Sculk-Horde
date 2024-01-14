@@ -166,6 +166,12 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         return p_27789_.getBlockState(p_27788_).isAir() ? 10.0F : 0.0F;
     }
 
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes

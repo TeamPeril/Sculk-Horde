@@ -88,6 +88,11 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     }
 
     @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {

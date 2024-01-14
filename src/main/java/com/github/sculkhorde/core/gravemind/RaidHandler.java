@@ -10,7 +10,6 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockSearcher;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -155,18 +154,18 @@ public class RaidHandler {
         int lengthInBlocks = Math.max(distanceXBetweenRaidCenterAndSpawnPos, distanceZBetweenRaidCenterAndSpawnPos) * 2;
         int chunkLength = BlockAlgorithms.convertBlockLengthToChunkLength(lengthInBlocks);
 
-        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(raidData.getRaidCenter(), raidData.getDimension());
-        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getRaidCenter(), chunkLength, 2, TickUnits.convertHoursToTicks(1));
+        //BlockEntityChunkLoaderHelper.getChunkLoaderHelper().removeRequestsWithOwner(raidData.getRaidCenter(), raidData.getDimension());
+        //BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getRaidCenter(), chunkLength, 2, TickUnits.convertHoursToTicks(1));
     }
 
     public void loadScoutingChunks()
     {
-        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), scoutingLocation, 3, 2, TickUnits.convertHoursToTicks(1));
+        //BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), scoutingLocation, 3, 2, TickUnits.convertHoursToTicks(1));
     }
 
     public void loadSpawningChunks()
     {
-        BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getSpawnLocation(), 5, 2, TickUnits.convertHoursToTicks(1));
+        //BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(raidData.getDimension(), raidData.getSpawnLocation(), 5, 2, TickUnits.convertHoursToTicks(1));
     }
 
 
