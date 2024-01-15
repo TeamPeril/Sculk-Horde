@@ -198,9 +198,9 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 // Set entity on fire
                 entity.setSecondsOnFire(60);
                 // Give entity potion effects
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3));
-                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 3));
-                entity.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 3));
+                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.MOVEMENT_SLOWDOWN, 60, 3);
+                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.WEAKNESS, 60, 3);
+                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.POISON, 60, 3);
             }
         }
 

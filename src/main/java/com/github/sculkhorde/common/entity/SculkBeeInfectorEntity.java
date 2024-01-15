@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -117,7 +118,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
         {
             return;
         }
-        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
             CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
             cursor.setMaxTransformations(100);

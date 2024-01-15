@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.infection;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
+import net.minecraft.server.TickTask;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
@@ -61,8 +62,10 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
         List<CursorSurfaceInfectorEntity> Infectors = this.level().getEntitiesOfClass(CursorSurfaceInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
         for(CursorSurfaceInfectorEntity infector : Infectors)
         {
-            infector.discard();
-            this.discard();
+            level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
+                infector.discard();
+                this.discard();
+            }));
             break;
         }
     }

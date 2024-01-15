@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -119,7 +120,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
                     entity.playSound(soundevent, 1.0F, 1.0F);
                     entity.hurt(this.damageSources().magic(), 2.0F);
                     // Give entity darkness potion effect
-                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, TickUnits.convertSecondsToTicks(5), 0));
+                    EntityAlgorithms.applyEffectToTarget(entity, MobEffects.DARKNESS, TickUnits.convertSecondsToTicks(5), 0);
                     break;
                 }
             }

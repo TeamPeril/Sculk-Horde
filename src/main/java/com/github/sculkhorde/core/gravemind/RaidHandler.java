@@ -11,6 +11,7 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockSearcher;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -398,7 +399,7 @@ public class RaidHandler {
             raidData.getScoutEnderman().setScouting(true);
             SculkHorde.LOGGER.info("RaidHandler | Sculk Enderman Scouting at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + raidData.getDimensionResourceKey() + " for " + ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get() + " minutes");
             announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(raidData.areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(raidData.getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), raidData.getCurrentRaidRadius() * 8);
-            raidData.getScoutEnderman().addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
+            EntityAlgorithms.applyEffectToTarget(raidData.getScoutEnderman(), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
             playSoundForEveryPlayer(ModSounds.RAID_SCOUT_SOUND.get(), 1.0F, 1.0F);
 
             //Spawn Sculk Phantoms
@@ -529,7 +530,7 @@ public class RaidHandler {
             raidParticipant.setParticipatingInRaid(true);
             ((Mob)raidParticipant).setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
             raidData.getDimension().addFreshEntity((Entity) raidParticipant);
-            ((Mob) raidParticipant).addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0));
+            EntityAlgorithms.applyEffectToTarget(((Mob) raidParticipant), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
         });
     }
     private void initializingWaveTick()

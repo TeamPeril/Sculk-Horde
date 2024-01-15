@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -69,7 +70,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         attackBubble.setOwner(mob);
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);
-        getSculkEnderman().addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(5), 4));
+        EntityAlgorithms.applyEffectToTarget(getSculkEnderman(), MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(5), 4);
     }
 
     @Override

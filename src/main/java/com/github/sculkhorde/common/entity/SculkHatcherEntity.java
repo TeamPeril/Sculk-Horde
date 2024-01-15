@@ -6,6 +6,7 @@ import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -332,9 +333,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 if(ticksInCooldown >= tickCooldownForSpawn && thisMob.getTarget() != null && thisMob.getHealth() > SculkMiteEntity.MAX_HEALTH)
                 {
                     ticksInCooldown = 0;
-                    BlockPos spawnPos = new BlockPos(thisMob.blockPosition());
-                    ModEntities.SCULK_MITE.get().spawn((ServerLevel) thisMob.level(), spawnPos, MobSpawnType.SPAWNER);
-                    thisMob.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
+                    spawnMite();
                 }
                 else
                 {
@@ -342,6 +341,14 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 }
             }
         }
+    }
+
+    protected void spawnMite()
+    {
+        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
+            ModEntities.SCULK_MITE.get().spawn((ServerLevel) this.level(), this.blockPosition(), MobSpawnType.SPAWNER);
+            this.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
+        }));
     }
 
     public boolean dampensVibrations() {

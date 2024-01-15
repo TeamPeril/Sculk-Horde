@@ -1,13 +1,12 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.effect.SculkInfectionEffect;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.TickTask;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,7 +23,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -34,7 +32,7 @@ import java.util.function.Predicate;
 
 public class EntityAlgorithms {
 
-    public static boolean canApplyDebuffEffect(LivingEntity entity, MobEffect debuff)
+    public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
     {
         boolean isEntityNull = entity == null;
         boolean isEntityDead = entity.isDeadOrDying();
@@ -53,11 +51,13 @@ public class EntityAlgorithms {
         return true;
     }
 
-    public static void applyDebuffEffect(LivingEntity entity, MobEffect debuff, int duration, int amplifier)
+    public static void applyEffectToTarget(LivingEntity entity, MobEffect debuff, int duration, int amplifier)
     {
-        if(canApplyDebuffEffect(entity, debuff))
+        if(canApplyEffectsToTarget(entity, debuff))
         {
-            entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
+            entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
+                entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
+            }));
         }
     }
 
@@ -65,10 +65,12 @@ public class EntityAlgorithms {
     {
         if(entity.hasEffect(ModMobEffects.PURITY.get()))
         {
-            MobEffectInstance purityEffect = entity.getEffect(ModMobEffects.PURITY.get());
-            int newDuration = Math.max(purityEffect.getDuration() - amountInTicks, 0);
-            entity.removeEffect(ModMobEffects.PURITY.get());
-            entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), newDuration, purityEffect.getAmplifier()));
+            entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
+                MobEffectInstance purityEffect = entity.getEffect(ModMobEffects.PURITY.get());
+                int newDuration = Math.max(purityEffect.getDuration() - amountInTicks, 0);
+                entity.removeEffect(ModMobEffects.PURITY.get());
+                entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), newDuration, purityEffect.getAmplifier()));
+            }));
         }
     }
 

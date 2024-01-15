@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -10,6 +9,7 @@ import com.github.sculkhorde.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -413,14 +413,14 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     {
         if(level().isClientSide()) { return; }
 
-        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
             SculkPhantomEntity.this.discard();
             SculkPhantomCorpseEntity corpse = new SculkPhantomCorpseEntity(ModEntities.SCULK_PHANTOM_CORPSE.get(), level());
             corpse.setPos(SculkPhantomEntity.this.getX(), SculkPhantomEntity.this.getY(), SculkPhantomEntity.this.getZ());
             level().addFreshEntity(corpse);
 
             // Give spore spewer slow falling
-            corpse.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 1));
+            EntityAlgorithms.applyEffectToTarget(corpse, MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 0);
         }));
     }
 
@@ -634,7 +634,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             {
                 SculkPhantomEntity.this.doHurtTarget(target);
                 EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(5));
-                EntityAlgorithms.applyDebuffEffect(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
+                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
                 lastTimeOfAttack = level().getGameTime();
                 return;
             }

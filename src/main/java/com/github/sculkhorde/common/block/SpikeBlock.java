@@ -8,7 +8,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.Vec3;
@@ -125,7 +124,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
             if (d0 >= (double)0.003F || d1 >= (double)0.003F)
             {
                 entity.hurt(entity.damageSources().generic(), 1.0F);
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL);
                 world.destroyBlock(blockPos, false);
             }
         }

@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.effect;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
@@ -56,8 +57,8 @@ public class SculkVesselEffect extends MobEffect {
         boolean inRangeOfNode = BlockAlgorithms.getBlockDistance(entity.blockPosition(), nearestNode.getPosition()) <= 200;
         if(isInSameDimension && inRangeOfNode)
         {
-            entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, TickUnits.convertMinutesToTicks(2), 0));
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(2), 0));
+            EntityAlgorithms.applyEffectToTarget(entity, MobEffects.MOVEMENT_SPEED, TickUnits.convertMinutesToTicks(2), 0);
+            EntityAlgorithms.applyEffectToTarget(entity, MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(2), 0);
         }
 
     }

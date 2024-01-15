@@ -76,10 +76,9 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
             }
 
             targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), 6.0F);
-            // Give weakness and levetation
-            targetEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0));
-            targetEntity.addEffect(new MobEffectInstance(MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(20), 0));
-
+            // Give weakness and levitation
+            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0);
+            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(20), 0);
         }
     }
 

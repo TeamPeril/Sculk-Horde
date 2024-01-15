@@ -12,11 +12,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +24,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -37,7 +36,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -240,13 +238,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         if (canSpawnCursor) {
             // Spawn Block Traverser
-            cursor = new CursorSurfaceInfectorEntity(level());
-            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
-            cursor.setMaxTransformations(100);
-            cursor.setMaxRange(100);
-            cursor.setTickIntervalMilliseconds(50);
-            cursor.setSearchIterationsPerTick(1);
-            level().addFreshEntity(cursor);
+            tellServerToSpawnCursorNextTick();
             triggerAnim("spread_controller", "spread_animation");
         }
 
@@ -263,11 +255,25 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 }
 
                 EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
 
             }
         }
+    }
+
+    protected void tellServerToSpawnCursorNextTick()
+    {
+        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
+            // Spawn Block Traverser
+            cursor = new CursorSurfaceInfectorEntity(level());
+            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+            cursor.setMaxTransformations(100);
+            cursor.setMaxRange(100);
+            cursor.setTickIntervalMilliseconds(50);
+            cursor.setSearchIterationsPerTick(1);
+            level().addFreshEntity(cursor);
+        }));
     }
 
     protected SoundEvent getAmbientSound() {
