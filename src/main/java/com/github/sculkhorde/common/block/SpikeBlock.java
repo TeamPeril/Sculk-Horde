@@ -125,7 +125,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
             if (d0 >= (double)0.003F || d1 >= (double)0.003F)
             {
                 entity.hurt(entity.damageSources().generic(), 1.0F);
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
+                //((LivingEntity) entity).addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), INFECT_DURATION, INFECT_LEVEL));
                 world.destroyBlock(blockPos, false);
             }
         }

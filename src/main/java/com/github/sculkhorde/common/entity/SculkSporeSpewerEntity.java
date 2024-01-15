@@ -261,9 +261,9 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                     return;
                 }
                 tellServerToSpawnCursorNextTick();
-                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
-                EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+                //EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
+                //EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
+                //EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
 
             }
         }
