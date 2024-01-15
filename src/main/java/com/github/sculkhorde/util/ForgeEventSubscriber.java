@@ -83,8 +83,8 @@ public class ForgeEventSubscriber {
        // SculkHorde.savedData.incrementNoNodeSpawningTicksElapsed();
 
         //SculkHorde.raidHandler.raidTick(); // Tick the raid handler
-        SculkHorde.deathAreaInvestigator.tick();
-        SculkHorde.sculkNodesHandler.tick();
+        //SculkHorde.deathAreaInvestigator.tick();
+        //SculkHorde.sculkNodesHandler.tick();
         //SculkHorde.eventHandler.serverTick(); NOT THIS
         //SculkHorde.cursorHandler.serverTick(); NOT THIS
 
