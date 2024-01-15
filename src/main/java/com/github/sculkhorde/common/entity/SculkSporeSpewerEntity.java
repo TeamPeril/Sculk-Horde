@@ -266,13 +266,28 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 {
                     return;
                 }
-
+                tellServerToSpawnCursorNextTick();
                 EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
                 EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
                 EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
 
             }
         }
+    }
+
+    protected void tellServerToSpawnCursorNextTick()
+    {
+        if(level().isClientSide()) { return; }
+
+        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+            cursor = new CursorSurfaceInfectorEntity(level());
+            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+            cursor.setMaxTransformations(100);
+            cursor.setMaxRange(100);
+            cursor.setTickIntervalMilliseconds(50);
+            cursor.setSearchIterationsPerTick(1);
+            level().addFreshEntity(cursor);
+        }));
     }
 
     protected SoundEvent getAmbientSound() {

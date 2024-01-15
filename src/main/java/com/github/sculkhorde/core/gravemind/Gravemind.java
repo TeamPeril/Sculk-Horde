@@ -157,6 +157,7 @@ public class Gravemind
 
     public void processReinforcementRequest(ReinforcementRequest context)
     {
+        
         context.isRequestViewed = true;
 
 

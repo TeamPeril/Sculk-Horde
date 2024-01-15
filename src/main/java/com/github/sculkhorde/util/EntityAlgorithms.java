@@ -8,13 +8,11 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.TickTask;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +31,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class EntityAlgorithms {
-
     public static boolean canApplyDebuffEffect(LivingEntity entity, MobEffect debuff)
     {
         boolean isEntityNull = entity == null;
