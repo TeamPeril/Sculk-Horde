@@ -233,6 +233,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         boolean isTheHordeNotDefeated = !SculkHorde.savedData.isHordeDefeated();
         boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeNotDefeated;
 
+        /*
         if (canSpawnCursor) {
             level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
                 // Spawn Block Traverser
@@ -246,6 +247,8 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
             }));
             triggerAnim("spread_controller", "spread_animation");
         }
+
+         */
 
         if (level().getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
         {

@@ -90,6 +90,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public void spawnInfectors()
     {
+        /*
         level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
             int numToSpawn = 15;
             int spawnRange = 5;
@@ -106,6 +107,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
                 this.level().addFreshEntity(infector);
             }
         }));
+
+         */
     }
 
     public void infectEntitiesAroundMe()
@@ -151,7 +154,9 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         if(!isParticipatingInRaid())
         {
             this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
-            if(ModConfig.SERVER.block_infestation_enabled.get()) {spawnInfectors();}
+            if(ModConfig.SERVER.block_infestation_enabled.get()) {
+                spawnInfectors();
+            }
         }
         else
         {

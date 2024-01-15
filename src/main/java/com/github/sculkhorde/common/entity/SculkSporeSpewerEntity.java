@@ -245,13 +245,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         if (canSpawnCursor) {
             // Spawn Block Traverser
-            cursor = new CursorSurfaceInfectorEntity(level());
-            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
-            cursor.setMaxTransformations(100);
-            cursor.setMaxRange(100);
-            cursor.setTickIntervalMilliseconds(50);
-            cursor.setSearchIterationsPerTick(1);
-            level().addFreshEntity(cursor);
+            tellServerToSpawnCursorNextTick();
             triggerAnim("spread_controller", "spread_animation");
         }
 
@@ -277,6 +271,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
     protected void tellServerToSpawnCursorNextTick()
     {
+        /*
         if(level().isClientSide()) { return; }
 
         level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
@@ -288,6 +283,8 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
             cursor.setSearchIterationsPerTick(1);
             level().addFreshEntity(cursor);
         }));
+
+         */
     }
 
     protected SoundEvent getAmbientSound() {

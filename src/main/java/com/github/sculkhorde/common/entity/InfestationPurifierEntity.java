@@ -210,6 +210,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     {
         if(level().isClientSide()) { return; }
 
+        /*
         level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
             if((cursor1 == null || !cursor1.isAlive() ))
             {
@@ -263,6 +264,8 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 level().addFreshEntity(cursor4);
             }
         }));
+
+         */
     }
 
     //If entity is rightclicked, drop item
@@ -277,7 +280,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     @Override
     public void onRemovedFromWorld() {
         if(level().isClientSide) { return; }
-        this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
+        //this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
     }
 
     protected SoundEvent getAmbientSound() {

@@ -411,6 +411,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     protected void tellServerToSpawnCorpseNextTick()
     {
+        /*
         if(level().isClientSide()) { return; }
 
         level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
@@ -422,6 +423,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             // Give spore spewer slow falling
             corpse.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 1));
         }));
+
+         */
     }
 
     protected void dieAndSpawnCorpse()

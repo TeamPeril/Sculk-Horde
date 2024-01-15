@@ -117,6 +117,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
         {
             return;
         }
+        /*
         level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
             CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
             cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
@@ -126,6 +127,8 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
             cursor.setSearchIterationsPerTick(20);
             level().addFreshEntity(cursor);
         }));
+
+         */
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
