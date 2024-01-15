@@ -55,14 +55,18 @@ public class EntityAlgorithms {
     {
         if(canApplyEffectsToTarget(entity, debuff))
         {
+            /*
             entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
                 entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
             }));
+
+             */
         }
     }
 
     public static void reducePurityEffectDuration(LivingEntity entity, int amountInTicks)
     {
+        /*
         if(entity.hasEffect(ModMobEffects.PURITY.get()))
         {
             entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
@@ -72,6 +76,8 @@ public class EntityAlgorithms {
                 entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), newDuration, purityEffect.getAmplifier()));
             }));
         }
+
+         */
     }
 
     /**
