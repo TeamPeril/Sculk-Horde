@@ -42,10 +42,7 @@ public class SculkVesselEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amp) {
-        if(entity.level().isClientSide())
-        {
-            return;
-        }
+        if(entity.level().isClientSide()) { return;}
 
         // Give strength and speed to the player if near sculk node
         ModSavedData.NodeEntry nearestNode = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());

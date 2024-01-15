@@ -50,6 +50,8 @@ public class SculkInfectionEffect extends MobEffect {
 
     public static void onPotionExpire(MobEffectEvent.Expired event)
     {
+        if(event.getEntity().level().isClientSide()) { return;}
+
         LivingEntity entity = event.getEntity();
         // OR mob outside of world border
         if(entity == null || EntityAlgorithms.isSculkLivingEntity.test(entity) || !entity.level().isInWorldBounds(entity.blockPosition()))

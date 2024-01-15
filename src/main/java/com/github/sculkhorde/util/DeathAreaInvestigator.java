@@ -41,7 +41,9 @@ public class DeathAreaInvestigator {
 
     public void setState(State state)
     {
+        SculkHorde.LOGGER.info("DeathAreaInvestigator | Old State: " + this.state + ". New State: " + state);
         this.state = state;
+
     }
 
     public void idleTick()
@@ -54,11 +56,16 @@ public class DeathAreaInvestigator {
         if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
         {
             ticksSinceLastSearch = 0;
+            SculkHorde.LOGGER.info("It has been enough time since last death area check. Will see if there is a valid death area.");
             if(SculkHorde.savedData != null) {searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();}
+
             if(searchEntry.isPresent())
             {
                 setState(State.INITIALIZING);
+                SculkHorde.LOGGER.info("Got area with highest deaths.");
+                return;
             }
+            SculkHorde.LOGGER.info("No death area found.");
         }
     }
 
@@ -72,7 +79,7 @@ public class DeathAreaInvestigator {
             setState(State.FINISHED);
             return;
         }
-
+        SculkHorde.LOGGER.debug("DeathAreaInvestigator | Starting block search " + searchEntry.get().getDimension());
         blockSearcher = new BlockSearcher(level, searchEntry.get().getPosition());
         blockSearcher.setMaxDistance(25);
         blockSearcher.setObstructionPredicate((pos) -> {
@@ -95,7 +102,7 @@ public class DeathAreaInvestigator {
             ticksSinceLastSuccessfulFind = 0;
             setState(State.FINISHED);
             //Send message to all players
-            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
+            SculkHorde.LOGGER.info("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
             // Add to Area of Interest Memory
             if(SculkHorde.savedData != null) {SculkHorde.savedData.addAreaOfInterestToMemory(searchEntry.get().getDimension(), searchEntry.get().getPosition());}
         }
@@ -103,12 +110,13 @@ public class DeathAreaInvestigator {
         {
             setState(State.FINISHED);
             blockSearcher = null;
-            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
+            SculkHorde.LOGGER.info("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
         }
     }
 
     public void finishedTick()
     {
+        SculkHorde.LOGGER.info("DeathAreaInvestigator | Finished");
         if(SculkHorde.savedData != null) { SculkHorde.savedData.removeDeathAreaFromMemory(searchEntry.get().getPosition()); }
         ticksSinceLastSearch = 0;
         setState(State.IDLE);

@@ -69,7 +69,7 @@ public class DiseasedCystsEffect extends MobEffect {
                     continue;
                 }
 
-                victim.hurtMarked = true;
+                //victim.hurtMarked = true;
 
                 EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertSecondsToTicks(60));
                 EntityAlgorithms.applyDebuffEffect(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), 0);

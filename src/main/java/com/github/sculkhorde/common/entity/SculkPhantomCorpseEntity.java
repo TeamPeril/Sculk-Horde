@@ -110,6 +110,12 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
     }
 
     @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {
@@ -228,14 +234,16 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeNotDefeated;
 
         if (canSpawnCursor) {
-            // Spawn Block Traverser
-            cursor = new CursorSurfaceInfectorEntity(level());
-            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
-            cursor.setMaxTransformations(100);
-            cursor.setMaxRange(100);
-            cursor.setTickIntervalMilliseconds(50);
-            cursor.setSearchIterationsPerTick(1);
-            level().addFreshEntity(cursor);
+            level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+                // Spawn Block Traverser
+                cursor = new CursorSurfaceInfectorEntity(level());
+                cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+                cursor.setMaxTransformations(100);
+                cursor.setMaxRange(100);
+                cursor.setTickIntervalMilliseconds(50);
+                cursor.setSearchIterationsPerTick(1);
+                level().addFreshEntity(cursor);
+            }));
             triggerAnim("spread_controller", "spread_animation");
         }
 

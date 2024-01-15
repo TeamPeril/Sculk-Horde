@@ -36,6 +36,8 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> should_phantoms_load_chunks;
+
         public final ForgeConfigSpec.ConfigValue<Boolean> sculk_raid_enabled;
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_enderman_scouting_duration_minutes;
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_global_cooldown_between_raids_minutes;
@@ -81,7 +83,7 @@ public class ModConfig {
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             builder.pop();
 
-            builder.push("Emergency Manual Cursor Tick Control. (An emergency system that kicks in if there are too many cursors, which can lag the game.)");
+            builder.push("Emergency Manual Cursor Tick Control");
             cursors_threshold_for_activation = builder.comment("How many cursors need to exist for this system to kick in. (Default 300)").defineInRange("cursors_threshold_for_activation", 300, 0, Integer.MAX_VALUE);
             cursors_to_tick_per_tick = builder.comment("How many cursors should we tick, per in game tick. (Default 50)").defineInRange("cursors_to_tick_per_tick", 50, 0, 100);
             delay_between_cursor_tick_interval = builder.comment("How many ticks should there be between intervals of ticking cursors. (Default 1)").defineInRange("delay_between_cursor_tick_interval", 1, 0, 100);
@@ -101,6 +103,10 @@ public class ModConfig {
 
             builder.push("Sculk Mite Variables");
             should_sculk_mites_spawn_in_deep_dark = builder.comment("Should sculk mites spawn in deep dark? (Default false)").define("should_sculk_mites_spawn_in_deep_dark",false);
+            builder.pop();
+
+            builder.push("Sculk Phantom Variables");
+            should_phantoms_load_chunks = builder.comment("Should sculk phantoms load chunks? (Default true)").define("should_phantoms_load_chunks",true);
             builder.pop();
 
             builder.push("Experimental Features");

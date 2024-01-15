@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,9 +61,6 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     public static final float MOVEMENT_SPEED = 0F;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    private int MAX_TARGET_FIND_FAILS = 32;
-    private int targetFindFails = 0;
 
     CursorSurfacePurifierEntity cursor1;
     CursorSurfacePurifierEntity cursor2;
@@ -187,53 +185,32 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
         }
 
         Random random = new Random();
-        if (random.nextInt(100) == 0)
+        if (random.nextInt(100) != 0) { return; }
+
+        tellServerToSpawnCursors();
+
+        // Any sculk entity within 10 blocks of the spewer will be set on fire
+        ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
+        for (LivingEntity entity : entities)
         {
-            // If the cursor is dead and it does not find target, keep track.
-            if(cursor1 != null && !cursor1.isAlive() && !cursor1.isSuccessful)
+            if (entity != null && EntityAlgorithms.isSculkLivingEntity.test(entity))
             {
-                targetFindFails++;
+                // Set entity on fire
+                entity.setSecondsOnFire(60);
+                // Give entity potion effects
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3));
+                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 3));
+                entity.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 3));
             }
-            // If the cursor is dead and it does find target, reset the counter.
-            else if(cursor1 != null &&!cursor1.isAlive() && cursor1.isSuccessful)
-            {
-                targetFindFails = 0;
-            }
+        }
 
-            // If the cursor is dead and it does not find target, keep track.
-            if(cursor2 != null && !cursor2.isAlive() && !cursor2.isSuccessful)
-            {
-                targetFindFails++;
-            }
-            // If the cursor is dead and it does find target, reset the counter.
-            else if(cursor2 != null && !cursor2.isAlive() && cursor2.isSuccessful)
-            {
-                targetFindFails = 0;
-            }
+    }
 
-            // If the cursor is dead and it does not find target, keep track.
-            if(cursor3 != null && !cursor3.isAlive() && !cursor3.isSuccessful)
-            {
-                targetFindFails++;
-            }
-            // If the cursor is dead and it does find target, reset the counter.
-            else if(cursor3 != null && !cursor3.isAlive() && cursor3.isSuccessful)
-            {
-                targetFindFails = 0;
-            }
+    protected void tellServerToSpawnCursors()
+    {
+        if(level().isClientSide()) { return; }
 
-            // If the cursor is dead and it does not find target, keep track.
-            if(cursor4 != null && !cursor4.isAlive() && !cursor4.isSuccessful)
-            {
-                targetFindFails++;
-            }
-            // If the cursor is dead and it does find target, reset the counter.
-            else if(cursor4 != null && !cursor4.isAlive() && cursor4.isSuccessful)
-            {
-                targetFindFails = 0;
-            }
-
-
+        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
             if((cursor1 == null || !cursor1.isAlive() ))
             {
                 // Spawn Block Traverser
@@ -285,21 +262,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
                 cursor4.setTickIntervalMilliseconds(20);
                 level().addFreshEntity(cursor4);
             }
-
-            // Any sculk entity within 10 blocks of the spewer will be set on fire
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
-            for (LivingEntity entity : entities)
-            {
-                if (entity instanceof LivingEntity && EntityAlgorithms.isSculkLivingEntity.test(entity))
-                {
-                    // Set entity on fire
-                    entity.setSecondsOnFire(60);
-                    // Give entity potion effects
-                    entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3));
-                    entity.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 3));
-                }
-            }
-        }
+        }));
     }
 
     //If entity is rightclicked, drop item

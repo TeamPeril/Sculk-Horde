@@ -6,8 +6,11 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -72,6 +75,12 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
                 .add(Attributes.FLYING_SPEED, 1.5F);
     }
 
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
+
+
     private final Predicate<BlockPos> IS_VALID_FLOWER = (blockPos) -> {
         BlockState blockState = level().getBlockState(blockPos);
         if (blockState.hasProperty(BlockStateProperties.WATERLOGGED) && blockState.getValue(BlockStateProperties.WATERLOGGED))
@@ -108,14 +117,15 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
         {
             return;
         }
-
-        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
-        cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
-        cursor.setMaxTransformations(100);
-        cursor.setMaxRange(100);
-        cursor.setTickIntervalMilliseconds(500);
-        cursor.setSearchIterationsPerTick(20);
-        level().addFreshEntity(cursor);
+        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+            CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level());
+            cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY(), this.blockPosition().getZ());
+            cursor.setMaxTransformations(100);
+            cursor.setMaxRange(100);
+            cursor.setTickIntervalMilliseconds(500);
+            cursor.setSearchIterationsPerTick(20);
+            level().addFreshEntity(cursor);
+        }));
     }
 
     /** ~~~~~~~~ ANIMATION ~~~~~~~~ **/
