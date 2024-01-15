@@ -105,7 +105,7 @@ public class EntityFactory {
         Optional<EntityFactoryEntry> entry = getEntry(entityType);
         if(entry.isPresent())
         {
-            entry.get().getEntity().spawn((ServerLevel) level, pos, MobSpawnType.SPAWNER);
+            //entry.get().getEntity().spawn((ServerLevel) level, pos, MobSpawnType.SPAWNER);
             SculkHorde.statisticsData.incrementTotalUnitsSpawned();
         }
     }
