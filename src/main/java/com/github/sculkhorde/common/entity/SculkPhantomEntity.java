@@ -636,8 +636,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             if (doesPhantomIntersectTarget)
             {
                 SculkPhantomEntity.this.doHurtTarget(target);
-                EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(5));
-                EntityAlgorithms.applyDebuffEffect(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
+                //EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(5));
+                //EntityAlgorithms.applyDebuffEffect(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), 0);
                 lastTimeOfAttack = level().getGameTime();
                 return;
             }
