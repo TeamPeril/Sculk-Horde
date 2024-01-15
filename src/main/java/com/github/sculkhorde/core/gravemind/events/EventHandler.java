@@ -27,8 +27,9 @@ public class EventHandler {
 
     public boolean canExecute()
     {
+        boolean isHordeActive = SculkHorde.savedData.isHordeActive();
         // Check overworld time
-        return (ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - lastGameTimeOfExecution) > EXECUTION_COOLDOWN_TICKS;
+        return isHordeActive && (ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - lastGameTimeOfExecution) > EXECUTION_COOLDOWN_TICKS;
     }
 
     public Event getEvent(long eventID)
