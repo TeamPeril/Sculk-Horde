@@ -48,7 +48,7 @@ public class DeathAreaInvestigator {
 
     public void idleTick()
     {
-        if(SculkHorde.gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped)
+        if(SculkHorde.gravemind.getEvolutionState() == Gravemind.evolution_states.Undeveloped || !ModConfig.SERVER.sculk_raid_enabled.get())
         {
             return;
         }
