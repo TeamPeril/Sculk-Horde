@@ -80,11 +80,11 @@ public class ForgeEventSubscriber {
 
         // Run this stuff every tick
 
-        SculkHorde.savedData.incrementNoNodeSpawningTicksElapsed();
+       // SculkHorde.savedData.incrementNoNodeSpawningTicksElapsed();
 
-        SculkHorde.raidHandler.raidTick(); // Tick the raid handler
-        SculkHorde.deathAreaInvestigator.tick();
-        SculkHorde.sculkNodesHandler.tick();
+        //SculkHorde.raidHandler.raidTick(); // Tick the raid handler
+        //SculkHorde.deathAreaInvestigator.tick();
+        //SculkHorde.sculkNodesHandler.tick();
         //SculkHorde.eventHandler.serverTick(); NOT THIS
         //SculkHorde.cursorHandler.serverTick(); NOT THIS
 
@@ -98,20 +98,20 @@ public class ForgeEventSubscriber {
         }
 
         time_save_point = event.level.getGameTime();//Set to current time so we can recalculate time passage
-        SculkHorde.gravemind.enableAmountOfBeeHives(20);
+        //SculkHorde.gravemind.enableAmountOfBeeHives(20);
 
         //Verification Processes to ensure our data is accurate
-        SculkHorde.savedData.validateNodeEntries();
-        SculkHorde.savedData.validateBeeNestEntries();
-        SculkHorde.savedData.validateNoRaidZoneEntries();
-        SculkHorde.savedData.validateAreasOfInterest();
+        //SculkHorde.savedData.validateNodeEntries();
+        //SculkHorde.savedData.validateBeeNestEntries();
+       // SculkHorde.savedData.validateNoRaidZoneEntries();
+        //SculkHorde.savedData.validateAreasOfInterest();
 
         //Calculate Current State
-        SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
+        //SculkHorde.gravemind.calulateCurrentState(); //Have the gravemind update it's state if necessary
 
         //Check How much Mass Was Generated over this period
         if(SculkHorde.isDebugMode()) System.out.println("Accumulated Mass Since Last Check: " + (SculkHorde.savedData.getSculkAccumulatedMass() - sculkMassCheck));
-        sculkMassCheck = SculkHorde.savedData.getSculkAccumulatedMass();
+        //sculkMassCheck = SculkHorde.savedData.getSculkAccumulatedMass();
 
     }
 
