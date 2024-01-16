@@ -11,13 +11,10 @@ import net.minecraft.world.level.Level;
 import java.util.concurrent.TimeUnit;
 
 public class DespawnAfterTime extends Goal {
-
-
-    long timeElapsed = 0;
-    long ticksThreshold;
-    ISculkSmartEntity mob;
-    long creationTime;
-    Level level;
+    protected long ticksThreshold;
+    protected ISculkSmartEntity mob;
+    protected long creationTime;
+    protected Level level;
 
     public DespawnAfterTime(ISculkSmartEntity mob, int ticksThreshold)
     {

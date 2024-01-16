@@ -29,6 +29,8 @@ public class TickUnits {
         return minutes * TICKS_PER_MINUTE;
     }
 
+    public static long convertTicksToMinutes(long ticks) { return ticks/TICKS_PER_MINUTE; }
+
     public static int convertHoursToTicks(int hours) {
         return hours * TICKS_PER_HOUR;
     }

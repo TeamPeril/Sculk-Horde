@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.server.TickTask;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -277,7 +278,9 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     @Override
     public void onRemovedFromWorld() {
         if(level().isClientSide) { return; }
-        this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
+        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
+            this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
+        }));
     }
 
     protected SoundEvent getAmbientSound() {

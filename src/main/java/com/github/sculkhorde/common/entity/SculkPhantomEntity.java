@@ -16,7 +16,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -155,7 +154,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public Goal[] goalSelectorPayload()
     {
         return new Goal[]{
-                new FallToGroundAfterTime(this, TickUnits.convertMinutesToTicks(15)),
+                new DropCorpseOrDespawn(this, TickUnits.convertMinutesToTicks(15)),
                 new FallToTheGroundIfMobsUnder(),
                 new SweepAttackGoal(),
                 new selectRandomLocationToVisit(),
@@ -645,16 +644,34 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
     }
 
-    class FallToGroundAfterTime extends DespawnAfterTime
+    class DropCorpseOrDespawn extends DespawnAfterTime
     {
-        public FallToGroundAfterTime(ISculkSmartEntity mob, int ticksThreshold) {
+        public DropCorpseOrDespawn(ISculkSmartEntity mob, int ticksThreshold) {
             super(mob, ticksThreshold);
+        }
+
+        public long calculateTicksThreshold()
+        {
+            if(isScouter()) { return ticksThreshold; }
+
+            return ticksThreshold/3;
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            boolean mobHasBeenNameTagged = ((Mob) mob).hasCustomName();
+            if(level.getGameTime() - creationTime > calculateTicksThreshold() && !mob.isParticipatingInRaid() && !mobHasBeenNameTagged)
+            {
+                return true;
+            }
+            return false;
         }
 
         @Override
         public void start()
         {
-            dieAndSpawnCorpse();
+            if(isScouter()) { dieAndSpawnCorpse(); }
         }
     }
 
