@@ -60,6 +60,7 @@ public class Event {
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(eventCost);
         setEventActive(true);
+        SculkHorde.LOGGER.info("Sculk Horde Event Handler | Starting event " + this.getClass());
     }
 
     public void serverTick()

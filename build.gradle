@@ -106,14 +106,25 @@ repositories {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.1.0'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.3')
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.3.1')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:jei-238222:4712868")
-	implementation fg.deobf("curse.maven:spore-678295:4764840")
-	implementation fg.deobf("curse.maven:spark-361579:4738952")
-	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
-	implementation fg.deobf("curse.maven:deeperdarker-659011:4807511")
+    implementation fg.deobf("curse.maven:jei-238222:4712868")
+    implementation fg.deobf("curse.maven:spark-361579:4738952")
+    implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
+    implementation fg.deobf("curse.maven:terralith-513688:4823753")
+    implementation fg.deobf("curse.maven:create-328085:4835191")
+    implementation fg.deobf("curse.maven:createaddition-439890:4909014")
+    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5003521")
+    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+    implementation fg.deobf("curse.maven:curios-309927:4985525")
+    implementation fg.deobf("curse.maven:caelus-308989:4581481")
+    implementation fg.deobf("curse.maven:waystones-245755:4956472")
+    implementation fg.deobf("curse.maven:balm-531761:4943500")
+    implementation fg.deobf("curse.maven:when-dungeons-arise-442508:4798432")
+    implementation fg.deobf("curse.maven:choicetheorems-overhauled-village-623908:4823685")
+    implementation fg.deobf("curse.maven:l_ender-s-cataclysm-551586:4991993")
+    implementation fg.deobf("curse.maven:citadel-331936:4848887")
 }
 
 mixin {

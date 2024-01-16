@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
@@ -16,7 +15,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -24,6 +22,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -182,7 +181,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     }
 
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
-        ImprovedFlyingNavigator flyingpathnavigation = new ImprovedFlyingNavigator(this, level);
+        FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, level);
         flyingpathnavigation.setCanOpenDoors(false);
         flyingpathnavigation.setCanFloat(true);
         flyingpathnavigation.setCanPassDoors(true);
