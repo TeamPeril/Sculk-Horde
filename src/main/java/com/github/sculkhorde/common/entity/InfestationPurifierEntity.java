@@ -270,18 +270,11 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (!this.level().isClientSide) {
-            this.remove(RemovalReason.DISCARDED);
+            this.kill();
         }
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void onRemovedFromWorld() {
-        if(level().isClientSide) { return; }
-        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
-            this.spawnAtLocation(new ItemStack(ModItems.INFESTATION_PURIFIER.get()));
-        }));
-    }
 
     protected SoundEvent getAmbientSound() {
         return SoundEvents.BEACON_AMBIENT;

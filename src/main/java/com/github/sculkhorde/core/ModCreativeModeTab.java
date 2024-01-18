@@ -48,11 +48,11 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTATION_WARD_BLOCK.get());
                 event.accept(ModItems.CRYING_SOULS.get());
                 event.accept(ModItems.PURE_SOULS.get());
-                if(!FMLLoader.isProduction()) event.accept(ModItems.CHUNK_O_BRAIN.get());
-                if(!FMLLoader.isProduction()) event.accept(ModItems.DORMANT_HEART_OF_THE_HORDE.get());
-                if(!FMLLoader.isProduction()) event.accept(ModItems.HEART_OF_THE_HORDE.get());
-                if(!FMLLoader.isProduction()) event.accept(ModItems.HEART_OF_PURITY.get());
-                if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOUL_HARVESTER_BLOCK.get());
+                if(ModConfig.isNewEndingEnabled()) event.accept(ModItems.CHUNK_O_BRAIN.get());
+                if(ModConfig.isNewEndingEnabled()) event.accept(ModItems.DORMANT_HEART_OF_THE_HORDE.get());
+                if(ModConfig.isNewEndingEnabled()) event.accept(ModItems.HEART_OF_THE_HORDE.get());
+                if(ModConfig.isNewEndingEnabled()) event.accept(ModItems.HEART_OF_PURITY.get());
+                if(ModConfig.isNewEndingEnabled()) event.accept(ModBlocks.SOUL_HARVESTER_BLOCK.get());
                 event.accept(ModItems.EYE_OF_PURITY.get());
                 event.accept(ModItems.SCULK_ACIDIC_PROJECTILE.get());
                 event.accept(ModItems.SCULK_RESIN.get());
