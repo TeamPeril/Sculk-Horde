@@ -17,6 +17,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
+import java.util.Random;
+
 import static com.github.sculkhorde.util.BlockAlgorithms.isExposedToInfestationWardBlock;
 
 public class CursorSurfaceInfectorEntity extends CursorEntity{
@@ -107,6 +109,11 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
     @Override
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(2.0D), this.getRandomY(), this.getRandomZ(2.0D), 0.0D, 0.0D, 0.0D);
+        Random random = new Random();
+        float maxOffset = 2;
+        float randomXOffset = random.nextFloat(maxOffset * 2) - maxOffset;
+        float randomYOffset = random.nextFloat(maxOffset * 2) - maxOffset;
+        float randomZOffset = random.nextFloat(maxOffset * 2) - maxOffset;
+        this.level().addParticle(ParticleTypes.SCULK_SOUL, getX() + randomXOffset, getY() + randomYOffset, getZ() + randomZOffset, randomXOffset * 0.1, randomYOffset * 0.1, randomZOffset * 0.1);
     }
 }

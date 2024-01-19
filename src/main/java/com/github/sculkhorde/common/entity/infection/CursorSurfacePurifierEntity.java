@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Predicate;
 
 public class CursorSurfacePurifierEntity extends CursorEntity{
@@ -73,7 +74,12 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void spawnParticleEffects()
     {
-        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, this.getRandomX(1.5D), this.getRandomY(), this.getRandomZ(1.5D), 0.0D, 0.0D, 0.0D);
+        Random random = new Random();
+        float maxOffset = 2;
+        float randomXOffset = random.nextFloat(maxOffset * 2) - maxOffset;
+        float randomYOffset = random.nextFloat(maxOffset * 2) - maxOffset;
+        float randomZOffset = random.nextFloat(maxOffset * 2) - maxOffset;
+        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, getX() + randomXOffset, getY() + randomYOffset, getZ() + randomZOffset, randomXOffset * 0.1, randomYOffset * 0.1, randomZOffset * 0.1);
     }
 
     /**
