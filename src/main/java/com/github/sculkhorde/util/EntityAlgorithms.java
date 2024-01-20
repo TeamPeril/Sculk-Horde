@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.misc.ModColaborationHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.world.InteractionHand;

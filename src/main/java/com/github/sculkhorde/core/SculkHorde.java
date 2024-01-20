@@ -8,14 +8,12 @@ import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
+import com.github.sculkhorde.misc.contributions.ContributionHandler;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
-import com.github.sculkhorde.util.StatisticsData;
+import com.github.sculkhorde.misc.StatisticsData;
 import com.mojang.logging.LogUtils;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.Tiers;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -54,6 +52,7 @@ public class SculkHorde {
     public static BlockEntityChunkLoaderHelper blockEntityChunkLoaderHelper;
     public static EntityChunkLoaderHelper entityChunkLoaderHelper = new EntityChunkLoaderHelper();
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static final ContributionHandler contributionHandler = new ContributionHandler();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
     public SculkHorde()

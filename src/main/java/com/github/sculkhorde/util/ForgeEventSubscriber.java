@@ -6,25 +6,22 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
-import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoadRequest;
+import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ForcedChunksSavedData;
-import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -194,6 +191,20 @@ public class ForgeEventSubscriber {
         if(event.player.tickCount % 20 == 0)
         {
             AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogIn(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        if(event.getEntity().level().isClientSide())
+        {
+            return;
+        }
+
+        if(SculkHorde.contributionHandler.isContributor((ServerPlayer) event.getEntity()))
+        {
+            SculkHorde.contributionHandler.givePlayerCoinOfContribution(event.getEntity());
         }
     }
 }

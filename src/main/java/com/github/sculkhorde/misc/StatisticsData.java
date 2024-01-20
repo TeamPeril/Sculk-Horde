@@ -1,4 +1,4 @@
-package com.github.sculkhorde.util;
+package com.github.sculkhorde.misc;
 
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.nbt.CompoundTag;
