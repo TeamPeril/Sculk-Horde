@@ -272,7 +272,7 @@ public abstract class CursorEntity extends Entity
         lastTickTime = System.currentTimeMillis();
 
         // Play Particles on Client
-        if (this.level().isClientSide) {
+        if (this.level() != null && this.level().isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
@@ -435,7 +435,7 @@ public abstract class CursorEntity extends Entity
     {
         if(ModConfig.SERVER.thanos_snap_cursors_after_reaching_threshold.get() && SculkHorde.cursorHandler.isManualControlOfTickingEnabled())
         {
-            if(random.nextBoolean())
+            if( random.nextBoolean())
             {
                 discard();
             }

@@ -81,7 +81,7 @@ public class ForgeEventSubscriber {
     public static void WorldTickEvent(TickEvent.LevelTickEvent event)
     {
         // If we are on client or the gravemind is null or we are not in the overworld, return
-        if(event.level.isClientSide() || SculkHorde.gravemind == null || !event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.level.isClientSide() || (event.phase == TickEvent.Phase.END) || (SculkHorde.gravemind == null) || !event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             return;
         }
