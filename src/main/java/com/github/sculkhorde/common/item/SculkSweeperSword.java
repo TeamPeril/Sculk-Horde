@@ -71,7 +71,7 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 
         ItemStack itemstack = player.getItemInHand(hand);
-        if(!itemstack.isDamaged())
+        if(!itemstack.isDamaged() && !level.isClientSide())
         {
             doSpikeAttack(player, player, itemstack);
             level.playSound(player, player.blockPosition(), SoundEvents.EVOKER_FANGS_ATTACK, player.getSoundSource());
