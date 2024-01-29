@@ -2,6 +2,8 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ModItems;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
@@ -30,6 +32,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -205,19 +208,21 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     }
 
     /** TOOLTIPS **/
-    /**
-     * This is the description the item of the block will display when hovered over.
-     * @param stack The item stack
-     * @param iBlockReader A block reader
-     * @param tooltip The tooltip
-     * @param flagIn The flag
-     */
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
-
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_bee_nest_cell")); //Text that displays if holding shift
+        if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+        {
+            tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_bee_nest_cell.functionality"));
+        }
+        else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+        {
+            tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_bee_nest_cell.lore"));
+        }
+        else
+        {
+            tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+        }
     }
 
     // Block Entity Related

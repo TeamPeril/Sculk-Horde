@@ -2,16 +2,20 @@ package com.github.sculkhorde.core;
 
 
 import com.github.sculkhorde.common.item.*;
-import com.github.sculkhorde.common.potion.PuritySplashPotionItem;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -22,8 +26,20 @@ public class ModItems {
 	public static final RegistryObject<SculkSweeperSword> SCULK_SWEEPER_SWORD = ITEMS.register("sculk_sweeper_sword", SculkSweeperSword::new);
 	public static final RegistryObject<Item> SCULK_ENDERMAN_CLEAVER = ITEMS.register("sculk_enderman_cleaver", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_enderman_cleaver"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_enderman_cleaver.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_enderman_cleaver.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
@@ -31,27 +47,63 @@ public class ModItems {
 
 	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.crying_souls"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.crying_souls.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.crying_souls.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
 	public static final RegistryObject<Item> PURE_SOULS = ITEMS.register("pure_souls", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.pure_souls"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.pure_souls.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.pure_souls.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
 	public static final RegistryObject<Item> ESSENCE_OF_PURITY = ITEMS.register("essence_of_purity", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.essence_of_purity"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.essence_of_purity.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.essence_of_purity.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
-	public static final RegistryObject<PuritySplashPotionItem> PURITY_SPLASH_POTION = ITEMS.register("purity_splash_potion",
-			PuritySplashPotionItem::new);
+	public static final RegistryObject<PurificationFlaskItem> PURIFICATION_FLASK = ITEMS.register("purification_flask",
+			PurificationFlaskItem::new);
 
     public static final RegistryObject<DevWand> DEV_WAND = ITEMS.register("dev_wand",
 			DevWand::new);
@@ -69,8 +121,20 @@ public class ModItems {
 			() -> new CustomItemProjectile()
 			{
 				@Override
+				@OnlyIn(Dist.CLIENT)
 				public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-					tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_acidic_projectile"));
+					if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_acidic_projectile.functionality"));
+					}
+					else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_acidic_projectile.lore"));
+					}
+					else
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+					}
 				}
 			});
 
@@ -80,8 +144,20 @@ public class ModItems {
 	public static final RegistryObject<Item> CALCITE_CLUMP = ITEMS.register("calcite_clump",
 			() -> new Item(new Item.Properties()){
 				@Override
+				@OnlyIn(Dist.CLIENT)
 				public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-					tooltip.add(Component.translatable("tooltip.sculkhorde.calcite_clump"));
+					if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.calcite_clump.functionality"));
+					}
+					else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.calcite_clump.lore"));
+					}
+					else
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+					}
 				}
 			});
 
@@ -96,36 +172,103 @@ public class ModItems {
 
 	public static final RegistryObject<Item> CHUNK_O_BRAIN = ITEMS.register("chunk_o_brain", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.chunk_o_brain.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.chunk_o_brain.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
 	public static final RegistryObject<Item> DORMANT_HEART_OF_THE_HORDE = ITEMS.register("dormant_heart_of_the_horde", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.dormant_heart_of_the_horde.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.dormant_heart_of_the_horde.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
 	public static final RegistryObject<Item> HEART_OF_THE_HORDE = ITEMS.register("heart_of_the_horde", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.heart_of_the_horde.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.heart_of_the_horde.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
 
 
 	public static final RegistryObject<Item> HEART_OF_PURITY = ITEMS.register("heart_of_purity", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			tooltip.add(Component.translatable("tooltip.sculkhorde.in_development"));
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.heart_of_purity.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.heart_of_purity.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
 		}
 	});
-	public static final RegistryObject<EyeOfPurityItem> EYE_OF_PURITY = ITEMS.register("eye_of_purity", () -> new EyeOfPurityItem());
+	public static final RegistryObject<EyeOfPurityItem> EYE_OF_PURITY = ITEMS.register("eye_of_purity", () -> new EyeOfPurityItem()
+	{
+		@Override
+		@OnlyIn(Dist.CLIENT)
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.eye_of_purity.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.eye_of_purity.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
+		}
+	});
 
 	public static final RegistryObject<Item> COIN_OF_CONTRIBUTION = ITEMS.register("coin_of_contribution", () -> new Item(new Item.Properties()){
 		@Override
+		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 			tooltip.add(Component.translatable("tooltip.sculkhorde.coin_of_contribution"));
 		}

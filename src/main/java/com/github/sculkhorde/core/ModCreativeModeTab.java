@@ -1,8 +1,5 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModItems;
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -43,7 +40,7 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_ENDERMAN_CLEAVER.get());
                 event.accept(ModItems.SCULK_SWEEPER_SWORD.get());
                 event.accept(ModItems.INFESTATION_PURIFIER.get());
-                event.accept(ModItems.PURITY_SPLASH_POTION.get());
+                event.accept(ModItems.PURIFICATION_FLASK.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());
                 event.accept(ModBlocks.INFESTATION_WARD_BLOCK.get());
                 event.accept(ModItems.CRYING_SOULS.get());

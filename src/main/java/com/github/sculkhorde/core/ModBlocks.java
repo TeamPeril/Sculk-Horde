@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.github.sculkhorde.common.block.DevMassInfectinator3000Block;
@@ -21,18 +22,30 @@ import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.block.SpikeBlock;
 import com.github.sculkhorde.common.block.TendrilsBlock;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.lwjgl.glfw.GLFW;
+
+import javax.annotation.Nullable;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
@@ -100,7 +113,25 @@ public class ModBlocks {
 						.destroyTime(5f)
 						.requiresCorrectToolForDrops()
 						.sound(SoundType.ANCIENT_DEBRIS)
-			));
+			)
+			{
+				@Override
+				@OnlyIn(Dist.CLIENT)
+				public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+					if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.calcite_ore.functionality"));
+					}
+					else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.calcite_ore.lore"));
+					}
+					else
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+					}
+				}
+			});
 
 	public static final RegistryObject<Block> INFESTED_STONE =
 			registerBlock("infested_stone", () -> new Block(BlockBehaviour.Properties.of()
@@ -127,7 +158,25 @@ public class ModBlocks {
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.WOOD)
-			));
+			)
+			{
+				@Override
+				@OnlyIn(Dist.CLIENT)
+				public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+					if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.infested_log.functionality"));
+					}
+					else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.infested_log.lore"));
+					}
+					else
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+					}
+				}
+			});
 
 	public static final RegistryObject<Block> INFESTED_SAND =
 			registerBlock("infested_sand", () -> new Block(BlockBehaviour.Properties.of()
@@ -592,7 +641,25 @@ public class ModBlocks {
 			registerBlock("infestation_ward_block", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_YELLOW)
 					.sound(SoundType.AMETHYST)
-			));
+			)
+			{
+				@Override
+				@OnlyIn(Dist.CLIENT)
+				public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+					if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.infestation_ward_block.functionality"));
+					}
+					else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.infestation_ward_block.lore"));
+					}
+					else
+					{
+						tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+					}
+				}
+			});
 
 	public static final RegistryObject<SpikeBlock> SPIKE =
 			registerBlock("spike", () -> new SpikeBlock());
