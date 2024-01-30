@@ -4,14 +4,17 @@ import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -19,6 +22,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.network.chat.Component;
@@ -31,7 +36,9 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
+public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -59,7 +66,8 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public SculkSummonerBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(VIBRATION_COOLDOWN, false));
+                .setValue(VIBRATION_COOLDOWN, false)
+                .setValue(WATERLOGGED, false));
     }
 
     /**
@@ -96,12 +104,12 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(VIBRATION_COOLDOWN, false);
+                .setValue(VIBRATION_COOLDOWN, false).setValue(WATERLOGGED, false);
 
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(VIBRATION_COOLDOWN);
+        pBuilder.add(VIBRATION_COOLDOWN).add(WATERLOGGED);
     }
 
     /**
@@ -186,5 +194,18 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
+    }
+
+    // Water Log Handling, stole this from BaseRailBlock
+    public BlockState updateShape(BlockState p_152151_, Direction p_152152_, BlockState p_152153_, LevelAccessor p_152154_, BlockPos p_152155_, BlockPos p_152156_) {
+        if (p_152151_.getValue(WATERLOGGED)) {
+            p_152154_.scheduleTick(p_152155_, Fluids.WATER, Fluids.WATER.getTickDelay(p_152154_));
+        }
+
+        return super.updateShape(p_152151_, p_152152_, p_152153_, p_152154_, p_152155_, p_152156_);
+    }
+
+    public FluidState getFluidState(BlockState p_152158_) {
+        return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);
     }
 }

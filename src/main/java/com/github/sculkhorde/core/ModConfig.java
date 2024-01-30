@@ -45,8 +45,6 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
 
-        public final ForgeConfigSpec.ConfigValue<Boolean> new_ending_enabled;
-
         public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
@@ -111,7 +109,6 @@ public class ModConfig {
 
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
-            new_ending_enabled = builder.comment("Should the new ending be enabled? (Default false)").define("new_ending_enabled",false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");
@@ -125,9 +122,6 @@ public class ModConfig {
 
     public static boolean isExperimentalFeaturesEnabled() {
         return SERVER.experimental_features_enabled.get();
-    }
-    public static boolean isNewEndingEnabled() {
-        return SERVER.new_ending_enabled.get() && isExperimentalFeaturesEnabled();
     }
 
     public static class DataGen {

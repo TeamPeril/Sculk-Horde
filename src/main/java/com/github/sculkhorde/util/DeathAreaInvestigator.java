@@ -56,16 +56,16 @@ public class DeathAreaInvestigator {
         if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
         {
             ticksSinceLastSearch = 0;
-            SculkHorde.LOGGER.info("It has been enough time since last death area check. Will see if there is a valid death area.");
+            //SculkHorde.LOGGER.info("It has been enough time since last death area check. Will see if there is a valid death area.");
             if(SculkHorde.savedData != null) {searchEntry = SculkHorde.savedData.getDeathAreaWithHighestDeaths();}
 
             if(searchEntry.isPresent())
             {
                 setState(State.INITIALIZING);
-                SculkHorde.LOGGER.info("Got area with highest deaths.");
+                //SculkHorde.LOGGER.info("Got area with highest deaths.");
                 return;
             }
-            SculkHorde.LOGGER.info("No death area found.");
+            //SculkHorde.LOGGER.info("No death area found.");
         }
     }
 

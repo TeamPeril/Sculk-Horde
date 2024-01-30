@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -438,13 +440,22 @@ public class BlockAlgorithms {
     {
         BlockState blockState = SculkHorde.randomSculkFlora.getRandomEntry().defaultBlockState();
 
+        boolean canBlockBeWaterLogged = blockState.hasProperty(BlockStateProperties.WATERLOGGED);
+        FluidState fluidStateAtTargetPos = world.getFluidState(targetPos);
+
+        // If block is water loggable and in water and can survive, then place
+        if(canBlockBeWaterLogged && fluidStateAtTargetPos.getType() == Fluids.WATER && blockState.canSurvive(world, targetPos))
+        {
+            blockState.setValue(BlockStateProperties.WATERLOGGED, true);
+            world.setBlockAndUpdate(targetPos, blockState);
+        }
+
         //If block below target is valid and the target can be replaced by water and target is not waterloggable
-        if(blockState.canSurvive(world, targetPos)
-                && (world.getBlockState(targetPos).isAir()
-                || world.getBlockState(targetPos).is(Blocks.SNOW)))
+        else if(blockState.canSurvive(world, targetPos) && (world.getBlockState(targetPos).isAir() || world.getBlockState(targetPos).is(Blocks.SNOW)))
         {
             world.setBlockAndUpdate(targetPos, blockState);
         }
+
     }
 
     /**
