@@ -35,12 +35,17 @@ public class SoulHarvesterScreen extends AbstractContainerScreen<SoulHarvesterMe
         guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
 
         renderProgressArrow(guiGraphics, x, y);
+        renderSoulsBar(guiGraphics, x, y);
     }
 
     private void renderProgressArrow(GuiGraphics guiGraphics, int x, int y) {
         if(menu.isCrafting()) {
             guiGraphics.blit(TEXTURE, x + 85, y + 30, 176, 0, 8, menu.getScaledProgress());
         }
+    }
+
+    private void renderSoulsBar(GuiGraphics guiGraphics, int x, int y) {
+        guiGraphics.blit(TEXTURE, x + 90, y + 30, 176, 0, 8, menu.getScaledProgress());
     }
 
     @Override
