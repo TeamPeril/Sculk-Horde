@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -127,6 +129,7 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
             }
 
             purifier = new InfestationPurifierEntity(level);
+            EntityAlgorithms.applyEffectToTarget(purifier, MobEffects.GLOWING, Integer.MAX_VALUE, 0);
             purifier.setPos(spawnPosition.getCenter().x, spawnPosition.getCenter().y, spawnPosition.getCenter().z);
             level.addFreshEntity(purifier);
 
