@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    " C ",
+    " S ",
+    " B "
+  ],
+
+  "key":
+  {
+    "B":
+    {
+      "item": "sculkhorde:chunk_o_brain"
+    },
+    "C":
+    {
+      "item": "minecraft:sculk_catalyst"
+    },
+    "S":
+    {
+      "item": "minecraft:sculk_shrieker"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:soul_harvester",
+    "count": 1
+  }
+}
