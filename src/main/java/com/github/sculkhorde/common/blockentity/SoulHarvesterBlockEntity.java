@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SoulHarvesterTrigger;
 import com.github.sculkhorde.common.block.SoulHarvesterBlock;
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.common.recipe.SoulHarvestingRecipe;
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -11,7 +12,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -238,6 +243,9 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
             pBlockEntity.setActive(false);
             pBlockEntity.resetProgress();
         }
+
+        // Sync To Client
+        pLevel.sendBlockUpdated(pBlockEntity.worldPosition, pBlockEntity.getBlockState(), pBlockEntity.getBlockState(), SoulHarvesterBlock.UPDATE_ALL);
     }
 
     private void resetProgress() {
@@ -291,6 +299,8 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
             // Do not accept xp from sculk entities
             if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) killedEntitiy)) { return false; }
+            // Do not accept xp from infestation purifiers
+            if(killedEntitiy instanceof InfestationPurifierEntity) { return false; }
 
             LivingEntity livingentity = (LivingEntity)killedEntitiy;
 
@@ -341,7 +351,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     protected void saveAdditional(CompoundTag pTag) {
         pTag.put("inventory", itemHandler.serializeNBT());
         pTag.putInt("soul_harvester.progress", progress);
-        pTag.putInt("soul_harvester.progress", progress);
+        pTag.putInt("soul_harvester.healthHarvested", healthHarvested);
         super.saveAdditional(pTag);
     }
 
@@ -350,6 +360,31 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         super.load(pTag);
         itemHandler.deserializeNBT(pTag.getCompound("inventory"));
         progress = pTag.getInt("soul_harvester.progress");
+        healthHarvested = pTag.getInt("soul_harvester.healthHarvested");
+    }
+
+    /**
+     * This method runs when the chunk is loaded, and the server is giving the client
+     * CompoundTag to load. We will use this to update the client on what the value
+     * of health harvested is when the chunk loads.
+     * YouTube Video Where I learned This <a href="https://www.youtube.com/watch?v=zqNFmZ6lscU">...</a>
+     * @return The tag
+     */
+    @Override
+    public @NotNull CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    /**
+     * Using this to sync to client
+     * @return
+     */
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     /* ~~~~~~~~~~~~Animation~~~~~~~~~~~~~~~~~~~~ */

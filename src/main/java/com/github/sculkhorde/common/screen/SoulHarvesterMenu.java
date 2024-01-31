@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.screen;
 
+import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModMenuTypes;
@@ -54,9 +55,9 @@ public class SoulHarvesterMenu extends AbstractContainerMenu {
     }
 
     public int getScaledSoulProgress() {
-        int progress = 500;
-        int maxProgress = 1000;  // Max Progress
-        int progressArrowSize = 26; // This is the height in pixels of your arrow
+        int progress = blockEntity.getHealthHarvested();
+        int maxProgress = SoulHarvesterBlock.MAX_HEALTH;  // Max Progress
+        int progressArrowSize = 32; // This is the height in pixels of your arrow
 
         return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }

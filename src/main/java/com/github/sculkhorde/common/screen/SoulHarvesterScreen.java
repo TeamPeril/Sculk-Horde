@@ -40,12 +40,23 @@ public class SoulHarvesterScreen extends AbstractContainerScreen<SoulHarvesterMe
 
     private void renderProgressArrow(GuiGraphics guiGraphics, int x, int y) {
         if(menu.isCrafting()) {
-            guiGraphics.blit(TEXTURE, x + 85, y + 30, 176, 0, 8, menu.getScaledProgress());
+            int arrowSourceX = 176; // The X Coordinate of the arrow on the texture
+            int arrowSourceY = 0; // The Y Coordinate of the arrow on the texture
+            int arrowSourceWidth = 8; // The Width of the arrow on the texture
+            int arrowSourceHeight = menu.getScaledProgress(); // The Height of the arrow on the texture (We change this to make it look like an animated texture)
+
+            guiGraphics.blit(TEXTURE, x + 85, y + 30, arrowSourceX, arrowSourceY, arrowSourceWidth, arrowSourceHeight);
         }
     }
 
+
     private void renderSoulsBar(GuiGraphics guiGraphics, int x, int y) {
-        guiGraphics.blit(TEXTURE, x + 90, y + 30, 176, 0, 8, menu.getScaledProgress());
+        int sourceX = 184; // The X Coordinate of the arrow on the texture
+        int sourceY = 0; // The Y Coordinate of the arrow on the texture
+        int sourceWidth = 20; // The Width of the arrow on the texture
+        int sourceHeight = menu.getScaledSoulProgress(); // The Height of the arrow on the texture (We change this to make it look like an animated texture)
+
+        guiGraphics.blit(TEXTURE, x + 104, y + 27, sourceX, sourceY, sourceWidth, sourceHeight);
     }
 
     @Override
