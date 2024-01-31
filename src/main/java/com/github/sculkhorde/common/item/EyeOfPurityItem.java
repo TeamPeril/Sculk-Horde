@@ -97,9 +97,6 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
         eyeofender.signalTo(blockpos);
         levelIn.gameEvent(GameEvent.PROJECTILE_SHOOT, eyeofender.position(), GameEvent.Context.of(playerIn));
         levelIn.addFreshEntity(eyeofender);
-        if (playerIn instanceof ServerPlayer) {
-            CriteriaTriggers.USED_ENDER_EYE.trigger((ServerPlayer)playerIn, blockpos);
-        }
 
         levelIn.playSound((Player)null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ENDER_EYE_LAUNCH, SoundSource.NEUTRAL, 0.5F, 0.4F / (levelIn.getRandom().nextFloat() * 0.4F + 0.8F));
         levelIn.levelEvent((Player)null, 1003, playerIn.blockPosition(), 0);
