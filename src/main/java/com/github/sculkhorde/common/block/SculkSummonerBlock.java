@@ -101,11 +101,15 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
      * @param context
      * @return
      */
-    public BlockState getStateForPlacement(BlockPlaceContext context)
-    {
-        return this.defaultBlockState()
-                .setValue(VIBRATION_COOLDOWN, false).setValue(WATERLOGGED, false);
+    @Nullable
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
+        BlockState blockstate = this.defaultBlockState();
+        if (blockstate.canSurvive(context.getLevel(), context.getClickedPos())) {
+            return blockstate.setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER)).setValue(VIBRATION_COOLDOWN, false);
 
+        }
+        return null;
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {

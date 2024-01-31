@@ -1,6 +1,6 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.effect.SculkInfectionEffect;
+import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
@@ -153,7 +153,7 @@ public class ForgeEventSubscriber {
 
         if(effectInstance.getEffect() == ModMobEffects.SCULK_INFECTION.get())
         {
-            SculkInfectionEffect.onPotionExpire(event);
+            SculkBurrowedEffect.onPotionExpire(event);
         }
 
     }

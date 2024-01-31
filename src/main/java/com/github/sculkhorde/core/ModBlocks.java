@@ -662,55 +662,55 @@ public class ModBlocks {
 			});
 
 	public static final RegistryObject<SpikeBlock> SPIKE =
-			registerBlock("spike", () -> new SpikeBlock());
+			registerBlock("spike", SpikeBlock::new);
 
 	public static final RegistryObject<SmallShroomBlock> SMALL_SHROOM =
-			registerBlock("small_shroom", () -> new SmallShroomBlock());
+			registerBlock("small_shroom", SmallShroomBlock::new);
 
 	public static final RegistryObject<SculkFloraBlock> GRASS =
-			registerBlock("grass", () -> new SculkFloraBlock());
+			registerBlock("grass", SculkFloraBlock::new);
 
 	public static final RegistryObject<SculkFloraBlock> GRASS_SHORT =
-			registerBlock("grass_short", () -> new SculkFloraBlock());
+			registerBlock("grass_short", SculkFloraBlock::new);
 
 	public static final RegistryObject<SculkShroomCultureBlock> SCULK_SHROOM_CULTURE =
-			registerBlock("sculk_shroom_culture", () -> new SculkShroomCultureBlock());
+			registerBlock("sculk_shroom_culture", SculkShroomCultureBlock::new);
 
 	public static final RegistryObject<SculkMassBlock> SCULK_MASS =
-			registerBlock("sculk_mass", () -> new SculkMassBlock());
+			registerBlock("sculk_mass", SculkMassBlock::new);
 
 	public static final RegistryObject<TendrilsBlock> TENDRILS =
-			registerBlock("tendrils", () -> new TendrilsBlock());
+			registerBlock("tendrils", TendrilsBlock::new);
 
 	public static final RegistryObject<SculkNodeBlock> SCULK_NODE_BLOCK =
-			registerBlock("sculk_node", () -> new SculkNodeBlock());
+			registerBlock("sculk_node", SculkNodeBlock::new);
 
 	public static final RegistryObject<SculkAncientNodeBlock> SCULK_ANCIENT_NODE_BLOCK =
-			registerBlock("sculk_ancient_node", () -> new SculkAncientNodeBlock());
+			registerBlock("sculk_ancient_node", SculkAncientNodeBlock::new);
 
 	public static final RegistryObject<SculkBeeNestBlock> SCULK_BEE_NEST_BLOCK =
-			registerBlock("sculk_bee_nest", () -> new SculkBeeNestBlock());
+			registerBlock("sculk_bee_nest", SculkBeeNestBlock::new);
 
 	public static final RegistryObject<SculkBeeNestCellBlock> SCULK_BEE_NEST_CELL_BLOCK =
-			registerBlock("sculk_bee_nest_cell", () -> new SculkBeeNestCellBlock());
+			registerBlock("sculk_bee_nest_cell", SculkBeeNestCellBlock::new);
 
 	public static final RegistryObject<SculkSummonerBlock> SCULK_SUMMONER_BLOCK =
-			registerBlock("sculk_summoner", () -> new SculkSummonerBlock());
+			registerBlock("sculk_summoner", SculkSummonerBlock::new);
 
 	public static final RegistryObject<SculkLivingRockBlock> SCULK_LIVING_ROCK_BLOCK =
-			registerBlock("sculk_living_rock", () -> new SculkLivingRockBlock());
+			registerBlock("sculk_living_rock", SculkLivingRockBlock::new);
 
 	public static final RegistryObject<SculkLivingRockRootBlock> SCULK_LIVING_ROCK_ROOT_BLOCK =
-			registerBlock("sculk_living_rock_root", () -> new SculkLivingRockRootBlock());
+			registerBlock("sculk_living_rock_root", SculkLivingRockRootBlock::new);
 
 	public static final RegistryObject<DevStructureTesterBlock> DEV_STRUCTURE_TESTER_BLOCK =
-			registerBlock("dev_structure_tester", () -> new DevStructureTesterBlock());
+			registerBlock("dev_structure_tester", DevStructureTesterBlock::new);
 
 	public static final RegistryObject<DevMassInfectinator3000Block> DEV_MASS_INFECTINATOR_3000_BLOCK =
-			registerBlock("dev_mass_infectinator_3000", () -> new DevMassInfectinator3000Block());
+			registerBlock("dev_mass_infectinator_3000", DevMassInfectinator3000Block::new);
 
 	public static final RegistryObject<SoulHarvesterBlock> SOUL_HARVESTER_BLOCK =
-			registerBlock("soul_harvester", () -> new SoulHarvesterBlock());
+			registerBlock("soul_harvester", SoulHarvesterBlock::new);
 
 	public static class BlockTags
 	{

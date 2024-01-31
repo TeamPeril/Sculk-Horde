@@ -3,13 +3,19 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
@@ -23,7 +29,10 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
-public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
+public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -52,6 +61,8 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public SculkMassBlock(Properties prop) {
         super(prop);
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(WATERLOGGED, false));
     }
 
     /**
@@ -76,6 +87,33 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
                 .noOcclusion();
     }
 
+    @Nullable
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
+        BlockState blockstate = this.defaultBlockState();
+        if (blockstate.canSurvive(context.getLevel(), context.getClickedPos())) {
+            return blockstate.setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER));
+
+        }
+        return null;
+    }
+
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(WATERLOGGED);
+    }
+
+    public BlockState updateShape(BlockState p_152151_, Direction p_152152_, BlockState p_152153_, LevelAccessor p_152154_, BlockPos p_152155_, BlockPos p_152156_) {
+        if (p_152151_.getValue(WATERLOGGED)) {
+            p_152154_.scheduleTick(p_152155_, Fluids.WATER, Fluids.WATER.getTickDelay(p_152154_));
+        }
+
+        return super.updateShape(p_152151_, p_152152_, p_152153_, p_152154_, p_152155_, p_152156_);
+    }
+
+    public FluidState getFluidState(BlockState p_152158_) {
+        return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);
+    }
+
     /**
      * Spawns A Sculk Mass. The sculk will cause the body to age 30 years over a few moments
      * to generate mass for the sculk. One third of this mass is taxed and given to the
@@ -87,36 +125,21 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
     public void spawn(Level world, BlockPos originPos, float victimHealth)
     {
         BlockPos placementPos = originPos.above();
-        int MAX_ATTEMPTS = 64;
-        int attempts = 0;
+
         SculkMassBlockEntity thisTile;
 
-        //Try and find solid ground to place this block on
-        while(world.getBlockState(placementPos.below()).canBeReplaced(Fluids.WATER) && attempts <= MAX_ATTEMPTS)
-        {
-            placementPos = placementPos.below();
-            attempts++;
-        }
-        //If was able to find correct placement in under MAX_ATTEMPTS, then place it
-        if(attempts < MAX_ATTEMPTS)
-        {
-            //If sculk mass does not yet exist, add it
-            if(!world.getBlockState(placementPos).equals(this.defaultBlockState()))
-            {
-                world.setBlockAndUpdate(placementPos, this.defaultBlockState());
-                thisTile = getTileEntity(world, placementPos);
+        world.setBlockAndUpdate(placementPos, this.defaultBlockState());
+        thisTile = getTileEntity(world, placementPos);
 
-                //Calcualate the total mass collected
-                int totalMassPreTax = (int) (victimHealth * HEALTH_ABSORB_MULTIPLIER);
-                int totalMassTax = (int) (totalMassPreTax * SCULK_HOARD_MASS_TAX);
-                int totalRemainingMass = totalMassPreTax - totalMassTax;
-                thisTile.setStoredSculkMass(totalRemainingMass);
+        //Calcualate the total mass collected
+        int totalMassPreTax = (int) (victimHealth * HEALTH_ABSORB_MULTIPLIER);
+        int totalMassTax = (int) (totalMassPreTax * SCULK_HOARD_MASS_TAX);
+        int totalRemainingMass = totalMassPreTax - totalMassTax;
+        thisTile.setStoredSculkMass(totalRemainingMass);
 
-                //Pay Mass Tax to the Sculk Hoard
-                if(SculkHorde.savedData != null) {SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);}
-                if(SculkHorde.statisticsData != null) {SculkHorde.statisticsData.addTotalMassFromBurrowed(totalMassTax);}
-            }
-        }
+        //Pay Mass Tax to the Sculk Hoard
+        if(SculkHorde.savedData != null) {SculkHorde.savedData.addSculkAccumulatedMass(totalMassTax);}
+        if(SculkHorde.statisticsData != null) {SculkHorde.statisticsData.addTotalMassFromBurrowed(totalMassTax);}
     }
 
     /**
@@ -177,6 +200,10 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
         return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.SCULK_MASS_BLOCK_ENTITY.get(), SculkMassBlockEntity::tick);
     }
 
+    @Override
+    public boolean canSurvive(BlockState p_60525_, LevelReader p_60526_, BlockPos p_60527_) {
+        return true;
+    }
 
     @org.jetbrains.annotations.Nullable
     @Override
@@ -187,5 +214,10 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock {
     @Override
     public RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState p_60535_, Fluid p_60536_) {
+        return false;
     }
 }
