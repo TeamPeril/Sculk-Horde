@@ -1,16 +1,14 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 /**
  * This class is only used in the EntityFactory class which stores a list
@@ -19,7 +17,7 @@ import javax.annotation.Nullable;
  */
 public class EntityFactoryEntry {
 
-    public enum StrategicValues {Combat, Infector, Melee, Ranged, Boss, Support, Tank, Flying, Swimming}
+    public enum StrategicValues {Combat, Infector, Melee, Ranged, Boss, Support, Tank, EffectiveInSkies, Aquatic, EffectiveOnGround}
 
     private int orderCost = 0;
     private EntityType entity = null;
@@ -127,9 +125,41 @@ public class EntityFactoryEntry {
         return true;
     }
 
-    public boolean doesEntityContainAnyRequiredStrategicValues(StrategicValues[] requiredValues)
+    public boolean doesEntityContainNeededStrategicValue(StrategicValues requiredValue)
     {
+        for(StrategicValues entityValue : strategicValues)
+        {
+            if(entityValue == requiredValue)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean doesEntityContainNeededStrategicValues(ArrayList<StrategicValues> requiredValues)
+    {
+        int amountOfValuesNeeded = requiredValues.size();
+        int amountOfValuesUnitHasFromRequirement = 0;
+
         for(StrategicValues value : requiredValues)
+        {
+            for(StrategicValues entityValue : strategicValues)
+            {
+                if(entityValue == value)
+                {
+                    amountOfValuesUnitHasFromRequirement++;
+                }
+            }
+        }
+
+        return amountOfValuesNeeded == amountOfValuesUnitHasFromRequirement;
+    }
+
+    public boolean doesEntityContainAnyDeniedStrategicValues(StrategicValues[] deniedValues)
+    {
+        for(StrategicValues value : deniedValues)
         {
             for(StrategicValues entityValue : strategicValues)
             {
@@ -154,14 +184,14 @@ public class EntityFactoryEntry {
         boolean doesHordeNotHaveEnoughMass = getCost() >= SculkHorde.savedData.getSculkAccumulatedMass();
         boolean isSenderExplicitlyDenied = isSenderExplicitlyDenied(context.sender);
         boolean isEvolutionStateNotMet = !SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired);
-        boolean doesEntityNotContainAnyRequiredStrategicValues = !doesEntityContainAnyRequiredStrategicValues(context.approvedMobTypes);
-        boolean doesRequestSpecifyAnyApprovedMobTypes = context.approvedMobTypes.length > 0;
+        boolean doesEntityNotContainNeededStrategicValues = !doesEntityContainNeededStrategicValues(context.approvedStrategicValues);
+        boolean doesRequestSpecifyAnyApprovedMobTypes = !context.approvedStrategicValues.isEmpty();
 
         if(doesHordeNotHaveEnoughMass || isOverBudget)
         {
             return false;
         }
-        else if(doesEntityNotContainAnyRequiredStrategicValues && doesRequestSpecifyAnyApprovedMobTypes)
+        else if(doesEntityNotContainNeededStrategicValues && doesRequestSpecifyAnyApprovedMobTypes)
         {
             return false;
         }

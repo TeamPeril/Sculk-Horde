@@ -11,7 +11,6 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.*;
 
@@ -181,7 +180,7 @@ public class Gravemind
         boolean isThereAtLeastOneSpawnPoint = context.positions.length > 0;
         boolean isThereSculkNodesInExistence = !SculkHorde.savedData.getNodeEntries().isEmpty();
 
-        // If Overpopulated, and its a summoner, do not approve.
+        // If Overpopulated, and it's a summoner, do not approve.
         if( (isSenderTypeSummoner || isSenderTypeMassBlock) && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
         {
             BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.dimension, context.positions[0]).getPosition();
@@ -202,21 +201,22 @@ public class Gravemind
         {
             context.isRequestApproved = true;
         }
-        else if(evolution_state == evolution_states.Immature || evolution_state == evolution_states.Mature)
+        else
         {
             //Spawn Combat Mobs to deal with player
             if(context.is_aggressor_nearby)
             {
-                context.approvedMobTypes = new EntityFactoryEntry.StrategicValues[]{Combat};
+                context.approvedStrategicValues.add(Combat);
                 context.isRequestApproved = true;
             }
+
             //Spawn infector mobs to infect
-            //NOTE: I turned this into an else if because if both aggressors and passives are present,
+            //NOTE: I turned this into an else if because is both aggressors and passives are present,
             //it will choose from both combat and infector units. I think its better we prioritize
             //spawning aggressors if both are present
             else if(context.is_non_sculk_mob_nearby)
             {
-                context.approvedMobTypes = new EntityFactoryEntry.StrategicValues[]{Infector};
+                context.approvedStrategicValues.add(Infector);
                 context.isRequestApproved = true;
             }
         }

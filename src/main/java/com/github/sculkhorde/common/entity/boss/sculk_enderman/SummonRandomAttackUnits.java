@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -15,6 +14,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry.StrategicValues.Combat;
+
 public class SummonRandomAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
@@ -22,11 +23,12 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(40);
     protected int ticksElapsed = executionCooldown;
 
-    protected EntityFactoryEntry.StrategicValues[] validStrategicValues = new EntityFactoryEntry.StrategicValues[]{EntityFactoryEntry.StrategicValues.Combat};
+    protected ArrayList<EntityFactoryEntry.StrategicValues> validStrategicValues = new ArrayList<>();
 
     public SummonRandomAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
+        validStrategicValues.add(Combat);
     }
 
     private SculkEndermanEntity getSculkEnderman()
@@ -80,7 +82,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     {
         return (entityFactoryEntry) ->
         {
-            return entityFactoryEntry.doesEntityContainAnyRequiredStrategicValues(validStrategicValues);
+            return entityFactoryEntry.doesEntityContainNeededStrategicValues(validStrategicValues);
         };
     }
 

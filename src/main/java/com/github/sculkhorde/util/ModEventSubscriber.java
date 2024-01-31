@@ -4,21 +4,17 @@ import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.advancement.SculkNodeSpawnTrigger;
 import com.github.sculkhorde.common.advancement.SoulHarvesterTrigger;
-import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -39,7 +35,7 @@ public class ModEventSubscriber {
                         .setCost((int) SculkSporeSpewerEntity.MAX_HEALTH)
                         .setLimit(1)
                         .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
-                        .addStrategicValues(EntityFactoryEntry.StrategicValues.Infector),
+                        .addStrategicValues(EntityFactoryEntry.StrategicValues.Infector, EntityFactoryEntry.StrategicValues.EffectiveOnGround),
 
                 new EntityFactoryEntry(ModEntities.SCULK_PHANTOM.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
@@ -47,9 +43,10 @@ public class ModEventSubscriber {
                         .setLimit(1)
                         .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass, ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
-                        EntityFactoryEntry.StrategicValues.Infector,
-                        EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.Flying
+                            EntityFactoryEntry.StrategicValues.Infector,
+                            EntityFactoryEntry.StrategicValues.Melee,
+                            EntityFactoryEntry.StrategicValues.EffectiveOnGround,
+                            EntityFactoryEntry.StrategicValues.EffectiveInSkies
                 ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_RAVAGER.get())
@@ -58,9 +55,10 @@ public class ModEventSubscriber {
                         .setLimit(1)
                         .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
                         .addStrategicValues(
-                                EntityFactoryEntry.StrategicValues.Combat,
-                                EntityFactoryEntry.StrategicValues.Tank,
-                                EntityFactoryEntry.StrategicValues.Melee
+                            EntityFactoryEntry.StrategicValues.Combat,
+                            EntityFactoryEntry.StrategicValues.Tank,
+                            EntityFactoryEntry.StrategicValues.Melee,
+                            EntityFactoryEntry.StrategicValues.EffectiveOnGround
                         ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_HATCHER.get())
@@ -68,16 +66,18 @@ public class ModEventSubscriber {
                         .setCost((int) SculkHatcherEntity.MAX_HEALTH)
                         .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
                         .addStrategicValues(
-                                EntityFactoryEntry.StrategicValues.Combat,
-                                EntityFactoryEntry.StrategicValues.Melee
+                            EntityFactoryEntry.StrategicValues.Combat,
+                            EntityFactoryEntry.StrategicValues.Melee,
+                            EntityFactoryEntry.StrategicValues.EffectiveOnGround
                         ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_CREEPER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
                         .setCost(20)
                         .addStrategicValues(
-                        EntityFactoryEntry.StrategicValues.Combat,
-                        EntityFactoryEntry.StrategicValues.Melee
+                            EntityFactoryEntry.StrategicValues.Combat,
+                            EntityFactoryEntry.StrategicValues.Melee,
+                            EntityFactoryEntry.StrategicValues.EffectiveOnGround
                 ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_SPITTER.get())
@@ -85,7 +85,8 @@ public class ModEventSubscriber {
                         .setCost(20)
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
-                        EntityFactoryEntry.StrategicValues.Ranged
+                        EntityFactoryEntry.StrategicValues.Ranged,
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround
                 ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_ZOMBIE.get())
@@ -93,7 +94,8 @@ public class ModEventSubscriber {
                         .setCost(20)
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
-                        EntityFactoryEntry.StrategicValues.Melee
+                        EntityFactoryEntry.StrategicValues.Melee,
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround
                 ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_VINDICATOR.get())
@@ -101,7 +103,8 @@ public class ModEventSubscriber {
                         .setCost((int) SculkVindicatorEntity.MAX_HEALTH)
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
-                        EntityFactoryEntry.StrategicValues.Melee
+                        EntityFactoryEntry.StrategicValues.Melee,
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround
                 ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_MITE_AGGRESSOR.get())
@@ -109,7 +112,8 @@ public class ModEventSubscriber {
                         .setCost(6)
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
-                        EntityFactoryEntry.StrategicValues.Melee
+                        EntityFactoryEntry.StrategicValues.Melee,
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround
                 ),
 
                 new EntityFactoryEntry(ModEntities.SCULK_MITE.get())
@@ -117,7 +121,8 @@ public class ModEventSubscriber {
                         .setCost((int) SculkMiteEntity.MAX_HEALTH)
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Infector,
-                        EntityFactoryEntry.StrategicValues.Melee
+                        EntityFactoryEntry.StrategicValues.Melee,
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround
                 ),
         };
 

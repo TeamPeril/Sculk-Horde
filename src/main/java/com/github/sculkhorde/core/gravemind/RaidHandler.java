@@ -23,7 +23,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -689,7 +688,7 @@ public class RaidHandler {
 
     private Predicate<EntityFactoryEntry> isValidRaidParticipant(EntityFactoryEntry.StrategicValues strategicValue)
     {
-        return (entityFactoryEntry) -> entityFactoryEntry.doesEntityContainAnyRequiredStrategicValues(new EntityFactoryEntry.StrategicValues[]{strategicValue});
+        return (entityFactoryEntry) -> entityFactoryEntry.doesEntityContainNeededStrategicValue(strategicValue);
     }
 
     public EntityFactoryEntry.StrategicValues[] getWavePattern()

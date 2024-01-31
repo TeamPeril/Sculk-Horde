@@ -1,7 +1,6 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -48,10 +47,9 @@ public class EntityFactory {
         rng = new Random();
     }
 
-    private EntityFactoryEntry addEntryToFactory(EntityFactoryEntry entry)
+    private void addEntryToFactory(EntityFactoryEntry entry)
     {
         entries.add(entry);
-        return entry;
     }
 
     public void addEntriesToFactory( EntityFactoryEntry[] entityFactoryEntries)

@@ -21,10 +21,10 @@ import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
@@ -43,8 +43,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
+
+import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry.StrategicValues.*;
 
 
 public class SculkSummonerBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem, GeoBlockEntity
@@ -147,7 +147,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
                         blockEntity.searchArea,
                         blockEntity.infectableTargetParameters.isPossibleNewTargetValid);
 
-        if (blockEntity.possibleAggressorTargets.size() != 0 || blockEntity.possibleLivingEntityTargets.size() != 0)
+        if(!blockEntity.possibleAggressorTargets.isEmpty() || !blockEntity.possibleLivingEntityTargets.isEmpty())
         {
             return true;
         }
@@ -156,12 +156,14 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     }
 
-    public void spawnReinforcements()
+    public void requestReinforcementsFromGravemind()
     {
+        boolean isSummonerWaterLogged = getBlockState().getValue(BlockStateProperties.WATERLOGGED);
+
         ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, this.getBlockPos().getX() + 0.5D, this.getBlockPos().getY() + 1.15D, this.getBlockPos().getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
-        ((ServerLevel)level).playSound((Player)null, this.getBlockPos(), SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
+        ((ServerLevel)level).playSound(null, this.getBlockPos(), SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
         //Choose spawn positions
-        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), 5, this.MAX_SPAWNED_ENTITIES);
+        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), 5, this.MAX_SPAWNED_ENTITIES, isSummonerWaterLogged);
 
         BlockPos[] finalizedSpawnPositions = new BlockPos[this.MAX_SPAWNED_ENTITIES];
 
@@ -176,18 +178,30 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             finalizedSpawnPositions[0] = this.getBlockPos().above();
         }
 
+
+
         //Give gravemind context to our request to make more informed situations
         this.request = new ReinforcementRequest((ServerLevel) getLevel(), finalizedSpawnPositions);
         this.request.sender = ReinforcementRequest.senderType.Summoner;
 
-        if (this.possibleAggressorTargets.size() != 0) {
+        // IF we are water logged, need water mobs
+        if(isSummonerWaterLogged) {
+            request.approvedStrategicValues.add(Aquatic);
+        }
+        // If we aren't underwater, need walkers
+        else {
+            request.approvedStrategicValues.add(EffectiveOnGround);
+        }
+
+        if (!this.possibleAggressorTargets.isEmpty()) {
             this.request.is_aggressor_nearby = true;
         }
-        if (this.possibleLivingEntityTargets.size() != 0) {
+
+        if (!this.possibleLivingEntityTargets.isEmpty()) {
             this.request.is_non_sculk_mob_nearby = true;
         }
 
-        //If there is some sort of enemy near by, request reinforcement
+        //If there is some sort of enemy nearby, request reinforcement
         if (this.request.is_non_sculk_mob_nearby || this.request.is_aggressor_nearby) {
             //Request reinforcement from entity factory (this request gets approved or denied by gravemind)
             SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level, this.getBlockPos(), false, this.request);
@@ -196,7 +210,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
 
     /** ~~~~~~~~ Events ~~~~~~~~ **/
-    public static void recieveVibrationTick(Level level, BlockPos vibrationSource, BlockState blockState, SculkSummonerBlockEntity blockEntity, Entity entity)
+    public static void receiveVibrationTick(Level level, BlockPos vibrationSource, BlockState blockState, SculkSummonerBlockEntity blockEntity, Entity entity)
     {
         if(level == null || level.isClientSide)
         {
@@ -213,7 +227,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
         if(blockEntity.areAnyTargetsNearBy(blockEntity.worldPosition, blockEntity))
         {
-            blockEntity.spawnReinforcements();
+            blockEntity.requestReinforcementsFromGravemind();
             level.levelEvent(3007, blockEntity.worldPosition, 0);
             level.gameEvent(GameEvent.SHRIEK, blockEntity.worldPosition, GameEvent.Context.of(entity));
         }
@@ -239,13 +253,13 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      * @param amountOfPositions The amount of positions to get
      * @return A list of the spawn positions
      */
-    public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int length, int amountOfPositions)
+    public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int length, int amountOfPositions, boolean requireWater)
     {
         //TODO Can potentially be optimized by not getting all the possible positions
-        ArrayList<BlockPos> listOfPossibleSpawns = getSpawnPositions(worldIn, origin, VALID_SPAWN_BLOCKS, length);
+        ArrayList<BlockPos> listOfPossibleSpawns = getSpawnPositions(worldIn, origin, length, requireWater);
         ArrayList<BlockPos> finalList = new ArrayList<>();
         Random rng = new Random();
-        for(int count = 0; count < amountOfPositions && listOfPossibleSpawns.size() > 0; count++)
+        for(int count = 0; count < amountOfPositions && !listOfPossibleSpawns.isEmpty(); count++)
         {
             int randomIndex = rng.nextInt(listOfPossibleSpawns.size());
             //Get random position between 0 and size of list
@@ -256,28 +270,25 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     }
 
     /**
-     * Represents a predicate (boolean-valued function) of one argument. <br>
-     * Currently determines if a block is a valid flower.
-     */
-    private final Predicate<BlockPos> VALID_SPAWN_BLOCKS = (blockPos) ->
-    {
-        return isValidSpawnPosition((ServerLevel) this.level, blockPos) ;
-    };
-
-    /**
      * Returns true if the block below is a sculk block,
      * and if the two blocks above it are free.
      * @param worldIn The World
      * @param pos The Position to spawn the entity
      * @return True/False
      */
-    public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
+    public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos, boolean requireWater)
     {
-        boolean isBlockBleowCurable = BlockInfestationHelper.isCurable(worldIn, pos.below());
+        boolean isBlockBelowCurable = BlockInfestationHelper.isCurable(worldIn, pos.below());
         boolean isBaseBlockReplaceable = worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER);
+        boolean isBaseBlockWater = worldIn.getFluidState(pos).is(Fluids.WATER);
         boolean isBlockAboveReplaceable = worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
 
-        return isBlockBleowCurable && isBaseBlockReplaceable && isBlockAboveReplaceable;
+        if(!isBaseBlockWater && requireWater)
+        {
+            return false;
+        }
+
+        return isBlockBelowCurable && isBaseBlockReplaceable && isBlockAboveReplaceable;
 
     }
 
@@ -285,11 +296,10 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      * Finds the location of the nearest block given a BlockPos predicate.
      * @param worldIn The world
      * @param origin The origin of the search location
-     * @param predicateIn The predicate that determines if a block is the one were searching for
      * @param pDistance The search distance
      * @return The position of the block
      */
-    public static ArrayList<BlockPos> getSpawnPositions(ServerLevel worldIn, BlockPos origin, Predicate<BlockPos> predicateIn, double pDistance)
+    public ArrayList<BlockPos> getSpawnPositions(ServerLevel worldIn, BlockPos origin, double pDistance, boolean requireWater)
     {
         ArrayList<BlockPos> list = new ArrayList<>();
 
@@ -306,8 +316,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
                         BlockPos temp = new BlockPos(origin.getX() + k, origin.getY() + i-1, origin.getZ() + l);
 
                         //If the block is close enough and is the right blockstate
-                        if (origin.closerThan(temp, pDistance)
-                                && predicateIn.test(temp))
+                        if (origin.closerThan(temp, pDistance) && isValidSpawnPosition(worldIn, temp, requireWater))
                         {
                             list.add(temp); //add position
                         }
@@ -385,7 +394,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            recieveVibrationTick(level, blockPos, getBlockState(), summoner, entity);
+            receiveVibrationTick(level, blockPos, getBlockState(), summoner, entity);
         }
 
         public void onDataChanged()
