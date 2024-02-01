@@ -118,7 +118,8 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
     private static ArgumentBuilder<CommandSourceStack, ?> experimentalFeaturesConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("experimental_features")
-                .then(booleanConfigOption("experimental_features_enabled"));
+                .then(booleanConfigOption("experimental_features_enabled"))
+                .then(booleanConfigOption("enable_sculk_salmon"));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> triggerAutomaticallyConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -300,8 +301,12 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         success = true;
                     }
                     break;
-
-
+                case "enable_sculk_salmon":
+                    if(valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.enable_sculk_salmon.set((Boolean) rawValue);
+                        success = true;
+                    }
+                    break;
                 case "Invalid Argument":
                     context.getSource().sendFailure(Component.literal("Invalid Arguments"));
                     break;

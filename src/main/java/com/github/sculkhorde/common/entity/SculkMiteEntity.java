@@ -194,8 +194,8 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     {
         Goal[] goals =
                 {
-                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(1)),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(5)),
+                        new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(1)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),
@@ -271,6 +271,10 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
     public boolean dampensVibrations() {
         return true;
+    }
+
+    public boolean isPushedByFluid() {
+        return false;
     }
 
 }

@@ -195,30 +195,21 @@ public class Gravemind
             }
         }
 
-
-        //If gravemind is undeveloped, just auto approve all requests
-        if(evolution_state == evolution_states.Undeveloped)
+        //Spawn Combat Mobs to deal with player
+        if(context.is_aggressor_nearby)
         {
+            context.approvedStrategicValues.add(Combat);
             context.isRequestApproved = true;
         }
-        else
-        {
-            //Spawn Combat Mobs to deal with player
-            if(context.is_aggressor_nearby)
-            {
-                context.approvedStrategicValues.add(Combat);
-                context.isRequestApproved = true;
-            }
 
-            //Spawn infector mobs to infect
-            //NOTE: I turned this into an else if because is both aggressors and passives are present,
-            //it will choose from both combat and infector units. I think its better we prioritize
-            //spawning aggressors if both are present
-            else if(context.is_non_sculk_mob_nearby)
-            {
-                context.approvedStrategicValues.add(Infector);
-                context.isRequestApproved = true;
-            }
+        //Spawn infector mobs to infect
+        //NOTE: I turned this into an else if because is both aggressors and passives are present,
+        //it will choose from both combat and infector units. I think its better we prioritize
+        //spawning aggressors if both are present
+        else if(context.is_non_sculk_mob_nearby)
+        {
+            context.approvedStrategicValues.add(Infector);
+            context.isRequestApproved = true;
         }
     }
 

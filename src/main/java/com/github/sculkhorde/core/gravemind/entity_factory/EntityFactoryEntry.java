@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
@@ -7,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,9 @@ public class EntityFactoryEntry {
 
     private ReinforcementRequest.senderType explicitDeniedSenders[] = new ReinforcementRequest.senderType[]{};
     private Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
+
+    boolean experimentalMode = false;
+    private ForgeConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.enable_sculk_salmon;
 
     public EntityFactoryEntry(EntityType entity)
     {
@@ -52,6 +57,13 @@ public class EntityFactoryEntry {
     public EntityFactoryEntry setLimit(int limit)
     {
         this.limit = limit;
+        return this;
+    }
+
+    public EntityFactoryEntry enableExperimentalMode(ForgeConfigSpec.ConfigValue<Boolean> configOptionThatNeedsToBeTrue)
+    {
+        experimentalMode = true;
+        requiredConfig = configOptionThatNeedsToBeTrue;
         return this;
     }
 
@@ -188,6 +200,10 @@ public class EntityFactoryEntry {
         boolean doesRequestSpecifyAnyApprovedMobTypes = !context.approvedStrategicValues.isEmpty();
 
         if(doesHordeNotHaveEnoughMass || isOverBudget)
+        {
+            return false;
+        }
+        else if(experimentalMode && (!ModConfig.SERVER.experimental_features_enabled.get() || !requiredConfig.get()))
         {
             return false;
         }

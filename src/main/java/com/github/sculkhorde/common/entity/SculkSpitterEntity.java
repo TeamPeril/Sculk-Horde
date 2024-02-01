@@ -170,7 +170,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         Goal[] goals =
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                        new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(2)),
+                        new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),

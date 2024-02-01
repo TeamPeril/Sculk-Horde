@@ -50,8 +50,8 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SculkCreeperEntity>> SCULK_CREEPER = registerMob("sculk_creeper", SculkCreeperEntity::new, 0.6f, 1.95f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkPhantomEntity>> SCULK_PHANTOM = registerMob("sculk_phantom", SculkPhantomEntity::new, 2.5f, 1f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkPhantomCorpseEntity>> SCULK_PHANTOM_CORPSE = registerMob("sculk_phantom_corpse", SculkPhantomCorpseEntity::new, 1f, 1f, 0x000000, 0x000000);
-
     public static final RegistryObject<EntityType<SculkEndermanEntity>> SCULK_ENDERMAN = registerMob("sculk_enderman", SculkEndermanEntity::new, 0.6f, 3f, 0x000000, 0x000000);
+    public static final RegistryObject<EntityType<SculkSalmonEntity>> SCULK_SALMON = registerMob("sculk_salmon", SculkSalmonEntity::new, 0.7f, 0.4f, 0x000000, 0x000000);
 
     public static final RegistryObject<EntityType<CursorProberEntity>> CURSOR_PROBER = ENTITY_TYPES.register("cursor_prober", () -> EntityType.Builder.<CursorProberEntity>of(CursorProberEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("cursor_prober"));
     public static final RegistryObject<EntityType<CustomItemProjectileEntity>> CUSTOM_ITEM_PROJECTILE_ENTITY = ENTITY_TYPES.register("custom_item_projectile", () -> EntityType.Builder.<CustomItemProjectileEntity>of(CustomItemProjectileEntity::new, MobCategory.MISC).sized(0.45F, 0.45F).clientTrackingRange(4).updateInterval(10).build("custom_item_projectile"));

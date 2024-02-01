@@ -44,7 +44,7 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_no_raid_zone_duration_minutes;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
-
+        public final ForgeConfigSpec.ConfigValue<Boolean> enable_sculk_salmon;
         public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
@@ -109,6 +109,7 @@ public class ModConfig {
 
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
+            enable_sculk_salmon = builder.comment("Enable the spawning of Sculk Salmon from Summoners (Default true). Requires restart on change.").define("enable_sculk_salmon", true);
             builder.pop();
 
             builder.push("Sculk Raid Variables");

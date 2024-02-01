@@ -10,16 +10,17 @@ import java.util.concurrent.TimeUnit;
 
 public class DespawnWhenIdle extends Goal {
 
-    long lastTimeSinceNotIdle = System.nanoTime();
+    long lastTimeSinceNotIdle = 0;
     long timeElapsed = 0;
-    long secondsIdleThreshold;
+    long ticksIdleThreshold;
     ISculkSmartEntity mob;
 
-    public DespawnWhenIdle(ISculkSmartEntity mob, long secondsIdleThreshold)
+    public DespawnWhenIdle(ISculkSmartEntity mob, long ticksIdleThreshold)
     {
         super();
         this.mob = mob;
-        this.secondsIdleThreshold = secondsIdleThreshold;
+        this.ticksIdleThreshold = ticksIdleThreshold;
+        lastTimeSinceNotIdle = ((Mob) mob).level().getGameTime();
     }
 
     /**
@@ -31,11 +32,11 @@ public class DespawnWhenIdle extends Goal {
     {
         if(!mob.isIdle() || mob.isParticipatingInRaid() || ((Mob) mob).hasCustomName())
         {
-            lastTimeSinceNotIdle = System.nanoTime();
+            lastTimeSinceNotIdle = ((Mob) mob).level().getGameTime();
         }
 
-        timeElapsed = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastTimeSinceNotIdle);
-        return timeElapsed > secondsIdleThreshold;
+        timeElapsed = ((Mob) mob).level().getGameTime() - lastTimeSinceNotIdle;
+        return timeElapsed > ticksIdleThreshold;
     }
 
     @Override

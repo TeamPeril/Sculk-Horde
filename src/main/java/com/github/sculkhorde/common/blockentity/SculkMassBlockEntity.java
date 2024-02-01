@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
+import static com.github.sculkhorde.common.block.SculkMassBlock.WATERLOGGED;
+
 public class SculkMassBlockEntity extends BlockEntity {
 
     /**
@@ -93,6 +97,11 @@ public class SculkMassBlockEntity extends BlockEntity {
 
         context.sender = ReinforcementRequest.senderType.SculkMass;
         context.budget = blockEntity.getStoredSculkMass();
+
+        if(blockEntity.getBlockState().getValue(WATERLOGGED))
+        {
+            context.approvedStrategicValues.add(EntityFactoryEntry.StrategicValues.Aquatic);
+        }
 
         //Attempt to call in reinforcements and then update stored sculk mass
         entityFactory.requestReinforcementSculkMass(level, blockPos, context);

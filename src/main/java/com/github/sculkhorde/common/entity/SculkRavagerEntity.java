@@ -155,7 +155,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
         return new Goal[]{
 
                 new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
-                new DespawnWhenIdle(this, TimeUnit.MINUTES.toSeconds(5)),
+                new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)),
                 //SwimGoal(mob)
                 new FloatGoal(this),
                 new SquadHandlingGoal(this),

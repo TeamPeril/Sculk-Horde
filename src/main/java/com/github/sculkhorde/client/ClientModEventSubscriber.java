@@ -86,6 +86,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseRenderer::new);
 
+        event.registerEntityRenderer(ModEntities.SCULK_SALMON.get(), SculkSalmonRenderer::new);
+
         event.registerEntityRenderer(ModEntities.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
 
         event.registerEntityRenderer(ModEntities.CHAOS_TELEPORATION_RIFT.get(), ChaosTeleporationRiftRenderer::new);
