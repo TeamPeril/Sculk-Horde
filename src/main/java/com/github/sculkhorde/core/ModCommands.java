@@ -30,7 +30,8 @@ public class ModCommands {
                 .then(StatisticsCommand.register(dispatcher, buildContext))
                 .then(PlayerStatusCommand.register(dispatcher, buildContext))
                 .then(ConfigCommand.register(dispatcher, buildContext))
-                .then(SummonReinforcementsCommand.register(dispatcher, buildContext));
+                .then(SummonReinforcementsCommand.register(dispatcher, buildContext))
+                .then(NodesStatusCommand.register(dispatcher, buildContext));
 
         dispatcher.register(cmd);
     }

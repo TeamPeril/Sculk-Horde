@@ -38,7 +38,7 @@ public class SummonReinforcementsCommand implements Command<CommandSourceStack> 
     
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
 
-        return Commands.literal("summon_reinforcements").requires(command -> command.hasPermission(4))
+        return Commands.literal("summon_reinforcements").requires(command -> command.hasPermission(1))
                 .executes(new SummonReinforcementsCommand());
 
     }

@@ -32,7 +32,7 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> gravemind_mass_goal_for_mature_stage;
 
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
-        public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_spawn_cooldown_hours;
+        public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_spawn_cooldown_minutes;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
 
@@ -45,6 +45,7 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> enable_sculk_salmon;
+        public final ForgeConfigSpec.ConfigValue<Boolean> disable_sculk_horde_unless_activated;
         public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
@@ -53,7 +54,6 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> cursors_to_tick_per_tick;
         public final ForgeConfigSpec.ConfigValue<Integer> delay_between_cursor_tick_interval;
         public final ForgeConfigSpec.ConfigValue<Boolean> thanos_snap_cursors_after_reaching_threshold;
-
 
         public Server(ForgeConfigSpec.Builder builder) {
 
@@ -96,7 +96,7 @@ public class ModConfig {
 
             builder.push("Sculk Node Variables");
             sculk_node_chunkload_radius = builder.comment("How many chunks should be loaded around a sculk node? (Default 15)").defineInRange("sculk_node_chunkload_radius",15, 0, 15);
-            sculk_node_spawn_cooldown_hours = builder.comment("How many hours should pass before another Sculk node can spawn? (Default 2)").defineInRange("sculk_node_spawn_cooldown_hours",2, 0, Integer.MAX_VALUE);
+            sculk_node_spawn_cooldown_minutes = builder.comment("How many minutes should pass before another Sculk node can spawn? (Default 120)").defineInRange("sculk_node_spawn_cooldown_minutes",120, 0, Integer.MAX_VALUE);
             builder.pop();
 
             builder.push("Sculk Mite Variables");
@@ -110,6 +110,7 @@ public class ModConfig {
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
             enable_sculk_salmon = builder.comment("Enable the spawning of Sculk Salmon from Summoners (Default true). Requires restart on change.").define("enable_sculk_salmon", true);
+            disable_sculk_horde_unless_activated = builder.comment("Should the Sculk Horde be unable to function without Ancient Node Activation (Default false).").define("disable_sculk_horde_unless_activated", false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");
@@ -123,6 +124,11 @@ public class ModConfig {
 
     public static boolean isExperimentalFeaturesEnabled() {
         return SERVER.experimental_features_enabled.get();
+    }
+
+    public static boolean isSculkSalmonEnabled()
+    {
+        return ModConfig.SERVER.enable_sculk_salmon.get() && ModConfig.SERVER.experimental_features_enabled.get();
     }
 
     public static class DataGen {

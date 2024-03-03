@@ -18,7 +18,7 @@ public class RaidCommand implements Command<CommandSourceStack> {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
 
         return Commands.literal("raid")
-                .then(Commands.literal("end").requires(command -> command.hasPermission(4))
+                .then(Commands.literal("end").requires(command -> command.hasPermission(1))
                         .executes((context -> startOrEndRaid(context, "end"))
                                 ));
 
