@@ -72,7 +72,21 @@ public class ContributionHandler {
         addContributor("Kierbo05");
         addContributor("MasterofK3gs");
 
-
+        addContributor("dwalkrun");
+        addContributor("MrBall2748");
+        addContributor("BLUEKOZ");
+        addContributor("Royito123170");
+        addContributor("Goggalcon6");
+        addContributor("xoom7");
+        addContributor("FunkyMonk127");
+        addContributor("Bioscar_YT");
+        addContributor("joshpd8318");
+        addContributor("aarter");
+        addContributor("EpochIH");
+        addContributor("petrolpark");
+        addContributor("theactualrealglados");
+        addContributor("MelonGodKing");
+        addContributor("AeroHearts");
     }
 
     public void addContributor(String name)
