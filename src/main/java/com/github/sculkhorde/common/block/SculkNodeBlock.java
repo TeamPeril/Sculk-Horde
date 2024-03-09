@@ -65,6 +65,9 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static float BLAST_RESISTANCE = 10f;
 
+    public static final int SPAWN_NODE_COST = 3000;
+    public static final int SPAWN_NODE_BUFFER = 1000;
+
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     /**
@@ -105,9 +108,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean forcePlace)
     {
-        final int SPAWN_NODE_COST = 3000;
-        final int SPAWN_NODE_BUFFER = 1000;
-
         boolean failRandomChance = new Random().nextInt(1000) > 1;
         boolean isSavedDataNull = SculkHorde.savedData == null;
         if(isSavedDataNull) {

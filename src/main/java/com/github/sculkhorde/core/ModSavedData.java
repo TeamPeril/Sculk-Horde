@@ -59,7 +59,7 @@ public class ModSavedData extends SavedData {
     }
 
     public boolean isHordeDefeated() {
-        return hordeState == HordeState.DEFEATED;
+        return hordeState == HordeState.DEFEATED || (ModConfig.SERVER.disable_sculk_horde_unless_activated.get() && hordeState == HordeState.UNACTIVATED);
     }
 
     public HordeState getHordeState() {
@@ -271,6 +271,14 @@ public class ModSavedData extends SavedData {
         long ticksNeeded = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
         boolean result = ticksElapsed >= ticksNeeded;
         return result;
+    }
+
+    public long getMinutesRemainingUntilNodeSpawn()
+    {
+        long ticksElapsed = getTicksElapsedForNodeSpawningCooldown();
+        long ticksNeeded = Gravemind.TICKS_BETWEEN_NODE_SPAWNS;
+        long result = Math.max(0, ticksNeeded - ticksElapsed);
+        return TickUnits.convertTicksToMinutes(result);
     }
 
     public int getTicksElapsedForNodeSpawningCooldown() {

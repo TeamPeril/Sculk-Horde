@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.effect;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -47,6 +49,12 @@ public class DiseasedCystsEffect extends MobEffect {
     public void applyEffectTick(LivingEntity sourceEntity, int amp) {
 
         if(sourceEntity.level().isClientSide())
+        {
+            return;
+        }
+        boolean isHordeNotActivatedAndNotAllowedToFunction = (ModConfig.SERVER.disable_sculk_horde_unless_activated.get() && SculkHorde.savedData.getHordeState() == ModSavedData.HordeState.UNACTIVATED);
+
+        if(isHordeNotActivatedAndNotAllowedToFunction)
         {
             return;
         }

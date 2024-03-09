@@ -112,7 +112,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
     private static ArgumentBuilder<CommandSourceStack, ?> sculkNodeConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("sculk_node")
-                .then(integerConfigOption("sculk_node_spawn_cooldown_hours", 1, Integer.MAX_VALUE))
+                .then(integerConfigOption("sculk_node_spawn_cooldown_minutes", 0, Integer.MAX_VALUE))
                 .then(integerConfigOption("sculk_node_chunkload_radius", 0, 15));
     }
 
@@ -262,9 +262,9 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                     }
                     break;
                 // Sculk Node Config
-                case "sculk_node_spawn_cooldown_hours":
+                case "sculk_node_spawn_cooldown_minutes":
                     if (valueType.equals(Integer.class)) {
-                        ModConfig.SERVER.sculk_node_spawn_cooldown_hours.set((Integer) rawValue);
+                        ModConfig.SERVER.sculk_node_spawn_cooldown_minutes.set((Integer) rawValue);
                         success = true;
                     }
                     break;

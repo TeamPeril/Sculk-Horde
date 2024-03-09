@@ -1,9 +1,7 @@
 package com.github.sculkhorde.common.effect;
 
 import com.github.sculkhorde.common.block.SculkMassBlock;
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -50,9 +48,11 @@ public class SculkBurrowedEffect extends MobEffect {
     {
         if(event.getEntity().level().isClientSide()) { return;}
 
+        boolean isHordeNotActivatedAndNotAllowedToFunction = (ModConfig.SERVER.disable_sculk_horde_unless_activated.get() && SculkHorde.savedData.getHordeState() == ModSavedData.HordeState.UNACTIVATED);
+
         LivingEntity entity = event.getEntity();
         // OR mob outside of world border
-        if(entity == null || EntityAlgorithms.isSculkLivingEntity.test(entity) || !entity.level().isInWorldBounds(entity.blockPosition()))
+        if(entity == null || EntityAlgorithms.isSculkLivingEntity.test(entity) || !entity.level().isInWorldBounds(entity.blockPosition()) || isHordeNotActivatedAndNotAllowedToFunction)
         {
             return;
         }
@@ -62,8 +62,8 @@ public class SculkBurrowedEffect extends MobEffect {
         BlockPos entityPosition = entity.blockPosition();
 
         //Spawn Mite
-        if(event.getEntity().isSwimming()) { ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
-        if(!event.getEntity().isSwimming()) { ModEntities.SCULK_SALMON.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
+        if(entity.level().getFluidState(entityPosition) == Fluids.EMPTY.defaultFluidState() || !ModConfig.isSculkSalmonEnabled()) { ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
+        else { ModEntities.SCULK_SALMON.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
 
         //Spawn Sculk Mass
         placeSculkMass(entity);
