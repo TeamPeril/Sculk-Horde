@@ -23,6 +23,8 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_NODE_SPAWNER.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_RAID_WAND.get());
+                event.accept(ModItems.DEEP_GREEN_MUSIC_DISC.get());
+                event.accept(ModItems.BLIND_AND_ALONE_MUSIC_DISC.get());
                 event.accept(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get());
                 event.accept(ModBlocks.SCULK_NODE_BLOCK.get());
                 event.accept(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get());

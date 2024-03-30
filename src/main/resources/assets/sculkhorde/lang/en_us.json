@@ -194,6 +194,10 @@
   "sounds.sculkhorde.raid_scout": "A distant Sculk Endemran scouting out a raid location.",
   "sounds.sculkhorde.node_spawn_sound": "A Sculk Node spawning",
   "sounds.sculkhorde.node_destroy_sound": "A Sculk Node being destroyed.",
+  "sounds.sculkhorde.blind_and_alone_music_disc": "Blind and Alone Music Disc",
+  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Firel - Blind and Alone",
+  "sounds.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
+  "sounds.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
 
   "effect.sculkhorde.sculk_infected": "Burrowed",
   "effect.sculkhorde.sculk_lure": "Lure",
