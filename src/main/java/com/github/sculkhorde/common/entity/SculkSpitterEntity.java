@@ -60,7 +60,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     //The armor of the mob
     public static final float ARMOR = 4F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 5F;
+    public static final float ATTACK_DAMAGE = 1F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 2F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
