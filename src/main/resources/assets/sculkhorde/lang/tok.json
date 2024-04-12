@@ -214,7 +214,16 @@
   "entity.sculkhorde.sculk_phantom": "waso Sculk",
   "entity.sculkhorde.sculk_phantom_corpse": "waso Sculk moli",
   "entity.sculkhorde.sculk_salmon": "kala Sculk",
+  "entity.sculkhorde.sculk_skeleton": "jan moli palisa Sculk"
 
+  "block.sculkhorde.cocoon": "len mama Sculk",
+  "block.sculkhorde.cocoon_root": "noka pi len mama Sculk",
+
+  "sounds.sculkhorde.blind_and_alone_music_disc": "sike kalama pi kalama musi 'lukin ala en taso'"
+  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "jan Firel - lukin ala en taso"
+  "sounds.sculkhorde.deep_green_music_disc": "sike kalama pi kalama musi 'laso wawa'"
+  "sounds.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa"
+  
   "item.sculkhorde.coin_of_contribution": "mani pana",
   "tooltip.sculkhorde.coin_of_contribution": "mani ni li sama pana suli sina tawa ante ni. jan sama sina li lon ala la, ante Sculk Horde kin li lon ala. mi toki e ni: sina pona! ante Sculk Horde o pona tawa sina :)"
 }
