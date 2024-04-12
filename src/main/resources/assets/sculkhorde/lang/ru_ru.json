@@ -16,7 +16,7 @@
   "tooltip.sculkhorde.custom_item_projectile": "Это предмет разработчика для тестирования снарядов. Это родительский класс всех снарядов. Добавлен как предмет только для дурачества",
   "item.sculkhorde.sculk_acidic_projectile": "Кислотная масса",
   "tooltip.sculkhorde.sculk_acidic_projectile.functionality": "§7§oКислотный снаряд §e§oскалкового плеваки§f§7§o. Имеет шанс выпасть в виде предмета при попадании в блок. Может быть брошен.",
-	"tooltip.sculkhorde.sculk_acidic_projectile.lore": "§7§oКислое, тёплое и летучее вещество. Может растворять любое органическое или неорганическое вещество.",
+  "tooltip.sculkhorde.sculk_acidic_projectile.lore": "§7§oКислое, тёплое и летучее вещество. Может растворять любое органическое или неорганическое вещество.",
 
   "item.sculkhorde.sculk_matter": "Скалковая материя",
   "item.sculkhorde.calcite_clump": "Кальцитовый сгусток",
@@ -194,6 +194,10 @@
   "sounds.sculkhorde.raid_scout": "Далёкий скалковый эндермен разведывает место проведения рейда.",
   "sounds.sculkhorde.node_spawn_sound": "Скалковый узел появляется",
   "sounds.sculkhorde.node_destroy_sound": "Скалковый узел уничтожается.",
+  "sounds.sculkhorde.blind_and_alone_music_disc": "Пластинка Blind and Alone",
+  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Firel — Blind and Alone",
+  "sounds.sculkhorde.deep_green_music_disc": "Пластинка Deep Green",
+  "sounds.sculkhorde.deep_green_music_disc.desc": "Firel — Deep Green",
 
   "effect.sculkhorde.sculk_infected": "Зарытый",
   "effect.sculkhorde.sculk_lure": "Приманка",
