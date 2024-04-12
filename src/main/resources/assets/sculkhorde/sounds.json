@@ -23,10 +23,26 @@
       "sculkhorde:node_spawn_sound"
     ]
   },
-    "node_destroy_sound": {
-        "subtitle": "sounds.sculkhorde.node_destroy_sound",
-        "sounds": [
-        "sculkhorde:node_destroy_sound"
-        ]
-    }
+  "node_destroy_sound": {
+      "subtitle": "sounds.sculkhorde.node_destroy_sound",
+      "sounds": [
+      "sculkhorde:node_destroy_sound"
+      ]
+  },
+  "deep_green": {
+    "sounds": [
+      {
+        "name": "sculkhorde:deep_green",
+        "stream": true
+      }
+    ]
+  },
+  "blind_and_alone": {
+    "sounds": [
+      {
+        "name": "sculkhorde:blind_and_alone",
+        "stream": true
+      }
+    ]
+  }
 }

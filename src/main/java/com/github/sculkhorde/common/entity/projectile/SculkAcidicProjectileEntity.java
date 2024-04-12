@@ -1,11 +1,17 @@
 package com.github.sculkhorde.common.entity.projectile;
 
+import com.github.sculkhorde.common.effect.CorrodingEffect;
+import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.ItemStack;
@@ -15,8 +21,6 @@ import net.minecraft.world.phys.EntityHitResult;
 
 
 public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
-
-    private float damage = 50f;
 
     /** CONSTRUCTORS **/
 
@@ -63,6 +67,11 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     protected void onHitEntity(EntityHitResult raytrace) {
         super.onHitEntity(raytrace);
         this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+
+        if(raytrace.getEntity() instanceof LivingEntity livingEntity)
+        {
+            CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), livingEntity, TickUnits.convertSecondsToTicks(3));
+        }
     }
 
     @Override

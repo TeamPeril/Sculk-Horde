@@ -57,6 +57,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
     @Override
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos)
     {
+        if(pLevel.isClientSide()) { return false; }
         //IF the face it is placed on is not a valid face, return false.
         //The face depends on the direction of the block
         BlockState northBlock = pLevel.getBlockState(pPos.north());
@@ -104,6 +105,8 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
      */
     public void placeBlock(Level worldIn, BlockPos blockPosIn)
     {
+        if(worldIn.isClientSide()) { return; }
+
         // If the block is not air, return
         if(!worldIn.getBlockState(blockPosIn).isAir()) {
             return;
@@ -153,6 +156,8 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
      */
     public boolean isValidFace(LevelReader worldIn, BlockState blockState, BlockPos blockPosIn, Direction direction)
     {
+        if(worldIn.isClientSide()) { return false; }
+
         if(!blockState.isFaceSturdy(worldIn, blockPosIn, direction))
         {
             return false;

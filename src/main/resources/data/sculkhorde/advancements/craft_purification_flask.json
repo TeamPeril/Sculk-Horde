@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:purity_splash_potion"
+      "item": "sculkhorde:purification_flask"
     },
     "title": "Purification",
     "description": "Craft a Purification Flask",
@@ -15,7 +15,7 @@
       "trigger": "minecraft:recipe_crafted",
       "conditions": {
         "player": [],
-        "recipe_id": "sculkhorde:purity_splash_potion"
+        "recipe_id": "sculkhorde:purification_flask"
       }
     }
   }

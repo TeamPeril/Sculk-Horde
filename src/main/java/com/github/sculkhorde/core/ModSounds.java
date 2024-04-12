@@ -18,6 +18,9 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> NODE_SPAWN_SOUND = registerSoundEvent("node_spawn_sound");
     public static final RegistryObject<SoundEvent> NODE_DESTROY_SOUND = registerSoundEvent("node_destroy_sound");
 
+    public static final RegistryObject<SoundEvent> DEEP_GREEN = registerSoundEvent("deep_green");
+    public static final RegistryObject<SoundEvent> BLIND_AND_ALONE = registerSoundEvent("blind_and_alone");
+
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = new ResourceLocation(SculkHorde.MOD_ID, name);
