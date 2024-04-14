@@ -68,7 +68,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 50F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.75F;
+    public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();

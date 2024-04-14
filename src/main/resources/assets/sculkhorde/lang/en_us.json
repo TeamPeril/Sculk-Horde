@@ -194,15 +194,12 @@
   "sounds.sculkhorde.raid_scout": "A distant Sculk Endemran scouting out a raid location.",
   "sounds.sculkhorde.node_spawn_sound": "A Sculk Node spawning",
   "sounds.sculkhorde.node_destroy_sound": "A Sculk Node being destroyed.",
-  "sounds.sculkhorde.blind_and_alone_music_disc": "Blind and Alone Music Disc",
-  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Firel - Blind and Alone",
-  "sounds.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
-  "sounds.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
 
   "effect.sculkhorde.sculk_infected": "Burrowed",
   "effect.sculkhorde.sculk_lure": "Lure",
   "effect.sculkhorde.diseased_cysts": "Diseased Cysts",
   "effect.sculkhorde.sculk_vessel": "Sculk Vessel",
+  "effect.sculkhorde.corroded": "Corroded",
 
   "entity.sculkhorde.sculk_zombie": "Sculk Zombie",
   "entity.sculkhorde.sculk_spitter": "Sculk Spitter",
@@ -223,5 +220,14 @@
   "entity.sculkhorde.sculk_salmon": "Sculk Salmon",
 
   "item.sculkhorde.coin_of_contribution": "Coin of Contribution",
-  "tooltip.sculkhorde.coin_of_contribution": "§7§oA coin representing the immense value you contributed to this mod. Sculk Horde cannot exist without people like you. This is a personal thank you from me. Please enjoy Sculk Horde :)"
+  "tooltip.sculkhorde.coin_of_contribution": "§7§oA coin representing the immense value you contributed to this mod. Sculk Horde cannot exist without people like you. This is a personal thank you from me. Please enjoy Sculk Horde :)",
+
+  "sounds.sculkhorde.blind_and_alone_music_disc": "Blind and Alone Music Disc",
+  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Firel - Blind and Alone",
+  "item.sculkhorde.blind_and_alone_music_disc": "Blind and Alone Music Disc",
+  "item.sculkhorde.blind_and_alone_music_disc.desc": "Firel - Blind and Alone",
+  "sounds.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
+  "sounds.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
+  "item.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
+  "item.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green"
 }

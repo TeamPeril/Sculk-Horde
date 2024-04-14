@@ -33,6 +33,18 @@ import java.util.function.Predicate;
 
 public class EntityAlgorithms {
 
+
+    public static void doSculkTypeDamageToEntity(LivingEntity aggressor, LivingEntity target, float totalDamage, float guaranteedDamage)
+    {
+        if(target.isInvulnerable())
+        {
+            return;
+        }
+        float nonGuaranteedDamage = totalDamage - guaranteedDamage;
+        target.hurt(aggressor.damageSources().generic(), nonGuaranteedDamage);
+        target.setHealth(target.getHealth() - guaranteedDamage );
+    }
+
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
     {
         boolean isEntityNull = entity == null;
