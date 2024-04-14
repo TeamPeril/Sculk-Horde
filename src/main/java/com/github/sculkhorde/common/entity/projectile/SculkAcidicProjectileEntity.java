@@ -70,7 +70,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
 
         if(raytrace.getEntity() instanceof LivingEntity livingEntity)
         {
-            CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), livingEntity, TickUnits.convertSecondsToTicks(3));
+            CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), livingEntity, TickUnits.convertSecondsToTicks(10));
         }
     }
 
