@@ -40,7 +40,7 @@ public class EntityAlgorithms {
         {
             return;
         }
-        float nonGuaranteedDamage = totalDamage - guaranteedDamage;
+        float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
         target.hurt(aggressor.damageSources().generic(), nonGuaranteedDamage);
         target.setHealth(target.getHealth() - guaranteedDamage );
     }

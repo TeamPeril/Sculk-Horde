@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -116,8 +117,7 @@ public class RangedSonicBoomAttackGoal extends Goal
         }
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-        float damage = targetEntity.getMaxHealth() > 50.0F && targetEntity.getArmorValue() > 5F ? (targetEntity.getMaxHealth()/4F) + 10.0F : 10.0F;
-        targetEntity.hurt(((ServerLevel)mob.level()).damageSources().sonicBoom(targetEntity), damage);
+        EntityAlgorithms.doSculkTypeDamageToEntity(this.getSculkEnderman(), targetEntity, 6, 4);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);

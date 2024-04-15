@@ -229,5 +229,11 @@
   "sounds.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
   "sounds.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
   "item.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
-  "item.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green"
+  "item.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
+  "sounds.sculkhorde.sculk_enderman_hit": "Sculk Enderman Hurts",
+  "sounds.sculkhorde.sculk_enderman_death": "Sculk Enderman Dies",
+  "sounds.sculkhorde.sculk_enderman_scream": "Sculk Enderman Screams",
+  "sounds.sculkhorde.sculk_enderman_portal": "Sculk Enderman Teleports",
+  "sounds.sculkhorde.sculk_enderman_idle": "Sculk Enderman Idles",
+  "sounds.sculkhorde.sculk_enderman_stare": "Sculk Enderman Screeches"
 }
