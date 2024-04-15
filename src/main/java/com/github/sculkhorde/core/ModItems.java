@@ -1,9 +1,12 @@
 package com.github.sculkhorde.core;
 
 
+import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
+import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.common.item.*;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
@@ -136,6 +139,12 @@ public class ModItems {
 					{
 						tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
 					}
+				}
+
+				@Override
+				public CustomItemProjectileEntity getCustomItemProjectileEntity(Level level, Player player)
+				{
+					return new SculkAcidicProjectileEntity(level, player, getDamage());
 				}
 			});
 
