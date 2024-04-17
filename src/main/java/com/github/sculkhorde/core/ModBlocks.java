@@ -3,24 +3,7 @@ package com.github.sculkhorde.core;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.github.sculkhorde.common.block.DevMassInfectinator3000Block;
-import com.github.sculkhorde.common.block.DevStructureTesterBlock;
-import com.github.sculkhorde.common.block.InfestedStairBlock;
-import com.github.sculkhorde.common.block.InfestedTagBlock;
-import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
-import com.github.sculkhorde.common.block.SculkBeeNestBlock;
-import com.github.sculkhorde.common.block.SculkBeeNestCellBlock;
-import com.github.sculkhorde.common.block.SculkFloraBlock;
-import com.github.sculkhorde.common.block.SculkLivingRockBlock;
-import com.github.sculkhorde.common.block.SculkLivingRockRootBlock;
-import com.github.sculkhorde.common.block.SculkMassBlock;
-import com.github.sculkhorde.common.block.SculkNodeBlock;
-import com.github.sculkhorde.common.block.SculkShroomCultureBlock;
-import com.github.sculkhorde.common.block.SculkSummonerBlock;
-import com.github.sculkhorde.common.block.SmallShroomBlock;
-import com.github.sculkhorde.common.block.SoulHarvesterBlock;
-import com.github.sculkhorde.common.block.SpikeBlock;
-import com.github.sculkhorde.common.block.TendrilsBlock;
+import com.github.sculkhorde.common.block.*;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
@@ -86,26 +69,12 @@ public class ModBlocks {
 							.destroyTime(10f)
 							.sound(SoundType.ANCIENT_DEBRIS)
     					));
+	public static final RegistryObject<SculkArachnoidBlock> SCULK_ARACHNOID =
+			registerBlock("sculk_arachnoid", SculkArachnoidBlock::new);
+	public static final RegistryObject<SculkDuraMatterBlock> SCULK_DURA_MATTER =
+			registerBlock("sculk_dura_matter", SculkDuraMatterBlock::new);
 
-	//Sculk Arachnoid
-	public static final RegistryObject<Block> SCULK_ARACHNOID =
-			registerBlock("sculk_arachnoid", () -> new Block(BlockBehaviour.Properties.of()
-						.mapColor(MapColor.COLOR_CYAN)
-						.strength(10f, 6f)//Hardness & Resistance
-						.requiresCorrectToolForDrops()
-						.sound(SoundType.HONEY_BLOCK)
-				));
 
-	//Sculk Dura Matter
-	public static final RegistryObject<Block> SCULK_DURA_MATTER =
-			registerBlock("sculk_dura_matter", () -> new Block(BlockBehaviour.Properties.of()
-						.mapColor(MapColor.QUARTZ)
-						.strength(4f, 30f)//Hardness & Resistance
-						.requiresCorrectToolForDrops()
-						.sound(SoundType.ANCIENT_DEBRIS)
-			));
-
-	//Sculk Dura Matter
 	public static final RegistryObject<Block> CALCITE_ORE =
 			registerBlock("calcite_ore", () -> new Block(BlockBehaviour.Properties.of()
 						.mapColor(MapColor.QUARTZ)
