@@ -226,6 +226,11 @@ public class EntityAlgorithms {
             return true;
         }
 
+        if(ModColaborationHelper.isThisAnArsNouveauBlackListEntity(entity))
+        {
+            return true;
+        }
+
         return false;
     }
 
