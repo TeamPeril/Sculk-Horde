@@ -1,16 +1,6 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.blockentity.DevMassInfectinator3000BlockEntity;
-import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
-import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkLivingRockRootBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
-import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
+import com.github.sculkhorde.common.blockentity.*;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -75,6 +65,10 @@ public class ModBlockEntities {
     public static RegistryObject<BlockEntityType<SoulHarvesterBlockEntity>> SOUL_HARVESTER_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("soul_harvester_block_entity", () -> BlockEntityType.Builder.of(
                     SoulHarvesterBlockEntity::new, ModBlocks.SOUL_HARVESTER_BLOCK.get()).build(null));
+
+    public static RegistryObject<BlockEntityType<FleshyCompostBlockEntity>> FLESHY_COMPOST_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("fleshy_compost_block_entity", () -> BlockEntityType.Builder.of(
+                    FleshyCompostBlockEntity::new, ModBlocks.PASTY_ORGANIC_MASS.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

@@ -15,7 +15,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
@@ -680,6 +679,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<SoulHarvesterBlock> SOUL_HARVESTER_BLOCK =
 			registerBlock("soul_harvester", SoulHarvesterBlock::new);
+
+	public static final RegistryObject<FleshyCompostBlock> PASTY_ORGANIC_MASS =
+			registerBlock("fleshy_compost_block", FleshyCompostBlock::new);
 
 	public static class BlockTags
 	{

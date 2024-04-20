@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.block.FleshyCompostBlock;
 import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
@@ -132,8 +133,19 @@ public class ForgeEventSubscriber {
         {
             SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
             SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
+            return;
 
         }
+
+        Entity killerEntity = event.getSource().getEntity();
+        if(killerEntity instanceof LivingEntity killerLivingEntity)
+        {
+            if(EntityAlgorithms.isSculkLivingEntity.test(killerLivingEntity))
+            {
+                FleshyCompostBlock.placeBlock(event.getEntity());
+            }
+        }
+
     }
 
     @SubscribeEvent
