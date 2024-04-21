@@ -194,15 +194,12 @@
   "sounds.sculkhorde.raid_scout": "Далёкий скалковый эндермен разведывает место проведения рейда.",
   "sounds.sculkhorde.node_spawn_sound": "Скалковый узел появляется",
   "sounds.sculkhorde.node_destroy_sound": "Скалковый узел уничтожается.",
-  "sounds.sculkhorde.blind_and_alone_music_disc": "Пластинка Blind and Alone",
-  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Firel — Blind and Alone",
-  "sounds.sculkhorde.deep_green_music_disc": "Пластинка Deep Green",
-  "sounds.sculkhorde.deep_green_music_disc.desc": "Firel — Deep Green",
 
   "effect.sculkhorde.sculk_infected": "Зарытый",
   "effect.sculkhorde.sculk_lure": "Приманка",
   "effect.sculkhorde.diseased_cysts": "Пораженные кисты",
   "effect.sculkhorde.sculk_vessel": "Скалковый сосуд",
+  "effect.sculkhorde.corroded": "Корродированный",
 
   "entity.sculkhorde.sculk_zombie": "Скалковый зомби",
   "entity.sculkhorde.sculk_spitter": "Скалковый плеватель",
@@ -223,5 +220,20 @@
   "entity.sculkhorde.sculk_salmon": "Скалковый лосось",
 
   "item.sculkhorde.coin_of_contribution": "Монета вклада",
-  "tooltip.sculkhorde.coin_of_contribution": "Монета, символизирующая огромную ценность, которую вы внесли в этот мод. «Скалковая Орда» не может существовать без таких людей, как вы. Это личная благодарность от меня. Пожалуйста, наслаждайтесь «Скалковой Ордой» :)"
+  "tooltip.sculkhorde.coin_of_contribution": "Монета, символизирующая огромную ценность, которую вы внесли в этот мод. «Скалковая Орда» не может существовать без таких людей, как вы. Это личная благодарность от меня. Пожалуйста, наслаждайтесь «Скалковой Ордой» :)",
+  
+  "sounds.sculkhorde.blind_and_alone_music_disc": "Blind and Alone Music Disc",
+  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Firel - Blind and Alone",
+  "item.sculkhorde.blind_and_alone_music_disc": "Blind and Alone Music Disc",
+  "item.sculkhorde.blind_and_alone_music_disc.desc": "Firel - Blind and Alone",
+  "sounds.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
+  "sounds.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
+  "item.sculkhorde.deep_green_music_disc": "Deep Green Music Disc",
+  "item.sculkhorde.deep_green_music_disc.desc": "Firel - Deep Green",
+  "sounds.sculkhorde.sculk_enderman_hit": "Sculk Enderman Hurts",
+  "sounds.sculkhorde.sculk_enderman_death": "Sculk Enderman Dies",
+  "sounds.sculkhorde.sculk_enderman_scream": "Sculk Enderman Screams",
+  "sounds.sculkhorde.sculk_enderman_portal": "Sculk Enderman Teleports",
+  "sounds.sculkhorde.sculk_enderman_idle": "Sculk Enderman Idles",
+  "sounds.sculkhorde.sculk_enderman_stare": "Sculk Enderman Screeches"
 }
