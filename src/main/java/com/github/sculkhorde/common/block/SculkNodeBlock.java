@@ -18,10 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -35,6 +32,7 @@ import net.minecraftforge.common.extensions.IForgeBlock;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -290,8 +288,28 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
         worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
 
+        decayRemainingNodeBlocks((ServerLevel) worldIn, pos, 12);
 
         super.onRemove(state, worldIn, pos, newState, isMoving);
+    }
+
+    public void decayRemainingNodeBlocks(ServerLevel level, BlockPos origin, int searchLength)
+    {
+        ArrayList<BlockPos> blocks = BlockAlgorithms.getBlockPosInCube(origin, searchLength, true);
+
+        for(BlockPos pos : blocks)
+        {
+            BlockState blockState = level.getBlockState(pos);
+
+            if(blockState.getBlock() instanceof SculkDuraMatterBlock block)
+            {
+                block.setDecaying(level, blockState, pos);
+            }
+            else if(blockState.getBlock() instanceof SculkArachnoidBlock block)
+            {
+                block.setDecaying(level, blockState, pos);
+            }
+        }
     }
 
     /**

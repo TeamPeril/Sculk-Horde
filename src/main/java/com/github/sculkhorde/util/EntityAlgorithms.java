@@ -33,6 +33,18 @@ import java.util.function.Predicate;
 
 public class EntityAlgorithms {
 
+
+    public static void doSculkTypeDamageToEntity(LivingEntity aggressor, LivingEntity target, float totalDamage, float guaranteedDamage)
+    {
+        if(target.isInvulnerable())
+        {
+            return;
+        }
+        float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
+        target.hurt(aggressor.damageSources().generic(), nonGuaranteedDamage);
+        target.setHealth(target.getHealth() - guaranteedDamage );
+    }
+
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
     {
         boolean isEntityNull = entity == null;
@@ -210,6 +222,11 @@ public class EntityAlgorithms {
         }
 
         if(ModColaborationHelper.isThisASporeEntity(entity) && !ModConfig.SERVER.target_spore_entities.get())
+        {
+            return true;
+        }
+
+        if(ModColaborationHelper.isThisAnArsNouveauBlackListEntity(entity))
         {
             return true;
         }

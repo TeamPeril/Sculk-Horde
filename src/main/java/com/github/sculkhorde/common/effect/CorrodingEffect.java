@@ -70,27 +70,26 @@ public class CorrodingEffect extends MobEffect {
     public void applyEffectTick(LivingEntity victimEntity, int amp) {
         if(victimEntity.level().isClientSide())
         {
-            double randomX = victimEntity.getX() + getNextDoubleBetweenInclusive(victimEntity.getRandom(), -0.5, 0.5);
-            double randomY = victimEntity.getY() + getNextDoubleBetweenInclusive(victimEntity.getRandom(),-1, 1) + 1;
-            double randomZ = victimEntity.getZ() + getNextDoubleBetweenInclusive(victimEntity.getRandom(),-0.5, 0.5);
-            victimEntity.level().addParticle(new DustParticleOptions(Vec3.fromRGB24(1302700).toVector3f(), 2.0F), randomX, randomY, randomZ, 0.0D, victimEntity.getRandom().nextDouble() * - 1, 0.0D);
+            double spawnWidth = victimEntity.getBbWidth() / 2;
+            double spawnHeight = victimEntity.getBbHeight() / 2;
+            spawnRandomParticle(victimEntity, spawnWidth, spawnHeight);
+            spawnRandomParticle(victimEntity, spawnWidth, spawnHeight);
+            spawnRandomParticle(victimEntity, spawnWidth, spawnHeight);
+            spawnRandomParticle(victimEntity, spawnWidth, spawnHeight);
             return;
         }
 
-        float damage = 0.1F;
-        if(!victimEntity.isInvulnerable())
-        {
-            victimEntity.hurt(victimEntity.damageSources().generic(), damage);
-            victimEntity.setHealth(Math.max(0, victimEntity.getHealth() - 1));
-        }
-
-
+        EntityAlgorithms.doSculkTypeDamageToEntity(victimEntity, victimEntity, 2, 1);
     }
 
-    @Override
-    public MobEffect addAttributeModifier(Attribute attribute, String id, double value, AttributeModifier.Operation operation) {
-        return super.addAttributeModifier(attribute, id, value, operation);
+    private void spawnRandomParticle(LivingEntity victimEntity, double maxWidthOffset, double maxHeightOffset)
+    {
+        double randomX = victimEntity.getX() + getNextDoubleBetweenInclusive(victimEntity.getRandom(), -maxWidthOffset, maxWidthOffset);
+        double randomY = victimEntity.getY() + getNextDoubleBetweenInclusive(victimEntity.getRandom(),-maxHeightOffset, maxHeightOffset) + maxHeightOffset;
+        double randomZ = victimEntity.getZ() + getNextDoubleBetweenInclusive(victimEntity.getRandom(),-maxWidthOffset, maxWidthOffset);
+        victimEntity.level().addParticle(new DustParticleOptions(Vec3.fromRGB24(2726783).toVector3f(), 2.0F), randomX, randomY, randomZ, 0.0D, victimEntity.getRandom().nextDouble() * - 1, 0.0D);
     }
+
 
     /**
      * A function that is called every tick an entity has this effect. <br>

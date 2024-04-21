@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -465,7 +466,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 if (!this.isSilent())
                 {
                     this.level().playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
-                    this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                    this.playSound(ModSounds.SCULK_ENDERMAN_PORTAL.get(), 1.0F, 1.0F);
                     ticksSinceLastTeleport = 0;
                 }
             }
@@ -623,15 +624,15 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     // ####### Sound Code ###########
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENDERMAN_AMBIENT;
+        return ModSounds.SCULK_ENDERMAN_IDLE.get();
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.ENDERMAN_HURT;
+        return ModSounds.SCULK_ENDERMAN_HIT.get();
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENDERMAN_DEATH;
+        return ModSounds.SCULK_ENDERMAN_DEATH.get();
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {

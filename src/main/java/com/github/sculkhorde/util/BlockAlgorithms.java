@@ -139,9 +139,9 @@ public class BlockAlgorithms {
         int center_z = origin.getZ();
 
         //Initial position is in corner
-        int start_pos_x = center_x - (length/2) - 1;
-        int start_pos_y = center_y - (length/2) - 1;
-        int start_pos_z = center_z - (length/2) - 1;
+        int start_pos_x = center_x - (length/2);
+        int start_pos_y = center_y - (length/2);
+        int start_pos_z = center_z - (length/2);
 
         //Iterate over y positions
         for(int y_offset = 0; y_offset < length; y_offset++)

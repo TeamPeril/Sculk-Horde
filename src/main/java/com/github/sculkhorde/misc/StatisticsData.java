@@ -16,6 +16,7 @@ public class StatisticsData {
     private long totalMassFromDiseasedCysts;
     private long totalMassFromNodes;
     private long totalMassRemovedFromHorde;
+    private long totalMassFromFleshyCompost;
 
     public StatisticsData() {
         this.totalUnitDeaths = 0;
@@ -28,6 +29,7 @@ public class StatisticsData {
         this.totalMassFromDiseasedCysts = 0;
         this.totalMassFromNodes = 0;
         this.totalMassRemovedFromHorde = 0;
+        this.totalMassFromFleshyCompost = 0;
     }
 
     public long getTotalUnitDeaths() {
@@ -147,7 +149,19 @@ public class StatisticsData {
     }
 
     public void addTotalMassRemovedFromHorde(int value) {
-        this.totalMassRemovedFromHorde += value;
+        this.totalMassFromFleshyCompost += value;
+    }
+
+    public long getTotalMassFromFleshyCompost() {
+        return totalMassFromFleshyCompost;
+    }
+
+    public void setTotalMassFromFleshyCompost(long totalMassFromFleshyCompost) {
+        this.totalMassFromFleshyCompost = totalMassFromFleshyCompost;
+    }
+
+    public void addTotalMassFromFleshyCompost(int value) {
+        this.totalMassFromFleshyCompost += value;
     }
 
     public static StatisticsData getStatsData()
@@ -167,6 +181,7 @@ public class StatisticsData {
         tag.putLong("totalMassFromDiseasedCysts", getStatsData().getTotalMassFromDiseasedCysts());
         tag.putLong("totalMassFromNodes", getStatsData().getTotalMassFromNodes());
         tag.putLong("totalMassRemovedFromHorde", getStatsData().getTotalMassRemovedFromHorde());
+        tag.putLong("totalMassFromFleshyCompost", getStatsData().getTotalMassFromFleshyCompost());
     }
 
     public static void load(CompoundTag tag)
@@ -181,5 +196,6 @@ public class StatisticsData {
         getStatsData().setTotalMassFromDiseasedCysts(tag.getLong("totalMassFromDiseasedCysts"));
         getStatsData().setTotalMassFromNodes(tag.getLong("totalMassFromNodes"));
         getStatsData().setTotalMassRemovedFromHorde(tag.getLong("totalMassRemovedFromHorde"));
+        getStatsData().setTotalMassFromFleshyCompost(tag.getLong("totalMassFromFleshyCompost"));
     }
 }

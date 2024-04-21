@@ -20,6 +20,12 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> DEEP_GREEN = registerSoundEvent("deep_green");
     public static final RegistryObject<SoundEvent> BLIND_AND_ALONE = registerSoundEvent("blind_and_alone");
+    public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_IDLE = registerSoundEvent("sculk_enderman_idle");
+    public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_PORTAL = registerSoundEvent("sculk_enderman_portal");
+    public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_SCREAM = registerSoundEvent("sculk_enderman_scream");
+    public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_DEATH = registerSoundEvent("sculk_enderman_death");
+    public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_HIT = registerSoundEvent("sculk_enderman_hit");
+    public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_STARE = registerSoundEvent("sculk_enderman_stare");
 
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {

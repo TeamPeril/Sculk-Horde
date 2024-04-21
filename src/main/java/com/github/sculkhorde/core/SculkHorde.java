@@ -1,6 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
+import com.github.sculkhorde.common.loot.ModLootModifier;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.CursorHandler;
 import com.github.sculkhorde.core.gravemind.Gravemind;
@@ -73,15 +74,13 @@ public class SculkHorde {
         ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
         ModCommands.init();
         ModPotions.register(bus); //Load Potions
-
         ModMenuTypes.register(bus); //Load Menus
         ModMobEffects.EFFECTS.register(bus); //Load Effects
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
-
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
-
         ModRecipes.register(bus); //Load Recipes
+        ModLootModifier.register(bus);
     }
 
     public static boolean isDebugMode() {

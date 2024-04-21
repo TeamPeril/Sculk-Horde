@@ -44,5 +44,52 @@
         "stream": true
       }
     ]
+  },
+  "sculk_enderman_death": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_death",
+    "sounds": [
+      "sculkhorde:sculk_enderman_death"
+    ]
+  },
+  "sculk_enderman_hit": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_hit",
+    "sounds": [
+      "sculkhorde:sculk_enderman_hit1",
+      "sculkhorde:sculk_enderman_hit2",
+      "sculkhorde:sculk_enderman_hit3",
+      "sculkhorde:sculk_enderman_hit4"
+    ]
+  },
+  "sculk_enderman_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_idle",
+    "sounds": [
+      "sculkhorde:sculk_enderman_idle1",
+      "sculkhorde:sculk_enderman_idle2",
+      "sculkhorde:sculk_enderman_idle3",
+      "sculkhorde:sculk_enderman_idle4",
+      "sculkhorde:sculk_enderman_idle5"
+    ]
+  },
+  "sculk_enderman_portal": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_portal",
+    "sounds": [
+      "sculkhorde:sculk_enderman_portal1",
+      "sculkhorde:sculk_enderman_portal2"
+    ]
+  },
+  "sculk_enderman_scream": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_scream",
+    "sounds": [
+      "sculkhorde:sculk_enderman_scream1",
+      "sculkhorde:sculk_enderman_scream2",
+      "sculkhorde:sculk_enderman_scream3",
+      "sculkhorde:sculk_enderman_scream4"
+    ]
+  },
+  "sculk_enderman_stare": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_stare",
+    "sounds": [
+      "sculkhorde:sculk_enderman_stare"
+    ]
   }
 }
