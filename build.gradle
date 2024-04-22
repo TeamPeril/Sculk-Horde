@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20.1-0.9.0-Beta8'
+version = '1.20.1-0.9.0-Beta9'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -102,6 +102,10 @@ repositories {
 				includeGroup "curse.maven"
 			}
 		}
+    maven {
+        name "Jared's Maven"
+        url "https://maven.blamejared.com/"
+    }
 }
 
 dependencies {
@@ -109,11 +113,16 @@ dependencies {
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.3')
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:jei-238222:4712868")
+	implementation fg.deobf("curse.maven:jei-238222:5101366")
 	implementation fg.deobf("curse.maven:spore-678295:4764840")
 	implementation fg.deobf("curse.maven:spark-361579:4738952")
 	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
 	implementation fg.deobf("curse.maven:deeperdarker-659011:4807511")
+
+    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
 }
 
 mixin {

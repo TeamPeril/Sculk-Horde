@@ -665,7 +665,7 @@ public class ModSavedData extends SavedData {
             SculkHorde.LOGGER.info("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
-    
+
     public void validateNoRaidZoneEntries() {
         long startTime = System.currentTimeMillis();
         Iterator<NoRaidZoneEntry> iterator = getNoRaidZoneEntries().iterator();
