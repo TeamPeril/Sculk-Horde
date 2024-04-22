@@ -76,7 +76,7 @@ public class ModSavedData extends SavedData {
     private final Map<String, HostileEntry> hostileEntries = new HashMap<>();
     private final ArrayList<PriorityBlockEntry> priorityBlockEntries = new ArrayList<>();
     private final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
-    private final ArrayList<AreaofInterestEntry> areasOfInterestEntries = new ArrayList<>();
+    private final ArrayList<AreaOfInterestEntry> areasOfInterestEntries = new ArrayList<>();
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
 
     private int sculkAccumulatedMass = 0;
@@ -153,7 +153,7 @@ public class ModSavedData extends SavedData {
         }
 
         for (int i = 0; gravemindData.contains("area_of_interest_entry" + i); i++) {
-            SculkHorde.savedData.getAreasOfInterestEntries().add(AreaofInterestEntry.serialize(gravemindData.getCompound("area_of_interest_entry" + i)));
+            SculkHorde.savedData.getAreasOfInterestEntries().add(AreaOfInterestEntry.serialize(gravemindData.getCompound("area_of_interest_entry" + i)));
         }
 
         for(int i = 0; gravemindData.contains("no_raid_zone_entry" + i); i++) {
@@ -222,7 +222,7 @@ public class ModSavedData extends SavedData {
             gravemindData.put("death_area_entry" + iterator.nextIndex(), iterator.next().deserialize());
         }
 
-        for (ListIterator<AreaofInterestEntry> iterator = getAreasOfInterestEntries().listIterator(); iterator.hasNext(); ) {
+        for (ListIterator<AreaOfInterestEntry> iterator = getAreasOfInterestEntries().listIterator(); iterator.hasNext(); ) {
             gravemindData.put("area_of_interest_entry" + iterator.nextIndex(), iterator.next().deserialize());
         }
 
@@ -365,7 +365,7 @@ public class ModSavedData extends SavedData {
         return deathAreaEntries;
     }
 
-    public ArrayList<AreaofInterestEntry> getAreasOfInterestEntries() {
+    public ArrayList<AreaOfInterestEntry> getAreasOfInterestEntries() {
         return areasOfInterestEntries;
     }
 
@@ -479,7 +479,7 @@ public class ModSavedData extends SavedData {
         setDirty();
     }
 
-    public Optional<AreaofInterestEntry> addAreaOfInterestToMemory(ServerLevel dimension, BlockPos positionIn) {
+    public Optional<AreaOfInterestEntry> addAreaOfInterestToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getAreasOfInterestEntries() == null)
         {
             SculkHorde.LOGGER.warn("Attempted to add an area of interest to memory but the list was null");
@@ -496,7 +496,7 @@ public class ModSavedData extends SavedData {
         }
 
         SculkHorde.LOGGER.info("Adding Area of Interest at " + dimension.dimension() + " at " + positionIn + " to memory");
-        AreaofInterestEntry entry = new AreaofInterestEntry(dimension, positionIn);
+        AreaOfInterestEntry entry = new AreaOfInterestEntry(dimension, positionIn);
         getAreasOfInterestEntries().add(entry);
         setDirty();
         return Optional.of(entry);
@@ -580,7 +580,7 @@ public class ModSavedData extends SavedData {
      * Will try to return an Area of Interest Entry that is not in a no raid zone.
      * @return Optional<AreaofInterestEntry> - The area of interest entry that is not in a no raid zone
      */
-    public Optional<AreaofInterestEntry> getAreaOfInterestEntryNotInNoRaidZone()
+    public Optional<AreaOfInterestEntry> getAreaOfInterestEntryNotInNoRaidZone()
     {
         if(getAreasOfInterestEntries() == null)
         {
@@ -606,18 +606,20 @@ public class ModSavedData extends SavedData {
      */
     public void validateNodeEntries() {
         long startTime = System.nanoTime();
-        for (int index = 0; index < nodeEntries.size(); index++) {
-            if (!getNodeEntries().get(index).isEntryValid()) {
+        Iterator<NodeEntry> iterator = getNodeEntries().iterator();
+        while (iterator.hasNext()) {
+            NodeEntry entry = iterator.next();
+            if (!entry.isEntryValid()) {
                 resetNoNodeSpawningTicksElapsed();
-                getNodeEntries().remove(index);
-                index--;
+                iterator.remove();
                 setDirty();
             }
         }
         long endTime = System.nanoTime();
-        if (SculkHorde.isDebugMode())
-        {
-            System.out.println("Node Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
+        if (SculkHorde.isDebugMode()) {
+            System.out.println("Node Validation Took " +
+                    TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) +
+                    " milliseconds");
         }
     }
 
@@ -647,45 +649,40 @@ public class ModSavedData extends SavedData {
         }
     }
 
-    public void validateAreasOfInterest()
-    {
+    public void validateAreasOfInterest() {
         long startTime = System.currentTimeMillis();
-        for (int index = 0; index < getAreasOfInterestEntries().size(); index++)
-        {
-            if (!getAreasOfInterestEntries().get(index).isInNoRaidZone())
-            {
-                SculkHorde.LOGGER.info("Area of Interest at " + getAreasOfInterestEntries().get(index).position + " is on no raid zone. Removing from memory.");
-                getAreasOfInterestEntries().remove(index);
-                index--;
+        Iterator<AreaOfInterestEntry> iterator = getAreasOfInterestEntries().iterator();
+        while (iterator.hasNext()) {
+            AreaOfInterestEntry entry = iterator.next();
+            if (!entry.isInNoRaidZone()) {
+                SculkHorde.LOGGER.info("Area of Interest at " + entry.position + " is on no raid zone. Removing from memory.");
+                iterator.remove();
                 setDirty();
             }
         }
-
         long endTime = System.currentTimeMillis();
-        if(SculkHorde.isDebugMode()) {
+        if (SculkHorde.isDebugMode()) {
             SculkHorde.LOGGER.info("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
-
-    public void validateNoRaidZoneEntries()
-    {
+    
+    public void validateNoRaidZoneEntries() {
         long startTime = System.currentTimeMillis();
-        for (int index = 0; index < getNoRaidZoneEntries().size(); index++)
-        {
-            if (getNoRaidZoneEntries().get(index).isExpired(level.getGameTime()))
-            {
-                SculkHorde.LOGGER.info("No Raid Zone Entry at " + getNoRaidZoneEntries().get(index).position + " has expired. Removing from memory.");
-                getNoRaidZoneEntries().remove(index);
-                index--;
+        Iterator<NoRaidZoneEntry> iterator = getNoRaidZoneEntries().iterator();
+        while (iterator.hasNext()) {
+            NoRaidZoneEntry entry = iterator.next();
+            if (entry.isExpired(level.getGameTime())) {
+                SculkHorde.LOGGER.info("No Raid Zone Entry at " + entry.position + " has expired. Removing from memory.");
+                iterator.remove();
                 setDirty();
             }
         }
-
         long endTime = System.currentTimeMillis();
-        if(SculkHorde.isDebugMode()) {
+        if (SculkHorde.isDebugMode()) {
             SculkHorde.LOGGER.info("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
+
 
     /**
      * Will check the positons of all entries to see
@@ -1333,19 +1330,19 @@ public class ModSavedData extends SavedData {
         }
     }
 
-    public static class AreaofInterestEntry
+    public static class AreaOfInterestEntry
     {
         private final BlockPos position; // The Location of the Death Area
         private final ResourceKey<Level> dimension;
         private long ticksSinceLastRaid;
 
-        public AreaofInterestEntry(ServerLevel dimension, BlockPos positionIn)
+        public AreaOfInterestEntry(ServerLevel dimension, BlockPos positionIn)
         {
             this.dimension = dimension.dimension();
             position = positionIn;
         }
 
-        public AreaofInterestEntry(ResourceKey<Level> dimension, BlockPos positionIn, long ticksSinceLastRaidIn)
+        public AreaOfInterestEntry(ResourceKey<Level> dimension, BlockPos positionIn, long ticksSinceLastRaidIn)
         {
             this.dimension = dimension;
             position = positionIn;
@@ -1399,9 +1396,9 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static AreaofInterestEntry serialize(CompoundTag nbt) {
+        public static AreaOfInterestEntry serialize(CompoundTag nbt) {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
-            return new AreaofInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
+            return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
 

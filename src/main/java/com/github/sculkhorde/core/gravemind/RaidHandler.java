@@ -269,7 +269,7 @@ public class RaidHandler {
     {
         if(raidData.getAreaOfInterestEntry() == null)
         {
-            Optional<ModSavedData.AreaofInterestEntry> possibleEntry = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone();
+            Optional<ModSavedData.AreaOfInterestEntry> possibleEntry = SculkHorde.savedData.getAreaOfInterestEntryNotInNoRaidZone();
             if(possibleEntry.isEmpty())
             {
                 raidData.setFailure(failureType.FAILED_INITIALIZATION);
@@ -286,7 +286,7 @@ public class RaidHandler {
 
         }
 
-        ModSavedData.AreaofInterestEntry areaOfInterestEntry = raidData.getAreaOfInterestEntry();
+        ModSavedData.AreaOfInterestEntry areaOfInterestEntry = raidData.getAreaOfInterestEntry();
         ServerLevel dimension = areaOfInterestEntry.getDimension();
         ResourceKey<Level> dimensionResourceKey = dimension.dimension();
         raidData.setDimension(dimensionResourceKey);

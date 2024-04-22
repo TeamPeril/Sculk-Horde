@@ -6,14 +6,12 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
@@ -65,7 +63,7 @@ public class RaidData {
     private int currentWave = 1;
     private int remainingWaveParticipants = 0;
 
-    protected ModSavedData.AreaofInterestEntry areaOfInterestEntry;
+    protected ModSavedData.AreaOfInterestEntry areaOfInterestEntry;
 
     // Targets
     private static final ArrayList<BlockPos> high_priority_targets = new ArrayList<>();
@@ -186,7 +184,7 @@ public class RaidData {
             SculkHorde.LOGGER.info("Artificially Starting Raid. Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState());
         }
         removeNoRaidZoneAtBlockPos(level, raidLocationIn);
-        Optional<ModSavedData.AreaofInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(level, raidLocationIn);
+        Optional<ModSavedData.AreaOfInterestEntry> possibleAreaOfInterestEntry = SculkHorde.savedData.addAreaOfInterestToMemory(level, raidLocationIn);
         if(possibleAreaOfInterestEntry.isPresent())
         {
             setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
@@ -539,11 +537,11 @@ public class RaidData {
         SculkHorde.savedData.setDirty();
     }
 
-    public ModSavedData.AreaofInterestEntry getAreaOfInterestEntry() {
+    public ModSavedData.AreaOfInterestEntry getAreaOfInterestEntry() {
         return areaOfInterestEntry;
     }
 
-    public void setAreaOfInterestEntry(ModSavedData.AreaofInterestEntry areaOfInterestEntry) {
+    public void setAreaOfInterestEntry(ModSavedData.AreaOfInterestEntry areaOfInterestEntry) {
         this.areaOfInterestEntry = areaOfInterestEntry;
         SculkHorde.savedData.setDirty();
     }
@@ -768,7 +766,7 @@ public class RaidData {
         // Area of Interest Entry
         if (tag.contains("areaOfInterestEntry")) {
             CompoundTag areaOfInterestEntryTag = tag.getCompound("areaOfInterestEntry");
-            RaidHandler.raidData.setAreaOfInterestEntry(ModSavedData.AreaofInterestEntry.serialize(areaOfInterestEntryTag));
+            RaidHandler.raidData.setAreaOfInterestEntry(ModSavedData.AreaOfInterestEntry.serialize(areaOfInterestEntryTag));
         }
 
         // Targets
