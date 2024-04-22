@@ -630,17 +630,19 @@ public class ModSavedData extends SavedData {
      */
     public void validateBeeNestEntries() {
         long startTime = System.nanoTime();
-        for (int index = 0; index < getBeeNestEntries().size(); index++) {
-            getBeeNestEntries().get(index).setParentNodeToClosest();
-            if (!getBeeNestEntries().get(index).isEntryValid()) {
-                getBeeNestEntries().remove(index);
-                index--;
-                setDirty();
+        List<BeeNestEntry> toRemove = new ArrayList<>();
+        Iterator<BeeNestEntry> iterator = getBeeNestEntries().iterator();
+        while (iterator.hasNext()) {
+            BeeNestEntry entry = iterator.next();
+            entry.setParentNodeToClosest();
+            if (!entry.isEntryValid()) {
+                toRemove.add(entry);
             }
         }
+        getBeeNestEntries().removeAll(toRemove);
+        setDirty();
         long endTime = System.nanoTime();
-        if (SculkHorde.isDebugMode())
-        {
+        if (SculkHorde.isDebugMode()) {
             System.out.println("Bee Nest Validation Took " + TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS) + " milliseconds");
         }
     }
