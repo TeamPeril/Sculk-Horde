@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -57,13 +55,12 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static float BLAST_RESISTANCE = 3600000.0F;
 
-    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
-    public static final int STATE_RECIEVE_VIBRATION = 0;
+    public static final BooleanProperty DEFEATED = BooleanProperty.create("defeated");
 
     public SculkAncientNodeBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
-                .setValue(STATE, STATE_RECIEVE_VIBRATION));
+                .setValue(DEFEATED, false));
     }
 
     /**
@@ -72,6 +69,16 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public SculkAncientNodeBlock() {
         this(getProperties());
+    }
+
+    public static boolean isDefeated(BlockState blockState)
+    {
+        return blockState.hasProperty(DEFEATED) && blockState.is(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get()) && blockState.getValue(DEFEATED);
+    }
+    public static void setDefeated(ServerLevel world, BlockState blockState, BlockPos position, boolean value)
+    {
+        if(!blockState.hasProperty(DEFEATED) || !blockState.is(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get())) { return; }
+        world.setBlock(position, blockState.setValue(DEFEATED, Boolean.valueOf(value)), 3);
     }
 
     public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
@@ -84,7 +91,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         boolean IsHordeRevivalItem = playerIn.getMainHandItem().is(ModItems.HEART_OF_THE_HORDE.get());
 
 
-        if(IsHordeCureItem && !savedData.isHordeDefeated())
+        if(IsHordeCureItem && !savedData.isHordeDefeated() && !ModConfig.SERVER.disable_defeating_sculk_horde.get())
         {
             savedData.setHordeState(ModSavedData.HordeState.DEFEATED);
             level.players().forEach(player -> player.displayClientMessage(Component.literal("The Ancient Sculk Node has been Defeated!"), true));
@@ -92,21 +99,19 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
             //Spawn Explosion that Does No Damage
             level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
+
+            setDefeated((ServerLevel) playerIn.level(), blockState, pos, true);
+
             return InteractionResult.CONSUME;
         }
 
         if(IsHordeRevivalItem && !savedData.isHordeActive())
         {
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
+            setDefeated((ServerLevel) playerIn.level(), blockState, pos, false);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.FAIL;
-    }
-
-    public boolean areAllNodesDestroyed()
-    {
-        if(savedData == null) { return true; }
-        return savedData.getNodeEntries().isEmpty();
     }
 
     /**
@@ -138,11 +143,11 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState()
-                .setValue(STATE, STATE_RECIEVE_VIBRATION);
+                .setValue(DEFEATED, false);
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(STATE);
+        pBuilder.add(DEFEATED);
     }
 
     /**

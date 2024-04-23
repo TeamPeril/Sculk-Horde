@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
+import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
@@ -215,7 +216,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
      */
     public static void tickClient(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
     {
-        if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
+        if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis && !blockState.getValue(SculkAncientNodeBlock.DEFEATED))
         {
             blockEntity.lastHeartBeat = System.currentTimeMillis();
             level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);

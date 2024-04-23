@@ -1,5 +1,6 @@
 {
   "variants": {
-    "": { "model": "sculkhorde:block/sculk_ancient_node" }
+    "defeated=true": { "model": "sculkhorde:block/sculk_ancient_node_defeated" },
+    "defeated=false": { "model": "sculkhorde:block/sculk_ancient_node" }
   }
 }
