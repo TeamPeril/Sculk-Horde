@@ -57,6 +57,12 @@ public class CorrodingEffect extends MobEffect {
 
     public static void applyToEntity(LivingEntity source, LivingEntity victim, int duration)
     {
+        if(victim.hasEffect(ModMobEffects.CORRODED.get()))
+        {
+            victim.addEffect(new MobEffectInstance(ModMobEffects.CORRODED.get(), duration + victim.getEffect(ModMobEffects.CORRODED.get()).getDuration(), 0));
+            return;
+        }
+
         victim.addEffect(new MobEffectInstance(ModMobEffects.CORRODED.get(), duration, 0));
     }
 

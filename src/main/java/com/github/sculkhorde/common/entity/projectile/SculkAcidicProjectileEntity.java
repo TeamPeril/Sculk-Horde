@@ -79,14 +79,14 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
             return;
         }
 
-        if(raytrace.getEntity() instanceof LivingEntity livingEntity)
+        if(raytrace.getEntity() instanceof LivingEntity target)
         {
 
-            if(!(this.getOwner() instanceof Player) && EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
+            if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) this.getOwner()) && EntityAlgorithms.isSculkLivingEntity.test(target))
             {
-                return; // Do not attack sculk mobs if owner is not a player
+                return;
             }
-            CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), livingEntity, TickUnits.convertSecondsToTicks(10));
+            CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), target, TickUnits.convertSecondsToTicks(5));
         }
     }
 
