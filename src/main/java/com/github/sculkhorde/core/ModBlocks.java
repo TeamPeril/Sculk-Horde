@@ -633,7 +633,7 @@ public class ModBlocks {
 			registerBlock("spike", SpikeBlock::new);
 
 	public static final RegistryObject<SmallShroomBlock> SMALL_SHROOM =
-			registerBlock("small_shroom", SmallShroomBlock::new);
+			registerBlock("small_shroom.json", SmallShroomBlock::new);
 
 	public static final RegistryObject<SculkFloraBlock> GRASS =
 			registerBlock("grass", SculkFloraBlock::new);

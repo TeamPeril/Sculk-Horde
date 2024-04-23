@@ -3,20 +3,25 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:match_tool",
-          "predicate": {
-            "items": [
-              "minecraft:shears"
-            ]
-          }
-        }
-      ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "sculkhorde:grass"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "items": [
+                      "minecraft:shears"
+                    ]
+                  }
+                }
+              ],
+              "name": "sculkhorde:grass"
+            }
+          ]
         }
       ],
       "rolls": 1.0

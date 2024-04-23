@@ -1,3 +1,6 @@
 {
-  "parent": "sculkhorde:block/grass"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "sculkhorde:block/grass"
+  }
 }
