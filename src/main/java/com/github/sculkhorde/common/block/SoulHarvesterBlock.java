@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -108,11 +110,21 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
+        return  Properties.of()
+                .mapColor(MapColor.QUARTZ)
+                .strength(HARDNESS, BLAST_RESISTANCE)
+                .sound(SoundType.SCULK_CATALYST)
+                .noOcclusion()
+                .noParticlesOnBreak();
+
+        /*
         Properties prop = Properties.copy(Blocks.SCULK_SHRIEKER)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noOcclusion()
                 .sound(SoundType.SCULK_CATALYST);
         return prop;
+
+         */
     }
 
 
