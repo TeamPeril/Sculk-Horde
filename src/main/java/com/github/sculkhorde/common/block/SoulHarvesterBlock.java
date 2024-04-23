@@ -116,15 +116,6 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
                 .sound(SoundType.SCULK_CATALYST)
                 .noOcclusion()
                 .noParticlesOnBreak();
-
-        /*
-        Properties prop = Properties.copy(Blocks.SCULK_SHRIEKER)
-                .strength(HARDNESS, BLAST_RESISTANCE)
-                .noOcclusion()
-                .sound(SoundType.SCULK_CATALYST);
-        return prop;
-
-         */
     }
 
 
