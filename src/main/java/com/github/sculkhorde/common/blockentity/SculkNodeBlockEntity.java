@@ -52,8 +52,8 @@ public class SculkNodeBlockEntity extends BlockEntity
     private final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
     private long lastHeartBeat = System.currentTimeMillis();
     private long lastPopulationUpdate = 0;
-    private final long populationUpdateIntervalMillis = TickUnits.convertMinutesToTicks(3);
-    public final int MAX_POPULATION = 64;
+    private final long populationUpdateIntervalTicks = TickUnits.convertMinutesToTicks(3);
+    public final int MAX_POPULATION = 1;
     Collection<ISculkSmartEntity> sculkEntitiesBelongingToThisNode = new ArrayList<>();
 
     /** Accessors **/
@@ -68,68 +68,6 @@ public class SculkNodeBlockEntity extends BlockEntity
         this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkNodeBlock.ACTIVE, active), 3);
     }
 
-    public void updateListOfSculkEntitiesBelongingToThisNode()
-    {
-        assert level != null;
-        if(level.getGameTime() - lastPopulationUpdate < populationUpdateIntervalMillis)
-        {
-            return;
-        }
-
-        lastPopulationUpdate = level.getGameTime();
-        sculkEntitiesBelongingToThisNode.clear();
-        ServerLevel serverLevel = (ServerLevel)level;
-        Iterable<Entity> listOfEntities = serverLevel.getEntities().getAll();
-
-        for(Entity entity : listOfEntities)
-        {
-            if(! (entity instanceof LivingEntity))
-            {
-                continue;
-            }
-
-            if(!EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) entity))
-            {
-                continue;
-            }
-
-            if(entity instanceof SculkBeeHarvesterEntity)
-            {
-                continue;
-            }
-
-            BlockPos thisNodePosition = this.getBlockPos();
-            BlockPos theClosestNodetoEntity = ((ISculkSmartEntity)entity).getClosestNodePosition();
-            boolean isClosestNodeThisNode = theClosestNodetoEntity.equals(thisNodePosition);
-
-            if(isClosestNodeThisNode && entity.isAlive())
-            {
-                sculkEntitiesBelongingToThisNode.add((ISculkSmartEntity) entity);
-                if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Node has reached maximum population."); }
-            }
-        }
-    }
-
-    public boolean isPopulationAtMax()
-    {
-        tryCalculateSculkEntityPopulationForThisNode();
-        // Population will be 200 / number of nodes
-
-        return sculkEntitiesBelongingToThisNode.size() > (MAX_POPULATION);
-    }
-
-    public void tryCalculateSculkEntityPopulationForThisNode()
-    {
-        assert level != null;
-
-        if(level.getGameTime() - lastPopulationUpdate < populationUpdateIntervalMillis)
-        {
-            return;
-        }
-
-        lastPopulationUpdate = level.getGameTime();
-        updateListOfSculkEntitiesBelongingToThisNode();
-    }
 
     /** Modifiers **/
 

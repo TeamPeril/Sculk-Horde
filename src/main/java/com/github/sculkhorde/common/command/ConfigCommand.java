@@ -75,7 +75,8 @@ public class ConfigCommand implements Command<CommandSourceStack> {
         return Commands.literal("general")
                 .then(booleanConfigOption("chunk_loading_enabled"))
                 .then(booleanConfigOption("block_infestation_enabled"))
-                .then(booleanConfigOption("disable_defeating_sculk_horde"));
+                .then(booleanConfigOption("disable_defeating_sculk_horde"))
+                .then(integerConfigOption("maximum_sculk_population", 0, 1000));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> sculkRaidConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -194,6 +195,11 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 case "disable_defeating_sculk_horde":
                     if (valueType.equals(Boolean.class)) {
                         ModConfig.SERVER.disable_defeating_sculk_horde.set((Boolean) rawValue);
+                        success = true;
+                    }
+                case "maximum_sculk_population":
+                    if (valueType.equals(Integer.class)) {
+                        ModConfig.SERVER.maximum_sculk_population.set((Integer) rawValue);
                         success = true;
                     }
                     break;

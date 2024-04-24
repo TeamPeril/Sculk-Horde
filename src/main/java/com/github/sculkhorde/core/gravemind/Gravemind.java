@@ -186,7 +186,7 @@ public class Gravemind
             Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
             if(nodeBlockEntity.isPresent())
             {
-                if(nodeBlockEntity.get().isPopulationAtMax())
+                if(SculkHorde.populationHandler.isPopulationAtMax())
                 {
                     context.isRequestApproved = false;
                     return;

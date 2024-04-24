@@ -50,6 +50,8 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "Emergency Manual Cursor Ticking Enabled?: " + SculkHorde.cursorHandler.isManualControlOfTickingEnabled()
                         + "\n"
                         + "Cursors being Ticked: " + SculkHorde.cursorHandler.getSizeOfCursorList()
+                        + "\n"
+                        + "Sculk Population: " + SculkHorde.populationHandler.getPopulationSize() + " / " + SculkHorde.populationHandler.getMaxPopulation()
                 ), false);
         return 0;
     }

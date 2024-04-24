@@ -3,10 +3,7 @@ package com.github.sculkhorde.core;
 import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.loot.ModLootModifier;
 import com.github.sculkhorde.common.pools.PoolBlocks;
-import com.github.sculkhorde.core.gravemind.CursorHandler;
-import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.core.gravemind.RaidHandler;
-import com.github.sculkhorde.core.gravemind.SculkNodesHandler;
+import com.github.sculkhorde.core.gravemind.*;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactory;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
 import com.github.sculkhorde.misc.contributions.ContributionHandler;
@@ -54,6 +51,7 @@ public class SculkHorde {
     public static EntityChunkLoaderHelper entityChunkLoaderHelper = new EntityChunkLoaderHelper();
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final ContributionHandler contributionHandler = new ContributionHandler();
+    public static final SculkPopulationHandler populationHandler = new SculkPopulationHandler();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
     public SculkHorde()

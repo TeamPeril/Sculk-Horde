@@ -24,7 +24,7 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> chunk_loading_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> disable_defeating_sculk_horde;
-
+        public final ForgeConfigSpec.ConfigValue<Integer> maximum_sculk_population;
         public final ForgeConfigSpec.ConfigValue<Boolean> trigger_ancient_node_automatically;
         public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_wait_days;
         public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_time_of_day;
@@ -69,6 +69,7 @@ public class ModConfig {
             block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
             chunk_loading_enabled = builder.comment("Should the Sculk Horde load chunks? If disabled, and will ruin the intended experience. For example, raids wont work properly (Default true)").define("chunk_loading_enabled",true);
             disable_defeating_sculk_horde = builder.comment("Should players be able to defeat the Sculk Horde?").define("disable_defeating_sculk_horde",false);
+            maximum_sculk_population = builder.comment("How many sculk mobs should be allowed to exist at one time?").defineInRange("maximum_sculk_population",200, 0, 1000);
             builder.pop();
 
             builder.push("Trigger Automatically Variables");

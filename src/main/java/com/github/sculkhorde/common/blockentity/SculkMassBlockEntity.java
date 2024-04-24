@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Optional;
+
 import static com.github.sculkhorde.common.block.SculkMassBlock.WATERLOGGED;
 
 public class SculkMassBlockEntity extends BlockEntity {
@@ -28,9 +30,7 @@ public class SculkMassBlockEntity extends BlockEntity {
      */
     protected int storedSculkMass = 0;
     protected String storedSculkMassIdentifier = "storedSculkMass";
-
     protected long lastTickTime = 0;
-
     protected int tickInterval = TickUnits.convertSecondsToTicks(3);
 
 
@@ -78,6 +78,20 @@ public class SculkMassBlockEntity extends BlockEntity {
         storedSculkMass = Math.max(0, storedSculkMass + value);
     }
 
+    public boolean isParentNodePopulationFull()
+    {
+        BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) this.getLevel(), this.getBlockPos()).getPosition();
+        Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+        if(nodeBlockEntity.isPresent())
+        {
+            if(SculkHorde.populationHandler.isPopulationAtMax())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassBlockEntity blockEntity)
     {
         // If world is not a server world, return
@@ -90,7 +104,23 @@ public class SculkMassBlockEntity extends BlockEntity {
         {
             return;
         }
+
         blockEntity.lastTickTime = level.getGameTime();
+
+        if(blockEntity.getStoredSculkMass() <= 0)
+        {
+            level.destroyBlock(blockPos, false);
+            return;
+        }
+
+        if(blockEntity.isParentNodePopulationFull())
+        {
+            SculkHorde.savedData.addSculkAccumulatedMass(blockEntity.getStoredSculkMass());
+            blockEntity.setStoredSculkMass(0);
+            return;
+        }
+
+        // If we can spawn reinforcements
 
         EntityFactory entityFactory = SculkHorde.entityFactory;
         ReinforcementRequest context = new ReinforcementRequest((ServerLevel) level, blockPos);
@@ -113,13 +143,6 @@ public class SculkMassBlockEntity extends BlockEntity {
         // Do not spawn infectors if infection not enabled.
         if(!ModConfig.SERVER.block_infestation_enabled.get())
         {
-            return;
-        }
-
-        // Destroy if no more mass
-        if(blockEntity.getStoredSculkMass() <= 0)
-        {
-            level.destroyBlock(blockPos, false);
             return;
         }
 
