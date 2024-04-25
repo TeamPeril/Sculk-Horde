@@ -3,6 +3,12 @@
     "icon": {
       "item": "sculkhorde:heart_of_purity"
     },
+    "title": {
+      "translate": "achievement.sculkhorde.craft_heart_of_purity.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.craft_heart_of_purity.desc"
+    },
     "title": "The Cure",
     "description": "Craft a Heart of Purity.",
     "frame": "goal",

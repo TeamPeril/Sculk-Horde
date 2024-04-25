@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:infestation_ward_block"
     },
-    "title": "Stopping the Spread, Dead in its Tracks",
-    "description": "Craft a Infestation Ward Block. It can be used to stop the spread of the Sculk across blocks.",
+    "title": {
+      "translate": "achievement.sculkhorde.craft_infestation_ward_block.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.craft_infestation_ward_block.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": false

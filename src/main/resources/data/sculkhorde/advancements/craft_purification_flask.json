@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:purification_flask"
     },
-    "title": "Purification",
-    "description": "Craft a Purification Flask",
+    "title": {
+      "translate": "achievement.sculkhorde.craft_purification_flask.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.craft_purification_flask.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": false

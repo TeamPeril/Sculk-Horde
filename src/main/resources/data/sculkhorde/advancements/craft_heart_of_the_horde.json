@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:heart_of_the_horde"
     },
-    "title": "Resurrected Through Sacrafice",
-    "description": "Sacrafice Souls to fuel the Heart of the Horde. Use a soul harvester to craft a Heart of the Horde.",
+    "title": {
+      "translate": "achievement.sculkhorde.craft_heart_of_the_horde.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.craft_heart_of_the_horde.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": false

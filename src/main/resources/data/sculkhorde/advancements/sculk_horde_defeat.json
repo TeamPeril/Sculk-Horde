@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:sculk_ancient_node"
     },
-    "title": "Reclamation",
-    "description": "You fought tooth and nail to protect and reclaim the Overworld from the Sculk Horde. It wasn't easy, but you did it, you defeated the Horde. The threat has passed, but the world is left scarred. Go out there and clean up.",
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_horde_defeat.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_horde_defeat.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true

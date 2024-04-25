@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:essence_of_purity"
     },
-    "title": "The Start of a Solution",
-    "description": "Craft Essence of Purity",
+    "title": {
+      "translate": "achievement.sculkhorde.craft_essence_of_purity.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.craft_essence_of_purity.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": false

@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:sculk_node"
     },
-    "title": "The Birth of A Brain",
-    "description": "Witness the birth of a sculk node; a brain-like structure to assist the Gravemind in its conquest of the overworld.",
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_node_spawn.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_node_spawn.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true

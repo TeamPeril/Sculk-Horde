@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:soul_harvester"
     },
-    "title": "Soul Stealer",
-    "description": "Harvest Souls using the soul harvester.",
+    "title": {
+      "translate": "achievement.sculkhorde.use_soul_harvester.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.use_soul_harvester.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": false

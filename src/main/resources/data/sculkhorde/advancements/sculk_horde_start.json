@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:sculk_ancient_node"
     },
-    "title": "Incomprehensible Horrors",
-    "description": "The Sculk Horde has been unleashed, and now they're coming for you.",
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_horde_start.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_horde_start.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true

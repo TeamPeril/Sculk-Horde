@@ -3,8 +3,12 @@
     "icon": {
       "item": "sculkhorde:sculk_node"
     },
-    "title": "A Developed Threat",
-    "description": "Have the Gravemind evolve from the undeveloped stage into the immature stage.",
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_evolve_immature.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_evolve_immature.desc"
+    },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true

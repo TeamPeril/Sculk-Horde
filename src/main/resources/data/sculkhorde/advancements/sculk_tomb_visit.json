@@ -3,8 +3,12 @@
     "icon": {
       "item": "minecraft:sculk"
     },
-    "title": "Dug too Deep",
-    "description": "Locate the Sculk Tomb",
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_tomb_visit.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_tomb_visit.desc"
+    },
     "background": "sculkhorde:textures/block/infested_stone.png",
     "frame": "goal",
     "show_toast": true,
