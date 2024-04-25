@@ -102,6 +102,8 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
 
             setDefeated((ServerLevel) playerIn.level(), blockState, pos, true);
 
+            playerIn.getMainHandItem().grow(-1);
+
             return InteractionResult.CONSUME;
         }
 
@@ -109,6 +111,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         {
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
             setDefeated((ServerLevel) playerIn.level(), blockState, pos, false);
+            playerIn.getMainHandItem().grow(-1);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.FAIL;

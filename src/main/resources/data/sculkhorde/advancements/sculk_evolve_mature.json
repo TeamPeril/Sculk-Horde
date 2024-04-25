@@ -1,0 +1,18 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:sculk_node"
+    },
+    "title": "A Mature Threat",
+    "description": "Have the Gravemind evolve from the immature stage into the mature stage.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:sculk_evolve_immature",
+  "criteria": {
+    "gravemind_evolved": {
+      "trigger": "sculkhorde:gravemind_evolve_mature_trigger"
+    }
+  }
+}
