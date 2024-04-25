@@ -78,19 +78,6 @@ public class SculkMassBlockEntity extends BlockEntity {
         storedSculkMass = Math.max(0, storedSculkMass + value);
     }
 
-    public boolean isParentNodePopulationFull()
-    {
-        BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) this.getLevel(), this.getBlockPos()).getPosition();
-        Optional<SculkNodeBlockEntity> nodeBlockEntity = SculkHorde.savedData.level.getBlockEntity(nodeBlockPos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
-        if(nodeBlockEntity.isPresent())
-        {
-            if(SculkHorde.populationHandler.isPopulationAtMax())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassBlockEntity blockEntity)
     {
@@ -113,7 +100,7 @@ public class SculkMassBlockEntity extends BlockEntity {
             return;
         }
 
-        if(blockEntity.isParentNodePopulationFull())
+        if(SculkHorde.populationHandler.isPopulationAtMax())
         {
             SculkHorde.savedData.addSculkAccumulatedMass(blockEntity.getStoredSculkMass());
             blockEntity.setStoredSculkMass(0);

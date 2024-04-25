@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
+import com.github.sculkhorde.common.entity.infection.AncientNodePurificationHandler;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.events.Event;
@@ -54,6 +55,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     private long lastHeartBeat = System.currentTimeMillis();
 
     private SculkNodeInfectionHandler infectionHandler;
+    private AncientNodePurificationHandler purificationHandler;
 
     // Vibration Code
     private final VibrationSystem.User vibrationUser = new SculkAncientNodeBlockEntity.VibrationUser(this);
@@ -168,6 +170,13 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             infectionHandler = new SculkNodeInfectionHandler(this, getBlockPos());
         }
     }
+    private void initializePurificationHandler()
+    {
+        if(purificationHandler == null)
+        {
+            purificationHandler = new AncientNodePurificationHandler(this, getBlockPos());
+        }
+    }
 
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
@@ -195,6 +204,10 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         else if(SculkHorde.savedData.isHordeUnactivated() && ModConfig.SERVER.trigger_ancient_node_automatically.get())
         {
             tickTriggerAutomatically(level, blockPos, blockState, blockEntity);
+        }
+        else if(SculkHorde.savedData.isHordeDefeated())
+        {
+            tickDefeated(level, blockPos, blockState, blockEntity);
         }
         else if(SculkHorde.savedData.isHordeUnactivated() && !ModConfig.SERVER.trigger_ancient_node_automatically.get())
         {
@@ -244,6 +257,37 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         {
             tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
         }
+    }
+
+    /**
+     * Gets called on server when the block is awake
+     * @param level The level
+     * @param blockPos The position
+     * @param blockState The blockstate
+     * @param blockEntity The block entity
+     */
+    public static void tickDefeated(Level level, BlockPos blockPos, BlockState blockState, SculkAncientNodeBlockEntity blockEntity)
+    {
+
+        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
+
+        // Initialize the infection handler
+        if(blockEntity.purificationHandler == null)
+        {
+            blockEntity.initializePurificationHandler();
+        }
+        if(blockEntity.purificationHandler.canBeActivated())
+        {
+            blockEntity.purificationHandler.activate();
+        }
+
+        blockEntity.purificationHandler.tick();
+
+        // If the time elapsed is less than the tick interval, return
+        if(timeElapsed < tickIntervalSeconds) { return; }
+
+        // Update the tickedAt time
+        blockEntity.tickedAt = System.nanoTime();
     }
 
     /**

@@ -60,6 +60,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.CURSOR_PROBER.get(), CursorProberRenderer::new);
 
+        event.registerEntityRenderer(ModEntities.CURSOR_PURIFIER_PROBER.get(), CursorPurifierProberRenderer::new);
+
         event.registerEntityRenderer(ModEntities.CURSOR_BRIDGER.get(), CursorBridgerRenderer::new);
 
         event.registerEntityRenderer(ModEntities.CURSOR_SURFACE_INFECTOR.get(), CursorSurfaceInfectorRenderer::new);
