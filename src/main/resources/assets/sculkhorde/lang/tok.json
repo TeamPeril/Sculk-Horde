@@ -100,7 +100,7 @@
   "tooltip.sculkhorde.sculk_bee_nest_cell.functionality": "§7§oni li pini la, jan li ken kama jo e §e§oko pipi Sculk§r§7§o kepeken ilo kipisi lili. ko laso li lon la, ni li pini.",
   "tooltip.sculkhorde.sculk_bee_nest_cell.lore": "§7§opoki ni li tomo pi kulupu pi pipi suwi Sculk. pipi la, poki ni li nasin, li poki pi ko pipi.",
   "block.sculkhorde.sculk_living_rock": "kiwen sijelo",
-  "tooltip.sculkhorde.sculk_living_rock.functionality": "jan li ken pali e §e§oilo awen pi soko Sculk kepeken ni§r§7§o.",
+  "tooltip.sculkhorde.sculk_living_rock.functionality": "jan li ken pali e §e§osinpin pi soko Sculk kepeken ni§r§7§o.",
   "tooltip.sculkhorde.sculk_living_rock.lore": "§7§okiwen ni li seli, li kiwen mute, li awen pona. ona li kama suli li kama lili sama ni: ona li moku e kon.",
   "block.sculkhorde.sculk_living_rock_root": "noka pi kiwen sijelo",
   "tooltip.sculkhorde.sculk_living_rock_root.functionality": "§7§oni li insa pi palisa pi kiwen sijelo, li pona e palisa ona.",
@@ -136,7 +136,7 @@
   "tooltip.sculkhorde.soul_harvester.functionality": "§7§okepeken ilo ni la, jan li wawa e pilin poki. ilo ni li wile e kon. Requires souls to function. ijo li moli lon poka ni la, ona li kama jo e kon ona.",
   "tooltip.sculkhorde.soul_harvester.lore": "§7§oo kama jo e kon pi ijo pi moli ala, o ike suli e ona la ona li wile moli. kute sina li lon poka ilo ni la, sina ken kute e toki ona pi wile weka. ilo kon ni li ken wawa e ijo kepeken kon ni lon poki. ni la, ona li kama ijo mani ike.",
 
-  "block.sculkhorde.infestation_ward_block": "ilo awen pi soko Sculk",
+  "block.sculkhorde.infestation_ward_block": "sinpin pi soko Sculk",
   "tooltip.sculkhorde.infestation_ward_block.functionality": "§7§osoko Sculk li ken ala kama lon poka leko ni. nasin kepeken pona pi leko ni li ni: jan li selo e ma kepeken leko ni la, soko Sculk li ken ala lon ma ni!",
   "tooltip.sculkhorde.infestation_ward_block.lore": "§7§oawen pi kiwen sijelo en §e§okipisi pi pona wawa§r§7§o li weka pona e soko Sculk. sina noka e ni la sina pilin pona mute.",
   "block.sculkhorde.infested_mud": "ma telo Sculk",
@@ -167,7 +167,7 @@
   "tooltip.sculkhorde.dev_mass_infectinator_3000": "leko ni li awen soko Sculk e ma suli. ni li lon tan wile awen Sculk pi jan Kewa Fen. o sona e ken pakala a!",
 
   "item.sculkhorde.infestation_purifier": "ilo pi weka Sculk",
-  "tooltip.sculkhorde.infestation_purifier.functionality": "§7§osina nena nanpa tu pi ilo luka e ni la, ona li kama ijo.\nni li ijo ala, ni li weka e soko Sculk lon poka. kulupu Sculk li utala e ona.",
+  "tooltip.sculkhorde.infestation_purifier.functionality": "§7§osina nena nanpa tu pi ilo luka e ni la, ona li kama ijo.\nni li ijo ala la, ni li weka e soko Sculk lon poka. kulupu Sculk li utala e ona.",
   "tooltip.sculkhorde.infestation_purifier.lore": "§7§osina pona e ike suli kon la, kon ni li wawa e utala sina tawa kulupu Sculk.",
   "item.sculkhorde.purification_flask": "telo pi weka Sculk",
   "tooltip.sculkhorde.purification_flask.functionality": "§7§otelo ni li lon soko Sculk la ona li weka. ni li pona e pilin 'jaki lon insa', e pilin 'kama', e pilin 'moli Sculk'. nasin pali pi telo ni li §e§okipisi pona§r§7§o lon insa poki lili luka tu wan.",
@@ -223,6 +223,41 @@
   "sounds.sculkhorde.blind_and_alone_music_disc.desc": "jan Firel - lukin ala en taso"
   "sounds.sculkhorde.deep_green_music_disc": "sike kalama pi kalama musi 'laso wawa'"
   "sounds.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa"
+  "item.sculkhorde.blind_and_alone_music_disc": "sike kalama pi kalama musi 'lukin ala en taso'",
+  "item.sculkhorde.blind_and_alone_music_disc.desc": "jan Firel - lukin ala en taso",
+  "item.sculkhorde.deep_green_music_disc": "sike kalama pi kalama musi 'laso wawa'",
+  "item.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa"
+  
+  "achievement.sculkhorde.sculk_horde_start.title": "monsuta pi moku ale",
+  "achievement.sculkhorde.sculk_horde_start.desc": "kulupu utala pi soko Sculk li kama poki ala, li kama tawa sina.",
+  "achievement.sculkhorde.sculk_horde_defeat.title": "pona sin",
+  "achievement.sculkhorde.sculk_horde_defeat.desc": "sina pali wawa li utala wawa la, sina awen e ma lon kulupu utala pi soko Sculk, li weka e kulupu ni tan ma. ni li pali mute. taso, sina pali pona a! sina anpa e kulupu a. ike li weka. taso, pakala li awen lon ma. o tawa jaki ni o pona e ona a..",
+  "achievement.sculkhorde.sculk_evolve_immature.title": "lawa pali",
+  "achievement.sculkhorde.sculk_evolve_immature.desc": "lawa pi kulupu Sculk o kama suli lili",
+  "achievement.sculkhorde.sculk_evolve_mature.title": "lawa wawa",
+  "achievement.sculkhorde.sculk_evolve_mature.desc": "lawa pi kulupu Sculk o kama suli",
+  "achievement.sculkhorde.sculk_node_spawn.title": "open pi insa lawa",
+  "achievement.sculkhorde.sculk_node_spawn.desc": "o lukin e kama pi insa lawa Sculk. insa ni li sama insa lawa, li wawa e lawa pi kulupu Sculk.",
+  "achievement.sculkhorde.sculk_tomb_visit.title": "kulupu utala pi soko Sculk",
+  "achievement.sculkhorde.sculk_tomb_visit.desc": "o lon tomo moli pi soko Sculk",
+  "achievement.sculkhorde.craft_essence_of_purity.title": "open pona",
+  "achievement.sculkhorde.craft_essence_of_purity.desc": "o pali e kipisi pi pona wawa",
+  "achievement.sculkhorde.craft_purification_flask.title": "kama pona",
+  "achievement.sculkhorde.craft_purification_flask.desc": "o pali e telo pi pona wawa",
+  "achievement.sculkhorde.use_soul_harvester.title": "kama jo e kon",
+  "achievement.sculkhorde.use_soul_harvester.desc": "o kama jo e kon kepeken ilo kon",
+  "achievement.sculkhorde.craft_pure_souls.title": "kon pi kama soko",
+  "achievement.sculkhorde.craft_pure_souls.desc": "o pali e kon pi pona wawa tan kon kalama. kon kalama li tan kiwen wawa pakala Sculk.",
+  "achievement.sculkhorde.craft_infestation_ward_block.title": "sinpin soko",
+  "achievement.sculkhorde.craft_infestation_ward_block.desc": "o pali e sinpin pi soko Sculk. ona li pini e kama suli pi soko Sculk lon leko.",
+  "achievement.sculkhorde.craft_infestation_purifier.title": "pali wawa",
+  "achievement.sculkhorde.craft_infestation_purifier.desc": "o pali e ilo pi weka Sculk",
+  "achievement.sculkhorde.craft_heart_of_the_horde.title": "kama moli ala tan pakala pana",
+  "achievement.sculkhorde.craft_heart_of_the_horde.desc": "o moli pana e kon tawa pilin poki wawa. o pali e pilin poki wawa kepeken ilo kon.",
+  "achievement.sculkhorde.craft_heart_of_purity.title": "ilo pi pona ma",
+  "achievement.sculkhorde.craft_heart_of_purity.desc": "o pali e pilin pi pona wawa",
+  "achievement.sculkhorde.craft_dormant_heart_of_the_horde.title": "pilin pi pilin ala",
+  "achievement.sculkhorde.craft_dormant_heart_of_the_horde.desc": "o pali e pilin poki"
   
   "item.sculkhorde.coin_of_contribution": "mani pana",
   "tooltip.sculkhorde.coin_of_contribution": "mani ni li sama pana suli sina tawa ante ni. jan sama sina li lon ala la, ante Sculk Horde kin li lon ala. mi toki e ni: sina pona! ante Sculk Horde o pona tawa sina :)"
