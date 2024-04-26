@@ -26,6 +26,9 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_DEATH = registerSoundEvent("sculk_enderman_death");
     public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_HIT = registerSoundEvent("sculk_enderman_hit");
     public static final RegistryObject<SoundEvent> SCULK_ENDERMAN_STARE = registerSoundEvent("sculk_enderman_stare");
+    public static final RegistryObject<SoundEvent> SOUL_HARVESTER_ITEM_INSERTED = registerSoundEvent("soul_harvester_item_inserted");
+    public static final RegistryObject<SoundEvent> SOUL_HARVESTER_FINISHED = registerSoundEvent("soul_harvester_finished");
+    public static final RegistryObject<SoundEvent> SOUL_HARVESTER_ACTIVE = registerSoundEvent("soul_harvester_active");
 
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {

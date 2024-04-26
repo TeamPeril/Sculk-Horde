@@ -3,9 +3,11 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.advancement.SoulHarvesterTrigger;
 import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.common.entity.SculkSpitterEntity;
 import com.github.sculkhorde.common.recipe.SoulHarvestingRecipe;
 import com.github.sculkhorde.common.screen.SoulHarvesterMenu;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
@@ -53,6 +55,7 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -118,9 +121,12 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         return this.getBlockState().getValue(SoulHarvesterBlock.IS_PREPARED);
     }
 
-    public void setPrepared(boolean active)
+    public void setPrepared(boolean value)
     {
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_PREPARED, active), 3);
+        if(isPrepared() == value) { return; }
+
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_PREPARED, value), 3);
+        if(value) { this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_ITEM_INSERTED.get(), SoundSource.BLOCKS); }
     }
 
     public boolean isActive()
@@ -128,9 +134,12 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         return this.getBlockState().getValue(SoulHarvesterBlock.IS_ACTIVE);
     }
 
-    public void setActive(boolean active)
+    public void setActive(boolean value)
     {
-        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_ACTIVE, active), 3);
+        if(isActive() == value) { return; }
+
+        this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_ACTIVE, value), 3);
+        if(value) {this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_ACTIVE.get(), SoundSource.BLOCKS); }
     }
 
     public int getHealthHarvested()
@@ -226,7 +235,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
         if(pBlockEntity.isAnyItemInInputSlot()) {
             pBlockEntity.setPrepared(true);
-        } else {
+        } else if(pBlockEntity.isPrepared()) {
             pBlockEntity.setPrepared(false);
         }
 
@@ -262,6 +271,10 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
                 this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
 
         this.setHealthHarvested(0);
+
+        triggerAnim("finish_controller", "finished");
+        FINISH_ANIMATION_CONTROLLER.tryTriggerAnimation("finished");
+        this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_FINISHED.get(), SoundSource.BLOCKS);
     }
 
     public SoulHarvesterListener getListener() {
@@ -389,10 +402,13 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     /* ~~~~~~~~~~~~Animation~~~~~~~~~~~~~~~~~~~~ */
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlayAndHold("idle");
-    private static final RawAnimation READYUP_ANIMATION = RawAnimation.begin().thenPlayAndHold("item_inside");
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("idle");
+    private static final RawAnimation READYUP_ANIMATION = RawAnimation.begin().thenPlay("item_inside").thenLoop("item_inside_idle");
     private static final RawAnimation ACTIVE_ANIMATION = RawAnimation.begin().thenLoop("active");
+    private static final RawAnimation FINISH_ANIMATION = RawAnimation.begin().thenPlay("finished");
+
+    private final AnimationController FINISH_ANIMATION_CONTROLLER = new AnimationController<>(this, "finish_controller", state -> PlayState.STOP)
+            .triggerableAnim("finished", FINISH_ANIMATION);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

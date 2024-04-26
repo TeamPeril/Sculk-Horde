@@ -236,6 +236,9 @@
   "sounds.sculkhorde.sculk_enderman_portal": "Sculk Enderman Teleports",
   "sounds.sculkhorde.sculk_enderman_idle": "Sculk Enderman Idles",
   "sounds.sculkhorde.sculk_enderman_stare": "Sculk Enderman Screeches",
+  "sounds.sculkhorde.soul_harvester_active": "Soul Harvester infusing.",
+  "sounds.sculkhorde.soul_harvester_finished": "Soul Harvester finished infusing.",
+  "sounds.sculkhorde.soul_harvester_item_inserted": "Item inserted into Soul Harvester.",
 
   "achievement.sculkhorde.sculk_horde_start.title": "Incomprehensible Horrors",
   "achievement.sculkhorde.sculk_horde_start.desc": "The Sculk Horde has been unleashed, and now they're coming for you.",

@@ -91,5 +91,23 @@
     "sounds": [
       "sculkhorde:sculk_enderman_stare"
     ]
+  },
+  "soul_harvester_active": {
+    "subtitle": "sounds.sculkhorde.soul_harvester_active",
+    "sounds": [
+      "sculkhorde:soul_harvester_active"
+    ]
+  },
+  "soul_harvester_finished": {
+    "subtitle": "sounds.sculkhorde.soul_harvester_finished",
+    "sounds": [
+      "sculkhorde:soul_harvester_finished"
+    ]
+  },
+  "soul_harvester_item_inserted": {
+    "subtitle": "sounds.sculkhorde.soul_harvester_item_inserted",
+    "sounds": [
+      "sculkhorde:soul_harvester_item_inserted"
+    ]
   }
 }
