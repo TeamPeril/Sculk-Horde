@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.advancement.ContributeTrigger;
 import com.github.sculkhorde.common.block.FleshyCompostBlock;
 import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.core.*;
@@ -211,8 +212,9 @@ public class ForgeEventSubscriber {
             return;
         }
 
-        if(SculkHorde.contributionHandler.isContributor((ServerPlayer) event.getEntity()))
+        if(SculkHorde.contributionHandler.isContributor((ServerPlayer) event.getEntity()) && !SculkHorde.contributionHandler.doesPlayerHaveContributionAdvancement((ServerPlayer) event.getEntity()))
         {
+            AdvancementUtil.giveAdvancementToPlayer((ServerPlayer) event.getEntity(), ContributeTrigger.INSTANCE);
             SculkHorde.contributionHandler.givePlayerCoinOfContribution(event.getEntity());
         }
     }

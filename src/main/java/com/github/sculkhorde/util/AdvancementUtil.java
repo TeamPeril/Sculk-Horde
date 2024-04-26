@@ -26,10 +26,12 @@ public final class AdvancementUtil {
     }
 
     public static boolean isAdvancementCompleted(ServerPlayer player, ResourceLocation id) {
-        Advancement adv = getAdvancement(id);
+        Advancement adv = ServerLifecycleHooks.getCurrentServer().getAdvancements().getAdvancement(id);
 
         if (adv != null)
+        {
             return player.getAdvancements().getOrStartProgress(adv).isDone();
+        }
 
         return false;
     }

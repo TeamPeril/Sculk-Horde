@@ -156,6 +156,7 @@ public class ModEventSubscriber {
         CriteriaTriggers.register(SculkNodeSpawnTrigger.INSTANCE);
         CriteriaTriggers.register(SoulHarvesterTrigger.INSTANCE);
         CriteriaTriggers.register(SculkHordeDefeatTrigger.INSTANCE);
+        CriteriaTriggers.register(ContributeTrigger.INSTANCE);
     }
 
     /* entityAttributes

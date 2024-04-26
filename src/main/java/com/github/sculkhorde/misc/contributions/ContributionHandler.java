@@ -1,6 +1,9 @@
 package com.github.sculkhorde.misc.contributions;
 
+import com.github.sculkhorde.common.advancement.ContributeTrigger;
 import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.util.AdvancementUtil;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -92,6 +95,11 @@ public class ContributionHandler {
     public void addContributor(String name)
     {
         getListOfContributors().put(name.toLowerCase(),true);
+    }
+
+    public boolean doesPlayerHaveContributionAdvancement(ServerPlayer player)
+    {
+        return AdvancementUtil.isAdvancementCompleted(player, new ResourceLocation("sculkhorde:contribute"));
     }
 
     public boolean isContributor(ServerPlayer player)
