@@ -28,12 +28,15 @@ public class ContributionHandler {
         addContributor("KaratFeng");
 
         addContributor("ForgeLabsSean");
+        addContributor("RobertGuy"); //https://www.youtube.com/watch?v=ELHIABGHdSc
+
+        addContributor("Legundo"); //https://www.youtube.com/watch?v=pWyO39WPKH0
 
         addContributor("Dongerstein");
         addContributor("Spaghettleg");
         addContributor("0dna");
 
-        addContributor("SirColor");
+        addContributor("SirColor"); //https://www.youtube.com/watch?v=Ke4zdWzbqOk
 
         addContributor("EqlipseTV");
 
@@ -42,6 +45,13 @@ public class ContributionHandler {
         addContributor("Lynixity");
         addContributor("Kiply");
         addContributor("RagePlaysGames");
+
+        addContributor("Kaupenjoe");
+
+        //"Adding 16 Dwellers With Minecraft's Sculk Horde" - https://www.youtube.com/watch?v=diAgJcSmleQ
+        addContributor("Ivan_the_Moron");
+        addContributor("Codekid_");
+        addContributor("Jamsteobro");
 
         addContributor("Abandoned_Cat87");
         addContributor("AbsoluteKun");
