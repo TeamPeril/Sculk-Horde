@@ -119,39 +119,40 @@ public class Gravemind
         calulateCurrentState();
     }
 
-    public void enableAmountOfBeeHives(int amount)
-    {
-        if(SculkHorde.savedData == null) { return; }
+    public void enableAmountOfBeeHives(int amount) {
+        if (SculkHorde.savedData == null) {
+            return;
+        }
 
-        if(SculkHorde.savedData.getBeeNestEntries().size() <= 0) { return; }
+        List<ModSavedData.BeeNestEntry> beeNestEntries = SculkHorde.savedData.getBeeNestEntries();
+        if (beeNestEntries.isEmpty()) {
+            return;
+        }
 
         int lastEnabledIndex = -1;
-        for (int i = 0; i < SculkHorde.savedData.getBeeNestEntries().size(); i++)
-        {
-            ModSavedData.BeeNestEntry entry = SculkHorde.savedData.getBeeNestEntries().get(i);
+        for (int i = 0; i < beeNestEntries.size(); i++) {
+            ModSavedData.BeeNestEntry entry = beeNestEntries.get(i);
 
-            if(!entry.isEntryValid()) { continue; }
+            if (!entry.isEntryValid()) {
+                continue;
+            }
 
-            if (!entry.isOccupantsExistingDisabled())
-            {
+            if (!entry.isOccupantsExistingDisabled()) {
                 entry.disableOccupantsExiting();
                 lastEnabledIndex = i;
             }
         }
-        int startIndex = lastEnabledIndex + 1;
-        if (startIndex >= SculkHorde.savedData.getBeeNestEntries().size())
-        {
-            startIndex = 0;
-        }
-        for (int i = startIndex; i < startIndex + amount; i++)
-        {
-            int index = i % SculkHorde.savedData.getBeeNestEntries().size();
 
-            if(!SculkHorde.savedData.getBeeNestEntries().get(index).isEntryValid()) { continue; }
+        int startIndex = (lastEnabledIndex + 1) % beeNestEntries.size();
+        for (int i = 0; i < amount; i++) {
+            int index = (startIndex + i) % beeNestEntries.size();
 
-            SculkHorde.savedData.getBeeNestEntries().get(index).enableOccupantsExiting();
+            if (beeNestEntries.get(index).isEntryValid()) {
+                beeNestEntries.get(index).enableOccupantsExiting();
+            }
         }
     }
+
 
     public void processReinforcementRequest(ReinforcementRequest context)
     {

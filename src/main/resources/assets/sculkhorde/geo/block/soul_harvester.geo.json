@@ -1,5 +1,8 @@
 {
 	"format_version": "1.12.0",
+	"textures": {
+		"particle": "minecraft:block/sculk_shrieker"
+	},
 	"minecraft:geometry": [
 		{
 			"description": {
