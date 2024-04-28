@@ -2,6 +2,6 @@
 	"parent":"block/block",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"particle": "minecraft:block/sculk"
+		"particle": "sculkhorde:block/soul_harvester"
 	}
 }
