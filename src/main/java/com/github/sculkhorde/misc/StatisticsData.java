@@ -151,7 +151,7 @@ public class StatisticsData {
     }
 
     public void addTotalMassRemovedFromHorde(int value) {
-        this.totalMassFromFleshyCompost += value;
+        this.totalMassRemovedFromHorde += value;
     }
 
     public long getTotalMassFromFleshyCompost() {

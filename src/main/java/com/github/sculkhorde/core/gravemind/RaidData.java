@@ -480,21 +480,13 @@ public class RaidData {
     }
 
     public float getWaveProgress() {
-        int aliveWaveParticipants = 0;
+        int progress = 0;
         for(ISculkSmartEntity entity : waveParticipants)
         {
-            if(entity == null)
-            {
-                continue;
-            }
-
-            if(((Mob) entity).isAlive())
-            {
-                aliveWaveParticipants++;
-            }
+            progress += (int) ((Mob) entity).getHealth();
         }
 
-        return (float) aliveWaveParticipants / (float) waveParticipants.size();
+        return (float) progress / (float) waveParticipants.size();
     }
 
     protected void updateRemainingWaveParticipantsAmount()

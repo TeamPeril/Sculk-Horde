@@ -282,9 +282,12 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return;
         }
         SculkHorde.savedData.removeNodeFromMemory(pos);
+
         // Subtract 10% of total mass
         int subtractAmount = (int) (SculkHorde.savedData.getSculkAccumulatedMass() * 0.1);
         SculkHorde.savedData.subtractSculkAccumulatedMass(subtractAmount);
+        SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
+
         worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
         worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
 

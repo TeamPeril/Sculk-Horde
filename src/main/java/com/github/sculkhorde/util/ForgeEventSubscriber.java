@@ -134,6 +134,8 @@ public class ForgeEventSubscriber {
         {
             SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
             SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
+            SculkHorde.statisticsData.incrementTotalUnitDeaths();
+            SculkHorde.statisticsData.addTotalMassRemovedFromHorde((int) event.getEntity().getMaxHealth());
             return;
 
         }
