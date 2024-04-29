@@ -48,6 +48,9 @@ public class ContributionHandler {
 
         addContributor("Kaupenjoe");
 
+        addContributor("TheDestroyer6928");
+        addContributor("Red_2101");
+
         //"Adding 16 Dwellers With Minecraft's Sculk Horde" - https://www.youtube.com/watch?v=diAgJcSmleQ
         addContributor("Ivan_the_Moron");
         addContributor("Codekid_");
