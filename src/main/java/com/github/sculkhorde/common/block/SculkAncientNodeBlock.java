@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.core.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.github.sculkhorde.core.SculkHorde.savedData;
 
@@ -103,6 +106,17 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             setDefeated((ServerLevel) playerIn.level(), blockState, pos, true);
 
             playerIn.getMainHandItem().grow(-1);
+
+            for(int i = 0; i < 10; i++)
+            {
+                CursorSurfacePurifierEntity purifier = new CursorSurfacePurifierEntity(level);
+                purifier.setPos(pos.getCenter());
+                purifier.setMaxTransformations(100);
+                purifier.setMaxRange(30);
+                purifier.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
+                purifier.setTickIntervalMilliseconds(10);
+                level.addFreshEntity(purifier);
+            }
 
             return InteractionResult.CONSUME;
         }
