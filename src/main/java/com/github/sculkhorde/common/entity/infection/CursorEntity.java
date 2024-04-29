@@ -7,6 +7,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -459,11 +460,15 @@ public abstract class CursorEntity extends Entity
 
     public void chanceToThanosSnapThisCursor()
     {
+        if(level().isClientSide()) { return; }
+
         if(ModConfig.SERVER.thanos_snap_cursors_after_reaching_threshold.get() && SculkHorde.cursorHandler.isManualControlOfTickingEnabled())
         {
-            if( random.nextBoolean())
+            ServerLevel serverLevel = (ServerLevel) level();
+            MinecraftServer server = serverLevel.getServer();
+            if(serverLevel.random.nextBoolean())
             {
-                discard();
+                server.tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, this::discard));
             }
         }
     }
