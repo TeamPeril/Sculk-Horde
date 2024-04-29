@@ -294,7 +294,7 @@ public abstract class CursorEntity extends Entity
             origin = this.blockPosition();
         }
 
-        if(this.random.nextBoolean() && this instanceof CursorSurfaceInfectorEntity)
+        if(this.random.nextFloat() <= 0.1 && this instanceof CursorSurfaceInfectorEntity)
         {
             AABB boundingBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(blockPosition().getCenter(), 20);
             List<Entity> entities = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) this.level(), boundingBox, IS_DROPPED_ITEM);
