@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.block.InfestationEntries;
 
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -142,6 +143,8 @@ public class BlockInfestationTable{
         {
             ((ITagInfestedBlock) newBlock.getBlock()).getTagInfestedBlockEntity(world, targetPos).setNormalBlockState(oldBlock);
         }
+
+        SculkHorde.statisticsData.incrementTotalBlocksInfested();
 
         return true;
     }

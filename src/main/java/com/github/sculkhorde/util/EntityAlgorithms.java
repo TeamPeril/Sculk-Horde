@@ -71,6 +71,11 @@ public class EntityAlgorithms {
             entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
                 entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
             }));
+
+            if(debuff == ModMobEffects.SCULK_INFECTION.get() || debuff == ModMobEffects.DISEASED_CYSTS.get())
+            {
+                SculkHorde.statisticsData.incrementTotalVictimsInfested();
+            }
         }
     }
 
