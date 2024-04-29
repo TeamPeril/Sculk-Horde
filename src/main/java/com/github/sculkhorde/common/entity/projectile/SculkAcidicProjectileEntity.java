@@ -74,7 +74,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
             return;
         }
 
-        if(raytrace.getEntity().getUUID().equals(this.getOwner().getUUID()))
+        if(this.getOwner() != null && raytrace.getEntity().getUUID().equals(this.getOwner().getUUID()))
         {
             return;
         }
