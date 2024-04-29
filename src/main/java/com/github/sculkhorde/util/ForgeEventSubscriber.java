@@ -57,6 +57,7 @@ public class ForgeEventSubscriber {
             SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper(); //Initialize Entity Chunk Loader Helper
             SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper(); //Initialize Block Entity Chunk Loader Helper
             SculkHorde.eventHandler = new EventHandler(); //Initialize Event Handler
+            ModConfig.SERVER.loadItemsInfectionCursorsCanEat();
 
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass
@@ -66,6 +67,8 @@ public class ForgeEventSubscriber {
             {
                 BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare(((ServerLevel)event.getLevel()), BlockPos.ZERO, 5, 0, TickUnits.convertMinutesToTicks(10));
             }
+
+
         }
     }
 

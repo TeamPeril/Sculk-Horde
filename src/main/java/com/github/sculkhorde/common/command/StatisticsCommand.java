@@ -32,6 +32,7 @@ public class StatisticsCommand implements Command<CommandSourceStack> {
                         + printIfNotZero("Total Mass Gained From Bees", SculkHorde.statisticsData.getTotalMassFromBees())
                         + printIfNotZero("Total Mass From Nodes", SculkHorde.statisticsData.getTotalMassFromNodes())
                         + printIfNotZero("Total Mass From Fleshy Compost", SculkHorde.statisticsData.getTotalMassFromFleshyCompost())
+                        + printIfNotZero("Total Mass From Infected Cursor Item Eating", SculkHorde.statisticsData.getTotalMassFromInfestedCursorItemEating())
                 ), false);
         return 0;
     }

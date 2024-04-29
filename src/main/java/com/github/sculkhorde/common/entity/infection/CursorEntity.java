@@ -3,17 +3,22 @@ package com.github.sculkhorde.common.entity.infection;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 /** This Entity is used to traverse the world and infect blocks.
  * Once spawned, it will use breadth-first search to find the nearest block to infect.
@@ -260,6 +265,10 @@ public abstract class CursorEntity extends Entity
         // Mark position as visited
         visitedPositons.put(closest.asLong(), true);
     }
+    private final Predicate<Entity> IS_DROPPED_ITEM = (entity) ->
+    {
+        return entity instanceof ItemEntity;
+    };
 
     public void cursorTick()
     {
@@ -283,6 +292,23 @@ public abstract class CursorEntity extends Entity
         if (origin == BlockPos.ZERO)
         {
             origin = this.blockPosition();
+        }
+
+        if(this.random.nextBoolean() && this instanceof CursorSurfaceInfectorEntity)
+        {
+            AABB boundingBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(blockPosition().getCenter(), 20);
+            List<Entity> entities = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) this.level(), boundingBox, IS_DROPPED_ITEM);
+            for(Entity entity : entities)
+            {
+                if(!ModConfig.SERVER.isItemEdibleToCursors((ItemEntity) entity))
+                {
+                    continue;
+                }
+                entity.discard();
+                int massToAdd = ((ItemEntity)entity).getItem().getCount();
+                SculkHorde.savedData.addSculkAccumulatedMass(massToAdd);
+                SculkHorde.statisticsData.addTotalMassFromInfestedCursorItemEating(massToAdd);
+            }
         }
 
         long currentLifeTimeMilliseconds = System.currentTimeMillis() - creationTickTime;

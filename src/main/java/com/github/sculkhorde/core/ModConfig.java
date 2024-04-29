@@ -3,10 +3,18 @@ package com.github.sculkhorde.core;
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class ModConfig {
 
@@ -51,10 +59,52 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
 
+        private final ForgeConfigSpec.ConfigValue<List<? extends String>> items_infection_cursors_can_eat;
+        public static final HashMap<String, Boolean> infection_cursor_item_eat_list = new HashMap<>();
+
         public final ForgeConfigSpec.ConfigValue<Integer> cursors_threshold_for_activation;
         public final ForgeConfigSpec.ConfigValue<Integer> cursors_to_tick_per_tick;
         public final ForgeConfigSpec.ConfigValue<Integer> delay_between_cursor_tick_interval;
         public final ForgeConfigSpec.ConfigValue<Boolean> thanos_snap_cursors_after_reaching_threshold;
+
+        public void loadItemsInfectionCursorsCanEat()
+        {
+            infection_cursor_item_eat_list.clear();
+            for(String item : ModConfig.SERVER.items_infection_cursors_can_eat.get())
+            {
+                infection_cursor_item_eat_list.put(item, true);
+            }
+        }
+
+        public boolean isItemEdibleToCursors(ItemEntity itemEntity)
+        {
+            ItemStack itemStack = itemEntity.getItem();
+            Item item = itemStack.getItem();
+            ResourceLocation itemResourceLocation = BuiltInRegistries.ITEM.getKey(item);
+
+
+            if(itemResourceLocation == null)
+            {
+                return false;
+            }
+
+            String itemName = itemResourceLocation.toString();
+            if(infection_cursor_item_eat_list.containsKey(itemName))
+            {
+                return true;
+            }
+
+            if(item.isEdible())
+            {
+                return true;
+            }
+
+            if (itemName.contains("sapling")) {
+                return true;
+            }
+
+            return false;
+        }
 
         public Server(ForgeConfigSpec.Builder builder) {
 
@@ -82,6 +132,8 @@ public class ModConfig {
             infestation_speed_multiplier = builder.comment("How much faster or slower should infestation spread? (Default 0)").defineInRange("infestation_speed_multiplier",0f, -10f, 10f);
             purification_speed_multiplier = builder.comment("How much faster or slower should purification spread? (Default 0)").defineInRange("purification_speed_multiplier",0f, -10f, 10f);
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
+            items_infection_cursors_can_eat = builder.comment("What dropped items should cursors eat? This prevents lag and boosts their lifespan.").defineList("items_infection_cursors_can_eat", Arrays.asList("minecraft:wheat_seeds", "minecraft:bamboo", "minecraft:stick"), entry -> true);
+
             builder.pop();
 
             builder.push("Emergency Manual Cursor Tick Control");

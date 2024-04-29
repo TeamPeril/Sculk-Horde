@@ -17,6 +17,7 @@ public class StatisticsData {
     private long totalMassFromNodes;
     private long totalMassRemovedFromHorde;
     private long totalMassFromFleshyCompost;
+    private long totalMassFromInfestedCursorItemEating;
 
     public StatisticsData() {
         this.totalUnitDeaths = 0;
@@ -30,6 +31,7 @@ public class StatisticsData {
         this.totalMassFromNodes = 0;
         this.totalMassRemovedFromHorde = 0;
         this.totalMassFromFleshyCompost = 0;
+        this.totalMassFromInfestedCursorItemEating = 0;
     }
 
     public long getTotalUnitDeaths() {
@@ -164,6 +166,20 @@ public class StatisticsData {
         this.totalMassFromFleshyCompost += value;
     }
 
+    public long getTotalMassFromInfestedCursorItemEating()
+    {
+        return totalMassFromInfestedCursorItemEating;
+    }
+    public void setTotalMassFromInfestedCursorItemEating(long value)
+    {
+        this.totalMassFromInfestedCursorItemEating = value;
+    }
+
+    public void addTotalMassFromInfestedCursorItemEating(long value)
+    {
+        setTotalMassFromInfestedCursorItemEating(getTotalMassFromInfestedCursorItemEating() + value);
+    }
+
     public static StatisticsData getStatsData()
     {
         return SculkHorde.statisticsData;
@@ -182,6 +198,7 @@ public class StatisticsData {
         tag.putLong("totalMassFromNodes", getStatsData().getTotalMassFromNodes());
         tag.putLong("totalMassRemovedFromHorde", getStatsData().getTotalMassRemovedFromHorde());
         tag.putLong("totalMassFromFleshyCompost", getStatsData().getTotalMassFromFleshyCompost());
+        tag.putLong("totalMassFromInfestedCursorItemEating", getStatsData().getTotalMassFromInfestedCursorItemEating());
     }
 
     public static void load(CompoundTag tag)
@@ -197,5 +214,6 @@ public class StatisticsData {
         getStatsData().setTotalMassFromNodes(tag.getLong("totalMassFromNodes"));
         getStatsData().setTotalMassRemovedFromHorde(tag.getLong("totalMassRemovedFromHorde"));
         getStatsData().setTotalMassFromFleshyCompost(tag.getLong("totalMassFromFleshyCompost"));
+        getStatsData().setTotalMassFromInfestedCursorItemEating(tag.getLong("totalMassFromInfestedCursorItemEating"));
     }
 }
