@@ -23,6 +23,19 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_NODE_SPAWNER.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_RAID_WAND.get());
+
+                event.accept(ModItems.SCULK_SPORE_SPEWER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_MITE_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_MITE_AGGRESSOR_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_ZOMBIE_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_SPITTER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_CREEPER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_HATCHER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_VINDICATOR_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_RAVAGER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_PHANTOM_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
+
                 event.accept(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());
                 event.accept(ModItems.EYE_OF_PURITY.get());
@@ -44,32 +57,21 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.SCULK_ARACHNOID.get());
                 event.accept(ModBlocks.SCULK_DURA_MATTER.get());
 
-                event.accept(ModItems.SCULK_SPORE_SPEWER_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_MITE_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_MITE_AGGRESSOR_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_ZOMBIE_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_SPITTER_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_CREEPER_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_HATCHER_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_VINDICATOR_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_RAVAGER_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_PHANTOM_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
+
 
                 event.accept(ModBlocks.SCULK_BEE_NEST_BLOCK.get());
                 event.accept(ModBlocks.SCULK_BEE_NEST_CELL_BLOCK.get());
+                event.accept(ModItems.SCULK_RESIN.get());
                 event.accept(ModBlocks.SCULK_LIVING_ROCK_ROOT_BLOCK.get());
                 event.accept(ModBlocks.SCULK_LIVING_ROCK_BLOCK.get());
                 event.accept(ModBlocks.CALCITE_ORE.get());
                 event.accept(ModItems.CALCITE_CLUMP.get());
                 event.accept(ModItems.SCULK_ACIDIC_PROJECTILE.get());
-                event.accept(ModItems.SCULK_RESIN.get());
-                event.accept(ModBlocks.SCULK_SUMMONER_BLOCK.get());
-                event.accept(Blocks.SCULK_CATALYST);
-                event.accept(Blocks.SCULK_SHRIEKER);
-                event.accept(Blocks.SCULK_SENSOR);
+
+
                 event.accept(ModItems.DEEP_GREEN_MUSIC_DISC.get());
                 event.accept(ModItems.BLIND_AND_ALONE_MUSIC_DISC.get());
+
                 event.accept(ModBlocks.GRASS.get());
                 event.accept(ModBlocks.GRASS_SHORT.get());
                 event.accept(ModBlocks.SCULK_SHROOM_CULTURE.get());
@@ -77,6 +79,12 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.SPIKE.get());
                 event.accept(ModBlocks.TENDRILS.get());
                 event.accept(Blocks.SCULK);
+
+                event.accept(ModBlocks.SCULK_SUMMONER_BLOCK.get());
+                event.accept(Blocks.SCULK_CATALYST);
+                event.accept(Blocks.SCULK_SHRIEKER);
+                event.accept(Blocks.SCULK_SENSOR);
+
                 event.accept(ModBlocks.INFESTED_LOG.get());
                 event.accept(ModBlocks.INFESTED_SAND.get());
                 event.accept(ModBlocks.INFESTED_RED_SAND.get());
