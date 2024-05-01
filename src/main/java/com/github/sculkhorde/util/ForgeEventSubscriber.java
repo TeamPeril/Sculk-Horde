@@ -58,6 +58,7 @@ public class ForgeEventSubscriber {
             SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper(); //Initialize Block Entity Chunk Loader Helper
             SculkHorde.eventHandler = new EventHandler(); //Initialize Event Handler
             ModConfig.SERVER.loadItemsInfectionCursorsCanEat();
+            ModConfig.SERVER.loadConfiguredInfestableBlocks();
 
             time_save_point = 0; //Used to track time passage.
             sculkMassCheck = 0; //Used to track changes in sculk mass

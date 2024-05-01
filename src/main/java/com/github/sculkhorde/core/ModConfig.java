@@ -8,6 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -58,9 +60,11 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
-
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> items_infection_cursors_can_eat;
         public static final HashMap<String, Boolean> infection_cursor_item_eat_list = new HashMap<>();
+
+        private final ForgeConfigSpec.ConfigValue<List<? extends String>> make_block_infestable;
+        public static final HashMap<String, Boolean> manually_configured_infestable_blocks = new HashMap<>();
 
         public final ForgeConfigSpec.ConfigValue<Integer> cursors_threshold_for_activation;
         public final ForgeConfigSpec.ConfigValue<Integer> cursors_to_tick_per_tick;
@@ -106,6 +110,35 @@ public class ModConfig {
             return false;
         }
 
+        public void loadConfiguredInfestableBlocks()
+        {
+            manually_configured_infestable_blocks.clear();
+            for(String block : ModConfig.SERVER.make_block_infestable.get())
+            {
+                manually_configured_infestable_blocks.put(block, true);
+            }
+        }
+
+        public boolean isBlockConfiguredToBeInfestable(BlockState blockState)
+        {
+            Block block = blockState.getBlock();
+            ResourceLocation itemResourceLocation = BuiltInRegistries.BLOCK.getKey(block);
+
+
+            if(itemResourceLocation == null)
+            {
+                return false;
+            }
+
+            String blockName = itemResourceLocation.toString();
+            if(manually_configured_infestable_blocks.containsKey(blockName))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public Server(ForgeConfigSpec.Builder builder) {
 
             Config.setInsertionOrderPreserved(true);
@@ -133,7 +166,7 @@ public class ModConfig {
             purification_speed_multiplier = builder.comment("How much faster or slower should purification spread? (Default 0)").defineInRange("purification_speed_multiplier",0f, -10f, 10f);
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             items_infection_cursors_can_eat = builder.comment("What dropped items should cursors eat? This prevents lag and boosts their lifespan.").defineList("items_infection_cursors_can_eat", Arrays.asList("minecraft:wheat_seeds", "minecraft:bamboo", "minecraft:stick"), entry -> true);
-
+            make_block_infestable = builder.comment("Add blocks to this list to make them infestable. I.E. minecraft:dirt. Be careful what you put in here, this can potentially lead to issues. This will not work with blocks that are air, have a block entity, are already considered an infested block, or have the not infestable tag.").defineList("make_block_infestable", Arrays.asList(""), entry -> true);
             builder.pop();
 
             builder.push("Emergency Manual Cursor Tick Control");

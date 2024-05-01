@@ -62,6 +62,11 @@ public class BlockInfestationTable{
         entries.add(new ToolTaglInfestationTableEntry(toolRequired, tier, infectedVariant));
     }
 
+    public void addEntry(ITagInfestedBlock infectedVariant)
+    {
+        entries.add(new ConfigInfestationTableEntry(infectedVariant));
+    }
+
     public BlockState getInfestedVariant(Level level, BlockPos blockPos)
     {
         BlockState blockState = level.getBlockState(blockPos);

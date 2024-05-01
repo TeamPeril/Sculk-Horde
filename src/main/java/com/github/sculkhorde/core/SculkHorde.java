@@ -39,6 +39,7 @@ public class SculkHorde {
     public static BlockInfestationTable explicitInfectableBlocks;
     public static BlockInfestationTable tagInfectableBlocks;
     public static BlockInfestationTable tagInfectableStairsAndSlabsBlocks;
+    public static BlockInfestationTable configInfectableBlocks;
 
     public static BlockInfestationTable[] INFESTATION_TABLES;
 

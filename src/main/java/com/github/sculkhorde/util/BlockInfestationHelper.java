@@ -129,10 +129,14 @@ public class BlockInfestationHelper {
         SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
         SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
 
+        SculkHorde.configInfectableBlocks = new BlockInfestationTable(false);
+        SculkHorde.configInfectableBlocks.addEntry(ModBlocks.INFESTED_STURDY_MASS.get());
+
         SculkHorde.INFESTATION_TABLES = new BlockInfestationTable[]{
                 SculkHorde.explicitInfectableBlocks,
                 SculkHorde.tagInfectableStairsAndSlabsBlocks,
-                SculkHorde.tagInfectableBlocks
+                SculkHorde.tagInfectableBlocks,
+                SculkHorde.configInfectableBlocks
         };
     }
 

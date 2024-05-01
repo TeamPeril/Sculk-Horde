@@ -40,6 +40,15 @@ public class EntityAlgorithms {
         {
             return;
         }
+
+        if(target instanceof Player player)
+        {
+            if(player.isSpectator() || player.isCreative())
+            {
+                return;
+            }
+        }
+
         float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
         target.hurt(aggressor.damageSources().generic(), nonGuaranteedDamage);
         target.setHealth(target.getHealth() - guaranteedDamage );
