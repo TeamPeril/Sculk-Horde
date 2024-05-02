@@ -32,7 +32,6 @@ public class CorrodingEffect extends MobEffect {
 
 
     /**
-     * Old Dumb Constructor
      * @param effectType Determines if harmful or not
      * @param liquidColor The color in some number format
      */
@@ -40,30 +39,29 @@ public class CorrodingEffect extends MobEffect {
         super(effectType, liquidColor);
     }
 
-    /**
-     * Simpler Constructor
-     */
     public CorrodingEffect() {
         this(effectType, liquidColor);
     }
-    public CorrodingEffect(LivingEntity attackerIn) {
-        this(effectType, liquidColor);
-        if(attackerIn != null)
-        {
-            this.attacker = Optional.of(attackerIn);
-        }
 
+    public void setAttacker(LivingEntity attacker)
+    {
+        this.attacker = Optional.of(attacker);
     }
+
 
     public static void applyToEntity(LivingEntity source, LivingEntity victim, int duration)
     {
-        if(victim.hasEffect(ModMobEffects.CORRODED.get()))
+        CorrodingEffect effect = ModMobEffects.CORRODED.get();
+
+        effect.setAttacker(source);
+
+        if(victim.hasEffect(effect))
         {
-            victim.addEffect(new MobEffectInstance(ModMobEffects.CORRODED.get(), duration + victim.getEffect(ModMobEffects.CORRODED.get()).getDuration(), 0));
+            victim.addEffect(new MobEffectInstance(effect, duration + victim.getEffect(ModMobEffects.CORRODED.get()).getDuration(), 0));
             return;
         }
 
-        victim.addEffect(new MobEffectInstance(ModMobEffects.CORRODED.get(), duration, 0));
+        victim.addEffect(new MobEffectInstance(effect, duration, 0));
     }
 
     public double getNextDoubleBetweenInclusive(RandomSource rng, double min, double max)
@@ -85,7 +83,14 @@ public class CorrodingEffect extends MobEffect {
             return;
         }
 
-        EntityAlgorithms.doSculkTypeDamageToEntity(victimEntity, victimEntity, 2, 1);
+        if(attacker.isPresent())
+        {
+            EntityAlgorithms.doSculkTypeDamageToEntity(attacker.get(), victimEntity, 2, 1);
+        }
+        else
+        {
+            EntityAlgorithms.doSculkTypeDamageToEntity(victimEntity, victimEntity, 2, 1);
+        }
     }
 
     private void spawnRandomParticle(LivingEntity victimEntity, double maxWidthOffset, double maxHeightOffset)
@@ -115,6 +120,5 @@ public class CorrodingEffect extends MobEffect {
         }
         cooldownTicksRemaining = COOLDOWN;
         return true;
-
     }
 }
