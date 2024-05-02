@@ -6,6 +6,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -62,6 +63,7 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
     }
 
 
+
     @Override
     public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity, LivingEntity ownerEntity) {
         boolean isSculkLivingEntity = EntityAlgorithms.isSculkLivingEntity.test(targetEntity);
@@ -89,6 +91,11 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
     public @NotNull AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target)
     {
         return target.getBoundingBox().inflate(3.0D, 0.25D, 3.0D);
+    }
+
+    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player)
+    {
+        return true;
     }
 
     @Override
