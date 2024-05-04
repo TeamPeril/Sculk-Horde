@@ -351,6 +351,11 @@ public class BlockInfestationHelper {
         }
     }
 
+    public static boolean blockIsAirOrSnow(BlockState state)
+    {
+        return state.isAir() || state.getBlock() == Blocks.SNOW;
+    }
+
     /**
      * Will only place Sculk Bee Hives
      * @param world The World to place it in
@@ -360,7 +365,7 @@ public class BlockInfestationHelper {
     {
 
         //Given random chance and the target location can see the sky, create a sculk hive
-        if(new Random().nextInt(4000) <= 1 && world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.above()).isAir() && world.getBlockState(targetPos.above().above()).isAir())
+        if(new Random().nextInt(4000) <= 1 && blockIsAirOrSnow(world.getBlockState(targetPos)) && blockIsAirOrSnow(world.getBlockState(targetPos.above())) && blockIsAirOrSnow(world.getBlockState(targetPos.above().above())))
         {
             world.setBlockAndUpdate(targetPos, ModBlocks.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
             SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
