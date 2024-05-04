@@ -1,7 +1,7 @@
 {
   "itemGroup.sculkhorde_tab": "ante Sculk Horde",
 
-  "tooltip.sculkhorde.default": "o luka e nena [§eSHIFT§r] la sina lukin e kepeken.\\no luka e nena [§eCTRL§r] la sina lukin e toki musi.",
+  "tooltip.sculkhorde.default": "o luka e nena [§eSHIFT§r] la sina lukin e kepeken.\no luka e nena [§eCTRL§r] la sina lukin e toki musi.",
 
   "tooltip.sculkhorde.in_development": "§7§omi pini pali ala e ijo ni. o jan ma ala kepeken ona. pali taso la ona li pona.",
   "item.sculkhorde.dev_wand": "ilo pi jan pali",
@@ -167,7 +167,7 @@
   "tooltip.sculkhorde.dev_mass_infectinator_3000": "leko ni li awen soko Sculk e ma suli. ni li lon tan wile awen Sculk pi jan Kewa Fen. o sona e ken pakala a!",
 
   "item.sculkhorde.infestation_purifier": "ilo pi weka Sculk",
-  "tooltip.sculkhorde.infestation_purifier.functionality": "§7§osina nena nanpa tu pi ilo luka e ni la, ona li kama ijo.\\nni li ijo ala la, ni li weka e soko Sculk lon poka. kulupu Sculk li utala e ona.",
+  "tooltip.sculkhorde.infestation_purifier.functionality": "§7§osina nena nanpa tu pi ilo luka e ni la, ona li kama ijo.\nni li ijo ala la, ni li weka e soko Sculk lon poka. kulupu Sculk li utala e ona.",
   "tooltip.sculkhorde.infestation_purifier.lore": "§7§osina pona e ike suli kon la, kon ni li wawa e utala sina tawa kulupu Sculk.",
   "item.sculkhorde.purification_flask": "telo pi weka Sculk",
   "tooltip.sculkhorde.purification_flask.functionality": "§7§otelo ni li lon soko Sculk la ona li weka. ni li pona e pilin 'jaki lon insa', e pilin 'kama', e pilin 'moli Sculk'. nasin pali pi telo ni li §e§okipisi pona§r§7§o lon insa poki lili luka tu wan.",
