@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 
 public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
@@ -86,8 +88,31 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
             {
                 return;
             }
+
+            if(isBeingShieldBlocked(target))
+            {
+                return;
+            }
+
             CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), target, TickUnits.convertSecondsToTicks(5));
         }
+    }
+
+    public boolean isBeingShieldBlocked(LivingEntity target)
+    {
+        if (target.isBlocking()) {
+            Vec3 vec32 = this.position();
+            if (vec32 != null) {
+                Vec3 targetViewVector = target.getViewVector(1.0F);
+                Vec3 vec31 = vec32.vectorTo(target.position()).normalize();
+                vec31 = new Vec3(vec31.x, 0.0D, vec31.z);
+                if (vec31.dot(targetViewVector) < 0.0D) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
