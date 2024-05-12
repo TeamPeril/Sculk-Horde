@@ -389,7 +389,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         }
 
         public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent event, GameEvent.Context context) {
-                return !isBlockStateVibrationCooldownTrue();
+                return !isBlockStateVibrationCooldownTrue() && !SculkHorde.populationHandler.isPopulationAtMax();
         }
 
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)

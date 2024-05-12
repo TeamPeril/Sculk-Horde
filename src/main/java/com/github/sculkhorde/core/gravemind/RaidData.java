@@ -480,13 +480,15 @@ public class RaidData {
     }
 
     public float getWaveProgress() {
-        int progress = 0;
+        float progress = 0;
+        float maxProgress = 0;
         for(ISculkSmartEntity entity : waveParticipants)
         {
             progress += (int) ((Mob) entity).getHealth();
+            maxProgress += (int) ((Mob) entity).getMaxHealth();
         }
 
-        return (float) progress / (float) waveParticipants.size();
+        return progress / maxProgress;
     }
 
     protected void updateRemainingWaveParticipantsAmount()

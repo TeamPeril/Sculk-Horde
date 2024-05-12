@@ -2,6 +2,7 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
+import com.github.sculkhorde.common.entity.SculkPhantomCorpseEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -70,7 +71,7 @@ public class SculkPopulationHandler {
                     continue;
                 }
 
-                if(entity instanceof SculkBeeHarvesterEntity)
+                if(entity instanceof SculkBeeHarvesterEntity || entity instanceof SculkPhantomCorpseEntity)
                 {
                     continue;
                 }

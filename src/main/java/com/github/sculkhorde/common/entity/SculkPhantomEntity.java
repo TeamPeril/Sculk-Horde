@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.*;
+import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -154,7 +155,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public Goal[] goalSelectorPayload()
     {
         return new Goal[]{
-                new DropCorpseOrDespawn(this, TickUnits.convertMinutesToTicks(15)),
+                new Despawn(this, TickUnits.convertMinutesToTicks(15)),
                 new FallToTheGroundIfMobsUnder(),
                 new SweepAttackGoal(),
                 new selectRandomLocationToVisit(),
@@ -345,7 +346,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         // If this phantom is not scouting, don't bother chunk loading.
         if(isScouter() && ModConfig.SERVER.should_phantoms_load_chunks.get())
         {
-            //EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,2, 3, TickUnits.convertMinutesToTicks(1));
+            EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,5, 3, TickUnits.convertMinutesToTicks(1));
         }
     }
 
@@ -644,9 +645,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
     }
 
-    class DropCorpseOrDespawn extends DespawnAfterTime
+    class Despawn extends DespawnAfterTime
     {
-        public DropCorpseOrDespawn(ISculkSmartEntity mob, int ticksThreshold) {
+        public Despawn(ISculkSmartEntity mob, int ticksThreshold) {
             super(mob, ticksThreshold);
         }
 
@@ -671,7 +672,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         @Override
         public void start()
         {
-            if(isScouter()) { dieAndSpawnCorpse(); }
+            if(isScouter()) { discard(); }
         }
     }
 

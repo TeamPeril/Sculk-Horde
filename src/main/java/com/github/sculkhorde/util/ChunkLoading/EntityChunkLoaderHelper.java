@@ -1,10 +1,12 @@
 package com.github.sculkhorde.util.ChunkLoading;
 
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
@@ -200,6 +202,12 @@ public class EntityChunkLoaderHelper
             }
         }
         createChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUnitExpiration);
+
+        ServerLevel serverLevel = ((ServerLevel) owner.level());
+
+        serverLevel.getServer().tell(new TickTask(serverLevel.getServer().getTickCount() + 1, () -> {
+            loadChunksWithOwner(owner.getUUID(), serverLevel);
+        }));
 
     }
 

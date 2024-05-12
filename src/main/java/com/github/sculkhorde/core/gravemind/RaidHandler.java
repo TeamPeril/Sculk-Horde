@@ -580,6 +580,7 @@ public class RaidHandler {
     {
         // Otherwise, go to next wave
         raidData.incrementCurrentWave();
+        raidData.waveParticipants.clear();
 
         // If we are on last wave, end raid
         if(isLastWave(1))
@@ -590,7 +591,7 @@ public class RaidHandler {
             return;
         }
 
-        announceToPlayersInRange(Component.literal("Wave " + (raidData.getCurrentWave()) + " complete."), raidData.getCurrentRaidRadius() * 8);
+        announceToPlayersInRange(Component.literal("Wave " + (raidData.getCurrentWave() - 1) + " complete."), raidData.getCurrentRaidRadius() * 8);
 
         raidData.setRaidState(RaidState.INITIALIZING_WAVE);
     }

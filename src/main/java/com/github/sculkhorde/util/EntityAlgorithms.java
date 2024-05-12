@@ -51,7 +51,13 @@ public class EntityAlgorithms {
 
         float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
         target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
-        target.setHealth(target.getHealth() - guaranteedDamage );
+        float newHealth = target.getHealth() - guaranteedDamage;
+        if(newHealth <= 0)
+        {
+            target.kill();
+            return;
+        }
+        target.setHealth(newHealth);
     }
 
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
