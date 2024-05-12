@@ -26,6 +26,7 @@ public class StatisticsCommand implements Command<CommandSourceStack> {
                 printIfNotZero("Total Blocks Infested", SculkHorde.statisticsData.getTotalBlocksInfested())
                         + printIfNotZero("Total Units Spawned", SculkHorde.statisticsData.getTotalUnitsSpawned())
                         + printIfNotZero("Total Units Killed", SculkHorde.statisticsData.getTotalUnitDeaths())
+                        + printIfNotZero("Total Nodes Destroyed", SculkHorde.statisticsData.getTotalNodesDestroyed())
                         + printIfNotZero("Total Victims Infested", SculkHorde.statisticsData.getTotalVictimsInfested())
                         + printIfNotZero("Total Mass Removed from Horde", SculkHorde.statisticsData.getTotalMassRemovedFromHorde())
                         + printIfNotZero("Total Mass Gained From Burrowed", SculkHorde.statisticsData.getTotalMassFromBurrowed())

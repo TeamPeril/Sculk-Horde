@@ -18,6 +18,7 @@ public class StatisticsData {
     private long totalMassRemovedFromHorde;
     private long totalMassFromFleshyCompost;
     private long totalMassFromInfestedCursorItemEating;
+    private int totalNodesDestroyed;
 
     public StatisticsData() {
         this.totalUnitDeaths = 0;
@@ -32,6 +33,7 @@ public class StatisticsData {
         this.totalMassRemovedFromHorde = 0;
         this.totalMassFromFleshyCompost = 0;
         this.totalMassFromInfestedCursorItemEating = 0;
+        this.totalNodesDestroyed = 0;
     }
 
     public long getTotalUnitDeaths() {
@@ -180,6 +182,21 @@ public class StatisticsData {
         setTotalMassFromInfestedCursorItemEating(getTotalMassFromInfestedCursorItemEating() + value);
     }
 
+    public int getTotalNodesDestroyed()
+    {
+        return this.totalNodesDestroyed;
+    }
+
+    public void setTotalNodesDestroyed(int value)
+    {
+        this.totalNodesDestroyed = value;
+    }
+
+    public void incrementTotalNodesDestroyed()
+    {
+        setTotalNodesDestroyed(getTotalNodesDestroyed() + 1);
+    }
+
     public static StatisticsData getStatsData()
     {
         return SculkHorde.statisticsData;
@@ -188,6 +205,7 @@ public class StatisticsData {
     public static void save(CompoundTag tag)
     {
         tag.putLong("totalUnitDeaths", getStatsData().getTotalUnitDeaths());
+        tag.putLong("totalNodesDestroyed", getStatsData().getTotalNodesDestroyed());
         tag.putLong("totalUnitsSpawned", getStatsData().getTotalUnitsSpawned());
         tag.putLong("totalVictimsInfested", getStatsData().getTotalVictimsInfested());
         tag.putLong("totalBlocksInfested", getStatsData().getTotalBlocksInfested());
@@ -204,6 +222,7 @@ public class StatisticsData {
     public static void load(CompoundTag tag)
     {
         getStatsData().setTotalUnitDeaths(tag.getLong("totalUnitDeaths"));
+        getStatsData().setTotalNodesDestroyed(tag.getInt("totalNodesDestroyed"));
         getStatsData().setTotalUnitsSpawned(tag.getLong("totalUnitsSpawned"));
         getStatsData().setTotalVictimsInfested(tag.getLong("totalVictimsInfested"));
         getStatsData().setTotalBlocksInfested(tag.getLong("totalBlocksInfested"));

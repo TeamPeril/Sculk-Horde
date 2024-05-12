@@ -293,6 +293,8 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
         decayRemainingNodeBlocks((ServerLevel) worldIn, pos, 12);
 
+        SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
