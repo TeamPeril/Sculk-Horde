@@ -24,6 +24,7 @@ public class ContributionHandler {
         addContributor("Dev");
         addContributor("Sly3501");
         addContributor("SwagPotato345");
+        addContributor("SwagPotato345");
 
         addContributor("KaratFeng");
 
@@ -103,6 +104,9 @@ public class ContributionHandler {
         addContributor("theactualrealglados");
         addContributor("MelonGodKing");
         addContributor("AeroHearts");
+        addContributor("BurningSock");
+        addContributor("Kerunith");
+        addContributor("EhnenehMari");
     }
 
     public void addContributor(String name)
