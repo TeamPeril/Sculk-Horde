@@ -131,7 +131,7 @@ public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock, Simp
         world.setBlockAndUpdate(placementPos, this.defaultBlockState());
         thisTile = getTileEntity(world, placementPos);
 
-        if(thisTile == null) { return; }
+        if(!(thisTile instanceof SculkMassBlockEntity)) { return; }
 
         //Calcualate the total mass collected
         int totalMassPreTax = (int) (victimHealth * HEALTH_ABSORB_MULTIPLIER);
