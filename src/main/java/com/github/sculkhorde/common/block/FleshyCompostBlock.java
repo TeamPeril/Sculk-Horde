@@ -110,11 +110,17 @@ public class FleshyCompostBlock extends BaseEntityBlock implements IForgeBlock, 
     {
         BlockPos placementPos = originPos.above();
 
-
-        world.setBlockAndUpdate(placementPos, this.defaultBlockState());
-        if(world.getBlockEntity(placementPos) instanceof FleshyCompostBlockEntity blockEntity)
+        if(world.getBlockState(placementPos).isAir() || world.getBlockState(placementPos).canBeReplaced(Fluids.WATER))
         {
-            blockEntity.setStoredSculkMass((int) livingEntity.getMaxHealth());
+            world.setBlockAndUpdate(placementPos, this.defaultBlockState());
+            if(world.getBlockEntity(placementPos) instanceof FleshyCompostBlockEntity blockEntity)
+            {
+                blockEntity.setStoredSculkMass((int) livingEntity.getMaxHealth());
+            }
+        }
+        else
+        {
+            SculkHorde.savedData.addSculkAccumulatedMass((int) livingEntity.getMaxHealth());
         }
     }
 
