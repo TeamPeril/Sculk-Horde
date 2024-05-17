@@ -94,7 +94,8 @@ public class SculkPopulationHandler {
     {
         for(ISculkSmartEntity entity : population)
         {
-            if(entity.isIdle())
+            // We don't want raid entities being killed if raid is active.
+            if(entity.isIdle() && (!entity.isParticipatingInRaid() && !SculkHorde.raidHandler.isRaidInactive()))
             {
                 ((LivingEntity) entity).discard();
                 SculkHorde.savedData.addSculkAccumulatedMass((int) ((LivingEntity) entity).getHealth());
