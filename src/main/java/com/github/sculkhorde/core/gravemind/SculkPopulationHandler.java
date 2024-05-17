@@ -87,7 +87,7 @@ public class SculkPopulationHandler {
 
         if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Horde has reached maximum population. Killing Idle Mobs"); }
 
-        despawnIdleMobs();
+        if(isPopulationAtMax()) { despawnIdleMobs(); }
     }
 
     public void despawnIdleMobs()
