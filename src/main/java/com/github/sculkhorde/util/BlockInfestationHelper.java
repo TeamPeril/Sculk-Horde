@@ -115,6 +115,10 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:cave_vines", "deeperdarker:sculk_vines");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:mud", "deeperdarker:sculk_jaw");
 
+        // Remove Sculk Vein
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "minecraft:sculk_vein");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "sculkhorde:tendrils");
+
 
 
         // Used to infect stairs and slabs. Order Matters
