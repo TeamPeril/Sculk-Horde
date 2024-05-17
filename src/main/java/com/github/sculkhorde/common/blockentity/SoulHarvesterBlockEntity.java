@@ -272,8 +272,8 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
         this.setHealthHarvested(0);
 
-        triggerAnim("finish_controller", "finished");
-        FINISH_ANIMATION_CONTROLLER.tryTriggerAnimation("finished");
+        triggerAnim("finish_controller", "finished_animation");
+        //FINISH_ANIMATION_CONTROLLER.tryTriggerAnimation("finished");
         this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_FINISHED.get(), SoundSource.BLOCKS);
     }
 
@@ -408,7 +408,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     private static final RawAnimation FINISH_ANIMATION = RawAnimation.begin().thenPlay("finished");
 
     private final AnimationController FINISH_ANIMATION_CONTROLLER = new AnimationController<>(this, "finish_controller", state -> PlayState.STOP)
-            .triggerableAnim("finished", FINISH_ANIMATION);
+            .triggerableAnim("finished_animation", FINISH_ANIMATION);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -434,7 +434,9 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
                 return state.setAndContinue(IDLE_ANIMATION);
             }
         }
-        ));
+        ),
+                FINISH_ANIMATION_CONTROLLER
+        );
     }
 
     @Override
