@@ -180,7 +180,6 @@ public class Gravemind
         boolean isThereAtLeastOneSpawnPoint = context.positions.length > 0;
         boolean isThereSculkNodesInExistence = !SculkHorde.savedData.getNodeEntries().isEmpty();
 
-        // If Overpopulated, and it's a summoner, do not approve.
         if( (isSenderTypeSummoner || isSenderTypeMassBlock) && isThereAtLeastOneSpawnPoint && isThereSculkNodesInExistence)
         {
             BlockPos nodeBlockPos = SculkHorde.savedData.getClosestNodeEntry(context.dimension, context.positions[0]).getPosition();

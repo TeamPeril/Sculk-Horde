@@ -169,7 +169,7 @@ public class EntityFactoryEntry {
         return amountOfValuesNeeded == amountOfValuesUnitHasFromRequirement;
     }
 
-    public boolean doesEntityContainAnyDeniedStrategicValues(StrategicValues[] deniedValues)
+    public boolean doesEntityContainAnyDeniedStrategicValues(ArrayList<StrategicValues>  deniedValues)
     {
         for(StrategicValues value : deniedValues)
         {
@@ -197,6 +197,7 @@ public class EntityFactoryEntry {
         boolean isSenderExplicitlyDenied = isSenderExplicitlyDenied(context.sender);
         boolean isEvolutionStateNotMet = !SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired);
         boolean doesEntityNotContainNeededStrategicValues = !doesEntityContainNeededStrategicValues(context.approvedStrategicValues);
+        boolean doesEntityContainBannedStrategicValues = doesEntityContainAnyDeniedStrategicValues(context.deniedStrategicValues);
         boolean doesRequestSpecifyAnyApprovedMobTypes = !context.approvedStrategicValues.isEmpty();
 
         if(doesHordeNotHaveEnoughMass || isOverBudget)
@@ -208,6 +209,10 @@ public class EntityFactoryEntry {
             return false;
         }
         else if(doesEntityNotContainNeededStrategicValues && doesRequestSpecifyAnyApprovedMobTypes)
+        {
+            return false;
+        }
+        else if(doesEntityContainBannedStrategicValues)
         {
             return false;
         }

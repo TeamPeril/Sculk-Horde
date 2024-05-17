@@ -79,6 +79,27 @@ public class SculkMassBlockEntity extends BlockEntity {
     }
 
 
+    public static ReinforcementRequest createReinforcementRequest(Level level, BlockPos blockPos, BlockState blockState, SculkMassBlockEntity blockEntity)
+    {
+        ReinforcementRequest context = new ReinforcementRequest((ServerLevel) level, blockPos);
+
+        context.sender = ReinforcementRequest.senderType.SculkMass;
+        context.budget = blockEntity.getStoredSculkMass();
+
+
+        // Better Control if aquatic mobs spawn
+        if(blockState.getValue(WATERLOGGED))
+        {
+            context.deniedStrategicValues.add(EntityFactoryEntry.StrategicValues.EffectiveOnGround);
+        }
+        else
+        {
+            context.deniedStrategicValues.add(EntityFactoryEntry.StrategicValues.Aquatic);
+        }
+
+        return context;
+    }
+
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkMassBlockEntity blockEntity)
     {
         // If world is not a server world, return
@@ -86,6 +107,16 @@ public class SculkMassBlockEntity extends BlockEntity {
         {
             return;
         }
+
+        // Delay the spawning of mobs for balance, and so that the mass block can recognise if it is under water.
+        // When they are first placed, they are not waterlogged. This will result in spawning a surface unit
+        // for the first tick, instead of a aquatic unit.
+        if(blockEntity.lastTickTime == 0)
+        {
+            blockEntity.lastTickTime = level.getGameTime();
+        }
+
+
         // Tick every 10 seconds
         if(level.getGameTime() - blockEntity.lastTickTime < blockEntity.tickInterval)
         {
@@ -110,15 +141,7 @@ public class SculkMassBlockEntity extends BlockEntity {
         // If we can spawn reinforcements
 
         EntityFactory entityFactory = SculkHorde.entityFactory;
-        ReinforcementRequest context = new ReinforcementRequest((ServerLevel) level, blockPos);
-
-        context.sender = ReinforcementRequest.senderType.SculkMass;
-        context.budget = blockEntity.getStoredSculkMass();
-
-        if(blockEntity.getBlockState().getValue(WATERLOGGED))
-        {
-            context.approvedStrategicValues.add(EntityFactoryEntry.StrategicValues.Aquatic);
-        }
+        ReinforcementRequest context = createReinforcementRequest(level, blockPos, blockState, blockEntity);
 
         //Attempt to call in reinforcements and then update stored sculk mass
         entityFactory.requestReinforcementSculkMass(level, blockPos, context);

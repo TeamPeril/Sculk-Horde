@@ -22,6 +22,7 @@ public class ReinforcementRequest {
     public boolean isRequestViewed = false; // If the Gravemind has viewed this request.
     public boolean isRequestApproved = false; // If the reinforcement request is approved.
     public final ArrayList<EntityFactoryEntry.StrategicValues> approvedStrategicValues; // All approved mob types to spawn.
+    public final ArrayList<EntityFactoryEntry.StrategicValues> deniedStrategicValues; // All approved mob types to spawn.
     public LivingEntity[] spawnedEntities; // All entities spawned by this request.
 
     public ServerLevel dimension;
@@ -36,6 +37,7 @@ public class ReinforcementRequest {
         positions = new BlockPos[]{blockPosIn};
         spawnedEntities = new LivingEntity[positions.length];
         approvedStrategicValues = new ArrayList<EntityFactoryEntry.StrategicValues>();
+        deniedStrategicValues = new ArrayList<EntityFactoryEntry.StrategicValues>();
         creationTime = System.nanoTime();
     }
 
@@ -49,6 +51,7 @@ public class ReinforcementRequest {
         this.positions = positions;
         spawnedEntities = new LivingEntity[positions.length];
         approvedStrategicValues = new ArrayList<EntityFactoryEntry.StrategicValues>();
+        deniedStrategicValues = new ArrayList<EntityFactoryEntry.StrategicValues>();
         creationTime = System.nanoTime();
     }
 
@@ -62,6 +65,7 @@ public class ReinforcementRequest {
                 && isRequestViewed == context.isRequestViewed
                 && isRequestApproved == context.isRequestApproved
                 && approvedStrategicValues.equals(context.approvedStrategicValues)
+                && deniedStrategicValues.equals(context.deniedStrategicValues)
                 && !dimension.toString().equals(context.dimension.toString());
     }
 
@@ -77,6 +81,7 @@ public class ReinforcementRequest {
                 ", isRequestViewed=" + isRequestViewed +
                 ", isRequestApproved=" + isRequestApproved +
                 ", approvedMobTypes=" + approvedStrategicValues.toString() +
+                ", deniedMobTypes=" + approvedStrategicValues.toString() +
                 '}';
     }
 }
