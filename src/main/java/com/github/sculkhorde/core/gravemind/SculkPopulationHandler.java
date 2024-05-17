@@ -9,6 +9,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
@@ -30,7 +31,10 @@ public class SculkPopulationHandler {
     public void serverTick()
     {
         long currentTime = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
-        if(currentTime - lastTimeOfPopulationRecount >= populationRecountInterval)
+
+        // I saw a weird bug where the lastTimeOfPopulationRecount was bigger than currentTime. No Idea why.
+        // Therefore I will use math.abs
+        if(Math.abs(currentTime - lastTimeOfPopulationRecount) >= populationRecountInterval)
         {
             lastTimeOfPopulationRecount = currentTime;
             updatePopulationCollection();
@@ -81,8 +85,21 @@ public class SculkPopulationHandler {
         });
 
 
-        if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Horde has reached maximum population."); }
-        if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Horde has calculated population to be " + population.size() + "."); }
+        if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Horde has reached maximum population. Killing Idle Mobs"); }
+
+        despawnIdleMobs();
+    }
+
+    public void despawnIdleMobs()
+    {
+        for(ISculkSmartEntity entity : population)
+        {
+            if(entity.isIdle())
+            {
+                ((LivingEntity) entity).discard();
+                SculkHorde.savedData.addSculkAccumulatedMass((int) ((LivingEntity) entity).getHealth());
+            }
+        }
     }
 }
 
