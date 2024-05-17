@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 public class SoulHarvestingCategory implements IRecipeCategory<SoulHarvestingRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(SculkHorde.MOD_ID, "soul_harvesting");
     public static final ResourceLocation TEXTURE = new ResourceLocation(SculkHorde.MOD_ID,
-            "textures/gui/soul_harvester_gui.png");
+            "textures/gui/soul_harvester_gui_jei.png");
 
     public static final RecipeType<SoulHarvestingRecipe> SOUL_HARVESTING_TYPE =
             new RecipeType<>(UID, SoulHarvestingRecipe.class);
