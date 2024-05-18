@@ -231,6 +231,11 @@ public class EntityAlgorithms {
             return true;
         }
 
+        if(entity.getType().is(ModEntities.EntityTags.SCULK_HORDE_DO_NOT_ATTACK))
+        {
+            return true;
+        }
+        
         if(entity.getType().is(ModEntities.EntityTags.SCULK_ENTITY))
         {
             return true;

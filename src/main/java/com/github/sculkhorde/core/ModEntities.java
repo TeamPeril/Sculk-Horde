@@ -71,6 +71,7 @@ public class ModEntities {
     public static class EntityTags
     {
         public static TagKey<EntityType<?>> SCULK_ENTITY = create("sculk_entity");
+        public static TagKey<EntityType<?>> SCULK_HORDE_DO_NOT_ATTACK = create("sculk_horde_do_not_attack");
 
         private static TagKey<EntityType<?>> create(String string) {
             return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SculkHorde.MOD_ID, string));
