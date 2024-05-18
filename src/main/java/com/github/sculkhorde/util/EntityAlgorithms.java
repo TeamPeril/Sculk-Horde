@@ -235,7 +235,7 @@ public class EntityAlgorithms {
         {
             return true;
         }
-        
+
         if(entity.getType().is(ModEntities.EntityTags.SCULK_ENTITY))
         {
             return true;

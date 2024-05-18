@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.block.SculkSummonerBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.github.sculkhorde.common.block.SculkMassBlock.WATERLOGGED;
 import static com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry.StrategicValues.*;
 
 
@@ -184,13 +186,14 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         this.request = new ReinforcementRequest((ServerLevel) getLevel(), finalizedSpawnPositions);
         this.request.sender = ReinforcementRequest.senderType.Summoner;
 
-        // IF we are water logged, need water mobs
-        if(isSummonerWaterLogged) {
-            request.approvedStrategicValues.add(Aquatic);
+        // Better Control if aquatic mobs spawn
+        if(isSummonerWaterLogged)
+        {
+            request.deniedStrategicValues.add(EntityFactoryEntry.StrategicValues.EffectiveOnGround);
         }
-        // If we aren't underwater, need walkers
-        else {
-            request.approvedStrategicValues.add(EffectiveOnGround);
+        else
+        {
+            request.deniedStrategicValues.add(EntityFactoryEntry.StrategicValues.Aquatic);
         }
 
         if (!this.possibleAggressorTargets.isEmpty()) {
