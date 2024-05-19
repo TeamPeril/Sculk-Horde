@@ -175,6 +175,7 @@
   "tooltip.sculkhorde.purification_flask.functionality": "§7Бросьте на заражение, чтобы избавиться от него. Лечит эффекты: зарытый, приманка и поражение кисты. Создано окружением §eэссенции чистоты§r§7 стеклянными бутылками.",
   "tooltip.sculkhorde.purification_flask.lore": "§7Готовое решение вполне реальной проблемы. Держа его в руке, вы ощущаете успокаивающее тепло, сродни солнечному в холодный день.",
   "effect.sculkhorde.purity": "Чистота",
+  "effect.sculkhorde.purity.description": "Жизненно важный эффект, не позволяющий сущностям получать эффекты поглощённый и приманка. Его можно получить, бросив в себя колбу для очистки.",
 
   "block.sculkhorde.infested_sturdy_mass": "Инфицированная прочная масса",
   "block.sculkhorde.infested_crumpled_mass": "Инфицированная смятая масса",
@@ -196,10 +197,15 @@
   "sounds.sculkhorde.node_destroy_sound": "Скалковый узел уничтожается.",
 
   "effect.sculkhorde.sculk_infected": "Поглощённый",
+  "effect.sculkhorde.sculk_infected.description": "Скалковое заражение клещом в теле носителя. Приводит к распространению скалковой орды на близлежащие блоки.",
   "effect.sculkhorde.sculk_lure": "Приманка",
+  "effect.sculkhorde.sculk_lure.description": "Позволяет скалковому мозгу отслеживать вас с большого расстояния. Можно снять, используя колбу для очистки.",
   "effect.sculkhorde.diseased_cysts": "Пораженные кисты",
+  "effect.sculkhorde.diseased_cysts.description": "Наносит урон и заражает других существ, находящихся рядом с изначальной жертвой. Можно снять, используя колбу для очистки.",
   "effect.sculkhorde.sculk_vessel": "Скалковый сосуд",
+  "effect.sculkhorde.sculk_vessel.description": "В разработке.",
   "effect.sculkhorde.corroded": "Корродированный",
+  "effect.sculkhorde.corroded.description": "Заставляет объект со временем получает урон. Похож на яд, но часть урона игнорирует броню. Может быть получен при попадании кислотной массы скалкового плевателя или игрока.",
 
   "entity.sculkhorde.sculk_zombie": "Скалковый зомби",
   "entity.sculkhorde.sculk_spitter": "Скалковый плеватель",
