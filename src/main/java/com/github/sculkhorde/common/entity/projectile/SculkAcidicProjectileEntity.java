@@ -83,10 +83,14 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
 
         if(raytrace.getEntity() instanceof LivingEntity target)
         {
+            LivingEntity owner = (LivingEntity) this.getOwner();
 
-            if(EntityAlgorithms.isSculkLivingEntity.test((LivingEntity) this.getOwner()) && EntityAlgorithms.isSculkLivingEntity.test(target))
+            if(owner != null)
             {
-                return;
+                if(EntityAlgorithms.isSculkLivingEntity.test(owner) && EntityAlgorithms.isSculkLivingEntity.test(target))
+                {
+                    return;
+                }
             }
 
             if(isBeingShieldBlocked(target))
@@ -94,7 +98,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
                 return;
             }
 
-            CorrodingEffect.applyToEntity((LivingEntity) this.getOwner(), target, TickUnits.convertSecondsToTicks(5));
+            CorrodingEffect.applyToEntity(owner, target, TickUnits.convertSecondsToTicks(5));
         }
     }
 

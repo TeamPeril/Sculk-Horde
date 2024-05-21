@@ -149,7 +149,14 @@ public class EntityAlgorithms {
      * @return True if Valid, False otherwise
      */
     public static Predicate<LivingEntity> isSculkLivingEntity = (e) ->
-            e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
+    {
+        if(e == null)
+        {
+            return false;
+        }
+        return e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
+    };
+
 
     /**
      * Determines if an Entity is Infected based on if it has a potion effect
