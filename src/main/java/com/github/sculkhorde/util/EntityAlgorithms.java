@@ -428,7 +428,7 @@ public class EntityAlgorithms {
 
             getDamageDealerAsMob().swing(InteractionHand.MAIN_HAND);
             getDamageDealerAsMob().doHurtTarget(getDamageDealerAsMob().getTarget());
-            attackExecution.execute(target.get());
+            if(attackExecution != null) { attackExecution.execute(target.get()); }
             return true;
         }
 
