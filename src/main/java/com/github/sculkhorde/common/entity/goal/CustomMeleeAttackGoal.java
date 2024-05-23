@@ -1,8 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -30,6 +29,7 @@ public class CustomMeleeAttackGoal extends Goal{
     protected int ATTACK_ANIMATION_DELAY_TICKS;
 
     protected EntityAlgorithms.DelayedHurtScheduler delayedHurtScheduler;
+    public AttackExecution codeToRunOnAttack;
 
     public CustomMeleeAttackGoal(PathfinderMob mob, double speedMod, boolean followTargetIfNotSeen, int attackAnimationDelayTicksIn) {
         this.mob = mob;
@@ -202,6 +202,7 @@ public class CustomMeleeAttackGoal extends Goal{
 
     }
 
+
     protected void checkAndPerformAttack(LivingEntity targetMob, double distanceFromTargetIn) {
         boolean isTargetNull = targetMob == null;
         if (isTargetNull)
@@ -216,7 +217,9 @@ public class CustomMeleeAttackGoal extends Goal{
             return;
         }
         triggerAnimation();
+        delayedHurtScheduler.attackExecution = codeToRunOnAttack;
         delayedHurtScheduler.trigger(attackReach);
+
         resetAttackCooldown();
     }
 
@@ -238,5 +241,10 @@ public class CustomMeleeAttackGoal extends Goal{
 
     protected double getAttackReachSqr(LivingEntity p_25556_) {
         return (double)(this.mob.getBbWidth() * 2.0F * this.mob.getBbWidth() * 2.0F + p_25556_.getBbWidth());
+    }
+
+    @FunctionalInterface
+    public interface AttackExecution {
+        void execute(Entity target);
     }
 }

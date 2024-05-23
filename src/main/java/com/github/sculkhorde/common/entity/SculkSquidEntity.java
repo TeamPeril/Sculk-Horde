@@ -1,26 +1,30 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
-import net.minecraft.world.entity.animal.Salmon;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
@@ -31,7 +35,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -48,21 +51,16 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
      * Added client/renderer/entity/ SculkMiteRenderer.java
      */
 
-    public static final float MAX_HEALTH = 5F;
-    public static final float ATTACK_DAMAGE = 1F;
+    public static final float MAX_HEALTH = 8F;
+    public static final float ATTACK_DAMAGE = 5F;
     public static final float FOLLOW_RANGE = 30F;
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget().enableTargetSwimmers();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget().enableTargetSwimmers().disableBlackListMobs();
     private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public float xBodyRot;
-    public float xBodyRotO;
-    public float zBodyRot;
-    public float zBodyRotO;
-    public float rotateSpeed;
 
     /**
      * The Constructor
@@ -72,6 +70,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     public SculkSquidEntity(EntityType<? extends SculkSquidEntity> type, Level worldIn)
     {
         super(type, worldIn);
+        this.moveControl = new FishMoveControl(this);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
@@ -130,8 +129,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(1)));
         this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
-        this.goalSelector.addGoal(6, new MeleeAttackGoal(this, (double)1F, true));
-        //this.goalSelector.addGoal(1, new SculkSalmonInfectGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(1, new AttackInfectAndFleeGoal());
 
         Goal[] targetSelectorPayload = targetSelectorPayload();
         for(int priority = 0; priority < targetSelectorPayload.length; priority++)
@@ -169,37 +167,8 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         return blockpos != null ? blockpos.closerToCenterThan(this.position(), 12.0D) : false;
     }
 
-    public void aiStep() {
-        super.aiStep(); // Call the base class method to perform basic AI tasks
 
-        // Update body rotation variables
-        this.xBodyRotO = this.xBodyRot; // Store the old horizontal body rotation
-        this.zBodyRotO = this.zBodyRot; // Store the old vertical body rotation
-
-        // The following tentacle-related code has been removed as per your request
-
-        // Check if the entity is in water or a bubble column
-        if (this.isInWaterOrBubble()) {
-            // Calculate the new body rotation based on the movement vector
-            Vec3 vec3 = this.getDeltaMovement();
-            double horizontalDistance = vec3.horizontalDistance(); // Get the horizontal distance of the movement vector
-
-            // Update the horizontal body rotation (y-axis rotation)
-            this.yBodyRot += (-((float) Mth.atan2(vec3.x, vec3.z)) * (180F / (float)Math.PI) - this.yBodyRot) * 0.1F;
-            this.setYRot(this.yBodyRot); // Set the entity's rotation to the new calculated value
-
-            // Update the vertical body rotation (z-axis rotation)
-            this.zBodyRot += (float)Math.PI * this.rotateSpeed * 1.5F;
-
-            // Update the pitch of the body (x-axis rotation)
-            this.xBodyRot += (-((float)Mth.atan2(horizontalDistance, vec3.y)) * (180F / (float)Math.PI) - this.xBodyRot) * 0.1F;
-        } else {
-            // If the entity is not in water, adjust the pitch of the body to be more downward
-            this.xBodyRot += (-90.0F - this.xBodyRot) * 0.02F;
-        }
-    }
-
-
+    /*
     public void travel(Vec3 p_28383_) {
         if (this.isEffectiveAi() && this.isInWater())
         {
@@ -215,6 +184,21 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             }
         } else {
             super.travel(p_28383_);
+        }
+
+    }
+    */
+
+    public void travel(Vec3 movementVector) {
+        if (this.isEffectiveAi() && this.isInWater()) {
+            this.moveRelative(MOVEMENT_SPEED, movementVector);
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
+            if (this.getTarget() == null) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
+            }
+        } else {
+            super.travel(movementVector);
         }
 
     }
@@ -277,6 +261,96 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
     public boolean dampensVibrations() {
         return true;
+    }
+
+    static class FishMoveControl extends MoveControl {
+        private final SculkSquidEntity fish;
+
+        FishMoveControl(SculkSquidEntity p_27501_) {
+            super(p_27501_);
+            this.fish = p_27501_;
+        }
+
+        public void tick() {
+            if (this.fish.isEyeInFluid(FluidTags.WATER)) {
+                this.fish.setDeltaMovement(this.fish.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
+            }
+
+            if (this.operation == MoveControl.Operation.MOVE_TO && !this.fish.getNavigation().isDone()) {
+                float f = (float)(this.speedModifier * this.fish.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                this.fish.setSpeed(Mth.lerp(0.125F, this.fish.getSpeed(), f));
+                double d0 = this.wantedX - this.fish.getX();
+                double d1 = this.wantedY - this.fish.getY();
+                double d2 = this.wantedZ - this.fish.getZ();
+                if (d1 != 0.0D) {
+                    double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+                    this.fish.setDeltaMovement(this.fish.getDeltaMovement().add(0.0D, (double)this.fish.getSpeed() * (d1 / d3) * 0.1D, 0.0D));
+                }
+
+                if (d0 != 0.0D || d2 != 0.0D) {
+                    float f1 = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
+                    this.fish.setYRot(this.rotlerp(this.fish.getYRot(), f1, 90.0F));
+                    this.fish.yBodyRot = this.fish.getYRot();
+                }
+
+            } else {
+                this.fish.setSpeed(0.0F);
+            }
+        }
+    }
+
+    class AttackInfectAndFleeGoal extends CustomMeleeAttackGoal
+    {
+
+        public final int ATTACK_MOB_STATE = 0;
+        public final int FLEE_MOB_STATE = 1;
+        public int attackState = ATTACK_MOB_STATE;
+
+        public AttackInfectAndFleeGoal()
+        {
+            super(SculkSquidEntity.this, 1.0D, false, 10);
+
+            // THis is such a terrible way of doing this. The purpose of this is to execute this when the actuall attack happens.
+            codeToRunOnAttack = (Entity target) -> {
+                if(target instanceof LivingEntity livingTarget)
+                {
+                    if(livingTarget.getHealth() < livingTarget.getMaxHealth()/2)
+                    {
+                        EntityAlgorithms.applyEffectToTarget(livingTarget, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0);
+                    }
+                }
+            };
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            // If the mob is already targeting something valid, don't bother
+            return canWeUse;
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return canUse();
+        }
+
+        protected double getAttackReachSqr(LivingEntity pAttackTarget)
+        {
+            float f = SculkSquidEntity.this.getBbHeight() - 0.1F;
+            return (double)(f * 2.0F * f * 2.0F + pAttackTarget.getBbWidth());
+        }
+
+        @Override
+        protected int getAttackInterval() {
+            return TickUnits.convertSecondsToTicks(2);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            ((SculkSquidEntity)mob).triggerAnim("attack_controller", "attack_animation");
+        }
     }
 
 }

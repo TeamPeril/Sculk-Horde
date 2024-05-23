@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
@@ -366,6 +367,8 @@ public class EntityAlgorithms {
 
         private double attackReach = 0.0;
 
+        public CustomMeleeAttackGoal.AttackExecution attackExecution;
+
         public DelayedHurtScheduler(Mob damageDealer, int delayInTicks)
         {
             this.damageDealer = damageDealer;
@@ -425,7 +428,13 @@ public class EntityAlgorithms {
 
             getDamageDealerAsMob().swing(InteractionHand.MAIN_HAND);
             getDamageDealerAsMob().doHurtTarget(getDamageDealerAsMob().getTarget());
+            attackExecution.execute(target.get());
             return true;
+        }
+
+        public void additionalExecutionOnAttack(LivingEntity targetMob)
+        {
+
         }
 
         public void trigger(double attackReach)
