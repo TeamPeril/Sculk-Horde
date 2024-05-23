@@ -180,6 +180,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_PHANTOM.get(), SculkPhantomEntity.createAttributes().build());
         event.put(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseEntity.createAttributes().build());
         event.put(ModEntities.SCULK_SALMON.get(), SculkSalmonEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_SQUID.get(), SculkSquidEntity.createAttributes().build());
     }
 }
 

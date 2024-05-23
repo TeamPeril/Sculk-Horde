@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.common.entity.SculkSalmonEntity;
+import com.github.sculkhorde.common.entity.SculkSquidEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
