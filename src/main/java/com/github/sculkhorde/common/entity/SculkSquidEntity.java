@@ -7,6 +7,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,6 +57,12 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget().enableTargetSwimmers();
     private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    public float xBodyRot;
+    public float xBodyRotO;
+    public float zBodyRot;
+    public float zBodyRotO;
+    public float rotateSpeed;
 
     /**
      * The Constructor
@@ -161,6 +168,37 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         BlockPos blockpos = this.getNavigation().getTargetPos();
         return blockpos != null ? blockpos.closerToCenterThan(this.position(), 12.0D) : false;
     }
+
+    public void aiStep() {
+        super.aiStep(); // Call the base class method to perform basic AI tasks
+
+        // Update body rotation variables
+        this.xBodyRotO = this.xBodyRot; // Store the old horizontal body rotation
+        this.zBodyRotO = this.zBodyRot; // Store the old vertical body rotation
+
+        // The following tentacle-related code has been removed as per your request
+
+        // Check if the entity is in water or a bubble column
+        if (this.isInWaterOrBubble()) {
+            // Calculate the new body rotation based on the movement vector
+            Vec3 vec3 = this.getDeltaMovement();
+            double horizontalDistance = vec3.horizontalDistance(); // Get the horizontal distance of the movement vector
+
+            // Update the horizontal body rotation (y-axis rotation)
+            this.yBodyRot += (-((float) Mth.atan2(vec3.x, vec3.z)) * (180F / (float)Math.PI) - this.yBodyRot) * 0.1F;
+            this.setYRot(this.yBodyRot); // Set the entity's rotation to the new calculated value
+
+            // Update the vertical body rotation (z-axis rotation)
+            this.zBodyRot += (float)Math.PI * this.rotateSpeed * 1.5F;
+
+            // Update the pitch of the body (x-axis rotation)
+            this.xBodyRot += (-((float)Mth.atan2(horizontalDistance, vec3.y)) * (180F / (float)Math.PI) - this.xBodyRot) * 0.1F;
+        } else {
+            // If the entity is not in water, adjust the pitch of the body to be more downward
+            this.xBodyRot += (-90.0F - this.xBodyRot) * 0.02F;
+        }
+    }
+
 
     public void travel(Vec3 p_28383_) {
         if (this.isEffectiveAi() && this.isInWater())
