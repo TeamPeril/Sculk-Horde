@@ -12,19 +12,16 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
-import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
@@ -37,6 +34,8 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import javax.annotation.Nullable;
 
 public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSmartEntity {
 
@@ -127,9 +126,10 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(2)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(1)));
-        this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0D, 10));
-        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(1, new AttackInfectAndFleeGoal());
+        this.goalSelector.addGoal(4, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
+        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+
 
         Goal[] targetSelectorPayload = targetSelectorPayload();
         for(int priority = 0; priority < targetSelectorPayload.length; priority++)
@@ -194,8 +194,8 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             this.moveRelative(MOVEMENT_SPEED, movementVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
-            if (this.getTarget() == null) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
+            if (isIdle()) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.01D, 0.0D));
             }
         } else {
             super.travel(movementVector);
@@ -272,6 +272,8 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         }
 
         public void tick() {
+            if(fish.level().isClientSide()) { return; }
+
             if (this.fish.isEyeInFluid(FluidTags.WATER)) {
                 this.fish.setDeltaMovement(this.fish.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
             }
@@ -350,6 +352,17 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         @Override
         protected void triggerAnimation() {
             ((SculkSquidEntity)mob).triggerAnim("attack_controller", "attack_animation");
+        }
+    }
+
+    public class SculkSquidRandomSwimmingGoal extends RandomStrollGoal {
+        public SculkSquidRandomSwimmingGoal(PathfinderMob mob, double speedModifier, int interval) {
+            super(mob, speedModifier, interval, false);
+        }
+
+        @Nullable
+        protected Vec3 getPosition() {
+            return BehaviorUtils.getRandomSwimmablePos(this.mob, 10, 7);
         }
     }
 
