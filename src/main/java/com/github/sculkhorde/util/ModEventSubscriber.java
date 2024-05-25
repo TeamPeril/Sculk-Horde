@@ -121,7 +121,16 @@ public class ModEventSubscriber {
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
                         EntityFactoryEntry.StrategicValues.Aquatic)
-                        .enableExperimentalMode(ModConfig.SERVER.enable_sculk_salmon),
+                        .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
+
+                new EntityFactoryEntry(ModEntities.SCULK_SQUID.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
+                        .setCost((int) SculkSquidEntity.MAX_HEALTH)
+                        .addStrategicValues(
+                                EntityFactoryEntry.StrategicValues.Infector,
+                                EntityFactoryEntry.StrategicValues.Melee,
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
         };
 
         SculkHorde.entityFactory.addEntriesToFactory(entries);
