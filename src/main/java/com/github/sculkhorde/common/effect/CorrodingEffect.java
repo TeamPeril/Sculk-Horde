@@ -45,15 +45,17 @@ public class CorrodingEffect extends MobEffect {
 
     public void setAttacker(LivingEntity attacker)
     {
-        this.attacker = Optional.of(attacker);
+        if(attacker != null) { this.attacker = Optional.of(attacker); }
     }
 
 
     public static void applyToEntity(LivingEntity source, LivingEntity victim, int duration)
     {
+        if(victim == null) { return; }
+
         CorrodingEffect effect = ModMobEffects.CORRODED.get();
 
-        effect.setAttacker(source);
+        if(source != null) { effect.setAttacker(source); }
 
         if(victim.hasEffect(effect))
         {
