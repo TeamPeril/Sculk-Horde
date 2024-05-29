@@ -295,6 +295,8 @@ public class ModItems {
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_RAVAGER_SPAWN_EGG = ITEMS.register("sculk_ravager_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_RAVAGER, 0x5B5049, 0x062E37, new Item.Properties()));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ENDERMAN_SPAWN_EGG = ITEMS.register("sculk_enderman_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ENDERMAN, 0x111B21, 0xE079FA, new Item.Properties()));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_PHANTOM_SPAWN_EGG = ITEMS.register("sculk_phantom_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_PHANTOM, 0x88FF00, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SALMON_SPAWN_EGG = ITEMS.register("sculk_salmon_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SALMON, 0xA93432, 0x062E37, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SQUID_SPAWN_EGG = ITEMS.register("sculk_squid_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SQUID, 0x1D3241, 0x062E37, new Item.Properties()));
 
 	public static final RegistryObject<Item> DEEP_GREEN_MUSIC_DISC = ITEMS.register("deep_green_music_disc", () -> new RecordItem(6, ModSounds.DEEP_GREEN, new Item.Properties().stacksTo(1), 5120));
 	public static final RegistryObject<Item> BLIND_AND_ALONE_MUSIC_DISC = ITEMS.register("blind_and_alone_music_disc", () -> new RecordItem(6, ModSounds.BLIND_AND_ALONE, new Item.Properties().stacksTo(1), 4920));

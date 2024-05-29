@@ -264,7 +264,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             }
         }
         // IF target isnt null and we cannot see them, teleport to them
-        if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget())
+        if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget(getTarget()))
         {
             teleportBehindEntity(getTarget());
         }

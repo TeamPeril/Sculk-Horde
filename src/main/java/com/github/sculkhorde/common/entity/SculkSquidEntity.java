@@ -2,30 +2,41 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -56,7 +67,14 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget().enableTargetSwimmers().disableBlackListMobs();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .enableTargetHostiles()
+            .enableTargetPassives()
+            .enableMustReachTarget()
+            .enableTargetSwimmers()
+            .disableBlackListMobs()
+            .disableTargetWalkers()
+            .enableMustSeeTarget();
     private SquadHandler squad = new SquadHandler(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -124,11 +142,12 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     public void registerGoals() {
         super.registerGoals();
 
-        this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(2)));
-        this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(1)));
-        this.goalSelector.addGoal(1, new AttackInfectAndFleeGoal());
-        this.goalSelector.addGoal(4, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
-        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
+        this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
+        //this.goalSelector.addGoal(1, new ChargeAttackGoal(this));
+        this.goalSelector.addGoal(2, new AttackInfectAndBlindGoal());
+        this.goalSelector.addGoal(3, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
+        this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
 
 
         Goal[] targetSelectorPayload = targetSelectorPayload();
@@ -158,6 +177,24 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         return goals;
     }
 
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if(SculkHorde.isDebugMode())
+        {
+            player.displayClientMessage(Component.literal("Running Goals: " + goalSelector.getRunningGoals().toString()), false);
+            player.displayClientMessage(Component.literal("\nTarget: " + getTarget()), false);
+
+            if(getTarget() != null)
+            {
+                EntityAlgorithms.applyEffectToTarget(getTarget(), MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0);
+            }
+
+            return InteractionResult.PASS;
+        }
+
+        return InteractionResult.PASS;
+    }
+
     protected PathNavigation createNavigation(Level p_28362_) {
         return new WaterBoundPathNavigation(this, p_28362_);
     }
@@ -168,39 +205,36 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     }
 
 
-    /*
-    public void travel(Vec3 p_28383_) {
-        if (this.isEffectiveAi() && this.isInWater())
-        {
-            this.moveRelative(MOVEMENT_SPEED, p_28383_);
-            this.move(MoverType.SELF, this.getDeltaMovement());
-
-            Vec3 normalizedDelta = this.getDeltaMovement().normalize();
-            Vec3 cappedDelta = normalizedDelta.scale(Math.min(MOVEMENT_SPEED, this.getDeltaMovement().length()));
-
-            this.setDeltaMovement(cappedDelta);
-            if (this.getTarget() == null) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
-            }
-        } else {
-            super.travel(p_28383_);
-        }
-
-    }
-    */
-
     public void travel(Vec3 movementVector) {
-        if (this.isEffectiveAi() && this.isInWater()) {
+        if(!this.isEffectiveAi()) { return; }
+
+        if (this.isInWater())
+        {
             this.moveRelative(MOVEMENT_SPEED, movementVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
-            if (isIdle()) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.01D, 0.0D));
-            }
-        } else {
-            super.travel(movementVector);
         }
 
+        this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.001D, 0.0D));
+
+    }
+
+    private void spawnInk() {
+        this.playSound(SoundEvents.SQUID_SQUIRT, this.getSoundVolume(), this.getVoicePitch());
+
+        if (getTarget() != null) {
+            Vec3 squidPosition = this.position();
+            Vec3 targetPosition = getTarget().position();
+            Vec3 directionVector = targetPosition.subtract(squidPosition).normalize();
+
+            for (int i = 0; i < 30; ++i) {
+                ((ServerLevel)this.level()).sendParticles(ParticleTypes.SQUID_INK,
+                        squidPosition.x, squidPosition.y, squidPosition.z,
+                        1, // count of particles
+                        directionVector.x, directionVector.y, directionVector.z,
+                        0.1); // speed of particles
+            }
+        }
     }
 
 
@@ -274,9 +308,6 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         public void tick() {
             if(fish.level().isClientSide()) { return; }
 
-            if (this.fish.isEyeInFluid(FluidTags.WATER)) {
-                this.fish.setDeltaMovement(this.fish.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
-            }
 
             if (this.operation == MoveControl.Operation.MOVE_TO && !this.fish.getNavigation().isDone()) {
                 float f = (float)(this.speedModifier * this.fish.getAttributeValue(Attributes.MOVEMENT_SPEED));
@@ -301,14 +332,69 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         }
     }
 
-    class AttackInfectAndFleeGoal extends CustomMeleeAttackGoal
+    class ChargeAttackGoal extends Goal
+    {
+        PathfinderMob mob;
+        long lastTimeOfAttack = 0;
+        int ATTACK_COOLDOWN = TickUnits.convertSecondsToTicks(20);
+
+        int CHARGE_DURATION = TickUnits.convertSecondsToTicks(5);
+
+        long attackStartTime = 0;
+
+        public ChargeAttackGoal(PathfinderMob mob) {
+            lastTimeOfAttack = mob.level().getGameTime();
+            this.mob = mob;
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            if(getTarget() == null)
+            {
+                return false;
+            }
+
+            if(getTarget().distanceTo(mob) <= FOLLOW_RANGE / 6)
+            {
+                return false;
+            }
+
+            if(level().getGameTime() - lastTimeOfAttack < ATTACK_COOLDOWN)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return level().getGameTime() - attackStartTime < CHARGE_DURATION;
+        }
+
+        @Override
+        public void start() {
+            EntityAlgorithms.applyEffectToTarget(mob, MobEffects.MOVEMENT_SPEED, TickUnits.convertSecondsToTicks(CHARGE_DURATION), 4);
+            lastTimeOfAttack = level().getGameTime();
+            attackStartTime = level().getGameTime();
+        }
+
+        @Override
+        public void stop()
+        {
+            mob.removeEffect(MobEffects.MOVEMENT_SPEED);
+        }
+    }
+
+    class AttackInfectAndBlindGoal extends CustomMeleeAttackGoal
     {
 
         public final int ATTACK_MOB_STATE = 0;
-        public final int FLEE_MOB_STATE = 1;
         public int attackState = ATTACK_MOB_STATE;
 
-        public AttackInfectAndFleeGoal()
+        public AttackInfectAndBlindGoal()
         {
             super(SculkSquidEntity.this, 1.0D, false, 10);
 
@@ -319,6 +405,12 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
                     if(livingTarget.getHealth() < livingTarget.getMaxHealth()/2)
                     {
                         EntityAlgorithms.applyEffectToTarget(livingTarget, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0);
+                    }
+
+                    if(this.mob instanceof SculkSquidEntity squid)
+                    {
+                        EntityAlgorithms.applyEffectToTarget(livingTarget, MobEffects.BLINDNESS, TickUnits.convertSecondsToTicks(3), 0);
+                        squid.spawnInk();
                     }
                 }
             };
@@ -352,6 +444,37 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         @Override
         protected void triggerAnimation() {
             ((SculkSquidEntity)mob).triggerAnim("attack_controller", "attack_animation");
+        }
+
+        @Override
+        protected void checkAndPerformAttack(LivingEntity targetMob, double distanceFromTargetIn) {
+            boolean isTargetNull = targetMob == null;
+            if (isTargetNull)
+            {
+                return;
+            }
+            double attackReach = this.getAttackReachSqr(this.mob);
+            boolean isTooFarFromTarget = distanceFromTargetIn > attackReach;
+            boolean canSeeTarget = this.mob.getSensing().hasLineOfSight(targetMob);
+            if (!isTimeToAttack() || isTooFarFromTarget || !canSeeTarget)
+            {
+                return;
+            }
+            triggerAnimation();
+
+            if(targetMob.getHealth() < ATTACK_DAMAGE)
+            {
+                EntityAlgorithms.applyEffectToTarget(targetMob, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30), 0);
+                spawnInk();
+            }
+            else
+            {
+                delayedHurtScheduler.attackExecution = codeToRunOnAttack;
+                delayedHurtScheduler.trigger(attackReach);
+            }
+
+
+            resetAttackCooldown();
         }
     }
 

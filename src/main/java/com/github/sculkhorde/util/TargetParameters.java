@@ -33,8 +33,7 @@ public class TargetParameters
     //A hash map which we store a blacklist of mobs we should not attack. Should use UUIDs of mobs to identify
     private HashMap<UUID, Long> blacklist = new HashMap<>();
     private boolean canBlackListMobs = true; //Should we blacklist mobs?
-
-
+    private boolean targetWalkers;
 
 
     public TargetParameters()
@@ -61,15 +60,52 @@ public class TargetParameters
             return false;
         }
 
-        if(e instanceof InfestationPurifierEntity)
-        {
-            return true;
-        }
+
 
         //If player is in creative or spectator
         if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {
             return false;
+        }
+
+        //If we do not attack swimmers and target is a swimmer
+        if(!isTargetingSwimmers() && isLivingEntitySwimmer(e))
+        {
+            return false;
+        }
+
+        //If we do not attack entities in water and target is in water
+        if(!isTargetingEntitiesInWater() && e.isInWater())
+        {
+            return false;
+        }
+
+        if(isIgnoringTargetBelow50PercentHealth() && (e.getHealth() < e.getMaxHealth() / 2))
+        {
+            return false;
+        }
+
+        if(!isTargetWalkers() && !e.isInWater())
+        {
+            return false;
+        }
+
+        if(isMustSeeTarget() && !canSeeTarget(e))
+        {
+            return false;
+        }
+
+        //If we must reach target and cannot reach target
+        // NOTE: validating existing targets gets called significantly more often.
+        // When we do this, we disable reach check because it lags to all hell.
+        if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
+        {
+            return false;
+        }
+
+        if(e instanceof InfestationPurifierEntity)
+        {
+            return true;
         }
 
         if(e instanceof Player)
@@ -84,45 +120,19 @@ public class TargetParameters
         }
 
         //If we do not attack infected and entity is infected
-        if(!targetInfected && isLivingEntityInfected(e))
+        if(!isTargetingInfected() && isLivingEntityInfected(e))
         {
             return false;
         }
 
         //If we do not attack passives and entity is non-hostile
-        if(!targetPassives && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
+        if(!isTargetingPassives() && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
         {
             return false;
         }
 
         //If we do not attack hostiles and target is hostile
-        if(!targetHostiles && isLivingEntityHostile(e))
-        {
-            return false;
-        }
-
-        //If we do not attack swimmers and target is a swimmer
-        if(!targetSwimmers && isLivingEntitySwimmer(e))
-        {
-            return false;
-        }
-
-        //If we do not attack entities in water and target is in water
-        if(!targetEntitiesInWater && e.isInWater())
-        {
-            return false;
-        }
-
-        //If we do not attack swimmers and target is a swimmer
-        if(!targetBelow50PercentHealth && (e.getHealth() < e.getMaxHealth() / 2))
-        {
-            return false;
-        }
-
-        //If we must reach target and cannot reach target
-        // NOTE: validating existing targets gets called significantly more often.
-        // When we do this, we disable reach check because it lags to all hell.
-        if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
+        if(!isTargetingHostiles() && isLivingEntityHostile(e))
         {
             return false;
         }
@@ -193,6 +203,17 @@ public class TargetParameters
         return targetBelow50PercentHealth;
     }
 
+    public TargetParameters disableTargetWalkers()
+    {
+        targetWalkers = false;
+        return this;
+    }
+
+    public boolean isTargetWalkers()
+    {
+        return targetWalkers;
+    }
+
     public TargetParameters enableTargetSwimmers()
     {
         targetSwimmers = true;
@@ -230,17 +251,17 @@ public class TargetParameters
         return mustSeeTarget;
     }
 
-    public boolean canSeeTarget()
+    public boolean canSeeTarget(LivingEntity e)
     {
         if(this.mob == null)
         {
-            throw new IllegalStateException("Cannot enable must reach target without a mob");
+            throw new IllegalStateException("Cannot enable must see target without a mob");
         }
-        if(mob.getTarget() == null)
+        if(e == null)
         {
             return false;
         }
-        return mob.getSensing().hasLineOfSight(mob.getTarget());
+        return mob.getSensing().hasLineOfSight(e);
     }
 
     public TargetParameters enableMustReachTarget()
