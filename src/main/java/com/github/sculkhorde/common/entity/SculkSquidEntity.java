@@ -144,7 +144,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
-        //this.goalSelector.addGoal(1, new ChargeAttackGoal(this));
+        this.goalSelector.addGoal(1, new ChargeAttackGoal(this));
         this.goalSelector.addGoal(2, new AttackInfectAndBlindGoal());
         this.goalSelector.addGoal(3, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
@@ -336,7 +336,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     {
         PathfinderMob mob;
         long lastTimeOfAttack = 0;
-        int ATTACK_COOLDOWN = TickUnits.convertSecondsToTicks(20);
+        int ATTACK_COOLDOWN = TickUnits.convertSecondsToTicks(30);
 
         int CHARGE_DURATION = TickUnits.convertSecondsToTicks(5);
 
