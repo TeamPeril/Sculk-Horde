@@ -54,21 +54,35 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
     @Override
     public void tick()
     {
+        super.tick();
         if(!canContinueToUse())
         {
             return;
         }
 
         SculkMiteEntity thisMob = this.mob;
+
+        // I shouldn't have to do this, but there is a possible crash.
+        if(this.mob == null || !this.mob.isAlive())
+        {
+            return;
+        }
+
         LivingEntity target = this.mob.getTarget();
-        super.tick();
+
+        // I shouldn't have to do this, but there is a possible crash.
+        if(target == null || !target.isAlive())
+        {
+            return;
+        }
+
         //Calcualate distance between this mob and target mob in a 3D space
         double mobX = thisMob.getX();
         double mobY = thisMob.getY();
         double mobZ = thisMob.getZ();
         double targetX = target.getX();
         double targetY = target.getY();
-        double targetZ = thisMob.getTarget().getZ();
+        double targetZ = target.getZ();
         double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
         //If in infect range & not client side & current mob health is less than or equal to 50% of max health
         if(distance <= SculkMiteEntity.INFECT_RANGE && !(this.mob.level().isClientSide))
