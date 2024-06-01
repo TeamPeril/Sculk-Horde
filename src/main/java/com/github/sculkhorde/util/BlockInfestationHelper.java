@@ -81,6 +81,7 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
 
         // Deeper and Darker Compatibility
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_stone");

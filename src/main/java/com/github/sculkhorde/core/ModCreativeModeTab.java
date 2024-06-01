@@ -80,6 +80,7 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.SMALL_SHROOM.get());
                 event.accept(ModBlocks.SPIKE.get());
                 event.accept(ModBlocks.TENDRILS.get());
+                event.accept(ModBlocks.DISEASED_KELP_BLOCK.get());
                 event.accept(Blocks.SCULK);
 
                 event.accept(ModBlocks.SCULK_SUMMONER_BLOCK.get());

@@ -165,25 +165,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
         return true;
     }
 
-    /**
-     * Causes Model to be offset
-     * @return
-     */
-    public BlockBehaviour.OffsetType getOffsetType() {
-        return BlockBehaviour.OffsetType.XZ;
-    }
-
-
-    public boolean canBeReplacedByLeaves(BlockState state, LevelReader world, BlockPos pos) {
-        return true;
-    }
-
-
     public boolean canBeReplaced(BlockState pState, Fluid pFluid) {
-        return true;
-    }
-
-    public boolean canBeReplacedByLogs(BlockState state, LevelReader world, BlockPos pos) {
         return true;
     }
 

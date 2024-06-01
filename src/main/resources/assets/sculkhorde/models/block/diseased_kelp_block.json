@@ -1,0 +1,6 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "all": "sculkhorde:block/diseased_kelp_block"
+  }
+}
