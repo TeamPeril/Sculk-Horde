@@ -15,6 +15,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.IPlantable;
 
 import java.util.List;
@@ -222,6 +223,8 @@ public class BlockInfestationHelper {
 
         // Chance to place a sculk bee hive above the block
         BlockInfestationHelper.tryPlaceSculkBeeHive(world, targetPos.above());
+
+        BlockInfestationHelper.tryPlaceDiseasedKelp(world, targetPos.above());
     }
 
     public static boolean tryToCureBlock(ServerLevel world, BlockPos targetPos)
@@ -380,6 +383,26 @@ public class BlockInfestationHelper {
             nest.addFreshInfectorOccupant();
             nest.addFreshHarvesterOccupant();
             nest.addFreshHarvesterOccupant();
+        }
+
+    }
+
+    /**
+     * Will only place Sculk Bee Hives
+     * @param world The World to place it in
+     * @param targetPos The position to place it in
+     */
+    public static void tryPlaceDiseasedKelp(ServerLevel world, BlockPos targetPos)
+    {
+
+        //Given random chance and the target location can see the sky, create a sculk hive
+        if(new Random().nextInt(200) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
+        {
+            int height = world.random.nextInt(10);
+            for(int i = 0; i < height; i++)
+            {
+                world.setBlockAndUpdate(targetPos.above(i), ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
+            }
         }
 
     }

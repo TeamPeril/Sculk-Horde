@@ -102,6 +102,11 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
             return true;
         }
 
+        if(!state.getFluidState().isEmpty())
+        {
+            return true;
+        }
+
         // This is to prevent the entity from getting stuck in a loop
         if(visitedPositons.containsKey(pos.asLong()))
         {

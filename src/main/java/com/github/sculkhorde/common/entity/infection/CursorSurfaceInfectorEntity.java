@@ -16,6 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.Random;
 
@@ -70,6 +71,10 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
             return true;
         }
         else if(state.isAir())
+        {
+            return true;
+        }
+        else if(!state.getFluidState().isEmpty())
         {
             return true;
         }

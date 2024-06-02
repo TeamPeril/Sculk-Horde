@@ -1,6 +1,7 @@
 {
-  "parent": "block/cross",
+  "parent": "minecraft:block/cross",
+  "render_type": "minecraft:cutout",
   "textures": {
-    "all": "sculkhorde:block/diseased_kelp_block"
+    "cross": "sculkhorde:block/diseased_kelp_block"
   }
 }

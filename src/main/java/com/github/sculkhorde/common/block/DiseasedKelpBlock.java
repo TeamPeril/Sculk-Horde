@@ -115,23 +115,8 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
         }
 
         entity.makeStuckInBlock(blockState, new Vec3((double)0.8F, 0.75D, (double)0.8F));
-
-        if (entity.xOld != entity.getX() || entity.zOld != entity.getZ())
-        {
-            double d0 = Math.abs(entity.getX() - entity.xOld);
-            double d1 = Math.abs(entity.getZ() - entity.zOld);
-            if (d0 >= (double)0.003F || d1 >= (double)0.003F)
-            {
-                //entity.hurt(entity.damageSources().generic(), 1.0F);
-                EntityAlgorithms.doSculkTypeDamageToEntity((LivingEntity) null, (LivingEntity) entity,1.0F, 1.0F);
-                EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0);
-            }
-        }
-
-    }
-
-    public boolean canBeReplaced(BlockState pState, Fluid pFluid) {
-        return false;
+        entity.hurt(entity.damageSources().generic(), 1.0F);
+        EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0);
     }
 
     /**
