@@ -4,6 +4,8 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -36,6 +38,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.extensions.IForgeBlock;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -122,20 +125,22 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
         EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0);
     }
 
-
-    /**
-     * This is the description the item of the block will display when hovered over.
-     * @param stack The item stack
-     * @param iBlockReader A block reader
-     * @param tooltip The tooltip
-     * @param flagIn The flag
-     */
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
 
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
-        tooltip.add(Component.translatable("tooltip.sculkhorde.spike")); //Text that displays if holding shift
+        if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+        {
+            tooltip.add(Component.translatable("tooltip.sculkhorde.diseased_kelp_block.functionality"));
+        }
+        else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+        {
+            tooltip.add(Component.translatable("tooltip.sculkhorde.diseased_kelp_block.lore"));
+        }
+        else
+        {
+            tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+        }
     }
 
     @Override
