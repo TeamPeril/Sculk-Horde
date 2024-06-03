@@ -7,7 +7,6 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -118,7 +117,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
             return;
         }
 
-        entity.makeStuckInBlock(blockState, new Vec3((double)0.8F, 0.75D, (double)0.8F));
+        entity.makeStuckInBlock(blockState, new Vec3(0.8F, 0.75D, (double)0.8F));
         entity.hurt(entity.damageSources().generic(), 1.0F);
         EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0);
     }
@@ -147,6 +146,10 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
     @Override
     public boolean placeLiquid(LevelAccessor p_54770_, BlockPos p_54771_, BlockState p_54772_, FluidState p_54773_) {
         return false;
+    }
+
+    public BlockState updateShape(BlockState oldState, Direction dir, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos pos2) {
+        return !oldState.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(oldState, dir, newState, level, pos, pos2);
     }
 
     @Override
