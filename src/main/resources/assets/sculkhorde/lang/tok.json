@@ -3,7 +3,7 @@
 
   "tooltip.sculkhorde.default": "o luka e nena [§eSHIFT§r] la sina lukin e kepeken.\no luka e nena [§eCTRL§r] la sina lukin e toki musi.",
 
-  "tooltip.sculkhorde.in_development": "§7§omi pini pali ala e ijo ni. o jan ma ala kepeken ona. pali taso la ona li pona.",
+  "tooltip.sculkhorde.in_development": "§7§omi pini ala pali e ijo ni. o jan ma ala kepeken ona. pali taso la ona li pona.",
   "item.sculkhorde.dev_wand": "ilo pi jan pali",
   "item.sculkhorde.dev_conversion_wand": "ilo ante pi jan pali",
   "tooltip.sculkhorde.dev_conversion_wand": "§7§oni li ante Sculk e leko.",
@@ -214,24 +214,24 @@
   "entity.sculkhorde.sculk_phantom": "waso Sculk",
   "entity.sculkhorde.sculk_phantom_corpse": "waso Sculk moli",
   "entity.sculkhorde.sculk_salmon": "kala Sculk",
-  "entity.sculkhorde.sculk_skeleton": "jan moli palisa Sculk"
+  "entity.sculkhorde.sculk_skeleton": "jan moli palisa Sculk",
 
   "block.sculkhorde.cocoon": "len mama Sculk",
   "block.sculkhorde.cocoon_root": "noka pi len mama Sculk",
 
-  "sounds.sculkhorde.blind_and_alone_music_disc": "sike kalama pi kalama musi 'lukin ala en taso'"
-  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "jan Firel - lukin ala en taso"
-  "sounds.sculkhorde.deep_green_music_disc": "sike kalama pi kalama musi 'laso wawa'"
-  "sounds.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa"
+  "sounds.sculkhorde.blind_and_alone_music_disc": "sike kalama pi kalama musi 'lukin ala en taso'",
+  "sounds.sculkhorde.blind_and_alone_music_disc.desc": "jan Firel - lukin ala en taso",
+  "sounds.sculkhorde.deep_green_music_disc": "sike kalama pi kalama musi 'laso wawa'",
+  "sounds.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa",
   "item.sculkhorde.blind_and_alone_music_disc": "sike kalama pi kalama musi 'lukin ala en taso'",
   "item.sculkhorde.blind_and_alone_music_disc.desc": "jan Firel - lukin ala en taso",
   "item.sculkhorde.deep_green_music_disc": "sike kalama pi kalama musi 'laso wawa'",
-  "item.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa"
+  "item.sculkhorde.deep_green_music_disc.desc": "jan Firel - laso wawa",
   
   "achievement.sculkhorde.sculk_horde_start.title": "monsuta pi moku ale",
   "achievement.sculkhorde.sculk_horde_start.desc": "kulupu utala pi soko Sculk li kama poki ala, li kama tawa sina.",
   "achievement.sculkhorde.sculk_horde_defeat.title": "pona sin",
-  "achievement.sculkhorde.sculk_horde_defeat.desc": "sina pali wawa li utala wawa la, sina awen e ma lon kulupu utala pi soko Sculk, li weka e kulupu ni tan ma. ni li pali mute. taso, sina pali pona a! sina anpa e kulupu a. ike li weka. taso, pakala li awen lon ma. o tawa jaki ni o pona e ona a..",
+  "achievement.sculkhorde.sculk_horde_defeat.desc": "sina pali wawa li utala wawa la, sina awen e ma lon kulupu utala pi soko Sculk, li weka e kulupu ni tan ma. ni li pali mute. taso, sina pali pona a! sina anpa e kulupu a. ike li weka. taso, pakala li awen lon ma. o tawa jaki ni o pona e ona a.",
   "achievement.sculkhorde.sculk_evolve_immature.title": "lawa pali",
   "achievement.sculkhorde.sculk_evolve_immature.desc": "lawa pi kulupu Sculk o kama suli lili",
   "achievement.sculkhorde.sculk_evolve_mature.title": "lawa wawa",
@@ -257,7 +257,7 @@
   "achievement.sculkhorde.craft_heart_of_purity.title": "ilo pi pona ma",
   "achievement.sculkhorde.craft_heart_of_purity.desc": "o pali e pilin pi pona wawa",
   "achievement.sculkhorde.craft_dormant_heart_of_the_horde.title": "pilin pi pilin ala",
-  "achievement.sculkhorde.craft_dormant_heart_of_the_horde.desc": "o pali e pilin poki"
+  "achievement.sculkhorde.craft_dormant_heart_of_the_horde.desc": "o pali e pilin poki",
   
   "item.sculkhorde.coin_of_contribution": "mani pana",
   "tooltip.sculkhorde.coin_of_contribution": "mani ni li sama pana suli sina tawa ante ni. jan sama sina li lon ala la, ante Sculk Horde kin li lon ala. mi toki e ni: sina pona! ante Sculk Horde o pona tawa sina :)"
