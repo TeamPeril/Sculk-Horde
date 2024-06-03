@@ -30,7 +30,7 @@ public class EntityFactoryEntry {
     private Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
 
     boolean experimentalMode = false;
-    private ForgeConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.enable_sculk_salmon;
+    private ForgeConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.experimental_features_enabled;
 
     public EntityFactoryEntry(EntityType entity)
     {

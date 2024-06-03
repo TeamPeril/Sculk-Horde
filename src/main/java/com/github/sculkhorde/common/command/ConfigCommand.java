@@ -120,8 +120,8 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
     private static ArgumentBuilder<CommandSourceStack, ?> experimentalFeaturesConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("experimental_features")
-                .then(booleanConfigOption("experimental_features_enabled"))
-                .then(booleanConfigOption("enable_sculk_salmon"));
+                .then(booleanConfigOption("experimental_features_enabled"));
+
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> triggerAutomaticallyConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -311,12 +311,6 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 case "trigger_ancient_node_time_of_day":
                     if (valueType.equals(Integer.class)) {
                         ModConfig.SERVER.trigger_ancient_node_time_of_day.set((Integer) rawValue);
-                        success = true;
-                    }
-                    break;
-                case "enable_sculk_salmon":
-                    if(valueType.equals(Boolean.class)) {
-                        ModConfig.SERVER.enable_sculk_salmon.set((Boolean) rawValue);
                         success = true;
                     }
                     break;

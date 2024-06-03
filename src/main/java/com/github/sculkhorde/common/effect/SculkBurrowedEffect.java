@@ -6,12 +6,11 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 
@@ -62,7 +61,7 @@ public class SculkBurrowedEffect extends MobEffect {
         BlockPos entityPosition = entity.blockPosition();
 
         //Spawn Mite
-        if(entity.level().getFluidState(entityPosition) == Fluids.EMPTY.defaultFluidState() || !ModConfig.isSculkSalmonEnabled()) { ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
+        if(entity.level().getFluidState(entityPosition) == Fluids.EMPTY.defaultFluidState() || !ModConfig.isExperimentalFeaturesEnabled()) { ModEntities.SCULK_MITE.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
         else { ModEntities.SCULK_SALMON.get().spawn((ServerLevel) event.getEntity().level(), entityPosition, MobSpawnType.SPAWNER); }
 
         //Spawn Sculk Mass
