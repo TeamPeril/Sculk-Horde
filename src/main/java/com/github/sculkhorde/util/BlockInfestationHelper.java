@@ -15,6 +15,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.IPlantable;
 
 import java.util.List;
@@ -81,6 +82,8 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
 
         // Deeper and Darker Compatibility
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_stone");
@@ -221,6 +224,8 @@ public class BlockInfestationHelper {
 
         // Chance to place a sculk bee hive above the block
         BlockInfestationHelper.tryPlaceSculkBeeHive(world, targetPos.above());
+
+        BlockInfestationHelper.tryPlaceDiseasedKelp(world, targetPos.above());
     }
 
     public static boolean tryToCureBlock(ServerLevel world, BlockPos targetPos)
@@ -379,6 +384,26 @@ public class BlockInfestationHelper {
             nest.addFreshInfectorOccupant();
             nest.addFreshHarvesterOccupant();
             nest.addFreshHarvesterOccupant();
+        }
+
+    }
+
+    /**
+     * Will only place Sculk Bee Hives
+     * @param world The World to place it in
+     * @param targetPos The position to place it in
+     */
+    public static void tryPlaceDiseasedKelp(ServerLevel world, BlockPos targetPos)
+    {
+
+        //Given random chance and the target location can see the sky, create a sculk hive
+        if(new Random().nextInt(200) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
+        {
+            int height = world.random.nextInt(25);
+            for(int i = 0; i < height && !world.getBlockState(targetPos.above(i)).getFluidState().isEmpty(); i++)
+            {
+                world.setBlockAndUpdate(targetPos.above(i), ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
+            }
         }
 
     }

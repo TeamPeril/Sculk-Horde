@@ -11,11 +11,13 @@ import net.minecraft.core.particles.SculkChargeParticleOptions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.Random;
 
@@ -72,6 +74,20 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
         else if(state.isAir())
         {
             return true;
+        }
+        // If we detect fluid
+        else if(!state.getFluidState().isEmpty())
+        {
+            // If its water, its only obstructed if its the water source block or flowing water block
+            if(state.getFluidState().is(Fluids.WATER) && state.is(Blocks.WATER))
+            {
+                return true;
+            }
+
+            if(!state.getFluidState().is(Fluids.WATER))
+            {
+                return true;
+            }
         }
         else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
         {

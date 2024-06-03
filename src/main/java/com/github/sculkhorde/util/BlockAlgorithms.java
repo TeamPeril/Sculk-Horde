@@ -26,6 +26,11 @@ import java.util.function.Predicate;
 
 public class BlockAlgorithms {
 
+    public static boolean isWaterLoggable(BlockState state)
+    {
+        return state.getProperties().contains(BlockStateProperties.WATERLOGGED);
+    }
+
     public static float getSudoRNGFromPosition(BlockPos position, int min, int max)
     {
         int range = max - min;

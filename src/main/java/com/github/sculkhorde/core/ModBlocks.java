@@ -683,6 +683,9 @@ public class ModBlocks {
 	public static final RegistryObject<FleshyCompostBlock> PASTY_ORGANIC_MASS =
 			registerBlock("fleshy_compost_block", FleshyCompostBlock::new);
 
+	public static final RegistryObject<DiseasedKelpBlock> DISEASED_KELP_BLOCK =
+			registerBlock("diseased_kelp_block", DiseasedKelpBlock::new);
+
 	public static class BlockTags
 	{
 		public static final TagKey<Block> SCULK_RAID_TARGET_HIGH_PRIORITY = create("sculk_raid_target/high_priority");

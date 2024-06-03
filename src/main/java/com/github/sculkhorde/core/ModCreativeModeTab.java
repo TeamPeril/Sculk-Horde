@@ -35,6 +35,8 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_RAVAGER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_PHANTOM_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_SALMON_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_SQUID_SPAWN_EGG.get());
 
                 event.accept(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());
@@ -78,6 +80,7 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.SMALL_SHROOM.get());
                 event.accept(ModBlocks.SPIKE.get());
                 event.accept(ModBlocks.TENDRILS.get());
+                event.accept(ModBlocks.DISEASED_KELP_BLOCK.get());
                 event.accept(Blocks.SCULK);
 
                 event.accept(ModBlocks.SCULK_SUMMONER_BLOCK.get());

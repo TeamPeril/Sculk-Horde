@@ -272,5 +272,12 @@
   "achievement.sculkhorde.craft_dormant_heart_of_the_horde.title": "A Life-less Heart",
   "achievement.sculkhorde.craft_dormant_heart_of_the_horde.desc": "Craft a Dormant Heart of the Horde.",
   "achievement.sculkhorde.contribute.title": "Grateful for You",
-  "achievement.sculkhorde.contribute.desc": "Prove yourself to go above and beyond and be a contributor to the Sculk Horde Mod."
+  "achievement.sculkhorde.contribute.desc": "Prove yourself to go above and beyond and be a contributor to the Sculk Horde Mod.",
+
+  "block.sculkhorde.diseased_kelp_block": "Diseased Kelp",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oA dangerous under-water sculk plant that pricks you and gives you Diseased Cysts.",
+  "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oA hybrid design between the surface Spikes that normally spawn, and kelp which grows plentiful underwater. This plant serves the purpose of spreading disease and triggering Summoners, ultimately ending with the demise of its victim.",
+  "entity.sculkhorde.sculk_squid": "Sculk Squid",
+  "item.sculkhorde.sculk_squid_spawn_egg": "Sculk Squid Spawn Egg",
+  "item.sculkhorde.sculk_salmon_spawn_egg": "Sculk Salmon Spawn Egg"
 }
