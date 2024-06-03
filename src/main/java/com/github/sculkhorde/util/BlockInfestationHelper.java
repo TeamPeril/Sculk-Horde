@@ -83,6 +83,7 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
 
         // Deeper and Darker Compatibility
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_stone");
@@ -398,8 +399,8 @@ public class BlockInfestationHelper {
         //Given random chance and the target location can see the sky, create a sculk hive
         if(new Random().nextInt(200) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
         {
-            int height = world.random.nextInt(10);
-            for(int i = 0; i < height; i++)
+            int height = world.random.nextInt(25);
+            for(int i = 0; i < height && !world.getBlockState(targetPos.above(i)).getFluidState().isEmpty(); i++)
             {
                 world.setBlockAndUpdate(targetPos.above(i), ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
             }

@@ -27,7 +27,12 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.IPlantable;
@@ -91,8 +96,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
                 .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .requiresCorrectToolForDrops()
-                .sound(SoundType.SLIME_BLOCK)
-                .noCollission();
+                .sound(SoundType.SLIME_BLOCK);
     }
 
     /** Makes entities slow and damages them. I stole this code from the berry bush.<br>
@@ -118,6 +122,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
         entity.hurt(entity.damageSources().generic(), 1.0F);
         EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0);
     }
+
 
     /**
      * This is the description the item of the block will display when hovered over.
@@ -163,5 +168,32 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
 
     public FluidState getFluidState(BlockState p_54319_) {
         return Fluids.WATER.getSource(false);
+    }
+
+    // #### Collision Code ####
+    protected static final VoxelShape SHAPE = Block.box(0.0D, 0.1D, 0.0D, 16.0D, 15.9D, 16.0D);
+    @Override
+    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
+        return SHAPE;
+    }
+
+    @Override
+    public VoxelShape getBlockSupportShape(BlockState p_221566_, BlockGetter p_221567_, BlockPos p_221568_) {
+        return Shapes.block();
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext collisionContext) {
+        if (collisionContext instanceof EntityCollisionContext entityCollisionContext){
+            if (entityCollisionContext.getEntity() instanceof LivingEntity livingEntity){
+                return Shapes.empty();
+            }
+        }
+        return super.getCollisionShape(state, getter, pos, collisionContext);
+    }
+
+    @Override
+    public boolean isPathfindable(BlockState p_154258_, BlockGetter p_154259_, BlockPos p_154260_, PathComputationType p_154261_) {
+        return true;
     }
 }

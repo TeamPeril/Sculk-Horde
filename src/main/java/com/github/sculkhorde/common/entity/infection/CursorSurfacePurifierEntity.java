@@ -4,12 +4,15 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import net.minecraft.server.TickTask;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 import java.util.Objects;
@@ -102,9 +105,19 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
             return true;
         }
 
-        if(!state.getFluidState().isEmpty())
+        // If we detect fluid
+        else if(!state.getFluidState().isEmpty())
         {
-            return true;
+            // If its water, its only obstructed if its the water source block or flowing water block
+            if(state.getFluidState().is(Fluids.WATER) && state.is(Blocks.WATER))
+            {
+                return true;
+            }
+
+            if(!state.getFluidState().is(Fluids.WATER))
+            {
+                return true;
+            }
         }
 
         // This is to prevent the entity from getting stuck in a loop
