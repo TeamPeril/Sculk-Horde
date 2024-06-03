@@ -13,12 +13,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -26,7 +24,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -34,15 +31,14 @@ import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -239,28 +235,42 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
 
     //Animation Stuff below
-    //private static final RawAnimation SWIM_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
-    //private static final RawAnimation LAND_ANIMATION = RawAnimation.begin().thenLoop("misc.land");
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("idle");
+    private static final RawAnimation SWIM_ANIMATION = RawAnimation.begin().thenLoop("swim");
+    private static final RawAnimation STUCK_ANIMATION = RawAnimation.begin().thenLoop("stuck");
+    private static final RawAnimation BOOST_ANIMATION = RawAnimation.begin().thenPlay("boost");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
+
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
+            .triggerableAnim("attack", ATTACK_ANIMATION);
+
+    private final AnimationController BOOST_ANIMATION_CONTROLLER = new AnimationController<>(this, "boost_controller", state -> PlayState.STOP)
+            .triggerableAnim("boost", BOOST_ANIMATION);
 
 
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                new AnimationController<>(this, "walk_cycle", 5, this::poseWalkCycle)
+                new AnimationController<>(this, "walk_cycle", 5, this::poseSwimCycle),
+                ATTACK_ANIMATION_CONTROLLER,
+                BOOST_ANIMATION_CONTROLLER
         );
     }
 
-    protected PlayState poseWalkCycle(AnimationState<SculkSquidEntity> state)
+    protected PlayState poseSwimCycle(AnimationState<SculkSquidEntity> state)
     {
 
-        if(state.getAnimatable().level().getFluidState(state.getAnimatable().blockPosition()).is(Fluids.WATER))
+        if(state.getAnimatable().level().getFluidState(state.getAnimatable().blockPosition()).isEmpty())
         {
-            //state.setAnimation(SWIM_ANIMATION);
+            state.setAnimation(STUCK_ANIMATION);
         }
-        else
+        else if(state.getAnimatable().getX() != state.getAnimatable().xOld || state.getAnimatable().getZ() != state.getAnimatable().zOld)
         {
-            //state.setAnimation(LAND_ANIMATION);
+            state.setAnimation(SWIM_ANIMATION);
+        }
+        else {
+            state.setAnimation(IDLE_ANIMATION);
         }
 
         return PlayState.CONTINUE;
@@ -379,6 +389,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             EntityAlgorithms.applyEffectToTarget(mob, MobEffects.MOVEMENT_SPEED, TickUnits.convertSecondsToTicks(CHARGE_DURATION), 4);
             lastTimeOfAttack = level().getGameTime();
             attackStartTime = level().getGameTime();
+            triggerAnim("boost_controller", "boost");
         }
 
         @Override
@@ -443,7 +454,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
         @Override
         protected void triggerAnimation() {
-            ((SculkSquidEntity)mob).triggerAnim("attack_controller", "attack_animation");
+            ((SculkSquidEntity)mob).triggerAnim("attack_controller", "attack");
         }
 
         @Override
