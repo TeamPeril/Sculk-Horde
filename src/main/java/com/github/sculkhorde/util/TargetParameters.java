@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -32,7 +33,7 @@ public class TargetParameters
     //A hash map which we store a blacklist of mobs we should not attack. Should use UUIDs of mobs to identify
     private HashMap<UUID, Long> blacklist = new HashMap<>();
     private boolean canBlackListMobs = true; //Should we blacklist mobs?
-    private boolean targetWalkers;
+    private boolean targetWalkers = true;
 
 
     public TargetParameters()
@@ -51,6 +52,17 @@ public class TargetParameters
         return isEntityValidTarget(e, false);
     };
 
+    public void debugPrint(boolean validatingExistingTarget, LivingEntity e, String message)
+    {
+        String Header = "\n===============\n" +
+                        " isEntityValid" +
+                        "\n===============\n";
+        String mob = this.mob == null ? "" : this.mob.toString() + "\n";
+        String checkType = validatingExistingTarget ? "is Checking Current Target: " : "is Checking Potential Target: ";
+
+        if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug(Header + mob + checkType + e + "\n" + message); }
+    }
+
 
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
@@ -59,83 +71,95 @@ public class TargetParameters
         if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is explicitly denied.");
         }
-
-
 
         //If player is in creative or spectator
         else if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is explicitly player in creative or spectator. Denied.");
         }
 
         //If we do not attack swimmers and target is a swimmer
-        if(!isTargetingSwimmers() && isLivingEntitySwimmer(e))
+        else if(!isTargetingSwimmers() && isLivingEntitySwimmer(e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
         }
 
         //If we do not attack entities in water and target is in water
-        if(!isTargetingEntitiesInWater() && e.isInWater())
+        else if(!isTargetingEntitiesInWater() && e.isInWater())
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is in water. Denied.");
         }
 
-        if(isIgnoringTargetBelow50PercentHealth() && (e.getHealth() < e.getMaxHealth() / 2))
+        else if(isIgnoringTargetBelow50PercentHealth() && (e.getHealth() < e.getMaxHealth() / 2))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is below 50% health. Denied.");
         }
 
-        if(!isTargetWalkers() && !e.isInWater())
+        else if(!isTargetWalkers() && !e.isInWater())
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is walker. Denied.");
         }
 
-        if(isMustSeeTarget() && !canSeeTarget(e))
+        else if(isMustSeeTarget() && !canSeeTarget(e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "cant see target. Denied.");
         }
 
         //If we must reach target and cannot reach target
         // NOTE: validating existing targets gets called significantly more often.
         // When we do this, we disable reach check because it lags to all hell.
-        if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
+        else if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "cannot reach. Denied.");
         }
 
-        if(e instanceof InfestationPurifierEntity)
+        else if(e instanceof InfestationPurifierEntity)
         {
             isValid = true;
+            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
         }
 
-        if(e instanceof Player)
+        else if(e instanceof Player)
         {
             isValid = true;
+            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
         }
 
         // If Blacklisted
-        if(isOnBlackList((Mob) e))
+        else if(isOnBlackList((Mob) e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
         }
 
         //If we do not attack infected and entity is infected
-        if(!isTargetingInfected() && isLivingEntityInfected(e))
+        else if(!isTargetingInfected() && isLivingEntityInfected(e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is infected. Denied.");
         }
 
         //If we do not attack passives and entity is non-hostile
-        if(!isTargetingPassives() && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
+        else if(!isTargetingPassives() && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is Passive. Denied.");
         }
 
         //If we do not attack hostiles and target is hostile
-        if(!isTargetingHostiles() && isLivingEntityHostile(e))
+        else if(!isTargetingHostiles() && isLivingEntityHostile(e))
         {
             isValid = false;
+            debugPrint(validatingExistingTarget, e, "is hostile. Denied.");
         }
 
         return isValid;
@@ -200,7 +224,7 @@ public class TargetParameters
 
     public boolean isIgnoringTargetBelow50PercentHealth()
     {
-        return targetBelow50PercentHealth;
+        return !targetBelow50PercentHealth;
     }
 
     public TargetParameters disableTargetWalkers()

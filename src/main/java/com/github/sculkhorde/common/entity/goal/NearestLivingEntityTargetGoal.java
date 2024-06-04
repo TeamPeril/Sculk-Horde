@@ -5,6 +5,7 @@ import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.phys.AABB;
 
@@ -12,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
 
     //protected EntityPredicate targetConditions;
@@ -53,7 +55,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     protected AABB getTargetSearchArea(double range)
     {
-        return this.mob.getBoundingBox().inflate(range, 4.0D, range);
+        return this.mob.getBoundingBox().inflate(range, this.mob.getAttributeValue(Attributes.FOLLOW_RANGE), range);
     }
 
     protected void findTarget()
