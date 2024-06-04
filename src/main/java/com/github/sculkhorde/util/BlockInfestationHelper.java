@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTab
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -82,8 +83,8 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
-        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
-        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
+        if(ModConfig.isExperimentalFeaturesEnabled()) { SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState()); }
+        if(ModConfig.isExperimentalFeaturesEnabled()) { SculkHorde.explicitInfectableBlocks.addEntry(Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState()); }
 
         // Deeper and Darker Compatibility
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_stone");
@@ -397,7 +398,7 @@ public class BlockInfestationHelper {
     {
 
         //Given random chance and the target location can see the sky, create a sculk hive
-        if(new Random().nextInt(30) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
+        if(ModConfig.isExperimentalFeaturesEnabled() && new Random().nextInt(30) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
         {
             boolean isTargetPosEmptyWater = world.getBlockState(targetPos).is(Blocks.WATER);
             if(!isTargetPosEmptyWater) { return; }

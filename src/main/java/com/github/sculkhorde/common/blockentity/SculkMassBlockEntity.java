@@ -151,6 +151,9 @@ public class SculkMassBlockEntity extends BlockEntity {
             return;
         }
 
+        //Attempt to call in reinforcements and then update stored sculk mass
+        entityFactory.requestReinforcementSculkMass(level, blockPos, context);
+
         // Spawn Block Infection
         CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
         cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -159,14 +162,5 @@ public class SculkMassBlockEntity extends BlockEntity {
         level.addFreshEntity(cursor);
         level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 
-        /*
-        //Attempt to call in reinforcements and then update stored sculk mass
-        entityFactory.requestReinforcementSculkMass(level, blockPos, context);
-        if(context.isRequestViewed && context.isRequestApproved)
-        {
-            blockEntity.setStoredSculkMass(context.remaining_balance);
-        }
-
-         */
     }
 }
