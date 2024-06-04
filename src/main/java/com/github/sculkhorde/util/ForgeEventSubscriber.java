@@ -177,10 +177,19 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void OnLivingDamageEvent(LivingDamageEvent event)
     {
+
+
         // Get Item being used to attack
         ItemStack itemStack = ItemStack.EMPTY;
         Entity damageSourceEntity = event.getSource().getEntity();
         LivingEntity targetEntity = event.getEntity();
+
+        if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity) && damageSourceEntity instanceof LivingEntity)
+        {
+            SculkHorde.savedData.addHostileToMemory((LivingEntity) damageSourceEntity);
+        }
+
+
         if(damageSourceEntity instanceof LivingEntity attackingEntity)
         {
             itemStack = attackingEntity.getMainHandItem();
