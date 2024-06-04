@@ -1,6 +1,8 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModEntities;
@@ -77,6 +79,12 @@ public class EntityAlgorithms {
         {
             return false;
         }
+
+        if(entity instanceof InfestationPurifierEntity && debuff instanceof SculkBurrowedEffect)
+        {
+            return false;
+        }
+
         return true;
     }
 
