@@ -9,13 +9,12 @@ import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
-import java.util.Optional;
+import net.minecraft.world.level.block.state.BlockState;
 
 import static com.github.sculkhorde.common.block.SculkMassBlock.WATERLOGGED;
 
@@ -143,6 +142,24 @@ public class SculkMassBlockEntity extends BlockEntity {
         EntityFactory entityFactory = SculkHorde.entityFactory;
         ReinforcementRequest context = createReinforcementRequest(level, blockPos, blockState, blockEntity);
 
+
+        // Do not spawn infectors if infection not enabled.
+        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        {
+            SculkHorde.savedData.addSculkAccumulatedMass(blockEntity.getStoredSculkMass());
+            level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+            return;
+        }
+
+        // Spawn Block Infection
+        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
+        cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        cursor.setMaxTransformations(blockEntity.getStoredSculkMass() * 100);
+        cursor.setMaxRange(blockEntity.getStoredSculkMass() * 10);
+        level.addFreshEntity(cursor);
+        level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+
+        /*
         //Attempt to call in reinforcements and then update stored sculk mass
         entityFactory.requestReinforcementSculkMass(level, blockPos, context);
         if(context.isRequestViewed && context.isRequestApproved)
@@ -150,17 +167,6 @@ public class SculkMassBlockEntity extends BlockEntity {
             blockEntity.setStoredSculkMass(context.remaining_balance);
         }
 
-        // Do not spawn infectors if infection not enabled.
-        if(!ModConfig.SERVER.block_infestation_enabled.get())
-        {
-            return;
-        }
-
-        // Spawn Block Traverser
-        CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity(level);
-        cursor.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        cursor.setMaxTransformations(blockEntity.getStoredSculkMass() * 10);
-        cursor.setMaxRange(blockEntity.getStoredSculkMass()* 10);
-        level.addFreshEntity(cursor);
+         */
     }
 }

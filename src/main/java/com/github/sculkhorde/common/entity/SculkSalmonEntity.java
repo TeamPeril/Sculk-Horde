@@ -161,7 +161,7 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
     protected PlayState poseWalkCycle(AnimationState<SculkSalmonEntity> state)
     {
 
-        if(!state.getAnimatable().isInWaterOrBubble())
+        if(state.getAnimatable().isInWaterOrBubble())
         {
             state.setAnimation(SWIM_ANIMATION);
         }

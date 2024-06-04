@@ -1,13 +1,12 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.core.ModEntities;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.util.Mth;
+import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -55,44 +54,46 @@ public class TargetParameters
 
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
+        boolean isValid = true;
+
         if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
         {
-            return false;
+            isValid = false;
         }
 
 
 
         //If player is in creative or spectator
-        if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
+        else if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {
-            return false;
+            isValid = false;
         }
 
         //If we do not attack swimmers and target is a swimmer
         if(!isTargetingSwimmers() && isLivingEntitySwimmer(e))
         {
-            return false;
+            isValid = false;
         }
 
         //If we do not attack entities in water and target is in water
         if(!isTargetingEntitiesInWater() && e.isInWater())
         {
-            return false;
+            isValid = false;
         }
 
         if(isIgnoringTargetBelow50PercentHealth() && (e.getHealth() < e.getMaxHealth() / 2))
         {
-            return false;
+            isValid = false;
         }
 
         if(!isTargetWalkers() && !e.isInWater())
         {
-            return false;
+            isValid = false;
         }
 
         if(isMustSeeTarget() && !canSeeTarget(e))
         {
-            return false;
+            isValid = false;
         }
 
         //If we must reach target and cannot reach target
@@ -100,45 +101,44 @@ public class TargetParameters
         // When we do this, we disable reach check because it lags to all hell.
         if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
         {
-            return false;
+            isValid = false;
         }
 
         if(e instanceof InfestationPurifierEntity)
         {
-            return true;
+            isValid = true;
         }
 
         if(e instanceof Player)
         {
-            return true;
+            isValid = true;
         }
 
         // If Blacklisted
         if(isOnBlackList((Mob) e))
         {
-            return false;
+            isValid = false;
         }
 
         //If we do not attack infected and entity is infected
         if(!isTargetingInfected() && isLivingEntityInfected(e))
         {
-            return false;
+            isValid = false;
         }
 
         //If we do not attack passives and entity is non-hostile
         if(!isTargetingPassives() && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
         {
-            return false;
+            isValid = false;
         }
 
         //If we do not attack hostiles and target is hostile
         if(!isTargetingHostiles() && isLivingEntityHostile(e))
         {
-            return false;
+            isValid = false;
         }
 
-        //Entity is Valid
-        return true;
+        return isValid;
     }
 
     public TargetParameters enableBlackListMobs()
