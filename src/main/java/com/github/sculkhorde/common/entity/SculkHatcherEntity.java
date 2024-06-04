@@ -32,8 +32,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * The Sculk Hatcher.
  * @see com.github.sculkhorde.client.renderer.entity.SculkHatcherRenderer
@@ -62,7 +60,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 25F;
+    public static final float FOLLOW_RANGE = 16F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.25F;
 

@@ -59,14 +59,13 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
     public static final float MAX_HEALTH = 8F;
     public static final float ATTACK_DAMAGE = 5F;
-    public static final float FOLLOW_RANGE = 30F;
+    public static final float FOLLOW_RANGE = 16F;
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
             .enableTargetHostiles()
             .enableTargetPassives()
-            .enableMustReachTarget()
             .enableTargetSwimmers()
             .disableBlackListMobs()
             .disableTargetWalkers()
