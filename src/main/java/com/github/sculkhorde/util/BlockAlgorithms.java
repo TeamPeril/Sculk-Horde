@@ -1,7 +1,5 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.block.TendrilsBlock;
-import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
@@ -9,19 +7,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class BlockAlgorithms {
@@ -447,6 +442,11 @@ public class BlockAlgorithms {
 
         boolean canBlockBeWaterLogged = blockState.hasProperty(BlockStateProperties.WATERLOGGED);
         FluidState fluidStateAtTargetPos = world.getFluidState(targetPos);
+
+        if(world.getBlockState(targetPos.below()).is(ModBlocks.DISEASED_KELP_BLOCK.get()))
+        {
+            return;
+        }
 
         // If block is water loggable and in water and can survive, then place
         if(canBlockBeWaterLogged && fluidStateAtTargetPos.getType() == Fluids.WATER && blockState.canSurvive(world, targetPos))

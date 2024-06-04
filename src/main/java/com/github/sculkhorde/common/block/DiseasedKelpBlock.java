@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -120,6 +119,13 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
             return;
         }
 
+        LivingEntity vicitim = ((LivingEntity) entity);
+
+        if(vicitim.getMaxHealth() / 2 >= vicitim.getHealth())
+        {
+            return;
+        }
+
         entity.makeStuckInBlock(blockState, new Vec3(0.8F, 0.75D, (double)0.8F));
         entity.hurt(entity.damageSources().generic(), 1.0F);
         EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), 0);
@@ -159,8 +165,10 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
 
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return levelReader.getBlockState(blockPos.below()).is(ModBlocks.BlockTags.INFESTED_BLOCK)
-                || levelReader.getBlockState(blockPos.below()).is(this);
+        return levelReader.getBlockState(blockPos.below()).isSolid()
+                || levelReader.getBlockState(blockPos.below()).is(this)
+                || levelReader.getBlockState(blockPos.below()).is(Blocks.KELP)
+                || levelReader.getBlockState(blockPos.below()).is(Blocks.KELP_PLANT);
     }
 
     @Override

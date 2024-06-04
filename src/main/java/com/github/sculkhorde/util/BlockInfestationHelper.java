@@ -397,10 +397,14 @@ public class BlockInfestationHelper {
     {
 
         //Given random chance and the target location can see the sky, create a sculk hive
-        if(new Random().nextInt(200) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
+        if(new Random().nextInt(30) <= 1 && world.getFluidState(targetPos).is(Fluids.WATER))
         {
+            boolean isTargetPosEmptyWater = world.getBlockState(targetPos).is(Blocks.WATER);
+            if(!isTargetPosEmptyWater) { return; }
+
+
             int height = world.random.nextInt(25);
-            for(int i = 0; i < height && !world.getBlockState(targetPos.above(i)).getFluidState().isEmpty(); i++)
+            for(int i = 0; i < height && !world.getBlockState(targetPos.above(i + 1)).getFluidState().isEmpty(); i++)
             {
                 world.setBlockAndUpdate(targetPos.above(i), ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
             }
