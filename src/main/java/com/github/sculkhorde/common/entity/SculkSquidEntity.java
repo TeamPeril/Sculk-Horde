@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -199,6 +200,10 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         return blockpos != null ? blockpos.closerToCenterThan(this.position(), 12.0D) : false;
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+    }
 
     public void travel(Vec3 movementVector) {
         if(!this.isEffectiveAi()) { return; }
@@ -209,9 +214,6 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
         }
-
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.001D, 0.0D));
-
     }
 
     private void spawnInk() {
@@ -317,8 +319,12 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         public void tick() {
             if(fish.level().isClientSide()) { return; }
 
+            if(mob.isEyeInFluid(FluidTags.WATER))
+            {
+                fish.setDeltaMovement(fish.getDeltaMovement().add(0.0D, -1D, 0.0D));
+            }
 
-            if (this.operation == MoveControl.Operation.MOVE_TO && !this.fish.getNavigation().isDone()) {
+            else if (this.operation == MoveControl.Operation.MOVE_TO && !this.fish.getNavigation().isDone()) {
                 float f = (float)(this.speedModifier * this.fish.getAttributeValue(Attributes.MOVEMENT_SPEED));
                 this.fish.setSpeed(Mth.lerp(0.125F, this.fish.getSpeed(), f));
                 double d0 = this.wantedX - this.fish.getX();
@@ -370,6 +376,11 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             }
 
             if(level().getGameTime() - lastTimeOfAttack < ATTACK_COOLDOWN)
+            {
+                return false;
+            }
+
+            if(!isInWater())
             {
                 return false;
             }
@@ -429,9 +440,10 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         @Override
         public boolean canUse()
         {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean isTargetValid = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean isInWater = isInWater();
             // If the mob is already targeting something valid, don't bother
-            return canWeUse;
+            return isTargetValid && isInWater;
         }
 
         @Override
