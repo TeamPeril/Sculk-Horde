@@ -214,6 +214,10 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
         }
+        else
+        {
+            super.travel(movementVector);
+        }
     }
 
     private void spawnInk() {
@@ -319,9 +323,9 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         public void tick() {
             if(fish.level().isClientSide()) { return; }
 
-            if(mob.isEyeInFluid(FluidTags.WATER))
+            if(!mob.isEyeInFluid(FluidTags.WATER))
             {
-                fish.setDeltaMovement(fish.getDeltaMovement().add(0.0D, -1D, 0.0D));
+                fish.setDeltaMovement(fish.getDeltaMovement().add(0.0D, -0.001D, 0.0D));
             }
 
             else if (this.operation == MoveControl.Operation.MOVE_TO && !this.fish.getNavigation().isDone()) {
