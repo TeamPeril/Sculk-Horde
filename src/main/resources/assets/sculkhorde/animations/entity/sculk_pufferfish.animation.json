@@ -1,0 +1,21 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.pufferfish.large.v1.8.new": {
+			"loop": true
+		},
+		"swim": {
+			"loop": true
+		},
+		"idle": {
+			"loop": true
+		},
+		"stuck": {
+			"loop": true
+		},
+		"attack": {
+			"loop": "hold_on_last_frame"
+		}
+	},
+	"geckolib_format_version": 2
+}

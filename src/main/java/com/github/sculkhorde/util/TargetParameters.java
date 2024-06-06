@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -59,7 +60,7 @@ public class TargetParameters
         String mob = this.mob == null ? "" : this.mob.toString() + "\n";
         String checkType = validatingExistingTarget ? "is Checking Current Target: " : "is Checking Potential Target: ";
 
-        //if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug(Header + mob + checkType + e + "\n" + message); }
+        if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug(Header + mob + checkType + e + "\n" + message); }
     }
 
 
