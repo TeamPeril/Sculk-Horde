@@ -131,6 +131,15 @@ public class ModEventSubscriber {
                                 EntityFactoryEntry.StrategicValues.Melee,
                                 EntityFactoryEntry.StrategicValues.Aquatic)
                         .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
+
+                new EntityFactoryEntry(ModEntities.SCULK_PUFFERFISH.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setCost((int) SculkPufferfishEntity.MAX_HEALTH)
+                        .addStrategicValues(
+                                EntityFactoryEntry.StrategicValues.Support,
+                                EntityFactoryEntry.StrategicValues.Melee,
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
         };
 
         SculkHorde.entityFactory.addEntriesToFactory(entries);

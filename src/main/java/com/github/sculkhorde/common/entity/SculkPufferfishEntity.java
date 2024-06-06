@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
@@ -43,6 +44,9 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISculkSmartEntity {
 
@@ -140,6 +144,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
         this.goalSelector.addGoal(1, new ChaseHostileAndExplode(this));
+        this.goalSelector.addGoal(2, new ChaseFriendlyAndHeal(this));
         this.goalSelector.addGoal(3, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
 
@@ -356,7 +361,8 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         @Override
         public void start()
         {
-
+            this.timeToRecalcPath = 0;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         @Override
@@ -377,6 +383,94 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = this.adjustedTickDelay(20);
                 this.getMob().getNavigation().moveTo(getTarget(), 1.0);
+            }
+        }
+
+        private void spawnLingeringCloud(MobEffect effect) {
+
+            getMob().playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
+            AreaEffectCloud areaeffectcloud = new AreaEffectCloud(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
+            areaeffectcloud.setOwner((LivingEntity) thisEntity);
+            areaeffectcloud.setRadius(5F);
+            areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(30));
+            areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
+            getMob().level().addFreshEntity(areaeffectcloud);
+        }
+
+    }
+
+    private class ChaseFriendlyAndHeal extends Goal {
+
+        private final ISculkSmartEntity thisEntity; // the skeleton mob
+        private int timeToRecalcPath;
+        long lastTimeOfCheck = 0;
+        long CHECK_INTERVAL = TickUnits.convertSecondsToTicks(5);
+        private final int EXPLODE_RANGE = 1;
+        LivingEntity targetToHeal = null;
+
+        public ChaseFriendlyAndHeal(ISculkSmartEntity mob) {
+            this.thisEntity = mob;
+        }
+
+        private Mob getMob() {
+            return (Mob) this.thisEntity;
+        }
+
+        /**
+         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
+         * method as well.
+         */
+        public boolean canUse()
+        {
+            long currentTime = getMob().level().getGameTime();
+            long timeElapsed = currentTime - lastTimeOfCheck;
+            boolean hasEnoughTimeElapsed = timeElapsed >= CHECK_INTERVAL;
+
+            List<LivingEntity> hurtSculkUnits = new ArrayList<>();
+
+            if(hasEnoughTimeElapsed)
+            {
+                hurtSculkUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) getMob().level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), 15));
+                if(!hurtSculkUnits.isEmpty()) { targetToHeal = hurtSculkUnits.get(0); }
+            }
+
+            return targetToHeal != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return targetToHeal != null && targetToHeal.getHealth() < targetToHeal.getMaxHealth() && targetToHeal.getHealth() > 0;
+        }
+
+        /**
+         * Execute a one shot task or start executing a continuous task
+         */
+        @Override
+        public void start()
+        {
+            this.timeToRecalcPath = 0;
+            lastTimeOfCheck = level().getGameTime();
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        @Override
+        public void tick()
+        {
+            if(targetToHeal == null || level().isClientSide())
+            {
+                return;
+            }
+
+            if (getMob().distanceToSqr(targetToHeal) < EXPLODE_RANGE) {
+                // stop the navigation
+                spawnLingeringCloud(MobEffects.REGENERATION);
+                getMob().hurt(damageSources().genericKill(), Integer.MAX_VALUE);
+
+            }
+
+            if (--this.timeToRecalcPath <= 0) {
+                this.timeToRecalcPath = this.adjustedTickDelay(20);
+                this.getMob().getNavigation().moveTo(targetToHeal, 1.0);
             }
         }
 

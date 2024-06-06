@@ -311,6 +311,18 @@ public class EntityAlgorithms {
 
     }
 
+
+    public static List<LivingEntity> getHurtSculkHordeEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox)
+    {
+        List<LivingEntity> list = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
+            @Override
+            public boolean test(LivingEntity livingEntity) {
+                return isSculkLivingEntity.test(livingEntity) && livingEntity.getHealth() < livingEntity.getMaxHealth();
+            }
+        });
+        return list;
+    }
+
     /**
      * Gets all living entities in the given bounding box.
      * @param serverLevel The given world
