@@ -389,9 +389,9 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         private void spawnLingeringCloud(MobEffect effect) {
 
             getMob().playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
-            AreaEffectCloud areaeffectcloud = new AreaEffectCloud(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
+            AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
             areaeffectcloud.setOwner((LivingEntity) thisEntity);
-            areaeffectcloud.setRadius(5F);
+            areaeffectcloud.setRadius(2F);
             areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(30));
             areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
             getMob().level().addFreshEntity(areaeffectcloud);
@@ -477,9 +477,9 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         private void spawnLingeringCloud(MobEffect effect) {
 
             getMob().playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
-            AreaEffectCloud areaeffectcloud = new AreaEffectCloud(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
+            AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
             areaeffectcloud.setOwner((LivingEntity) thisEntity);
-            areaeffectcloud.setRadius(5F);
+            areaeffectcloud.setRadius(2F);
             areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(30));
             areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
             getMob().level().addFreshEntity(areaeffectcloud);

@@ -68,6 +68,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<CursorSurfacePurifierEntity>> CURSOR_SURFACE_PURIFIER = ENTITY_TYPES.register("cursor_surface_purifier", () -> EntityType.Builder.<CursorSurfacePurifierEntity>of(CursorSurfacePurifierEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("cursor_surface_purifier"));
     public static final RegistryObject<EntityType<CursorPurifierProberEntity>> CURSOR_PURIFIER_PROBER = ENTITY_TYPES.register("cursor_purifier_prober", () -> EntityType.Builder.<CursorPurifierProberEntity>of(CursorPurifierProberEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("cursor_surface_purifier"));
     public static final RegistryObject<EntityType<InfestationPurifierEntity>> INFESTATION_PURIFIER = ENTITY_TYPES.register("infestation_purifier", () -> EntityType.Builder.<InfestationPurifierEntity>of(InfestationPurifierEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("infestation_purifier"));
+    public static final RegistryObject<EntityType<AreaEffectSphericalCloudEntity>> AREA_EFFECT_SPHERICAL_CLOUD = ENTITY_TYPES.register("area_effect_spherical_cloud", () -> EntityType.Builder.<AreaEffectSphericalCloudEntity>of(AreaEffectSphericalCloudEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("area_effect_spherical_cloud"));
 
 
     public static class EntityTags

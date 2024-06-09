@@ -100,6 +100,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), SculkSpineSpikeAttackRenderer::new);
 
+        event.registerEntityRenderer(ModEntities.AREA_EFFECT_SPHERICAL_CLOUD.get(), AreaEffectSphericalCloudRenderer::new);
+
     }
 
     @SubscribeEvent
