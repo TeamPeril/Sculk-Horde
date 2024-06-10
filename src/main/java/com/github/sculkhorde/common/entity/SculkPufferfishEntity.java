@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
@@ -206,6 +207,12 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+
+        if(!hasEffect(MobEffects.REGENERATION))
+        {
+            MobEffectInstance regen = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
+            addEffect(regen, this);
+        }
     }
 
     public void travel(Vec3 movementVector) {
@@ -289,6 +296,17 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
 
     public boolean dampensVibrations() {
         return true;
+    }
+
+    private void spawnLingeringCloud(MobEffect effect) {
+
+        playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
+        AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(level(), getX(), getY() - 1, getZ());
+        areaeffectcloud.setOwner((LivingEntity) this);
+        areaeffectcloud.setRadius(2F);
+        areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(10));
+        areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
+        level().addFreshEntity(areaeffectcloud);
     }
 
     static class FishMoveControl extends MoveControl {
@@ -376,6 +394,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
             if (getMob().distanceToSqr(getTarget()) < EXPLODE_RANGE) {
                 // stop the navigation
                 spawnLingeringCloud(MobEffects.POISON);
+                spawnLingeringCloud(ModMobEffects.SCULK_INFECTION.get());
                 getMob().hurt(damageSources().genericKill(), Integer.MAX_VALUE);
 
             }
@@ -385,18 +404,6 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
                 this.getMob().getNavigation().moveTo(getTarget(), 1.0);
             }
         }
-
-        private void spawnLingeringCloud(MobEffect effect) {
-
-            getMob().playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
-            AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
-            areaeffectcloud.setOwner((LivingEntity) thisEntity);
-            areaeffectcloud.setRadius(2F);
-            areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(30));
-            areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
-            getMob().level().addFreshEntity(areaeffectcloud);
-        }
-
     }
 
     private class ChaseFriendlyAndHeal extends Goal {
@@ -464,6 +471,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
             if (getMob().distanceToSqr(targetToHeal) < EXPLODE_RANGE) {
                 // stop the navigation
                 spawnLingeringCloud(MobEffects.REGENERATION);
+                addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(60)), getTarget());
                 getMob().hurt(damageSources().genericKill(), Integer.MAX_VALUE);
 
             }
@@ -473,18 +481,6 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
                 this.getMob().getNavigation().moveTo(targetToHeal, 1.0);
             }
         }
-
-        private void spawnLingeringCloud(MobEffect effect) {
-
-            getMob().playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
-            AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(getMob().level(), getMob().getX(), getMob().getY(), getMob().getZ());
-            areaeffectcloud.setOwner((LivingEntity) thisEntity);
-            areaeffectcloud.setRadius(2F);
-            areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(30));
-            areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
-            getMob().level().addFreshEntity(areaeffectcloud);
-        }
-
     }
 
     public class SculkSquidRandomSwimmingGoal extends RandomStrollGoal {
