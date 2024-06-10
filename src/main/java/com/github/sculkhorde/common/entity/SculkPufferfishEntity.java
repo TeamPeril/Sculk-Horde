@@ -144,8 +144,8 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
 
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
-        this.goalSelector.addGoal(1, new ChaseHostileAndExplode(this));
-        this.goalSelector.addGoal(2, new ChaseFriendlyAndHeal(this));
+        this.goalSelector.addGoal(1, new ChaseFriendlyAndHeal(this));
+        this.goalSelector.addGoal(2, new ChaseHostileAndExplode(this));
         this.goalSelector.addGoal(3, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
 
