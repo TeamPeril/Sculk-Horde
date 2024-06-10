@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -621,6 +622,19 @@ public class BlockAlgorithms {
         for(BlockPos pos : getBlockPosInCube(origin, range, true))
         {
             if(level.getFluidState(pos).getType() != Fluids.EMPTY)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isNearNonWaterFluid(ServerLevel level, BlockPos origin, int range)
+    {
+        for(BlockPos pos : getBlockPosInCube(origin, range, true))
+        {
+            if(level.getFluidState(pos).getType() != Fluids.EMPTY && !level.getFluidState(pos).is(FluidTags.WATER))
             {
                 return true;
             }

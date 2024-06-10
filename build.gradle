@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20.1-0.9.5'
+version = '1.20.1-0.9.6'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -117,7 +117,6 @@ dependencies {
 	implementation fg.deobf("curse.maven:spore-678295:4764840")
 	implementation fg.deobf("curse.maven:spark-361579:4738952")
 	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
-	implementation fg.deobf("curse.maven:deeperdarker-659011:4807511")
 
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))

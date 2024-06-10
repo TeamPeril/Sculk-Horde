@@ -171,7 +171,11 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             }
         }
 
-        if(BlockAlgorithms.isNearFluid(worldIn, positionIn, 5))
+        if(!ModConfig.isExperimentalFeaturesEnabled() && BlockAlgorithms.isNearFluid(worldIn, positionIn, 5))
+        {
+            return false;
+        }
+        else if(ModConfig.isExperimentalFeaturesEnabled() && BlockAlgorithms.isNearNonWaterFluid(worldIn, positionIn, 5))
         {
             return false;
         }

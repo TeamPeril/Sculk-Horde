@@ -189,6 +189,11 @@ public class BlockInfestationHelper {
 
     public static void tryToInfestBlock(ServerLevel world, BlockPos targetPos)
     {
+        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        {
+            return;
+        }
+
         BlockState victimBlockState = world.getBlockState(targetPos);
         boolean wasAbleToInfestBlock = false;
 
