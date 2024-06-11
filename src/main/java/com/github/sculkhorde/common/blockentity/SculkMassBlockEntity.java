@@ -144,7 +144,7 @@ public class SculkMassBlockEntity extends BlockEntity {
 
 
         // Do not spawn infectors if infection not enabled.
-        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        if(!ModConfig.SERVER.block_infestation_enabled.get() || SculkHorde.cursorHandler.isCursorPopulationAtMax())
         {
             SculkHorde.savedData.addSculkAccumulatedMass(blockEntity.getStoredSculkMass());
             level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());

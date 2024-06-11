@@ -6,12 +6,9 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.BlockInfestationHelper;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -114,7 +111,7 @@ public class SculkBeeInfectorEntity extends SculkBeeHarvesterEntity implements G
     @Override
     protected void executeCodeOnPollination()
     {
-        if(!ModConfig.SERVER.block_infestation_enabled.get())
+        if(!ModConfig.SERVER.block_infestation_enabled.get() || SculkHorde.cursorHandler.isCursorPopulationAtMax())
         {
             return;
         }

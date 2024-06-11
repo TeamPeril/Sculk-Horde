@@ -4,7 +4,6 @@ import com.github.sculkhorde.common.entity.infection.CursorEntity;
 import com.github.sculkhorde.core.ModConfig;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +15,8 @@ public class CursorHandler {
     private int tickDelay = 3;
 
     private boolean manualControlOfTickingEnabled = false;
+
+    private int cursorPopulationThreshold = 0;
 
     public void setManualControlOfTickingEnabled(boolean value) { manualControlOfTickingEnabled = value; }
     public boolean isManualControlOfTickingEnabled() { return manualControlOfTickingEnabled; }
@@ -70,6 +71,11 @@ public class CursorHandler {
         }
     }
 
+    public boolean isCursorPopulationAtMax()
+    {
+        return getSizeOfCursorList() >= cursorPopulationThreshold;
+    }
+
     /**
      * This runs every tick the server runs.
      * The purpose of this function is to manually tick all the cursors if it is enabled.
@@ -88,7 +94,7 @@ public class CursorHandler {
         tickDelay = 0;
         cursors.clean(); // Clean the list before we start ticking cursors
         int cursorPopulationAmount = getSizeOfCursorList();
-        int cursorPopulationThreshold = ModConfig.SERVER.cursors_threshold_for_activation.get();
+        cursorPopulationThreshold = ModConfig.SERVER.cursors_threshold_for_activation.get();
 
         if(cursorPopulationAmount >= cursorPopulationThreshold)
         {
