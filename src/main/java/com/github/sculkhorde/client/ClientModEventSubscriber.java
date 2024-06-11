@@ -102,6 +102,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.AREA_EFFECT_SPHERICAL_CLOUD.get(), AreaEffectSphericalCloudRenderer::new);
 
+        event.registerEntityRenderer(ModEntities.SCULK_WITCH.get(), SculkWitchRenderer::new);
+
     }
 
     @SubscribeEvent

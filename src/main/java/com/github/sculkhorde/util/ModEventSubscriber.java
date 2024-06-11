@@ -140,6 +140,15 @@ public class ModEventSubscriber {
                                 EntityFactoryEntry.StrategicValues.Melee,
                                 EntityFactoryEntry.StrategicValues.Aquatic)
                         .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
+
+                new EntityFactoryEntry(ModEntities.SCULK_WITCH.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setCost((int) SculkWitchEntity.MAX_HEALTH)
+                        .addStrategicValues(
+                                EntityFactoryEntry.StrategicValues.Support,
+                                EntityFactoryEntry.StrategicValues.Melee,
+                                EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
         };
 
         SculkHorde.entityFactory.addEntriesToFactory(entries);
@@ -200,6 +209,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_SALMON.get(), SculkSalmonEntity.createAttributes().build());
         event.put(ModEntities.SCULK_SQUID.get(), SculkSquidEntity.createAttributes().build());
         event.put(ModEntities.SCULK_PUFFERFISH.get(), SculkPufferfishEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_WITCH.get(), SculkWitchEntity.createAttributes().build());
     }
 }
 
