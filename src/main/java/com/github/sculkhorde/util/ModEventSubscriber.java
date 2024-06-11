@@ -142,7 +142,7 @@ public class ModEventSubscriber {
                         .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
 
                 new EntityFactoryEntry(ModEntities.SCULK_WITCH.get())
-                        .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
                         .setCost((int) SculkWitchEntity.MAX_HEALTH)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,

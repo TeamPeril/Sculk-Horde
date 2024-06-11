@@ -59,17 +59,17 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
      */
 
     //The Health
-    public static final float MAX_HEALTH = 10F;
+    public static final float MAX_HEALTH = 20F;
     //The armor of the mob
     public static final float ARMOR = 10F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 7F;
+    public static final float ATTACK_DAMAGE = 5F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.30F;
+    public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
@@ -407,6 +407,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             this.timeToRecalcPath = 0;
             lastTimeOfCheck = level().getGameTime();
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+            this.setFlags(EnumSet.of(Goal.Flag.LOOK));
         }
 
         @Override
@@ -421,6 +422,8 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             {
                 return;
             }
+
+            getLookControl().setLookAt(targetToHeal.getX(), targetToHeal.getEyeY(), targetToHeal.getZ());
 
             if (getMob().distanceToSqr(targetToHeal) < REQUIRED_PROXIMITY && level().getGameTime() - lastTimeOfPotionThrown > POTION_THROW_COOLDOWN) {
                 // stop the navigation
