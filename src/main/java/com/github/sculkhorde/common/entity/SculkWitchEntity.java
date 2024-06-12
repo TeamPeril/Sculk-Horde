@@ -10,14 +10,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
@@ -30,6 +32,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -40,9 +43,11 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartEntity, RangedAttackMob {
 
@@ -70,6 +75,8 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     public static final float FOLLOW_RANGE = 25F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.35F;
+
+    public static final float ATTACK_RANGE = 5;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
@@ -169,8 +176,10 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),
-                        new ChaseFriendlyAndHeal(this),
-                        new RangedAttackGoal(this, 1.0D, 60, 10.0F),
+                        new RunFromHostilesGoal<>(this, 4, 1.0F, 1.0F),
+                        new BuffNearbyAllies(this),
+                        // RangedAttackGoal(thisMob, speedModifier, Min Attack Interval, Max Attack Interval, Attack Radius)
+                        new RangedAttackGoal(this, 1.0D, 30, 30, 10.0F),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
@@ -203,6 +212,28 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         return goals;
     }
 
+    @Override
+    public boolean hurt(DamageSource damageSource, float amount)
+    {
+        boolean isIndirectMagicDamageType = damageSource.is(DamageTypes.INDIRECT_MAGIC);
+        boolean isMagicDamageType = damageSource.is(DamageTypes.MAGIC);
+        if(isIndirectMagicDamageType || isMagicDamageType)
+        {
+            return false;
+        }
+
+        return super.hurt(damageSource, amount);
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        if(!hasEffect(MobEffects.REGENERATION))
+        {
+            addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1));
+        }
+        super.customServerAiStep();
+    }
+
     public void performRangedAttack(LivingEntity target, float p_34144_) {
         Vec3 vec3 = target.getDeltaMovement();
         double d0 = target.getX() + vec3.x - this.getX();
@@ -210,26 +241,17 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         double d2 = target.getZ() + vec3.z - this.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         Potion potion = Potions.HARMING;
-        if (EntityAlgorithms.isSculkLivingEntity.test(target)) {
-            if (target.getHealth() <= 4.0F)
-            {
-                potion = Potions.HEALING;
-            }
-            else if(random.nextFloat() < 0.50F)
-            {
-                potion = Potions.REGENERATION;
-            }
-            else
-            {
-                potion = Potions.STRENGTH;
-            }
+        float rng = random.nextFloat();
 
-            this.setTarget((LivingEntity)null);
-        } else if (d3 >= 8.0D && !target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
-            potion = Potions.SLOWNESS;
-        } else if (target.getHealth() >= 8.0F && !target.hasEffect(MobEffects.POISON)) {
+        if(rng > 0.9)
+        {
+            potion = Potions.HARMING;
+        }
+        else if(rng > 0.6)
+        {
             potion = Potions.POISON;
-        } else if (d3 <= 3.0D && !target.hasEffect(MobEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
+        }
+        else {
             potion = Potions.WEAKNESS;
         }
 
@@ -330,15 +352,15 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.PILLAGER_AMBIENT;
+        return SoundEvents.WITCH_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.PILLAGER_HURT;
+        return SoundEvents.WITCH_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.PILLAGER_DEATH;
+        return SoundEvents.WITCH_DEATH;
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
@@ -356,7 +378,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         private int timeToRecalcPath;
         long lastTimeOfCheck = 0;
         long CHECK_INTERVAL = TickUnits.convertSecondsToTicks(5);
-        private final int REQUIRED_PROXIMITY = 5;
+        private final int REQUIRED_PROXIMITY = 10;
         LivingEntity targetToHeal = null;
 
         private long lastTimeOfPotionThrown = 0;
@@ -459,6 +481,144 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         }
     }
 
+    private class BuffNearbyAllies extends Goal {
 
+        private final ISculkSmartEntity thisEntity; // the skeleton mob
+        private int timeToRecalcPath;
+        long lastTimeOfGoalExecution = 0;
+        long EXECUTION_INTERVAL = TickUnits.convertSecondsToTicks(5);
+        private final int BUFF_RADIUS = 10;
+
+        List<LivingEntity> hurtUnits;
+
+        public BuffNearbyAllies(ISculkSmartEntity mob) {
+            this.thisEntity = mob;
+        }
+
+        private Mob getMob() {
+            return (Mob) this.thisEntity;
+        }
+
+        /**
+         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
+         * method as well.
+         */
+        public boolean canUse()
+        {
+            long currentTime = getMob().level().getGameTime();
+            if(currentTime - lastTimeOfGoalExecution < EXECUTION_INTERVAL)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return false;
+        }
+
+        /**
+         * Execute a one shot task or start executing a continuous task
+         */
+        @Override
+        public void start()
+        {
+            this.timeToRecalcPath = 0;
+            lastTimeOfGoalExecution = level().getGameTime();
+
+            hurtUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
+
+            MobEffectInstance regen = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
+            MobEffectInstance strength = new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(5), 0);
+
+            for(LivingEntity e : hurtUnits)
+            {
+                e.addEffect(regen);
+                e.addEffect(strength);
+            }
+        }
+
+        @Override
+        public void tick()
+        {
+            if(level().isClientSide())
+            {
+                return;
+            }
+
+
+        }
+    }
+
+    public class RunFromHostilesGoal<T extends LivingEntity> extends Goal {
+        protected final PathfinderMob mob;
+        private final double walkSpeedModifier;
+        private final double sprintSpeedModifier;
+        @Nullable
+        protected Optional<LivingEntity> toAvoid;
+        protected final float triggerDistance;
+        @Nullable
+        protected Path path;
+        protected final PathNavigation pathNav;
+        public RunFromHostilesGoal(PathfinderMob mob, float triggerDistance, double walkSpeedMod, double sprintSpeedMod) {
+            this.mob = mob;
+            this.triggerDistance = triggerDistance;
+            this.walkSpeedModifier = walkSpeedMod;
+            this.sprintSpeedModifier = sprintSpeedMod;
+            this.pathNav = mob.getNavigation();
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        public boolean canUse()
+        {
+            this.toAvoid = EntityAlgorithms.getNearestHostile((ServerLevel) level(), blockPosition(), getBoundingBox().inflate(triggerDistance));
+            if (this.toAvoid.isEmpty()) {
+                return false;
+            } else {
+                Vec3 vec3 = DefaultRandomPos.getPosAway(this.mob, 16, 7, this.toAvoid.get().position());
+                if (vec3 == null) {
+                    return false;
+                } else if (this.toAvoid.get().distanceToSqr(vec3.x, vec3.y, vec3.z) < this.toAvoid.get().distanceToSqr(this.mob)) {
+                    return false;
+                } else {
+                    this.path = this.pathNav.createPath(vec3.x, vec3.y, vec3.z, 0);
+                    return this.path != null;
+                }
+            }
+        }
+
+        public boolean canContinueToUse() {
+            return !this.pathNav.isDone();
+        }
+
+        public void start() {
+            this.pathNav.moveTo(this.path, this.walkSpeedModifier);
+
+            if(!hasEffect(MobEffects.INVISIBILITY) && getHealth() <= getMaxHealth() / 2)
+            {
+                level().playSound((Player)null, getX(), getY(), getZ(), SoundEvents.WITCH_DRINK, getSoundSource(), 1.0F, 0.8F + random.nextFloat() * 0.4F);
+                addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, TickUnits.convertSecondsToTicks(10), 0));
+                addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, TickUnits.convertSecondsToTicks(10), 0));
+            }
+        }
+
+        public void stop() {
+            this.toAvoid = null;
+        }
+
+        public void tick() {
+
+            if(toAvoid.isEmpty()) { return; }
+
+            if (this.mob.distanceToSqr(this.toAvoid.get()) < 49.0D) {
+                this.mob.getNavigation().setSpeedModifier(this.sprintSpeedModifier);
+            } else {
+                this.mob.getNavigation().setSpeedModifier(this.walkSpeedModifier);
+            }
+
+        }
+    }
 
 }

@@ -37,6 +37,8 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_SALMON_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_SQUID_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_PUFFERFISH_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_WITCH_SPAWN_EGG.get());
 
                 event.accept(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get());
                 event.accept(ModItems.ESSENCE_OF_PURITY.get());

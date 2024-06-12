@@ -323,6 +323,31 @@ public class EntityAlgorithms {
         return list;
     }
 
+    public static List<LivingEntity> getHostileEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox)
+    {
+        List<LivingEntity> list = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
+            @Override
+            public boolean test(LivingEntity livingEntity) {
+                return EntityAlgorithms.isLivingEntityHostile(livingEntity) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(livingEntity);
+            }
+        });
+        return list;
+    }
+
+    public static Optional<LivingEntity> getNearestHostile(ServerLevel serverLevel, BlockPos position, AABB boundingBox) {
+
+        // Get the list of hostile entities within the bounding box
+        List<LivingEntity> hostiles = getHostileEntitiesInBoundingBox(serverLevel, boundingBox);
+
+        // Stream the list, calculate the distance to the position, and find the minimum
+        return hostiles.stream()
+                .min((entity1, entity2) -> {
+                    double dist1 = entity1.distanceToSqr(position.getX(), position.getY(), position.getZ());
+                    double dist2 = entity2.distanceToSqr(position.getX(), position.getY(), position.getZ());
+                    return Double.compare(dist1, dist2);
+                });
+    }
+
     /**
      * Gets all living entities in the given bounding box.
      * @param serverLevel The given world
