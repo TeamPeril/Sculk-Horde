@@ -109,5 +109,11 @@
     "sounds": [
       "sculkhorde:soul_harvester_item_inserted"
     ]
+  },
+  "ender_bubble_loop": {
+    "subtitle": "sounds.sculkhorde.ender_bubble_loop",
+    "sounds": [
+      "sculkhorde:ender_bubble_loop"
+    ]
   }
 }

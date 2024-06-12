@@ -2,13 +2,13 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -35,6 +35,8 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
     public int currentLifeTicks = 0;
     private double pushUpStrength = 0.1; // Strength of the push effect
     private double orbitStrength = 0.5; // Strength of the orbit effect
+
+    private boolean startedPlayingSFX = false;
 
     public EnderBubbleAttackEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -123,6 +125,11 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
         // If the entity is alive for more than LIFE_TIME, discard it
         if(currentLifeTicks >= LIFE_TIME && LIFE_TIME != -1) this.discard();
+
+        if(!startedPlayingSFX)
+        {
+            level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), ModSounds.ENDER_BUBBLE_LOOP.get(), this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+        }
 
         pullInEntities(20);
 
