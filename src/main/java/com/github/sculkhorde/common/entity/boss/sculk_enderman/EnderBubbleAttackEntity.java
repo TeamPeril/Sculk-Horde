@@ -128,7 +128,7 @@ public class EnderBubbleAttackEntity extends SpecialEffectEntity implements GeoE
 
         if(!startedPlayingSFX)
         {
-            level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), ModSounds.ENDER_BUBBLE_LOOP.get(), this.getSoundSource(), 1.0F, 0.5F);
+            level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), ModSounds.ENDER_BUBBLE_LOOP.get(), this.getSoundSource(), 1.0F, 1F);
         }
 
         pullInEntities(20);
