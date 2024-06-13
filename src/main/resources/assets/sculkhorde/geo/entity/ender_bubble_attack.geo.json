@@ -4,9 +4,9 @@
 		{
 			"description": {
 				"identifier": "geometry.unknown",
-				"texture_width": 256,
-				"texture_height": 256,
-				"visible_bounds_width": 4,
+				"texture_width": 512,
+				"texture_height": 512,
+				"visible_bounds_width": 11,
 				"visible_bounds_height": 3,
 				"visible_bounds_offset": [0, 0.5, 0]
 			},
@@ -17,16 +17,36 @@
 				},
 				{
 					"name": "outercube",
+					"parent": "root",
 					"pivot": [0, 0, 0],
 					"cubes": [
-						{"origin": [-24, -24, -24], "size": [48, 48, 48], "uv": [0, 0]}
+						{"origin": [-24, -24, -24], "size": [48, 48, 48], "uv": [0, 224]}
 					]
 				},
 				{
 					"name": "innercube",
+					"parent": "root",
 					"pivot": [0, 0, 0],
 					"cubes": [
-						{"origin": [-16, -16, -16], "size": [32, 32, 32], "uv": [0, 96]}
+						{"origin": [-16, -16, -16], "size": [32, 32, 32], "uv": [192, 224]}
+					]
+				},
+				{
+					"name": "ring1",
+					"parent": "root",
+					"pivot": [0, -5, 0],
+					"rotation": [5, 0, -5],
+					"cubes": [
+						{"origin": [-56, -5, -56], "size": [112, 0, 112], "uv": [0, 112]}
+					]
+				},
+				{
+					"name": "ring2",
+					"parent": "root",
+					"pivot": [0, 5, 0],
+					"rotation": [-5, 0, 5],
+					"cubes": [
+						{"origin": [-56, 5, -56], "size": [112, 0, 112], "uv": [0, 0]}
 					]
 				}
 			]
