@@ -323,6 +323,17 @@ public class EntityAlgorithms {
         return list;
     }
 
+    public static List<LivingEntity> getSculkHordeEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox)
+    {
+        List<LivingEntity> list = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
+            @Override
+            public boolean test(LivingEntity livingEntity) {
+                return isSculkLivingEntity.test(livingEntity);
+            }
+        });
+        return list;
+    }
+
     public static List<LivingEntity> getHostileEntitiesInBoundingBox(ServerLevel serverLevel, AABB boundingBox)
     {
         List<LivingEntity> list = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {

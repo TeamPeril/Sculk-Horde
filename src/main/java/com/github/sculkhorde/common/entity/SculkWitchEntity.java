@@ -13,7 +13,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
@@ -44,7 +47,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -64,9 +66,9 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
      */
 
     //The Health
-    public static final float MAX_HEALTH = 20F;
+    public static final float MAX_HEALTH = 10F;
     //The armor of the mob
-    public static final float ARMOR = 10F;
+    public static final float ARMOR = 0F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
     public static final float ATTACK_DAMAGE = 5F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
@@ -76,7 +78,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.35F;
 
-    public static final float ATTACK_RANGE = 5;
+    public static MobEffectInstance effect = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
@@ -91,6 +93,30 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     public SculkWitchEntity(EntityType<? extends SculkWitchEntity> type, Level worldIn) {
         super(type, worldIn);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+
+        int rng = random.nextInt(0,6);
+
+        switch(rng)
+        {
+            case 0:
+                effect = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
+                break;
+            case 1:
+                effect = new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(5), 1);
+                break;
+            case 2:
+                effect = new MobEffectInstance(MobEffects.MOVEMENT_SPEED, TickUnits.convertMinutesToTicks(5), 1);
+                break;
+            case 3:
+                effect = new MobEffectInstance(MobEffects.FIRE_RESISTANCE, TickUnits.convertMinutesToTicks(5), 1);
+                break;
+            case 4:
+                effect = new MobEffectInstance(MobEffects.ABSORPTION, TickUnits.convertMinutesToTicks(5), 1);
+                break;
+            case 5:
+                effect = new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, TickUnits.convertMinutesToTicks(5), 1);
+                break;
+        }
     }
     /**
      * Determines & registers the attributes of the mob.
@@ -229,7 +255,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     protected void customServerAiStep() {
         if(!hasEffect(MobEffects.REGENERATION))
         {
-            addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1));
+            addEffect(effect);
         }
         super.customServerAiStep();
     }
@@ -253,42 +279,6 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         }
         else {
             potion = Potions.WEAKNESS;
-        }
-
-        ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
-        thrownpotion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
-        thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
-        thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
-        if (!this.isSilent()) {
-            this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
-        }
-
-        this.level().addFreshEntity(thrownpotion);
-
-    }
-
-    public void performHealAttack(LivingEntity target) {
-        Vec3 vec3 = target.getDeltaMovement();
-        double d0 = target.getX() + vec3.x - this.getX();
-        double d1 = target.getEyeY() - (double)1.1F - this.getY();
-        double d2 = target.getZ() + vec3.z - this.getZ();
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        Potion potion = Potions.HARMING;
-        if (EntityAlgorithms.isSculkLivingEntity.test(target)) {
-            if (target.getHealth() <= 4.0F)
-            {
-                potion = Potions.HEALING;
-            }
-            else if(random.nextFloat() < 0.50F)
-            {
-                potion = Potions.REGENERATION;
-            }
-            else
-            {
-                potion = Potions.STRENGTH;
-            }
-
-            this.setTarget((LivingEntity)null);
         }
 
         ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
@@ -371,116 +361,6 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         return true;
     }
 
-
-    private class ChaseFriendlyAndHeal extends Goal {
-
-        private final ISculkSmartEntity thisEntity; // the skeleton mob
-        private int timeToRecalcPath;
-        long lastTimeOfCheck = 0;
-        long CHECK_INTERVAL = TickUnits.convertSecondsToTicks(5);
-        private final int REQUIRED_PROXIMITY = 10;
-        LivingEntity targetToHeal = null;
-
-        private long lastTimeOfPotionThrown = 0;
-        private final long POTION_THROW_COOLDOWN = TickUnits.convertSecondsToTicks(5);
-
-        public ChaseFriendlyAndHeal(ISculkSmartEntity mob) {
-            this.thisEntity = mob;
-        }
-
-        private Mob getMob() {
-            return (Mob) this.thisEntity;
-        }
-
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
-        public boolean canUse()
-        {
-            long currentTime = getMob().level().getGameTime();
-            long timeElapsed = currentTime - lastTimeOfCheck;
-            boolean hasEnoughTimeElapsed = timeElapsed >= CHECK_INTERVAL;
-
-            List<LivingEntity> hurtSculkUnits = new ArrayList<>();
-
-            if(hasEnoughTimeElapsed)
-            {
-                hurtSculkUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) getMob().level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), 15));
-                if(!hurtSculkUnits.isEmpty()) { targetToHeal = hurtSculkUnits.get(0); }
-
-                lastTimeOfCheck = level().getGameTime();
-            }
-
-            return targetToHeal != null;
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return verifyHealTarget();
-        }
-
-        /**
-         * Execute a one shot task or start executing a continuous task
-         */
-        @Override
-        public void start()
-        {
-            this.timeToRecalcPath = 0;
-            lastTimeOfCheck = level().getGameTime();
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
-            this.setFlags(EnumSet.of(Goal.Flag.LOOK));
-        }
-
-        @Override
-        public void tick()
-        {
-            if(level().isClientSide())
-            {
-                return;
-            }
-
-            if(!verifyHealTarget())
-            {
-                return;
-            }
-
-            getLookControl().setLookAt(targetToHeal.getX(), targetToHeal.getEyeY(), targetToHeal.getZ());
-
-            if (getMob().distanceToSqr(targetToHeal) < REQUIRED_PROXIMITY && level().getGameTime() - lastTimeOfPotionThrown > POTION_THROW_COOLDOWN) {
-                // stop the navigation
-                performHealAttack(targetToHeal);
-                lastTimeOfPotionThrown = level().getGameTime();
-            }
-
-            if (--this.timeToRecalcPath <= 0) {
-                this.timeToRecalcPath = this.adjustedTickDelay(20);
-                this.getMob().getNavigation().moveTo(targetToHeal, 1.0);
-            }
-        }
-
-        protected boolean verifyHealTarget()
-        {
-            if (targetToHeal == null)
-            {
-                return false;
-            }
-
-            if(targetToHeal.getHealth() >= targetToHeal.getMaxHealth())
-            {
-                targetToHeal = null;
-                return false;
-            }
-            if(targetToHeal.getHealth() <= 0)
-            {
-                targetToHeal = null;
-                return false;
-            }
-
-            return true;
-        }
-    }
-
     private class BuffNearbyAllies extends Goal {
 
         private final ISculkSmartEntity thisEntity; // the skeleton mob
@@ -528,15 +408,11 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             this.timeToRecalcPath = 0;
             lastTimeOfGoalExecution = level().getGameTime();
 
-            hurtUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
-
-            MobEffectInstance regen = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
-            MobEffectInstance strength = new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(5), 0);
+            hurtUnits = EntityAlgorithms.getSculkHordeEntitiesInBoundingBox((ServerLevel) level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
 
             for(LivingEntity e : hurtUnits)
             {
-                e.addEffect(regen);
-                e.addEffect(strength);
+                e.addEffect(effect);
             }
         }
 
