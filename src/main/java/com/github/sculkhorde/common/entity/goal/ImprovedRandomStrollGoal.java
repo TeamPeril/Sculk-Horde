@@ -131,7 +131,7 @@ public class ImprovedRandomStrollGoal extends Goal{
         }
         else
         {
-            Vec3 squadLeaderPos = ((Mob) getSculkMob().getSquad().squadLeader.get()).position();
+            Vec3 squadLeaderPos = ((Entity) getSculkMob().getSquad().squadLeader.get()).position();
 
             if (isInWater)
             {
