@@ -102,19 +102,19 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
                 effect = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
                 break;
             case 1:
-                effect = new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(5), 1);
+                effect = new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(5), 0);
                 break;
             case 2:
-                effect = new MobEffectInstance(MobEffects.MOVEMENT_SPEED, TickUnits.convertMinutesToTicks(5), 1);
+                effect = new MobEffectInstance(MobEffects.MOVEMENT_SPEED, TickUnits.convertMinutesToTicks(5), 0);
                 break;
             case 3:
-                effect = new MobEffectInstance(MobEffects.FIRE_RESISTANCE, TickUnits.convertMinutesToTicks(5), 1);
+                effect = new MobEffectInstance(MobEffects.FIRE_RESISTANCE, TickUnits.convertMinutesToTicks(5), 0);
                 break;
             case 4:
                 effect = new MobEffectInstance(MobEffects.ABSORPTION, TickUnits.convertMinutesToTicks(5), 1);
                 break;
             case 5:
-                effect = new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, TickUnits.convertMinutesToTicks(5), 1);
+                effect = new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, TickUnits.convertMinutesToTicks(5), 0);
                 break;
         }
     }
