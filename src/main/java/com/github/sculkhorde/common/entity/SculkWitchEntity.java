@@ -38,10 +38,10 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -261,6 +261,9 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     }
 
     public void performRangedAttack(LivingEntity target, float p_34144_) {
+
+        triggerAnim("attack_controller", "throwpotion");
+
         Vec3 vec3 = target.getDeltaMovement();
         double d0 = target.getX() + vec3.x - this.getX();
         double d1 = target.getEyeY() - (double)1.1F - this.getY();
@@ -295,45 +298,21 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
     // Animation Code
 
-    private static final RawAnimation JAW_IDLE_ANIMATION = RawAnimation.begin().thenLoop("jaw.idle");
-    private static final RawAnimation JAW_RUN_ANIMATION = RawAnimation.begin().thenLoop("jaw.run");
-    private static final RawAnimation TUMOR_ANIMATION = RawAnimation.begin().thenLoop("tumor");
-    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("jaw.attack");
+    private static final RawAnimation THROW_POTION_ANIMATION = RawAnimation.begin().thenPlay("throwpotion");
+    private static final RawAnimation BUFF_ALLIES_ANIMATION = RawAnimation.begin().thenPlay("dispense");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
+            .triggerableAnim("throwpotion", THROW_POTION_ANIMATION).transitionLength(5)
+            .triggerableAnim("dispense", BUFF_ALLIES_ANIMATION).transitionLength(5);
 
 
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                //DefaultAnimations.genericWalkRunIdleController(this).transitionLength(5),
-                //ATTACK_ANIMATION_CONTROLLER,
-                //new AnimationController<>(this, "Legs", 5, this::poseJawCycle),
-                //new AnimationController<>(this, "Tumor", 5, this::poseTumorCycle)
+                DefaultAnimations.genericWalkIdleController(this).transitionLength(5),
+                ATTACK_ANIMATION_CONTROLLER
         );
-    }
-
-    // Create the animation handler for the body segment
-    protected PlayState poseJawCycle(AnimationState<SculkWitchEntity> state)
-    {
-        if(!state.isMoving())
-        {
-            state.setAnimation(JAW_IDLE_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(JAW_RUN_ANIMATION);
-        }
-
-        return PlayState.CONTINUE;
-    }
-
-    protected PlayState poseTumorCycle(AnimationState<SculkWitchEntity> state)
-    {
-        state.setAnimation(TUMOR_ANIMATION);
-        return PlayState.CONTINUE;
     }
 
     @Override
@@ -414,6 +393,8 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             {
                 e.addEffect(effect);
             }
+
+            triggerAnim("attack_controller", "dispense");
         }
 
         @Override
