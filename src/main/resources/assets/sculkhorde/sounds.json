@@ -115,5 +115,13 @@
     "sounds": [
       "sculkhorde:ender_bubble_loop"
     ]
+  },
+  "sculk_zombie_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_zombie_idle",
+    "sounds": [
+      "sculkhorde:sculk_zombie_idle1",
+      "sculkhorde:sculk_zombie_idle2",
+      "sculkhorde:sculk_zombie_idle3"
+    ]
   }
 }

@@ -283,5 +283,6 @@
   "entity.sculkhorde.sculk_pufferfish": "Sculk Pufferfish",
   "item.sculkhorde.sculk_pufferfish_spawn_egg": "Sculk Pufferfish Spawn Egg",
   "entity.sculkhorde.sculk_witch": "Sculk Witch",
-  "item.sculkhorde.sculk_witch_spawn_egg": "Sculk Witch Spawn Egg"
+  "item.sculkhorde.sculk_witch_spawn_egg": "Sculk Witch Spawn Egg",
+  "sounds.sculkhorde.sculk_zombie_idle": "Sculk Zombie Groans"
 }

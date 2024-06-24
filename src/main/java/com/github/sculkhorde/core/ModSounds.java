@@ -30,6 +30,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SOUL_HARVESTER_FINISHED = registerSoundEvent("soul_harvester_finished");
     public static final RegistryObject<SoundEvent> SOUL_HARVESTER_ACTIVE = registerSoundEvent("soul_harvester_active");
     public static final RegistryObject<SoundEvent> ENDER_BUBBLE_LOOP = registerSoundEvent("ender_bubble_loop");
+    public static final RegistryObject<SoundEvent> SCULK_ZOMBIE_IDLE = registerSoundEvent("sculk_zombie_idle");
 
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
