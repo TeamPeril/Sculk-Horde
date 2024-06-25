@@ -215,11 +215,11 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.DROWNED_HURT;
+        return ModSounds.SCULK_ZOMBIE_HURT.get();
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.DROWNED_DEATH;
+        return ModSounds.SCULK_ZOMBIE_DEATH.get();
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {

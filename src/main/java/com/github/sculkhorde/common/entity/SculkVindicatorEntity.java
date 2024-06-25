@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -10,10 +11,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,8 +30,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.concurrent.TimeUnit;
 
 public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -237,15 +238,15 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.PILLAGER_AMBIENT;
+        return ModSounds.SCULK_VINDICATOR_IDLE.get();
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.PILLAGER_HURT;
+        return ModSounds.SCULK_VINDICATOR_HURT.get();
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.PILLAGER_DEATH;
+        return ModSounds.SCULK_VINDICATOR_DEATH.get();
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
@@ -255,15 +256,6 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     public boolean dampensVibrations() {
         return true;
     }
-
-
-    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
-    @Override
-    public void onRemovedFromWorld() {
-        SculkHorde.savedData.addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
-    }
-    */
 
 
     public class SculkVindicatorAttackGoal extends CustomMeleeAttackGoal

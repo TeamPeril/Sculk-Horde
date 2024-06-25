@@ -284,5 +284,10 @@
   "item.sculkhorde.sculk_pufferfish_spawn_egg": "Sculk Pufferfish Spawn Egg",
   "entity.sculkhorde.sculk_witch": "Sculk Witch",
   "item.sculkhorde.sculk_witch_spawn_egg": "Sculk Witch Spawn Egg",
-  "sounds.sculkhorde.sculk_zombie_idle": "Sculk Zombie Groans"
+  "sounds.sculkhorde.sculk_zombie_idle": "Sculk Zombie Groans",
+  "sounds.sculkhorde.sculk_zombie_hurt": "Sculk Zombie Hurt",
+  "sounds.sculkhorde.sculk_zombie_death": "Sculk Zombie Died",
+  "sounds.sculkhorde.sculk_vindicator_idle": "Sculk Vindicator Groans",
+  "sounds.sculkhorde.sculk_vindicator_hurt": "Sculk Vindicator Hurt",
+  "sounds.sculkhorde.sculk_vindicator_death": "Sculk Vindicator Died"
 }
