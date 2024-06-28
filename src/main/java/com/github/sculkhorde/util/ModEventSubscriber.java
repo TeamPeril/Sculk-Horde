@@ -137,6 +137,7 @@ public class ModEventSubscriber {
                         .setCost((int) SculkPufferfishEntity.MAX_HEALTH)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,
+                                EntityFactoryEntry.StrategicValues.Combat,
                                 EntityFactoryEntry.StrategicValues.Melee,
                                 EntityFactoryEntry.StrategicValues.Aquatic)
                         .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
@@ -146,6 +147,7 @@ public class ModEventSubscriber {
                         .setCost((int) SculkWitchEntity.MAX_HEALTH)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,
+                                EntityFactoryEntry.StrategicValues.Combat,
                                 EntityFactoryEntry.StrategicValues.Melee,
                                 EntityFactoryEntry.StrategicValues.EffectiveOnGround)
                         .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
