@@ -145,6 +145,8 @@ public class ModEventSubscriber {
                 new EntityFactoryEntry(ModEntities.SCULK_WITCH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
                         .setCost((int) SculkWitchEntity.MAX_HEALTH)
+                        .setChanceToSpawn(0.5F)
+                        .setLimit(2)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,
                                 EntityFactoryEntry.StrategicValues.Combat,

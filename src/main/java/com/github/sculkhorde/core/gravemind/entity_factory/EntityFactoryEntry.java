@@ -1,8 +1,8 @@
 package com.github.sculkhorde.core.gravemind.entity_factory;
 
 import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -11,6 +11,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * This class is only used in the EntityFactory class which stores a list
@@ -19,12 +20,17 @@ import java.util.ArrayList;
  */
 public class EntityFactoryEntry {
 
+    Random rng = new Random();
+
     public enum StrategicValues {Combat, Infector, Melee, Ranged, Boss, Support, Tank, EffectiveInSkies, Aquatic, EffectiveOnGround}
 
-    private int orderCost = 0;
-    private EntityType entity = null;
-    private int limit = Integer.MAX_VALUE; // The limit of how many of this entity can be spawned
-    private  StrategicValues[] strategicValues = new StrategicValues[]{};
+    private int orderCost;
+    private EntityType<Mob> entity;
+    private int squad_limit = Integer.MAX_VALUE;
+
+    private float chanceToSpawn = 1.0F;
+
+    private StrategicValues[] strategicValues = new StrategicValues[]{};
 
     private ReinforcementRequest.senderType explicitDeniedSenders[] = new ReinforcementRequest.senderType[]{};
     private Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
@@ -54,9 +60,20 @@ public class EntityFactoryEntry {
         return orderCost;
     }
 
+    public boolean getChanceToSpawn()
+    {
+        return rng.nextFloat() <= chanceToSpawn;
+    }
+
+    public EntityFactoryEntry setChanceToSpawn(float value)
+    {
+        chanceToSpawn = value;
+        return this;
+    }
+
     public EntityFactoryEntry setLimit(int limit)
     {
-        this.limit = limit;
+        this.squad_limit = limit;
         return this;
     }
 
@@ -69,7 +86,7 @@ public class EntityFactoryEntry {
 
     public int getLimit()
     {
-        return limit;
+        return squad_limit;
     }
 
     public EntityFactoryEntry addStrategicValues(StrategicValues... values)
@@ -78,15 +95,6 @@ public class EntityFactoryEntry {
         return this;
     }
 
-    public StrategicValues[] getStrategicValues()
-    {
-        return strategicValues;
-    }
-
-    public StrategicValues getFirstStrategicValue()
-    {
-        return strategicValues[0];
-    }
 
     public EntityFactoryEntry setExplicitlyDeniedSenders(ReinforcementRequest.senderType... deniedSenders)
     {
@@ -94,20 +102,11 @@ public class EntityFactoryEntry {
         return this;
     }
 
-    public ReinforcementRequest.senderType[] getExplicitDeniedSenders()
-    {
-        return explicitDeniedSenders;
-    }
 
     public EntityFactoryEntry setMinEvolutionRequired(Gravemind.evolution_states minEvolutionRequired)
     {
         this.minEvolutionRequired = minEvolutionRequired;
         return this;
-    }
-
-    public Gravemind.evolution_states getMinEvolutionRequired()
-    {
-        return minEvolutionRequired;
     }
 
     public boolean isSenderExplicitlyDenied(ReinforcementRequest.senderType sender)
@@ -130,6 +129,10 @@ public class EntityFactoryEntry {
             return false;
         }
         else if(!SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired))
+        {
+            return false;
+        }
+        else if(!getChanceToSpawn())
         {
             return false;
         }
@@ -185,7 +188,7 @@ public class EntityFactoryEntry {
         return false;
     }
 
-    public boolean isEntryAppropriate(ReinforcementRequest context)
+     public boolean isEntryAppropriate(ReinforcementRequest context)
     {
         if(context == null)
         {
@@ -221,6 +224,10 @@ public class EntityFactoryEntry {
             return false;
         }
         else if(isSenderExplicitlyDenied)
+        {
+            return false;
+        }
+        else if(!getChanceToSpawn())
         {
             return false;
         }
