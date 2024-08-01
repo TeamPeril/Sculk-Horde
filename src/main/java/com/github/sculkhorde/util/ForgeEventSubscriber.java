@@ -233,4 +233,14 @@ public class ForgeEventSubscriber {
             SculkHorde.contributionHandler.givePlayerCoinOfContribution(event.getEntity());
         }
     }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
+    {
+        if(PlayerProfileHandler.isPlayerActiveVessel(event.getEntity()))
+        {
+            MobEffectInstance effectInstance = new MobEffectInstance(ModMobEffects.SCULK_VESSEL.get(), Integer.MAX_VALUE);
+            event.getEntity().addEffect(effectInstance);
+        }
+    }
 }
