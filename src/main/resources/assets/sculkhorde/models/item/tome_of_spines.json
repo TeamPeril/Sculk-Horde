@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "sculkhorde:item/tome_of_spines"
+  }
+}
