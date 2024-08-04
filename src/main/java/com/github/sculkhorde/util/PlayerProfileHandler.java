@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class PlayerProfileHandler {
 
-    public static Optional<ModSavedData.PlayerProfileEntry> getPlayerProfile(Player player)
+    private static Optional<ModSavedData.PlayerProfileEntry> getPlayerProfile(Player player)
     {
         for(ModSavedData.PlayerProfileEntry entry: SculkHorde.savedData.getPlayerProfileEntries())
         {
@@ -20,6 +20,23 @@ public class PlayerProfileHandler {
             }
         }
         return Optional.empty();
+    }
+
+    public static ModSavedData.PlayerProfileEntry getOrCreatePlayerProfile(Player player)
+    {
+        Optional<ModSavedData.PlayerProfileEntry> profile =  getPlayerProfile(player);
+
+        if(profile.isPresent())
+        {
+            return profile.get();
+        }
+        else
+        {
+            ModSavedData.PlayerProfileEntry newEntry = new ModSavedData.PlayerProfileEntry(player);
+            SculkHorde.savedData.getPlayerProfileEntries().add(newEntry);
+            return newEntry;
+
+        }
     }
 
     public static ArrayList<ServerPlayer> getVessels()
