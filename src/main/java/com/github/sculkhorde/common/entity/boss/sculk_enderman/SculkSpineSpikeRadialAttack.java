@@ -93,7 +93,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 
         for(int i = 4; i < 20; i++)
         {
-            spawnSpikesOnCircumference(getSculkEnderman(), i, i * 3, ((i * 10)));
+            spawnSpikesOnCircumference(getSculkEnderman(), i, i * 4, (((i - 4) * 5)));
         }
     }
 
