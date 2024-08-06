@@ -151,8 +151,7 @@ public class ModEventSubscriber {
                                 EntityFactoryEntry.StrategicValues.Support,
                                 EntityFactoryEntry.StrategicValues.Combat,
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.EffectiveOnGround)
-                        .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
+                                EntityFactoryEntry.StrategicValues.EffectiveOnGround),
         };
 
         SculkHorde.entityFactory.addEntriesToFactory(entries);
