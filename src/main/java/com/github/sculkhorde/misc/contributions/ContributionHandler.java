@@ -1,6 +1,5 @@
 package com.github.sculkhorde.misc.contributions;
 
-import com.github.sculkhorde.common.advancement.ContributeTrigger;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.AdvancementUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +55,39 @@ public class ContributionHandler {
         addContributor("Ivan_the_Moron");
         addContributor("Codekid_");
         addContributor("Jamsteobro");
+
+        addContributor("MythicNinja"); //https://www.youtube.com/watch?v=V1euV4mwMFI&t=828s
+
+        //Project S, modded survival Minecraft SMP https://www.youtube.com/watch?v=f25MdHjaZ5w
+        addContributor("immortalhipster");
+        addContributor("Wolfie_Luke");
+        addContributor("SillyLinn");
+        addContributor("Samuelis");
+        addContributor("TheRedRobber");
+        addContributor("Wabadoodel");
+        addContributor("Poke_Snivy");
+        addContributor("CrazyNatureKitty");
+        addContributor("Samuelis");
+        addContributor("Star_Aiden");
+
+        //Moth Plays 1.20.1 Parasites Zombies and Colonies https://www.youtube.com/watch?v=az1hCYSh9WY&t=437s
+        addContributor("Wendifoe");
+
+        // Sculk Horde Survival modpack with extra mods with friends reboot https://www.youtube.com/watch?v=-Mb2f1TIq1g
+        addContributor("Sophienix");
+
+        // Bunch of Sculk Horde vids https://www.youtube.com/watch?v=cIhiy7i2h54
+        addContributor("TGWalker");
+
+        //2 Idiots Fight The Sculk Horde https://www.youtube.com/watch?v=h-EbhQyls3Q
+        addContributor("DR_28");
+        addContributor("Kevoonio");
+
+        // Preparing for the Sculk Horde! Unnamed SMP https://www.youtube.com/watch?v=PCgLKJJNwuM
+        addContributor("jearldster");
+
+        //Surviving 100 Days during a Sculk Outbreak in Hardcore Minecraft | Chaste and Pure edition https://www.youtube.com/watch?v=Gx2joIIwMO0
+        addContributor("Sneve");
 
         addContributor("Abandoned_Cat87");
         addContributor("AbsoluteKun");

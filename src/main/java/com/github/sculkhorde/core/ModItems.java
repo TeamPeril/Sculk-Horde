@@ -284,8 +284,14 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<TomeOfSpines> TOME_OF_SPINES = ITEMS.register("tome_of_spines",
-			TomeOfSpines::new);
+	public static final RegistryObject<TomeOfSpinesItem> TOME_OF_SPINES = ITEMS.register("tome_of_spines",
+			TomeOfSpinesItem::new);
+
+	public static final RegistryObject<TomeOfReinforcementItem> TOME_OF_REINFORCEMENT = ITEMS.register("tome_of_reinforcement",
+			TomeOfReinforcementItem::new);
+
+	public static final RegistryObject<TomeOfVeilItem> TOME_OF_VEIL = ITEMS.register("tome_of_veil",
+			TomeOfVeilItem::new);
 
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPORE_SPEWER_SPAWN_EGG = ITEMS.register("sculk_spore_spewer_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPORE_SPEWER, 0x111B21, 0xD1D6B6, new Item.Properties()));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_SPAWN_EGG = ITEMS.register("sculk_mite_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_MITE, 0x062E37, 0x034150, new Item.Properties()));

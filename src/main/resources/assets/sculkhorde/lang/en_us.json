@@ -289,5 +289,10 @@
   "sounds.sculkhorde.sculk_zombie_death": "Sculk Zombie Died",
   "sounds.sculkhorde.sculk_vindicator_idle": "Sculk Vindicator Groans",
   "sounds.sculkhorde.sculk_vindicator_hurt": "Sculk Vindicator Hurt",
-  "sounds.sculkhorde.sculk_vindicator_death": "Sculk Vindicator Died"
+  "sounds.sculkhorde.sculk_vindicator_death": "Sculk Vindicator Died",
+
+  "item.sculkhorde.tome_of_spines": "Tome of Spines",
+  "item.sculkhorde.tome_of_reinforcement": "Tome of Reinforcement",
+  "item.sculkhorde.tome_of_veil": "Tome of Veil",
+  "item.sculkhorde.graveminds_symbiote": "Gravemind's Symbiote"
 }

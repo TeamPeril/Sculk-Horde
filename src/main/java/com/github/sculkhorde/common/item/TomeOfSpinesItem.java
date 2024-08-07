@@ -2,16 +2,11 @@ package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -22,13 +17,13 @@ import net.minecraftforge.common.extensions.IForgeItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TomeOfSpines extends Item implements IForgeItem {
+public class TomeOfSpinesItem extends TomeItem implements IForgeItem {
 
 	/**
 	 * The Constructor that takes in properties
 	 * @param properties The Properties
 	 */
-	public TomeOfSpines(Properties properties) {
+	public TomeOfSpinesItem(Properties properties) {
 		super(properties);
 
 	}
@@ -37,20 +32,9 @@ public class TomeOfSpines extends Item implements IForgeItem {
 	 * A simpler constructor that does not take in properties.<br>
 	 * I made this so that registering items in ItemRegistry.java can look cleaner
 	 */
-	public TomeOfSpines() {this(getProperties());}
+	public TomeOfSpinesItem() {this(getProperties());}
 
-	/**
-	 * Determines the properties of an item.<br>
-	 * I made this in order to be able to establish a item's properties from within the item class and not in the ItemRegistry.java
-	 * @return The Properties of the item
-	 */
-	public static Properties getProperties()
-	{
-		return new Properties()
-				.rarity(Rarity.EPIC)
-				.fireResistant();
 
-	}
 
 	//This changes the text you see when hovering over an item
 	@Override
@@ -70,30 +54,13 @@ public class TomeOfSpines extends Item implements IForgeItem {
 	}
 
 	@Override
-	public Rarity getRarity(ItemStack itemStack) {
-		return Rarity.EPIC;
+	public int getCooldownTicks()
+	{
+		return TickUnits.convertSecondsToTicks(15);
 	}
 
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
-	{
-		ItemStack itemstack = playerIn.getItemInHand(handIn);
-		BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
-
-		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
-		{
-
-			playerIn.getCooldowns().addCooldown(this, TickUnits.convertSecondsToTicks(0)); //Cool down for second (20 ticks per second)
-
-			executePower(playerIn);
-
-			return InteractionResultHolder.pass(itemstack);
-		}
-		return InteractionResultHolder.fail(itemstack);
-	}
-
 	public void executePower(Player player)
 	{
 
@@ -103,7 +70,7 @@ public class TomeOfSpines extends Item implements IForgeItem {
 		}
 	}
 
-	public static void spawnSpikesOnCircumference(Player player, int radius, int amount, int delayTicks)
+	protected static void spawnSpikesOnCircumference(Player player, int radius, int amount, int delayTicks)
 	{
 		Vec3 origin = new Vec3(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
 		ArrayList<SculkSpineSpikeAttackEntity> entities = new ArrayList<SculkSpineSpikeAttackEntity>();
@@ -129,7 +96,7 @@ public class TomeOfSpines extends Item implements IForgeItem {
 		}
 	}
 
-	public static int getSpawnHeight(Player player, BlockPos startPos)
+	protected static int getSpawnHeight(Player player, BlockPos startPos)
 	{
 		BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos(startPos.getX(), startPos.getY(), startPos.getZ());
 		int iterationsElapsed = 0;
