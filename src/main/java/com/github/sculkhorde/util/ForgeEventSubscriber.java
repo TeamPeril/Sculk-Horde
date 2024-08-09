@@ -243,4 +243,14 @@ public class ForgeEventSubscriber {
             event.getEntity().addEffect(effectInstance);
         }
     }
+
+
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event)
+    {
+        if (event.phase == TickEvent.Phase.START) {
+            TPSHandler.onServerTick();
+        }
+    }
 }

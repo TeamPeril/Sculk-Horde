@@ -59,6 +59,11 @@ public abstract class TomeItem extends Item implements IForgeItem {
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 		BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
 
+		if(worldIn.isClientSide())
+		{
+			// Do something in the future
+			return InteractionResultHolder.fail(itemstack);
+		}
 		if(!PlayerProfileHandler.isPlayerVessel(playerIn))
 		{
 			// Do something in the future
@@ -66,7 +71,7 @@ public abstract class TomeItem extends Item implements IForgeItem {
 		}
 
 		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
+		if(!playerIn.getCooldowns().isOnCooldown(this) && targetPos != null)
 		{
 
 			playerIn.getCooldowns().addCooldown(this, getCooldownTicks()); //

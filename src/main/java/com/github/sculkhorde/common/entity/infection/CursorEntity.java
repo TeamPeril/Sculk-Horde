@@ -274,7 +274,7 @@ public abstract class CursorEntity extends Entity
     public void cursorTick()
     {
         float timeElapsedMilliSeconds = System.currentTimeMillis() - lastTickTime;
-        double tickIntervalMillisecondsAfterMultiplier = tickIntervalMilliseconds - (tickIntervalMilliseconds * (ModConfig.SERVER.infestation_speed_multiplier.get()));
+        double tickIntervalMillisecondsAfterMultiplier = tickIntervalMilliseconds;
         if (timeElapsedMilliSeconds < Math.max(tickIntervalMillisecondsAfterMultiplier, 1)) {
             return;
         }
@@ -462,7 +462,7 @@ public abstract class CursorEntity extends Entity
     {
         if(level().isClientSide()) { return; }
 
-        if(ModConfig.SERVER.thanos_snap_cursors_after_reaching_threshold.get() && SculkHorde.cursorHandler.isManualControlOfTickingEnabled())
+        if(ModConfig.SERVER.performance_mode_thanos_snap_cursors.get() && SculkHorde.cursorHandler.isManualControlOfTickingEnabled())
         {
             ServerLevel serverLevel = (ServerLevel) level();
             MinecraftServer server = serverLevel.getServer();

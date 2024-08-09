@@ -34,7 +34,7 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> block_infestation_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> chunk_loading_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> disable_defeating_sculk_horde;
-        public final ForgeConfigSpec.ConfigValue<Integer> maximum_sculk_population;
+        public final ForgeConfigSpec.ConfigValue<Integer> max_unit_population;
         public final ForgeConfigSpec.ConfigValue<Boolean> trigger_ancient_node_automatically;
         public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_wait_days;
         public final ForgeConfigSpec.ConfigValue<Integer> trigger_ancient_node_time_of_day;
@@ -56,7 +56,6 @@ public class ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> disable_sculk_horde_unless_activated;
-        public final ForgeConfigSpec.ConfigValue<Double> infestation_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> items_infection_cursors_can_eat;
@@ -65,10 +64,12 @@ public class ModConfig {
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> make_block_infestable;
         public static final HashMap<String, Boolean> manually_configured_infestable_blocks = new HashMap<>();
 
-        public final ForgeConfigSpec.ConfigValue<Integer> cursors_threshold_for_activation;
-        public final ForgeConfigSpec.ConfigValue<Integer> cursors_to_tick_per_tick;
-        public final ForgeConfigSpec.ConfigValue<Integer> delay_between_cursor_tick_interval;
-        public final ForgeConfigSpec.ConfigValue<Boolean> thanos_snap_cursors_after_reaching_threshold;
+        public final ForgeConfigSpec.ConfigValue<Integer> max_infector_cursor_population;
+        public final ForgeConfigSpec.ConfigValue<Integer> max_nodes_active;
+        public final ForgeConfigSpec.ConfigValue<Integer> performance_mode_cursor_threshold;
+        public final ForgeConfigSpec.ConfigValue<Integer> performance_mode_cursors_to_tick_per_tick;
+        public final ForgeConfigSpec.ConfigValue<Integer> performance_mode_delay_between_cursor_ticks;
+        public final ForgeConfigSpec.ConfigValue<Boolean> performance_mode_thanos_snap_cursors;
 
         public void loadItemsInfectionCursorsCanEat()
         {
@@ -142,6 +143,16 @@ public class ModConfig {
 
             Config.setInsertionOrderPreserved(true);
 
+            builder.push("Performance Settings");
+            max_unit_population = builder.comment("How many sculk mobs should be allowed to exist at one time?").defineInRange("max_unit_population",200, 0, 1000);
+            max_infector_cursor_population = builder.comment("How many infector cursors should be allowed to exist at one time?").defineInRange("max_infector_cursor_population",200, 0, 1000);
+            max_nodes_active = builder.comment("How many nodes can be active at once?").defineInRange("max_nodes_active",2, 0, 1000);
+            performance_mode_cursor_threshold = builder.comment("How many cursors need to exist for performance mode to kick in. (Default 100)").defineInRange("performance_mode_cursor_threshold", 100, 0, 1000);
+            performance_mode_cursors_to_tick_per_tick = builder.comment("How many cursors should we tick, per in game tick. (Default 50)").defineInRange("performance_mode_cursors_to_tick_per_tick", 50, 0, 100);
+            performance_mode_delay_between_cursor_ticks = builder.comment("How many ticks should there be between intervals of ticking cursors. (Default 1)").defineInRange("performance_mode_delay_between_cursor_ticks", 1, 0, 100);
+            performance_mode_thanos_snap_cursors = builder.comment("50% Chance for cursors to discard themselves upon reaching threshold. (Default false)").define("performance_mode_thanos_snap_cursors", false);
+            builder.pop();
+
             builder.push("Mod Compatability");
             target_faw_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'From Another World'? (Default false)").define("target_faw_entities",false);
             target_spore_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'? (Default false)").define("target_spore_entities",false);
@@ -151,7 +162,6 @@ public class ModConfig {
             block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);
             chunk_loading_enabled = builder.comment("Should the Sculk Horde load chunks? If disabled, and will ruin the intended experience. For example, raids wont work properly (Default true)").define("chunk_loading_enabled",true);
             disable_defeating_sculk_horde = builder.comment("Should players be able to defeat the Sculk Horde?").define("disable_defeating_sculk_horde",false);
-            maximum_sculk_population = builder.comment("How many sculk mobs should be allowed to exist at one time?").defineInRange("maximum_sculk_population",200, 0, 1000);
             builder.pop();
 
             builder.push("Trigger Automatically Variables");
@@ -161,20 +171,11 @@ public class ModConfig {
             builder.pop();
 
             builder.push("Infestation / Purification Variables");
-            infestation_speed_multiplier = builder.comment("How much faster or slower should infestation spread? (Default 0)").defineInRange("infestation_speed_multiplier",0f, -10f, 10f);
             purification_speed_multiplier = builder.comment("How much faster or slower should purification spread? (Default 0)").defineInRange("purification_speed_multiplier",0f, -10f, 10f);
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             items_infection_cursors_can_eat = builder.comment("What dropped items should cursors eat? This prevents lag and boosts their lifespan.").defineList("items_infection_cursors_can_eat", Arrays.asList("minecraft:wheat_seeds", "minecraft:bamboo", "minecraft:stick", "minecraft:poppy", "minecraft:dandelion", "minecraft:blue_orchid", "minecraft:allium", "minecraft:azure_bluet", "minecraft:red_tulip", "minecraft:orange_tulip", "minecraft:white_tulip", "minecraft:pink_tulip", "minecraft:oxeye_daisy", "minecraft:cornflower", "minecraft:lily_of_the_valley", "minecraft:sunflower", "minecraft:lilac", "minecraft:rose_bush", "minecraft:peony"), entry -> true);
             make_block_infestable = builder.comment("Add blocks to this list to make them infestable. I.E. minecraft:dirt. Be careful what you put in here, this can potentially lead to issues. This will not work with blocks that are air, have a block entity, are already considered an infested block, or have the not infestable tag.").defineList("make_block_infestable", Arrays.asList(""), entry -> true);
             builder.pop();
-
-            builder.push("Emergency Manual Cursor Tick Control");
-            cursors_threshold_for_activation = builder.comment("How many cursors need to exist for this system to kick in. (Default 300)").defineInRange("cursors_threshold_for_activation", 300, 0, Integer.MAX_VALUE);
-            cursors_to_tick_per_tick = builder.comment("How many cursors should we tick, per in game tick. (Default 50)").defineInRange("cursors_to_tick_per_tick", 50, 0, 100);
-            delay_between_cursor_tick_interval = builder.comment("How many ticks should there be between intervals of ticking cursors. (Default 1)").defineInRange("delay_between_cursor_tick_interval", 1, 0, 100);
-            thanos_snap_cursors_after_reaching_threshold = builder.comment("50% Chance for cursors to discard themselves upon reaching threshold. (Default false)").define("thanos_snap_cursors_after_reaching_threshold", false);
-            builder.pop();
-
 
             builder.push("Gravemind Variables");
             gravemind_mass_goal_for_immature_stage = builder.comment("How much mass is needed for the Gravemind to enter the immature stage? (Default 5000)").defineInRange("gravemind_mass_goal_for_immature_stage",5000, 0, Integer.MAX_VALUE);
