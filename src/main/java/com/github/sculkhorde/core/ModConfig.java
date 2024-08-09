@@ -144,9 +144,9 @@ public class ModConfig {
             Config.setInsertionOrderPreserved(true);
 
             builder.push("Performance Settings");
-            max_unit_population = builder.comment("How many sculk mobs should be allowed to exist at one time?").defineInRange("max_unit_population",200, 0, 1000);
-            max_infector_cursor_population = builder.comment("How many infector cursors should be allowed to exist at one time?").defineInRange("max_infector_cursor_population",200, 0, 1000);
-            max_nodes_active = builder.comment("How many nodes can be active at once?").defineInRange("max_nodes_active",2, 0, 1000);
+            max_unit_population = builder.comment("How many sculk mobs should be allowed to exist at one time? (Default 200)").defineInRange("max_unit_population",200, 0, 1000);
+            max_infector_cursor_population = builder.comment("How many infector cursors should be allowed to exist at one time? (Default 200)").defineInRange("max_infector_cursor_population",200, 0, 1000);
+            max_nodes_active = builder.comment("How many nodes can be active at once? (Default 1)").defineInRange("max_nodes_active",1, 0, 1000);
             performance_mode_cursor_threshold = builder.comment("How many cursors need to exist for performance mode to kick in. (Default 100)").defineInRange("performance_mode_cursor_threshold", 100, 0, 1000);
             performance_mode_cursors_to_tick_per_tick = builder.comment("How many cursors should we tick, per in game tick. (Default 50)").defineInRange("performance_mode_cursors_to_tick_per_tick", 50, 0, 100);
             performance_mode_delay_between_cursor_ticks = builder.comment("How many ticks should there be between intervals of ticking cursors. (Default 1)").defineInRange("performance_mode_delay_between_cursor_ticks", 1, 0, 100);
