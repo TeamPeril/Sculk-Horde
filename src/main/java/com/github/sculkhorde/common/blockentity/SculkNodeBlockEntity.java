@@ -1,29 +1,23 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.SculkNodeBlock;
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -73,7 +67,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
         level.players().forEach((player) -> {
-            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator())
+            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator() && !PlayerProfileHandler.isPlayerVessel(player))
             {
                 EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 0);
             }
