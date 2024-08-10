@@ -1,27 +1,27 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.attack.AcidAttack;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -32,14 +32,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-
-import java.util.concurrent.TimeUnit;
 
 public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
 
@@ -175,10 +167,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),
                         new MountNearestRavager(this),
-                        //
-                        new RangedAttackGoal(this, new AcidAttack(this)
-                                .setProjectileOriginOffset(0.8, 0.9, 0.8)
-                                .setDamage(ATTACK_DAMAGE), 1.0D, 40, 30, 15, 15F, 1),
+                        new RangedAcidAttackGoal(this, 1.0D, TickUnits.convertSecondsToTicks(3), 40),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
@@ -212,6 +201,17 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
+    }
+
+    public void performRangedAttack(LivingEntity target) {
+        SculkAcidicProjectileEntity acid = new SculkAcidicProjectileEntity(target.level(), this, 1);
+        double d0 = target.getX() - this.getX();
+        double d1 = target.getY(0.3333333333333333D) - acid.getY();
+        double d2 = target.getZ() - this.getZ();
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+        acid.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
+        this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level().addFreshEntity(acid);
     }
 
     // Synced Data

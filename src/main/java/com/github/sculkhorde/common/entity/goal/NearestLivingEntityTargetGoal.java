@@ -20,7 +20,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     List<LivingEntity> possibleTargets;
 
     long lastTimeSinceTargetSearch = 0;
-    long targetSearchInterval = TickUnits.convertSecondsToTicks(5);
+    long targetSearchInterval = TickUnits.convertSecondsToTicks(2);
 
     public NearestLivingEntityTargetGoal(Mob mobEntity, boolean mustSee, boolean mustReach)
     {
