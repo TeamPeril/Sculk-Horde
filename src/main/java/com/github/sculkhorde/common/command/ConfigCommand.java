@@ -73,7 +73,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> performance(CommandDispatcher<CommandSourceStack> dispatcher) {
-        return Commands.literal("general")
+        return Commands.literal("performance")
                 .then(integerConfigOption("max_unit_population", 0, 1000))
                 .then(integerConfigOption("max_infector_cursor_population", 0, 1000))
                 .then(integerConfigOption("max_nodes_active", 0, 1000))
