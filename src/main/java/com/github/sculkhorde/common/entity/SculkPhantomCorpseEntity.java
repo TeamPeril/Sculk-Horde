@@ -223,6 +223,9 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
             return;
         }
 
+        // Prevent from Drowning
+        this.setAirSupply(getMaxAirSupply());
+
         Random random = new Random();
         boolean passRandomChance = random.nextInt(100) == 0;
         boolean isCursorNullOrDead = cursor == null || !cursor.isAlive();
