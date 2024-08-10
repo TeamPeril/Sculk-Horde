@@ -81,6 +81,7 @@ public class TomeOfVeilItem extends TomeItem implements IForgeItem {
 
 				removeAllItems(player, ModItems.TOME_OF_REINFORCEMENT.get());
 				removeAllItems(player, ModItems.TOME_OF_SPINES.get());
+				removeAllItems(player, ModItems.TOME_OF_SPORE.get());
 			}
 			else
 			{
@@ -90,6 +91,7 @@ public class TomeOfVeilItem extends TomeItem implements IForgeItem {
 				player.sendSystemMessage(Component.literal("Your powers are now active. You now appear as a vessel."));
 				player.getInventory().add(new ItemStack(ModItems.TOME_OF_REINFORCEMENT.get()));
 				player.getInventory().add(new ItemStack(ModItems.TOME_OF_SPINES.get()));
+				player.getInventory().add(new ItemStack(ModItems.TOME_OF_SPORE.get()));
 			}
 		}
 		else
