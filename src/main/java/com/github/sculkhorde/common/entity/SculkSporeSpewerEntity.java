@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -260,6 +261,17 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
             }
         }
+    }
+
+    @Override
+    public void die(DamageSource p_21014_) {
+        super.die(p_21014_);
+        AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(level(), getX(), getY() - 1, getZ());
+        areaeffectcloud.setOwner((LivingEntity) this);
+        areaeffectcloud.setRadius(2F);
+        areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(5));
+        areaeffectcloud.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0));
+        level().addFreshEntity(areaeffectcloud);
     }
 
     protected void tellServerToSpawnCursorNextTick()
