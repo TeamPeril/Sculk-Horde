@@ -73,8 +73,8 @@ public class TomeOfSporeItem extends TomeItem implements IForgeItem {
 		{
 			if(profile.isActiveVessel())
 			{
-				player.hurt(player.damageSources().genericKill(), player.getMaxHealth() - 1);
-				player.addEffect(new MobEffectInstance(MobEffects.HUNGER, TickUnits.convertSecondsToTicks(10), 2));
+				player.addEffect(new MobEffectInstance(MobEffects.HUNGER, TickUnits.convertSecondsToTicks(10), 90));
+				player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertSecondsToTicks(30), 9));
 				SculkSporeSpewerEntity entity = new SculkSporeSpewerEntity(player.level());
 				entity.setPos(player.position());
 				player.level().addFreshEntity(entity);
