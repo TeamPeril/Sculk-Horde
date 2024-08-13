@@ -1,20 +1,21 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.entity.*;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporationRiftEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.PurificationFlaskProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporationRiftEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -56,11 +57,13 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SculkPufferfishEntity>> SCULK_PUFFERFISH = registerMob("sculk_pufferfish", SculkPufferfishEntity::new, 0.9f, 0.9f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkWitchEntity>> SCULK_WITCH = registerMob("sculk_witch", SculkWitchEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
 
+    public static final RegistryObject<EntityType<SculkSoulReaperEntity>> SCULK_SOUL_REAPER = registerMob("sculk_soul_reaper", SculkSoulReaperEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
+
+
     public static final RegistryObject<EntityType<CursorProberEntity>> CURSOR_PROBER = ENTITY_TYPES.register("cursor_prober", () -> EntityType.Builder.<CursorProberEntity>of(CursorProberEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("cursor_prober"));
     public static final RegistryObject<EntityType<CustomItemProjectileEntity>> CUSTOM_ITEM_PROJECTILE_ENTITY = ENTITY_TYPES.register("custom_item_projectile", () -> EntityType.Builder.<CustomItemProjectileEntity>of(CustomItemProjectileEntity::new, MobCategory.MISC).sized(0.45F, 0.45F).clientTrackingRange(4).updateInterval(10).build("custom_item_projectile"));
     public static final RegistryObject<EntityType<SculkAcidicProjectileEntity>> SCULK_ACIDIC_PROJECTILE_ENTITY = ENTITY_TYPES.register("sculk_acidic_projectile", () -> EntityType.Builder.<SculkAcidicProjectileEntity>of(SculkAcidicProjectileEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).clientTrackingRange(4).updateInterval(4).build("sculk_acidic_projectile"));
     public static final RegistryObject<EntityType<PurificationFlaskProjectileEntity>> PURIFICATION_FLASK_PROJECTILE_ENTITY = ENTITY_TYPES.register("purification_flask_projectile", () -> EntityType.Builder.<PurificationFlaskProjectileEntity>of(PurificationFlaskProjectileEntity::new, MobCategory.MISC).sized(0.45F, 0.45F).clientTrackingRange(4).updateInterval(10).build("purification_flask_projectile"));
-
     public static final RegistryObject<EntityType<EnderBubbleAttackEntity>> ENDER_BUBBLE_ATTACK = ENTITY_TYPES.register("ender_bubble_attack", () -> EntityType.Builder.<EnderBubbleAttackEntity>of(EnderBubbleAttackEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("ender_bubble_attack"));
     public static final RegistryObject<EntityType<ChaosTeleporationRiftEntity>> CHAOS_TELEPORATION_RIFT = ENTITY_TYPES.register("chaos_teleporation_rift", () -> EntityType.Builder.<ChaosTeleporationRiftEntity>of(ChaosTeleporationRiftEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("chaos_teleporation_rift"));
     public static final RegistryObject<EntityType<SculkSpineSpikeAttackEntity>> SCULK_SPINE_SPIKE_ATTACK = ENTITY_TYPES.register("sculk_spine_spike_attack", () -> EntityType.Builder.<SculkSpineSpikeAttackEntity>of(SculkSpineSpikeAttackEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("sculk_spine_spike_attack"));
