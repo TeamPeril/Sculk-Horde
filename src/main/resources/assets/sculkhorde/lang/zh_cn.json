@@ -134,5 +134,12 @@
   "item.sculkhorde.infestation_purifier": "净化感染",
   "tooltip.sculkhorde.infestation_purifier.functionality": "右键单击返回物品\n当实体生成时，它将清除该区域的隐秘感染。此外，隐秘部落也会攻击它",
   "item.sculkhorde.purification_flask": "净化瓶",
-  "tooltip.sculkhorde.purification_flask.functionality": "投掷到感染上净化它"
+  "tooltip.sculkhorde.purification_flask.functionality": "投掷到感染上净化它",
+
+  "effect.sculkhorde.purity.description": "防止实体获得 感染 和 诱饵 效果. 可以通过向自己扔一个净化瓶来获得.",
+  "effect.sculkhorde.sculk_infected.description": "用生活在体内的螨虫感染实体，并导致部落传播到附近的街区",
+  "effect.sculkhorde.sculk_lure.description": "允许坟墓从远处追踪您.",
+  "effect.sculkhorde.diseased_cysts.description": "可以破坏和感染最初受害者附近的其他实体。可以用净化瓶诅咒它.",
+  "effect.sculkhorde.sculk_vessel.description": "增加幽匿节点附近同一维度且距离不超过200个街区的实体的速度和伤害",
+  "effect.sculkhorde.corroded.description": "导致实体随着时间的推移而受到损害。部分伤害忽略了护甲。只能从Sculk Spitters或玩家可以射击的Sculk Acidic投射物中获得."
 }
