@@ -75,7 +75,7 @@ public class SummonVexAttackGoal extends Goal
 
         for(int i = 0; i < 10; i++)
         {
-            SculkVexEntity entity = null; //new SculkVexEntity(mob.level());
+            SculkVexEntity entity = new SculkVexEntity(mob.level());
             entity.setPos(mob.getX(), mob.getY() + 1, mob.getZ());
             entity.finalizeSpawn((ServerLevelAccessor) mob.level(), mob.level().getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null, (CompoundTag)null);
             entity.setOwner(mob);

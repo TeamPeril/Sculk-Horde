@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporation
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.PurificationFlaskProjectileEntity;
@@ -56,8 +57,8 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SculkPufferfishEntity>> SCULK_PUFFERFISH = registerMob("sculk_pufferfish", SculkPufferfishEntity::new, 0.9f, 0.9f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkWitchEntity>> SCULK_WITCH = registerMob("sculk_witch", SculkWitchEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
 
-    //public static final RegistryObject<EntityType<SculkSoulReaperEntity>> SCULK_SOUL_REAPER = registerMob("sculk_soul_reaper", SculkSoulReaperEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
-    //public static final RegistryObject<EntityType<SculkVexEntity>> SCULK_VEX = registerMob("sculk_vex", SculkVexEntity::new, 0.8f, 0.8f, 0x000000, 0x000000);
+    public static final RegistryObject<EntityType<SculkSoulReaperEntity>> SCULK_SOUL_REAPER = registerMob("sculk_soul_reaper", SculkSoulReaperEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
+    public static final RegistryObject<EntityType<SculkVexEntity>> SCULK_VEX = registerMob("sculk_vex", SculkVexEntity::new, 0.8f, 0.8f, 0x000000, 0x000000);
 
 
     public static final RegistryObject<EntityType<CursorProberEntity>> CURSOR_PROBER = ENTITY_TYPES.register("cursor_prober", () -> EntityType.Builder.<CursorProberEntity>of(CursorProberEntity::new, MobCategory.MISC).sized(1f, 1f).clientTrackingRange(4).updateInterval(10).build("cursor_prober"));

@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
@@ -97,13 +98,9 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
         this.moveControl = new VexMoveControl(this);
     }
 
-    /*
     public SculkVexEntity(Level worldIn) {
         this(ModEntities.SCULK_VEX.get(), worldIn);
     }
-
-     */
-
 
 
     protected float getStandingEyeHeight(Pose p_260180_, EntityDimensions p_260049_) {
