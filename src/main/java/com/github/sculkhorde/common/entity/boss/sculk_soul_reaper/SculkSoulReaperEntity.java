@@ -152,8 +152,10 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void registerGoals() {
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
         this.goalSelector.addGoal(1, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-        this.goalSelector.addGoal(1, new ShortRangeFloorSoulsAttackGoal(this));
+        this.goalSelector.addGoal(1, new FangsAttackGoal(this));
+        this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
         this.goalSelector.addGoal(3, new AttackGoal());
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 1.0F, 20F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
@@ -201,7 +203,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     }
 
     protected ServerBossEvent createBossEvent() {
-        ServerBossEvent event = new ServerBossEvent(Component.literal("Sculk Enderman"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        ServerBossEvent event = new ServerBossEvent(Component.translatable("entity.sculkhorde.sculk_soul_reaper"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         return event;
     }
 
@@ -218,8 +220,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     }
 
     // ###### Data Code ########
-    String DATA_IS_SCOUTING_IDENTIFIER = "is_scouting";
-    String DATA_IS_AGGRO_IDENTIFIER = "is_aggro";
     protected void defineSynchedData()
     {
         super.defineSynchedData();
@@ -354,7 +354,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         return true;
     }
 
-
+    
     class AttackGoal extends CustomMeleeAttackGoal
     {
 

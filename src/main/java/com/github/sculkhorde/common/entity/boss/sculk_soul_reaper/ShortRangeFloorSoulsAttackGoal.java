@@ -17,7 +17,7 @@ import java.util.EnumSet;
 public class ShortRangeFloorSoulsAttackGoal extends Goal
 {
     private final Mob mob;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected long lastTimeOfExecution;
 
 
