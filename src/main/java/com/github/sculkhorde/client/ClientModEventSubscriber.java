@@ -108,6 +108,8 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.SCULK_VEX.get(), SculkVexRenderer::new);
 
+        event.registerEntityRenderer(ModEntities.SOUL_FIRE_PROJECTILE.get(), SoulFireProjectileRenderer::new);
+
     }
 
     @SubscribeEvent
