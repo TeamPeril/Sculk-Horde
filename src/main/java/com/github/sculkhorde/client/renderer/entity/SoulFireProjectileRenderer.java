@@ -23,32 +23,13 @@ public class SoulFireProjectileRenderer extends EntityRenderer<Projectile> {
         super(context);
         ModelPart modelpart = context.bakeLayer(SoulFireProjectileModel.LAYER_LOCATION);
         this.model = new SoulFireProjectileModel<>(modelpart);
-        //this.body = modelpart.getChild("body");
-    }
-    /*
-
-    public static LayerDefinition createBodyLayer() {
-        MeshDefinition meshdefinition = new MeshDefinition();
-        PartDefinition partdefinition = meshdefinition.getRoot();
-        partdefinition.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, -1.0F, -4.0F, 2.0F, 2.0F, 8.0F), PartPose.ZERO);
-        return LayerDefinition.create(meshdefinition, 20, 10);
     }
 
-     */
 
     @Override
     public void render(Projectile entity, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light) {
         poseStack.pushPose();
         poseStack.translate(0, entity.getBoundingBox().getYsize() * .5f, 0);
-
-        /*
-        Vec3 motion = entity.getDeltaMovement();
-        float xRot = -((float) (Mth.atan2(motion.horizontalDistance(), motion.y) * (double) (180F / (float) Math.PI)) - 90.0F);
-        float yRot = -((float) (Mth.atan2(motion.z, motion.x) * (double) (180F / (float) Math.PI)) + 90.0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
-        poseStack.mulPose(Axis.XP.rotationDegrees(xRot));
-
-         */
 
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
         //this.body.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
