@@ -89,11 +89,14 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
+    /*
     public SculkSoulReaperEntity(Level level, BlockPos pos)
     {
         this(ModEntities.SCULK_SOUL_REAPER.get(), level);
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
     }
+    
+     */
 
     /**
      * Determines & registers the attributes of the mob.
