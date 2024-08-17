@@ -291,11 +291,11 @@
     "sounds.sculkhorde.sculk_vindicator_hurt": "幽匿卫道士：受伤",
     "sounds.sculkhorde.sculk_vindicator_death": "幽匿卫道士：死亡",
   
-    "item.sculkhorde.tome_of_spines": "巨型脊柱",
-    "item.sculkhorde.tome_of_reinforcement": "巨型强化物",
-    "item.sculkhorde.tome_of_veil": "巨型遮盖层",
-    "item.sculkhorde.tome_of_spore": "巨型孢子",
-    "item.sculkhorde.tome_of_sacrifice": "巨型纹饰锻造模板",
+    "item.sculkhorde.tome_of_spines": "脊柱纹饰锻造模板",
+    "item.sculkhorde.tome_of_reinforcement": "幽匿升级锻造模板",
+    "item.sculkhorde.tome_of_veil": "遮盖层纹饰锻造模板",
+    "item.sculkhorde.tome_of_spore": "孢子纹饰锻造模板",
+    "item.sculkhorde.tome_of_sacrifice": "祭祀纹饰锻造模板",
     "item.sculkhorde.graveminds_symbiote": "古代节点共生体",
 
     "effect.sculkhorde.purity.description": "防止实体获得 寄生 和 诱饵 效果. 可以通过向自己扔一个净化之瓶来获得.",
