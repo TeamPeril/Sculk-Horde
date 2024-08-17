@@ -82,6 +82,7 @@ public class TomeOfVeilItem extends TomeItem implements IForgeItem {
 				removeAllItems(player, ModItems.TOME_OF_REINFORCEMENT.get());
 				removeAllItems(player, ModItems.TOME_OF_SPINES.get());
 				removeAllItems(player, ModItems.TOME_OF_SPORE.get());
+				removeAllItems(player, ModItems.TOME_OF_SACRIFICE.get());
 			}
 			else
 			{
@@ -92,6 +93,7 @@ public class TomeOfVeilItem extends TomeItem implements IForgeItem {
 				player.getInventory().add(new ItemStack(ModItems.TOME_OF_REINFORCEMENT.get()));
 				player.getInventory().add(new ItemStack(ModItems.TOME_OF_SPINES.get()));
 				player.getInventory().add(new ItemStack(ModItems.TOME_OF_SPORE.get()));
+				player.getInventory().add(new ItemStack(ModItems.TOME_OF_SACRIFICE.get()));
 			}
 		}
 		else

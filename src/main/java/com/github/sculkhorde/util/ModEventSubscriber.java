@@ -3,12 +3,12 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.advancement.*;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -213,6 +213,8 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_SQUID.get(), SculkSquidEntity.createAttributes().build());
         event.put(ModEntities.SCULK_PUFFERFISH.get(), SculkPufferfishEntity.createAttributes().build());
         event.put(ModEntities.SCULK_WITCH.get(), SculkWitchEntity.createAttributes().build());
+        //event.put(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperEntity.createAttributes().build());
+        //event.put(ModEntities.SCULK_VEX.get(), SculkVexEntity.createAttributes().build());
     }
 }
 

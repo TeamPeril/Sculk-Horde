@@ -104,6 +104,10 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.SCULK_WITCH.get(), SculkWitchRenderer::new);
 
+        //event.registerEntityRenderer(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperRenderer::new);
+
+        //event.registerEntityRenderer(ModEntities.SCULK_VEX.get(), SculkVexRenderer::new);
+
     }
 
     @SubscribeEvent
