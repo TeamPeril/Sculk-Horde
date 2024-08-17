@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.projectile;
 
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ProjectileUtil;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -24,7 +25,7 @@ import java.util.Optional;
 
 public abstract class AbstractProjectileEntity extends Projectile {
 
-    protected static final int EXPIRE_TIME = 15 * 20;
+    protected static final int EXPIRE_TIME = TickUnits.convertSecondsToTicks(15);
 
     protected float damage;
     protected float explosionRadius;
@@ -91,7 +92,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
         if (!this.level().isClientSide()) {
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity livingEntity){
-                if(EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
+                if(!EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
                 {
                     entity.hurt(damageSources().generic(),this.getDamage());
                     applyEffectToEntity(livingEntity);

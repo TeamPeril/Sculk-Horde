@@ -1,6 +1,5 @@
 package com.github.sculkhorde.client;
 
-import com.github.sculkhorde.client.model.enitity.SoulFireProjectileModel;
 import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
 import com.github.sculkhorde.client.renderer.block.SoulHarvesterBlockRenderer;
@@ -114,13 +113,6 @@ public class ClientModEventSubscriber {
 
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void registerRenders(final EntityRenderersEvent.RegisterLayerDefinitions event) {
-
-        event.registerLayerDefinition(SoulFireProjectileModel.LAYER_LOCATION, SoulFireProjectileModel::createBodyLayer);
-
-    }
 
     @SubscribeEvent
     public static void registerRenderers(final RegisterParticleProvidersEvent event)

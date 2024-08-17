@@ -53,6 +53,11 @@ public class ShortRangeFloorSoulsAttackGoal extends Goal
             return false;
         }
 
+        if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
         return true;
     }
 

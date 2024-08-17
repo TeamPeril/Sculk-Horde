@@ -53,7 +53,7 @@ public class ShootSoulsAttackGoal extends Goal
             return false;
         }
 
-        if(mob.closerThan(mob.getTarget(), 3.0F))
+        if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
         {
             return false;
         }
@@ -95,11 +95,11 @@ public class ShootSoulsAttackGoal extends Goal
 
     public double getRandomDoubleInRange(double min, double max)
     {
-        return (mob.getRandom().nextFloat() * (max + min) - min);
+        return min + (mob.getRandom().nextFloat() * (max + min));
     }
     public int getRandomIntInRange(int min, int max)
     {
-        return (mob.getRandom().nextInt() * (max + min) - min);
+        return min + (mob.getRandom().nextInt() * (max + min));
     }
 
     public AbstractProjectileEntity getProjectile()
@@ -114,10 +114,7 @@ public class ShootSoulsAttackGoal extends Goal
 
     public void spawnSoulAndShootAtTarget(int range)
     {
-
-
         attackkIntervalCooldown--;
-
 
         if(attackkIntervalCooldown > 0)
         {
@@ -139,12 +136,11 @@ public class ShootSoulsAttackGoal extends Goal
         double spawnPosZ = mob.getZ() + getRandomDoubleInRange(0, 1);
 
         double targetPosX = mob.getTarget().getX() - spawnPosX;
-        double targetPosY = mob.getTarget().getY(0.3333333333333333D) - spawnPosY;
+        double targetPosY = mob.getTarget().getY((mob.getTarget().getBbHeight()/2)) - spawnPosY;
         double targetPosZ = mob.getTarget().getZ() - spawnPosZ;
-        double horizontalDistance = Math.sqrt(targetPosX * targetPosX + targetPosZ * targetPosZ);
 
         // Create a vector for the direction
-        Vec3 direction = new Vec3(targetPosX, targetPosY + horizontalDistance * 0.2, targetPosZ).normalize();
+        Vec3 direction = new Vec3(targetPosX, targetPosY, targetPosZ).normalize();
 
         // Shoot the projectile in the direction vector
         projectile.shoot(direction);

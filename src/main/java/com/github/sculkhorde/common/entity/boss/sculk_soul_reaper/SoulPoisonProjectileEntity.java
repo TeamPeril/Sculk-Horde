@@ -11,12 +11,17 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 
-public class SoulPoisonProjectileEntity extends AbstractProjectileEntity {
+public class SoulPoisonProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
     public SoulPoisonProjectileEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        setNoGravity(true);
     }
 
     public SoulPoisonProjectileEntity(Level level, LivingEntity shooter)
@@ -27,7 +32,7 @@ public class SoulPoisonProjectileEntity extends AbstractProjectileEntity {
 
     @Override
     protected void applyEffectToEntity(LivingEntity entity) {
-        entity.addEffect(new MobEffectInstance(MobEffects.POISON, TickUnits.convertSecondsToTicks(10), 0));
+         entity.addEffect(new MobEffectInstance(MobEffects.POISON, TickUnits.convertSecondsToTicks(10), 0));
     }
 
     @Override
@@ -48,5 +53,17 @@ public class SoulPoisonProjectileEntity extends AbstractProjectileEntity {
     @Override
     public Optional<SoundEvent> getImpactSound() {
         return Optional.of(SoundEvents.FIREWORK_ROCKET_BLAST);
+    }
+
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

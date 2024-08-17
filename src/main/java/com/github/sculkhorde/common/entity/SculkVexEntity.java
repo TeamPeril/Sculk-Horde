@@ -253,8 +253,8 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
     {
         Goal[] goals =
                 {
-                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(5)),
-                        new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
+                        new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(1)),
+                        new DespawnWhenIdle(this, TickUnits.convertSecondsToTicks(30)),
                         new FloatGoal(this),
                         new VexChargeAttackGoal(),
                         new VexRandomMoveGoal(),

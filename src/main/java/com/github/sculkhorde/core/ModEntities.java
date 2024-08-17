@@ -5,8 +5,8 @@ import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporation
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFireProjectileEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFireProjectileEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProjectileEntity;
 import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;

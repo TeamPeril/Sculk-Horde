@@ -81,6 +81,7 @@ public class SummonVexAttackGoal extends Goal
             entity.setOwner(mob);
             entity.setBoundOrigin(mob.blockPosition());
             entity.setLimitedLife(TickUnits.convertMinutesToTicks(5));
+            entity.setTarget(mob.getTarget());
             mob.level().addFreshEntity(entity);
         }
     }
