@@ -1,7 +1,10 @@
 package com.github.sculkhorde.common.entity.projectile;
 
-import net.minecraft.core.Direction;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.ProjectileUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -9,12 +12,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -65,11 +68,6 @@ public abstract class AbstractProjectileEntity extends Projectile {
     }
 
     @Override
-    protected boolean canHitEntity(Entity pTarget) {
-        return super.canHitEntity(pTarget) && pTarget != getOwner();
-    }
-
-    @Override
     public void checkDespawn() {
         if (level() instanceof ServerLevel serverLevel && !serverLevel.getChunkSource().chunkMap.getDistanceManager().inEntityTickingRange(this.chunkPosition().toLong())) {
             this.discard();
@@ -77,8 +75,49 @@ public abstract class AbstractProjectileEntity extends Projectile {
     }
 
     @Override
+    protected boolean canHitEntity(Entity entityIn) {
+        if (!entityIn.canBeHitByProjectile()) {
+            return false;
+        } else {
+            Entity entity = this.getOwner();
+            return entity == null || !entity.isPassengerOfSameVehicle(entityIn);
+        }
+    }
+
+    abstract protected void applyEffectToEntity(LivingEntity entity);
+
+    @Override
+    protected void onHitEntity(EntityHitResult entityHitResult) {
+        if (!this.level().isClientSide()) {
+            Entity entity = entityHitResult.getEntity();
+            if (entity instanceof LivingEntity livingEntity){
+                if(EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
+                {
+                    entity.hurt(damageSources().generic(),this.getDamage());
+                    applyEffectToEntity(livingEntity);
+                }
+            }
+        }else{
+            super.onHitEntity(entityHitResult);
+        }
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult hitResult) {
+        super.onHitBlock(hitResult);
+        if (level().getBlockState(hitResult.getBlockPos()).isSolidRender(level(),hitResult.getBlockPos()))
+            discard();
+    }
+
+    @Override
     public void tick() {
         super.tick();
+        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+
+        if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+            this.onHit(hitresult);
+        }
+
         if (tickCount > EXPIRE_TIME) {
             discard();
             return;
@@ -87,44 +126,6 @@ public abstract class AbstractProjectileEntity extends Projectile {
             trailParticles();
         }
         travel();
-    }
-
-    @Override
-    protected void onHitBlock(BlockHitResult hitResult) {
-        super.onHitBlock(hitResult);
-        onHit(hitResult);
-    }
-
-    @Override
-    protected void onHitEntity(EntityHitResult hitResult) {
-        super.onHitEntity(hitResult);
-
-        if(hitResult.getType() == HitResult.Type.MISS)
-        {
-            this.onHitBlock(new BlockHitResult(hitResult.getEntity().position(), Direction.fromYRot(this.getYRot()), hitResult.getEntity().blockPosition(), false));
-        }
-
-        if(!(hitResult.getEntity() instanceof LivingEntity))
-        {
-            this.onHitBlock(new BlockHitResult(hitResult.getEntity().position(), Direction.fromYRot(this.getYRot()), hitResult.getEntity().blockPosition(), false));
-            return;
-        }
-
-        if(isBeingShieldBlocked((LivingEntity) hitResult.getEntity()) && !shouldPierceShields())
-        {
-            this.onHitBlock(new BlockHitResult(hitResult.getEntity().position(), Direction.fromYRot(this.getYRot()), hitResult.getEntity().blockPosition(), false));
-            return;
-        }
-    }
-
-    @Override
-    protected void onHit(HitResult hitresult) {
-        super.onHit(hitresult);
-
-        if (!level().isClientSide) {
-            impactParticles(getX(), getY(), getZ());
-            getImpactSound().ifPresent(this::doImpactSound);
-        }
     }
 
     public boolean isBeingShieldBlocked(LivingEntity target)
@@ -189,7 +190,10 @@ public abstract class AbstractProjectileEntity extends Projectile {
         this.tickCount = tag.getInt("Age");
     }
 
-
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
 
     @Override
     public boolean isOnFire() {

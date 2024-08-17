@@ -5,7 +5,6 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,14 +17,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 
-public class SoulFireProjectileRenderer extends EntityRenderer<Projectile> {
-    public static final ModelLayerLocation MODEL_LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(SculkHorde.MOD_ID, "soul_fire_projectile_model"), "main");
-    private static ResourceLocation TEXTURE = new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/soul_fire_projectile.png");
+public class SoulPoisonProjectileRenderer extends EntityRenderer<Projectile> {
+    private static ResourceLocation TEXTURE = new ResourceLocation(SculkHorde.MOD_ID, "textures/entity/soul_poison_projectile.png");
     private final SoulFireProjectileModel model;
 
     private final ModelPart body;
 
-    public SoulFireProjectileRenderer(Context context) {
+    public SoulPoisonProjectileRenderer(Context context) {
         super(context);
         ModelPart modelpart = context.bakeLayer(SoulFireProjectileModel.LAYER_LOCATION);
         this.model = new SoulFireProjectileModel<>(modelpart);

@@ -14,12 +14,12 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public class SoulFireProjectileModel<T extends Entity> extends EntityModel<T> {
+public class SoulPoisonProjectileModel<T extends Entity> extends EntityModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(SculkHorde.MOD_ID, "fire_soul_projectile"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(SculkHorde.MOD_ID, "soul_poison_projectile"), "main");
 	private final ModelPart body;
 
-	public SoulFireProjectileModel(ModelPart root) {
+	public SoulPoisonProjectileModel(ModelPart root) {
 		this.body = root.getChild("body");
 	}
 

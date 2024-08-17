@@ -1,11 +1,12 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
-import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
+import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -16,8 +17,10 @@ public class ShootSoulsAttackGoal extends Goal
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
     protected int ticksElapsed = executionCooldown;
-    private int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.2F);
-    private int attackkIntervalCooldown = 0;
+    protected int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.2F);
+    protected int attackkIntervalCooldown = 0;
+
+    protected int projectileType = 0;
 
 
     public ShootSoulsAttackGoal(PathfinderMob mob, int durationInTicks) {
@@ -70,6 +73,7 @@ public class ShootSoulsAttackGoal extends Goal
         super.start();
         getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
         getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
+        projectileType = getRandomIntInRange(0,1);
         this.mob.getNavigation().stop();
     }
 
@@ -89,9 +93,23 @@ public class ShootSoulsAttackGoal extends Goal
         ticksElapsed = 0;
     }
 
-    public double getRandomOffset(double min, double max)
+    public double getRandomDoubleInRange(double min, double max)
     {
         return (mob.getRandom().nextFloat() * (max + min) - min);
+    }
+    public int getRandomIntInRange(int min, int max)
+    {
+        return (mob.getRandom().nextInt() * (max + min) - min);
+    }
+
+    public AbstractProjectileEntity getProjectile()
+    {
+
+        return switch (projectileType) {
+            case 0 -> new SoulFireProjectileEntity(mob.level(), mob);
+            case 1 -> new SoulPoisonProjectileEntity(mob.level(), mob);
+            default -> new SoulFireProjectileEntity(mob.level(), mob);
+        };
     }
 
     public void spawnSoulAndShootAtTarget(int range)
@@ -111,20 +129,31 @@ public class ShootSoulsAttackGoal extends Goal
             return;
         }
 
-        SculkAcidicProjectileEntity projectileEntity = new SculkAcidicProjectileEntity(mob.level(), mob, 1);
-        double spawnX = mob.getX() + getRandomOffset(0, 1);
-        double spawnY = mob.getY() + mob.getEyeHeight() + getRandomOffset(0, 1);
-        double spawnZ = mob.getZ() + getRandomOffset(0, 1);
+        AbstractProjectileEntity projectile =  getProjectile();
 
-        double d0 = mob.getTarget().getX() - spawnX;
-        double d1 = mob.getTarget().getY(0.3333333333333333D) - spawnY;
-        double d2 = mob.getTarget().getZ() - spawnZ;
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        projectileEntity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));
+        projectile.setDamage(1);
+        projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
+
+        double spawnPosX = mob.getX() + getRandomDoubleInRange(0, 1);
+        double spawnPosY = mob.getY() + mob.getEyeHeight() + getRandomDoubleInRange(0, 1);
+        double spawnPosZ = mob.getZ() + getRandomDoubleInRange(0, 1);
+
+        double targetPosX = mob.getTarget().getX() - spawnPosX;
+        double targetPosY = mob.getTarget().getY(0.3333333333333333D) - spawnPosY;
+        double targetPosZ = mob.getTarget().getZ() - spawnPosZ;
+        double horizontalDistance = Math.sqrt(targetPosX * targetPosX + targetPosZ * targetPosZ);
+
+        // Create a vector for the direction
+        Vec3 direction = new Vec3(targetPosX, targetPosY + horizontalDistance * 0.2, targetPosZ).normalize();
+
+        // Shoot the projectile in the direction vector
+        projectile.shoot(direction);
+
         mob.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level().addFreshEntity(projectileEntity);
+        mob.level().addFreshEntity(projectile);
 
         attackkIntervalCooldown = attackIntervalTicks;
     }
 
 }
+//projectileEntity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));
