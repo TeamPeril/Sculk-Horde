@@ -8,6 +8,7 @@ import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAt
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFireProjectileEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProjectileEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulSpearProjectileEntity;
 import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.PurificationFlaskProjectileEntity;
@@ -79,6 +80,7 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<SoulFireProjectileEntity>> SOUL_FIRE_PROJECTILE = ENTITY_TYPES.register("soul_fire_projectile", () -> EntityType.Builder.<SoulFireProjectileEntity>of(SoulFireProjectileEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).clientTrackingRange(4).updateInterval(4).build("soul_fire_projectile"));
     public static final RegistryObject<EntityType<SoulPoisonProjectileEntity>> SOUL_POISON_PROJECTILE = ENTITY_TYPES.register("soul_poison_projectile", () -> EntityType.Builder.<SoulPoisonProjectileEntity>of(SoulPoisonProjectileEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).clientTrackingRange(4).updateInterval(4).build("soul_poison_projectile"));
+    public static final RegistryObject<EntityType<SoulSpearProjectileEntity>> SOUL_SPEAR_PROJECTILE = ENTITY_TYPES.register("soul_spear_projectile", () -> EntityType.Builder.<SoulSpearProjectileEntity>of(SoulSpearProjectileEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).clientTrackingRange(4).updateInterval(4).build("soul_poison_projectile"));
 
 
     public static class EntityTags

@@ -1,9 +1,11 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
+import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
+import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -19,10 +21,8 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -34,13 +34,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.Random;
 
 public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -120,9 +114,10 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     private boolean isParticipatingInRaid = false;
 
+    protected SquadHandler squad = new SquadHandler(this);
     @Override
     public SquadHandler getSquad() {
-        return null;
+        return squad;
     }
 
     @Override
@@ -154,10 +149,10 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
+        this.goalSelector.addGoal(1, new ShootSoulSpearAttackGoal(this));
         this.goalSelector.addGoal(1, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
         this.goalSelector.addGoal(1, new FangsAttackGoal(this));
         this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
-        this.goalSelector.addGoal(3, new AttackGoal());
         this.goalSelector.addGoal(5, new MoveTowardsTargetGoal(this, 1.0F, 20F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
@@ -243,49 +238,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     // ####### Animation Code ###########
 
-    private static final RawAnimation IDLE_BODY_ANIMATION = RawAnimation.begin().thenPlay("idle");
-    private static final RawAnimation IDLE_TWITCH_ANIMATION = RawAnimation.begin().thenPlay("idle.twitch");
-    private static final RawAnimation IDLE_TENDRILS_ANIMATION = RawAnimation.begin().thenPlay("idle.tendrils");
-    private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenPlay("move.walk");
-    private static final RawAnimation RUN_ANIMATION = RawAnimation.begin().thenPlay("move.run");
-    private static final RawAnimation COMBAT_ATTACK_ANIMATION_1 = RawAnimation.begin().thenPlay("combat.attack1");
-    private static final RawAnimation COMBAT_ATTACK_ANIMATION_2 = RawAnimation.begin().thenPlay("combat.attack2");
-    private static final RawAnimation COMBAT_ATTACK_ANIMATION_3 = RawAnimation.begin().thenPlay("combat.attack3");
-    private static final RawAnimation COMBAT_FIREBALL_SHOOT_ANIMATION = RawAnimation.begin().thenPlay("combat.fireball.face");
-    private static final RawAnimation COMBAT_FIREBALL_SKY_SUMMON_ANIMATION = RawAnimation.begin().thenPlay("combat.fireball.sky.summon");
-    private static final RawAnimation COMBAT_FIREBALL_SKY_TWITCH_ANIMATION = RawAnimation.begin().thenPlay("combat.fireball.sky.twitch");
-    private static final RawAnimation COMBAT_SUMMON_ANIMATION = RawAnimation.begin().thenLoop("combat.summon");
-    private static final RawAnimation COMBAT_SUMMON_TWITCH_ANIMATION = RawAnimation.begin().thenLoop("combat.summon.twitch");
-    private static final RawAnimation COMBAT_RIFTS_SUMMON_ANIMATION = RawAnimation.begin().thenPlay("combat.rifts.summon");
-    private static final RawAnimation COMBAT_SPIKE_LINE = RawAnimation.begin().thenPlay("combat.spike.line");
-    private static final RawAnimation COMBAT_SPIKE_TWITCH = RawAnimation.begin().thenPlay("combat.spike.line.twitch");
-    private static final RawAnimation COMBAT_SPIKE_RADIAL = RawAnimation.begin().thenPlay("combat.spike.around");
-    private static final RawAnimation COMBAT_SPIKE_RADIAL_TWITCH = RawAnimation.begin().thenPlay("combat.spike.around.twitch");
-    private static final RawAnimation COMBAT_BUBBLE = RawAnimation.begin().thenPlay("combat.forcefieldbubble.activate");
-    private static final RawAnimation COMBAT_BUBBLE_TWITCH = RawAnimation.begin().thenPlay("combat.forcefieldbubble.twitch");
-
-    private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .transitionLength(5)
-            .triggerableAnim("melee_attack_animation_1", COMBAT_ATTACK_ANIMATION_1)
-            .triggerableAnim("melee_attack_animation_2", COMBAT_ATTACK_ANIMATION_2)
-            .triggerableAnim("melee_attack_animation_3", COMBAT_ATTACK_ANIMATION_3)
-            .triggerableAnim("fireball_shoot_animation", COMBAT_FIREBALL_SHOOT_ANIMATION)
-            .triggerableAnim("fireball_sky_summon_animation", COMBAT_FIREBALL_SKY_SUMMON_ANIMATION)
-            .triggerableAnim("fireball_sky_twitch_animation", COMBAT_FIREBALL_SKY_TWITCH_ANIMATION)
-            .triggerableAnim("summon_animation", COMBAT_SUMMON_ANIMATION)
-            .triggerableAnim("rifts_summon_animation", COMBAT_RIFTS_SUMMON_ANIMATION)
-            .triggerableAnim("spike_line_animation", COMBAT_SPIKE_LINE)
-            .triggerableAnim("spike_radial_animation", COMBAT_SPIKE_RADIAL)
-            .triggerableAnim("bubble_animation", COMBAT_BUBBLE);
-
-    private final AnimationController COMBAT_TWITCH_ANIMATION_CONTROLLER = new AnimationController<>(this, "twitch_controller", state -> PlayState.STOP)
-            .transitionLength(5)
-            .triggerableAnim("fireball_sky_twitch_animation", COMBAT_FIREBALL_SKY_TWITCH_ANIMATION)
-            .triggerableAnim("summon_twitch_animation", COMBAT_SUMMON_TWITCH_ANIMATION)
-            .triggerableAnim("spike_line_twitch_animation", COMBAT_SPIKE_TWITCH)
-            .triggerableAnim("spike_radial_twitch_animation", COMBAT_SPIKE_RADIAL_TWITCH)
-            .triggerableAnim("bubble_twitch_animation", COMBAT_BUBBLE_TWITCH);
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
     {
@@ -298,36 +250,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         );
     }
 
-    // Create the animation handler for the leg segment
-    protected PlayState poseWalk(AnimationState<SculkSoulReaperEntity> state)
-    {
-        if(state.isMoving())
-        {
-            state.setAnimation(WALK_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(IDLE_BODY_ANIMATION);
-        }
-        return PlayState.CONTINUE;
-    }
-
-    protected PlayState poseTwitch(AnimationState<SculkSoulReaperEntity> state)
-    {
-        state.setAnimation(IDLE_TWITCH_ANIMATION);
-        return PlayState.CONTINUE;
-    }
-
-    protected PlayState poseTendrils(AnimationState<SculkSoulReaperEntity> state)
-    {
-        state.setAnimation(IDLE_TENDRILS_ANIMATION);
-        return PlayState.CONTINUE;
-    }
-
-    protected float getStandingEyeHeight(Pose p_32517_, EntityDimensions p_32518_) {
-        return 2.55F;
-    }
-
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
@@ -336,15 +258,15 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     // ####### Sound Code ###########
 
     protected SoundEvent getAmbientSound() {
-        return ModSounds.SCULK_ENDERMAN_IDLE.get();
+        return SoundEvents.EVOKER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return ModSounds.SCULK_ENDERMAN_HIT.get();
+        return SoundEvents.EVOKER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return ModSounds.SCULK_ENDERMAN_DEATH.get();
+        return SoundEvents.EVOKER_DEATH;
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
@@ -354,44 +276,5 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public boolean dampensVibrations() {
         return true;
     }
-
     
-    class AttackGoal extends CustomMeleeAttackGoal
-    {
-
-        public AttackGoal()
-        {
-            super(SculkSoulReaperEntity.this, 1.0D, true, 17);
-        }
-
-        protected double getAttackReachSqr(LivingEntity pAttackTarget)
-        {
-            return 6;
-        }
-
-        @Override
-        protected float getMinimumDistanceToTarget()
-        {
-            return 0.5F;
-        }
-
-        @Override
-        protected void triggerAnimation()
-        {
-            // Choose between 3 animations randomly
-            int random = new Random().nextInt(3);
-            if(random == 0)
-            {
-                ((SculkSoulReaperEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_1");
-            }
-            else if(random == 1)
-            {
-                ((SculkSoulReaperEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_2");
-            }
-            else
-            {
-                ((SculkSoulReaperEntity)mob).triggerAnim("attack_controller", "melee_attack_animation_3");
-            }
-        }
-    }
 }

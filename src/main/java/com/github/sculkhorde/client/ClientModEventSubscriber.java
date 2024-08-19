@@ -110,6 +110,7 @@ public class ClientModEventSubscriber {
 
         event.registerEntityRenderer(ModEntities.SOUL_FIRE_PROJECTILE.get(), SoulFireProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL_POISON_PROJECTILE.get(), SoulPoisonProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.SOUL_SPEAR_PROJECTILE.get(), SoulSpearProjectileRenderer::new);
 
     }
 

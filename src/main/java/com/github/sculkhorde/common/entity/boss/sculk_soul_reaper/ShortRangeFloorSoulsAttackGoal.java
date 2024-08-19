@@ -84,7 +84,7 @@ public class ShortRangeFloorSoulsAttackGoal extends Goal
 
         for(Vec3 position: pos)
         {
-            AreaEffectCloud cloud = new AreaEffectCloud(mob.level(), position.x, position.y + 1, position.z);
+            AreaEffectCloud cloud = new AreaEffectCloud(mob.level(), position.x, position.y, position.z);
             cloud.setOwner(mob);
             cloud.setRadius(3);
             cloud.setDuration(TickUnits.convertSecondsToTicks(20));

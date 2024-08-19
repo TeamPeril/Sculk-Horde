@@ -24,10 +24,11 @@ public class SoulPoisonProjectileEntity extends AbstractProjectileEntity impleme
         setNoGravity(true);
     }
 
-    public SoulPoisonProjectileEntity(Level level, LivingEntity shooter)
+    public SoulPoisonProjectileEntity(Level level, LivingEntity shooter, float damage)
     {
         this(ModEntities.SOUL_POISON_PROJECTILE.get(), level);
         setOwner(shooter);
+        setDamage(damage);
     }
 
     @Override

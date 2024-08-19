@@ -8,6 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -15,26 +16,31 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 
-public class SoulFireProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
-    public SoulFireProjectileEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
+public class SoulSpearProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
+    public SoulSpearProjectileEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         setNoGravity(true);
     }
 
-    public SoulFireProjectileEntity(Level level, LivingEntity shooter, float damage)
+    public SoulSpearProjectileEntity(Level level, LivingEntity shooter, float damage)
     {
-        this(ModEntities.SOUL_FIRE_PROJECTILE.get(), level);
+        this(ModEntities.SOUL_SPEAR_PROJECTILE.get(), level);
         setOwner(shooter);
         setDamage(damage);
     }
 
     @Override
+    protected void onHitBlock(BlockHitResult hitResult) {
+    }
+
+    @Override
     protected void applyEffectToEntity(LivingEntity entity) {
-        entity.setSecondsOnFire(10);
+
     }
 
     @Override
     public void trailParticles() {
+
     }
 
     @Override
@@ -44,7 +50,7 @@ public class SoulFireProjectileEntity extends AbstractProjectileEntity implement
 
     @Override
     public float getSpeed() {
-        return 1.75F;
+        return 3F;
     }
 
     @Override
@@ -52,12 +58,13 @@ public class SoulFireProjectileEntity extends AbstractProjectileEntity implement
         return Optional.of(SoundEvents.FIREWORK_ROCKET_BLAST);
     }
 
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
 
     }
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;

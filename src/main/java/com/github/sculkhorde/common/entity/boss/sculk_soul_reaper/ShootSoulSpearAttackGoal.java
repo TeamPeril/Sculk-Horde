@@ -2,30 +2,30 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
-public class ShootSoulsAttackGoal extends Goal
+public class ShootSoulSpearAttackGoal extends Goal
 {
     private final Mob mob;
-    protected int maxAttackDuration = 0;
-    protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
     protected int ticksElapsed = executionCooldown;
-    protected int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.2F);
-    protected int attackkIntervalCooldown = 0;
 
-    protected int projectileType = 0;
+    protected final int baseCastingTime = TickUnits.convertSecondsToTicks(3);
+    protected int castingTime = 0;
 
 
-    public ShootSoulsAttackGoal(PathfinderMob mob, int durationInTicks) {
+    boolean spellCasted = false;
+
+
+
+    public ShootSoulSpearAttackGoal(PathfinderMob mob) {
         this.mob = mob;
-        maxAttackDuration = durationInTicks;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -37,6 +37,12 @@ public class ShootSoulsAttackGoal extends Goal
     {
         return (SculkSoulReaperEntity)this.mob;
     }
+
+    protected int getCastingTimeElapsed()
+    {
+        return castingTime;
+    }
+
 
     @Override
     public boolean canUse()
@@ -53,44 +59,63 @@ public class ShootSoulsAttackGoal extends Goal
             return false;
         }
 
-        if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
-        {
-            return false;
-        }
-
         return true;
     }
 
     @Override
     public boolean canContinueToUse()
     {
-        return elapsedAttackDuration < maxAttackDuration;
+        return !spellCasted && mob.getTarget() != null;
     }
 
     @Override
     public void start()
     {
         super.start();
+
+        if(mob.level().isClientSide())
+        {
+            return;
+        }
+
         getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
         getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
-        projectileType = getRandomIntInRange(0,1);
         this.mob.getNavigation().stop();
+        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level(), mob.blockPosition().above(50), MobSpawnType.SPAWNER);
     }
 
     @Override
     public void tick()
     {
         super.tick();
-        elapsedAttackDuration++;
-        spawnSoulAndShootAtTarget(5);
+
+        if(mob.level().isClientSide())
+        {
+            return;
+        }
+
+        if(getCastingTimeElapsed() < baseCastingTime)
+        {
+            castingTime++;
+            return;
+        }
+
+        if(spellCasted)
+        {
+            return;
+        }
+
+        shootProjectileAtTarget();
+        spellCasted = true;
     }
 
     @Override
     public void stop()
     {
         super.stop();
-        elapsedAttackDuration = 0;
         ticksElapsed = 0;
+        spellCasted = false;
+        castingTime = 0;
     }
 
     public double getRandomDoubleInRange(double min, double max)
@@ -102,40 +127,23 @@ public class ShootSoulsAttackGoal extends Goal
         return min + (mob.getRandom().nextInt() * (max + min));
     }
 
-    public AbstractProjectileEntity getProjectile()
+    public void shootProjectileAtTarget()
     {
-
-        return switch (projectileType) {
-            case 0 -> new SoulFireProjectileEntity(mob.level(), mob, 2.5F);
-            case 1 -> new SoulPoisonProjectileEntity(mob.level(), mob, 2.5F);
-            default -> new SoulFireProjectileEntity(mob.level(), mob, 2.5F);
-        };
-    }
-
-    public void spawnSoulAndShootAtTarget(int range)
-    {
-        attackkIntervalCooldown--;
-
-        if(attackkIntervalCooldown > 0)
-        {
-            return;
-        }
 
         if(mob.getTarget() == null)
         {
             return;
         }
 
-        AbstractProjectileEntity projectile =  getProjectile();
-
+        AbstractProjectileEntity projectile =  new SoulSpearProjectileEntity(mob.level(), mob, 20F);
         projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
 
-        double spawnPosX = mob.getX() + getRandomDoubleInRange(0, 1);
-        double spawnPosY = mob.getY() + mob.getEyeHeight() + getRandomDoubleInRange(0, 1);
-        double spawnPosZ = mob.getZ() + getRandomDoubleInRange(0, 1);
+        double spawnPosX = mob.getX();
+        double spawnPosY = mob.getY() + mob.getEyeHeight();
+        double spawnPosZ = mob.getZ();
 
         double targetPosX = mob.getTarget().getX() - spawnPosX  + getRandomDoubleInRange(0, 1);
-        double targetPosY = mob.getTarget().getY(1) - spawnPosY + getRandomDoubleInRange(0, 1);
+        double targetPosY = mob.getTarget().getY() - spawnPosY + getRandomDoubleInRange(0, 1);
         double targetPosZ = mob.getTarget().getZ() - spawnPosZ + getRandomDoubleInRange(0, 1);
 
         // Create a vector for the direction
@@ -147,7 +155,6 @@ public class ShootSoulsAttackGoal extends Goal
         mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
         mob.level().addFreshEntity(projectile);
 
-        attackkIntervalCooldown = attackIntervalTicks;
     }
 
 }
