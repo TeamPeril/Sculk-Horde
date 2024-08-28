@@ -103,8 +103,9 @@ public class EventHandler {
 
     public static void save(CompoundTag tag)
     {
-        SculkHorde.LOGGER.info("Saving events");
+        SculkHorde.LOGGER.info("Saving " + SculkHorde.eventHandler.getEvents().size() + " events.");
         CompoundTag eventsTag = new CompoundTag();
+        long startTime = System.currentTimeMillis();
         for(Event event : SculkHorde.eventHandler.getEvents().values())
         {
             CompoundTag eventTag = new CompoundTag();
@@ -112,19 +113,24 @@ public class EventHandler {
             eventsTag.put(event.getClass().getName(), eventTag);
         }
         tag.put("events", eventsTag);
+        SculkHorde.LOGGER.info("Saved " + SculkHorde.eventHandler.getEvents().size() + " events. Took " + (System.currentTimeMillis() - startTime) + " Milliseconds.");
     }
 
     public static EventHandler load(CompoundTag tag)
     {
-        SculkHorde.LOGGER.info("Loading events");
+
         EventHandler eventHandler = new EventHandler();
         CompoundTag eventsTag = tag.getCompound("events");
+
+        SculkHorde.LOGGER.info("Loading " + eventsTag.getAllKeys().size() + " events.");
+        long startTime = System.currentTimeMillis();
         for(String key : eventsTag.getAllKeys())
         {
             CompoundTag eventTag = eventsTag.getCompound(key);
             Event event = Event.load(eventTag);
             eventHandler.addEvent(event);
         }
+        SculkHorde.LOGGER.info("Loaded " + eventHandler.getEvents().size() + " events. Took " + (System.currentTimeMillis() - startTime) + " Milliseconds.");
         return eventHandler;
     }
 
