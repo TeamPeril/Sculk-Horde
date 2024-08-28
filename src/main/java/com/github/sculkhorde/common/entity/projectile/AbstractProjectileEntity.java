@@ -87,6 +87,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     abstract protected void applyEffectToEntity(LivingEntity entity);
 
+
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         if (!this.level().isClientSide()) {
