@@ -64,6 +64,7 @@ public class ShootSoulFlySwatterAttackGoal extends Goal
 
         if(mob.getTarget().onGround())
         {
+            return false;
         }
 
         return true;
