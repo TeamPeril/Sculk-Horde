@@ -2,11 +2,8 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
@@ -89,7 +86,6 @@ public class ShootSoulFlySwatterAttackGoal extends Goal
         //getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
         //getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         this.mob.getNavigation().stop();
-        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level(), mob.blockPosition().above(50), MobSpawnType.SPAWNER);
     }
 
     @Override

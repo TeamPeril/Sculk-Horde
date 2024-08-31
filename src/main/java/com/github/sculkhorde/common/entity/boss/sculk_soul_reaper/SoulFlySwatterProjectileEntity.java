@@ -1,7 +1,9 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
+import com.github.sculkhorde.common.effect.DenseEffect;
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
@@ -40,6 +42,7 @@ public class SoulFlySwatterProjectileEntity extends AbstractProjectileEntity imp
         if(getOwner() != null && getOwner() instanceof LivingEntity e)
         {
             e.doHurtTarget(entity);
+            DenseEffect.applyToEntity((LivingEntity) getOwner(), e, TickUnits.convertSecondsToTicks(20));
         }
 
     }
