@@ -163,7 +163,22 @@ public class EntityAlgorithms {
         {
             return false;
         }
-        return e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
+        boolean hasSculkEntityTag = e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
+        boolean implementsISculkSmartEntity = e instanceof ISculkSmartEntity;
+
+        // Making sure that the entity with this tag is an actual sculk horde entity.
+        if(hasSculkEntityTag && !implementsISculkSmartEntity)
+        {
+            SculkHorde.LOGGER.debug("ERROR | Do not give non-sculk horde entities the sculk_entity tag. This will crash your game. Mod author or modpack author, use sculk_horde_do_not_attack");
+            return false;
+        }
+
+        if(hasSculkEntityTag && implementsISculkSmartEntity)
+        {
+            return true;
+        }
+
+        return false;
     };
 
 
