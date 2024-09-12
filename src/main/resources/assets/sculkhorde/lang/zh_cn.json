@@ -301,6 +301,5 @@
     "effect.sculkhorde.sculk_infected.description": "实体被幽匿螨寄生所产生的负面效果，在破体而出之后会带出在体内生长的孢子并传播到附近的方块",
     "effect.sculkhorde.sculk_lure.description": "允许幽匿节点从远处追踪你的踪迹.",
     "effect.sculkhorde.diseased_cysts.description": "可以破坏和感染当前实体附近的其他实体。可以用净化之瓶净化.",
-    "effect.sculkhorde.sculk_vessel.description": "增加幽匿节点附近同一维度且距离不超过200个方块的实体的速度和伤害",
     "effect.sculkhorde.corroded.description": "这会导致实体随着时间的推移而受到损害。部分伤害忽略了护甲。只能从幽匿呕吐者或玩家可以射击的酸性物质投射物中获得."
   }

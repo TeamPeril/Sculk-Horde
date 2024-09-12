@@ -203,9 +203,8 @@
   "effect.sculkhorde.diseased_cysts": "Diseased Cysts",
   "effect.sculkhorde.diseased_cysts.description": "Can damage and infect other entities near the initial victim. It can be cursed using a Purification Flask.",
   "effect.sculkhorde.sculk_vessel": "Sculk Vessel",
-  "effect.sculkhorde.sculk_vessel.description": "Increases the speed and damage of an entity near the Sculk Node in the same dimension and at a distance of no more than 200 blocks from it.",
   "effect.sculkhorde.corroded": "Corroded",
-  "effect.sculkhorde.corroded.description": "Causes the entity to take damage over time. A portion of the damage ignores armor. Can only be obtained from the Sculk Acidic Projectile which can be shot by Sculk Spitters or players.",
+  "effect.sculkhorde.corroded.description": "Causes the entity to take damage over time. A portion of the damage ignores armor.",
 
   "entity.sculkhorde.sculk_zombie": "Sculk Zombie",
   "entity.sculkhorde.sculk_spitter": "Sculk Spitter",
