@@ -88,6 +88,7 @@ public class BlockInfestationHelper {
 
         // Deeper and Darker Compatibility
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_stone");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:cobbled_deepslate", "deeperdarker:cobbled_sculk_stone");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_coal_ore", "deeperdarker:sculk_stone_coal_ore");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_iron_ore", "deeperdarker:sculk_stone_iron_ore");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_gold_ore", "deeperdarker:sculk_stone_gold_ore");
@@ -98,10 +99,13 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_diamond_ore", "deeperdarker:sculk_stone_diamond_ore");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:moss_block", "deeperdarker:echo_soil");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:flowering_azalea_leaves", "deeperdarker:echo_leaves");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:oak_sapling", "deeperdarker:echo_sapling");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:oak_log", "deeperdarker:echo_log");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:oak_wood", "deeperdarker:echo_wood");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:pearlescent_froglight", "deeperdarker:sculk_gleam");
 
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:blackstone", "deeperdarker:gloomslate");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:blackstone", "deeperdarker:cobbled_gloomslate");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_coal_ore", "deeperdarker:gloomslate_coal_ore");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_iron_ore", "deeperdarker:gloomslate_iron_ore");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate_gold_ore", "deeperdarker:gloomslate_gold_ore");
@@ -114,10 +118,19 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:smooth_basalt", "deeperdarker:gloomy_sculk");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:ochre_froglight", "deeperdarker:crystallized_amber");
 
-        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:deepslate", "deeperdarker:sculk_grime");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:mud", "deeperdarker:sculk_grime");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "deeperdarker:sculk_tendrils");
-        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:cave_vines", "deeperdarker:sculk_vines");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:weeping_vines", "deeperdarker:sculk_vines");
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:mud", "deeperdarker:sculk_jaw");
+
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:moss_block", "deeperdarker:blooming_moss_block");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:grass_block", "deeperdarker:blooming_sculk_stone");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:cave_vines", "deeperdarker:glowing_vines");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "deeperdarker:glowing_roots");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "deeperdarker:glowing_flowers");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:seagrass", "deeperdarker:glowing_grass");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:torchflower", "deeperdarker:lily_flower");
+        SculkHorde.explicitInfectableBlocks.addEntry("minecraft:lily_pad", "deeperdarker:ice_lily");
 
         // Remove Sculk Vein
         SculkHorde.explicitInfectableBlocks.addEntry("minecraft:air", "minecraft:sculk_vein");
