@@ -216,6 +216,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_WITCH.get(), SculkWitchEntity.createAttributes().build());
         event.put(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperEntity.createAttributes().build());
         event.put(ModEntities.SCULK_VEX.get(), SculkVexEntity.createAttributes().build());
+        event.put(ModEntities.LIVING_ARMOR.get(), LivingArmorEntity.createAttributes().build());
     }
 }
 

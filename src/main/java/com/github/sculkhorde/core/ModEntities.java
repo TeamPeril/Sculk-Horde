@@ -57,6 +57,8 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SculkPufferfishEntity>> SCULK_PUFFERFISH = registerMob("sculk_pufferfish", SculkPufferfishEntity::new, 0.9f, 0.9f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkWitchEntity>> SCULK_WITCH = registerMob("sculk_witch", SculkWitchEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
 
+    public static final RegistryObject<EntityType<LivingArmorEntity>> LIVING_ARMOR = registerMob("living_armor", LivingArmorEntity::new, 0.6f, 1.95f, 0x000000, 0x000000);
+
     public static final RegistryObject<EntityType<SculkSoulReaperEntity>> SCULK_SOUL_REAPER = registerMob("sculk_soul_reaper", SculkSoulReaperEntity::new, 0.9f, 2.8f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkVexEntity>> SCULK_VEX = registerMob("sculk_vex", SculkVexEntity::new, 0.8f, 0.8f, 0x000000, 0x000000);
 

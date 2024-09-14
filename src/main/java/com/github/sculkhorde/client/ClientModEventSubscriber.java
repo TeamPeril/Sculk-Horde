@@ -39,74 +39,42 @@ public class ClientModEventSubscriber {
         // Register Renderers for Entities
 
         event.registerEntityRenderer(ModEntities.SCULK_ZOMBIE.get(), SculkZombieRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_MITE.get(), SculkMiteRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_MITE_AGGRESSOR.get(), SculkMiteAggressorRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_SPITTER.get(), SculkSpitterRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_BEE_INFECTOR.get(), SculkBeeInfectorRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_BEE_HARVESTER.get(), SculkBeeHarvesterRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CUSTOM_ITEM_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_ACIDIC_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
-
         event.registerEntityRenderer(ModEntities.PURIFICATION_FLASK_PROJECTILE_ENTITY.get(), ThrownItemRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_HATCHER.get(), SculkHatcherRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CURSOR_PROBER.get(), CursorProberRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CURSOR_PURIFIER_PROBER.get(), CursorPurifierProberRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CURSOR_BRIDGER.get(), CursorBridgerRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CURSOR_SURFACE_INFECTOR.get(), CursorSurfaceInfectorRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CURSOR_SURFACE_PURIFIER.get(), CursorSurfacePurifierRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_SPORE_SPEWER.get(), SculkSporeSpewerRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_RAVAGER.get(), SculkRavagerRenderer::new);
-
         event.registerEntityRenderer(ModEntities.INFESTATION_PURIFIER.get(), InfestationPurifierRenderer::new);
-
         event.registerBlockEntityRenderer(ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), context -> new SculkSummonerBlockRenderer());
-
         event.registerBlockEntityRenderer(ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get(), context -> new SoulHarvesterBlockRenderer());
-
         event.registerEntityRenderer(ModEntities.SCULK_VINDICATOR.get(), SculkVindicatorRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_CREEPER.get(), SculkCreeperRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_ENDERMAN.get(), SculkEndermanRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_PHANTOM.get(), SculkPhantomRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_PHANTOM_CORPSE.get(), SculkPhantomCorpseRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_SALMON.get(), SculkSalmonRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_SQUID.get(), SculkSquidRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_PUFFERFISH.get(), SculkPufferfishRenderer::new);
-
         event.registerEntityRenderer(ModEntities.ENDER_BUBBLE_ATTACK.get(), EnderBubbleAttackRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CHAOS_TELEPORATION_RIFT.get(), ChaosTeleporationRiftRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), SculkSpineSpikeAttackRenderer::new);
-
         event.registerEntityRenderer(ModEntities.AREA_EFFECT_SPHERICAL_CLOUD.get(), AreaEffectSphericalCloudRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_WITCH.get(), SculkWitchRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperRenderer::new);
-
         event.registerEntityRenderer(ModEntities.SCULK_VEX.get(), SculkVexRenderer::new);
+        event.registerEntityRenderer(ModEntities.SCULK_WITCH.get(), SculkWitchRenderer::new);
+        event.registerEntityRenderer(ModEntities.LIVING_ARMOR.get(), LivingArmorRenderer::new);
 
         event.registerEntityRenderer(ModEntities.SOUL_FIRE_PROJECTILE.get(), SoulFireProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL_POISON_PROJECTILE.get(), SoulPoisonProjectileRenderer::new);
