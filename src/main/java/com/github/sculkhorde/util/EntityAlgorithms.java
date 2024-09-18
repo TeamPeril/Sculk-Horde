@@ -3,14 +3,17 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.misc.ModColaborationHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -22,10 +25,8 @@ import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -167,9 +168,9 @@ public class EntityAlgorithms {
         boolean implementsISculkSmartEntity = e instanceof ISculkSmartEntity;
 
         // Making sure that the entity with this tag is an actual sculk horde entity.
-        if(hasSculkEntityTag && !implementsISculkSmartEntity)
+        if(hasSculkEntityTag && !implementsISculkSmartEntity && !(e instanceof SculkBeeHarvesterEntity))
         {
-            SculkHorde.LOGGER.debug("ERROR | Do not give non-sculk horde entities the sculk_entity tag. This will crash your game. Mod author or modpack author, use sculk_horde_do_not_attack");
+            SculkHorde.LOGGER.debug("ERROR | Do not give non-sculk horde entity " + e.getName().getString() + " the sculk_entity tag. This will crash your game. Mod author or modpack author, use sculk_horde_do_not_attack");
             return false;
         }
 

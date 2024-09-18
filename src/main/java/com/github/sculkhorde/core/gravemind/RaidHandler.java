@@ -445,6 +445,7 @@ public class RaidHandler {
             raidData.setRaidState(RaidState.INITIALIZING_RAID);
             raidData.getScoutEnderman().discard();
             raidData.setScoutEnderman(null);
+            raidData.setBlockSearcher(null);
         }
     }
 
@@ -466,7 +467,7 @@ public class RaidHandler {
     {
         SculkHorde.savedData.setTicksSinceLastRaid(0);
 
-        if(raidData.getBlockSearcher() == null)
+        if(raidData.getBlockSearcher().isEmpty())
         {
             SculkHorde.LOGGER.info("RaidHandler | Scouting Location Loaded: " + isScoutingLocationLoaded());
 
