@@ -25,6 +25,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -60,6 +61,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.25F;
     public int shieldCoolDown;
+    protected float lastHurtDistanceFromSourceEntity = 0;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
@@ -199,6 +201,28 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         return goals;
     }
 
+    // #### Behavior Management ####
+
+    @Override
+    public boolean hurt(@NotNull DamageSource damageSource, float amount) {
+
+        if(damageSource.getEntity() != null)
+        {
+            this.lastHurtDistanceFromSourceEntity = damageSource.getEntity().distanceTo(this);
+        }
+        else
+        {
+            this.lastHurtDistanceFromSourceEntity = 0;
+        }
+        return super.hurt(damageSource, amount);
+    }
+
+    public long getTicksSinceLastHurt()
+    {
+        return level().getGameTime()-getLastHurtMobTimestamp();
+    }
+
+
     // #### Inventory Management ####
 
     protected ItemStack getItemInMainHand()
@@ -264,6 +288,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         }
     }
 
+    // #### Animation Management ####
 
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
 
