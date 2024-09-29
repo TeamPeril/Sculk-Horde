@@ -6,7 +6,6 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -62,6 +61,9 @@ public abstract class CursorEntity extends Entity
     //Create a hash map to store all visited nodes
     protected HashMap<Long, Boolean> visitedPositons = new HashMap<>();
 
+    // Client Side Particle Spawning
+    protected int particleSpawnCooldown = TickUnits.convertSecondsToTicks(1);
+    protected int ticksSinceLastParticleSpawn = particleSpawnCooldown;
 
 
     public CursorEntity(EntityType<?> pType, Level pLevel) {
@@ -281,14 +283,6 @@ public abstract class CursorEntity extends Entity
 
         lastTickTime = System.currentTimeMillis();
 
-        // Play Particles on Client
-        if (this.level() != null && this.level().isClientSide) {
-            for (int i = 0; i < 2; ++i) {
-                spawnParticleEffects();
-            }
-            return;
-        }
-
         // Keep track of the origin
         if (origin == BlockPos.ZERO)
         {
@@ -363,6 +357,18 @@ public abstract class CursorEntity extends Entity
     public void tick() {
         super.tick();
 
+        // Play Particles on Client
+        if (this.level() != null && this.level().isClientSide)
+        {
+            ticksSinceLastParticleSpawn += 1;
+            if(ticksSinceLastParticleSpawn >= particleSpawnCooldown)
+            {
+                for (int i = 0; i < 2; ++i) {
+                    spawnParticleEffects();
+                }
+            }
+            return;
+        }
 
         if(canBeManuallyTicked())
         {
@@ -382,70 +388,6 @@ public abstract class CursorEntity extends Entity
         if(shouldTick) {
             cursorTick();
         }
-
-    }
-
-
-    /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
-     *
-     * @param nbt
-     */
-    @Override
-    protected void readAdditionalSaveData(CompoundTag nbt) {
-        /*
-        nbt.putInt("MAX_TRANSFORMATIONS", MAX_TRANSFORMATIONS);
-        nbt.putInt("currentTransformations", currentTransformations);
-        nbt.putInt("MAX_RANGE", MAX_RANGE);
-        nbt.putLong("MAX_LIFETIME_MILLIS", MAX_LIFETIME_MILLIS);
-        nbt.putLong("creationTickTime", creationTickTime);
-        nbt.putLong("lastTickTime", lastTickTime);
-        nbt.putLong("ticksRemainingBeforeCheckingIfInCursorList", ticksRemainingBeforeCheckingIfInCursorList);
-        nbt.putLong("searchIterationsPerTick", searchIterationsPerTick);
-        nbt.putLong("tickIntervalMilliseconds", tickIntervalMilliseconds);
-
-        int stateValue;
-        switch (state)
-        {
-            case SEARCHING -> stateValue = 1;
-            case EXPLORING -> stateValue = 2;
-            case FINISHED -> stateValue = 3;
-            default -> stateValue = 0;
-        }
-        nbt.putInt("state", stateValue);
-
-         */
-
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag nbt) {
-        /*
-        MAX_TRANSFORMATIONS = nbt.getInt("MAX_TRANSFORMATIONS");
-        currentTransformations = nbt.getInt("currentTransformations");
-        MAX_RANGE = nbt.getInt("MAX_RANGE");
-        MAX_LIFETIME_MILLIS = nbt.getLong("MAX_LIFETIME_MILLIS");
-        creationTickTime = nbt.getLong("creationTickTime");
-        lastTickTime = nbt.getLong("lastTickTime");
-        ticksRemainingBeforeCheckingIfInCursorList = nbt.getLong("ticksRemainingBeforeCheckingIfInCursorList");
-        searchIterationsPerTick = nbt.getInt("searchIterationsPerTick");
-        tickIntervalMilliseconds = nbt.getLong("tickIntervalMilliseconds");
-
-        State stateValue;
-        switch (nbt.getInt("state"))
-        {
-            case 1 -> stateValue = State.SEARCHING;
-            case 2 -> stateValue = State.EXPLORING;
-            case 3 -> stateValue = State.FINISHED;
-            default -> stateValue = State.IDLE;
-        }
-        state = State.IDLE;
-
-         */
-    }
-
-    @Override
-    protected void defineSynchedData() {
 
     }
 
