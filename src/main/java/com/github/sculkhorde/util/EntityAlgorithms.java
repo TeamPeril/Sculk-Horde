@@ -53,15 +53,30 @@ public class EntityAlgorithms {
             }
         }
 
+
         float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
         target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
-        float newHealth = target.getHealth() - guaranteedDamage;
-        if(newHealth <= 0)
+
+        float newHealth = Math.max(target.getHealth() - guaranteedDamage, 1);
+        if(newHealth <= 1)
         {
-            target.kill();
-            return;
+            target.hurt(aggressor.damageSources().indirectMagic(aggressor, aggressor), guaranteedDamage);
         }
+        else
+        {
+            target.setHealth(newHealth);
+            target.hurt(aggressor.damageSources().indirectMagic(aggressor, aggressor), 1F);
+        }
+
+
+        /*
+        float newHealth = Math.max(target.getHealth() - guaranteedDamage, 1);
         target.setHealth(newHealth);
+
+        float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
+        target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
+
+         */
     }
 
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
