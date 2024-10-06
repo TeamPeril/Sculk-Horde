@@ -1,19 +1,21 @@
-package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
+package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFlySwatterProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
-public class ShootSoulSpearAttackGoal extends Goal
+public class ShootSoulFlySwatterAttackGoal extends Goal
 {
     private final Mob mob;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(3);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(3);
@@ -24,7 +26,7 @@ public class ShootSoulSpearAttackGoal extends Goal
 
 
 
-    public ShootSoulSpearAttackGoal(PathfinderMob mob) {
+    public ShootSoulFlySwatterAttackGoal(PathfinderMob mob) {
         this.mob = mob;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
@@ -59,6 +61,11 @@ public class ShootSoulSpearAttackGoal extends Goal
             return false;
         }
 
+        if(mob.getTarget().onGround())
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -78,10 +85,9 @@ public class ShootSoulSpearAttackGoal extends Goal
             return;
         }
 
-        getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
-        getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
+        //getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
+        //getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         this.mob.getNavigation().stop();
-        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level(), mob.blockPosition().above(50), MobSpawnType.SPAWNER);
     }
 
     @Override
@@ -135,7 +141,7 @@ public class ShootSoulSpearAttackGoal extends Goal
             return;
         }
 
-        AbstractProjectileEntity projectile =  new SoulSpearProjectileEntity(mob.level(), mob, 20F);
+        AbstractProjectileEntity projectile =  new SoulFlySwatterProjectileEntity(mob.level(), mob, 10F);
         projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
 
         double spawnPosX = mob.getX();

@@ -1,5 +1,6 @@
-package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
+package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ParticleTypes;

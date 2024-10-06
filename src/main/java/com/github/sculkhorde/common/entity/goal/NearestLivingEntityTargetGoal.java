@@ -84,7 +84,7 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         //Return nearest Mob
         for(LivingEntity e : possibleTargets)
         {
-            if(e.distanceTo(this.mob) < e.distanceTo(closestLivingEntity))
+            if(e.distanceTo(this.mob) < closestLivingEntity.distanceTo(this.mob))
             {
                 closestLivingEntity = e;
             }
