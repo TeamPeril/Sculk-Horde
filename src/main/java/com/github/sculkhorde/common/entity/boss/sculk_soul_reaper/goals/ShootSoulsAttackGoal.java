@@ -29,7 +29,7 @@ public class ShootSoulsAttackGoal extends Goal
     public ShootSoulsAttackGoal(PathfinderMob mob, int durationInTicks) {
         this.mob = mob;
         maxAttackDuration = durationInTicks;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.setFlags(EnumSet.of(Flag.LOOK));
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -77,7 +77,6 @@ public class ShootSoulsAttackGoal extends Goal
         getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
         getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         projectileType = getRandomIntInRange(0,1);
-        this.mob.getNavigation().stop();
     }
 
     @Override

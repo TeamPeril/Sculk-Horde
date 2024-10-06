@@ -151,9 +151,10 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
         this.goalSelector.addGoal(1, new ShootSoulSpearAttackGoal(this));
         this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this));
-        this.goalSelector.addGoal(1, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-        this.goalSelector.addGoal(1, new FangsAttackGoal(this));
+        this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
+        this.goalSelector.addGoal(2, new FangsAttackGoal(this));
         this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
+        this.goalSelector.addGoal(1, new ShootZoltraakAttackGoal(this));
         this.goalSelector.addGoal(5, new SoulReapterNavigator(this, 20F, 10F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
