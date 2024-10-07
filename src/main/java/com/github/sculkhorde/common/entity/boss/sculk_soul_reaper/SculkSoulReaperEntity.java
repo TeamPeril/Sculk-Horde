@@ -68,6 +68,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
+    public int mobDifficultyLevel = 1;
 
     // Controls what types of entities this mob can target
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
@@ -95,6 +96,16 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     {
         this(ModEntities.SCULK_SOUL_REAPER.get(), level);
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static SculkSoulReaperEntity spawnWithDifficulty(Level level, BlockPos pos, int mobDifficultyLevel)
+    {
+        SculkSoulReaperEntity entity = new SculkSoulReaperEntity(ModEntities.SCULK_SOUL_REAPER.get(), level);
+        entity.setPos(pos.getX(), pos.getY(), pos.getZ());
+        entity.setMobDifficultyLevel(mobDifficultyLevel);
+        entity.addAbilitiesBasedOnDifficulty();
+        level.addFreshEntity(entity);
+        return entity;
     }
 
 
@@ -144,6 +155,16 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         return TARGET_PARAMETERS;
     }
 
+    public int getMobDifficultyLevel()
+    {
+        return mobDifficultyLevel;
+    }
+
+    public void setMobDifficultyLevel(int value)
+    {
+        mobDifficultyLevel = value;
+    }
+
     @Override
     public void checkDespawn() {}
 
@@ -156,21 +177,31 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void registerGoals() {
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
-        this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this));
-        this.goalSelector.addGoal(1, new ZoltraakAttackGoal(this));
-        this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
 
-        this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
+        this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
         this.goalSelector.addGoal(2, new FangsAttackGoal(this));
-        this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
-        this.goalSelector.addGoal(2, new ShootSoulSpearAttackGoal(this));
 
         this.goalSelector.addGoal(5, new SoulReapterNavigator(this, 20F, 10F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
         this.targetSelector.addGoal(1, new TargetAttacker(this));
         this.targetSelector.addGoal(2, new NearestLivingEntityTargetGoal<>(this, false, false));
+    }
+
+    public void addAbilitiesBasedOnDifficulty()
+    {
+        if(getMobDifficultyLevel() >= 2)
+        {
+            this.goalSelector.addGoal(1, new ZoltraakAttackGoal(this));
+            this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
+            this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this));
+        }
+        else if(getMobDifficultyLevel() >= 3)
+        {
+            this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
+            this.goalSelector.addGoal(2, new ShootSoulSpearAttackGoal(this));
+            this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
+        }
     }
 
     @Override
@@ -246,6 +277,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         super.aiStep();
     }
 
+    // ####### Boss Bar Event Stuff #######
 
     /**
      * Called every tick to update the entity's position/logic.
