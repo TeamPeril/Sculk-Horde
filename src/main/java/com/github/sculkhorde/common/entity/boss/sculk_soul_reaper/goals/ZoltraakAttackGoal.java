@@ -11,14 +11,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
-public class ShootZoltraakAttackGoal extends Goal
+public class ZoltraakAttackGoal extends Goal
 {
     private final Mob mob;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(5);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(1);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(1);
@@ -29,7 +31,7 @@ public class ShootZoltraakAttackGoal extends Goal
 
 
 
-    public ShootZoltraakAttackGoal(PathfinderMob mob) {
+    public ZoltraakAttackGoal(PathfinderMob mob) {
         this.mob = mob;
         this.setFlags(EnumSet.of(Flag.LOOK));
     }
@@ -110,7 +112,7 @@ public class ShootZoltraakAttackGoal extends Goal
             return;
         }
 
-        shootProjectileAtTarget(DAMAGE, 0.5F, 10F);
+        shootZoltraakBeam(DAMAGE, 0.5F, 10F);
         spellCasted = true;
     }
 
@@ -132,7 +134,7 @@ public class ShootZoltraakAttackGoal extends Goal
         return min + (mob.getRandom().nextInt() * (max + min));
     }
 
-    public void shootProjectileAtTarget(float damage, float radius, float thickness)
+    public void shootZoltraakBeam(float damage, float radius, float thickness)
     {
 
         if(mob.getTarget() == null)
@@ -141,12 +143,25 @@ public class ShootZoltraakAttackGoal extends Goal
         }
 
         mob.getLookControl().setLookAt(mob.getTarget().position());
-        Vec3 vec3 = mob.getEyePosition();
-        Vec3 vec31 = mob.getTarget().getEyePosition().subtract(vec3);
-        Vec3 vec32 = vec31.normalize();
+        Vec3 startVector = mob.getEyePosition();
+        Vec3 targetVector = mob.getTarget().getEyePosition().subtract(startVector).scale(2.0);
+        Vec3 direction = targetVector.normalize();
 
-        for (int i = 1; i < Mth.floor(vec31.length()) + 7; ++i) {
-            Vec3 vec33 = vec3.add(vec32.scale((double) i));
+        // Perform ray trace
+        HitResult hitResult = mob.level().clip(new ClipContext(startVector, startVector.add(targetVector), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mob));
+
+        if (hitResult.getType() == HitResult.Type.MISS) {
+            return;
+        }
+
+        Vec3 hitVector = hitResult.getLocation();
+
+        Vec3 beamPath = hitVector.subtract(startVector);
+
+
+        // Spawn Particles
+        for (int i = 1; i < Mth.floor(beamPath.length()) + 7; ++i) {
+            Vec3 vec33 = startVector.add(direction.scale((double) i));
 
             // Create a circle of particles around vec33
             for (int j = 0; j < thickness; ++j) {
@@ -157,11 +172,12 @@ public class ShootZoltraakAttackGoal extends Goal
             }
         }
 
-
         mob.level().playSound(mob,mob.blockPosition(), ModSounds.ZOLTRAAK_ATTACK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-        mob.getTarget().hurt(mob.damageSources().magic(), damage);
 
+        if(hitResult.getType() == HitResult.Type.ENTITY)
+        {
+            mob.getTarget().hurt(mob.damageSources().magic(), damage);
+        }
     }
 
 }
-//projectileEntity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));
