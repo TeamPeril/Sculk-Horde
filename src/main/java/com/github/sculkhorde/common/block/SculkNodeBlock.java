@@ -5,6 +5,8 @@ import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.PlayerProfileHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +20,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -298,6 +303,17 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         decayRemainingNodeBlocks((ServerLevel) worldIn, pos, 12);
 
         SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+
+        // Get Nearby Players and update the number of nodes they destroyed
+        worldIn.players().forEach((player) ->
+                {
+                    if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+                    {
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
+                    }
+                }
+        );
+
 
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }

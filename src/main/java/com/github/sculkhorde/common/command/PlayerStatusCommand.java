@@ -14,25 +14,35 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.Collection;
+
 public class PlayerStatusCommand implements Command<CommandSourceStack> {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
 
-        return Commands.literal("playerstatus")
+        return Commands.literal("player_profile")
                 .then(Commands.literal("set")
                         .then(Commands.argument("int", IntegerArgumentType.integer(1, 1000000))
-                                .executes((context -> function(context, "set"))
-                                )))
+                                .executes((context -> setPlayerProfile(context, "set"))
+                                )
+                        )
+                )
                 .then(Commands.literal("get")
-                        .then(Commands.argument("int", IntegerArgumentType.integer(1, 1000000))
-                                .executes((context -> function(context, "get"))
-                                )));
+                        .then(Commands.argument("targets", EntityArgument.players())
+                                .executes((commandStack -> getPlayerProfile(
+                                        commandStack.getSource(),
+                                        EntityArgument.getPlayers(commandStack, "targets")))
+                                )
+                        )
+                );
 
     }
 
@@ -41,8 +51,21 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
         return 0;
     }
 
+    protected static int getPlayerProfile(CommandSourceStack context, Collection<ServerPlayer> players)
+    {
+        for(ServerPlayer player : players)
+        {
+            ModSavedData.PlayerProfileEntry playerProfile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
 
-    private static int function(CommandContext<CommandSourceStack> context, String operation) throws CommandSyntaxException {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(playerProfile.toString());
+
+            context.sendSuccess(() -> { return Component.literal(stringBuilder.toString());}, false);
+        }
+        return players.size();
+    }
+
+    private static int setPlayerProfile(CommandContext<CommandSourceStack> context, String operation) throws CommandSyntaxException {
         int value = Math.abs(IntegerArgumentType.getInteger(context, "int"));
         Player player = context.getSource().getPlayerOrException();
 
@@ -57,7 +80,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
         }
 
         switch (operation) {
-            case "get" -> {
+            case "set" -> {
 
                 if(value == 162)
                 {
@@ -87,7 +110,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
                 }
 
             }
-            case "set" -> {
+            case "get" -> {
             }
         }
         return 0;
