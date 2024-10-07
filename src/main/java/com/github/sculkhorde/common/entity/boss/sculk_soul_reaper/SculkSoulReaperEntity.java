@@ -98,10 +98,10 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static SculkSoulReaperEntity spawnWithDifficulty(Level level, BlockPos pos, int mobDifficultyLevel)
+    public static SculkSoulReaperEntity spawnWithDifficulty(Level level, Vec3 pos, int mobDifficultyLevel)
     {
         SculkSoulReaperEntity entity = new SculkSoulReaperEntity(ModEntities.SCULK_SOUL_REAPER.get(), level);
-        entity.setPos(pos.getX(), pos.getY(), pos.getZ());
+        entity.setPos(pos);
         entity.setMobDifficultyLevel(mobDifficultyLevel);
         entity.addAbilitiesBasedOnDifficulty();
         level.addFreshEntity(entity);
@@ -196,7 +196,8 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
             this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
             this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this));
         }
-        else if(getMobDifficultyLevel() >= 3)
+
+        if(getMobDifficultyLevel() >= 3)
         {
             this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
             this.goalSelector.addGoal(2, new ShootSoulSpearAttackGoal(this));
