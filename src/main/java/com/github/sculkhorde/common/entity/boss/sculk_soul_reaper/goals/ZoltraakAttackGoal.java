@@ -66,6 +66,11 @@ public class ZoltraakAttackGoal extends Goal
             return false;
         }
 
+        if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -112,7 +117,7 @@ public class ZoltraakAttackGoal extends Goal
             return;
         }
 
-        shootZoltraakBeam(DAMAGE, 0.5F, 10F);
+        shootZoltraakBeam(DAMAGE, 0.3F, 10F);
         spellCasted = true;
     }
 
@@ -144,23 +149,23 @@ public class ZoltraakAttackGoal extends Goal
 
         mob.getLookControl().setLookAt(mob.getTarget().position());
         Vec3 startVector = mob.getEyePosition();
-        Vec3 targetVector = mob.getTarget().getEyePosition().subtract(startVector).scale(2.0);
+        Vec3 targetVector = mob.getTarget().getEyePosition().subtract(startVector);
         Vec3 direction = targetVector.normalize();
 
         // Perform ray trace
         HitResult hitResult = mob.level().clip(new ClipContext(startVector, startVector.add(targetVector), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mob));
-
-        if (hitResult.getType() == HitResult.Type.MISS) {
-            return;
-        }
 
         Vec3 hitVector = hitResult.getLocation();
 
         Vec3 beamPath = hitVector.subtract(startVector);
 
 
+        Vec3 up = new Vec3(0, 1, 0);
+        Vec3 right = direction.cross(up).normalize();
+        Vec3 forward = direction.cross(right).normalize();
+
         // Spawn Particles
-        for (int i = 1; i < Mth.floor(beamPath.length()) + 7; ++i) {
+        for (float i = 1; i < Mth.floor(beamPath.length()) + 1; i += 0.3F) {
             Vec3 vec33 = startVector.add(direction.scale((double) i));
 
             // Create a circle of particles around vec33
@@ -168,13 +173,14 @@ public class ZoltraakAttackGoal extends Goal
                 double angle = 2 * Math.PI * j / thickness;
                 double xOffset = radius * Math.cos(angle);
                 double zOffset = radius * Math.sin(angle);
-                ((ServerLevel) mob.level()).sendParticles(ParticleTypes.SOUL_FIRE_FLAME, vec33.x + xOffset, vec33.y, vec33.z + zOffset, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                Vec3 offset = right.scale(xOffset).add(forward.scale(zOffset));
+                ((ServerLevel) mob.level()).sendParticles(ParticleTypes.SOUL_FIRE_FLAME, vec33.x + offset.x, vec33.y + offset.y, vec33.z + offset.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
             }
         }
 
         mob.level().playSound(mob,mob.blockPosition(), ModSounds.ZOLTRAAK_ATTACK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
 
-        if(hitResult.getType() == HitResult.Type.ENTITY)
+        if(mob.getSensing().hasLineOfSight(mob.getTarget()))
         {
             mob.getTarget().hurt(mob.damageSources().magic(), damage);
         }
