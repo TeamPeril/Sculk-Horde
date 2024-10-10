@@ -9,7 +9,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -22,7 +21,7 @@ public class InfestedTagBlockEntity extends BlockEntity implements ITagInfestedB
      * storedSculkMassIdentifier is the string used to identify storedSculkMass
      * in CompoundNBT. It allows us to read/write to it.<br>
      */
-    protected BlockState storedNormalVariant = Blocks.OAK_LOG.defaultBlockState();
+    protected BlockState storedNormalVariant;
     protected String storedNormalVariantIdentifier = "storedNormalVariant";
 
 
@@ -58,7 +57,8 @@ public class InfestedTagBlockEntity extends BlockEntity implements ITagInfestedB
     @Override
     public void saveAdditional(CompoundTag compoundNBT) {
 
-        compoundNBT.put(storedNormalVariantIdentifier, NbtUtils.writeBlockState(getNormalBlockState()));
+        if (getNormalBlockState() != null)
+            compoundNBT.put(storedNormalVariantIdentifier, NbtUtils.writeBlockState(getNormalBlockState()));
         super.saveAdditional(compoundNBT);
         //SculkHorde.LOGGER.debug("Infested Log Saved State: " + NbtUtils.writeBlockState(storedNormalVariant));
     }

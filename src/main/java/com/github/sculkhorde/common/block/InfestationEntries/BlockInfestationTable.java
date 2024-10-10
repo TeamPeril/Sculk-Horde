@@ -47,9 +47,9 @@ public class BlockInfestationTable{
         entries.add(new BlockInfestationTableEntry(normalVariant, infectedVariant));
     }
 
-    public void addEntry(TagKey<Block> normalTag, ITagInfestedBlock infectedVariant)
+    public void addEntry(TagKey<Block> normalTag, ITagInfestedBlock infectedVariant, Block defaultNormalVariant)
     {
-        entries.add(new BlockTagInfestationTableEntry(normalTag, infectedVariant));
+        entries.add(new BlockTagInfestationTableEntry(normalTag, infectedVariant, defaultNormalVariant));
     }
 
     public void addEntry(String normalBlockID, String infectedBlockID)
@@ -57,9 +57,9 @@ public class BlockInfestationTable{
         entries.add(new BlockIDOnlyCurableTableEntry(normalBlockID, infectedBlockID));
     }
 
-    public void addEntry(TagKey<Block> toolRequired, Tier tier, ITagInfestedBlock infectedVariant)
+    public void addEntry(TagKey<Block> toolRequired, Tier tier, ITagInfestedBlock infectedVariant, Block defaultNormalVariant)
     {
-        entries.add(new ToolTaglInfestationTableEntry(toolRequired, tier, infectedVariant));
+        entries.add(new ToolTaglInfestationTableEntry(toolRequired, tier, infectedVariant, defaultNormalVariant));
     }
 
     public void addEntry(ITagInfestedBlock infectedVariant)

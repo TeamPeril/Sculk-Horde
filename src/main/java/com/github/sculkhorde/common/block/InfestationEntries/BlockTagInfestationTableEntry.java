@@ -13,6 +13,7 @@ public class BlockTagInfestationTableEntry implements IBlockInfestationEntry
 {
     protected TagKey<Block> normalVariantTag;
     protected ITagInfestedBlock infectedVariant;
+    protected Block defaultNormalVariant;
 
     // This is needed to tell java that the properties are of the same type
     private static <T extends Comparable<T>> BlockState copyBlockProperty(BlockState from, BlockState to, Property<T> property) {
@@ -25,10 +26,11 @@ public class BlockTagInfestationTableEntry implements IBlockInfestationEntry
     }
 
     // Default constructor
-    public BlockTagInfestationTableEntry(TagKey<Block> normalVariantIn, ITagInfestedBlock infectedVariantIn)
+    public BlockTagInfestationTableEntry(TagKey<Block> normalVariantIn, ITagInfestedBlock infectedVariantIn, Block defaultNormalVariantIn)
     {
         normalVariantTag = normalVariantIn;
         infectedVariant = infectedVariantIn;
+        defaultNormalVariant = defaultNormalVariantIn;
     }
 
     public boolean isNormalVariant(BlockState blockState)
@@ -44,11 +46,11 @@ public class BlockTagInfestationTableEntry implements IBlockInfestationEntry
     public BlockState getNormalVariant(Level level, BlockPos blockPos)
     {
         ITagInfestedBlockEntity blockEntity = infectedVariant.getTagInfestedBlockEntity(level, blockPos);
-        if(blockEntity == null || blockEntity.getNormalBlockState() == null)
+        if(blockEntity == null)
         {
             return level.getBlockState(blockPos);
         }
-        return infectedVariant.getTagInfestedBlockEntity(level, blockPos).getNormalBlockState();
+        return infectedVariant.getTagInfestedBlockEntity(level, blockPos).getNormalBlockState(defaultNormalVariant);
     }
 
     public BlockState getInfectedVariant(Level level, BlockPos blockPos)

@@ -133,15 +133,15 @@ public class BlockInfestationHelper {
 
         // Used to infect stairs and slabs. Order Matters
         SculkHorde.tagInfectableStairsAndSlabsBlocks = new BlockInfestationTable(false);
-        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get());
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get(), Blocks.OAK_STAIRS);
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Order Matters
         SculkHorde.tagInfectableBlocks = new BlockInfestationTable(true);
-        SculkHorde.tagInfectableBlocks.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
+        SculkHorde.tagInfectableBlocks.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get(), Blocks.OAK_LOG);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get(), Blocks.OAK_PLANKS);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get(), Blocks.COBBLESTONE);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get(), Blocks.COARSE_DIRT);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
 
         SculkHorde.configInfectableBlocks = new BlockInfestationTable(false);
         SculkHorde.configInfectableBlocks.addEntry(ModBlocks.INFESTED_STURDY_MASS.get());
