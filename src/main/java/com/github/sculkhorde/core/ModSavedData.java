@@ -1525,6 +1525,8 @@ public class ModSavedData extends SavedData {
         private int nodesDestroyed = 0;
         private long timeOfLastHit = 0;
 
+        private int difficultyOfNextHit = 1;
+
         private static final int MAX_RELATIONSHIP_VALUE = 1000;
         private static final int MIN_RELATIONSHIP_VALUE = -1000;
 
@@ -1538,7 +1540,7 @@ public class ModSavedData extends SavedData {
             this.playerUUID = uuid;
         }
 
-        public PlayerProfileEntry(UUID playerIn, int relationshipToTheHordeIn, boolean isVesselIn, boolean isActiveVesselIn, int nodesDestroyed, long timeOfLastHit)
+        public PlayerProfileEntry(UUID playerIn, int relationshipToTheHordeIn, boolean isVesselIn, boolean isActiveVesselIn, int nodesDestroyed, long timeOfLastHit, int difficultyOfNextHit)
         {
             this.playerUUID = playerIn;
             this.relationshipToTheHorde = relationshipToTheHordeIn;
@@ -1546,6 +1548,7 @@ public class ModSavedData extends SavedData {
             this.isActiveVessel = isActiveVesselIn;
             this.nodesDestroyed = nodesDestroyed;
             this.timeOfLastHit = timeOfLastHit;
+            this.difficultyOfNextHit = difficultyOfNextHit;
         }
 
         public Optional<Player> getPlayer()
@@ -1575,7 +1578,7 @@ public class ModSavedData extends SavedData {
 
         public boolean isHitCooldownOver()
         {
-            return ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - getTimeOfLastHit() > TickUnits.convertTicksToMinutes(1);
+            return ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - getTimeOfLastHit() > TickUnits.convertHoursToTicks(2);
         }
 
         public int getRelationshipToTheHorde()
@@ -1626,6 +1629,21 @@ public class ModSavedData extends SavedData {
 
         public void incrementNodesDestroyed() { setNodesDestroyed(getNodesDestroyed() + 1);}
 
+        public int getDifficultyOfNextHit()
+        {
+            return difficultyOfNextHit;
+        }
+
+        public void increaseDifficultyOfNextHit()
+        {
+            difficultyOfNextHit = Math.min(3, difficultyOfNextHit + 1);
+        }
+
+        public void decreaseDifficultyOfNextHit()
+        {
+            difficultyOfNextHit = Math.max(1, difficultyOfNextHit - 1);
+        }
+
         /**
          * Making nbt to be stored in memory
          * @return The nbt with our data
@@ -1639,6 +1657,7 @@ public class ModSavedData extends SavedData {
             nbt.putBoolean("isActiveVessel", isActiveVessel);
             nbt.putInt("nodesDestroyed", nodesDestroyed);
             nbt.putLong("timeOfLastHit", timeOfLastHit);
+            nbt.putInt("difficultyOfNextHit", difficultyOfNextHit);
             return nbt;
         }
 
@@ -1654,7 +1673,8 @@ public class ModSavedData extends SavedData {
                     nbt.getBoolean("isVessel"),
                     nbt.getBoolean("isActiveVessel"),
                     nbt.getInt("nodesDestroyed"),
-                    nbt.getLong("timeOfLastHit")
+                    nbt.getLong("timeOfLastHit"),
+                    nbt.getInt("difficultyOfNextHit")
             );
         }
 
@@ -1668,6 +1688,7 @@ public class ModSavedData extends SavedData {
                     ", isActiveVessel=" + isActiveVessel +
                     ", nodesDestroyed=" + nodesDestroyed +
                     ", timeOfLastHit=" + timeOfLastHit +
+                    ", difficultyOfNextHit=" + difficultyOfNextHit +
                     '}';
         }
     }

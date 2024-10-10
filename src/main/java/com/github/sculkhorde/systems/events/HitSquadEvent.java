@@ -34,7 +34,7 @@ public class HitSquadEvent extends Event {
         FAILURE
     }
 
-    protected State state = State.INITIALIZATION;
+    protected State state;
     protected boolean isEventOver = false;
 
     protected Optional<HitSquadSpawnFinder> spawnFinder = Optional.empty();
@@ -45,6 +45,8 @@ public class HitSquadEvent extends Event {
         super(dimension);
         setEventCost(100);
         this.target = target;
+        eventID = target.getMostSignificantBits() & Long.MAX_VALUE;
+        setState(State.INITIALIZATION);
     }
 
     public boolean canContinue()
@@ -153,7 +155,7 @@ public class HitSquadEvent extends Event {
 
         if(spawnFinder.get().isPathFound())
         {
-            reaper = SculkSoulReaperEntity.spawnWithDifficulty(player.level(), spawnFinder.get().getFoundBlock().getCenter(), 3);
+            reaper = SculkSoulReaperEntity.spawnWithDifficulty(player.level(), spawnFinder.get().getFoundBlock().getCenter(), getTargetProfile().getDifficultyOfNextHit());
             reaper.setHitTarget(player);
             setState(State.PURSUIT);
         }
@@ -172,7 +174,7 @@ public class HitSquadEvent extends Event {
         }
         Player player = getPlayerIfOnline().get();
 
-        if(player.distanceTo(reaper) <= 20)
+        if(player.distanceTo(reaper) <= 64)
         {
             setState(State.ENGAGING);
         }
@@ -197,7 +199,7 @@ public class HitSquadEvent extends Event {
         }
         Player player = getPlayerIfOnline().get();
 
-        if(player.distanceTo(reaper) > 20)
+        if(player.distanceTo(reaper) > 70)
         {
             setState(State.PURSUIT);
         }
@@ -215,11 +217,13 @@ public class HitSquadEvent extends Event {
 
     protected void successTick()
     {
+        getTargetProfile().decreaseDifficultyOfNextHit();
         isEventOver = true;
     }
 
     protected void failureTick()
     {
+        getTargetProfile().increaseDifficultyOfNextHit();
         isEventOver = true;
     }
 

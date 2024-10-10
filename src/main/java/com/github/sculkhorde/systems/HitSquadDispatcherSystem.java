@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class HitSquadDispatcherSystem {
 
-    protected static int CHECK_INTERVAL = TickUnits.convertMinutesToTicks(1);
+    protected static int CHECK_INTERVAL = TickUnits.convertMinutesToTicks(15);
     protected long timeOfLastCheckForDispatch = 0;
     protected static int MIN_NODES_DESTROYED = 2;
     protected static int MAX_RELATIONSHIP = -100;
