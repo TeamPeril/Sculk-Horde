@@ -134,6 +134,8 @@ public class BlockInfestationHelper {
         // Used to infect stairs and slabs. Order Matters
         SculkHorde.tagInfectableStairsAndSlabsBlocks = new BlockInfestationTable(false);
         SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get(), Blocks.OAK_STAIRS);
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.STAIRS, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
+
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Order Matters
         SculkHorde.tagInfectableBlocks = new BlockInfestationTable(true);

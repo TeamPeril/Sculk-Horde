@@ -589,6 +589,15 @@ public class ModBlocks {
 					.sound(SoundType.WOOD)
 			));
 
+	public static final RegistryObject<InfestedStairBlock> INFESTED_STURDY_STAIRS =
+			registerBlock("infested_sturdy_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
 	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
 			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
