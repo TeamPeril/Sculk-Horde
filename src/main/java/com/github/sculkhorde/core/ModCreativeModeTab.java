@@ -94,6 +94,7 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_SAND.get());
                 event.accept(ModBlocks.INFESTED_RED_SAND.get());
                 event.accept(ModBlocks.INFESTED_SANDSTONE.get());
+                event.accept(ModBlocks.INFESTED_SANDSTONE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_GRAVEL.get());
                 event.accept(ModBlocks.INFESTED_CLAY.get());
                 event.accept(ModBlocks.INFESTED_STONE.get());
@@ -104,9 +105,13 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_MOSSY_COBBLESTONE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_DEEPSLATE.get());
                 event.accept(ModBlocks.INFESTED_COBBLED_DEEPSLATE.get());
+                event.accept(ModBlocks.INFESTED_COBBLED_DEEPSLATE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_ANDESITE.get());
+                event.accept(ModBlocks.INFESTED_ANDESITE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_DIORITE.get());
+                event.accept(ModBlocks.INFESTED_DIORITE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_GRANITE.get());
+                event.accept(ModBlocks.INFESTED_GRANITE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_TUFF.get());
                 event.accept(ModBlocks.INFESTED_CALCITE.get());
                 event.accept(ModBlocks.INFESTED_SNOW.get());
@@ -135,8 +140,10 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_CRIMSON_NYLIUM.get());
                 event.accept(ModBlocks.INFESTED_WARPED_NYLIUM.get());
                 event.accept(ModBlocks.INFESTED_BLACKSTONE.get());
+                event.accept(ModBlocks.INFESTED_BLACKSTONE_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_BASALT.get());
                 event.accept(ModBlocks.INFESTED_SMOOTH_BASALT.get());
+                event.accept(ModBlocks.INFESTED_ENDSTONE.get());
                 event.accept(ModBlocks.INFESTED_WOOD_MASS.get());
                 event.accept(ModBlocks.INFESTED_WOOD_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_CRUMPLED_MASS.get());
