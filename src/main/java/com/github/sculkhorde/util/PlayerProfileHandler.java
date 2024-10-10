@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 public class PlayerProfileHandler {
 
@@ -15,6 +16,18 @@ public class PlayerProfileHandler {
         for(ModSavedData.PlayerProfileEntry entry: SculkHorde.savedData.getPlayerProfileEntries())
         {
             if(entry.getPlayerUUID().equals(player.getUUID()))
+            {
+                return Optional.of(entry);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<ModSavedData.PlayerProfileEntry> getPlayerProfile(UUID uuid)
+    {
+        for(ModSavedData.PlayerProfileEntry entry: SculkHorde.savedData.getPlayerProfileEntries())
+        {
+            if(entry.getPlayerUUID().equals(uuid))
             {
                 return Optional.of(entry);
             }
@@ -33,6 +46,23 @@ public class PlayerProfileHandler {
         else
         {
             ModSavedData.PlayerProfileEntry newEntry = new ModSavedData.PlayerProfileEntry(player);
+            SculkHorde.savedData.getPlayerProfileEntries().add(newEntry);
+            return newEntry;
+
+        }
+    }
+
+    public static ModSavedData.PlayerProfileEntry getOrCreatePlayerProfile(UUID uuid)
+    {
+        Optional<ModSavedData.PlayerProfileEntry> profile =  getPlayerProfile(uuid);
+
+        if(profile.isPresent())
+        {
+            return profile.get();
+        }
+        else
+        {
+            ModSavedData.PlayerProfileEntry newEntry = new ModSavedData.PlayerProfileEntry(uuid);
             SculkHorde.savedData.getPlayerProfileEntries().add(newEntry);
             return newEntry;
 

@@ -96,6 +96,7 @@ public class ForgeEventSubscriber {
         SculkHorde.eventHandler.serverTick();
         SculkHorde.cursorHandler.serverTick();
         SculkHorde.populationHandler.serverTick();
+        SculkHorde.hitSquadDispatcherSystem.serverTick();
         SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests();
         SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();
 

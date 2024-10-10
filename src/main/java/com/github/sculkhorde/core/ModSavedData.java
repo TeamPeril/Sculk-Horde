@@ -1523,22 +1523,29 @@ public class ModSavedData extends SavedData {
         private boolean isVessel = false;
         private boolean isActiveVessel = false;
         private int nodesDestroyed = 0;
+        private long timeOfLastHit = 0;
 
         private static final int MAX_RELATIONSHIP_VALUE = 1000;
-        private static final int MIN_RELATIONSHIP_VALUE = -1;
+        private static final int MIN_RELATIONSHIP_VALUE = -1000;
 
         public PlayerProfileEntry(Player playerIn)
         {
             this.playerUUID = playerIn.getUUID();
         }
 
-        public PlayerProfileEntry(UUID playerIn, int relationshipToTheHordeIn, boolean isVesselIn, boolean isActiveVesselIn, int nodesDestroyed)
+        public PlayerProfileEntry(UUID uuid)
+        {
+            this.playerUUID = uuid;
+        }
+
+        public PlayerProfileEntry(UUID playerIn, int relationshipToTheHordeIn, boolean isVesselIn, boolean isActiveVesselIn, int nodesDestroyed, long timeOfLastHit)
         {
             this.playerUUID = playerIn;
             this.relationshipToTheHorde = relationshipToTheHordeIn;
             this.isVessel = isVesselIn;
             this.isActiveVessel = isActiveVesselIn;
             this.nodesDestroyed = nodesDestroyed;
+            this.timeOfLastHit = timeOfLastHit;
         }
 
         public Optional<Player> getPlayer()
@@ -1549,6 +1556,26 @@ public class ModSavedData extends SavedData {
         public UUID getPlayerUUID()
         {
             return playerUUID;
+        }
+
+        public boolean isPlayerOnline()
+        {
+            return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID) != null;
+        }
+
+        public void setTimeOfLastHit(long value)
+        {
+            timeOfLastHit = value;
+        }
+
+        public long getTimeOfLastHit()
+        {
+            return timeOfLastHit;
+        }
+
+        public boolean isHitCooldownOver()
+        {
+            return ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - getTimeOfLastHit() > TickUnits.convertTicksToMinutes(1);
         }
 
         public int getRelationshipToTheHorde()
@@ -1611,6 +1638,7 @@ public class ModSavedData extends SavedData {
             nbt.putBoolean("isVessel", isVessel);
             nbt.putBoolean("isActiveVessel", isActiveVessel);
             nbt.putInt("nodesDestroyed", nodesDestroyed);
+            nbt.putLong("timeOfLastHit", timeOfLastHit);
             return nbt;
         }
 
@@ -1625,7 +1653,8 @@ public class ModSavedData extends SavedData {
                     nbt.getInt("relationshipToTheHorde"),
                     nbt.getBoolean("isVessel"),
                     nbt.getBoolean("isActiveVessel"),
-                    nbt.getInt("nodesDestroyed")
+                    nbt.getInt("nodesDestroyed"),
+                    nbt.getLong("timeOfLastHit")
             );
         }
 
@@ -1638,6 +1667,7 @@ public class ModSavedData extends SavedData {
                     ", isVessel=" + isVessel +
                     ", isActiveVessel=" + isActiveVessel +
                     ", nodesDestroyed=" + nodesDestroyed +
+                    ", timeOfLastHit=" + timeOfLastHit +
                     '}';
         }
     }

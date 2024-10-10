@@ -1,7 +1,6 @@
 package com.github.sculkhorde.core.gravemind.events;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.core.gravemind.RaidHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -48,7 +47,8 @@ public class Event {
 
     public boolean canStart()
     {
-        return getDimension().getGameTime() - lastGameTimeOfEventExecution > EXECUTION_COOLDOWN;
+        boolean hasEnoughTimePassed = getDimension().getGameTime() - lastGameTimeOfEventExecution >= EXECUTION_COOLDOWN;
+        return hasEnoughTimePassed;
     }
 
     public boolean canContinue()
@@ -177,8 +177,8 @@ public class Event {
         tag.putBoolean("isEventReocurring", isEventReocurring());
         tag.putBoolean("isEventActive", isEventActive());
         tag.putBoolean("toBeRemoved", isToBeRemoved());
-        tag.putString("dimension", dimension.location().toString());
-        tag.putLong("eventLocation", eventLocation.asLong());
+        if(dimension != null) { tag.putString("dimension", dimension.location().toString()); }
+        if(eventLocation != null) { tag.putLong("eventLocation", eventLocation.asLong()); }
     }
 
     public static Event load(CompoundTag tag)

@@ -310,6 +310,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
                     if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
                     {
                         PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
                     }
                 }
         );

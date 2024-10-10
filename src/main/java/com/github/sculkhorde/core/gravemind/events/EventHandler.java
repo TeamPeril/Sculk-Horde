@@ -13,7 +13,7 @@ public class EventHandler {
     private HashMap<Long, Event> events;
 
     private long lastGameTimeOfExecution;
-    private final long EXECUTION_COOLDOWN_TICKS = TickUnits.convertMinutesToTicks(1);
+    private final long EXECUTION_COOLDOWN_TICKS = TickUnits.convertSecondsToTicks(0.5F);
 
     public EventHandler()
     {
@@ -84,6 +84,7 @@ public class EventHandler {
             if(!isEventActive && canEventStart)
             {
                 event.start();
+                SculkHorde.LOGGER.info("Starting event " + event.getClass() + " with ID: " + event.getEventID());
                 continue;
             }
 
@@ -96,6 +97,7 @@ public class EventHandler {
             if(isEventActive && !canEventContinue)
             {
                 event.end();
+                SculkHorde.LOGGER.info("Ending event " + event.getClass() + " with ID: " + event.getEventID());
                 continue;
             }
         }

@@ -71,46 +71,46 @@ public class TargetParameters
         if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is explicitly denied.");
+            //debugPrint(validatingExistingTarget, e, "is explicitly denied.");
         }
 
         //If player is in creative or spectator
         else if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is explicitly player in creative or spectator. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is explicitly player in creative or spectator. Denied.");
         }
 
         //If we do not attack swimmers and target is a swimmer
         else if(!isTargetingSwimmers() && isLivingEntitySwimmer(e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
         }
 
         //If we do not attack entities in water and target is in water
         else if(!isTargetingEntitiesInWater() && e.isInWater())
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is in water. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is in water. Denied.");
         }
 
         else if(isIgnoringTargetBelow50PercentHealth() && (e.getHealth() < e.getMaxHealth() / 2))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is below 50% health. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is below 50% health. Denied.");
         }
 
         else if(!isTargetWalkers() && !e.isInWater())
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is walker. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is walker. Denied.");
         }
 
         else if(isMustSeeTarget() && !canSeeTarget(e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "cant see target. Denied.");
+            //debugPrint(validatingExistingTarget, e, "cant see target. Denied.");
         }
 
         //If we must reach target and cannot reach target
@@ -119,47 +119,47 @@ public class TargetParameters
         else if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "cannot reach. Denied.");
+            //debugPrint(validatingExistingTarget, e, "cannot reach. Denied.");
         }
 
         else if(e instanceof InfestationPurifierEntity)
         {
             isValid = true;
-            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
+            //debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
         }
 
         else if(e instanceof Player)
         {
             isValid = true;
-            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
+            //debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
         }
 
         // If Blacklisted
         else if(isOnBlackList((Mob) e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
         }
 
         //If we do not attack infected and entity is infected
         else if(!isTargetingInfected() && isLivingEntityInfected(e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is infected. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is infected. Denied.");
         }
 
         //If we do not attack passives and entity is non-hostile
         else if(!isTargetingPassives() && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is Passive. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is Passive. Denied.");
         }
 
         //If we do not attack hostiles and target is hostile
         else if(!isTargetingHostiles() && isLivingEntityHostile(e))
         {
             isValid = false;
-            debugPrint(validatingExistingTarget, e, "is hostile. Denied.");
+            //debugPrint(validatingExistingTarget, e, "is hostile. Denied.");
         }
 
         return isValid;
