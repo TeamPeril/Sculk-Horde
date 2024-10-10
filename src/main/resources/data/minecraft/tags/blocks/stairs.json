@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "sculkhorde:infested_sandstone_stairs",
+    "sculkhorde:infested_diorite_stairs",
+    "sculkhorde:infested_andesite_stairs",
+    "sculkhorde:infested_granite_stairs",
+    "sculkhorde:infested_cobbled_deepslate_stairs",
+    "sculkhorde:infested_blackstone_stairs",
+    "sculkhorde:infested_stone_stairs",
+    "sculkhorde:infested_cobblestone_stairs",
+    "sculkhorde:infested_mossy_cobblestone_stairs"
+  ]
+}

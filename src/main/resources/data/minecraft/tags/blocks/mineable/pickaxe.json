@@ -43,8 +43,15 @@
     "sculkhorde:infested_mossy_cobblestone",
 
     "sculkhorde:infested_sturdy_mass",
+
     "sculkhorde:infested_mossy_cobblestone_stairs",
     "sculkhorde:infested_cobblestone_stairs",
-    "sculkhorde:infested_stone_stairs"
+    "sculkhorde:infested_stone_stairs",
+    "sculkhorde:infested_andesite_stairs",
+    "sculkhorde:infested_granite_stairs",
+    "sculkhorde:infested_diorite_stairs",
+    "sculkhorde:infested_sandstone_stairs",
+    "sculkhorde:infested_cobbled_deepslate_stairs",
+    "sculkhorde:infested_blackstone_stairs"
   ]
 }

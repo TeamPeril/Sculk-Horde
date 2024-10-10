@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -52,6 +53,11 @@ public class ModBlocks {
 	//simple method to quickly register stairs
 	private static RegistryObject<StairBlock> stairs(RegistryObject<Block> original) {
 		return registerBlock(original.getId().getPath() + "_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(original.get())));
+	}
+
+	//simple method to quickly register slabs
+	private static RegistryObject<SlabBlock> slab(RegistryObject<Block> original) {
+		return registerBlock(original.getId().getPath() + "_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(original.get())));
 	}
 
     //Register Ancient Large Bricks
