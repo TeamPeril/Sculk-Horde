@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.item;
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.util.BlockInfestationHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
@@ -77,8 +78,15 @@ public class DevConversionWand extends Item implements IForgeItem {
 
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
-		if (!context.getLevel().isClientSide())
-			BlockInfestationHelper.tryToInfestBlock((ServerLevel) context.getLevel(), context.getClickedPos());
+		if (!context.getLevel().isClientSide()) {
+			if (BlockInfestationHelper.isCurable((ServerLevel) context.getLevel(), context.getClickedPos())) {
+				BlockPos pos = context.getClickedPos();
+				BlockInfestationHelper.tryToCureBlock((ServerLevel) context.getLevel(), context.getClickedPos());
+				((ServerLevel)context.getLevel()).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.getX() + 0.5D, pos.getY() + 1.15D, pos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
+			} else {
+				BlockInfestationHelper.tryToInfestBlock((ServerLevel) context.getLevel(), context.getClickedPos());
+			}
+		}
 		return InteractionResult.SUCCESS;
 	}
 }

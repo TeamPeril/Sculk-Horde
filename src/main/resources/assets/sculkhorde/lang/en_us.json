@@ -6,7 +6,7 @@
   "tooltip.sculkhorde.in_development": "§7§oThis Item is In Development. It is not meant to be used in survival. It is only meant for testing and development purposes.",
   "item.sculkhorde.dev_wand": "Dev Wand",
   "item.sculkhorde.dev_conversion_wand": "Dev Conversion Wand",
-  "tooltip.sculkhorde.dev_conversion_wand": "§7§oConverts blocks to infected variants.",
+  "tooltip.sculkhorde.dev_conversion_wand": "§7§oConverts normal blocks to infected variants and purifies infested ones.",
   "item.sculkhorde.warden_beef": "Warden Beef",
   "tooltip.sculkhorde.warden_beef": "§7§oA forbidden food. A dev item that is used to enable in-development features when eaten.",
   "item.sculkhorde.dev_node_spawner": "Dev Sculk Brain Node Spawner",
