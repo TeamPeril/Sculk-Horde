@@ -3,6 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.advancement.*;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.ModBlocks;

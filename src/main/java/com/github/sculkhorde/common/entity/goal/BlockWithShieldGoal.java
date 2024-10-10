@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.LivingArmorEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;

@@ -1,6 +1,6 @@
 package com.github.sculkhorde.client.model.enitity;
 
-import com.github.sculkhorde.common.entity.LivingArmorEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;

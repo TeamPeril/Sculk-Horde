@@ -1,5 +1,6 @@
-package com.github.sculkhorde.common.entity;
+package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
