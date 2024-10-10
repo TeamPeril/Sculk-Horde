@@ -48,7 +48,12 @@ public class ModBlocks {
 	}
 
     //NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
-    
+
+	//simple method to quickly register stairs
+	private static RegistryObject<StairBlock> stairs(RegistryObject<Block> original) {
+		return registerBlock(original.getId().getPath() + "_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(original.get())));
+	}
+
     //Register Ancient Large Bricks
     public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS =
 			registerBlock("ancient_large_bricks", () -> new Block(BlockBehaviour.Properties.of()
@@ -111,13 +116,7 @@ public class ModBlocks {
 			));
 	
 	public static final RegistryObject<StairBlock> INFESTED_STONE_STAIRS =
-			registerBlock("infested_stone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
-					.mapColor(MapColor.TERRACOTTA_BLACK)
-					.strength(4f, 30f)//Hardness & Resistance
-					.destroyTime(5f)
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.ANCIENT_DEBRIS)
-			));
+			stairs(INFESTED_STONE);
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_LOG =
 			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
@@ -181,6 +180,10 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_SANDSTONE_STAIRS =
+			stairs(INFESTED_SANDSTONE);
+
 	public static final RegistryObject<Block> INFESTED_DIORITE =
 			registerBlock("infested_diorite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -189,6 +192,9 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_DIORITE_STAIRS =
+			stairs(INFESTED_DIORITE);
 
 	public static final RegistryObject<Block> INFESTED_GRANITE =
 			registerBlock("infested_granite", () -> new Block(BlockBehaviour.Properties.of()
@@ -199,6 +205,9 @@ public class ModBlocks {
 					.sound(SoundType.STONE)
 			));
 
+	public static final RegistryObject<StairBlock> INFESTED_GRANITE_STAIRS =
+			stairs(INFESTED_GRANITE);
+
 	public static final RegistryObject<Block> INFESTED_ANDESITE =
 			registerBlock("infested_andesite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -207,6 +216,9 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_ANDESITE_STAIRS =
+			stairs(INFESTED_ANDESITE);
 
 	public static final RegistryObject<Block> INFESTED_TUFF =
 			registerBlock("infested_tuff", () -> new Block(BlockBehaviour.Properties.of()
@@ -234,6 +246,9 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_COBBLED_DEEPSLATE_STAIRS =
+			stairs(INFESTED_COBBLED_DEEPSLATE);
 
 	public static final RegistryObject<Block> INFESTED_GRAVEL =
 			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of()
@@ -425,13 +440,7 @@ public class ModBlocks {
 			));
 	
 	public static final RegistryObject<StairBlock> INFESTED_COBBLESTONE_STAIRS =
-			registerBlock("infested_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
-					.mapColor(MapColor.TERRACOTTA_BLUE)
-					.strength(4f, 30f)//Hardness & Resistance
-					.destroyTime(5f)
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
-			));
+			stairs(INFESTED_COBBLESTONE);
 
 	public static final RegistryObject<Block> INFESTED_CRYING_OBSIDIAN =
 			registerBlock("infested_crying_obsidian", () -> new Block(BlockBehaviour.Properties.of()
@@ -477,6 +486,9 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_BLACKSTONE_STAIRS =
+			stairs(INFESTED_BLACKSTONE);
 
 	public static final RegistryObject<Block> INFESTED_BASALT =
 			registerBlock("infested_basalt", () -> new Block(BlockBehaviour.Properties.of()
@@ -542,13 +554,7 @@ public class ModBlocks {
 			));
 	
 	public static final RegistryObject<StairBlock> INFESTED_MOSSY_COBBLESTONE_STAIRS =
-			registerBlock("infested_mossy_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
-					.mapColor(MapColor. STONE)
-					.strength(4f, 30f)//Hardness & Resistance
-					.destroyTime(5f)
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
-			));
+			stairs(INFESTED_MOSSY_COBBLESTONE);
 
 	public static final RegistryObject<Block> INFESTED_CLAY =
 			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()

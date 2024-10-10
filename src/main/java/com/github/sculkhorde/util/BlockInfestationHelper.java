@@ -40,12 +40,17 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_STAIRS, ModBlocks.INFESTED_STONE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DEEPSLATE, ModBlocks.INFESTED_DEEPSLATE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLED_DEEPSLATE, ModBlocks.INFESTED_COBBLED_DEEPSLATE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLED_DEEPSLATE_STAIRS, ModBlocks.INFESTED_COBBLED_DEEPSLATE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SAND, ModBlocks.INFESTED_SAND.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SANDSTONE, ModBlocks.INFESTED_SANDSTONE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SANDSTONE_STAIRS, ModBlocks.INFESTED_SANDSTONE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.RED_SAND, ModBlocks.INFESTED_RED_SAND.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DIORITE, ModBlocks.INFESTED_DIORITE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DIORITE_STAIRS, ModBlocks.INFESTED_DIORITE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRANITE, ModBlocks.INFESTED_GRANITE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRANITE_STAIRS, ModBlocks.INFESTED_GRANITE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.ANDESITE, ModBlocks.INFESTED_ANDESITE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.ANDESITE_STAIRS, ModBlocks.INFESTED_ANDESITE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.TUFF, ModBlocks.INFESTED_TUFF.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.CALCITE, ModBlocks.INFESTED_CALCITE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLESTONE, ModBlocks.INFESTED_COBBLESTONE.get().defaultBlockState());
@@ -80,6 +85,7 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.CRIMSON_NYLIUM, ModBlocks.INFESTED_CRIMSON_NYLIUM.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.WARPED_NYLIUM, ModBlocks.INFESTED_WARPED_NYLIUM.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BLACKSTONE, ModBlocks.INFESTED_BLACKSTONE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BLACKSTONE_STAIRS, ModBlocks.INFESTED_BLACKSTONE_STAIRS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
