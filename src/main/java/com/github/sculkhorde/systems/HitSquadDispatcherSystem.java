@@ -3,6 +3,7 @@ package com.github.sculkhorde.systems;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.events.HitSquadEvent;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
@@ -38,10 +39,19 @@ public class HitSquadDispatcherSystem {
                 return Optional.of(player);
             }
 
-            if(profile.getNodesDestroyed() < MIN_NODES_DESTROYED
-                    || profile.getRelationshipToTheHorde() > MAX_RELATIONSHIP
-                    || !profile.isPlayerOnline()
-                    || !profile.isHitCooldownOver())
+            if(!profile.isPlayerOnline())
+            {
+                continue;
+            }
+
+            boolean hasNotDestroyedEnoughNodes = profile.getNodesDestroyed() < MIN_NODES_DESTROYED;
+            boolean hasGoodRelationshipWithHorde = profile.getRelationshipToTheHorde() > MAX_RELATIONSHIP;
+            boolean isHitCooldownNotOver = !profile.isHitCooldownOver();
+
+            ModSavedData.NodeEntry entry = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) player.level(), player.blockPosition());
+            boolean isTooFarFromNode = BlockAlgorithms.getBlockDistanceXZ(player.blockPosition(), entry.getPosition()) > 200;
+
+             if(isTooFarFromNode || isHitCooldownNotOver || hasGoodRelationshipWithHorde || hasNotDestroyedEnoughNodes)
             {
                 continue;
             }

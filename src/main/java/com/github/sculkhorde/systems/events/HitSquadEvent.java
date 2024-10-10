@@ -101,7 +101,7 @@ public class HitSquadEvent extends Event {
 
         // Create the new BlockPos
         BlockPos newPos = new BlockPos(newX, 0, newZ);
-        if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug("HitSquadEvent | Desired Spawn Pos: " + newPos.toShortString()); }
+        SculkHorde.LOGGER.debug("HitSquadEvent | Desired Spawn Pos: " + newPos.toShortString());
         return newPos;
     }
 
@@ -139,7 +139,7 @@ public class HitSquadEvent extends Event {
         {
             desiredSpawnPos = Optional.of(getDesiredSpawnLocation(player.blockPosition()));
             spawnFinder = Optional.of(new HitSquadSpawnFinder((ServerLevel) player.level(), getEventLocation(), desiredSpawnPos.get()));
-            spawnFinder.get().enableDebugMode();
+            //spawnFinder.get().enableDebugMode();
             spawnFinder.get().setTargetBlockPredicate(isValidSpawnPos);
             spawnFinder.get().setObstructionPredicate(isObstructed);
             spawnFinder.get().setMaxDistance(MAX_DISTANCE_FROM_PLAYER);
