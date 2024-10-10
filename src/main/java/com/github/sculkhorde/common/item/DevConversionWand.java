@@ -1,7 +1,9 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
+import com.github.sculkhorde.util.BlockInfestationHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -11,6 +13,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
@@ -73,38 +76,9 @@ public class DevConversionWand extends Item implements IForgeItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
-	{
-		ItemStack itemstack = playerIn.getItemInHand(handIn);
-
-		//If item is not on cool down
-		if(!playerIn.getCooldowns().isOnCooldown(this))
-		{
-
-			//Ray trace to see what block the player is looking at
-			BlockPos targetPos = EntityAlgorithms.playerTargetBlockPos(playerIn, false);
-
-			double targetX;
-			double targetY;
-			double targetZ;
-
-			if(targetPos != null) //If player Looking at Block
-			{
-				if(!worldIn.isClientSide())
-				{
-					// Spawn a Block Traverser
-					CursorSurfaceInfectorEntity cursor = new CursorSurfaceInfectorEntity((ServerLevel) worldIn);
-					cursor.setPos(targetPos.getX(), targetPos.getY(), targetPos.getZ());
-					worldIn.addFreshEntity(cursor);
-
-				}
-
-				//Set Wand on cool down
-				playerIn.getCooldowns().addCooldown(this, 10); //Cool down for second (20 ticks per second)
-			}
-			return InteractionResultHolder.pass(itemstack);
-		}
-
-		return InteractionResultHolder.fail(itemstack);
+	public InteractionResult useOn(UseOnContext context) {
+		if (!context.getLevel().isClientSide())
+			BlockInfestationHelper.tryToInfestBlock((ServerLevel) context.getLevel(), context.getClickedPos());
+		return InteractionResult.SUCCESS;
 	}
 }
