@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class SoulReapterNavigator extends Goal {
-    private final PathfinderMob mob;
+    private final SculkSoulReaperEntity mob;
     @Nullable
     private LivingEntity target;
     private double wantedX;
@@ -20,8 +20,8 @@ public class SoulReapterNavigator extends Goal {
     private final float maxDistance;
     private final float minDistance;
 
-    public SoulReapterNavigator(PathfinderMob p_25646_, float maxDistance, float minDistance) {
-        this.mob = p_25646_;
+    public SoulReapterNavigator(SculkSoulReaperEntity reaper, float maxDistance, float minDistance) {
+        this.mob = reaper;
         this.speedModifier = 1;
         this.maxDistance = maxDistance;
         this.minDistance = minDistance;
@@ -30,7 +30,8 @@ public class SoulReapterNavigator extends Goal {
 
     public boolean canUse()
     {
-        this.target = this.mob.getTarget();
+        this.target = mob.getHitTarget().isEmpty() ? mob.getTarget() : mob.getHitTarget().get();
+
         if (this.target == null)
         {
             return false;
@@ -70,6 +71,7 @@ public class SoulReapterNavigator extends Goal {
     }
 
     public boolean canContinueToUse() {
+
         return !this.mob.getNavigation().isDone() && this.target.isAlive() && this.target.distanceTo(this.mob) <= this.maxDistance && this.target.distanceTo(this.mob) >= this.minDistance;
     }
 

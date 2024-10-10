@@ -154,6 +154,7 @@ public class HitSquadEvent extends Event {
         if(spawnFinder.get().isPathFound())
         {
             reaper = SculkSoulReaperEntity.spawnWithDifficulty(player.level(), spawnFinder.get().getFoundBlock().getCenter(), 3);
+            reaper.setHitTarget(player);
             setState(State.PURSUIT);
         }
         else

@@ -44,6 +44,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Optional;
+
 public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
@@ -78,6 +80,8 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     // Animation
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    protected Optional<LivingEntity> hitTarget = Optional.empty();
 
     /**
      * The Constructor
@@ -163,6 +167,16 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void setMobDifficultyLevel(int value)
     {
         mobDifficultyLevel = value;
+    }
+
+    public Optional<LivingEntity> getHitTarget()
+    {
+        return hitTarget;
+    }
+
+    public void setHitTarget(LivingEntity e)
+    {
+        hitTarget = Optional.of(e);
     }
 
     @Override
