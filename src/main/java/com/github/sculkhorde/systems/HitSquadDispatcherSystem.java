@@ -44,6 +44,11 @@ public class HitSquadDispatcherSystem {
                 continue;
             }
 
+            if(SculkHorde.savedData.getNodeEntries().isEmpty())
+            {
+                continue;
+            }
+
             boolean hasNotDestroyedEnoughNodes = profile.getNodesDestroyed() < MIN_NODES_DESTROYED;
             boolean hasGoodRelationshipWithHorde = profile.getRelationshipToTheHorde() > MAX_RELATIONSHIP;
             boolean isHitCooldownNotOver = !profile.isHitCooldownOver();
