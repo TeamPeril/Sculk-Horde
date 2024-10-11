@@ -147,6 +147,9 @@ public class BlockInfestationHelper {
         SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get(), Blocks.OAK_STAIRS);
         SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.STAIRS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
         SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.STAIRS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_STAIRS.get(), Blocks.MOSSY_COBBLESTONE_STAIRS); //vanilla doesn't have any stairs that match these criteria so this is about the best i could get
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_SLABS, ModBlocks.INFESTED_WOOD_SLAB.get(), Blocks.OAK_SLAB);
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.SLABS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_SLAB.get(), Blocks.COBBLESTONE_SLAB);
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.SLABS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_SLAB.get(), Blocks.MOSSY_COBBLESTONE_SLAB);
 
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Order Matters

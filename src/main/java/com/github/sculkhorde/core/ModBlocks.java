@@ -622,6 +622,15 @@ public class ModBlocks {
 					.sound(SoundType.WOOD)
 			));
 
+	public static final RegistryObject<InfestedSlabBlock> INFESTED_WOOD_SLAB =
+			registerBlock("infested_wood_slab", () -> new InfestedSlabBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
 	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
 			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
@@ -640,6 +649,15 @@ public class ModBlocks {
 					.sound(SoundType.STONE)
 			));
 
+	public static final RegistryObject<InfestedSlabBlock> INFESTED_STURDY_SLAB =
+			registerBlock("infested_sturdy_slab", () -> new InfestedSlabBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
 	public static final RegistryObject<InfestedStairBlock> INFESTED_CRUMBLING_STAIRS =
 			registerBlock("infested_crumbling_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.QUARTZ)
@@ -647,6 +665,15 @@ public class ModBlocks {
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.MOSS)
+			));
+
+	public static final RegistryObject<InfestedSlabBlock> INFESTED_CRUMBLING_SLAB =
+			registerBlock("infested_crumbling_slab", () -> new InfestedSlabBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
 			));
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_CRUMPLED_MASS =
