@@ -69,6 +69,18 @@
     "sculkhorde:infested_blackstone_stairs",
     "sculkhorde:infested_sturdy_stairs",
     "sculkhorde:infested_crumbling_stairs",
+    "sculkhorde:infested_mud_brick_stairs",
+
+    "sculkhorde:infested_cobblestone_slab",
+    "sculkhorde:infested_stone_slab",
+    "sculkhorde:infested_mossy_cobblestone_slab",
+    "sculkhorde:infested_andesite_slab",
+    "sculkhorde:infested_granite_slab",
+    "sculkhorde:infested_diorite_slab",
+    "sculkhorde:infested_sandstone_slab",
+    "sculkhorde:infested_cobbled_deepslate_slab",
+    "sculkhorde:infested_blackstone_slab",
+    "sculkhorde:infested_mud_brick_slab",
 
     "sculkhorde:sculk_bee_nest",
     "sculkhorde:sculk_bee_nest_cell"

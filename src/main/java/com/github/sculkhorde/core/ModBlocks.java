@@ -42,13 +42,11 @@ public class ModBlocks {
 	}
 
 	//helper method to register a given block as a holdable item
-	private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block)
+	private static void registerBlockItem(String name, RegistryObject<? extends Block> block)
 	{
 		ModItems.ITEMS.register(name, () -> new BlockItem(block.get(),
 				new Item.Properties()));
 	}
-
-    //NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
 
 	//simple method to quickly register stairs
 	private static RegistryObject<StairBlock> stairs(RegistryObject<Block> original) {
@@ -59,6 +57,8 @@ public class ModBlocks {
 	private static RegistryObject<SlabBlock> slab(RegistryObject<Block> original) {
 		return registerBlock(original.getId().getPath() + "_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(original.get())));
 	}
+
+	//NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
 
     //Register Ancient Large Bricks
     public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS =
@@ -123,6 +123,9 @@ public class ModBlocks {
 	
 	public static final RegistryObject<StairBlock> INFESTED_STONE_STAIRS =
 			stairs(INFESTED_STONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_STONE_SLAB =
+			slab(INFESTED_STONE);
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_LOG =
 			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
@@ -190,6 +193,9 @@ public class ModBlocks {
 	public static final RegistryObject<StairBlock> INFESTED_SANDSTONE_STAIRS =
 			stairs(INFESTED_SANDSTONE);
 
+	public static final RegistryObject<SlabBlock> INFESTED_SANDSTONE_SLAB =
+			slab(INFESTED_SANDSTONE);
+
 	public static final RegistryObject<Block> INFESTED_DIORITE =
 			registerBlock("infested_diorite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -201,6 +207,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<StairBlock> INFESTED_DIORITE_STAIRS =
 			stairs(INFESTED_DIORITE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_DIORITE_SLAB =
+			slab(INFESTED_DIORITE);
 
 	public static final RegistryObject<Block> INFESTED_GRANITE =
 			registerBlock("infested_granite", () -> new Block(BlockBehaviour.Properties.of()
@@ -214,6 +223,9 @@ public class ModBlocks {
 	public static final RegistryObject<StairBlock> INFESTED_GRANITE_STAIRS =
 			stairs(INFESTED_GRANITE);
 
+	public static final RegistryObject<SlabBlock> INFESTED_GRANITE_SLAB =
+			slab(INFESTED_GRANITE);
+
 	public static final RegistryObject<Block> INFESTED_ANDESITE =
 			registerBlock("infested_andesite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -225,6 +237,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<StairBlock> INFESTED_ANDESITE_STAIRS =
 			stairs(INFESTED_ANDESITE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_ANDESITE_SLAB =
+			slab(INFESTED_ANDESITE);
 
 	public static final RegistryObject<Block> INFESTED_TUFF =
 			registerBlock("infested_tuff", () -> new Block(BlockBehaviour.Properties.of()
@@ -255,6 +270,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<StairBlock> INFESTED_COBBLED_DEEPSLATE_STAIRS =
 			stairs(INFESTED_COBBLED_DEEPSLATE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_COBBLED_DEEPSLATE_SLAB =
+			slab(INFESTED_COBBLED_DEEPSLATE);
 
 	public static final RegistryObject<Block> INFESTED_GRAVEL =
 			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of()
@@ -448,6 +466,9 @@ public class ModBlocks {
 	public static final RegistryObject<StairBlock> INFESTED_COBBLESTONE_STAIRS =
 			stairs(INFESTED_COBBLESTONE);
 
+	public static final RegistryObject<SlabBlock> INFESTED_COBBLESTONE_SLAB =
+			slab(INFESTED_COBBLESTONE);
+
 	public static final RegistryObject<Block> INFESTED_CRYING_OBSIDIAN =
 			registerBlock("infested_crying_obsidian", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_PURPLE)
@@ -484,6 +505,12 @@ public class ModBlocks {
 					.sound(SoundType.MUD_BRICKS)
 			));
 
+	public static final RegistryObject<StairBlock> INFESTED_MUD_BRICK_STAIRS =
+			registerBlock("infested_mud_brick_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(INFESTED_MUD_BRICKS.get())));
+
+	public static final RegistryObject<SlabBlock> INFESTED_MUD_BRICK_SLAB =
+			registerBlock("infested_mud_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(INFESTED_MUD_BRICKS.get())));
+
 	public static final RegistryObject<Block> INFESTED_BLACKSTONE =
 			registerBlock("infested_blackstone", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_BLACK)
@@ -495,6 +522,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<StairBlock> INFESTED_BLACKSTONE_STAIRS =
 			stairs(INFESTED_BLACKSTONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_BLACKSTONE_SLAB =
+			slab(INFESTED_BLACKSTONE);
 
 	public static final RegistryObject<Block> INFESTED_BASALT =
 			registerBlock("infested_basalt", () -> new Block(BlockBehaviour.Properties.of()
@@ -561,6 +591,9 @@ public class ModBlocks {
 	
 	public static final RegistryObject<StairBlock> INFESTED_MOSSY_COBBLESTONE_STAIRS =
 			stairs(INFESTED_MOSSY_COBBLESTONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_MOSSY_COBBLESTONE_SLAB =
+			slab(INFESTED_MOSSY_COBBLESTONE);
 
 	public static final RegistryObject<Block> INFESTED_CLAY =
 			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()

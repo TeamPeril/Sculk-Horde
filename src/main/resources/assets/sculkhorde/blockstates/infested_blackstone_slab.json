@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "sculkhorde:block/infested_blackstone_slab"
+    },
+    "type=double": {
+      "model": "sculkhorde:block/infested_blackstone"
+    },
+    "type=top": {
+      "model": "sculkhorde:block/infested_blackstone_slab_top"
+    }
+  }
+}

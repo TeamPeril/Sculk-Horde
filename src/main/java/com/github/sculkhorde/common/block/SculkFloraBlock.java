@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockInfestationHelper;
+import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -111,23 +112,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     }
 
 
-
-    /**
-     * Determines what block the spike can be placed on <br>
-     * Goes through a list of valid blocks and checks if the
-     * given block is in that list.<br>
-     * @param blockState The block it is trying to be placed on
-     * @param iBlockReader An interface for objects like the world
-     * @param pos The Position
-     * @return True/False
-     */
-    @Override
-    protected boolean mayPlaceOn(BlockState blockState, BlockGetter iBlockReader, BlockPos pos) {
-
-        return blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK);
-    }
-
-
     /**
      * Determines Block Hitbox <br>
      * Stole from NetherRootsBlock.java
@@ -176,6 +160,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
 
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return levelReader.getBlockState(blockPos.below()).is(ModBlocks.BlockTags.INFESTED_BLOCK);
+        return levelReader.getBlockState(blockPos.below()).is(ModBlocks.BlockTags.INFESTED_BLOCK) && levelReader.getBlockState(blockPos.below()).isFaceSturdy(levelReader, blockPos.below(), Direction.UP);
     }
 }
