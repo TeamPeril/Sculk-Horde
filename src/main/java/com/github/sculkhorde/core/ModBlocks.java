@@ -589,6 +589,15 @@ public class ModBlocks {
 					.sound(SoundType.WOOD)
 			));
 
+	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
+			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLACK)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
 	public static final RegistryObject<InfestedStairBlock> INFESTED_STURDY_STAIRS =
 			registerBlock("infested_sturdy_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.QUARTZ)
@@ -598,13 +607,13 @@ public class ModBlocks {
 					.sound(SoundType.STONE)
 			));
 
-	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
-			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
-					.mapColor(MapColor.TERRACOTTA_BLACK)
+	public static final RegistryObject<InfestedStairBlock> INFESTED_CRUMBLING_STAIRS =
+			registerBlock("infested_crumbling_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
 					.strength(4f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
+					.sound(SoundType.MOSS)
 			));
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_CRUMPLED_MASS =
@@ -714,6 +723,7 @@ public class ModBlocks {
 		public static final TagKey<Block> SCULK_RAID_TARGET_LOW_PRIORITY = create("sculk_raid_target/low_priority");
 		public static final TagKey<Block> SCULK_BEE_HARVESTABLE = create("sculk_bee_harvestable");
 		public static final TagKey<Block> INFESTED_BLOCK = create("infested_block");
+		public static final TagKey<Block> CONVERTS_TO_CRUMBLING_VARIANT = create("converts_to_crumbling_variant");
 
 		public static final TagKey<Block> NOT_INFESTABLE = create("not_infestable");
 

@@ -188,6 +188,7 @@
   "block.sculkhorde.infested_wood_mass": "Infested Wood Mass",
   "block.sculkhorde.infested_wood_stairs": "Infested Wood Stairs",
   "block.sculkhorde.infested_sturdy_stairs": "Infested Sturdy Stairs",
+  "block.sculkhorde.infested_crumbling_stairs": "Infested Crumbling Stairs",
 
   "item.sculkhorde.sculk_sweeper_sword": "The Sculk Sweeper",
   "tooltip.sculkhorde.sculk_sweeper_sword.functionality": "§7§oA sword with a large sweeping edge. Only does 50% damage to non-sculk mobs. Attacking Sculk Mobs builds up a charge that can be released with right-click. This special attack will spawn Sculk Spines at the feet of Sculk Mobs.",

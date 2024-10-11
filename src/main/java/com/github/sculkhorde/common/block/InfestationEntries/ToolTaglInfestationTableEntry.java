@@ -10,21 +10,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.TierSortingRegistry;
 
-public class ToolTaglInfestationTableEntry implements IBlockInfestationEntry
+public class ToolTaglInfestationTableEntry extends BlockEntityInfestationTableEntry
 {
     protected TagKey<Block> toolRequiredTag;
     protected Tier tierRequired = Tiers.IRON;
-    protected ITagInfestedBlock infectedVariant;
-    protected Block defaultNormalVariant;
-
 
     // Default constructor
-    public ToolTaglInfestationTableEntry(TagKey<Block> toolRequiredTag, Tier tierRequired, ITagInfestedBlock infectedVariantIn, Block defaultNormalVariant)
+    public ToolTaglInfestationTableEntry(TagKey<Block> toolRequiredTag, Tier tierRequired, ITagInfestedBlock infectedVariantIn, Block defaultNormalVariantIn)
     {
+        super(infectedVariantIn, defaultNormalVariantIn);
         this.toolRequiredTag = toolRequiredTag;
         this.tierRequired = tierRequired;
-        this.infectedVariant = infectedVariantIn;
-        this.defaultNormalVariant = defaultNormalVariant;
     }
 
     public boolean isNormalVariant(BlockState blockState)
@@ -39,21 +35,6 @@ public class ToolTaglInfestationTableEntry implements IBlockInfestationEntry
         }
 
         return blockState.is(toolRequiredTag);
-    }
-
-    public boolean isInfectedVariant(BlockState blockState)
-    {
-        return ((Block)infectedVariant).defaultBlockState().is(blockState.getBlock());
-    }
-
-    public BlockState getNormalVariant(Level level, BlockPos blockPos)
-    {
-        ITagInfestedBlockEntity blockEntity = infectedVariant.getTagInfestedBlockEntity(level, blockPos);
-        if(blockEntity == null)
-        {
-            return level.getBlockState(blockPos);
-        }
-        return infectedVariant.getTagInfestedBlockEntity(level, blockPos).getNormalBlockState(defaultNormalVariant);
     }
 
     public BlockState getInfectedVariant(Level level, BlockPos blockPos)

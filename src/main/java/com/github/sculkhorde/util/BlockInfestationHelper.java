@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -134,7 +135,8 @@ public class BlockInfestationHelper {
         // Used to infect stairs and slabs. Order Matters
         SculkHorde.tagInfectableStairsAndSlabsBlocks = new BlockInfestationTable(false);
         SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get(), Blocks.OAK_STAIRS);
-        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.STAIRS, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.STAIRS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
+        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.STAIRS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_STAIRS.get(), Blocks.MOSSY_COBBLESTONE_STAIRS); //vanilla doesn't have any stairs that match these criteria so this is about the best i could get
 
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Order Matters

@@ -62,6 +62,11 @@ public class BlockInfestationTable{
         entries.add(new ToolTaglInfestationTableEntry(toolRequired, tier, infectedVariant, defaultNormalVariant));
     }
 
+    public void addEntry(TagKey<Block> tag1, TagKey<Block> tag2, Tier tier, ITagInfestedBlock infestedVariant, Block defaultNormalVariant)
+    {
+        entries.add(new MultiTagInfestationTableEntry(tag1, tag2, tier, infestedVariant, defaultNormalVariant));
+    }
+
     public void addEntry(ITagInfestedBlock infectedVariant)
     {
         entries.add(new ConfigInfestationTableEntry(infectedVariant));

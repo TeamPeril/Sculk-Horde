@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/stairs_inner",
+  "parent": "minecraft:block/inner_stairs",
   "textures": {
     "bottom": "sculkhorde:block/infested_cobbled_deepslate",
     "side": "sculkhorde:block/infested_cobbled_deepslate",
