@@ -848,13 +848,13 @@ public class ModBlocks {
 	static {
 		datagen(INFESTED_STONE_BRICKS);
 		datagen(INFESTED_MOSSY_STONE_BRICKS, "infested_stone_bricks");
-		datagen(INFESTED_BLACKSTONE_BRICKS, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICKS);
 		datagen(INFESTED_STONE_BRICK_STAIRS, "infested_stone_bricks");
 		datagen(INFESTED_MOSSY_STONE_BRICK_STAIRS, "infested_stone_bricks");
-		datagen(INFESTED_BLACKSTONE_BRICK_STAIRS, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICK_STAIRS, "infested_blackstone_bricks");
 		datagen(INFESTED_STONE_BRICK_SLAB, "infested_stone_bricks");
 		datagen(INFESTED_MOSSY_STONE_BRICK_SLAB, "infested_stone_bricks");
-		datagen(INFESTED_BLACKSTONE_BRICK_SLAB, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICK_SLAB, "infested_blackstone_bricks");
 	}
 
 	public static class BlockTags
