@@ -9,6 +9,22 @@
           "name": "sculkhorde:infested_blackstone_brick_slab"
         }
       ],
+      "functions": [
+        {
+          "add": false,
+          "conditions": [
+            {
+              "block": "sculkhorde:infested_blackstone_brick_slab",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "type": "double"
+              }
+            }
+          ],
+          "count": 2.0,
+          "function": "minecraft:set_count"
+        }
+      ],
       "rolls": 1.0
     }
   ],

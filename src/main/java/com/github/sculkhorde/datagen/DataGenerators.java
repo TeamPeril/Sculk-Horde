@@ -27,12 +27,9 @@ public class DataGenerators {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        SculkHorde.LOGGER.info("gatherData");
-
         //client
         generator.addProvider(event.includeClient(), (DataProvider.Factory<ModBlockModelsProvider>) output -> new ModBlockModelsProvider(output, SculkHorde.MOD_ID, existingFileHelper));
         generator.addProvider(event.includeClient(), (DataProvider.Factory<ModBlockStateProvider>) output -> new ModBlockStateProvider(output, SculkHorde.MOD_ID, existingFileHelper));
-        //generator.addProvider(event.includeClient(), (DataProvider.Factory<ModItemModelsProvider>) output -> new ModItemModelsProvider(output, SculkHorde.MOD_ID, existingFileHelper));
 
         //server
         generator.addProvider(event.includeServer(), new ModGlobalLootModifiersProvider(packOutput));

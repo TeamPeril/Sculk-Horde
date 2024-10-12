@@ -1,4 +1,3 @@
-// 1.20.1	2024-10-12T14:14:08.560114	Global Loot Modifiers : sculkhorde
-ea53ef52223322645c2c27786e101fd3cddc660e data/forge/loot_modifiers/global_loot_modifiers.json
-4f211e427b28f7d7e77bc7bd8cf7e1bbab05a689 data/sculkhorde/loot_modifiers/deep_green_music_disc_from_ancient_city.json
-625d7b8b58558d9f7fb5e6b129cc8eca6c27d01c data/sculkhorde/loot_modifiers/pine_cone_from_creeper.json
+// 1.20.1	2024-10-12T17:23:15.5889644	Global Loot Modifiers : sculkhorde
+f463a94f892408dfdd9331cfb5573fe56d3dd182 data/forge/loot_modifiers/global_loot_modifiers.json
+38d1114bf944d3c8de79c1396cfc9088fdf43186 data/sculkhorde/loot_modifiers/deep_green_music_disc_from_ancient_city.json

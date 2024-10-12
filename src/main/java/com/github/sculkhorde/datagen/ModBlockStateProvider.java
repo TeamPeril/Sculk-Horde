@@ -1,7 +1,6 @@
 package com.github.sculkhorde.datagen;
 
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -20,7 +19,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        SculkHorde.LOGGER.info("block state provider");
         for (Pair<RegistryObject<? extends Block>, ResourceLocation> pair : ModBlocks.BLOCKS_TO_DATAGEN) {
             if (pair.getA().get() instanceof StairBlock stairs) {
                 stairsBlock(stairs, pair.getB().withPrefix("block/"));
