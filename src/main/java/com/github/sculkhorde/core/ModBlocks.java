@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -27,12 +28,14 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.lwjgl.glfw.GLFW;
+import oshi.util.tuples.Pair;
 
 import javax.annotation.Nullable;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
-    
+    public static final List<Pair<RegistryObject<? extends Block>, ResourceLocation>> BLOCKS_TO_DATAGEN = new ArrayList<>();
+
 	//Method to Register Blocks & Register them as items
 	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
 	{
@@ -48,14 +51,35 @@ public class ModBlocks {
 				new Item.Properties()));
 	}
 
-	//simple method to quickly register stairs
+	//simple methods to quickly register stairs
 	private static RegistryObject<StairBlock> stairs(RegistryObject<Block> original) {
-		return registerBlock(original.getId().getPath() + "_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(original.get())));
+		return stairs(original.getId().getPath(), original);
 	}
 
-	//simple method to quickly register slabs
+	private static RegistryObject<StairBlock> stairs(String id, RegistryObject<Block> original) {
+		return registerBlock(id + "_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(original.get())));
+	}
+
+	//simple methods to quickly register slabs
 	private static RegistryObject<SlabBlock> slab(RegistryObject<Block> original) {
-		return registerBlock(original.getId().getPath() + "_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(original.get())));
+		return slab(original.getId().getPath(), original);
+	}
+
+	private static RegistryObject<SlabBlock> slab(String id, RegistryObject<Block> original) {
+		return registerBlock(id + "_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(original.get())));
+	}
+
+	//methods to add blocks to datagen
+	private static void datagen(RegistryObject<? extends Block> block, ResourceLocation textureId) {
+		BLOCKS_TO_DATAGEN.add(new Pair<>(block, textureId));
+	}
+
+	private static void datagen(RegistryObject<? extends Block> block, String textureId) {
+		datagen(block, new ResourceLocation(SculkHorde.MOD_ID, textureId));
+	}
+
+	private static void datagen(RegistryObject<? extends Block> block) {
+		datagen(block, block.getId());
 	}
 
 	//NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
@@ -506,10 +530,10 @@ public class ModBlocks {
 			));
 
 	public static final RegistryObject<StairBlock> INFESTED_MUD_BRICK_STAIRS =
-			registerBlock("infested_mud_brick_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(INFESTED_MUD_BRICKS.get())));
+			stairs("infested_mud_brick", INFESTED_MUD_BRICKS);
 
 	public static final RegistryObject<SlabBlock> INFESTED_MUD_BRICK_SLAB =
-			registerBlock("infested_mud_brick_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(INFESTED_MUD_BRICKS.get())));
+			slab("infested_mud_brick", INFESTED_MUD_BRICKS);
 
 	public static final RegistryObject<Block> INFESTED_BLACKSTONE =
 			registerBlock("infested_blackstone", () -> new Block(BlockBehaviour.Properties.of()
@@ -603,6 +627,51 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.MUD)
 			));
+
+	public static final RegistryObject<Block> INFESTED_STONE_BRICKS =
+			registerBlock("infested_stone_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<StairBlock> INFESTED_STONE_BRICK_STAIRS =
+			stairs("infested_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_STONE_BRICK_SLAB =
+			slab("infested_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<Block> INFESTED_MOSSY_STONE_BRICKS =
+			registerBlock("infested_mossy_stone_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<StairBlock> INFESTED_MOSSY_STONE_BRICK_STAIRS =
+			stairs("infested_mossy_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_MOSSY_STONE_BRICK_SLAB =
+			slab("infested_mossy_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<Block> INFESTED_BLACKSTONE_BRICKS =
+			registerBlock("infested_blackstone_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<StairBlock> INFESTED_BLACKSTONE_BRICK_STAIRS =
+			stairs("infested_blackstone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_BLACKSTONE_BRICK_SLAB =
+			slab("infested_blackstone_brick", INFESTED_STONE_BRICKS);
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_WOOD_MASS =
 			registerBlock("infested_wood_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
@@ -775,6 +844,18 @@ public class ModBlocks {
 
 	public static final RegistryObject<DiseasedKelpBlock> DISEASED_KELP_BLOCK =
 			registerBlock("diseased_kelp_block", DiseasedKelpBlock::new);
+
+	static {
+		datagen(INFESTED_STONE_BRICKS);
+		datagen(INFESTED_MOSSY_STONE_BRICKS, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICKS, "infested_stone_bricks");
+		datagen(INFESTED_STONE_BRICK_STAIRS, "infested_stone_bricks");
+		datagen(INFESTED_MOSSY_STONE_BRICK_STAIRS, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICK_STAIRS, "infested_stone_bricks");
+		datagen(INFESTED_STONE_BRICK_SLAB, "infested_stone_bricks");
+		datagen(INFESTED_MOSSY_STONE_BRICK_SLAB, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICK_SLAB, "infested_stone_bricks");
+	}
 
 	public static class BlockTags
 	{

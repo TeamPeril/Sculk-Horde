@@ -155,6 +155,15 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_BASALT.get());
                 event.accept(ModBlocks.INFESTED_SMOOTH_BASALT.get());
                 event.accept(ModBlocks.INFESTED_ENDSTONE.get());
+                event.accept(ModBlocks.INFESTED_STONE_BRICKS.get());
+                event.accept(ModBlocks.INFESTED_STONE_BRICK_STAIRS.get());
+                event.accept(ModBlocks.INFESTED_STONE_BRICK_SLAB.get());
+                event.accept(ModBlocks.INFESTED_MOSSY_STONE_BRICKS.get());
+                event.accept(ModBlocks.INFESTED_MOSSY_STONE_BRICK_STAIRS.get());
+                event.accept(ModBlocks.INFESTED_MOSSY_STONE_BRICK_SLAB.get());
+                event.accept(ModBlocks.INFESTED_BLACKSTONE_BRICKS.get());
+                event.accept(ModBlocks.INFESTED_BLACKSTONE_BRICK_STAIRS.get());
+                event.accept(ModBlocks.INFESTED_BLACKSTONE_BRICK_SLAB.get());
                 event.accept(ModBlocks.INFESTED_WOOD_MASS.get());
                 event.accept(ModBlocks.INFESTED_WOOD_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_WOOD_SLAB.get());

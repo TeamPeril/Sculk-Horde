@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "sculkhorde:block/infested_stone_brick_slab"
+    },
+    "type=double": {
+      "model": "sculkhorde:block/infested_stone_bricks"
+    },
+    "type=top": {
+      "model": "sculkhorde:block/infested_stone_brick_slab_top"
+    }
+  }
+}

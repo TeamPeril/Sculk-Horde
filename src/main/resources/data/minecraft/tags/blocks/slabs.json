@@ -13,6 +13,9 @@
     "sculkhorde:infested_mud_brick_slab",
     "sculkhorde:infested_sturdy_slab",
     "sculkhorde:infested_crumbling_slab",
-    "sculkhorde:infested_wood_slab"
+    "sculkhorde:infested_wood_slab",
+    "sculkhorde:infested_stone_brick_slab",
+    "sculkhorde:infested_mossy_stone_brick_slab",
+    "sculkhorde:infested_blackstone_brick_slab"
   ]
 }

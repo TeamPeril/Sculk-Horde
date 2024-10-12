@@ -4,7 +4,7 @@
       "model": "sculkhorde:block/infested_mud_brick_slab"
     },
     "type=double": {
-      "model": "sculkhorde:block/infested_mud_brick"
+      "model": "sculkhorde:block/infested_mud_bricks"
     },
     "type=top": {
       "model": "sculkhorde:block/infested_mud_brick_slab_top"

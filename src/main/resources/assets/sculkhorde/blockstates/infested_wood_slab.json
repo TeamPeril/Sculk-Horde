@@ -4,7 +4,7 @@
       "model": "sculkhorde:block/infested_wood_slab"
     },
     "type=double": {
-      "model": "sculkhorde:block/infested_wood"
+      "model": "sculkhorde:block/infested_wood_mass"
     },
     "type=top": {
       "model": "sculkhorde:block/infested_wood_slab_top"

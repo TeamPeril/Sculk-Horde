@@ -51,6 +51,9 @@
     "sculkhorde:infested_smooth_basalt",
     "sculkhorde:infested_endstone",
     "sculkhorde:infested_mossy_cobblestone",
+    "sculkhorde:infested_stone_bricks",
+    "sculkhorde:infested_mossy_stone_bricks",
+    "sculkhorde:infested_blackstone_bricks",
     "sculkhorde:sculk_summoner",
 
     "sculkhorde:infested_compost_mass",
@@ -70,6 +73,9 @@
     "sculkhorde:infested_sturdy_stairs",
     "sculkhorde:infested_crumbling_stairs",
     "sculkhorde:infested_mud_brick_stairs",
+    "sculkhorde:infested_stone_brick_stairs",
+    "sculkhorde:infested_mossy_stone_brick_stairs",
+    "sculkhorde:infested_blackstone_brick_stairs",
 
     "sculkhorde:infested_cobblestone_slab",
     "sculkhorde:infested_stone_slab",
@@ -84,6 +90,9 @@
     "sculkhorde:infested_sturdy_slab",
     "sculkhorde:infested_crumbling_slab",
     "sculkhorde:infested_wood_slab",
+    "sculkhorde:infested_stone_brick_slab",
+    "sculkhorde:infested_mossy_stone_brick_slab",
+    "sculkhorde:infested_blackstone_brick_slab",
 
     "sculkhorde:sculk_bee_nest",
     "sculkhorde:sculk_bee_nest_cell"

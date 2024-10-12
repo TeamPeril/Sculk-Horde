@@ -41,6 +41,9 @@
     "sculkhorde:infested_smooth_basalt",
     "sculkhorde:infested_endstone",
     "sculkhorde:infested_mossy_cobblestone",
+    "sculkhorde:infested_stone_bricks",
+    "sculkhorde:infested_mossy_stone_bricks",
+    "sculkhorde:infested_blackstone_bricks",
 
     "sculkhorde:infested_sturdy_mass",
 
@@ -55,6 +58,9 @@
     "sculkhorde:infested_blackstone_stairs",
     "sculkhorde:infested_sturdy_stairs",
     "sculkhorde:infested_mud_brick_stairs",
+    "sculkhorde:infested_stone_brick_stairs",
+    "sculkhorde:infested_mossy_stone_brick_stairs",
+    "sculkhorde:infested_blackstone_brick_stairs",
 
     "sculkhorde:infested_cobblestone_slab",
     "sculkhorde:infested_stone_slab",
@@ -66,6 +72,9 @@
     "sculkhorde:infested_cobbled_deepslate_slab",
     "sculkhorde:infested_blackstone_slab",
     "sculkhorde:infested_mud_brick_slab",
-    "sculkhorde:infested_sturdy_slab"
+    "sculkhorde:infested_sturdy_slab",
+    "sculkhorde:infested_stone_brick_slab",
+    "sculkhorde:infested_mossy_stone_brick_slab",
+    "sculkhorde:infested_blackstone_brick_slab"
   ]
 }
