@@ -76,9 +76,17 @@ public class ModBlocks {
 	}
 
 	private static RegistryObject<WallBlock> wall(String id, RegistryObject<Block> original, ResourceLocation texture) {
-		RegistryObject<WallBlock> wall = registerBlock(id + "_wall", () -> new WallBlock(BlockBehaviour.Properties.copy(original.get()).forceSolidOn()));
+		RegistryObject<WallBlock> wall = noDatagenWall(id, original);
 		datagen(wall, texture); //the datagen methods aren't part of registerBlock bc i didn't want to have to go back and change everything to use the new system
 		return wall; //but since i did datagen before starting walls it CAN be a part of this method
+	}
+
+	private static RegistryObject<WallBlock> noDatagenWall(String id, RegistryObject<Block> original) { //oops i was wrong :(
+		return registerBlock(id + "_wall", () -> new WallBlock(BlockBehaviour.Properties.copy(original.get()).forceSolidOn()));
+	}
+
+	private static RegistryObject<WallBlock> noDatagenWall(RegistryObject<Block> original) {
+		return noDatagenWall(original.getId().getPath(), original);
 	}
 
 	//methods to add blocks to datagen
@@ -584,7 +592,7 @@ public class ModBlocks {
 			slab(INFESTED_BLACKSTONE);
 
 	public static final RegistryObject<WallBlock> INFESTED_BLACKSTONE_WALL =
-			wall(INFESTED_BLACKSTONE);
+			noDatagenWall(INFESTED_BLACKSTONE);
 
 	public static final RegistryObject<Block> INFESTED_BASALT =
 			registerBlock("infested_basalt", () -> new Block(BlockBehaviour.Properties.of()

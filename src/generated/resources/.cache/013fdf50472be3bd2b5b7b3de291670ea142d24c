@@ -1,10 +1,9 @@
-// 1.20.1	2024-10-13T11:57:45.9824092	Block Models: sculkhorde
+// 1.20.1	2024-10-13T14:24:07.4565311	Block Models: sculkhorde
 67003678e741791acd1a73b374c977464804707e assets/sculkhorde/models/block/infested_andesite_wall.json
 427a997931c85b8d4d9cc60c932c9cca2c5c48be assets/sculkhorde/models/block/infested_blackstone_bricks.json
 ecd35063ad7f7d28705e48616c01526c01fd5e31 assets/sculkhorde/models/block/infested_blackstone_brick_slab.json
 70d82a935f59c91df07611e35799e7e8d6824d34 assets/sculkhorde/models/block/infested_blackstone_brick_stairs.json
 8ff55723645cc830f022fc7c0c8928f8ef825030 assets/sculkhorde/models/block/infested_blackstone_brick_wall.json
-0a51471e461bff08b798f6269f968fdcad8ef8db assets/sculkhorde/models/block/infested_blackstone_wall.json
 0757c3ea88cd85033a166c448e8c1cc231af9408 assets/sculkhorde/models/block/infested_cobbled_deepslate_wall.json
 b8d7185add0de02016bc8164d3a9a9334cc0f841 assets/sculkhorde/models/block/infested_cobblestone_wall.json
 b59cf1e63a97a78699a6280e2e788488c3cdb8ba assets/sculkhorde/models/block/infested_diorite_wall.json

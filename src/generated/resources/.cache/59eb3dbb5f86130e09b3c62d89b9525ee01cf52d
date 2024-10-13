@@ -1,10 +1,9 @@
-// 1.20.1	2024-10-13T11:35:16.7828426	Loot Tables
+// 1.20.1	2024-10-13T14:24:07.4565311	Loot Tables
 29a8c18b4897f9836c5df828c62524f3cffb0eec data/sculkhorde/loot_tables/blocks/infested_andesite_wall.json
 0fcfd6ae8851f55df8dcd79f4a21725efeb80a80 data/sculkhorde/loot_tables/blocks/infested_blackstone_bricks.json
 7925035f491795c0b5afca952a84cd8858f74cb3 data/sculkhorde/loot_tables/blocks/infested_blackstone_brick_slab.json
 929c2a56a6adb5724004757667cf399a5c8979b4 data/sculkhorde/loot_tables/blocks/infested_blackstone_brick_stairs.json
 7bbddbfc00cba09b7dd0539110dd240a12b0e223 data/sculkhorde/loot_tables/blocks/infested_blackstone_brick_wall.json
-f08815a96dc9006145fe7992a7e4176dbe872f88 data/sculkhorde/loot_tables/blocks/infested_blackstone_wall.json
 6211474d6de0cd4d8a117493ba81d8903bd2b141 data/sculkhorde/loot_tables/blocks/infested_cobbled_deepslate_wall.json
 491ee9729d2a5022817bb4bcf5eca48439046587 data/sculkhorde/loot_tables/blocks/infested_cobblestone_wall.json
 bf456219e20af5a387ed34c01e455f83b97135d5 data/sculkhorde/loot_tables/blocks/infested_diorite_wall.json

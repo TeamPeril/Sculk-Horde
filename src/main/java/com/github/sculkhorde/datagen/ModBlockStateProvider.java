@@ -1,7 +1,6 @@
 package com.github.sculkhorde.datagen;
 
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -27,13 +26,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
             } else if (pair.getA().get() instanceof SlabBlock slab) {
                 slabBlock(slab, pair.getB(), pair.getB().withPrefix("block/"));
             } else if (pair.getA().get() instanceof WallBlock wall) {
-                if (pair.getA() == ModBlocks.INFESTED_BLACKSTONE_WALL) {
-                    wallBlock(wall, models().wallPost("infested_blackstone_wall_post", new ResourceLocation(SculkHorde.MOD_ID, "block/infested_blackstone_top")),
-                            models().wallSide("infested_blackstone_wall_side", new ResourceLocation(SculkHorde.MOD_ID, "block/infested_blackstone_side")),
-                            models().wallSideTall("infested_blackstone_wall_side_tall", new ResourceLocation(SculkHorde.MOD_ID, "block/infested_blackstone_top")));
-                    simpleBlockItem(pair.getA().get(), models().getExistingFile(pair.getA().getId()));
-                    continue;
-                }
                 wallBlock(wall, pair.getB().withPrefix("block/"));
             } else {
                 simpleBlock(pair.getA().get(), models().cubeAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/")));
