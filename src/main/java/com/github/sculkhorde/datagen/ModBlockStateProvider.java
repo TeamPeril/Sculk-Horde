@@ -3,10 +3,7 @@ package com.github.sculkhorde.datagen;
 import com.github.sculkhorde.core.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
@@ -27,6 +24,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 slabBlock(slab, pair.getB(), pair.getB().withPrefix("block/"));
             } else if (pair.getA().get() instanceof WallBlock wall) {
                 wallBlock(wall, pair.getB().withPrefix("block/"));
+            } else if (pair.getA().get() instanceof FenceBlock fence) {
+                fenceBlock(fence, pair.getB().withPrefix("block/"));
             } else {
                 simpleBlock(pair.getA().get(), models().cubeAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/")));
             }

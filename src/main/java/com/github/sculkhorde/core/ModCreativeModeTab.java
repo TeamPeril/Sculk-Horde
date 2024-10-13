@@ -179,12 +179,16 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_WOOD_MASS.get());
                 event.accept(ModBlocks.INFESTED_WOOD_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_WOOD_SLAB.get());
+                event.accept(ModBlocks.INFESTED_WOOD_FENCE.get());
                 event.accept(ModBlocks.INFESTED_CRUMPLED_MASS.get());
                 event.accept(ModBlocks.INFESTED_CRUMBLING_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_CRUMBLING_SLAB.get());
+                event.accept(ModBlocks.INFESTED_CRUMBLING_WALL.get());
                 event.accept(ModBlocks.INFESTED_STURDY_MASS.get());
                 event.accept(ModBlocks.INFESTED_STURDY_STAIRS.get());
                 event.accept(ModBlocks.INFESTED_STURDY_SLAB.get());
+                event.accept(ModBlocks.INFESTED_STURDY_WALL.get());
+                event.accept(ModBlocks.INFESTED_STURDY_FENCE.get());
                 event.accept(ModBlocks.INFESTED_COMPOST_MASS.get());
             })
             .build());

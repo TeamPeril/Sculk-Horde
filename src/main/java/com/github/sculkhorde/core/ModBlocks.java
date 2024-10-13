@@ -756,6 +756,15 @@ public class ModBlocks {
 					.sound(SoundType.WOOD)
 			));
 
+	public static final RegistryObject<InfestedFenceBlock> INFESTED_WOOD_FENCE =
+			registerBlock("infested_wood_fence", () -> new InfestedFenceBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
 	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
 			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
@@ -790,6 +799,15 @@ public class ModBlocks {
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedFenceBlock> INFESTED_STURDY_FENCE =
+			registerBlock("infested_sturdy_fence", () -> new InfestedFenceBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
 			));
 
 	public static final RegistryObject<InfestedStairBlock> INFESTED_CRUMBLING_STAIRS =
@@ -931,6 +949,8 @@ public class ModBlocks {
 		datagen(INFESTED_BLACKSTONE_BRICK_SLAB, "infested_blackstone_bricks");
 		datagen(INFESTED_STURDY_WALL, "infested_sturdy_mass");
 		datagen(INFESTED_CRUMBLING_WALL, "infested_crumpled_mass");
+		datagen(INFESTED_WOOD_FENCE, "infested_wood_mass");
+		datagen(INFESTED_STURDY_FENCE, "infested_sturdy_mass");
 	}
 
 	public static class BlockTags

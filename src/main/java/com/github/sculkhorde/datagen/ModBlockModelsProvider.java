@@ -3,10 +3,7 @@ package com.github.sculkhorde.datagen;
 import com.github.sculkhorde.core.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
@@ -27,10 +24,18 @@ public class ModBlockModelsProvider extends BlockModelProvider {
                 slabAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
             } else if (pair.getA().get() instanceof WallBlock) {
                 wallAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
+            } else if (pair.getA().get() instanceof FenceBlock) {
+                fenceAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
             } else {
                 cubeAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
             }
         }
+    }
+
+    private void fenceAll(String name, ResourceLocation texture) {
+        fencePost(name, texture);
+        fenceInventory(name, texture);
+        fenceSide(name, texture);
     }
 
     private void stairsAll(String name, ResourceLocation texture) {
