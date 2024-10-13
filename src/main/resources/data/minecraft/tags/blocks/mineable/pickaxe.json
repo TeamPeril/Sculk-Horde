@@ -88,6 +88,8 @@
     "sculkhorde:infested_blackstone_wall",
     "sculkhorde:infested_blackstone_brick_wall",
     "sculkhorde:infested_mud_brick_wall",
-    "sculkhorde:infested_cobbled_deepslate_wall"
+    "sculkhorde:infested_cobbled_deepslate_wall",
+    "sculkhorde:infested_sturdy_wall",
+    "sculkhorde:infested_crumbling_wall"
   ]
 }
