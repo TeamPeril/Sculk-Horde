@@ -16,10 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
@@ -67,6 +64,21 @@ public class ModBlocks {
 
 	private static RegistryObject<SlabBlock> slab(String id, RegistryObject<Block> original) {
 		return registerBlock(id + "_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(original.get())));
+	}
+
+	//simple methods to quickly register walls
+	private static RegistryObject<WallBlock> wall(RegistryObject<Block> original) {
+		return wall(original.getId().getPath(), original);
+	}
+
+	private static RegistryObject<WallBlock> wall(String id, RegistryObject<Block> original) {
+		return wall(id, original, original.getId());
+	}
+
+	private static RegistryObject<WallBlock> wall(String id, RegistryObject<Block> original, ResourceLocation texture) {
+		RegistryObject<WallBlock> wall = registerBlock(id + "_wall", () -> new WallBlock(BlockBehaviour.Properties.copy(original.get()).forceSolidOn()));
+		datagen(wall, texture); //the datagen methods aren't part of registerBlock bc i didn't want to have to go back and change everything to use the new system
+		return wall; //but since i did datagen before starting walls it CAN be a part of this method
 	}
 
 	//methods to add blocks to datagen
@@ -220,6 +232,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_SANDSTONE_SLAB =
 			slab(INFESTED_SANDSTONE);
 
+	public static final RegistryObject<WallBlock> INFESTED_SANDSTONE_WALL =
+			wall(INFESTED_SANDSTONE);
+
 	public static final RegistryObject<Block> INFESTED_DIORITE =
 			registerBlock("infested_diorite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -234,6 +249,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<SlabBlock> INFESTED_DIORITE_SLAB =
 			slab(INFESTED_DIORITE);
+
+	public static final RegistryObject<WallBlock> INFESTED_DIORITE_WALL =
+			wall(INFESTED_DIORITE);
 
 	public static final RegistryObject<Block> INFESTED_GRANITE =
 			registerBlock("infested_granite", () -> new Block(BlockBehaviour.Properties.of()
@@ -250,6 +268,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_GRANITE_SLAB =
 			slab(INFESTED_GRANITE);
 
+	public static final RegistryObject<WallBlock> INFESTED_GRANITE_WALL =
+			wall(INFESTED_GRANITE);
+
 	public static final RegistryObject<Block> INFESTED_ANDESITE =
 			registerBlock("infested_andesite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -264,6 +285,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<SlabBlock> INFESTED_ANDESITE_SLAB =
 			slab(INFESTED_ANDESITE);
+
+	public static final RegistryObject<WallBlock> INFESTED_ANDESITE_WALL =
+			wall(INFESTED_ANDESITE);
 
 	public static final RegistryObject<Block> INFESTED_TUFF =
 			registerBlock("infested_tuff", () -> new Block(BlockBehaviour.Properties.of()
@@ -297,6 +321,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<SlabBlock> INFESTED_COBBLED_DEEPSLATE_SLAB =
 			slab(INFESTED_COBBLED_DEEPSLATE);
+
+	public static final RegistryObject<WallBlock> INFESTED_COBBLED_DEEPSLATE_WALL =
+			wall(INFESTED_COBBLED_DEEPSLATE);
 
 	public static final RegistryObject<Block> INFESTED_GRAVEL =
 			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of()
@@ -493,6 +520,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_COBBLESTONE_SLAB =
 			slab(INFESTED_COBBLESTONE);
 
+	public static final RegistryObject<WallBlock> INFESTED_COBBLESTONE_WALL =
+			wall(INFESTED_COBBLESTONE);
+
 	public static final RegistryObject<Block> INFESTED_CRYING_OBSIDIAN =
 			registerBlock("infested_crying_obsidian", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_PURPLE)
@@ -535,6 +565,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_MUD_BRICK_SLAB =
 			slab("infested_mud_brick", INFESTED_MUD_BRICKS);
 
+	public static final RegistryObject<WallBlock> INFESTED_MUD_BRICK_WALL =
+			wall("infested_mud_brick", INFESTED_MUD_BRICKS);
+
 	public static final RegistryObject<Block> INFESTED_BLACKSTONE =
 			registerBlock("infested_blackstone", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_BLACK)
@@ -549,6 +582,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<SlabBlock> INFESTED_BLACKSTONE_SLAB =
 			slab(INFESTED_BLACKSTONE);
+
+	public static final RegistryObject<WallBlock> INFESTED_BLACKSTONE_WALL =
+			wall(INFESTED_BLACKSTONE);
 
 	public static final RegistryObject<Block> INFESTED_BASALT =
 			registerBlock("infested_basalt", () -> new Block(BlockBehaviour.Properties.of()
@@ -619,6 +655,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_MOSSY_COBBLESTONE_SLAB =
 			slab(INFESTED_MOSSY_COBBLESTONE);
 
+	public static final RegistryObject<WallBlock> INFESTED_MOSSY_COBBLESTONE_WALL =
+			wall("infested_mossy_cobblestone", INFESTED_MOSSY_COBBLESTONE, new ResourceLocation(SculkHorde.MOD_ID, "infested_cobblestone"));
+
 	public static final RegistryObject<Block> INFESTED_CLAY =
 			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor. CLAY)
@@ -643,6 +682,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_STONE_BRICK_SLAB =
 			slab("infested_stone_brick", INFESTED_STONE_BRICKS);
 
+	public static final RegistryObject<WallBlock> INFESTED_STONE_BRICK_WALL =
+			wall("infested_stone_brick", INFESTED_STONE_BRICKS);
+
 	public static final RegistryObject<Block> INFESTED_MOSSY_STONE_BRICKS =
 			registerBlock("infested_mossy_stone_bricks", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -658,6 +700,9 @@ public class ModBlocks {
 	public static final RegistryObject<SlabBlock> INFESTED_MOSSY_STONE_BRICK_SLAB =
 			slab("infested_mossy_stone_brick", INFESTED_STONE_BRICKS);
 
+	public static final RegistryObject<WallBlock> INFESTED_MOSSY_STONE_BRICK_WALL =
+			wall("infested_mossy_stone_brick", INFESTED_MOSSY_STONE_BRICKS, new ResourceLocation(SculkHorde.MOD_ID, "infested_stone_bricks"));
+
 	public static final RegistryObject<Block> INFESTED_BLACKSTONE_BRICKS =
 			registerBlock("infested_blackstone_bricks", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -672,6 +717,9 @@ public class ModBlocks {
 
 	public static final RegistryObject<SlabBlock> INFESTED_BLACKSTONE_BRICK_SLAB =
 			slab("infested_blackstone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<WallBlock> INFESTED_BLACKSTONE_BRICK_WALL =
+			wall("infested_blackstone_brick", INFESTED_BLACKSTONE_BRICKS);
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_WOOD_MASS =
 			registerBlock("infested_wood_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()

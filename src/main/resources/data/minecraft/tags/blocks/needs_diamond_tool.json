@@ -94,6 +94,19 @@
     "sculkhorde:infested_mossy_stone_brick_slab",
     "sculkhorde:infested_blackstone_brick_slab",
 
+    "sculkhorde:infested_sandstone_wall",
+    "sculkhorde:infested_andesite_wall",
+    "sculkhorde:infested_granite_wall",
+    "sculkhorde:infested_diorite_wall",
+    "sculkhorde:infested_stone_brick_wall",
+    "sculkhorde:infested_mossy_stone_brick_wall",
+    "sculkhorde:infested_cobblestone_wall",
+    "sculkhorde:infested_mossy_cobblestone_wall",
+    "sculkhorde:infested_blackstone_wall",
+    "sculkhorde:infested_blackstone_brick_wall",
+    "sculkhorde:infested_mud_brick_wall",
+    "sculkhorde:infested_cobbled_deepslate_wall",
+
     "sculkhorde:sculk_bee_nest",
     "sculkhorde:sculk_bee_nest_cell"
 
