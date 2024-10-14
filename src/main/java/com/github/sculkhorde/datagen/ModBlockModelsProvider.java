@@ -26,16 +26,25 @@ public class ModBlockModelsProvider extends BlockModelProvider {
                 wallAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
             } else if (pair.getA().get() instanceof FenceBlock) {
                 fenceAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
+            } else if (pair.getA().get() instanceof FenceGateBlock) {
+                fenceGateAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
             } else {
                 cubeAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/"));
             }
         }
     }
 
+    private void fenceGateAll(String name, ResourceLocation texture) {
+        fenceGate(name, texture);
+        fenceGateOpen(name, texture);
+        fenceGateWall(name, texture);
+        fenceGateWallOpen(name, texture);
+    }
+
     private void fenceAll(String name, ResourceLocation texture) {
         fencePost(name, texture);
-        fenceInventory(name, texture);
         fenceSide(name, texture);
+        fenceInventory(name, texture);
     }
 
     private void stairsAll(String name, ResourceLocation texture) {

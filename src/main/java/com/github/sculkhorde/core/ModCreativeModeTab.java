@@ -189,7 +189,9 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_STURDY_SLAB.get());
                 event.accept(ModBlocks.INFESTED_STURDY_WALL.get());
                 event.accept(ModBlocks.INFESTED_STURDY_FENCE.get());
-                event.accept(ModBlocks.INFESTED_COMPOST_MASS.get());
+                event.accept(ModBlocks.INFESTED_WOOD_FENCE.get());
+                event.accept(ModBlocks.INFESTED_WOOD_FENCE_GATE.get());
+                event.accept(ModBlocks.INFESTED_STURDY_FENCE_GATE.get());
             })
             .build());
 }

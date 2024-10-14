@@ -1,4 +1,4 @@
-// 1.20.1	2024-10-13T16:12:22.1046154	Loot Tables
+// 1.20.1	2024-10-13T20:34:51.2052457	Loot Tables
 29a8c18b4897f9836c5df828c62524f3cffb0eec data/sculkhorde/loot_tables/blocks/infested_andesite_wall.json
 0fcfd6ae8851f55df8dcd79f4a21725efeb80a80 data/sculkhorde/loot_tables/blocks/infested_blackstone_bricks.json
 7925035f491795c0b5afca952a84cd8858f74cb3 data/sculkhorde/loot_tables/blocks/infested_blackstone_brick_slab.json
@@ -21,5 +21,7 @@ f7cfb9df7f8e297cb08fef17dae2a4198817296e data/sculkhorde/loot_tables/blocks/infe
 0342e7742a685e7cdce86c2abe540823f685b632 data/sculkhorde/loot_tables/blocks/infested_stone_brick_stairs.json
 13c6b93be3c77eb98b06e56bb461a2d12dee70f1 data/sculkhorde/loot_tables/blocks/infested_stone_brick_wall.json
 dff237b5a1bb3ba67636b7773b759468648c1aa4 data/sculkhorde/loot_tables/blocks/infested_sturdy_fence.json
+22ce74a6a8410ecdb820e856742d39e9dfd04859 data/sculkhorde/loot_tables/blocks/infested_sturdy_fence_gate.json
 848d9f03eb432d8736788ae21fd053e36c25281f data/sculkhorde/loot_tables/blocks/infested_sturdy_wall.json
 6384a3c6669870ba64f3f105a4d360ef52d43bee data/sculkhorde/loot_tables/blocks/infested_wood_fence.json
+f94dc8f2e058e11ab17d007c833ebe764f2a49f7 data/sculkhorde/loot_tables/blocks/infested_wood_fence_gate.json

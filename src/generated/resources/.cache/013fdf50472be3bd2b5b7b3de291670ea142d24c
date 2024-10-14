@@ -1,4 +1,4 @@
-// 1.20.1	2024-10-13T16:27:00.1544914	Block Models: sculkhorde
+// 1.20.1	2024-10-13T21:15:37.3754265	Block Models: sculkhorde
 67003678e741791acd1a73b374c977464804707e assets/sculkhorde/models/block/infested_andesite_wall.json
 427a997931c85b8d4d9cc60c932c9cca2c5c48be assets/sculkhorde/models/block/infested_blackstone_bricks.json
 ecd35063ad7f7d28705e48616c01526c01fd5e31 assets/sculkhorde/models/block/infested_blackstone_brick_slab.json
@@ -20,6 +20,8 @@ efcf0dbd67279a59590e7f782c1420880c00eff4 assets/sculkhorde/models/block/infested
 75ee168ca6ac9c9e2535dd62d2216a98cb83b5e0 assets/sculkhorde/models/block/infested_stone_brick_slab.json
 9fe9fe00959e1a38a132297d0f1c2e130d60458c assets/sculkhorde/models/block/infested_stone_brick_stairs.json
 d43fb7fdc711d5a1a8186c8a81890477494b7447 assets/sculkhorde/models/block/infested_stone_brick_wall.json
-61b776785a0e4a28b52ea3e1fbebf0da2514d225 assets/sculkhorde/models/block/infested_sturdy_fence.json
+e2b097d75cbc78798504c6f8238fc97e67c7e357 assets/sculkhorde/models/block/infested_sturdy_fence.json
+55701f5baad83fdcf71e7f3c651dfa3e284217f2 assets/sculkhorde/models/block/infested_sturdy_fence_gate.json
 e72c1a01cfdc784daa6d43bc0394e7911fac896f assets/sculkhorde/models/block/infested_sturdy_wall.json
-94a31d7bd0c1c4330ee14e9c8ca35a9bfab00385 assets/sculkhorde/models/block/infested_wood_fence.json
+063602e3f603f6ead424f5a95c4f242ae474e69a assets/sculkhorde/models/block/infested_wood_fence.json
+ae044a275976d7e5074edc0ab59a48f650706f41 assets/sculkhorde/models/block/infested_wood_fence_gate.json

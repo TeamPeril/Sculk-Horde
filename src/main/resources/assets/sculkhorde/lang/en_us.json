@@ -219,6 +219,7 @@
   "block.sculkhorde.infested_sturdy_slab": "Infested Sturdy Slab",
   "block.sculkhorde.infested_sturdy_wall": "Infested Sturdy Wall",
   "block.sculkhorde.infested_sturdy_fence": "Infested Sturdy Fence",
+  "block.sculkhorde.infested_sturdy_fence_gate": "Infested Sturdy Fence Gate",
   "block.sculkhorde.infested_crumpled_mass": "Infested Crumpled Mass",
   "block.sculkhorde.infested_crumbling_stairs": "Infested Crumbling Stairs",
   "block.sculkhorde.infested_crumbling_slab": "Infested Crumbling Slab",
@@ -228,6 +229,7 @@
   "block.sculkhorde.infested_wood_stairs": "Infested Wood Stairs",
   "block.sculkhorde.infested_wood_slab": "Infested Wood Slab",
   "block.sculkhorde.infested_wood_fence": "Infested Wood Fence",
+  "block.sculkhorde.infested_wood_fence_gate": "Infested Wood Fence Gate",
 
   "item.sculkhorde.sculk_sweeper_sword": "The Sculk Sweeper",
   "tooltip.sculkhorde.sculk_sweeper_sword.functionality": "§7§oA sword with a large sweeping edge. Only does 50% damage to non-sculk mobs. Attacking Sculk Mobs builds up a charge that can be released with right-click. This special attack will spawn Sculk Spines at the feet of Sculk Mobs.",

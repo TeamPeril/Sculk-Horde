@@ -765,6 +765,15 @@ public class ModBlocks {
 					.sound(SoundType.WOOD)
 			));
 
+	public static final RegistryObject<InfestedFenceGateBlock> INFESTED_WOOD_FENCE_GATE =
+			registerBlock("infested_wood_fence_gate", () -> new InfestedFenceGateBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
 	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
 			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
@@ -807,7 +816,16 @@ public class ModBlocks {
 					.strength(4f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
-					.sound(SoundType.WOOD)
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedFenceGateBlock> INFESTED_STURDY_FENCE_GATE =
+			registerBlock("infested_sturdy_fence_gate", () -> new InfestedFenceGateBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
 			));
 
 	public static final RegistryObject<InfestedStairBlock> INFESTED_CRUMBLING_STAIRS =
@@ -816,7 +834,7 @@ public class ModBlocks {
 					.strength(4f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
-					.sound(SoundType.MOSS)
+					.sound(SoundType.GRAVEL)
 			));
 
 	public static final RegistryObject<InfestedSlabBlock> INFESTED_CRUMBLING_SLAB =
@@ -825,7 +843,7 @@ public class ModBlocks {
 					.strength(4f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
+					.sound(SoundType.GRAVEL)
 			));
 
 	public static final RegistryObject<InfestedWallBlock> INFESTED_CRUMBLING_WALL =
@@ -834,7 +852,7 @@ public class ModBlocks {
 					.strength(4f, 30f)//Hardness & Resistance
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
+					.sound(SoundType.GRAVEL)
 			));
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_CRUMPLED_MASS =
@@ -951,6 +969,8 @@ public class ModBlocks {
 		datagen(INFESTED_CRUMBLING_WALL, "infested_crumpled_mass");
 		datagen(INFESTED_WOOD_FENCE, "infested_wood_mass");
 		datagen(INFESTED_STURDY_FENCE, "infested_sturdy_mass");
+		datagen(INFESTED_WOOD_FENCE_GATE, "infested_wood_mass");
+		datagen(INFESTED_STURDY_FENCE_GATE, "infested_sturdy_mass");
 	}
 
 	public static class BlockTags

@@ -26,6 +26,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 wallBlock(wall, pair.getB().withPrefix("block/"));
             } else if (pair.getA().get() instanceof FenceBlock fence) {
                 fenceBlock(fence, pair.getB().withPrefix("block/"));
+            } else if (pair.getA().get() instanceof FenceGateBlock fenceGate) {
+                fenceGateBlock(fenceGate, pair.getB().withPrefix("block/"));
             } else {
                 simpleBlock(pair.getA().get(), models().cubeAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/")));
             }
