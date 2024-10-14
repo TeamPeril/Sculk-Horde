@@ -294,51 +294,80 @@ public class RaidHandler {
         SculkHorde.LOGGER.info("RaidHandler | Investigating Location at: " + getFormattedCoordinates(areaOfInterestEntry.getPosition()) + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
 
         raidData.setBlockSearcher(new BlockSearcher(dimension, areaOfInterestEntry.getPosition()));
-        raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
+
+        if(raidData.getBlockSearcher().isEmpty())
+        {
+            SculkHorde.LOGGER.info("RaidHandler | BlockSearcher Failed to Initialize");
+            raidData.setFailure(failureType.FAILED_INITIALIZATION);
+            return;
+        }
+
+        BlockSearcher blockSearcher = raidData.getBlockSearcher().get();
+
+        blockSearcher.setMaxDistance(raidData.getCurrentRaidRadius());
         //raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
-        raidData.getBlockSearcher().searchIterationsPerTick = searchIterationsPerTick;
-        raidData.getBlockSearcher().ignoreBlocksNearTargets = true;
+        blockSearcher.searchIterationsPerTick = searchIterationsPerTick;
+        blockSearcher.ignoreBlocksNearTargets = true;
 
         // What is the target?
-        raidData.getBlockSearcher().setTargetBlockPredicate(raidData.isTargetInvestigateLocationState);
+        blockSearcher.setTargetBlockPredicate(raidData.isTargetInvestigateLocationState);
 
         // What is obstructed?
-        raidData.getBlockSearcher().setObstructionPredicate(raidData.isObstructedInvestigateLocationState);
+        blockSearcher.setObstructionPredicate(raidData.isObstructedInvestigateLocationState);
 
-        raidData.getBlockSearcher().MAX_TARGETS = maxTargets;
+        blockSearcher.MAX_TARGETS = maxTargets;
     }
 
     private void initializeBlockSearcherForSpawnSearch(int searchIterationsPerTick, int maxTargets)
     {
         raidData.setBlockSearcher(new BlockSearcher(raidData.getDimension(), raidData.getRaidLocation()));
-        raidData.getBlockSearcher().setMaxDistance(raidData.getCurrentRaidRadius());
-        raidData.getBlockSearcher().setTargetBlockPredicate(raidData.isSpawnTarget);
-        raidData.getBlockSearcher().setObstructionPredicate(raidData.isSpawnObstructed);
-        raidData.getBlockSearcher().setMaxTargets(1);
-        raidData.getBlockSearcher().setPositionToMoveAwayFrom(raidData.getRaidCenter());
-       // raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
-        raidData.getBlockSearcher().searchIterationsPerTick = searchIterationsPerTick;
-        raidData.getBlockSearcher().MAX_TARGETS = maxTargets;
+
+        if(raidData.getBlockSearcher().isEmpty())
+        {
+            SculkHorde.LOGGER.info("RaidHandler | BlockSearcher Failed to Initialize");
+            raidData.setFailure(failureType.FAILED_INITIALIZATION);
+            return;
+        }
+
+        BlockSearcher blockSearcher = raidData.getBlockSearcher().get();
+
+        blockSearcher.setMaxDistance(raidData.getCurrentRaidRadius());
+        blockSearcher.setTargetBlockPredicate(raidData.isSpawnTarget);
+        blockSearcher.setObstructionPredicate(raidData.isSpawnObstructed);
+        blockSearcher.setMaxTargets(1);
+        blockSearcher.setPositionToMoveAwayFrom(raidData.getRaidCenter());
+        // raidData.getBlockSearcher().setDebugMode(SculkHorde.isDebugMode());
+        blockSearcher.searchIterationsPerTick = searchIterationsPerTick;
+        blockSearcher.MAX_TARGETS = maxTargets;
     }
 
     private void investigatingLocationTick()
     {
         // Initialize Block Searcher if null
-        if(raidData.getBlockSearcher() == null)
+        if(raidData.getBlockSearcher().isEmpty())
         {
             initializeBlockSearcherForInvestigateLocation(100, 30);
         }
 
+        if(raidData.getBlockSearcher().isEmpty())
+        {
+            SculkHorde.LOGGER.info("RaidHandler | BlockSearcher Failed to Initialize");
+            raidData.setFailure(failureType.FAILED_INITIALIZATION);
+            return;
+        }
+
+        BlockSearcher blockSearcher = raidData.getBlockSearcher().get();
+
         // Tick Block Searcher
-        raidData.getBlockSearcher().tick();
+        blockSearcher.tick();
 
         // If the block searcher is not finished, return.
-        if(!raidData.getBlockSearcher().isFinished) { return; }
+        if(!blockSearcher.isFinished) { return; }
 
         // If we find block targets, store them.
-        if(raidData.getBlockSearcher().isSuccessful)
+        if(blockSearcher.isSuccessful)
         {
-            raidData.getFoundTargetsFromBlockSearcher(raidData.getBlockSearcher().foundTargets);
+            raidData.getFoundTargetsFromBlockSearcher(blockSearcher.foundTargets);
             raidData.setMaxWaves(10);
             raidData.setRaidLocation(raidData.getAreaOfInterestEntry().getPosition());
             SculkHorde.LOGGER.info("RaidHandler | Found " + (raidData.getHighPriorityTargets().size() + raidData.getMediumPriorityTargets().size()) + " objective targets in " + raidData.getAreaOfInterestEntry().getPosition() + " in dimension " + raidData.getDimension().dimension());
@@ -416,6 +445,7 @@ public class RaidHandler {
             raidData.setRaidState(RaidState.INITIALIZING_RAID);
             raidData.getScoutEnderman().discard();
             raidData.setScoutEnderman(null);
+            raidData.setBlockSearcher(null);
         }
     }
 
@@ -437,7 +467,7 @@ public class RaidHandler {
     {
         SculkHorde.savedData.setTicksSinceLastRaid(0);
 
-        if(raidData.getBlockSearcher() == null)
+        if(raidData.getBlockSearcher().isEmpty())
         {
             SculkHorde.LOGGER.info("RaidHandler | Scouting Location Loaded: " + isScoutingLocationLoaded());
 
@@ -467,22 +497,31 @@ public class RaidHandler {
             return;
         }
 
-        // Tick the Block Searcher
-        raidData.getBlockSearcher().tick();
+        if(raidData.getBlockSearcher().isEmpty())
+        {
+            SculkHorde.LOGGER.info("RaidHandler | BlockSearcher Failed to Initialize");
+            raidData.setFailure(failureType.FAILED_INITIALIZATION);
+            return;
+        }
 
-        if(!raidData.getBlockSearcher().isFinished)
+        BlockSearcher blockSearcher = raidData.getBlockSearcher().get();
+
+        // Tick the Block Searcher
+        blockSearcher.tick();
+
+        if(!blockSearcher.isFinished)
         {
             return;
         }
 
         // If successful
-        if(raidData.getBlockSearcher().isSuccessful)
+        if(blockSearcher.isSuccessful)
         {
             raidData.setRaidState(RaidState.INITIALIZING_WAVE);
-            SculkHorde.LOGGER.info("RaidHandler | Found Spawn Location at " + getFormattedCoordinates(raidData.getSpawnLocation()) + " in " + raidData.getBlockSearcher().getDimension().dimension() + ". Initializing Raid.");
+            SculkHorde.LOGGER.info("RaidHandler | Found Spawn Location at " + getFormattedCoordinates(raidData.getSpawnLocation()) + " in " + blockSearcher.getDimension().dimension() + ". Initializing Raid.");
 
             raidData.setNextObjectiveLocation();
-            raidData.setSpawnLocation(raidData.getBlockSearcher().foundTargets.get(0));
+            raidData.setSpawnLocation(blockSearcher.foundTargets.get(0));
 
             raidData.setCurrentRaidRadius(raidData.getDistanceOfFurthestObjective());
             SculkHorde.LOGGER.info("RaidHandler | Current Raid Radius: " + raidData.getCurrentRaidRadius());

@@ -1,8 +1,9 @@
 package com.github.sculkhorde.common.command;
 
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -10,12 +11,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -67,8 +66,8 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
                 }
                 else if(value == 462)
                 {
-                    MobEffectInstance effect = new MobEffectInstance(ModMobEffects.SCULK_VESSEL.get(), TickUnits.convertHoursToTicks(1), 60, false, false);
-                    player.addEffect(effect);
+                    ModSavedData.PlayerProfileEntry profile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
+                    profile.setVessel(true);
 
                 }
                 else if(value == 562)
@@ -86,6 +85,7 @@ public class PlayerStatusCommand implements Command<CommandSourceStack> {
                     spore.moveTo(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
                     player.level().addFreshEntity(spore);
                 }
+
             }
             case "set" -> {
             }

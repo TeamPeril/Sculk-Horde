@@ -549,7 +549,7 @@ public class BlockAlgorithms {
         // Calculate the flatness ratio
         double flatnessRatio = (double) flatBlocks / totalBlocks;
         // You can adjust the threshold value as needed
-        double flatnessThreshold = 0.9;
+        double flatnessThreshold = 0.5;
 
         return flatnessRatio >= flatnessThreshold;
     }

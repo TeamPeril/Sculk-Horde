@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core.gravemind;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.events.Event;
@@ -163,9 +164,7 @@ public class SculkNodesHandler {
         }
         lastTimeSinceTick = getLevel().getGameTime();
 
-        int maxActiveNodes = 1;
-
-        boolean isThereMoreNodesThanMaxActiveNodes = getNodes().size() > maxActiveNodes;
+        boolean isThereMoreNodesThanMaxActiveNodes = getNodes().size() > ModConfig.SERVER.max_nodes_active.get();
 
         boolean hasAnyNodeBeenActiveForTooLong = hasAnyNodeBeenActiveForTooLong();
 
@@ -173,7 +172,7 @@ public class SculkNodesHandler {
 
         if((hasAnyNodeBeenActiveForTooLong && isThereMoreNodesThanMaxActiveNodes) || areAllNodesInactive)
         {
-            for(int i = 0; i < maxActiveNodes; i++)
+            for(int i = 0; i < ModConfig.SERVER.max_nodes_active.get(); i++)
             {
                 DeactivateAllNodes();
                 ActivateNodeWithLongestDurationOfInactivity();

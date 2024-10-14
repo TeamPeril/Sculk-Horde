@@ -9,11 +9,8 @@ import com.github.sculkhorde.common.entity.infection.SculkNodeInfectionHandler;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.core.gravemind.events.Event;
 import com.github.sculkhorde.core.gravemind.events.SpawnPhantomsEvent;
-import com.github.sculkhorde.util.AdvancementUtil;
-import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -181,7 +178,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
         level.players().forEach((player) -> {
-            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator())
+            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator() && !PlayerProfileHandler.isPlayerVessel(player))
             {
                 EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 0);
             }

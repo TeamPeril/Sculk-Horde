@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"misc.living": {
+		"emerge": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.96,
 			"bones": {
@@ -72,6 +72,16 @@
 			"timeline": {
 				"0.48": "DoDamageInstruction;",
 				"0.96": "DiscardInstruction;"
+			}
+		},
+		"underground": {
+			"loop": "hold_on_last_frame",
+			"bones": {
+				"bone": {
+					"rotation": [0, 0, 0],
+					"position": [0, -16, 0],
+					"scale": 0
+				}
 			}
 		}
 	}

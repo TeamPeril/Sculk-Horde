@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -91,9 +90,40 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
+
+        for(int i = 4; i < 20; i++)
+        {
+            spawnSpikesOnCircumference(getSculkEnderman(), i, i * 4, (((i - 4) * 5)));
+        }
     }
 
-    public int getSpawnHeight(BlockPos startPos)
+    public static void spawnSpikesOnCircumference(SculkEndermanEntity player, int radius, int amount, int delayTicks)
+    {
+        Vec3 origin = new Vec3(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
+        ArrayList<SculkSpineSpikeAttackEntity> entities = new ArrayList<SculkSpineSpikeAttackEntity>();
+        ArrayList<Vec3> possibleSpawns = BlockAlgorithms.getPointsOnCircumferenceVec3(origin, radius, amount);
+        for(int i = 0; i < possibleSpawns.size(); i++)
+        {
+            Vec3 spawnPos = possibleSpawns.get(i);
+            SculkSpineSpikeAttackEntity entity = new SculkSpineSpikeAttackEntity(player, player.getX(), player.getY(), player.getZ(), delayTicks);
+
+            double spawnHeight = getSpawnHeight(player, BlockPos.containing(spawnPos));
+            Vec3 possibleSpawnPosition = new Vec3(spawnPos.x(), spawnHeight, spawnPos.z());
+            // If the block below our spawn is solid, spawn the entity
+            if(!player.level().getBlockState(BlockPos.containing(possibleSpawnPosition).below()).canBeReplaced())
+            {
+                entity.setPos(possibleSpawnPosition.x(), possibleSpawnPosition.y(), possibleSpawnPosition.z());
+                entities.add(entity);
+                entity.setOwner(player);
+            }
+        }
+
+        for (SculkSpineSpikeAttackEntity entity : entities) {
+            player.level().addFreshEntity(entity);
+        }
+    }
+
+    public static int getSpawnHeight(SculkEndermanEntity player, BlockPos startPos)
     {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos(startPos.getX(), startPos.getY(), startPos.getZ());
         int iterationsElapsed = 0;
@@ -103,7 +133,7 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 
             iterationsElapsed++;
 
-            if(!mob.level().getBlockState(mutablePos).canBeReplaced())
+            if(!player.level().getBlockState(mutablePos).canBeReplaced())
             {
                 continue;
             }
@@ -111,33 +141,6 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
 
         }
         return mutablePos.getY() + 1;
-    }
-
-    public void spawnSpikesOnCircumference(int radius, int amount)
-    {
-        Vec3 origin = new Vec3(mob.getX(), mob.getY() + mob.getEyeHeight(), mob.getZ());
-        ArrayList<SculkSpineSpikeAttackEntity> entities = new ArrayList<SculkSpineSpikeAttackEntity>();
-        ArrayList<Vec3> possibleSpawns = BlockAlgorithms.getPointsOnCircumferenceVec3(origin, radius, amount);
-        for(int i = 0; i < possibleSpawns.size(); i++)
-        {
-            Vec3 spawnPos = possibleSpawns.get(i);
-            SculkSpineSpikeAttackEntity entity = ModEntities.SCULK_SPINE_SPIKE_ATTACK.get().create(mob.level());
-            assert entity != null;
-
-            double spawnHeight = getSpawnHeight(BlockPos.containing(spawnPos));
-            Vec3 possibleSpawnPosition = new Vec3(spawnPos.x(), spawnHeight, spawnPos.z());
-            // If the block below our spawn is solid, spawn the entity
-            if(!mob.level().getBlockState(BlockPos.containing(possibleSpawnPosition).below()).canBeReplaced())
-            {
-                entity.setPos(possibleSpawnPosition.x(), possibleSpawnPosition.y(), possibleSpawnPosition.z());
-                entities.add(entity);
-                entity.setOwner(mob);
-            }
-        }
-
-        for (SculkSpineSpikeAttackEntity entity : entities) {
-            mob.level().addFreshEntity(entity);
-        }
     }
 
     @Override
@@ -150,35 +153,6 @@ public class SculkSpineSpikeRadialAttack extends MeleeAttackGoal
         if(delayRemaining != 0)
         {
             return;
-        }
-
-        if(elapsedAttackDuration == 0)
-        {
-            spawnSpikesOnCircumference(1, 8);
-        }
-        if(elapsedAttackDuration == 5)
-        {
-            spawnSpikesOnCircumference(4, 16);
-        }
-        else if(elapsedAttackDuration == 10)
-        {
-            spawnSpikesOnCircumference(5, 5*2);
-        }
-        else if(elapsedAttackDuration == 15)
-        {
-            spawnSpikesOnCircumference(6, 6*3);
-        }
-        else if(elapsedAttackDuration == 20)
-        {
-            spawnSpikesOnCircumference(8, 8*3);
-        }
-        else if(elapsedAttackDuration == 25)
-        {
-            spawnSpikesOnCircumference(10, 10*4);
-        }
-        else if(elapsedAttackDuration == 30)
-        {
-            spawnSpikesOnCircumference(12, 12*4);
         }
 
         elapsedAttackDuration++;

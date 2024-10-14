@@ -213,6 +213,7 @@
   "tooltip.sculkhorde.purification_flask.functionality": "§7§oThrow at Infestation to clear it up. Cures Burrowed, Lure, and Diseased Cysts status effects. Crafted by surrounding §e§oEssence of Purity§r§7§o with glass bottles.",
   "tooltip.sculkhorde.purification_flask.lore": "§7§oA brewed solution to a very real problem. Holding it in your hand makes you feel a calming warmth akin to the warmth of the sun on a chilly day.",
   "effect.sculkhorde.purity": "Purity",
+  "effect.sculkhorde.purity.description": "Prevents entities from receiving the Burrowed and Lure status effects. Can be obtained from throwing a Purification Flask at yourself.",
 
   "block.sculkhorde.infested_sturdy_mass": "Infested Sturdy Mass",
   "block.sculkhorde.infested_sturdy_stairs": "Infested Sturdy Stairs",
@@ -245,10 +246,14 @@
   "sounds.sculkhorde.node_destroy_sound": "A Sculk Node being destroyed.",
 
   "effect.sculkhorde.sculk_infected": "Burrowed",
+  "effect.sculkhorde.sculk_infected.description": "Infects entities with a mite living in their body and causes the Horde to spread to nearby blocks.",
   "effect.sculkhorde.sculk_lure": "Lure",
+  "effect.sculkhorde.sculk_lure.description": "Allows the Gravemind to track you from long distances.",
   "effect.sculkhorde.diseased_cysts": "Diseased Cysts",
+  "effect.sculkhorde.diseased_cysts.description": "Can damage and infect other entities near the initial victim. It can be cursed using a Purification Flask.",
   "effect.sculkhorde.sculk_vessel": "Sculk Vessel",
   "effect.sculkhorde.corroded": "Corroded",
+  "effect.sculkhorde.corroded.description": "Causes the entity to take damage over time. A portion of the damage ignores armor.",
 
   "entity.sculkhorde.sculk_zombie": "Sculk Zombie",
   "entity.sculkhorde.sculk_spitter": "Sculk Spitter",
@@ -332,5 +337,18 @@
   "entity.sculkhorde.sculk_pufferfish": "Sculk Pufferfish",
   "item.sculkhorde.sculk_pufferfish_spawn_egg": "Sculk Pufferfish Spawn Egg",
   "entity.sculkhorde.sculk_witch": "Sculk Witch",
-  "item.sculkhorde.sculk_witch_spawn_egg": "Sculk Witch Spawn Egg"
+  "item.sculkhorde.sculk_witch_spawn_egg": "Sculk Witch Spawn Egg",
+  "sounds.sculkhorde.sculk_zombie_idle": "Sculk Zombie Groans",
+  "sounds.sculkhorde.sculk_zombie_hurt": "Sculk Zombie Hurt",
+  "sounds.sculkhorde.sculk_zombie_death": "Sculk Zombie Died",
+  "sounds.sculkhorde.sculk_vindicator_idle": "Sculk Vindicator Groans",
+  "sounds.sculkhorde.sculk_vindicator_hurt": "Sculk Vindicator Hurt",
+  "sounds.sculkhorde.sculk_vindicator_death": "Sculk Vindicator Died",
+
+  "item.sculkhorde.tome_of_spines": "Tome of Spines",
+  "item.sculkhorde.tome_of_reinforcement": "Tome of Reinforcement",
+  "item.sculkhorde.tome_of_veil": "Tome of Veil",
+  "item.sculkhorde.tome_of_spore": "Tome of Spore",
+  "item.sculkhorde.tome_of_sacrifice": "Tome of Sacrifice",
+  "item.sculkhorde.graveminds_symbiote": "Gravemind's Symbiote"
 }

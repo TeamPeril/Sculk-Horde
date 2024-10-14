@@ -9,7 +9,6 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class SculkPopulationHandler {
 
     public int getMaxPopulation()
     {
-        return ModConfig.SERVER.maximum_sculk_population.get();
+        return ModConfig.SERVER.max_unit_population.get();
     }
 
     public boolean isPopulationAtMax()

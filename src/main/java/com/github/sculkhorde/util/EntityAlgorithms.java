@@ -3,14 +3,17 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.misc.ModColaborationHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -22,10 +25,8 @@ import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -52,15 +53,30 @@ public class EntityAlgorithms {
             }
         }
 
+
         float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
         target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
-        float newHealth = target.getHealth() - guaranteedDamage;
-        if(newHealth <= 0)
+
+        float newHealth = Math.max(target.getHealth() - guaranteedDamage, 1);
+        if(newHealth <= 1)
         {
-            target.kill();
-            return;
+            target.hurt(aggressor.damageSources().indirectMagic(aggressor, aggressor), guaranteedDamage);
         }
+        else
+        {
+            target.setHealth(newHealth);
+            target.hurt(aggressor.damageSources().indirectMagic(aggressor, aggressor), 1F);
+        }
+
+
+        /*
+        float newHealth = Math.max(target.getHealth() - guaranteedDamage, 1);
         target.setHealth(newHealth);
+
+        float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
+        target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
+
+         */
     }
 
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
@@ -163,7 +179,22 @@ public class EntityAlgorithms {
         {
             return false;
         }
-        return e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
+        boolean hasSculkEntityTag = e.getType().is(ModEntities.EntityTags.SCULK_ENTITY);
+        boolean implementsISculkSmartEntity = e instanceof ISculkSmartEntity;
+
+        // Making sure that the entity with this tag is an actual sculk horde entity.
+        if(hasSculkEntityTag && !implementsISculkSmartEntity && !(e instanceof SculkBeeHarvesterEntity))
+        {
+            SculkHorde.LOGGER.debug("ERROR | Do not give non-sculk horde entity " + e.getName().getString() + " the sculk_entity tag. This will crash your game. Mod author or modpack author, use sculk_horde_do_not_attack");
+            return false;
+        }
+
+        if(hasSculkEntityTag && implementsISculkSmartEntity)
+        {
+            return true;
+        }
+
+        return false;
     };
 
 

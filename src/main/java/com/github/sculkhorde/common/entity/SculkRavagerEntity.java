@@ -209,7 +209,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     // Add our animations
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericWalkIdleController(this));
+        controllers.add(DefaultAnimations.genericWalkIdleController(this).transitionLength(5));
         controllers.add(ATTACK_ANIMATION_CONTROLLER);
     }
 

@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.command;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.TPSHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -47,11 +49,15 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "\n"
                         + "Events in Queue: " + SculkHorde.eventHandler.getEvents().size()
                         + "\n"
-                        + "Emergency Manual Cursor Ticking Enabled?: " + SculkHorde.cursorHandler.isManualControlOfTickingEnabled()
+                        + "Performance Mode Enabled?: " + SculkHorde.cursorHandler.isManualControlOfTickingEnabled()
                         + "\n"
-                        + "Cursors being Ticked: " + SculkHorde.cursorHandler.getSizeOfCursorList()
+                        + "Performance Mode Cursor Threshold?: " + ModConfig.SERVER.performance_mode_cursor_threshold.get()
                         + "\n"
-                        + "Sculk Population: " + SculkHorde.populationHandler.getPopulationSize() + " / " + SculkHorde.populationHandler.getMaxPopulation()
+                        + "Performance Mode TPS Threshold?: " + TPSHandler.getTps() + " / 15 TPS"
+                        + "\n"
+                        + "Cursors being Ticked: " + SculkHorde.cursorHandler.getSizeOfCursorList() + " / " + ModConfig.SERVER.max_infector_cursor_population.get()
+                        + "\n"
+                        + "Sculk Unit Population: " + SculkHorde.populationHandler.getPopulationSize() + " / " + SculkHorde.populationHandler.getMaxPopulation()
                 ), false);
         return 0;
     }

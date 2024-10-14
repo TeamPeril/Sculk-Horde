@@ -2,6 +2,7 @@ package com.github.sculkhorde.core.gravemind;
 
 import com.github.sculkhorde.common.entity.infection.CursorEntity;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.util.TPSHandler;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -15,8 +16,6 @@ public class CursorHandler {
     private int tickDelay = 3;
 
     private boolean manualControlOfTickingEnabled = false;
-
-    private int cursorPopulationThreshold = 0;
 
     public void setManualControlOfTickingEnabled(boolean value) { manualControlOfTickingEnabled = value; }
     public boolean isManualControlOfTickingEnabled() { return manualControlOfTickingEnabled; }
@@ -51,7 +50,7 @@ public class CursorHandler {
     {
         ArrayList<CursorEntity> listOfCursors = cursors.getList();
 
-        for(int i = 0; i < ModConfig.SERVER.cursors_to_tick_per_tick.get(); i++)
+        for(int i = 0; i < ModConfig.SERVER.performance_mode_cursors_to_tick_per_tick.get(); i++)
         {
             if(index >= listOfCursors.size())
             {
@@ -71,9 +70,13 @@ public class CursorHandler {
         }
     }
 
+    public boolean isPerformanceModeThresholdReached()
+    {
+        return getSizeOfCursorList() >= ModConfig.SERVER.performance_mode_cursor_threshold.get() || TPSHandler.isTPSBelowPerformanceThreshold();
+    }
     public boolean isCursorPopulationAtMax()
     {
-        return getSizeOfCursorList() >= cursorPopulationThreshold;
+        return getSizeOfCursorList() >= ModConfig.SERVER.max_infector_cursor_population.get();
     }
 
     /**
@@ -85,7 +88,7 @@ public class CursorHandler {
     public void serverTick()
     {
         //Only Execute if the cooldown. Get the value from the config file.
-        if(tickDelay < ModConfig.SERVER.delay_between_cursor_tick_interval.get())
+        if(tickDelay < ModConfig.SERVER.performance_mode_delay_between_cursor_ticks.get())
         {
             tickDelay++;
             return;
@@ -93,10 +96,8 @@ public class CursorHandler {
 
         tickDelay = 0;
         cursors.clean(); // Clean the list before we start ticking cursors
-        int cursorPopulationAmount = getSizeOfCursorList();
-        cursorPopulationThreshold = ModConfig.SERVER.cursors_threshold_for_activation.get();
 
-        if(cursorPopulationAmount >= cursorPopulationThreshold)
+        if(isPerformanceModeThresholdReached())
         {
             setManualControlOfTickingEnabled(true);
             tickCursors();

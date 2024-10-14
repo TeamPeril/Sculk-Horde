@@ -6,11 +6,11 @@ import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.core.gravemind.RaidData;
 import com.github.sculkhorde.core.gravemind.RaidHandler;
 import com.github.sculkhorde.core.gravemind.events.EventHandler;
+import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -20,6 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -78,6 +79,7 @@ public class ModSavedData extends SavedData {
     private final ArrayList<DeathAreaEntry> deathAreaEntries = new ArrayList<>();
     private final ArrayList<AreaOfInterestEntry> areasOfInterestEntries = new ArrayList<>();
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
+    private final ArrayList<PlayerProfileEntry> playerProfileEntries = new ArrayList<>();
 
     private int sculkAccumulatedMass = 0;
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -160,6 +162,10 @@ public class ModSavedData extends SavedData {
             SculkHorde.savedData.getNoRaidZoneEntries().add(NoRaidZoneEntry.serialize(gravemindData.getCompound("no_raid_zone_entry" + i)));
         }
 
+        for(int i = 0; gravemindData.contains("player_profile_entry" + i); i++) {
+            SculkHorde.savedData.getPlayerProfileEntries().add(PlayerProfileEntry.serialize(gravemindData.getCompound("player_profile_entry" + i)));
+        }
+
         if(RaidHandler.raidData == null)
         {
             RaidHandler.raidData = new RaidData();
@@ -228,6 +234,10 @@ public class ModSavedData extends SavedData {
 
         for (ListIterator<NoRaidZoneEntry> iterator = getNoRaidZoneEntries().listIterator(); iterator.hasNext(); ) {
             gravemindData.put("no_raid_zone_entry" + iterator.nextIndex(), iterator.next().deserialize());
+        }
+
+        for (ListIterator<PlayerProfileEntry> iterator = getPlayerProfileEntries().listIterator(); iterator.hasNext(); ) {
+            gravemindData.put("player_profile_entry" + iterator.nextIndex(), iterator.next().deserialize());
         }
 
         nbt.put("gravemindData", gravemindData);
@@ -1496,6 +1506,112 @@ public class ModSavedData extends SavedData {
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
+        }
+    }
+
+    // ###### Player Profile Entries ######
+
+    public ArrayList<PlayerProfileEntry> getPlayerProfileEntries() {
+        return playerProfileEntries;
+    }
+
+    public static class PlayerProfileEntry
+    {
+        private final UUID playerUUID; // The Location
+        private int relationshipToTheHorde;
+
+        private boolean isVessel = false;
+        private boolean isActiveVessel = false;
+
+        private static final int MAX_RELATIONSHIP_VALUE = 1000;
+        private static final int MIN_RELATIONSHIP_VALUE = -1;
+
+        public PlayerProfileEntry(Player playerIn)
+        {
+            this.playerUUID = playerIn.getUUID();
+        }
+
+        public PlayerProfileEntry(UUID playerIn, int relationshipToTheHordeIn, boolean isVesselIn, boolean isActiveVesselIn)
+        {
+            this.playerUUID = playerIn;
+            this.relationshipToTheHorde = relationshipToTheHordeIn;
+            this.isVessel = isVesselIn;
+            this.isActiveVessel = isActiveVesselIn;
+        }
+
+        public Optional<Player> getPlayer()
+        {
+            return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID));
+        }
+
+        public UUID getPlayerUUID()
+        {
+            return playerUUID;
+        }
+
+        public int getRelationshipToTheHorde()
+        {
+            return relationshipToTheHorde;
+        }
+
+        public void setRelationshipToTheHorde(int value)
+        {
+            if(value < 0)
+            {
+                relationshipToTheHorde = Math.max(MIN_RELATIONSHIP_VALUE, value);
+            }
+            else
+            {
+                relationshipToTheHorde = Math.min(MAX_RELATIONSHIP_VALUE, value);
+            }
+        }
+
+        public void increaseOrDecreaseRelationshipToHorde(int value)
+        {
+            setRelationshipToTheHorde(getRelationshipToTheHorde() + value);
+        }
+
+        public void setVessel(boolean value)
+        {
+            isVessel = value;
+        }
+
+        public boolean isVessel()
+        {
+            return isVessel;
+        }
+
+        public void setActiveVessel(boolean value)
+        {
+            isActiveVessel = value;
+        }
+
+        public boolean isActiveVessel()
+        {
+            return isVessel && isActiveVessel;
+        }
+
+        /**
+         * Making nbt to be stored in memory
+         * @return The nbt with our data
+         */
+        public CompoundTag deserialize()
+        {
+            CompoundTag nbt = new CompoundTag();
+            nbt.putUUID("playerUUID", playerUUID);
+            nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
+            nbt.putBoolean("isVessel", isVessel);
+            nbt.putBoolean("isActiveVessel", isActiveVessel);
+            return nbt;
+        }
+
+        /**
+         * Extracting our data from the nbt.
+         * @return The nbt with our data
+         */
+        public static PlayerProfileEntry serialize(CompoundTag nbt)
+        {
+            return new PlayerProfileEntry(nbt.getUUID("playerUUID"), nbt.getInt("relationshipToTheHorde"), nbt.getBoolean("isVessel"), nbt.getBoolean("isActiveVessel"));
         }
     }
 }

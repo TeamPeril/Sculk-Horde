@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -19,10 +20,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -190,69 +191,18 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
         return goals;
     }
 
-    private static final RawAnimation BODY_IDLE_ANIMATION = RawAnimation.begin().thenPlay("body.idle");
-    private static final RawAnimation BODY_WALK_ANIMATION = RawAnimation.begin().thenPlay("body.walk");
-    private static final RawAnimation LEGS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("legs.idle");
-    private static final RawAnimation LEGS_WALK_ANIMATION = RawAnimation.begin().thenLoop("legs.walk");
-    private static final RawAnimation ARMS_IDLE_ANIMATION = RawAnimation.begin().thenPlay("arms.idle");
-    private static final RawAnimation ARMS_WALK_ANIMATION = RawAnimation.begin().thenPlay("arms.walk");
-    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("arms.attack");
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
+            .triggerableAnim("attack", ATTACK_ANIMATION).transitionLength(5);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                new AnimationController<>(this, "Legs", 5, this::poseLegs),
-                new AnimationController<>(this, "Body", 5, this::poseBody),
-                new AnimationController<>(this, "Arms", 5, this::poseArms),
+                DefaultAnimations.genericWalkIdleController(this),
                 ATTACK_ANIMATION_CONTROLLER
         );
     }
-
-    // Create the animation handler for the leg segment
-    protected PlayState poseLegs(AnimationState<SculkZombieEntity> state)
-    {
-        if(state.isMoving())
-        {
-            state.setAnimation(LEGS_WALK_ANIMATION);
-        }
-        else
-        {
-            //state.setAnimation(LEGS_IDLE_ANIMATION);
-            state.setAnimation(LEGS_IDLE_ANIMATION);
-        }
-
-        return PlayState.CONTINUE;
-    }
-
-    // Create the animation handler for the body segment
-    protected PlayState poseBody(AnimationState<SculkZombieEntity> state)
-    {
-        if(state.isMoving())
-        {
-            state.setAnimation(BODY_WALK_ANIMATION);
-        }
-        else
-        {
-            state.setAnimation(BODY_IDLE_ANIMATION);
-        }
-
-        return PlayState.CONTINUE;
-    }
-
-    // Create the animation handler for the arm segment
-    protected PlayState poseArms(AnimationState<SculkZombieEntity> state)
-    {
-        if(state.isMoving())
-        {
-            state.setAnimation(ARMS_WALK_ANIMATION);
-        }
-
-        return PlayState.CONTINUE;
-    }
-
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
@@ -261,15 +211,15 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
 
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.DROWNED_AMBIENT;
+        return ModSounds.SCULK_ZOMBIE_IDLE.get();
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.DROWNED_HURT;
+        return ModSounds.SCULK_ZOMBIE_HURT.get();
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.DROWNED_DEATH;
+        return ModSounds.SCULK_ZOMBIE_DEATH.get();
     }
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
@@ -323,7 +273,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
 
         @Override
         protected void triggerAnimation() {
-            ((SculkZombieEntity)mob).triggerAnim("attack_controller", "attack_animation");
+            ((SculkZombieEntity)mob).triggerAnim("attack_controller", "attack");
         }
     }
 }

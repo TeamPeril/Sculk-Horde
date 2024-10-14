@@ -3,12 +3,12 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.advancement.*;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.core.gravemind.Gravemind;
-import com.github.sculkhorde.common.pools.PoolBlocks;
 import com.github.sculkhorde.core.gravemind.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.core.gravemind.entity_factory.ReinforcementRequest;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -137,6 +137,7 @@ public class ModEventSubscriber {
                         .setCost((int) SculkPufferfishEntity.MAX_HEALTH)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,
+                                EntityFactoryEntry.StrategicValues.Combat,
                                 EntityFactoryEntry.StrategicValues.Melee,
                                 EntityFactoryEntry.StrategicValues.Aquatic)
                         .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
@@ -144,11 +145,13 @@ public class ModEventSubscriber {
                 new EntityFactoryEntry(ModEntities.SCULK_WITCH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
                         .setCost((int) SculkWitchEntity.MAX_HEALTH)
+                        .setChanceToSpawn(0.5F)
+                        .setLimit(2)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,
+                                EntityFactoryEntry.StrategicValues.Combat,
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.EffectiveOnGround)
-                        .enableExperimentalMode(ModConfig.SERVER.experimental_features_enabled),
+                                EntityFactoryEntry.StrategicValues.EffectiveOnGround),
         };
 
         SculkHorde.entityFactory.addEntriesToFactory(entries);
@@ -210,6 +213,8 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_SQUID.get(), SculkSquidEntity.createAttributes().build());
         event.put(ModEntities.SCULK_PUFFERFISH.get(), SculkPufferfishEntity.createAttributes().build());
         event.put(ModEntities.SCULK_WITCH.get(), SculkWitchEntity.createAttributes().build());
+        //event.put(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperEntity.createAttributes().build());
+        //event.put(ModEntities.SCULK_VEX.get(), SculkVexEntity.createAttributes().build());
     }
 }
 

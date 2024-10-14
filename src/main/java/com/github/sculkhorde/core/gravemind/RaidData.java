@@ -403,7 +403,7 @@ public class RaidData {
     public void setRaidState(RaidHandler.RaidState raidState) {
         this.raidState = raidState;
         SculkHorde.savedData.setDirty();
-        SculkHorde.LOGGER.info("RaidHandler | Raid State is now: " + raidState.name() + ".");
+        SculkHorde.LOGGER.debug("RaidHandler | Raid State is now: " + raidState.name() + ".");
     }
 
     public RaidHandler.failureType getFailure() {
@@ -540,8 +540,8 @@ public class RaidData {
         SculkHorde.savedData.setDirty();
     }
 
-    public BlockSearcher getBlockSearcher() {
-        return blockSearcher;
+    public Optional<BlockSearcher> getBlockSearcher() {
+        return Optional.ofNullable(blockSearcher);
     }
 
     public void setBlockSearcher(BlockSearcher blockSearcher) {

@@ -203,7 +203,6 @@
   "effect.sculkhorde.diseased_cysts": "Пораженные кисты",
   "effect.sculkhorde.diseased_cysts.description": "Наносит урон и заражает других существ, находящихся рядом с изначальной жертвой. Можно снять, используя колбу для очистки.",
   "effect.sculkhorde.sculk_vessel": "Скалковый сосуд",
-  "effect.sculkhorde.sculk_vessel.description": "Усиливает скорость и урон сущности, если она находится рядом со скалковым узлом в том же измерении и на расстоянии не более 200 блоков от него.",
   "effect.sculkhorde.corroded": "Корродированный",
   "effect.sculkhorde.corroded.description": "Заставляет объект со временем получает урон. Похож на яд, но часть урона игнорирует броню. Может быть получен при попадании кислотной массы скалкового плевателя или игрока.",
 
@@ -278,5 +277,27 @@
   "achievement.sculkhorde.craft_dormant_heart_of_the_horde.title": "Безжизненное сердце",
   "achievement.sculkhorde.craft_dormant_heart_of_the_horde.desc": "Создайте дремлющее сердце орды.",
   "achievement.sculkhorde.contribute.title": "Благодарю тебя",
-  "achievement.sculkhorde.contribute.desc": "Докажите, что вы способны на все, что угодно, и внесите свой вклад в создание мода скалковой орды."
+  "achievement.sculkhorde.contribute.desc": "Докажите, что вы способны на все, что угодно, и внесите свой вклад в создание мода скалковой орды.",
+
+  "block.sculkhorde.diseased_kelp_block": "Поражённая ламинария",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oОпасное подводное скалковое растение, которое колет вас и вызывает Пораженные кисты.",
+  "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oЭто гибрид шипов, которые обычно растут на поверхности, и ламинарий, которые в изобилии растут под водой. Это растение служит для распространения болезней и привлечения призывателей, что в конечном итоге приводит к гибели его жертвы.",
+  "entity.sculkhorde.sculk_squid": "Скалковый спрут",
+  "item.sculkhorde.sculk_squid_spawn_egg": "Яйцо призыва скалкового спрута",
+  "item.sculkhorde.sculk_salmon_spawn_egg": "Яйцо призыва скалкового лосося",
+  "entity.sculkhorde.sculk_pufferfish": "Скалковый иглобрюх",
+  "item.sculkhorde.sculk_pufferfish_spawn_egg": "Яйцо призыва скалкового иглобрюха",
+  "entity.sculkhorde.sculk_witch": "Скалковая ведьма",
+  "item.sculkhorde.sculk_witch_spawn_egg": "Яйцо призыва скалковой ведьмы",
+  "sounds.sculkhorde.sculk_zombie_idle": "Скалковый зомби стонет",
+  "sounds.sculkhorde.sculk_zombie_hurt": "Скалковый зомби ранен",
+  "sounds.sculkhorde.sculk_zombie_death": "Скалковый зомби умирает",
+  "sounds.sculkhorde.sculk_vindicator_idle": "Скалковый поборник стонет",
+  "sounds.sculkhorde.sculk_vindicator_hurt": "Скалковый поборник ранен",
+  "sounds.sculkhorde.sculk_vindicator_death": "Скалковый поборник умирает",
+
+  "item.sculkhorde.tome_of_spines": "Том с шипами",
+  "item.sculkhorde.tome_of_reinforcement": "Том укрепления",
+  "item.sculkhorde.tome_of_veil": "Том пелены",
+  "item.sculkhorde.graveminds_symbiote": "Симбиот могильного разума"
 }
