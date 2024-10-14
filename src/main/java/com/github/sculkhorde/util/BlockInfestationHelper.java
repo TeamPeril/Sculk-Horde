@@ -174,8 +174,8 @@ public class BlockInfestationHelper {
         SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.WALLS, Tiers.IRON, ModBlocks.INFESTED_STURDY_WALL.get(), Blocks.COBBLESTONE_WALL);
         SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.WOODEN_FENCES, ModBlocks.INFESTED_WOOD_FENCE.get(), Blocks.OAK_FENCE);
         SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCES, ModBlocks.INFESTED_STURDY_FENCE.get(), Blocks.NETHER_BRICK_FENCE);
-        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCE_GATES, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_FENCE.get(), Blocks.OAK_FENCE_GATE);
-        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCE_GATES, ModBlocks.INFESTED_STURDY_FENCE.get(), Blocks.OAK_FENCE_GATE);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCE_GATES, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCE_GATES, ModBlocks.INFESTED_STURDY_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Order Matters
         SculkHorde.tagInfectableBlocks = new BlockInfestationTable(true);
