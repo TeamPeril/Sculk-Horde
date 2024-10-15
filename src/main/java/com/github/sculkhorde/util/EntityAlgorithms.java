@@ -378,6 +378,12 @@ public class EntityAlgorithms {
         return entities;
     }
 
+    public static List<Player> getPlayersInBoundingBox(ServerLevel serverLevel, AABB boundingBox, Predicate<Entity> predicate)
+    {
+        List<Player> entities = serverLevel.getEntitiesOfClass(Player.class, boundingBox, predicate);
+        return entities;
+    }
+
     public static AABB createBoundingBoxCubeAtBlockPos(Vec3 origin, int squareLength)
     {
         double halfLength = squareLength/2;

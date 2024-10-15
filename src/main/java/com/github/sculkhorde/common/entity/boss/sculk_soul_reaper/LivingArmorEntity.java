@@ -19,6 +19,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
@@ -79,6 +80,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         super(type, worldIn);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
         this.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+        this.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.SHIELD));
         this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
         this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
@@ -164,13 +166,11 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(5)),
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
-                        //SwimGoal(mob)
                         new FloatGoal(this),
+                        new MirrorArmorGoal(),
                         new SquadHandlingGoal(this),
-                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new AttackGoal(),
                         new FollowSquadLeader(this),
-                        new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -369,6 +369,75 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         @Override
         protected void triggerAnimation() {
             ((LivingArmorEntity)mob).triggerAnim("attack_controller", "attack");
+        }
+    }
+
+    protected class MirrorArmorGoal extends Goal
+    {
+        protected long lastTimeOfArmorCheck = 0;
+        protected final long ARMOR_CHECK_COOL_DOWN = TickUnits.convertSecondsToTicks(10);
+
+
+        @Override
+        public boolean canUse() {
+            return Math.abs(level().getGameTime() - lastTimeOfArmorCheck) > ARMOR_CHECK_COOL_DOWN && getTarget() != null && getTarget() instanceof Player;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return false;
+        }
+
+        @Override
+        public void start() {
+
+
+            lastTimeOfArmorCheck = level().getGameTime();
+
+            if(getTarget() instanceof Player player)
+            {
+                ItemStack playerHead = player.getItemBySlot(EquipmentSlot.HEAD);
+                ItemStack playerChest = player.getItemBySlot(EquipmentSlot.CHEST);
+                ItemStack playerLegs = player.getItemBySlot(EquipmentSlot.LEGS);
+                ItemStack playerFeet = player.getItemBySlot(EquipmentSlot.FEET);
+
+                if(playerHead.isEmpty())
+                {
+                    setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+                }
+                else
+                {
+                    setItemSlot(EquipmentSlot.HEAD, playerHead.copy());
+                }
+
+                if(playerChest.isEmpty())
+                {
+                    setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+                }
+                else
+                {
+                    setItemSlot(EquipmentSlot.CHEST, playerChest.copy());
+                }
+
+                if(playerLegs.isEmpty())
+                {
+                    setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+                }
+                else
+                {
+                    setItemSlot(EquipmentSlot.LEGS, playerLegs.copy());
+                }
+
+                if(playerFeet.isEmpty())
+                {
+                    setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
+                }
+                else
+                {
+                    setItemSlot(EquipmentSlot.FEET, playerFeet.copy());
+                }
+
+            }
         }
     }
 }

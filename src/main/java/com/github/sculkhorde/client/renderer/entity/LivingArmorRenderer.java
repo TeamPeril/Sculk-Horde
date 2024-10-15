@@ -144,31 +144,31 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
             }
 
             protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack, LivingArmorEntity animatable) {
-                ItemDisplayContext var10000;
+                ItemDisplayContext displayContext;
                 switch (bone.getName()) {
                     case LEFT_HAND:
+                        displayContext = ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+                        break;
                     case RIGHT_HAND:
-                        var10000 = ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+                        displayContext = ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
                         break;
                     default:
-                        var10000 = ItemDisplayContext.NONE;
+                        displayContext = ItemDisplayContext.NONE;
                 }
 
-                return var10000;
+                return displayContext;
             }
 
             protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
                 if (stack == LivingArmorRenderer.this.mainHandItem) {
                     poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-                    //poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
-                    //.mulPose(Axis.ZP.rotationDegrees(-45.0F));
-                    //poseStack.translate(0.2, 0.2, 0);
                     if (stack.getItem() instanceof ShieldItem) {
                         poseStack.translate(0.0, 0.125, -0.25);
                     }
                 } else if (stack == LivingArmorRenderer.this.offhandItem) {
-                    poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
                     if (stack.getItem() instanceof ShieldItem) {
                         poseStack.translate(0.0, 0.125, 0.25);
                         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
