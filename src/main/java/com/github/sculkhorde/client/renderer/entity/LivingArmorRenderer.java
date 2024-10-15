@@ -27,8 +27,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
 
     private static final String LEFT_HAND = "leftItem";
     private static final String RIGHT_HAND = "rightItem";
-    private static final String LEFT_BOOT = "armorLeftFoot";
-    private static final String RIGHT_BOOT = "armorRightFoot";
+    private static final String LEFT_BOOT = "leftBoot";
+    private static final String RIGHT_BOOT = "rightBoot";
     private static final String LEFT_ARMOR_LEG = "leftLeg";
     private static final String RIGHT_ARMOR_LEG = "rightLeg";
     private static final String CHESTPLATE = "body";
@@ -45,39 +45,35 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
         this.addRenderLayer(new ItemArmorGeoLayer<LivingArmorEntity>(this) {
             @Nullable
             protected ItemStack getArmorItemForBone(GeoBone bone, LivingArmorEntity animatable) {
-                ItemStack var10000;
+                ItemStack itemStack;
                 switch (bone.getName()) {
-                    case LEFT_BOOT:
-                    case RIGHT_BOOT:
-                    case LEFT_ARMOR_LEG:
-                    case RIGHT_ARMOR_LEG:
-                        var10000 = this.leggingsStack;
+                    case LEFT_BOOT, RIGHT_BOOT:
+                        itemStack = this.bootsStack;
                         break;
-                    case CHESTPLATE:
-                    case RIGHT_SLEEVE:
-                    case LEFT_SLEEVE:
-                        var10000 = this.chestplateStack;
+                    case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
+                        itemStack = this.leggingsStack;
+                        break;
+                    case CHESTPLATE, RIGHT_SLEEVE, LEFT_SLEEVE:
+                        itemStack = this.chestplateStack;
                         break;
                     case HELMET:
-                        var10000 = this.helmetStack;
+                        itemStack = this.helmetStack;
                         break;
                     default:
-                        var10000 = null;
+                        itemStack = null;
                 }
 
-                return var10000;
+                return itemStack;
             }
 
             @Nonnull
             protected EquipmentSlot getEquipmentSlotForBone(GeoBone bone, ItemStack stack, LivingArmorEntity animatable) {
                 EquipmentSlot var10000;
                 switch (bone.getName()) {
-                    case LEFT_BOOT:
-                    case RIGHT_BOOT:
+                    case LEFT_BOOT, RIGHT_BOOT:
                         var10000 = EquipmentSlot.FEET;
                         break;
-                    case LEFT_ARMOR_LEG:
-                    case RIGHT_ARMOR_LEG:
+                    case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         var10000 = EquipmentSlot.LEGS;
                         break;
                     case RIGHT_SLEEVE:
@@ -103,12 +99,10 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
             protected ModelPart getModelPartForBone(GeoBone bone, EquipmentSlot slot, ItemStack stack, LivingArmorEntity animatable, HumanoidModel<?> baseModel) {
                 ModelPart var10000;
                 switch (bone.getName()) {
-                    case LEFT_BOOT:
-                    case LEFT_ARMOR_LEG:
+                    case LEFT_BOOT, LEFT_ARMOR_LEG:
                         var10000 = baseModel.leftLeg;
                         break;
-                    case RIGHT_BOOT:
-                    case RIGHT_ARMOR_LEG:
+                    case RIGHT_BOOT, RIGHT_ARMOR_LEG:
                         var10000 = baseModel.rightLeg;
                         break;
                     case RIGHT_SLEEVE:
@@ -152,8 +146,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
             protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack, LivingArmorEntity animatable) {
                 ItemDisplayContext var10000;
                 switch (bone.getName()) {
-                    case "bipedHandLeft":
-                    case "bipedHandRight":
+                    case LEFT_HAND:
+                    case RIGHT_HAND:
                         var10000 = ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
                         break;
                     default:
@@ -165,9 +159,11 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
 
             protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
                 if (stack == LivingArmorRenderer.this.mainHandItem) {
-                    poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
-                    poseStack.mulPose(Axis.ZP.rotationDegrees(-45.0F));
-                    poseStack.translate(0.2, 0.2, 0);
+                    poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+                    //poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+                    //.mulPose(Axis.ZP.rotationDegrees(-45.0F));
+                    //poseStack.translate(0.2, 0.2, 0);
                     if (stack.getItem() instanceof ShieldItem) {
                         poseStack.translate(0.0, 0.125, -0.25);
                     }
