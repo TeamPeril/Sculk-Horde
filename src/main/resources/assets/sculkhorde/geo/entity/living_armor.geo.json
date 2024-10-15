@@ -42,7 +42,10 @@
 				{
 					"name": "armorHead",
 					"parent": "head",
-					"pivot": [0, 24, 0]
+					"pivot": [0, 24, 0],
+					"cubes": [
+						{"origin": [0, 24, -1], "size": [1, 1, 1], "uv": [2, 1]}
+					]
 				},
 				{
 					"name": "rightArm",

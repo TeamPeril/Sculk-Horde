@@ -29,12 +29,12 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
     private static final String RIGHT_HAND = "rightItem";
     private static final String LEFT_BOOT = "armorLeftFoot";
     private static final String RIGHT_BOOT = "armorRightFoot";
-    private static final String LEFT_ARMOR_LEG = "armorLeftLeg";
-    private static final String RIGHT_ARMOR_LEG = "armorRightLeg";
-    private static final String CHESTPLATE = "armorBody";
-    private static final String RIGHT_SLEEVE = "armorRightArm";
-    private static final String LEFT_SLEEVE = "armorLeftArm";
-    private static final String HELMET = "armorHeadd";
+    private static final String LEFT_ARMOR_LEG = "leftLeg";
+    private static final String RIGHT_ARMOR_LEG = "rightLeg";
+    private static final String CHESTPLATE = "body";
+    private static final String RIGHT_SLEEVE = "rightArm";
+    private static final String LEFT_SLEEVE = "leftArm";
+    private static final String HELMET = "head";
 
     protected ItemStack mainHandItem;
     protected ItemStack offhandItem;
@@ -49,8 +49,6 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                 switch (bone.getName()) {
                     case LEFT_BOOT:
                     case RIGHT_BOOT:
-                        var10000 = this.bootsStack;
-                        break;
                     case LEFT_ARMOR_LEG:
                     case RIGHT_ARMOR_LEG:
                         var10000 = this.leggingsStack;
