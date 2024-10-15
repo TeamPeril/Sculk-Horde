@@ -40,6 +40,11 @@
 					]
 				},
 				{
+					"name": "armorHead",
+					"parent": "head",
+					"pivot": [0, 24, 0]
+				},
+				{
 					"name": "rightArm",
 					"parent": "body",
 					"pivot": [-5, 22, 0],

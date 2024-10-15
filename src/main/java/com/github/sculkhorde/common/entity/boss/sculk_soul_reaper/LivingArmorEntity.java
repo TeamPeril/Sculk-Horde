@@ -79,6 +79,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         super(type, worldIn);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
         this.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+        //this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
     }
     /**
      * Determines & registers the attributes of the mob.

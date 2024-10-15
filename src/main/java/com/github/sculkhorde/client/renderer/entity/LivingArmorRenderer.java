@@ -27,14 +27,14 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
 
     private static final String LEFT_HAND = "leftItem";
     private static final String RIGHT_HAND = "rightItem";
-    private static final String LEFT_BOOT = "armorBipedLeftFoot";
-    private static final String RIGHT_BOOT = "armorBipedRightFoot";
-    private static final String LEFT_ARMOR_LEG = "armorBipedLeftLeg";
-    private static final String RIGHT_ARMOR_LEG = "armorBipedRightLeg";
-    private static final String CHESTPLATE = "armorBipedBody";
-    private static final String RIGHT_SLEEVE = "armorBipedRightArm";
-    private static final String LEFT_SLEEVE = "armorBipedLeftArm";
-    private static final String HELMET = "armorBipedHead";
+    private static final String LEFT_BOOT = "armorLeftFoot";
+    private static final String RIGHT_BOOT = "armorRightFoot";
+    private static final String LEFT_ARMOR_LEG = "armorLeftLeg";
+    private static final String RIGHT_ARMOR_LEG = "armorRightLeg";
+    private static final String CHESTPLATE = "armorBody";
+    private static final String RIGHT_SLEEVE = "armorRightArm";
+    private static final String LEFT_SLEEVE = "armorLeftArm";
+    private static final String HELMET = "armorHeadd";
 
     protected ItemStack mainHandItem;
     protected ItemStack offhandItem;
