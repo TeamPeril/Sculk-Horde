@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -86,6 +88,12 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
         this.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
     }
+
+    public LivingArmorEntity(Level worldIn, Vec3 position) {
+        this(ModEntities.LIVING_ARMOR.get(), worldIn);
+        setPos(position);
+    }
+
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes

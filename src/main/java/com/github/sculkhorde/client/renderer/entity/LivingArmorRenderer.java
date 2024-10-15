@@ -170,8 +170,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
                     if (stack.getItem() instanceof ShieldItem) {
-                        poseStack.translate(0.0, 0.125, 0.25);
-                        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                        poseStack.translate(0, 0.13, -1.25);
+                        //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     }
                 }
 
