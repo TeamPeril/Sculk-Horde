@@ -50,8 +50,8 @@
 				{
 					"name": "rightItem",
 					"parent": "rightArm",
-					"pivot": [-6.25, 13, -1],
-					"rotation": [0, 0, 90]
+					"pivot": [-6.25, 13, 0],
+					"rotation": [90, 180, 0]
 				},
 				{
 					"name": "leftArm",
@@ -65,7 +65,8 @@
 				{
 					"name": "leftItem",
 					"parent": "leftArm",
-					"pivot": [6.25, 15, 1]
+					"pivot": [6.25, 13, 0],
+					"rotation": [90, 180, 0]
 				},
 				{
 					"name": "rightLeg",
