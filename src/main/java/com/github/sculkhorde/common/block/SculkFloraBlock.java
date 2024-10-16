@@ -158,6 +158,15 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
         return true;
     }
 
+    /**
+     * Determines whether or not this block should break at any given time (presumably when updated).
+     * Also seems to control where it can be placed.<br>
+     * Stole from a superclass of twisted vines, idr which
+     * @param blockState
+     * @param levelReader
+     * @param blockPos
+     * @return
+     */
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
         return levelReader.getBlockState(blockPos.below()).is(ModBlocks.BlockTags.INFESTED_BLOCK) && levelReader.getBlockState(blockPos.below()).isFaceSturdy(levelReader, blockPos.below(), Direction.UP);

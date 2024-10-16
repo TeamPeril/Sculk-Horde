@@ -1,10 +1,16 @@
 package com.github.sculkhorde.common.block.InfestationEntries;
 
+import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+
+/**
+ * Superclass for all infestation entries that store their normal variant in an {@link InfestedTagBlockEntity}.
+ * <code>isNormalVariant</code> is the only method left unimplemented and functions as a condition.
+ */
 
 public abstract class BlockEntityInfestationTableEntry implements IBlockInfestationEntry {
 

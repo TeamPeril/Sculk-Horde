@@ -42,6 +42,7 @@ public class ModBlockLootTableSubProvider extends BlockLootSubProvider {
         }
     }
 
+    // original sculk horde loot tables do not have explosion decay. i maintained this for datagen
     protected LootTable.Builder createSingleItemTableWithNoExplosionDecay(Block block) {
         return LootTable.lootTable()
                 .withPool(LootPool.lootPool()
@@ -52,7 +53,7 @@ public class ModBlockLootTableSubProvider extends BlockLootSubProvider {
         return LootTable.lootTable()
                 .withPool(LootPool.lootPool()
                         .add(LootItem.lootTableItem(block.asItem()))
-                        .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SlabBlock.TYPE, SlabType.DOUBLE)))));
+                        .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SlabBlock.TYPE, SlabType.DOUBLE))))); //stole from BlockLootSubProvider
     }
 
     @Override
