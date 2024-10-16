@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "sculkhorde:infested_moss",
-    "sculkhorde:infested_compost_mass"
+    "sculkhorde:infested_compost_mass",
+    "sculkhorde:infested_crumbling_stairs",
+    "sculkhorde:infested_crumbling_slab"
   ]
 }

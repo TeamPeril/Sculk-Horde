@@ -1,5 +1,6 @@
 package com.github.sculkhorde.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -15,9 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,12 +25,14 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.lwjgl.glfw.GLFW;
+import oshi.util.tuples.Pair;
 
 import javax.annotation.Nullable;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
-    
+    public static final List<Pair<RegistryObject<? extends Block>, ResourceLocation>> BLOCKS_TO_DATAGEN = new ArrayList<>();
+
 	//Method to Register Blocks & Register them as items
 	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
 	{
@@ -41,14 +42,68 @@ public class ModBlocks {
 	}
 
 	//helper method to register a given block as a holdable item
-	private static <T extends Block> void registerBlockItem(String name, RegistryObject<T> block)
+	private static void registerBlockItem(String name, RegistryObject<? extends Block> block)
 	{
 		ModItems.ITEMS.register(name, () -> new BlockItem(block.get(),
 				new Item.Properties()));
 	}
 
-    //NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
-    
+	//simple methods to quickly register stairs
+	private static RegistryObject<StairBlock> stairs(RegistryObject<Block> original) {
+		return stairs(original.getId().getPath(), original);
+	}
+
+	private static RegistryObject<StairBlock> stairs(String id, RegistryObject<Block> original) {
+		return registerBlock(id + "_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.copy(original.get())));
+	}
+
+	//simple methods to quickly register slabs
+	private static RegistryObject<SlabBlock> slab(RegistryObject<Block> original) {
+		return slab(original.getId().getPath(), original);
+	}
+
+	private static RegistryObject<SlabBlock> slab(String id, RegistryObject<Block> original) {
+		return registerBlock(id + "_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(original.get())));
+	}
+
+	//simple methods to quickly register walls
+	private static RegistryObject<WallBlock> wall(RegistryObject<Block> original) {
+		return wall(original.getId().getPath(), original);
+	}
+
+	private static RegistryObject<WallBlock> wall(String id, RegistryObject<Block> original) {
+		return wall(id, original, original.getId());
+	}
+
+	private static RegistryObject<WallBlock> wall(String id, RegistryObject<Block> original, ResourceLocation texture) {
+		RegistryObject<WallBlock> wall = noDatagenWall(id, original);
+		datagen(wall, texture); //the datagen methods aren't part of registerBlock bc i didn't want to have to go back and change everything to use the new system
+		return wall; //but since i did datagen before starting walls it CAN be a part of this method
+	}
+
+	private static RegistryObject<WallBlock> noDatagenWall(String id, RegistryObject<Block> original) { //oops i was wrong :(
+		return registerBlock(id + "_wall", () -> new WallBlock(BlockBehaviour.Properties.copy(original.get()).forceSolidOn()));
+	}
+
+	private static RegistryObject<WallBlock> noDatagenWall(RegistryObject<Block> original) {
+		return noDatagenWall(original.getId().getPath(), original);
+	}
+
+	//methods to add blocks to datagen
+	private static void datagen(RegistryObject<? extends Block> block, ResourceLocation textureId) {
+		BLOCKS_TO_DATAGEN.add(new Pair<>(block, textureId));
+	}
+
+	private static void datagen(RegistryObject<? extends Block> block, String textureId) {
+		datagen(block, new ResourceLocation(SculkHorde.MOD_ID, textureId));
+	}
+
+	private static void datagen(RegistryObject<? extends Block> block) {
+		datagen(block, block.getId());
+	}
+
+	//NOTE: Learned from https://www.youtube.com/watch?v=4igJ_nsFAZs "Creating a Block - Minecraft Forge 1.16.4 Modding Tutorial"
+
     //Register Ancient Large Bricks
     public static final RegistryObject<Block> ANCIENT_LARGE_BRICKS =
 			registerBlock("ancient_large_bricks", () -> new Block(BlockBehaviour.Properties.of()
@@ -111,13 +166,10 @@ public class ModBlocks {
 			));
 	
 	public static final RegistryObject<StairBlock> INFESTED_STONE_STAIRS =
-			registerBlock("infested_stone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
-					.mapColor(MapColor.TERRACOTTA_BLACK)
-					.strength(4f, 30f)//Hardness & Resistance
-					.destroyTime(5f)
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.ANCIENT_DEBRIS)
-			));
+			stairs(INFESTED_STONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_STONE_SLAB =
+			slab(INFESTED_STONE);
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_LOG =
 			registerBlock("infested_log", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
@@ -181,6 +233,16 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_SANDSTONE_STAIRS =
+			stairs(INFESTED_SANDSTONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_SANDSTONE_SLAB =
+			slab(INFESTED_SANDSTONE);
+
+	public static final RegistryObject<WallBlock> INFESTED_SANDSTONE_WALL =
+			wall(INFESTED_SANDSTONE);
+
 	public static final RegistryObject<Block> INFESTED_DIORITE =
 			registerBlock("infested_diorite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -189,6 +251,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_DIORITE_STAIRS =
+			stairs(INFESTED_DIORITE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_DIORITE_SLAB =
+			slab(INFESTED_DIORITE);
+
+	public static final RegistryObject<WallBlock> INFESTED_DIORITE_WALL =
+			wall(INFESTED_DIORITE);
 
 	public static final RegistryObject<Block> INFESTED_GRANITE =
 			registerBlock("infested_granite", () -> new Block(BlockBehaviour.Properties.of()
@@ -199,6 +270,15 @@ public class ModBlocks {
 					.sound(SoundType.STONE)
 			));
 
+	public static final RegistryObject<StairBlock> INFESTED_GRANITE_STAIRS =
+			stairs(INFESTED_GRANITE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_GRANITE_SLAB =
+			slab(INFESTED_GRANITE);
+
+	public static final RegistryObject<WallBlock> INFESTED_GRANITE_WALL =
+			wall(INFESTED_GRANITE);
+
 	public static final RegistryObject<Block> INFESTED_ANDESITE =
 			registerBlock("infested_andesite", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLUE)
@@ -207,6 +287,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_ANDESITE_STAIRS =
+			stairs(INFESTED_ANDESITE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_ANDESITE_SLAB =
+			slab(INFESTED_ANDESITE);
+
+	public static final RegistryObject<WallBlock> INFESTED_ANDESITE_WALL =
+			wall(INFESTED_ANDESITE);
 
 	public static final RegistryObject<Block> INFESTED_TUFF =
 			registerBlock("infested_tuff", () -> new Block(BlockBehaviour.Properties.of()
@@ -234,6 +323,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_COBBLED_DEEPSLATE_STAIRS =
+			stairs(INFESTED_COBBLED_DEEPSLATE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_COBBLED_DEEPSLATE_SLAB =
+			slab(INFESTED_COBBLED_DEEPSLATE);
+
+	public static final RegistryObject<WallBlock> INFESTED_COBBLED_DEEPSLATE_WALL =
+			wall(INFESTED_COBBLED_DEEPSLATE);
 
 	public static final RegistryObject<Block> INFESTED_GRAVEL =
 			registerBlock("infested_gravel", () -> new Block(BlockBehaviour.Properties.of()
@@ -425,13 +523,13 @@ public class ModBlocks {
 			));
 	
 	public static final RegistryObject<StairBlock> INFESTED_COBBLESTONE_STAIRS =
-			registerBlock("infested_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
-					.mapColor(MapColor.TERRACOTTA_BLUE)
-					.strength(4f, 30f)//Hardness & Resistance
-					.destroyTime(5f)
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
-			));
+			stairs(INFESTED_COBBLESTONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_COBBLESTONE_SLAB =
+			slab(INFESTED_COBBLESTONE);
+
+	public static final RegistryObject<WallBlock> INFESTED_COBBLESTONE_WALL =
+			wall(INFESTED_COBBLESTONE);
 
 	public static final RegistryObject<Block> INFESTED_CRYING_OBSIDIAN =
 			registerBlock("infested_crying_obsidian", () -> new Block(BlockBehaviour.Properties.of()
@@ -469,6 +567,15 @@ public class ModBlocks {
 					.sound(SoundType.MUD_BRICKS)
 			));
 
+	public static final RegistryObject<StairBlock> INFESTED_MUD_BRICK_STAIRS =
+			stairs("infested_mud_brick", INFESTED_MUD_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_MUD_BRICK_SLAB =
+			slab("infested_mud_brick", INFESTED_MUD_BRICKS);
+
+	public static final RegistryObject<WallBlock> INFESTED_MUD_BRICK_WALL =
+			wall("infested_mud_brick", INFESTED_MUD_BRICKS);
+
 	public static final RegistryObject<Block> INFESTED_BLACKSTONE =
 			registerBlock("infested_blackstone", () -> new Block(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_BLACK)
@@ -477,6 +584,15 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
 			));
+
+	public static final RegistryObject<StairBlock> INFESTED_BLACKSTONE_STAIRS =
+			stairs(INFESTED_BLACKSTONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_BLACKSTONE_SLAB =
+			slab(INFESTED_BLACKSTONE);
+
+	public static final RegistryObject<WallBlock> INFESTED_BLACKSTONE_WALL =
+			noDatagenWall(INFESTED_BLACKSTONE);
 
 	public static final RegistryObject<Block> INFESTED_BASALT =
 			registerBlock("infested_basalt", () -> new Block(BlockBehaviour.Properties.of()
@@ -542,13 +658,13 @@ public class ModBlocks {
 			));
 	
 	public static final RegistryObject<StairBlock> INFESTED_MOSSY_COBBLESTONE_STAIRS =
-			registerBlock("infested_mossy_cobblestone_stairs", () -> new StairBlock(() -> StairBlock.stateById(0), BlockBehaviour.Properties.of()
-					.mapColor(MapColor. STONE)
-					.strength(4f, 30f)//Hardness & Resistance
-					.destroyTime(5f)
-					.requiresCorrectToolForDrops()
-					.sound(SoundType.STONE)
-			));
+			stairs(INFESTED_MOSSY_COBBLESTONE);
+
+	public static final RegistryObject<SlabBlock> INFESTED_MOSSY_COBBLESTONE_SLAB =
+			slab(INFESTED_MOSSY_COBBLESTONE);
+
+	public static final RegistryObject<WallBlock> INFESTED_MOSSY_COBBLESTONE_WALL =
+			wall("infested_mossy_cobblestone", INFESTED_MOSSY_COBBLESTONE, new ResourceLocation(SculkHorde.MOD_ID, "infested_cobblestone"));
 
 	public static final RegistryObject<Block> INFESTED_CLAY =
 			registerBlock("infested_clay", () -> new Block(BlockBehaviour.Properties.of()
@@ -558,6 +674,60 @@ public class ModBlocks {
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.MUD)
 			));
+
+	public static final RegistryObject<Block> INFESTED_STONE_BRICKS =
+			registerBlock("infested_stone_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<StairBlock> INFESTED_STONE_BRICK_STAIRS =
+			stairs("infested_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_STONE_BRICK_SLAB =
+			slab("infested_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<WallBlock> INFESTED_STONE_BRICK_WALL =
+			wall("infested_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<Block> INFESTED_MOSSY_STONE_BRICKS =
+			registerBlock("infested_mossy_stone_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<StairBlock> INFESTED_MOSSY_STONE_BRICK_STAIRS =
+			stairs("infested_mossy_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_MOSSY_STONE_BRICK_SLAB =
+			slab("infested_mossy_stone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<WallBlock> INFESTED_MOSSY_STONE_BRICK_WALL =
+			wall("infested_mossy_stone_brick", INFESTED_MOSSY_STONE_BRICKS, new ResourceLocation(SculkHorde.MOD_ID, "infested_stone_bricks"));
+
+	public static final RegistryObject<Block> INFESTED_BLACKSTONE_BRICKS =
+			registerBlock("infested_blackstone_bricks", () -> new Block(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.TERRACOTTA_BLUE)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<StairBlock> INFESTED_BLACKSTONE_BRICK_STAIRS =
+			stairs("infested_blackstone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<SlabBlock> INFESTED_BLACKSTONE_BRICK_SLAB =
+			slab("infested_blackstone_brick", INFESTED_STONE_BRICKS);
+
+	public static final RegistryObject<WallBlock> INFESTED_BLACKSTONE_BRICK_WALL =
+			wall("infested_blackstone_brick", INFESTED_BLACKSTONE_BRICKS);
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_WOOD_MASS =
 			registerBlock("infested_wood_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
@@ -577,6 +747,33 @@ public class ModBlocks {
 					.sound(SoundType.WOOD)
 			));
 
+	public static final RegistryObject<InfestedSlabBlock> INFESTED_WOOD_SLAB =
+			registerBlock("infested_wood_slab", () -> new InfestedSlabBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
+	public static final RegistryObject<InfestedFenceBlock> INFESTED_WOOD_FENCE =
+			registerBlock("infested_wood_fence", () -> new InfestedFenceBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
+	public static final RegistryObject<InfestedFenceGateBlock> INFESTED_WOOD_FENCE_GATE =
+			registerBlock("infested_wood_fence_gate", () -> new InfestedFenceGateBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.WOOD)
+			));
+
 	public static final RegistryObject<InfestedTagBlock> INFESTED_STURDY_MASS =
 			registerBlock("infested_sturdy_mass", () -> new InfestedTagBlock(BlockBehaviour.Properties.of()
 					.mapColor(MapColor.TERRACOTTA_BLACK)
@@ -584,6 +781,78 @@ public class ModBlocks {
 					.destroyTime(5f)
 					.requiresCorrectToolForDrops()
 					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedStairBlock> INFESTED_STURDY_STAIRS =
+			registerBlock("infested_sturdy_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedSlabBlock> INFESTED_STURDY_SLAB =
+			registerBlock("infested_sturdy_slab", () -> new InfestedSlabBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedWallBlock> INFESTED_STURDY_WALL =
+			registerBlock("infested_sturdy_wall", () -> new InfestedWallBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedFenceBlock> INFESTED_STURDY_FENCE =
+			registerBlock("infested_sturdy_fence", () -> new InfestedFenceBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedFenceGateBlock> INFESTED_STURDY_FENCE_GATE =
+			registerBlock("infested_sturdy_fence_gate", () -> new InfestedFenceGateBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.STONE)
+			));
+
+	public static final RegistryObject<InfestedStairBlock> INFESTED_CRUMBLING_STAIRS =
+			registerBlock("infested_crumbling_stairs", () -> new InfestedStairBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.GRAVEL)
+			));
+
+	public static final RegistryObject<InfestedSlabBlock> INFESTED_CRUMBLING_SLAB =
+			registerBlock("infested_crumbling_slab", () -> new InfestedSlabBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.GRAVEL)
+			));
+
+	public static final RegistryObject<InfestedWallBlock> INFESTED_CRUMBLING_WALL =
+			registerBlock("infested_crumbling_wall", () -> new InfestedWallBlock(BlockBehaviour.Properties.of()
+					.mapColor(MapColor.QUARTZ)
+					.strength(4f, 30f)//Hardness & Resistance
+					.destroyTime(5f)
+					.requiresCorrectToolForDrops()
+					.sound(SoundType.GRAVEL)
 			));
 
 	public static final RegistryObject<InfestedTagBlock> INFESTED_CRUMPLED_MASS =
@@ -686,6 +955,24 @@ public class ModBlocks {
 	public static final RegistryObject<DiseasedKelpBlock> DISEASED_KELP_BLOCK =
 			registerBlock("diseased_kelp_block", DiseasedKelpBlock::new);
 
+	static {
+		datagen(INFESTED_STONE_BRICKS);
+		datagen(INFESTED_MOSSY_STONE_BRICKS, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICKS);
+		datagen(INFESTED_STONE_BRICK_STAIRS, "infested_stone_bricks");
+		datagen(INFESTED_MOSSY_STONE_BRICK_STAIRS, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICK_STAIRS, "infested_blackstone_bricks");
+		datagen(INFESTED_STONE_BRICK_SLAB, "infested_stone_bricks");
+		datagen(INFESTED_MOSSY_STONE_BRICK_SLAB, "infested_stone_bricks");
+		datagen(INFESTED_BLACKSTONE_BRICK_SLAB, "infested_blackstone_bricks");
+		datagen(INFESTED_STURDY_WALL, "infested_sturdy_mass");
+		datagen(INFESTED_CRUMBLING_WALL, "infested_crumpled_mass");
+		datagen(INFESTED_WOOD_FENCE, "infested_wood_mass");
+		datagen(INFESTED_STURDY_FENCE, "infested_sturdy_mass");
+		datagen(INFESTED_WOOD_FENCE_GATE, "infested_wood_mass");
+		datagen(INFESTED_STURDY_FENCE_GATE, "infested_sturdy_mass");
+	}
+
 	public static class BlockTags
 	{
 		public static final TagKey<Block> SCULK_RAID_TARGET_HIGH_PRIORITY = create("sculk_raid_target/high_priority");
@@ -693,6 +980,7 @@ public class ModBlocks {
 		public static final TagKey<Block> SCULK_RAID_TARGET_LOW_PRIORITY = create("sculk_raid_target/low_priority");
 		public static final TagKey<Block> SCULK_BEE_HARVESTABLE = create("sculk_bee_harvestable");
 		public static final TagKey<Block> INFESTED_BLOCK = create("infested_block");
+		public static final TagKey<Block> CONVERTS_TO_CRUMBLING_VARIANT = create("converts_to_crumbling_variant");
 
 		public static final TagKey<Block> NOT_INFESTABLE = create("not_infestable");
 

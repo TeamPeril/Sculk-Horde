@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "sculkhorde:block/infested_cobbled_deepslate_slab"
+    },
+    "type=double": {
+      "model": "sculkhorde:block/infested_cobbled_deepslate"
+    },
+    "type=top": {
+      "model": "sculkhorde:block/infested_cobbled_deepslate_slab_top"
+    }
+  }
+}

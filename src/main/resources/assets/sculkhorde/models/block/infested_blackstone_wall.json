@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "bottom": "sculkhorde:block/infested_blackstone_top",
+    "side": "sculkhorde:block/infested_blackstone_side",
+    "top": "sculkhorde:block/infested_blackstone_top",
+    "wall": "sculkhorde:block/infested_blackstone_top"
+  }
+}

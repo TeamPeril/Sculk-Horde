@@ -38,24 +38,47 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.CLAY, ModBlocks.INFESTED_CLAY.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE, ModBlocks.INFESTED_STONE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_STAIRS, ModBlocks.INFESTED_STONE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_SLAB, ModBlocks.INFESTED_STONE_SLAB.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DEEPSLATE, ModBlocks.INFESTED_DEEPSLATE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLED_DEEPSLATE, ModBlocks.INFESTED_COBBLED_DEEPSLATE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLED_DEEPSLATE_STAIRS, ModBlocks.INFESTED_COBBLED_DEEPSLATE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLED_DEEPSLATE_SLAB, ModBlocks.INFESTED_COBBLED_DEEPSLATE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLED_DEEPSLATE_WALL, ModBlocks.INFESTED_COBBLED_DEEPSLATE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SAND, ModBlocks.INFESTED_SAND.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SANDSTONE, ModBlocks.INFESTED_SANDSTONE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SANDSTONE_STAIRS, ModBlocks.INFESTED_SANDSTONE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SANDSTONE_SLAB, ModBlocks.INFESTED_SANDSTONE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SANDSTONE_WALL, ModBlocks.INFESTED_SANDSTONE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.RED_SAND, ModBlocks.INFESTED_RED_SAND.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DIORITE, ModBlocks.INFESTED_DIORITE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DIORITE_STAIRS, ModBlocks.INFESTED_DIORITE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DIORITE_SLAB, ModBlocks.INFESTED_DIORITE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.DIORITE_WALL, ModBlocks.INFESTED_DIORITE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRANITE, ModBlocks.INFESTED_GRANITE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRANITE_STAIRS, ModBlocks.INFESTED_GRANITE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRANITE_SLAB, ModBlocks.INFESTED_GRANITE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRANITE_WALL, ModBlocks.INFESTED_GRANITE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.ANDESITE, ModBlocks.INFESTED_ANDESITE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.ANDESITE_STAIRS, ModBlocks.INFESTED_ANDESITE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.ANDESITE_SLAB, ModBlocks.INFESTED_ANDESITE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.ANDESITE_WALL, ModBlocks.INFESTED_ANDESITE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.TUFF, ModBlocks.INFESTED_TUFF.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.CALCITE, ModBlocks.INFESTED_CALCITE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLESTONE, ModBlocks.INFESTED_COBBLESTONE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLESTONE_STAIRS, ModBlocks.INFESTED_COBBLESTONE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLESTONE_SLAB, ModBlocks.INFESTED_COBBLESTONE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.COBBLESTONE_WALL, ModBlocks.INFESTED_COBBLESTONE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_COBBLESTONE, ModBlocks.INFESTED_MOSSY_COBBLESTONE.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_COBBLESTONE_STAIRS, ModBlocks.INFESTED_MOSSY_COBBLESTONE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_COBBLESTONE_SLAB, ModBlocks.INFESTED_MOSSY_COBBLESTONE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_COBBLESTONE_WALL, ModBlocks.INFESTED_MOSSY_COBBLESTONE_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.GRAVEL, ModBlocks.INFESTED_GRAVEL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MUD, ModBlocks.INFESTED_MUD.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.PACKED_MUD, ModBlocks.INFESTED_PACKED_MUD.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MUD_BRICKS, ModBlocks.INFESTED_MUD_BRICKS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MUD_BRICK_STAIRS, ModBlocks.INFESTED_MUD_BRICK_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MUD_BRICK_SLAB, ModBlocks.INFESTED_MUD_BRICK_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MUD_BRICK_WALL, ModBlocks.INFESTED_MUD_BRICK_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SNOW_BLOCK, ModBlocks.INFESTED_SNOW.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSS_BLOCK, ModBlocks.INFESTED_MOSS.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.TERRACOTTA, ModBlocks.INFESTED_TERRACOTTA.get().defaultBlockState());
@@ -80,6 +103,21 @@ public class BlockInfestationHelper {
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.CRIMSON_NYLIUM, ModBlocks.INFESTED_CRIMSON_NYLIUM.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.WARPED_NYLIUM, ModBlocks.INFESTED_WARPED_NYLIUM.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BLACKSTONE, ModBlocks.INFESTED_BLACKSTONE.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BLACKSTONE_STAIRS, ModBlocks.INFESTED_BLACKSTONE_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BLACKSTONE_SLAB, ModBlocks.INFESTED_BLACKSTONE_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BLACKSTONE_WALL, ModBlocks.INFESTED_BLACKSTONE_WALL.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.POLISHED_BLACKSTONE_BRICKS, ModBlocks.INFESTED_BLACKSTONE_BRICKS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, ModBlocks.INFESTED_BLACKSTONE_BRICK_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, ModBlocks.INFESTED_BLACKSTONE_BRICK_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, ModBlocks.INFESTED_BLACKSTONE_BRICK_WALL.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_BRICKS, ModBlocks.INFESTED_STONE_BRICKS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_BRICK_STAIRS, ModBlocks.INFESTED_STONE_BRICK_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_BRICK_SLAB, ModBlocks.INFESTED_STONE_BRICK_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.STONE_BRICK_WALL, ModBlocks.INFESTED_STONE_BRICK_WALL.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_STONE_BRICKS, ModBlocks.INFESTED_MOSSY_STONE_BRICKS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_STONE_BRICK_STAIRS, ModBlocks.INFESTED_MOSSY_STONE_BRICK_STAIRS.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_STONE_BRICK_SLAB, ModBlocks.INFESTED_MOSSY_STONE_BRICK_SLAB.get().defaultBlockState());
+        SculkHorde.explicitInfectableBlocks.addEntry(Blocks.MOSSY_STONE_BRICK_WALL, ModBlocks.INFESTED_MOSSY_STONE_BRICK_WALL.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.BASALT, ModBlocks.INFESTED_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.SMOOTH_BASALT, ModBlocks.INFESTED_SMOOTH_BASALT.get().defaultBlockState());
         SculkHorde.explicitInfectableBlocks.addEntry(Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
@@ -125,24 +163,34 @@ public class BlockInfestationHelper {
 
 
 
-        // Used to infect stairs and slabs. Order Matters
-        SculkHorde.tagInfectableStairsAndSlabsBlocks = new BlockInfestationTable(false);
-        SculkHorde.tagInfectableStairsAndSlabsBlocks.addEntry(BlockTags.WOODEN_STAIRS, ModBlocks.INFESTED_WOOD_STAIRS.get());
+        // Used to infect non-full blocks. Order Matters
+        SculkHorde.tagInfectableNonFullBlocks = new BlockInfestationTable(false);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.STAIRS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.STAIRS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_STAIRS.get(), Blocks.MOSSY_COBBLESTONE_STAIRS); //vanilla doesn't have any stairs that match these criteria so this is about the best i could get
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.WOODEN_SLABS, ModBlocks.INFESTED_WOOD_SLAB.get(), Blocks.OAK_SLAB);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.SLABS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_SLAB.get(), Blocks.COBBLESTONE_SLAB);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.SLABS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_SLAB.get(), Blocks.MOSSY_COBBLESTONE_SLAB);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.WALLS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_WALL.get(), Blocks.MOSSY_COBBLESTONE_WALL);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.WALLS, Tiers.IRON, ModBlocks.INFESTED_STURDY_WALL.get(), Blocks.COBBLESTONE_WALL);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.WOODEN_FENCES, ModBlocks.INFESTED_WOOD_FENCE.get(), Blocks.OAK_FENCE);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCES, ModBlocks.INFESTED_STURDY_FENCE.get(), Blocks.NETHER_BRICK_FENCE);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCE_GATES, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
+        SculkHorde.tagInfectableNonFullBlocks.addEntry(BlockTags.FENCE_GATES, ModBlocks.INFESTED_STURDY_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Order Matters
         SculkHorde.tagInfectableBlocks = new BlockInfestationTable(true);
-        SculkHorde.tagInfectableBlocks.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get());
-        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get());
+        SculkHorde.tagInfectableBlocks.addEntry(net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get(), Blocks.OAK_LOG);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get(), Blocks.OAK_PLANKS);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get(), Blocks.COBBLESTONE);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get(), Blocks.COARSE_DIRT);
+        SculkHorde.tagInfectableBlocks.addEntry(BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
 
         SculkHorde.configInfectableBlocks = new BlockInfestationTable(false);
         SculkHorde.configInfectableBlocks.addEntry(ModBlocks.INFESTED_STURDY_MASS.get());
 
         SculkHorde.INFESTATION_TABLES = new BlockInfestationTable[]{
                 SculkHorde.explicitInfectableBlocks,
-                SculkHorde.tagInfectableStairsAndSlabsBlocks,
+                SculkHorde.tagInfectableNonFullBlocks,
                 SculkHorde.tagInfectableBlocks,
                 SculkHorde.configInfectableBlocks
         };

@@ -18,8 +18,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import software.bernie.geckolib.GeckoLib;
 import org.slf4j.Logger;
-
-import java.util.HashMap;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
@@ -38,7 +36,7 @@ public class SculkHorde {
     public static ModSavedData savedData;
     public static BlockInfestationTable explicitInfectableBlocks;
     public static BlockInfestationTable tagInfectableBlocks;
-    public static BlockInfestationTable tagInfectableStairsAndSlabsBlocks;
+    public static BlockInfestationTable tagInfectableNonFullBlocks;
     public static BlockInfestationTable configInfectableBlocks;
 
     public static BlockInfestationTable[] INFESTATION_TABLES;

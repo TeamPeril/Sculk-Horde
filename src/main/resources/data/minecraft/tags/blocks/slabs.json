@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "sculkhorde:infested_cobblestone_slab",
+    "sculkhorde:infested_stone_slab",
+    "sculkhorde:infested_mossy_cobblestone_slab",
+    "sculkhorde:infested_andesite_slab",
+    "sculkhorde:infested_granite_slab",
+    "sculkhorde:infested_diorite_slab",
+    "sculkhorde:infested_sandstone_slab",
+    "sculkhorde:infested_cobbled_deepslate_slab",
+    "sculkhorde:infested_blackstone_slab",
+    "sculkhorde:infested_mud_brick_slab",
+    "sculkhorde:infested_sturdy_slab",
+    "sculkhorde:infested_crumbling_slab",
+    "sculkhorde:infested_wood_slab",
+    "sculkhorde:infested_stone_brick_slab",
+    "sculkhorde:infested_mossy_stone_brick_slab",
+    "sculkhorde:infested_blackstone_brick_slab"
+  ]
+}
