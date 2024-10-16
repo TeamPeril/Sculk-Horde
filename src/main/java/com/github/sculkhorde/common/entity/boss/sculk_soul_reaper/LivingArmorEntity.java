@@ -10,6 +10,7 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ToolActions;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -37,6 +39,8 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.Optional;
 
 public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -206,6 +210,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                 {
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
+                        new RaiseShield(),
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
                         new NearestLivingEntityTargetGoal<>(this, true, true)
@@ -386,6 +391,8 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         protected final long ARMOR_CHECK_COOL_DOWN = TickUnits.convertSecondsToTicks(10);
 
 
+
+
         @Override
         public boolean canUse() {
             return Math.abs(level().getGameTime() - lastTimeOfArmorCheck) > ARMOR_CHECK_COOL_DOWN && getTarget() != null && getTarget() instanceof Player;
@@ -446,6 +453,102 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                 }
 
             }
+        }
+    }
+
+    protected class RaiseShield extends Goal
+    {
+        long timeOfRaiseShield = 0;
+        long MAX_SHIELD_UP_TIME = TickUnits.convertSecondsToTicks(10);
+
+        protected boolean shieldIsUp = false;
+        @Override
+        public boolean canUse() {
+            if(getTarget() == null)
+            {
+                return false;
+            }
+
+            // We want to block if we get hurt from too far away.
+            if(lastHurtDistanceFromSourceEntity > 5)
+            {
+                return true;
+            }
+
+
+            if(getTarget().distanceTo(LivingArmorEntity.this) > 5)
+            {
+                return false;
+            }
+
+            if(!getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+
+            if(getOffhandStackIfShield().isEmpty())
+            {
+                return false;
+            }
+
+            if(shieldIsUp && level().getGameTime() - timeOfRaiseShield > MAX_SHIELD_UP_TIME)
+            {
+                return false;
+            }
+
+            if(getTarget() == null || distanceTo(getTarget()) > 10)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected Optional<ItemStack> getOffhandStackIfShield()
+        {
+            if(!getItemInOffHand().isEmpty() || getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
+            {
+                return Optional.of(getItemInOffHand());
+            }
+
+            return Optional.empty();
+        }
+
+        protected boolean raiseShield()
+        {
+            if(getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
+            {
+                startUsingItem(InteractionHand.OFF_HAND);
+                timeOfRaiseShield = level().getGameTime();
+                shieldIsUp = true;
+                level().playSound(LivingArmorEntity.this, blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.HOSTILE, 1.0F, 1.0F);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            if(getOffhandStackIfShield().isEmpty())
+            {
+                return;
+            }
+
+            raiseShield();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            shieldIsUp = false;
+            stopUsingItem();
         }
     }
 }
