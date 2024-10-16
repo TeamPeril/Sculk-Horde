@@ -191,10 +191,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void registerGoals() {
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
-
-        this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
-        this.goalSelector.addGoal(3, new FangsAttackGoal(this));
-
         this.goalSelector.addGoal(5, new SoulReapterNavigator(this, 20F, 10F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
@@ -204,20 +200,31 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     public void addAbilitiesBasedOnDifficulty()
     {
-        if(getMobDifficultyLevel() >= 2)
+        if(getMobDifficultyLevel() == 1)
         {
+            this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
+            this.goalSelector.addGoal(3, new FangsAttackGoal(this));
+        }
+        if(getMobDifficultyLevel() == 2)
+        {
+
             this.goalSelector.addGoal(1, new ZoltraakAttackGoal(this));
             this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this));
+            this.goalSelector.addGoal(2, new FangsAttackGoal(this));
+            this.goalSelector.addGoal(2, new ShootSoulSpearAttackGoal(this));
             this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-            this.goalSelector.addGoal(1, new FloorSoulSpearsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-            this.goalSelector.addGoal(2, new MirrorPlayerGoal(this));
+            this.goalSelector.addGoal(2, new SummonVexAttackGoal(this));
         }
 
         if(getMobDifficultyLevel() >= 3)
         {
-            this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-            this.goalSelector.addGoal(2, new ShootSoulSpearAttackGoal(this));
+
+            this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
+            this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(15)));
+            this.goalSelector.addGoal(1, new FloorSoulSpearsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
+
             this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
+            this.goalSelector.addGoal(2, new MirrorPlayerGoal(this));
         }
     }
 

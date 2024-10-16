@@ -26,6 +26,8 @@ public class FloorSoulSpearsEntity extends SpecialEffectEntity implements Tracea
     public static int DAMAGE_DELAY_TICKS = TickUnits.convertSecondsToTicks(0.5F); // Had to eye ball this value
     private int lifeTicks = 0;
 
+
+
     public FloorSoulSpearsEntity(EntityType<? extends FloorSoulSpearsEntity> entityType, Level level) {
         super(entityType, level);
         triggerAnim("attack_controller", "underground");

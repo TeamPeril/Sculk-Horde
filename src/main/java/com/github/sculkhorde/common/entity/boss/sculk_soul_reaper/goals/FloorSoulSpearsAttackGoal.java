@@ -25,12 +25,13 @@ public class FloorSoulSpearsAttackGoal extends Goal
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
-    protected int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.5F);
-    protected int attackkIntervalCooldown = 0;
 
     FloorSoulSpearsSpawner spawner;
     List<LivingEntity> enemies;
     ArrayList<FloorSoulSpearsSpawner> spawners = new ArrayList<>();
+
+    protected long UPDATE_INTERVAL = TickUnits.convertSecondsToTicks(0.15F);
+    protected long lastUpdate = 0;
 
 
     public FloorSoulSpearsAttackGoal(PathfinderMob mob, int durationInTicks) {
@@ -86,6 +87,14 @@ public class FloorSoulSpearsAttackGoal extends Goal
     {
         super.tick();
         elapsedAttackDuration++;
+
+        if(Math.abs(mob.level().getGameTime() - lastUpdate) < UPDATE_INTERVAL)
+        {
+            return;
+        }
+
+        lastUpdate = mob.level().getGameTime();
+
         for(FloorSoulSpearsSpawner spawner : spawners)
         {
             spawner.tick();
