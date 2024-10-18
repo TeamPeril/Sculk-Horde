@@ -40,6 +40,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -357,11 +358,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
     {
         controllers.add(
-                //new AnimationController<>(this, "walk_cycle", 5, this::poseWalk),
-                //new AnimationController<>(this, "twitch", 5, this::poseTwitch),
-                //new AnimationController<>(this, "tendrils", 5, this::poseTendrils),
-                //COMBAT_ATTACK_ANIMATION_CONTROLLER
-                //COMBAT_TWITCH_ANIMATION_CONTROLLER
+                DefaultAnimations.genericWalkIdleController(this).transitionLength(5)
         );
     }
 
