@@ -235,4 +235,23 @@ public class Gravemind
         }
         return false;
     }
+
+
+    public boolean isCurrentEvolutionStateLessThan(evolution_states stateIn)
+    {
+        if(stateIn == evolution_states.Undeveloped)
+        {
+            return false;
+        }
+        else if (stateIn == evolution_states.Immature)
+        {
+            return getEvolutionState() == evolution_states.Undeveloped;
+        }
+        else if(stateIn == evolution_states.Mature)
+        {
+            return getEvolutionState() == evolution_states.Undeveloped
+                    || getEvolutionState() == evolution_states.Immature;
+        }
+        return false;
+    }
 }

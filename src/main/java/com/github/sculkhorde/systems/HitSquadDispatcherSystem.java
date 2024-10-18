@@ -2,6 +2,7 @@ package com.github.sculkhorde.systems;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.gravemind.Gravemind;
 import com.github.sculkhorde.systems.events.HitSquadEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
@@ -49,12 +50,17 @@ public class HitSquadDispatcherSystem {
                 continue;
             }
 
+            if(SculkHorde.gravemind.isCurrentEvolutionStateLessThan(Gravemind.evolution_states.Mature))
+            {
+                continue;
+            }
+
             boolean hasNotDestroyedEnoughNodes = profile.getNodesDestroyed() < MIN_NODES_DESTROYED;
             boolean hasGoodRelationshipWithHorde = profile.getRelationshipToTheHorde() > MAX_RELATIONSHIP;
             boolean isHitCooldownNotOver = !profile.isHitCooldownOver();
 
             ModSavedData.NodeEntry entry = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) player.level(), player.blockPosition());
-            boolean isTooFarFromNode = BlockAlgorithms.getBlockDistanceXZ(player.blockPosition(), entry.getPosition()) > 200;
+            boolean isTooFarFromNode = BlockAlgorithms.getBlockDistanceXZ(player.blockPosition(), entry.getPosition()) > 100;
 
              if(isTooFarFromNode || isHitCooldownNotOver || hasGoodRelationshipWithHorde || hasNotDestroyedEnoughNodes)
             {
