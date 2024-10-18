@@ -15,7 +15,7 @@ import java.util.EnumSet;
 public class ShootSoulSpearAttackGoal extends Goal
 {
     private final Mob mob;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(1);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(3);
@@ -80,8 +80,8 @@ public class ShootSoulSpearAttackGoal extends Goal
             return;
         }
 
-        getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
-        getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
+        //getEntity().triggerAnim("attack_controller", "fireball_sky_summon_animation");
+        //getEntity().triggerAnim("twitch_controller", "fireball_sky_twitch_animation");
         this.mob.getNavigation().stop();
         EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level(), mob.blockPosition().above(50), MobSpawnType.SPAWNER);
     }
@@ -145,7 +145,7 @@ public class ShootSoulSpearAttackGoal extends Goal
         double spawnPosZ = mob.getZ();
 
         double targetPosX = mob.getTarget().getX() - spawnPosX  + getRandomDoubleInRange(0, 1);
-        double targetPosY = mob.getTarget().getY() - spawnPosY + getRandomDoubleInRange(0, 1);
+        double targetPosY = mob.getTarget().getEyePosition().y() - spawnPosY + getRandomDoubleInRange(0, 1);
         double targetPosZ = mob.getTarget().getZ() - spawnPosZ + getRandomDoubleInRange(0, 1);
 
         // Create a vector for the direction

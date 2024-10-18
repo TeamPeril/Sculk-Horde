@@ -50,7 +50,7 @@ public class SoulSpearProjectileEntity extends AbstractProjectileEntity implemen
 
     @Override
     public float getSpeed() {
-        return 3F;
+        return 0.5F;
     }
 
     @Override

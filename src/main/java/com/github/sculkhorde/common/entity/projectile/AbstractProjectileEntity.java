@@ -128,6 +128,25 @@ public abstract class AbstractProjectileEntity extends Projectile {
             trailParticles();
         }
         travel();
+        //faceDirectionOfTravel();
+    }
+
+    protected void faceDirectionOfTravel()
+    {
+        // Get the motion vector
+        Vec3 motion = getDeltaMovement();
+
+        // Calculate the yaw and pitch from the motion vector
+        double motionX = motion.x;
+        double motionY = motion.y;
+        double motionZ = motion.z;
+
+        float yaw = (float) (Math.atan2(motionZ, motionX) * (180 / Math.PI)) - 90;
+        float pitch = (float) -(Math.atan2(motionY, Math.sqrt(motionX * motionX + motionZ * motionZ)) * (180 / Math.PI));
+
+        // Set the entity's rotation
+        setYRot(yaw);
+        setXRot(pitch);
     }
 
     public boolean isBeingShieldBlocked(LivingEntity target)
@@ -149,7 +168,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     public void travel() {
         setPos(position().add(getDeltaMovement()));
-        ProjectileUtil.rotateTowardsMovement(this, 1);
+        //ProjectileUtil.rotateTowardsMovement(this, 1);
         if (!this.isNoGravity()) {
             Vec3 vec34 = this.getDeltaMovement();
             this.setDeltaMovement(vec34.x, vec34.y - (double) 0.05F, vec34.z);
