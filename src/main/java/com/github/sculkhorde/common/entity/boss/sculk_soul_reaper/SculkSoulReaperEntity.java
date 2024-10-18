@@ -315,7 +315,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     }
 
     protected ServerBossEvent createBossEvent() {
-        ServerBossEvent event = new ServerBossEvent(Component.translatable("entity.sculkhorde.sculk_soul_reaper"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        ServerBossEvent event = new ServerBossEvent(Component.translatable("entity.sculkhorde.sculk_soul_reaper"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
         return event;
     }
 
