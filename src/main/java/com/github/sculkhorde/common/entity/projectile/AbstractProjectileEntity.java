@@ -111,15 +111,16 @@ public abstract class AbstractProjectileEntity extends Projectile {
             discard();
     }
 
+    public void handleHitDetection() {
+        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+        if (hitresult.getType() != HitResult.Type.MISS  && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+            onHit(hitresult);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
-        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-
-        if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
-            this.onHit(hitresult);
-        }
-
         if (tickCount > EXPIRE_TIME) {
             discard();
             return;
@@ -127,12 +128,17 @@ public abstract class AbstractProjectileEntity extends Projectile {
         if (level().isClientSide) {
             trailParticles();
         }
+        handleHitDetection();
+        faceDirectionOfTravel();
         travel();
-        //faceDirectionOfTravel();
+
     }
 
     protected void faceDirectionOfTravel()
     {
+        //ProjectileUtil.rotateTowardsMovement(this, 1);
+
+
         // Get the motion vector
         Vec3 motion = getDeltaMovement();
 
@@ -168,7 +174,6 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     public void travel() {
         setPos(position().add(getDeltaMovement()));
-        //ProjectileUtil.rotateTowardsMovement(this, 1);
         if (!this.isNoGravity()) {
             Vec3 vec34 = this.getDeltaMovement();
             this.setDeltaMovement(vec34.x, vec34.y - (double) 0.05F, vec34.z);

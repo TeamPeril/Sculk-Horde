@@ -15,6 +15,7 @@ public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProj
         super(renderManager, new SoulSpearProjectileModel());
     }
 
+    /*
     public void preRender(PoseStack poseStack, SoulSpearProjectileEntity e, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         //poseStack.translate(0, e.getBoundingBox().getYsize() * .5f, 0);
 
@@ -23,6 +24,14 @@ public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProj
         //float yRot = -((float) (Mth.atan2(motion.z, motion.x) * (double) (180F / (float) Math.PI)) + 90.0F);
         //poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
         //poseStack.mulPose(Axis.XP.rotationDegrees(xRot));
+        //RenderUtils.faceRotation(poseStack, e, partialTick);
+        super.preRender(poseStack, e, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+     */
+
+    public void preRender(PoseStack poseStack, SoulSpearProjectileEntity e, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+
         RenderUtils.faceRotation(poseStack, e, partialTick);
         super.preRender(poseStack, e, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
