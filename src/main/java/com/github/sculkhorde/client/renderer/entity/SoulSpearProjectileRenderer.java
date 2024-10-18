@@ -4,11 +4,12 @@ import com.github.sculkhorde.client.model.enitity.SoulSpearProjectileModel;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulSpearProjectileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.util.Mth;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.util.RenderUtils;
 
 public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProjectileEntity> {
     public SoulSpearProjectileRenderer(EntityRendererProvider.Context renderManager) {
@@ -31,6 +32,16 @@ public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProj
      */
 
     public void preRender(PoseStack poseStack, SoulSpearProjectileEntity e, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        RenderUtils.faceRotation(poseStack, e, partialTick);
+        //RenderUtils.faceRotation(poseStack, e, partialTick);
+    }
+
+    @Override
+    public void render(SoulSpearProjectileEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.getYRot())));
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.getXRot())));
+
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+        poseStack.popPose();
     }
 }
