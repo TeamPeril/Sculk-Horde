@@ -31,8 +31,6 @@ public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProj
      */
 
     public void preRender(PoseStack poseStack, SoulSpearProjectileEntity e, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-
         RenderUtils.faceRotation(poseStack, e, partialTick);
-        super.preRender(poseStack, e, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

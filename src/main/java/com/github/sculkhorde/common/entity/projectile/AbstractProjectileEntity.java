@@ -136,9 +136,6 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     protected void faceDirectionOfTravel()
     {
-        //ProjectileUtil.rotateTowardsMovement(this, 1);
-
-
         // Get the motion vector
         Vec3 motion = getDeltaMovement();
 
