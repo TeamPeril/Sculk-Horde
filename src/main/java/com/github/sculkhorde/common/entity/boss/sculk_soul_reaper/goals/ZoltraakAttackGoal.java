@@ -15,7 +15,7 @@ import static com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSo
 public class ZoltraakAttackGoal extends Goal
 {
     private final Mob mob;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(1);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(5);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(1);

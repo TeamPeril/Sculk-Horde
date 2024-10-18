@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFlySwatterProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Mob;
@@ -61,7 +62,7 @@ public class ShootSoulFlySwatterAttackGoal extends Goal
             return false;
         }
 
-        if(mob.getTarget().onGround())
+        if(EntityAlgorithms.getHeightOffGround(mob.getTarget()) <= 2)
         {
             return false;
         }

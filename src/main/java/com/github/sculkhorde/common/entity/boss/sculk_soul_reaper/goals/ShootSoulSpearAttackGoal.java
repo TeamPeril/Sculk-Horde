@@ -15,7 +15,7 @@ import java.util.EnumSet;
 public class ShootSoulSpearAttackGoal extends Goal
 {
     private final Mob mob;
-    protected final int executionCooldown = TickUnits.convertSecondsToTicks(1);
+    protected final int executionCooldown = TickUnits.convertSecondsToTicks(15);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(3);
