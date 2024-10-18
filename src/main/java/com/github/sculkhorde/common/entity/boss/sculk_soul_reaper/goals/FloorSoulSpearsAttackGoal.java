@@ -181,7 +181,7 @@ public class FloorSoulSpearsAttackGoal extends Goal
             BlockPos current = queue.poll();
 
             // Spawn Floor Soul Spear
-            FloorSoulSpearsEntity entity = new FloorSoulSpearsEntity(mob, current.getX(), current.getY(), current.getZ(), 0);
+            FloorSoulSpearsEntity entity = new FloorSoulSpearsEntity(mob, current.getX(), current.getY() + 1, current.getZ(), 0);
             mob.level().addFreshEntity(entity);
 
             if(debugMode)
