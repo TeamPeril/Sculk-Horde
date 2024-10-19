@@ -1,10 +1,6 @@
 package com.github.sculkhorde.core;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 import com.github.sculkhorde.common.block.*;
-
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -28,6 +24,8 @@ import net.minecraftforge.registries.RegistryObject;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SculkHorde.MOD_ID);
@@ -685,6 +683,12 @@ public class ModBlocks {
 
 	public static final RegistryObject<DiseasedKelpBlock> DISEASED_KELP_BLOCK =
 			registerBlock("diseased_kelp_block", DiseasedKelpBlock::new);
+
+	public static final RegistryObject<SouliteBlock> SOULITE_BLOCK =
+			registerBlock("soulite_block", SouliteBlock::new);
+
+	public static final RegistryObject<SouliteClusterBlock> SOULITE_CLUSTER_BLOCK =
+			registerBlock("soulite_cluster", SouliteClusterBlock::new);
 
 	public static class BlockTags
 	{

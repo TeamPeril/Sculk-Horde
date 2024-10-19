@@ -23,6 +23,8 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_NODE_SPAWNER.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_RAID_WAND.get());
+                if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOULITE_BLOCK.get());
+                if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOULITE_CLUSTER_BLOCK.get());
 
                 event.accept(ModItems.SCULK_SPORE_SPEWER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_MITE_SPAWN_EGG.get());
