@@ -45,6 +45,11 @@
     "sculkhorde:infested_sturdy_mass",
     "sculkhorde:infested_mossy_cobblestone_stairs",
     "sculkhorde:infested_cobblestone_stairs",
-    "sculkhorde:infested_stone_stairs"
+    "sculkhorde:infested_stone_stairs",
+
+    "sculkhorde:budding_soulite_block",
+    "sculkhorde:depleted_soulite_block",
+    "sculkhorde:soulite_block",
+    "sculkhorde:soulite_cluster_block"
   ]
 }

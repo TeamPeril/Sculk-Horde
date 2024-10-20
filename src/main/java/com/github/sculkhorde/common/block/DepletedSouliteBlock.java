@@ -1,22 +1,15 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
-public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
+public class DepletedSouliteBlock extends HalfTransparentBlock implements IForgeBlock {
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -42,7 +35,7 @@ public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public SouliteBlock(Properties prop) {
+    public DepletedSouliteBlock(Properties prop) {
         super(prop);
     }
 
@@ -50,7 +43,7 @@ public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public SouliteBlock() {
+    public DepletedSouliteBlock() {
         this(getProperties());
     }
 
@@ -74,23 +67,5 @@ public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
 
     public boolean propagatesSkylightDown(BlockState p_48740_, BlockGetter p_48741_, BlockPos p_48742_) {
         return true;
-    }
-
-    @Override
-    public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
-        if(player.getItemInHand(hand).isEmpty())
-        {
-            return InteractionResult.FAIL;
-        }
-
-        if(player.getItemInHand(hand).is(ModItems.PURE_SOULS.get()))
-        {
-            level.setBlockAndUpdate(pos, ModBlocks.DEPLETED_SOULITE_BLOCK.get().defaultBlockState());
-            BuddingSouliteBlock.spawnSouliteClusters(level, pos);
-
-            return InteractionResult.SUCCESS;
-        }
-
-        return InteractionResult.PASS;
     }
 }
