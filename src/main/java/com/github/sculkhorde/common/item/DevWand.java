@@ -11,8 +11,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraftforge.common.extensions.IForgeItem;
 import net.minecraftforge.server.ServerLifecycleHooks;
+
+import java.util.Optional;
 
 public class DevWand extends Item implements IForgeItem {
 	/* NOTE:
@@ -21,6 +26,7 @@ public class DevWand extends Item implements IForgeItem {
 	 * Also this is just an example item, I don't intend for this to be used
 	*/
 
+	StructureUtil.StructurePlacer structurePlacer;
 
 	/**
 	 * The Constructor that takes in properties
@@ -64,23 +70,39 @@ public class DevWand extends Item implements IForgeItem {
 	// ```/place template minecraft:village/snowy/villagers/nitwit```
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
+	public InteractionResultHolder<ItemStack> use(Level level, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 		//If item is not on cool down
-		if(worldIn.isClientSide())
+		if(level.isClientSide())
 		{
 			return InteractionResultHolder.fail(itemstack);
 		}
+
+		ServerLevel serverLevel = (ServerLevel) level;
+
 
 		//LivingArmorEntity entity = new LivingArmorEntity(ModEntities.LIVING_ARMOR.get(), worldIn);
 		//entity.teleportTo(playerIn.blockPosition().getX(), playerIn.blockPosition().getY(), playerIn.blockPosition().getZ());
 		//worldIn.addFreshEntity(entity);
 
-		ResourceLocation struct = new ResourceLocation("minecraft:village/snowy/villagers/nitwit");
 
-		StructureUtil.placeStructureTemplate((ServerLevel) worldIn, struct, playerIn.blockPosition());
+
+		//StructureUtil.placeStructureTemplate((ServerLevel) worldIn, struct, playerIn.blockPosition());
+
+		if(structurePlacer == null)
+		{
+			ResourceLocation structure = new ResourceLocation("minecraft:igloo/top");
+			StructureTemplateManager structuretemplatemanager = serverLevel.getStructureManager();
+			Optional<StructureTemplate> structureTemplate;
+			structureTemplate = structuretemplatemanager.get(structure);
+
+			StructurePlaceSettings structureplacesettings = (new StructurePlaceSettings());
+			structurePlacer = new StructureUtil.StructurePlacer(structureTemplate.get(), serverLevel, playerIn.blockPosition(), playerIn.blockPosition(), structureplacesettings, playerIn.getRandom());
+		}
+
+		structurePlacer.tick();
 
 		return InteractionResultHolder.pass(itemstack);
 	}

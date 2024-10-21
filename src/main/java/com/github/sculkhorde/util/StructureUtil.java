@@ -275,4 +275,181 @@ public class StructureUtil {
         }
     }
 
+
+    public static class StructurePlacer
+    {
+        protected final StructureTemplate structureTemplate;
+        protected final ServerLevelAccessor world;
+        protected final BlockPos startPos;
+        protected final BlockPos offsetPos;
+        protected final StructurePlaceSettings settings;
+        protected final RandomSource random;
+        protected List<StructureTemplate.StructureBlockInfo> rawBlockInfoList;
+        protected List<StructureTemplate.StructureBlockInfo> processedBlockInfoList;
+        protected int currentIndex = 0;
+        protected List<StructureTemplate.Palette> palettes;
+
+        protected int minX = Integer.MAX_VALUE;
+        protected int minY = Integer.MAX_VALUE;
+        protected int minZ = Integer.MAX_VALUE;
+        protected int maxX = Integer.MIN_VALUE;
+        protected int maxY = Integer.MIN_VALUE;
+        protected int maxZ = Integer.MIN_VALUE;
+
+        protected BoundingBox boundingBox;
+        protected List<BlockPos> liquidPositions;
+        protected List<BlockPos> sourceLiquidPositions;
+        protected List<Pair<BlockPos, CompoundTag>> blockEntityDataList;
+
+        public enum State
+        {
+            INITIALIZATION,
+            PLACING,
+            FINISHED
+        }
+
+        protected State state = State.INITIALIZATION;
+
+        public StructurePlacer(StructureTemplate structureTemplate, ServerLevelAccessor world, BlockPos startPos, BlockPos offsetPos, StructurePlaceSettings settings, RandomSource random) {
+            this.structureTemplate = structureTemplate;
+            this.world = world;
+            this.startPos = startPos;
+            this.offsetPos = offsetPos;
+            this.settings = settings;
+            this.random = random;
+        }
+
+        public void setState(State state) {
+            SculkHorde.LOGGER.debug("StructurePlacer | State is now: " + state);
+            this.state = state;
+        }
+
+        public void tick()
+        {
+            switch(state)
+            {
+                case INITIALIZATION -> {
+                    initializationTick();
+                }
+                case PLACING -> {
+                    placingBlocksTick();
+                }
+                case FINISHED -> {
+                    finishedTick();
+                }
+            }
+        }
+
+        public void initializationTick() {
+            StructureTemplateAccessor structureTemplateAccessor = ((StructureTemplateAccessor) structureTemplate);
+            palettes = structureTemplateAccessor.getPalettes();
+
+            // Check if there are any palettes to use
+            if (palettes.isEmpty()) {
+                SculkHorde.LOGGER.debug("StructurePlacer | Failure, Pallet is Empty");
+                setState(State.FINISHED);
+                return;
+            }
+
+                // Get the list of blocks from the selected palette
+                rawBlockInfoList = settings.getRandomPalette(palettes, startPos).blocks();
+
+                if (rawBlockInfoList.isEmpty()) {
+                    SculkHorde.LOGGER.debug("StructurePlacer | Failure, blockInfoList is Empty");
+                    setState(State.FINISHED);
+                    return;
+                }
+
+                if (settings.isIgnoreEntities() && structureTemplateAccessor.getEntityInfoList().isEmpty()) {
+                    SculkHorde.LOGGER.debug("StructurePlacer | Failure, entityInfoList is Empty");
+                    setState(State.FINISHED);
+                    return;
+                }
+
+                if (structureTemplateAccessor.getSize().getX() < 1 || structureTemplateAccessor.getSize().getY() < 1 || structureTemplateAccessor.getSize().getZ() < 1) {
+                    SculkHorde.LOGGER.debug("StructurePlacer | Failure, a dimension of structure size is 0.");
+                    setState(State.FINISHED);
+                    return;
+                }
+
+
+                boundingBox = settings.getBoundingBox();
+                liquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? rawBlockInfoList.size() : 0);
+                sourceLiquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? rawBlockInfoList.size() : 0);
+                blockEntityDataList = Lists.newArrayListWithCapacity(rawBlockInfoList.size());
+                processedBlockInfoList = processBlockInfos(world, startPos, offsetPos, settings, rawBlockInfoList, structureTemplate);
+                setState(State.PLACING);
+
+        }
+
+        public void placingBlocksTick()
+        {
+            if(currentIndex >= processedBlockInfoList.size())
+            {
+                SculkHorde.LOGGER.debug("StructurePlacer | Successfully Placed Structure.");
+                setState(State.FINISHED);
+                return;
+            }
+
+            StructureTemplate.StructureBlockInfo blockInfo = processedBlockInfoList.get(currentIndex);
+
+            BlockPos blockPos = blockInfo.pos();
+            if (boundingBox == null || boundingBox.isInside(blockPos))
+            {
+                FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(blockPos) : null;
+                BlockState blockState = blockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
+
+                // Handle block entities
+                if (blockInfo.nbt() != null) {
+                    BlockEntity blockEntity = world.getBlockEntity(blockPos);
+                    Clearable.tryClear(blockEntity);
+                    world.setBlock(blockPos, Blocks.BARRIER.defaultBlockState(), 20);
+                }
+
+                // Place the block in the world
+                if (world.setBlock(blockPos, blockState, 2)) {
+                    minX = Math.min(minX, blockPos.getX());
+                    minY = Math.min(minY, blockPos.getY());
+                    minZ = Math.min(minZ, blockPos.getZ());
+                    maxX = Math.max(maxX, blockPos.getX());
+                    maxY = Math.max(maxY, blockPos.getY());
+                    maxZ = Math.max(maxZ, blockPos.getZ());
+                    blockEntityDataList.add(Pair.of(blockPos, blockInfo.nbt()));
+
+                    // Load block entity data
+                    if (blockInfo.nbt() != null) {
+                        BlockEntity blockEntity1 = world.getBlockEntity(blockPos);
+                        if (blockEntity1 != null) {
+                            if (blockEntity1 instanceof RandomizableContainerBlockEntity) {
+                                blockInfo.nbt().putLong("LootTableSeed", random.nextLong());
+                            }
+                            blockEntity1.load(blockInfo.nbt());
+                        }
+                    }
+
+                    // Handle fluid states
+                    if (fluidState != null) {
+                        if (blockState.getFluidState().isSource()) {
+                            sourceLiquidPositions.add(blockPos);
+                        } else if (blockState.getBlock() instanceof LiquidBlockContainer) {
+                            ((LiquidBlockContainer) blockState.getBlock()).placeLiquid(world, blockPos, blockState, fluidState);
+                            if (!fluidState.isSource()) {
+                                liquidPositions.add(blockPos);
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentIndex += 1;
+        }
+
+        public void finishedTick()
+        {
+
+        }
+
+
+    }
+
 }
