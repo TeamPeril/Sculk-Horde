@@ -1,25 +1,30 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.common.structures.procedural.ProceduralStructure;
-import com.github.sculkhorde.common.structures.procedural.SculkNodeCaveHallwayProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.util.StructureUtil;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
 /**
  * Chunkloader code created by SuperMartijn642
  */
 public class DevStructureTesterBlockEntity extends BlockEntity
 {
+    StructureUtil.StructurePlacer structurePlacer;
+    public long tickedAt = 0;
 
-    private long tickedAt = System.nanoTime();
+    public long TICK_COOLDOWN = TickUnits.convertSecondsToTicks(0.5F);
 
     private ProceduralStructure proceduralStructure;
 
@@ -47,13 +52,29 @@ public class DevStructureTesterBlockEntity extends BlockEntity
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, DevStructureTesterBlockEntity blockEntity)
     {
-        if(blockEntity.spawnedCursors < blockEntity.maxSPawned)
+        if(level.isClientSide()) { return; }
+
+        ServerLevel serverLevel = (ServerLevel) level;
+
+        if(Math.abs(level.getGameTime() - blockEntity.tickedAt) < blockEntity.TICK_COOLDOWN)
         {
-            CursorSurfaceInfectorEntity entity = new CursorSurfaceInfectorEntity(level);
-            entity.setPos(blockPos.getCenter());
-            entity.setMaxTransformations(100);
-            entity.setMaxRange(100);
-            level.addFreshEntity(entity);
+            return;
         }
+
+        blockEntity.tickedAt = level.getGameTime();
+
+        if(blockEntity.structurePlacer == null)
+        {
+            ResourceLocation structure = new ResourceLocation("sculkhorde:sculk_tomb_main");
+            StructureTemplateManager structuretemplatemanager = serverLevel.getStructureManager();
+            Optional<StructureTemplate> structureTemplate;
+            structureTemplate = structuretemplatemanager.get(structure);
+
+            StructurePlaceSettings structureplacesettings = (new StructurePlaceSettings());
+            blockEntity.structurePlacer = new StructureUtil.StructurePlacer(structureTemplate.get(), serverLevel, blockPos, blockPos, structureplacesettings, serverLevel.getRandom());
+            blockEntity.structurePlacer.appendIgnoreBlockPosList(blockPos);
+        }
+
+        blockEntity.structurePlacer.tick();
     }
 }

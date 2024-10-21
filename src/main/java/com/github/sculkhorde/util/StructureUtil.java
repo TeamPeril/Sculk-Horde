@@ -34,6 +34,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -301,6 +302,11 @@ public class StructureUtil {
         protected List<BlockPos> sourceLiquidPositions;
         protected List<Pair<BlockPos, CompoundTag>> blockEntityDataList;
 
+        protected List<BlockPos> doNotPlaceBlocksHereList = new ArrayList<>();
+
+        protected BlockPos realOrigin;
+        protected BlockPos originOffset;
+
         public enum State
         {
             INITIALIZATION,
@@ -317,6 +323,11 @@ public class StructureUtil {
             this.offsetPos = offsetPos;
             this.settings = settings;
             this.random = random;
+        }
+
+        public void appendIgnoreBlockPosList(BlockPos pos)
+        {
+            doNotPlaceBlocksHereList.add(pos);
         }
 
         public void setState(State state) {
@@ -393,6 +404,12 @@ public class StructureUtil {
 
             StructureTemplate.StructureBlockInfo blockInfo = processedBlockInfoList.get(currentIndex);
 
+            if(doNotPlaceBlocksHereList.contains(blockInfo.pos()))
+            {
+                currentIndex += 1;
+                return;
+            }
+
             BlockPos blockPos = blockInfo.pos();
             if (boundingBox == null || boundingBox.isInside(blockPos))
             {
@@ -440,7 +457,6 @@ public class StructureUtil {
                     }
                 }
             }
-
             currentIndex += 1;
         }
 
