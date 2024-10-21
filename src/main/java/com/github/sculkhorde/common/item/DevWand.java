@@ -1,8 +1,9 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
-import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -73,9 +74,13 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		LivingArmorEntity entity = new LivingArmorEntity(ModEntities.LIVING_ARMOR.get(), worldIn);
-		entity.teleportTo(playerIn.blockPosition().getX(), playerIn.blockPosition().getY(), playerIn.blockPosition().getZ());
-		worldIn.addFreshEntity(entity);
+		//LivingArmorEntity entity = new LivingArmorEntity(ModEntities.LIVING_ARMOR.get(), worldIn);
+		//entity.teleportTo(playerIn.blockPosition().getX(), playerIn.blockPosition().getY(), playerIn.blockPosition().getZ());
+		//worldIn.addFreshEntity(entity);
+
+		ResourceLocation struct = new ResourceLocation("minecraft:village/snowy/villagers/nitwit");
+
+		StructureUtil.placeStructureTemplate((ServerLevel) worldIn, struct, playerIn.blockPosition());
 
 		return InteractionResultHolder.pass(itemstack);
 	}
