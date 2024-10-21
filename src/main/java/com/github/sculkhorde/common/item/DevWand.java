@@ -60,6 +60,7 @@ public class DevWand extends Item implements IForgeItem {
 	}
 
 
+	// ```/place template minecraft:village/snowy/villagers/nitwit```
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
@@ -78,4 +79,6 @@ public class DevWand extends Item implements IForgeItem {
 
 		return InteractionResultHolder.pass(itemstack);
 	}
+
+
 }
