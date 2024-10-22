@@ -30,17 +30,9 @@ public class PoolBlocks {
      */
     public void addEntry(Block blockIn, int weightIn)
     {
-        //Dont allow weights greater than 100
-        if(weightIn > 100)
-        {
-            totalWeight += 100;
-            entries.add(new PoolEntry(blockIn, 100));
-        }
-        else
-        {
-            totalWeight += weightIn;
-            entries.add(new PoolEntry(blockIn, weightIn));
-        }
+
+        totalWeight += weightIn;
+        entries.add(new PoolEntry(blockIn, weightIn));
     }
 
     /**

@@ -161,14 +161,15 @@ public class ModEventSubscriber {
         BlockInfestationHelper.initializeInfestationTables();
 
         SculkHorde.randomSculkFlora = new PoolBlocks();
-        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 1);
-        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SCULK_SUMMONER_BLOCK.get(), 2);
-        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 3);
-        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SPIKE.get(), 4);
-        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SMALL_SHROOM.get(), 6);
-        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SCULK_SHROOM_CULTURE.get(), 6);
-        SculkHorde.randomSculkFlora.addEntry(ModBlocks.GRASS_SHORT.get(), 200);
-        SculkHorde.randomSculkFlora.addEntry(ModBlocks.GRASS.get(), 200);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.STRUCTURE_CORE_BLOCK.get(), 100);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_CATALYST, 5000);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SCULK_SUMMONER_BLOCK.get(), 7000);
+        SculkHorde.randomSculkFlora.addEntry(Blocks.SCULK_SENSOR, 9000);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SPIKE.get(), 10000);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SMALL_SHROOM.get(), 12000);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.SCULK_SHROOM_CULTURE.get(), 12000);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.GRASS_SHORT.get(), 400000);
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.GRASS.get(), 400000);
 
         event.enqueueWork(() -> {
             SpawnPlacements.register(ModEntities.SCULK_MITE.get(),
