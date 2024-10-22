@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "sculkhorde:block/structure_origin_block"
+  }
+}

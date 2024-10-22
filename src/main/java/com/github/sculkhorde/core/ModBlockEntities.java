@@ -70,6 +70,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("fleshy_compost_block_entity", () -> BlockEntityType.Builder.of(
                     FleshyCompostBlockEntity::new, ModBlocks.PASTY_ORGANIC_MASS.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<StructureCoreBlockEntity>> STRUCTURE_CORE_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("structure_core_block_entity", () -> BlockEntityType.Builder.of(
+                    StructureCoreBlockEntity::new, ModBlocks.STRUCTURE_CORE_BLOCK.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

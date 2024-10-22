@@ -352,6 +352,11 @@ public class StructureUtil {
             }
         }
 
+        public boolean isFinished()
+        {
+            return state == State.FINISHED;
+        }
+
         public void initializationTick() {
             StructureTemplateAccessor structureTemplateAccessor = ((StructureTemplateAccessor) structureTemplate);
             palettes = structureTemplateAccessor.getPalettes();

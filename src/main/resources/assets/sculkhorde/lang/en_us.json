@@ -304,5 +304,6 @@
   "block.sculkhorde.soulite_cluster": "Soulite Cluster",
   "item.sculkhorde.soulite_shard": "Soulite Shard",
   "block.sculkhorde.structure_origin_block": "Structure Origin Block",
-  "tooltip.sculkhorde.structure_origin_block": "Used to determine where the origin of a structure is. When a structure is built, the structure will be offset so that the block building the structure is in the same position as this block."
+  "tooltip.sculkhorde.structure_origin_block": "Used to determine where the origin of a structure is. When a structure is built, the structure will be offset so that the block building the structure is in the same position as this block.",
+  "block.sculkhorde.structure_core_block": "Structure Core Block"
 }

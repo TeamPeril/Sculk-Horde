@@ -697,6 +697,9 @@ public class ModBlocks {
 	public static final RegistryObject<StructureOriginBlock> STRUCTURE_ORIGIN_BLOCK =
 			registerBlock("structure_origin_block", StructureOriginBlock::new);
 
+	public static final RegistryObject<StructureCoreBlock> STRUCTURE_CORE_BLOCK =
+			registerBlock("structure_core_block", StructureCoreBlock::new);
+
 	public static class BlockTags
 	{
 		public static final TagKey<Block> SCULK_RAID_TARGET_HIGH_PRIORITY = create("sculk_raid_target/high_priority");

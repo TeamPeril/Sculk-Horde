@@ -24,6 +24,7 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_CONVERSION_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_RAID_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.STRUCTURE_ORIGIN_BLOCK.get());
+                if(!FMLLoader.isProduction()) event.accept(ModBlocks.STRUCTURE_CORE_BLOCK.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.BUDDING_SOULITE_BLOCK.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOULITE_BLOCK.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.DEPLETED_SOULITE_BLOCK.get());
