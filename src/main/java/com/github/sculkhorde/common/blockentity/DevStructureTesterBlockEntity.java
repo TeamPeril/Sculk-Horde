@@ -65,7 +65,7 @@ public class DevStructureTesterBlockEntity extends BlockEntity
 
         if(blockEntity.structurePlacer == null)
         {
-            ResourceLocation structure = new ResourceLocation("sculkhorde:sculk_tomb_main");
+            ResourceLocation structure = new ResourceLocation("sculkhorde:test_soulite_structure");
             StructureTemplateManager structuretemplatemanager = serverLevel.getStructureManager();
             Optional<StructureTemplate> structureTemplate;
             structureTemplate = structuretemplatemanager.get(structure);

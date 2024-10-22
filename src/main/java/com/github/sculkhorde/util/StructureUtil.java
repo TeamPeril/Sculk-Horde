@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.mixin.structures.StructureTemplateAccessor;
 import com.google.common.collect.Lists;
@@ -389,8 +390,38 @@ public class StructureUtil {
                 sourceLiquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? rawBlockInfoList.size() : 0);
                 blockEntityDataList = Lists.newArrayListWithCapacity(rawBlockInfoList.size());
                 processedBlockInfoList = processBlockInfos(world, startPos, offsetPos, settings, rawBlockInfoList, structureTemplate);
-                setState(State.PLACING);
 
+                // Calculate Offset
+                Optional<BlockPos> structureOrigin = getOriginPos(processedBlockInfoList);
+                if(structureOrigin.isPresent())
+                {
+                    originOffset = new BlockPos(
+                            startPos.getX() - structureOrigin.get().getX(),
+                            startPos.getY() - structureOrigin.get().getY() ,
+                            startPos.getZ() - structureOrigin.get().getZ());
+
+                }
+                else
+                {
+                    originOffset = new BlockPos(0,0,0);
+                }
+
+                setState(State.PLACING);
+        }
+
+        public Optional<BlockPos> getOriginPos(List<StructureTemplate.StructureBlockInfo> blockInfoList)
+        {
+            Optional<BlockPos> result = Optional.empty();
+            for(StructureTemplate.StructureBlockInfo block : blockInfoList)
+            {
+                if(block.state().is(ModBlocks.STRUCTURE_ORIGIN_BLOCK.get()))
+                {
+                    result = Optional.of(block.pos());
+                    break;
+                }
+            }
+
+            return result;
         }
 
         public void placingBlocksTick()
@@ -404,38 +435,46 @@ public class StructureUtil {
 
             StructureTemplate.StructureBlockInfo blockInfo = processedBlockInfoList.get(currentIndex);
 
-            if(doNotPlaceBlocksHereList.contains(blockInfo.pos()))
+
+
+
+            BlockPos placePosition = blockInfo.pos().offset(originOffset.getX(), originOffset.getY(), originOffset.getZ());
+
+            //SculkHorde.LOGGER.debug("StructureUtil | Old Pos: " + blockInfo.pos().toShortString());
+            //SculkHorde.LOGGER.debug("StructureUtil | Offset: " + originOffset.toShortString());
+            //SculkHorde.LOGGER.debug("StructureUtil | New Pos: " + placePosition.toShortString());
+
+            if(doNotPlaceBlocksHereList.contains(placePosition))
             {
                 currentIndex += 1;
                 return;
             }
 
-            BlockPos blockPos = blockInfo.pos();
-            if (boundingBox == null || boundingBox.isInside(blockPos))
+            if (boundingBox == null || boundingBox.isInside(placePosition))
             {
-                FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(blockPos) : null;
+                FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(placePosition) : null;
                 BlockState blockState = blockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
 
                 // Handle block entities
                 if (blockInfo.nbt() != null) {
-                    BlockEntity blockEntity = world.getBlockEntity(blockPos);
+                    BlockEntity blockEntity = world.getBlockEntity(placePosition);
                     Clearable.tryClear(blockEntity);
-                    world.setBlock(blockPos, Blocks.BARRIER.defaultBlockState(), 20);
+                    world.setBlock(placePosition, Blocks.BARRIER.defaultBlockState(), 20);
                 }
 
                 // Place the block in the world
-                if (world.setBlock(blockPos, blockState, 2)) {
-                    minX = Math.min(minX, blockPos.getX());
-                    minY = Math.min(minY, blockPos.getY());
-                    minZ = Math.min(minZ, blockPos.getZ());
-                    maxX = Math.max(maxX, blockPos.getX());
-                    maxY = Math.max(maxY, blockPos.getY());
-                    maxZ = Math.max(maxZ, blockPos.getZ());
-                    blockEntityDataList.add(Pair.of(blockPos, blockInfo.nbt()));
+                if (world.setBlock(placePosition, blockState, 2)) {
+                    minX = Math.min(minX, placePosition.getX());
+                    minY = Math.min(minY, placePosition.getY());
+                    minZ = Math.min(minZ, placePosition.getZ());
+                    maxX = Math.max(maxX, placePosition.getX());
+                    maxY = Math.max(maxY, placePosition.getY());
+                    maxZ = Math.max(maxZ, placePosition.getZ());
+                    blockEntityDataList.add(Pair.of(placePosition, blockInfo.nbt()));
 
                     // Load block entity data
                     if (blockInfo.nbt() != null) {
-                        BlockEntity blockEntity1 = world.getBlockEntity(blockPos);
+                        BlockEntity blockEntity1 = world.getBlockEntity(placePosition);
                         if (blockEntity1 != null) {
                             if (blockEntity1 instanceof RandomizableContainerBlockEntity) {
                                 blockInfo.nbt().putLong("LootTableSeed", random.nextLong());
@@ -447,11 +486,11 @@ public class StructureUtil {
                     // Handle fluid states
                     if (fluidState != null) {
                         if (blockState.getFluidState().isSource()) {
-                            sourceLiquidPositions.add(blockPos);
+                            sourceLiquidPositions.add(placePosition);
                         } else if (blockState.getBlock() instanceof LiquidBlockContainer) {
-                            ((LiquidBlockContainer) blockState.getBlock()).placeLiquid(world, blockPos, blockState, fluidState);
+                            ((LiquidBlockContainer) blockState.getBlock()).placeLiquid(world, placePosition, blockState, fluidState);
                             if (!fluidState.isSource()) {
-                                liquidPositions.add(blockPos);
+                                liquidPositions.add(placePosition);
                             }
                         }
                     }

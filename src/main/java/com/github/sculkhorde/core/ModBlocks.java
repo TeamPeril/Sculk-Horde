@@ -694,6 +694,8 @@ public class ModBlocks {
 
 	public static final RegistryObject<BuddingSouliteBlock> BUDDING_SOULITE_BLOCK =
 			registerBlock("budding_soulite_block", BuddingSouliteBlock::new);
+	public static final RegistryObject<StructureOriginBlock> STRUCTURE_ORIGIN_BLOCK =
+			registerBlock("structure_origin_block", StructureOriginBlock::new);
 
 	public static class BlockTags
 	{
