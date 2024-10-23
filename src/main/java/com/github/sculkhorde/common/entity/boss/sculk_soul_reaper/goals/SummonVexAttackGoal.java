@@ -4,25 +4,25 @@ import com.github.sculkhorde.common.entity.SculkVexEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ServerLevelAccessor;
 
-import java.util.EnumSet;
-
 public class SummonVexAttackGoal extends Goal
 {
-    private final Mob mob;
+    protected final SculkSoulReaperEntity mob;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(30);
     protected long lastTimeOfExecution;
 
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
-    public SummonVexAttackGoal(PathfinderMob mob) {
+
+    public SummonVexAttackGoal(SculkSoulReaperEntity mob, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -46,7 +46,10 @@ public class SummonVexAttackGoal extends Goal
         {
             return false;
         }
-
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
+        {
+            return false;
+        }
 
         return true;
     }

@@ -108,7 +108,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         SculkSoulReaperEntity entity = new SculkSoulReaperEntity(ModEntities.SCULK_SOUL_REAPER.get(), level);
         entity.setPos(pos);
         entity.setMobDifficultyLevel(mobDifficultyLevel);
-        entity.addAbilitiesBasedOnDifficulty();
         level.addFreshEntity(entity);
         return entity;
     }
@@ -192,42 +191,27 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void registerGoals() {
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
+
+
+        this.goalSelector.addGoal(2, new SummonVexAttackGoal(this, 1, 3));
+        this.goalSelector.addGoal(3, new FangsAttackGoal(this, 1, 2));
+
+        this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this, 2, 2));
+        this.goalSelector.addGoal(1, new ShootSoulSpearAttackGoal(this, 2, -1));
+        this.goalSelector.addGoal(2, new ZoltraakAttackGoal(this, 2, 2));
+        this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10), 2, 2));
+
+        this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(15), 3, -1));
+        this.goalSelector.addGoal(1, new FloorSoulSpearsAttackGoal(this, TickUnits.convertSecondsToTicks(10), 3, -1));
+        this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this, 3, -1));
+        this.goalSelector.addGoal(2, new MirrorPlayerGoal(this, 3, -1));
+
+
         this.goalSelector.addGoal(5, new SoulReapterNavigator(this, 20F, 10F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
         this.targetSelector.addGoal(1, new TargetAttacker(this));
         this.targetSelector.addGoal(2, new NearestLivingEntityTargetGoal<>(this, false, false));
-    }
-
-    public void addAbilitiesBasedOnDifficulty()
-    {
-        if(getMobDifficultyLevel() == 1)
-        {
-            this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
-            this.goalSelector.addGoal(3, new FangsAttackGoal(this));
-        }
-        if(getMobDifficultyLevel() == 2)
-        {
-
-
-            this.goalSelector.addGoal(1, new ShootSoulFlySwatterAttackGoal(this));
-            this.goalSelector.addGoal(1, new ShootSoulSpearAttackGoal(this));
-            this.goalSelector.addGoal(2, new ZoltraakAttackGoal(this));
-            this.goalSelector.addGoal(2, new ShootSoulsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-            this.goalSelector.addGoal(2, new SummonVexAttackGoal(this));
-            this.goalSelector.addGoal(3, new FangsAttackGoal(this));
-        }
-
-        if(getMobDifficultyLevel() >= 3)
-        {
-
-            this.goalSelector.addGoal(1, new SummonVexAttackGoal(this));
-            this.goalSelector.addGoal(1, new ZoltraakBarrageAttackGoal(this, TickUnits.convertSecondsToTicks(15)));
-            this.goalSelector.addGoal(1, new FloorSoulSpearsAttackGoal(this, TickUnits.convertSecondsToTicks(10)));
-            this.goalSelector.addGoal(2, new ShootSoulSpearAttackGoal(this));
-            this.goalSelector.addGoal(2, new ShortRangeFloorSoulsAttackGoal(this));
-            this.goalSelector.addGoal(2, new MirrorPlayerGoal(this));
-        }
     }
 
     @Override
@@ -341,11 +325,13 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void addAdditionalSaveData(CompoundTag nbt)
     {
         super.addAdditionalSaveData(nbt);
+        nbt.putInt("difficulty", getMobDifficultyLevel());
     }
 
     public void readAdditionalSaveData(CompoundTag nbt)
     {
         super.readAdditionalSaveData(nbt);
+        setMobDifficultyLevel(nbt.getInt("difficulty"));
     }
 
     @Override

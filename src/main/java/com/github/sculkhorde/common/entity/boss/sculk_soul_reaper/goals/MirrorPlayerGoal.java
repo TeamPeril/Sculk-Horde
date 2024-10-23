@@ -10,32 +10,31 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 public class MirrorPlayerGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(30);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(5);
     protected int castingTime = 0;
     protected boolean spellCasted = false;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
-    public MirrorPlayerGoal(PathfinderMob mob) {
+
+    public MirrorPlayerGoal(SculkSoulReaperEntity mob, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
         return true;
-    }
-
-    private SculkSoulReaperEntity getEntity()
-    {
-        return (SculkSoulReaperEntity)this.mob;
     }
 
     protected int getCastingTimeElapsed()
@@ -65,6 +64,11 @@ public class MirrorPlayerGoal extends Goal
         }
 
         if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }

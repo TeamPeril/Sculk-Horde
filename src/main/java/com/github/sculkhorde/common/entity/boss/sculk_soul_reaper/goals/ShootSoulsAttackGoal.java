@@ -6,30 +6,29 @@ import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProj
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.EnumSet;
-
 public class ShootSoulsAttackGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(10);
     protected int ticksElapsed = executionCooldown;
     protected int attackIntervalTicks = TickUnits.convertSecondsToTicks(0.2F);
     protected int attackkIntervalCooldown = 0;
-
     protected int projectileType = 0;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
 
-    public ShootSoulsAttackGoal(PathfinderMob mob, int durationInTicks) {
+
+    public ShootSoulsAttackGoal(SculkSoulReaperEntity mob, int durationInTicks, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
         maxAttackDuration = durationInTicks;
-        this.setFlags(EnumSet.of(Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -57,6 +56,11 @@ public class ShootSoulsAttackGoal extends Goal
         }
 
         if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }

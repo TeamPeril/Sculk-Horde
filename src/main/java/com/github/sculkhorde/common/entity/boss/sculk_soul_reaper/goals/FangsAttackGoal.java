@@ -6,25 +6,23 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.projectile.EvokerFangs;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.EnumSet;
-
 public class FangsAttackGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(5);
     protected long lastTimeOfExecution;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
-
-    public FangsAttackGoal(PathfinderMob mob) {
+    public FangsAttackGoal(SculkSoulReaperEntity mob, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -55,6 +53,11 @@ public class FangsAttackGoal extends Goal
         }
 
         if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }

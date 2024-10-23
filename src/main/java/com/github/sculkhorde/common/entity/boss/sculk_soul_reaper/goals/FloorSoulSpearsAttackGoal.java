@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.FloorSoulSpearsEntity;
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -10,34 +11,36 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class FloorSoulSpearsAttackGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected int maxAttackDuration = 0;
     protected int elapsedAttackDuration = 0;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected int ticksElapsed = executionCooldown;
-
     FloorSoulSpearsSpawner spawner;
     List<LivingEntity> enemies;
     ArrayList<FloorSoulSpearsSpawner> spawners = new ArrayList<>();
-
     protected long UPDATE_INTERVAL = TickUnits.convertSecondsToTicks(0.15F);
     protected long lastUpdate = 0;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
 
-    public FloorSoulSpearsAttackGoal(PathfinderMob mob, int durationInTicks) {
+    public FloorSoulSpearsAttackGoal(SculkSoulReaperEntity mob, int durationInTicks, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
         maxAttackDuration = durationInTicks;
-        this.setFlags(EnumSet.of(Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -55,6 +58,11 @@ public class FloorSoulSpearsAttackGoal extends Goal
         }
 
         if(ticksElapsed < executionCooldown)
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }

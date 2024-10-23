@@ -7,24 +7,24 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 
 public class ShortRangeFloorSoulsAttackGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(20);
     protected long lastTimeOfExecution;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
 
-    public ShortRangeFloorSoulsAttackGoal(PathfinderMob mob) {
+    public ShortRangeFloorSoulsAttackGoal(SculkSoulReaperEntity mob, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
@@ -55,6 +55,11 @@ public class ShortRangeFloorSoulsAttackGoal extends Goal
         }
 
         if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }

@@ -4,41 +4,34 @@ import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReape
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-
-import java.util.EnumSet;
 
 import static com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity.shootZoltraakBeam;
 
 public class ZoltraakAttackGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(5);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(1);
     protected int castingTime = 0;
     protected boolean spellCasted = false;
-
     protected float DAMAGE = 8F;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
 
-
-    public ZoltraakAttackGoal(PathfinderMob mob) {
+    public ZoltraakAttackGoal(SculkSoulReaperEntity mob, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
-        this.setFlags(EnumSet.of(Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
         return true;
     }
 
-    private SculkSoulReaperEntity getEntity()
-    {
-        return (SculkSoulReaperEntity)this.mob;
-    }
 
     protected int getCastingTimeElapsed()
     {
@@ -62,6 +55,11 @@ public class ZoltraakAttackGoal extends Goal
         }
 
         if(!mob.getSensing().hasLineOfSight(mob.getTarget()))
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }

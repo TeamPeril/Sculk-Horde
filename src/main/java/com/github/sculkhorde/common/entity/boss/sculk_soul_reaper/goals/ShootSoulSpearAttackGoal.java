@@ -6,45 +6,39 @@ import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.EnumSet;
-
 public class ShootSoulSpearAttackGoal extends Goal
 {
-    private final Mob mob;
+    private final SculkSoulReaperEntity mob;
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(15);
     protected int ticksElapsed = executionCooldown;
 
     protected final int baseCastingTime = TickUnits.convertSecondsToTicks(3);
     protected int castingTime = 0;
 
-
     boolean spellCasted = false;
+    protected int minDifficulty = 0;
+    protected int maxDifficulty = 0;
 
 
-
-    public ShootSoulSpearAttackGoal(PathfinderMob mob) {
+    public ShootSoulSpearAttackGoal(SculkSoulReaperEntity mob, int minDifficulty, int maxDifficulty) {
         this.mob = mob;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.minDifficulty = minDifficulty;
+        this.maxDifficulty = maxDifficulty;
     }
 
     public boolean requiresUpdateEveryTick() {
         return true;
     }
 
-    private SculkSoulReaperEntity getEntity()
-    {
-        return (SculkSoulReaperEntity)this.mob;
-    }
-
     protected int getCastingTimeElapsed()
     {
         return castingTime;
     }
-
 
     @Override
     public boolean canUse()
@@ -57,6 +51,11 @@ public class ShootSoulSpearAttackGoal extends Goal
         }
 
         if(ticksElapsed < executionCooldown)
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
         {
             return false;
         }
