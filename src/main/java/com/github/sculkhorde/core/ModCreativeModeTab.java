@@ -25,11 +25,7 @@ public class ModCreativeModeTab {
                 if(!FMLLoader.isProduction()) event.accept(ModItems.DEV_RAID_WAND.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.STRUCTURE_ORIGIN_BLOCK.get());
                 if(!FMLLoader.isProduction()) event.accept(ModBlocks.STRUCTURE_CORE_BLOCK.get());
-                if(!FMLLoader.isProduction()) event.accept(ModBlocks.BUDDING_SOULITE_BLOCK.get());
-                if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOULITE_BLOCK.get());
-                if(!FMLLoader.isProduction()) event.accept(ModBlocks.DEPLETED_SOULITE_BLOCK.get());
-                if(!FMLLoader.isProduction()) event.accept(ModBlocks.SOULITE_CLUSTER_BLOCK.get());
-                if(!FMLLoader.isProduction()) event.accept(ModItems.SOULITE_SHARD.get());
+
 
                 event.accept(ModItems.SCULK_SPORE_SPEWER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_MITE_SPAWN_EGG.get());
@@ -61,6 +57,7 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_CRYING_OBSIDIAN.get());
                 event.accept(ModItems.CRYING_SOULS.get());
                 event.accept(ModItems.PURE_SOULS.get());
+                event.accept(ModItems.SOUL_DISRUPTER.get());
                 event.accept(ModItems.SCULK_ENDERMAN_CLEAVER.get());
                 event.accept(ModItems.SCULK_SWEEPER_SWORD.get());
                 event.accept(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get());
@@ -77,6 +74,11 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.SCULK_LIVING_ROCK_BLOCK.get());
                 event.accept(ModBlocks.CALCITE_ORE.get());
                 event.accept(ModItems.CALCITE_CLUMP.get());
+                event.accept(ModBlocks.BUDDING_SOULITE_BLOCK.get());
+                event.accept(ModBlocks.SOULITE_BLOCK.get());
+                event.accept(ModBlocks.DEPLETED_SOULITE_BLOCK.get());
+                event.accept(ModBlocks.SOULITE_CLUSTER_BLOCK.get());
+                event.accept(ModItems.SOULITE_SHARD.get());
                 event.accept(ModItems.SCULK_ACIDIC_PROJECTILE.get());
 
 
