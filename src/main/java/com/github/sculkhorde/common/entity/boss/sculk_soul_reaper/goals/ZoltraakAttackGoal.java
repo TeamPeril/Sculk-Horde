@@ -59,7 +59,12 @@ public class ZoltraakAttackGoal extends Goal
             return false;
         }
 
-        if(mob.getMobDifficultyLevel() < minDifficulty || mob.getMobDifficultyLevel() > maxDifficulty)
+        if(mob.getMobDifficultyLevel() < minDifficulty)
+        {
+            return false;
+        }
+
+        if(mob.getMobDifficultyLevel() > maxDifficulty && maxDifficulty != -1)
         {
             return false;
         }

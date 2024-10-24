@@ -303,7 +303,12 @@
   "block.sculkhorde.budding_soulite_block": "Budding Soulite Block",
   "block.sculkhorde.soulite_cluster": "Soulite Cluster",
   "item.sculkhorde.soulite_shard": "Soulite Shard",
+  "tooltip.sculkhorde.soulite_shard.functionality": "§7§oA rare crafting ingredient that can be made into a soul disrupter.",
+  "tooltip.sculkhorde.soulite_shard.lore": "§7§oAn sharp, cold, and glowing crystal that makes your hand numb when holding it. It is suspected that the Horde may use these to store souls for later use.",
   "block.sculkhorde.structure_origin_block": "Structure Origin Block",
   "tooltip.sculkhorde.structure_origin_block": "Used to determine where the origin of a structure is. When a structure is built, the structure will be offset so that the block building the structure is in the same position as this block.",
-  "block.sculkhorde.structure_core_block": "Structure Core Block"
+  "block.sculkhorde.structure_core_block": "Structure Core Block",
+  "item.sculkhorde.soul_disrupter": "Soul Disrupter",
+  "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oAn weapon that when pointed at a Soul Reaper, will weaken it for 1 minute. While the weakness is active, it brings down it's difficulty by one level.",
+  "tooltip.sculkhorde.soul_disrupter.lore": "§7§oAn improvised weapon designed to disrupt the powers of the Soul Reaper temporarily."
 }

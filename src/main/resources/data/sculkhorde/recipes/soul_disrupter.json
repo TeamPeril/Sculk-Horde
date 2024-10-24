@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "SCS",
+    "STS",
+    "SSS"
+  ],
+
+  "key":
+  {
+    "T":
+    {
+      "item": "minecraft:totem_of_undying"
+    },
+    "C":
+    {
+      "item": "sculkhorde:crying_souls"
+    },
+    "S":
+    {
+      "item": "sculkhorde:soulite_shard"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:soul_disrupter",
+    "count": 1
+  }
+}

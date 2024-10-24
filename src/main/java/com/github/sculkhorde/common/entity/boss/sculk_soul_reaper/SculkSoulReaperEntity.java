@@ -7,6 +7,7 @@ import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TargetParameters;
@@ -71,7 +72,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
-    public int mobDifficultyLevel = 1;
+    protected int mobDifficultyLevel = 1;
 
     // Controls what types of entities this mob can target
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
@@ -161,6 +162,11 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     public int getMobDifficultyLevel()
     {
+        if(hasEffect(ModMobEffects.SOUL_DISRUPTION.get()))
+        {
+            return Math.max(1, mobDifficultyLevel - 1);
+        }
+
         return mobDifficultyLevel;
     }
 
