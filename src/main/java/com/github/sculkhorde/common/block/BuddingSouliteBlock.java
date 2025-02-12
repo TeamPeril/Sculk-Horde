@@ -5,13 +5,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 public class BuddingSouliteBlock extends HalfTransparentBlock implements IForgeBlock {
@@ -60,7 +63,6 @@ public class BuddingSouliteBlock extends HalfTransparentBlock implements IForgeB
     public static Properties getProperties()
     {
         Properties prop = Properties.copy(Blocks.STONE)
-                .mapColor(MapColor.COLOR_CYAN)
                 .strength(HARDNESS, BLAST_RESISTANCE)//Hardness & Resistance
                 .sound(SoundType.HONEY_BLOCK)
                 .destroyTime(5f)
@@ -87,32 +89,32 @@ public class BuddingSouliteBlock extends HalfTransparentBlock implements IForgeB
         BlockPos west = pos.west();
         BlockPos up = pos.above();
         BlockPos down = pos.below();
-        if(level.getBlockState(north).canBeReplaced())
+        if(level.getBlockState(north).canBeReplaced(Fluids.WATER))
         {
             level.setBlockAndUpdate(north, ModBlocks.SOULITE_BUD_BLOCK.get().defaultBlockState().setValue(SouliteClusterBlock.FACING, Direction.NORTH));
         }
 
-        if(level.getBlockState(east).canBeReplaced())
+        if(level.getBlockState(east).canBeReplaced(Fluids.WATER))
         {
             level.setBlockAndUpdate(east, ModBlocks.SOULITE_BUD_BLOCK.get().defaultBlockState().setValue(SouliteClusterBlock.FACING, Direction.EAST));
         }
 
-        if(level.getBlockState(south).canBeReplaced())
+        if(level.getBlockState(south).canBeReplaced(Fluids.WATER))
         {
             level.setBlockAndUpdate(south, ModBlocks.SOULITE_BUD_BLOCK.get().defaultBlockState().setValue(SouliteClusterBlock.FACING, Direction.SOUTH));
         }
 
-        if(level.getBlockState(west).canBeReplaced())
+        if(level.getBlockState(west).canBeReplaced(Fluids.WATER))
         {
             level.setBlockAndUpdate(west, ModBlocks.SOULITE_BUD_BLOCK.get().defaultBlockState().setValue(SouliteClusterBlock.FACING, Direction.WEST));
         }
 
-        if(level.getBlockState(up).canBeReplaced())
+        if(level.getBlockState(up).canBeReplaced(Fluids.WATER))
         {
             level.setBlockAndUpdate(up, ModBlocks.SOULITE_BUD_BLOCK.get().defaultBlockState().setValue(SouliteClusterBlock.FACING, Direction.UP));
         }
 
-        if(level.getBlockState(down).canBeReplaced())
+        if(level.getBlockState(down).canBeReplaced(Fluids.WATER))
         {
             level.setBlockAndUpdate(down, ModBlocks.SOULITE_BUD_BLOCK.get().defaultBlockState().setValue(SouliteClusterBlock.FACING, Direction.DOWN));
         }

@@ -4,6 +4,11 @@ import com.github.sculkhorde.common.effect.DenseEffect;
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
@@ -11,14 +16,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 
-public class SoulFlySwatterProjectileAttackEntity extends AbstractProjectileEntity implements GeoEntity {
+public class SoulFlySwatterProjectileAttackEntity extends AbstractProjectileEntity implements GeoEntity, GeoAnimatable {
     public SoulFlySwatterProjectileAttackEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         setNoGravity(true);
@@ -68,7 +69,7 @@ public class SoulFlySwatterProjectileAttackEntity extends AbstractProjectileEnti
     }
 
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
 

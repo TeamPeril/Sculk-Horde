@@ -11,7 +11,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -94,8 +95,7 @@ public class StructureOriginBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.TERRACOTTA_BLUE)
+        Properties prop = Properties.of(Material.AMETHYST, MaterialColor.COLOR_CYAN)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .sound(SoundType.ANCIENT_DEBRIS);

@@ -44,7 +44,7 @@ public class PlannedBlock
         }
         // Explicit Allow
         if(validBlocksPredicate.is(ModBlocks.BlockTags.INFESTED_BLOCK)
-                || validBlocksPredicate.is(BlockTags.REPLACEABLE)
+                || validBlocksPredicate.is(BlockTags.SCULK_REPLACEABLE_WORLD_GEN)
                 || validBlocksPredicate.is(BlockTags.NEEDS_IRON_TOOL)
                 || validBlocksPredicate.is(BlockTags.NEEDS_STONE_TOOL)
                 || !validBlocksPredicate.requiresCorrectToolForDrops()

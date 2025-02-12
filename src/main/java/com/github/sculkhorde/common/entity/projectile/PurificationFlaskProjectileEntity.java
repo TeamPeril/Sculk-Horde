@@ -60,8 +60,8 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
 
     public void tick() {
         super.tick();
-        if (this.level().isClientSide) {
-            this.level().addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            this.level.addParticle(ParticleTypes.COMPOSTER, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -70,10 +70,10 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
     protected void onHit(HitResult result) {
         super.onHit(result);
 
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         // If any entities are close to the impact, remove the infection from them.
-        for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
+        for(LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
         {
             entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertMinutesToTicks(15)));
         }
@@ -82,13 +82,13 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         //this.level.broadcastEntityEvent(this, (byte)3); //Create Particle Effect
         this.remove(RemovalReason.DISCARDED);
 
-        ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(BlockPos.containing(result.getLocation()), 3, true);
+        ArrayList<BlockPos> list = BlockAlgorithms.getBlockPosInCircle(new BlockPos(result.getLocation()), 3, true);
         Collections.shuffle(list);
-        list.removeIf(pos -> BlockAlgorithms.isNotSolid((ServerLevel) level(), pos));
+        list.removeIf(pos -> BlockAlgorithms.isNotSolid((ServerLevel) level, pos));
 
         for(int i = 0; i < 5 && i < list.size(); i++)
         {
-            CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(level());
+            CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(level);
             // Spawn Infestation Purifier Cursors
             // Spawn Block Traverser
             cursor.setPos(list.get(i).getX(), list.get(i).getY(), list.get(i).getZ());
@@ -97,7 +97,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
             cursor.setSearchIterationsPerTick(5);
             cursor.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(1));
             cursor.setTickIntervalMilliseconds(150);
-            level().addFreshEntity(cursor);
+            level.addFreshEntity(cursor);
 
         }
     }

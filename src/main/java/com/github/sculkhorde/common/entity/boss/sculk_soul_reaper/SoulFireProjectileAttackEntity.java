@@ -3,6 +3,12 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.ParticleUtil;
+import com.mojang.math.Vector3f;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -10,15 +16,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import org.joml.Vector3f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 
-public class SoulFireProjectileAttackEntity extends AbstractProjectileEntity implements GeoEntity {
+public class SoulFireProjectileAttackEntity extends AbstractProjectileEntity implements GeoEntity, GeoAnimatable {
     public SoulFireProjectileAttackEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         setNoGravity(true);
@@ -38,11 +39,11 @@ public class SoulFireProjectileAttackEntity extends AbstractProjectileEntity imp
 
     @Override
     public void trailParticles() {
-        float spawnX = (float) (getX() + level().getRandom().nextFloat());
-        float spawnY = (float) (getY() + level().getRandom().nextFloat());
-        float spawnZ = (float) (getZ() + level().getRandom().nextFloat());
+        float spawnX = (float) (getX() + level.getRandom().nextFloat());
+        float spawnY = (float) (getY() + level.getRandom().nextFloat());
+        float spawnZ = (float) (getZ() + level.getRandom().nextFloat());
         Vector3f spawn = new Vector3f(spawnX, spawnY, spawnZ);
-        ParticleUtil.spawnFlameParticleOnClient((ClientLevel) level(), spawn, new Vector3f(0,0,0));
+        ParticleUtil.spawnFlameParticleOnClient((ClientLevel) level, spawn, new Vector3f(0,0,0));
     }
 
     @Override
@@ -65,7 +66,7 @@ public class SoulFireProjectileAttackEntity extends AbstractProjectileEntity imp
 
     }
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;

@@ -1,8 +1,8 @@
 package com.github.sculkhorde.modding_api;
 
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.BlockInfestationTable;
+import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Comparator;

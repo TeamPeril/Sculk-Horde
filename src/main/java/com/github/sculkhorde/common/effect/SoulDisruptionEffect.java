@@ -38,7 +38,7 @@ public class SoulDisruptionEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int amp) {
 
-        if(entity.level().isClientSide()) { return;}
+        if(entity.level.isClientSide()) { return;}
         // IF entity has a sculk infection, remove it
 
     }

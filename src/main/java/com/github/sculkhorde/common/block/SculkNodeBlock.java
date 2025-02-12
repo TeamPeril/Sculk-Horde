@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -30,7 +31,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -194,7 +196,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         level.setBlockAndUpdate(newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         SculkHorde.savedData.addNodeToMemory(level, newOrigin);
         SculkHorde.savedData.resetNoNodeSpawningTicksElapsed();
-        EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
+        EntityType.LIGHTNING_BOLT.spawn(level, (CompoundTag)null, (Component)null, (Player)null, newOrigin, MobSpawnType.SPAWNER, false, false);
         //Send message to all players that node has spawned
         level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
         // Play sound for each player
@@ -260,8 +262,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_BLUE)
+        Properties prop = Properties.of(Material.STONE, MaterialColor.COLOR_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS);
         return prop;

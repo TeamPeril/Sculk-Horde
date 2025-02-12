@@ -72,8 +72,10 @@ public class VesselCommand implements Command<CommandSourceStack> {
             stringBuilder.append(" Vessel Status: ");
             stringBuilder.append(playerProfile.isVessel());
 
-            context.sendSuccess(() -> { return Component.literal(stringBuilder.toString());}, false);
+
+            context.sendSuccess(Component.literal(stringBuilder.toString()), false);
         }
+
         return players.size();
     }
 
@@ -95,7 +97,7 @@ public class VesselCommand implements Command<CommandSourceStack> {
                 output.append(", ");
             }
             output.append("]");
-            context.sendSuccess(() -> { return Component.literal(output.toString());}, false);
+            context.sendSuccess(Component.literal(output.toString()), false);
         }
         return vessels.size();
     }
@@ -113,12 +115,12 @@ public class VesselCommand implements Command<CommandSourceStack> {
         if(playerProfile.isVessel())
         {
             context.getPlayer().getInventory().add(new ItemStack(ModItems.TOME_OF_VEIL.get()));
-            context.sendSuccess(() -> { return Component.literal("Your now poses the Tome.");}, false);
+            context.sendSuccess(Component.literal("You now possess the Tome."), false);
             return 1;
         }
         else
         {
-            context.sendFailure(Component.literal("You are not Worthy"));
+            context.sendFailure(Component.literal("You are not worthy"));
             return 0;
         }
     }

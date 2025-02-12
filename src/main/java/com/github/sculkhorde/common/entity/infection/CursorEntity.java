@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +48,7 @@ public abstract class CursorEntity extends Entity
 
     protected long ticksRemainingBeforeCheckingIfInCursorList = 0;
     protected final long CHECK_DELAY_TICKS = TickUnits.convertSecondsToTicks(5);
-    protected boolean canBeManuallyTicked = true;
+   // protected boolean canBeManuallyTicked = true;
 
     protected int searchIterationsPerTick = 20;
     protected long tickIntervalMilliseconds = 1000;
@@ -91,9 +92,9 @@ public abstract class CursorEntity extends Entity
         this.tickIntervalMilliseconds = milliseconds;
     }
 
-    public void setCanBeManuallyTicked(boolean value) { canBeManuallyTicked = value; }
+   // public void setCanBeManuallyTicked(boolean value) { canBeManuallyTicked = value; }
 
-    public boolean canBeManuallyTicked() { return canBeManuallyTicked; }
+   // public boolean canBeManuallyTicked() { return canBeManuallyTicked; }
 
     public void setState(State state)
     {
@@ -146,7 +147,7 @@ public abstract class CursorEntity extends Entity
      */
     protected void transformBlock(BlockPos pos)
     {
-        level().setBlockAndUpdate(pos, Blocks.DIAMOND_BLOCK.defaultBlockState());
+        level.setBlockAndUpdate(pos, Blocks.DIAMOND_BLOCK.defaultBlockState());
     }
 
     protected void spawnParticleEffects()
@@ -163,7 +164,7 @@ public abstract class CursorEntity extends Entity
     protected void addPositionToQueueIfValid(BlockPos pos)
     {
         boolean isPositionNotVisited = !positionsSearched.containsKey(pos.asLong());
-        BlockState neighborBlockState = level().getBlockState(pos);
+        BlockState neighborBlockState = level.getBlockState(pos);
         boolean isPositionNotObstructed = !isObstructed(neighborBlockState, pos);
 
         // If not visited and is a valid block to navigate
@@ -221,19 +222,19 @@ public abstract class CursorEntity extends Entity
         // Check each neighbor for obstructions and add unobstructed neighbors to the new list
         for (BlockPos neighbor : neighbors)
         {
-            if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+            if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
                 unobstructedNeighbors.add(neighbor);
             }
         }
 
         // If there are no non-obstructed neighbors, return
-        if (unobstructedNeighbors.size() == 0) {
+        if (neighbors.size() == 0) {
             return;
         }
 
         // Find the block that is closest to target in neighbors
-        BlockPos closest = unobstructedNeighbors.get(0);
-        for (BlockPos pos : unobstructedNeighbors)
+        BlockPos closest = neighbors.get(0);
+        for (BlockPos pos : neighbors)
         {
             if (BlockAlgorithms.getBlockDistance(pos, target) < BlockAlgorithms.getBlockDistance(closest, target)) {
                 closest = pos;
@@ -248,7 +249,7 @@ public abstract class CursorEntity extends Entity
         if (this.blockPosition().equals(target))
         {
             target = BlockPos.ZERO;
-            BlockState stateOfCurrentBlock = level().getBlockState(this.blockPosition());
+            BlockState stateOfCurrentBlock = level.getBlockState(this.blockPosition());
 
             boolean isTarget = isTarget(this.blockPosition());
             boolean isNotObstructed = !isObstructed(stateOfCurrentBlock, this.blockPosition());
@@ -301,8 +302,8 @@ public abstract class CursorEntity extends Entity
 
         if(this.random.nextFloat() <= 0.1 && this instanceof CursorSurfaceInfectorEntity)
         {
-            AABB boundingBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(blockPosition().getCenter(), 20);
-            List<Entity> entities = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) this.level(), boundingBox, IS_DROPPED_ITEM);
+            AABB boundingBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(Vec3.atCenterOf(blockPosition()), 20);
+            List<Entity> entities = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) this.level, boundingBox, IS_DROPPED_ITEM);
             for(Entity entity : entities)
             {
                 if(!ModConfig.SERVER.isItemEdibleToCursors((ItemEntity) entity))
@@ -368,7 +369,7 @@ public abstract class CursorEntity extends Entity
         super.tick();
 
         // Play Particles on Client
-        if (this.level() != null && this.level().isClientSide)
+        if (this.level != null && this.level.isClientSide)
         {
             ticksSinceLastParticleSpawn += 1;
             if(ticksSinceLastParticleSpawn >= PARTICLE_SPAWN_COOLDOWN)
@@ -378,7 +379,7 @@ public abstract class CursorEntity extends Entity
             return;
         }
 
-        if(canBeManuallyTicked())
+       // if(canBeManuallyTicked())
         {
             ticksRemainingBeforeCheckingIfInCursorList--;
 
@@ -388,14 +389,12 @@ public abstract class CursorEntity extends Entity
                 ticksRemainingBeforeCheckingIfInCursorList = CHECK_DELAY_TICKS;
             }
         }
-        boolean canBeManuallyTickedAndManualControlIsNotOn = (canBeManuallyTicked() && !SculkHorde.cursorSystem.isManualControlOfTickingEnabled());
-        boolean cannotBeManuallyTicked = !canBeManuallyTicked();
+      // boolean canBeManuallyTickedAndManualControlIsNotOn = (canBeManuallyTicked() && !SculkHorde.cursorSystem.isManualControlOfTickingEnabled());
+      //  boolean cannotBeManuallyTicked = !canBeManuallyTicked();
 
-        boolean shouldTick = canBeManuallyTickedAndManualControlIsNotOn || cannotBeManuallyTicked;
+        boolean shouldTick = true;
 
-        if(shouldTick) {
-            cursorTick();
-        }
+        cursorTick();
 
     }
 
@@ -405,20 +404,20 @@ public abstract class CursorEntity extends Entity
 
     @Override
     public void onRemovedFromWorld() {
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
     }
 
     public void chanceToThanosSnapThisCursor()
     {
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         if(SculkHorde.autoPerformanceSystem.isThanosSnappingCursors())
         {
-            ServerLevel serverLevel = (ServerLevel) level();
+            ServerLevel serverLevel = (ServerLevel) level;
             MinecraftServer server = serverLevel.getServer();
             if(serverLevel.random.nextBoolean())
             {
-                server.tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, this::discard));
+                server.tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 1, this::discard));
             }
         }
     }

@@ -4,10 +4,14 @@ import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReape
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulBlastAttackEntity;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
@@ -29,13 +33,13 @@ public class SoulBlastAttackGoal extends ReaperCastSpellGoal implements IDebugga
     public void start()
     {
         super.start();
-        if(mob.level().isClientSide())
+        if(mob.level.isClientSide())
         {
             return;
         }
 
         this.mob.getNavigation().stop();
-        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level(), BlockPos.containing(mob.getEyePosition()), MobSpawnType.SPAWNER);
+        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level, (ItemStack)null, (Player)null, new BlockPos(mob.getEyePosition()), MobSpawnType.SPAWNER, false, false);
     }
 
     @Override
@@ -47,11 +51,11 @@ public class SoulBlastAttackGoal extends ReaperCastSpellGoal implements IDebugga
     public void summonAttackEntity()
     {
 
-        SoulBlastAttackEntity attackEntity =  new SoulBlastAttackEntity(mob.level(), mob);
+        SoulBlastAttackEntity attackEntity =  new SoulBlastAttackEntity(mob.level, mob);
         attackEntity.setPos(mob.position().add(0, mob.getEyeHeight() + 5, 0));
 
         mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level().addFreshEntity(attackEntity);
+        mob.level.addFreshEntity(attackEntity);
 
     }
 

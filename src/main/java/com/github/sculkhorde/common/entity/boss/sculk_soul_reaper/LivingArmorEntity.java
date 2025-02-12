@@ -7,6 +7,14 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -32,17 +40,10 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolActions;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 
-public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -74,7 +75,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
 
     /**
@@ -237,7 +238,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
     public long getTicksSinceLastHurt()
     {
-        return level().getGameTime()-getLastHurtMobTimestamp();
+        return level.getGameTime()-getLastHurtMobTimestamp();
     }
 
 
@@ -302,7 +303,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         if (increase) chance += 0.75;
         if (this.random.nextFloat() < chance) {
             this.stopUsingItem();
-            level().broadcastEntityEvent(this, (byte) 30);
+            level.broadcastEntityEvent(this, (byte) 30);
         }
     }
 
@@ -311,7 +312,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack", ATTACK_ANIMATION).transitionLength(5);
+            .triggerableAnim("attack", ATTACK_ANIMATION);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -395,7 +396,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
         @Override
         public boolean canUse() {
-            return Math.abs(level().getGameTime() - lastTimeOfArmorCheck) > ARMOR_CHECK_COOL_DOWN && getTarget() != null && getTarget() instanceof Player;
+            return Math.abs(level.getGameTime() - lastTimeOfArmorCheck) > ARMOR_CHECK_COOL_DOWN && getTarget() != null && getTarget() instanceof Player;
         }
 
         @Override
@@ -407,7 +408,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         public void start() {
 
 
-            lastTimeOfArmorCheck = level().getGameTime();
+            lastTimeOfArmorCheck = level.getGameTime();
 
             if(getTarget() instanceof Player player)
             {
@@ -497,7 +498,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                 return false;
             }
 
-            if(shieldIsUp && level().getGameTime() - timeOfRaiseShield > MAX_SHIELD_UP_TIME)
+            if(shieldIsUp && level.getGameTime() - timeOfRaiseShield > MAX_SHIELD_UP_TIME)
             {
                 return false;
             }
@@ -525,9 +526,9 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
             if(getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
             {
                 startUsingItem(InteractionHand.OFF_HAND);
-                timeOfRaiseShield = level().getGameTime();
+                timeOfRaiseShield = level.getGameTime();
                 shieldIsUp = true;
-                level().playSound(LivingArmorEntity.this, blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.HOSTILE, 1.0F, 1.0F);
+                level.playSound((Player)null, LivingArmorEntity.this, SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.HOSTILE, 1.0F, 1.0F);
                 return true;
             }
             return false;

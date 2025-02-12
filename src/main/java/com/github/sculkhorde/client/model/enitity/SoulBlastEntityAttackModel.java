@@ -3,9 +3,9 @@ package com.github.sculkhorde.client.model.enitity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulBlastAttackEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
+import mod.azure.azurelib.model.DefaultedEntityGeoModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SoulBlastEntityAttackModel extends DefaultedEntityGeoModel<SoulBlastAttackEntity> {
     public SoulBlastEntityAttackModel() {

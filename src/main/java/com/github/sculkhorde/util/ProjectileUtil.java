@@ -29,14 +29,14 @@ public final class ProjectileUtil {
 
     public static HitResult getHitResultOnMoveVector(Entity p_278228_, Predicate<Entity> p_278315_) {
         Vec3 vec3 = p_278228_.getDeltaMovement();
-        Level level = p_278228_.level();
+        Level level = p_278228_.level;
         Vec3 vec31 = p_278228_.position();
         return getHitResult(vec31, p_278228_, p_278315_, vec3, level);
     }
 
     public static HitResult getHitResultOnViewVector(Entity p_278281_, Predicate<Entity> p_278306_, double p_278293_) {
         Vec3 vec3 = p_278281_.getViewVector(0.0F).scale(p_278293_);
-        Level level = p_278281_.level();
+        Level level = p_278281_.level;
         Vec3 vec31 = p_278281_.getEyePosition();
         return getHitResult(vec31, p_278281_, p_278306_, vec3, level);
     }
@@ -58,7 +58,7 @@ public final class ProjectileUtil {
 
     @Nullable
     public static EntityHitResult getEntityHitResult(Entity p_37288_, Vec3 p_37289_, Vec3 p_37290_, AABB p_37291_, Predicate<Entity> p_37292_, double p_37293_) {
-        Level level = p_37288_.level();
+        Level level = p_37288_.level;
         double d0 = p_37293_;
         Entity entity = null;
         Vec3 vec3 = null;
@@ -157,7 +157,7 @@ public final class ProjectileUtil {
 
     public static AbstractArrow getMobArrow(LivingEntity p_37301_, ItemStack p_37302_, float p_37303_) {
         ArrowItem arrowitem = (ArrowItem)(p_37302_.getItem() instanceof ArrowItem ? p_37302_.getItem() : Items.ARROW);
-        AbstractArrow abstractarrow = arrowitem.createArrow(p_37301_.level(), p_37302_, p_37301_);
+        AbstractArrow abstractarrow = arrowitem.createArrow(p_37301_.level, p_37302_, p_37301_);
         abstractarrow.setEnchantmentEffectsFromEntity(p_37301_, p_37303_);
         if (p_37302_.is(Items.TIPPED_ARROW) && abstractarrow instanceof Arrow) {
             ((Arrow)abstractarrow).setEffectsFromItem(p_37302_);

@@ -9,7 +9,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -78,7 +77,6 @@ public class SculkLivingRockBlock extends Block implements IForgeBlock {
     public static Properties getProperties()
     {
         Properties prop = Properties.copy(Blocks.STONE)
-                .mapColor(MapColor.TERRACOTTA_GRAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
         return prop;

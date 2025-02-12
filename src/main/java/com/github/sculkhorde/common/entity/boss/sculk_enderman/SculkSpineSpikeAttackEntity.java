@@ -4,23 +4,24 @@ import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.keyframe.event.CustomInstructionKeyframeEvent;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.keyframe.event.CustomInstructionKeyframeEvent;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements TraceableEntity, GeoEntity {
+public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements GeoEntity, GeoAnimatable {
 
     public static int LIFE_IN_TICKS = TickUnits.convertSecondsToTicks(2);
     public static int DAMAGE_DELAY_TICKS = TickUnits.convertSecondsToTicks(0.5F); // Had to eye ball this value
@@ -32,7 +33,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     }
 
     public SculkSpineSpikeAttackEntity(LivingEntity owner, double x, double y, double z, int delay) {
-        this(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), owner.level());
+        this(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), owner.level);
         this.setPos(x, y, z);
         this.lifeTicks -= delay;
 
@@ -45,7 +46,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
             if (livingentity == null)
             {
-                targetEntity.hurt(this.damageSources().generic(), 6.0F);
+                targetEntity.hurt(DamageSource.GENERIC, 6.0F);
                 return;
             }
 
@@ -59,7 +60,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
                 return;
             }
 
-            targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), 6.0F);
+            targetEntity.hurt(DamageSource.indirectMagic(this, livingentity), 6.0F);
             // Give weakness and levitation
             EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0);
             EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(20), 0);
@@ -68,7 +69,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
     public void hurtTouchingEntities()
     {
-        for(LivingEntity livingEntity : this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5D)))
+        for(LivingEntity livingEntity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.5D)))
         {
             if(livingEntity != this.getOwner())
             {
@@ -82,7 +83,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     {
         super.tick();
 
-        if(level().isClientSide())
+        if(level.isClientSide())
         {
             return;
         }
@@ -90,7 +91,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
         if(lifeTicks == 0)
         {
             triggerAnim("attack_controller", "attack_animation");
-            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+            this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
         }
 
         this.lifeTicks++;
@@ -113,7 +114,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     private static final RawAnimation UNDERGROUND_ANIMATION = RawAnimation.begin().thenPlay("underground");
 
     // ### GECKOLIB Animation Code ###
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack_animation", ATTACK_ANIMATION)
             .triggerableAnim("underground_animation", UNDERGROUND_ANIMATION)
@@ -132,7 +133,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
     private <ENTITY extends GeoEntity> void instructionListener(CustomInstructionKeyframeEvent<ENTITY> event) {
         if(event.getKeyframeData().getInstructions().contains("DoDamageInstruction"))
         {
-            if(this.level().isClientSide())
+            if(this.level.isClientSide())
             {
                 for(int i = 0; i < 12; ++i)
                 {
@@ -142,7 +143,7 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
                     double d3 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
                     double d4 = 0.3D + this.random.nextDouble() * 0.3D;
                     double d5 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
-                    this.level().addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
+                    this.level.addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
                 }
             }
         }

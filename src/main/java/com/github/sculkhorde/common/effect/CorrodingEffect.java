@@ -11,7 +11,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Vector3f;
 
 import java.util.Optional;
 
@@ -19,7 +18,7 @@ public class CorrodingEffect extends MobEffect {
 
     public static int liquidColor = ColorUtil.hexToRGB(ColorUtil.sculkAcidColor1);
     public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
-    public long COOLDOWN = TickUnits.convertSecondsToTicks(3);
+    public long COOLDOWN = TickUnits.convertSecondsToTicks(1);
     public long cooldownTicksRemaining = COOLDOWN;
     private Optional<LivingEntity> attacker = Optional.empty();
 
@@ -79,7 +78,7 @@ public class CorrodingEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity victimEntity, int amp) {
-        if(victimEntity.level().isClientSide())
+        if(victimEntity.level.isClientSide())
         {
             float spawnWidth = victimEntity.getBbWidth() / 2;
             float spawnHeight = victimEntity.getBbHeight() / 2;
@@ -105,12 +104,6 @@ public class CorrodingEffect extends MobEffect {
         float randomY = (float) (victimEntity.getY() + getNextFloatBetweenInclusive(victimEntity.getRandom(),-maxHeightOffset, maxHeightOffset) + maxHeightOffset);
         float randomZ = (float) (victimEntity.getZ() + getNextFloatBetweenInclusive(victimEntity.getRandom(),-maxWidthOffset, maxWidthOffset));
         //victimEntity.level().addParticle(new DustParticleOptions(Vec3.fromRGB24(2726783).toVector3f(), 2.0F), randomX, randomY, randomZ, 0.0D, victimEntity.getRandom().nextDouble() * - 1, 0.0D);
-        ParticleUtil.spawnColoredDustParticleOnClient((ClientLevel) victimEntity.level(),
-                ColorUtil.getRandomHexAcidColor(victimEntity.getRandom()),
-                0.8F,
-                new Vector3f(randomX, randomY, randomZ),
-                new Vector3f(0, victimEntity.getRandom().nextFloat() * - 1, 0));
-    }
 
 
     /**
@@ -122,14 +115,5 @@ public class CorrodingEffect extends MobEffect {
      * @param amplifier The level of the effect
      * @return Determines if the effect should apply.
      */
-    @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
-        if(cooldownTicksRemaining > 0)
-        {
-            cooldownTicksRemaining--;
-            return false;
-        }
-        cooldownTicksRemaining = COOLDOWN;
-        return true;
     }
 }

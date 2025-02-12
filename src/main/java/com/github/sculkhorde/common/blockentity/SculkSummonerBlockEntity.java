@@ -1,16 +1,31 @@
 package com.github.sculkhorde.common.blockentity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
+import com.github.sculkhorde.common.block.InfestationEntries.BlockInfestationTable;
 import com.github.sculkhorde.common.block.SculkSummonerBlock;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
+
+import mod.azure.azurelib.animatable.GeoBlockEntity;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +37,7 @@ import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,23 +46,13 @@ import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
-import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import net.minecraft.world.phys.Vec3;
 
 
-public class SculkSummonerBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem, GeoBlockEntity
+public class SculkSummonerBlockEntity extends BlockEntity implements VibrationListener.VibrationListenerConfig, GeoBlockEntity
 {
     AABB searchArea;
     //ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
@@ -55,16 +61,21 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private List<LivingEntity> possibleLivingEntityTargets;
     //possibleAggressorTargets - A list of nearby targets which should be considered hostile.
     private List<LivingEntity> possibleAggressorTargets;
-    private long lastGameTimeOfVibrationRecieve = 0;
+    private long lastTimeSinceVibrationRecieve = System.currentTimeMillis();
+    private long timeElapsedSinceVibrationRecieve = 0;
+    //Used to track the last time this tile was ticked
+    private long lastTimeOfSpawn = System.currentTimeMillis();
+    private long timeElapsedSinceSpawn = 0;
+    private final long spawningCoolDownMilis = TimeUnit.SECONDS.toMillis(20);
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
     private final TargetParameters hostileTargetParameters = new TargetParameters().enableTargetHostiles().enableTargetInfected();
     private final TargetParameters infectableTargetParameters = new TargetParameters().enableTargetPassives();
 
     // Vibration Code
-    private final VibrationSystem.User vibrationUser = new VibrationUser(this);
-    private VibrationSystem.Data vibrationData = new VibrationSystem.Data();
-    private final VibrationSystem.Listener vibrationListener = new VibrationSystem.Listener(this);
+    private static final int LISTENER_RADIUS = 24;
+    private final PositionSource positionSource = new BlockPositionSource(this.worldPosition);
+    private VibrationListener listener = new VibrationListener(this.positionSource, LISTENER_RADIUS, this, (VibrationListener.ReceivingEvent)null, 0.0F, 0);
 
     /**
      * The Constructor that takes in properties
@@ -79,13 +90,21 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
-    private boolean isVibrationCooldownOver()
+    private boolean isActive()
     {
-        return level.getGameTime() - lastGameTimeOfVibrationRecieve > TickUnits.convertSecondsToTicks(15);
+        return getBlockState().getValue(SculkSummonerBlock.IS_ACTIVE);
     }
 
-    private boolean isBlockStateVibrationCooldownTrue()
+    private void setActive(boolean value)
     {
+        assert level != null;
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(SculkSummonerBlock.IS_ACTIVE, value));
+    }
+
+
+    private boolean isOnVibrationCooldown()
+    {
+        assert level != null;
         return getBlockState().getValue(SculkSummonerBlock.VIBRATION_COOLDOWN);
     }
 
@@ -99,6 +118,16 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
 
     /** ~~~~~~~~ Boolean ~~~~~~~~  **/
+
+    /**
+     * Returns true if the time elapsed since the last alert is less than the length of the alert period.
+     * False otherwise
+     * @return True/False
+     */
+    public boolean hasSpawningCoolDownEnded()
+    {
+        return (timeElapsedSinceSpawn >= spawningCoolDownMilis);
+    }
 
 
     /**
@@ -130,7 +159,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private boolean areAnyTargetsNearBy(BlockPos blockPos, SculkSummonerBlockEntity blockEntity)
     {
         //Create bounding box to detect targets
-        blockEntity.searchArea = EntityAlgorithms.createBoundingBoxRectableAtBlockPos(blockPos.getCenter(), blockEntity.ACTIVATION_DISTANCE, 10, blockEntity.ACTIVATION_DISTANCE);
+        blockEntity.searchArea = EntityAlgorithms.createBoundingBoxRectableAtBlockPos(Vec3.atCenterOf(blockPos), blockEntity.ACTIVATION_DISTANCE, 10, blockEntity.ACTIVATION_DISTANCE);
 
         //Get targets inside bounding box.
         blockEntity.possibleAggressorTargets =
@@ -146,13 +175,19 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
                         blockEntity.searchArea,
                         blockEntity.infectableTargetParameters.isPossibleNewTargetValid);
 
-        if(!blockEntity.possibleAggressorTargets.isEmpty() || !blockEntity.possibleLivingEntityTargets.isEmpty())
+        if (blockEntity.possibleAggressorTargets.size() != 0 || blockEntity.possibleLivingEntityTargets.size() != 0)
         {
             return true;
         }
 
         return false;
 
+    }
+
+    public void calculateTimeElapsed()
+    {
+        timeElapsedSinceSpawn = System.currentTimeMillis() - lastTimeOfSpawn;
+        timeElapsedSinceVibrationRecieve = System.currentTimeMillis() - lastTimeSinceVibrationRecieve;
     }
 
     public void requestReinforcementsFromGravemind()
@@ -210,37 +245,43 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
 
     /** ~~~~~~~~ Events ~~~~~~~~ **/
-    public static void receiveVibrationTick(Level level, BlockPos vibrationSource, BlockState blockState, SculkSummonerBlockEntity blockEntity, Entity entity)
+    public static void recieveVibrationTick(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity)
     {
         if(level == null || level.isClientSide)
         {
             return;
         }
 
-        blockEntity.setVibrationCooldown(true);
-        blockEntity.lastGameTimeOfVibrationRecieve = level.getGameTime();
-
         if(!blockEntity.areAllReinforcementsDead())
         {
             return;
         }
 
-        if(blockEntity.areAnyTargetsNearBy(blockEntity.worldPosition, blockEntity))
+        if(blockEntity.areAnyTargetsNearBy(blockPos, blockEntity))
         {
             blockEntity.requestReinforcementsFromGravemind();
-            level.levelEvent(3007, blockEntity.worldPosition, 0);
-            level.gameEvent(GameEvent.SHRIEK, blockEntity.worldPosition, GameEvent.Context.of(entity));
+            blockEntity.setActive(false);
         }
+        blockEntity.setVibrationCooldown(true);
+        blockEntity.lastTimeSinceVibrationRecieve = System.currentTimeMillis();
     }
 
     public static void tickOnCoolDown(Level level, BlockPos blockPos, BlockState blockState, SculkSummonerBlockEntity blockEntity) {
         if (level == null || level.isClientSide) {
             return;
         }
-        
-        if(blockEntity.isVibrationCooldownOver())
+
+        blockEntity.calculateTimeElapsed();
+
+        if(blockEntity.timeElapsedSinceVibrationRecieve >= TimeUnit.SECONDS.toMillis(10))
         {
             blockEntity.setVibrationCooldown(false);
+        }
+
+
+        if (blockEntity.hasSpawningCoolDownEnded() && !blockEntity.isActive())
+        {
+            blockEntity.setActive(true);
         }
     }
 
@@ -296,6 +337,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      * Finds the location of the nearest block given a BlockPos predicate.
      * @param worldIn The world
      * @param origin The origin of the search location
+     * @param
      * @param pDistance The search distance
      * @return The position of the block
      */
@@ -334,8 +376,8 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         super.load(nbt);
 
         if (nbt.contains("listener", 10)) {
-            VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
-                this.vibrationData = data;
+            VibrationListener.codec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+                this.listener = data;
             });
         }
 
@@ -344,72 +386,47 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     protected void saveAdditional(CompoundTag nbt)
     {
         super.saveAdditional(nbt);
-        VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+        VibrationListener.codec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
     }
 
     /** ~~~~~~~~ Vibration Events ~~~~~~~~  **/
-    public VibrationSystem.Listener getListener() {
-        return this.vibrationListener;
+    public VibrationListener getListener() {
+        return this.listener;
     }
 
-    public VibrationSystem.Data getVibrationData() {
-        return this.vibrationData;
+    @Override
+    public TagKey<GameEvent> getListenableEvents() {
+        return GameEventTags.SHRIEKER_CAN_LISTEN;
     }
 
-    public VibrationSystem.User getVibrationUser() {
-        return this.vibrationUser;
+    @Override
+    public boolean shouldListen(ServerLevel level, GameEventListener listener, BlockPos blockPos, GameEvent gameEvent, GameEvent.Context context) {
+        return !isOnVibrationCooldown();
     }
 
-    /**
-     * The listener for the sculk summoner block entity.
-     */
-    class VibrationUser implements VibrationSystem.User
+    @Override
+    public void onSignalReceive(ServerLevel level, GameEventListener listener, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
     {
-        private static final int LISTENER_RADIUS = 24;
-        private final PositionSource positionSource = new BlockPositionSource(SculkSummonerBlockEntity.this.worldPosition);
-        private SculkSummonerBlockEntity summoner;
+        recieveVibrationTick(level, sourcePosition, getBlockState(), this);
 
-        public VibrationUser(SculkSummonerBlockEntity summoner) {
-            this.summoner = summoner;
-        }
-
-
-        public int getListenerRadius() {
-            return LISTENER_RADIUS;
-        }
-
-        public PositionSource getPositionSource() {
-            return this.positionSource;
-        }
-
-        public TagKey<GameEvent> getListenableEvents() {
-            return GameEventTags.SHRIEKER_CAN_LISTEN;
-        }
-
-        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent event, GameEvent.Context context) {
-                return !isBlockStateVibrationCooldownTrue() && !SculkHorde.populationHandler.isPopulationAtMax();
-        }
-
-        public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
+        if(!isActive())
         {
-            receiveVibrationTick(level, blockPos, getBlockState(), summoner, entity);
+            level.levelEvent(3007, worldPosition, 0);
+            level.gameEvent(GameEvent.SHRIEK, worldPosition, GameEvent.Context.of(entity));
         }
+    }
 
-        public void onDataChanged()
-        {
-            setChanged();
-        }
-
-        public boolean requiresAdjacentChunksToBeTicking() {
-            return true;
-        }
+    @Override
+    public void onSignalSchedule()
+    {
+        setChanged();
     }
 
     /** ~~~~~~~~ Animation Events ~~~~~~~~  **/
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     // We statically instantiate our RawAnimations for efficiency, consistency, and error-proofing
     private static final RawAnimation SCULK_SUMMONER_COOLDOWN_ANIMATION = RawAnimation.begin().thenPlayAndHold("cooldown");
@@ -419,15 +436,19 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, state ->
         {
-                BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
-                if(blockState.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
+            BlockState blockState = state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition);
+            if(blockState.is(ModBlocks.SCULK_SUMMONER_BLOCK.get()))
+            {
+                if(!state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.IS_ACTIVE)
+                        || state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.VIBRATION_COOLDOWN))
                 {
-                    if(state.getAnimatable().getLevel().getBlockState(state.getAnimatable().worldPosition).getValue(SculkSummonerBlock.VIBRATION_COOLDOWN))
-                    {
-                        return state.setAndContinue(SCULK_SUMMONER_COOLDOWN_ANIMATION);
-                    }
+                    return state.setAndContinue(SCULK_SUMMONER_COOLDOWN_ANIMATION);
                 }
-                return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
+
+
+
+            }
+            return state.setAndContinue(SCULK_SUMMONER_READY_ANIMATION);
         }
         ));
     }

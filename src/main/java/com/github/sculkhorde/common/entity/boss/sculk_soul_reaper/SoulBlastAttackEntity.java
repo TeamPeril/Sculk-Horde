@@ -6,17 +6,19 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -29,7 +31,7 @@ import java.util.function.Predicate;
  * Added {@link com.github.sculkhorde.client.model.enitity.EnderBubbleAttackModel}<br>
  * Added {@link com.github.sculkhorde.client.renderer.entity.EnderBubbleAttackRenderer}
  */
-public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEntity {
+public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEntity, GeoAnimatable {
 
     public static int LIFE_TIME = TickUnits.convertSecondsToTicks(1);
     public int currentLifeTicks = 0;
@@ -49,7 +51,7 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
     }
 
     private void pushOutEntities(double range) {
-        if (level().isClientSide()) return;
+        if (level.isClientSide()) return;
 
         Predicate<Entity> predicate = (entity) -> {
             if (entity == null) {
@@ -65,7 +67,7 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
             return entityIsPushable;
         };
 
-        List<Entity> pushAwayList = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(range, range, range), predicate);
+        List<Entity> pushAwayList = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(range, range, range), predicate);
 
         float pushAwayStrength = 0.3f; // Increased push strength for better outwards effect
         float pushUpStrength = 0.1f;   // Separate push up strength for vertical component.
@@ -99,7 +101,7 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
 
         if(!startedPlayingSFX)
         {
-            level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), ModSounds.ENDER_BUBBLE_LOOP.get(), this.getSoundSource(), 1.0F, 1F);
+            level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), ModSounds.ENDER_BUBBLE_LOOP.get(), this.getSoundSource(), 1.0F, 1F);
             startedPlayingSFX = true;
         }
 
@@ -116,11 +118,11 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
 
             if(getOwner() != null)
             {
-                entity.hurt(damageSources().indirectMagic(entity, getOwner()), 5);
+                entity.hurt(DamageSource.indirectMagic(entity, getOwner()), 5);
             }
             else
             {
-                entity.hurt(damageSources().indirectMagic(entity, this), 5);
+                entity.hurt(DamageSource.indirectMagic(entity, this), 5);
             }
         }
 
@@ -128,7 +130,7 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
     }
 
     // ### GECKOLIB Animation Code ###
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

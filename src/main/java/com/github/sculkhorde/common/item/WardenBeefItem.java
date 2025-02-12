@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.advancement.GravemindEvolveImmatureTrigger;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -40,7 +41,8 @@ public class WardenBeefItem extends Item {
     {
         return new Item.Properties()
                 .rarity(Rarity.EPIC)
-                .food(getPropertiesFood());
+                .food(getPropertiesFood())
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
     }
     public static FoodProperties getPropertiesFood() {

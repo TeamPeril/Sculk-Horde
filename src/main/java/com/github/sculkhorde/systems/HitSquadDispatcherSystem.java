@@ -4,7 +4,6 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
@@ -34,12 +33,13 @@ public class HitSquadDispatcherSystem {
         {
             ModSavedData.PlayerProfileEntry profile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
 
-            if(!profile.isPlayerOnline())
+            if(SculkHorde.isDebugMode())
             {
-                continue;
+                SculkHorde.LOGGER.info("HitSquadDispatcherSystem | DEBUG MODE ENABLED. " + player.getScoreboardName() + " IS BEING TARGETED. ");
+                return Optional.of(player);
             }
 
-            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(profile.getPlayer().get()))
+            if(!profile.isPlayerOnline())
             {
                 continue;
             }
@@ -58,7 +58,7 @@ public class HitSquadDispatcherSystem {
             boolean hasGoodRelationshipWithHorde = profile.getRelationshipToTheHorde() > MAX_RELATIONSHIP;
             boolean isHitCooldownNotOver = !profile.isHitCooldownOver();
 
-            ModSavedData.NodeEntry entry = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) player.level(), player.blockPosition());
+            ModSavedData.NodeEntry entry = SculkHorde.savedData.getClosestNodeEntry((ServerLevel) player.getLevel(), player.blockPosition());
             boolean isTooFarFromNode = BlockAlgorithms.getBlockDistanceXZ(player.blockPosition(), entry.getPosition()) > 100;
 
              if(isTooFarFromNode || isHitCooldownNotOver || hasGoodRelationshipWithHorde || hasNotDestroyedEnoughNodes)
@@ -70,12 +70,6 @@ public class HitSquadDispatcherSystem {
             {
                 target = profile.getPlayer();
             }
-        }
-
-        if(SculkHorde.isDebugMode() && target.isPresent())
-        {
-            SculkHorde.LOGGER.info("HitSquadDispatcherSystem | DEBUG MODE ENABLED. " + target.get().getScoreboardName() + " IS BEING TARGETED. ");
-            return target;
         }
 
         return target;
@@ -98,7 +92,7 @@ public class HitSquadDispatcherSystem {
         if(nextTarget.isPresent())
         {
             SculkHorde.LOGGER.info("HitSquadDispatcherSystem | The Next Target is " + nextTarget.get().getScoreboardName());
-            SculkHorde.eventSystem.addEvent(new HitSquadEvent(nextTarget.get().level().dimension(), nextTarget.get().getUUID()));
+            SculkHorde.eventSystem.addEvent(new HitSquadEvent(nextTarget.get().getLevel().dimension(), nextTarget.get().getUUID()));
             PlayerProfileHandler.getOrCreatePlayerProfile(nextTarget.get()).setTimeOfLastHit(level.getGameTime());
         }
         else if(SculkHorde.isDebugMode())

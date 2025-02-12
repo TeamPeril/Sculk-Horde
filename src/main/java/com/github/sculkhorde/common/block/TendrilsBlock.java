@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -48,7 +47,6 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
     public static Properties getProperties()
     {
         return Properties.copy(Blocks.VINE)
-                .mapColor(MapColor.TERRACOTTA_BLUE)
                 .noOcclusion()
                 .noCollission();
     }

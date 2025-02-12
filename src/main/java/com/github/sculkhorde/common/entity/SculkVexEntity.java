@@ -6,6 +6,15 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,18 +42,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -74,7 +76,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     public static final float FLAP_DEGREES_PER_TICK = 45.836624F;
     public static final int TICKS_PER_FLAP = Mth.ceil(3.9269907F);
@@ -123,7 +125,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
         this.setNoGravity(true);
         if (this.hasLimitedLife && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.hurt(this.damageSources().starve(), 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
 
     }
@@ -318,7 +320,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack", ATTACK_ANIMATION).transitionLength(5);
+            .triggerableAnim("attack", ATTACK_ANIMATION);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -495,7 +497,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
             for(int i = 0; i < 3; ++i) {
                 BlockPos blockpos1 = blockpos.offset(random.nextInt(15) - 7, random.nextInt(11) - 5, random.nextInt(15) - 7);
-                if (level().isEmptyBlock(blockpos1)) {
+                if (level.isEmptyBlock(blockpos1)) {
                     moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
                     if (getTarget() == null) {
                         getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);

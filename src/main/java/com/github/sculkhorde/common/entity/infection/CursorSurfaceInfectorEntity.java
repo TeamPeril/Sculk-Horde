@@ -5,16 +5,19 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -57,7 +60,7 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
     @Override
     protected boolean isTarget(BlockPos pos)
     {
-        return BlockInfestationSystem.isInfectable((ServerLevel) level(), pos);
+        return BlockInfestationSystem.isInfectable((ServerLevel) level, pos);
     }
 
     /**
@@ -67,7 +70,7 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        BlockInfestationSystem.tryToInfestBlock((ServerLevel) level(), pos);
+        BlockInfestationSystem.tryToInfestBlock((ServerLevel) level, pos);
     }
 
     /**
@@ -105,7 +108,7 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
                 return true;
             }
         }
-        else if(isExposedToInfestationWardBlock((ServerLevel) this.level(), pos))
+        else if(isExposedToInfestationWardBlock((ServerLevel) this.level, pos))
         {
             return true;
         }
@@ -115,7 +118,7 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
         }
 
         // Check if block is not beyond world border
-        if(!level().isInWorldBounds(pos))
+        if(!level.isInWorldBounds(pos))
         {
             return true;
         }
@@ -126,7 +129,7 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
             return true;
         }
 
-        boolean isBlockNotExposedToAir = !BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos);
+        boolean isBlockNotExposedToAir = !BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos);
         boolean isBlockNotSculkArachnoid = !state.is(ModBlocks.SCULK_ARACHNOID.get());
         boolean isBlockNotSculkDuraMatter = !state.is(ModBlocks.SCULK_DURA_MATTER.get());
 
@@ -146,6 +149,10 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
         float randomXOffset = random.nextFloat(maxOffset * 2) - maxOffset;
         float randomYOffset = random.nextFloat(maxOffset * 2) - maxOffset;
         float randomZOffset = random.nextFloat(maxOffset * 2) - maxOffset;
-        this.level().addParticle(ParticleTypes.SCULK_SOUL, getX() + randomXOffset, getY() + randomYOffset, getZ() + randomZOffset, randomXOffset * 0.1, randomYOffset * 0.1, randomZOffset * 0.1);
+        this.level.addParticle(ParticleTypes.SCULK_SOUL, getX() + randomXOffset, getY() + randomYOffset, getZ() + randomZOffset, randomXOffset * 0.1, randomYOffset * 0.1, randomZOffset * 0.1);
+    }
+    @Override
+    public @NotNull Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

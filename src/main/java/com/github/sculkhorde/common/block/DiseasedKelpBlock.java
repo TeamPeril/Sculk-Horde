@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -23,10 +24,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.*;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -93,8 +91,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
      */
     public static Properties getProperties()
     {
-        return Properties.of()
-                .mapColor(MapColor.QUARTZ)
+        return Properties.of(Material.WATER_PLANT, MaterialColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.SLIME_BLOCK);
@@ -127,7 +124,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
         }
 
         entity.makeStuckInBlock(blockState, new Vec3(0.8F, 0.75D, (double)0.8F));
-        entity.hurt(entity.damageSources().generic(), 1.0F);
+        entity.hurt(DamageSource.GENERIC, 1.0F);
         EntityAlgorithms.applyEffectToTarget(((LivingEntity) entity), ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30), 0);
     }
 
@@ -165,7 +162,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
 
     @Override
     public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return levelReader.getBlockState(blockPos.below()).isSolid()
+        return levelReader.getBlockState(blockPos.below()).canOcclude()
                 || levelReader.getBlockState(blockPos.below()).is(this)
                 || levelReader.getBlockState(blockPos.below()).is(Blocks.KELP)
                 || levelReader.getBlockState(blockPos.below()).is(Blocks.KELP_PLANT);

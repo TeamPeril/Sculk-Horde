@@ -4,6 +4,12 @@ import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -20,17 +26,12 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class InfestationPurifierEntity extends PathfinderMob implements GeoEntity {
+public class InfestationPurifierEntity extends PathfinderMob implements GeoEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -55,7 +56,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0F;
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     CursorSurfacePurifierEntity cursor1;
     CursorSurfacePurifierEntity cursor2;
@@ -174,7 +175,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level().isClientSide)
+        if (level.isClientSide)
         {
             return;
         }
@@ -188,7 +189,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
         tellServerToSpawnCursors();
 
         // Any sculk entity within 10 blocks of the spewer will be set on fire
-        ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level(), this.getBoundingBox().inflate(10));
+        ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getLivingEntitiesInBoundingBox((ServerLevel) level, this.getBoundingBox().inflate(10));
         for (LivingEntity entity : entities)
         {
             if (entity != null && EntityAlgorithms.isSculkLivingEntity.test(entity) || EntityAlgorithms.isLivingEntityAllyToSculkHorde(entity))
@@ -206,59 +207,59 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
 
     protected void tellServerToSpawnCursors()
     {
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
-        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+        level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 1, () -> {
             if((cursor1 == null || !cursor1.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor1 = new CursorSurfacePurifierEntity(level());
+                cursor1 = new CursorSurfacePurifierEntity(level);
                 cursor1.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor1.setMaxTransformations(100);
                 cursor1.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor1.setSearchIterationsPerTick(2);
                 cursor1.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor1.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor1);
+                level.addFreshEntity(cursor1);
             }
 
             if((cursor2 == null || !cursor2.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor2 = new CursorSurfacePurifierEntity(level());
+                cursor2 = new CursorSurfacePurifierEntity(level);
                 cursor2.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor2.setMaxTransformations(100);
                 cursor2.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor2.setSearchIterationsPerTick(2);
                 cursor2.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor2.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor2);
+                level.addFreshEntity(cursor2);
             }
 
             if((cursor3 == null || !cursor3.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor3 = new CursorSurfacePurifierEntity(level());
+                cursor3 = new CursorSurfacePurifierEntity(level);
                 cursor3.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor3.setMaxTransformations(100);
                 cursor3.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor3.setSearchIterationsPerTick(2);
                 cursor3.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor3.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor3);
+                level.addFreshEntity(cursor3);
             }
 
             if((cursor4 == null || !cursor4.isAlive() ))
             {
                 // Spawn Block Traverser
-                cursor4 = new CursorSurfacePurifierEntity(level());
+                cursor4 = new CursorSurfacePurifierEntity(level);
                 cursor4.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
                 cursor4.setMaxTransformations(100);
                 cursor4.setMaxRange(ModConfig.SERVER.infestation_purifier_range.get());
                 cursor4.setSearchIterationsPerTick(2);
                 cursor4.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(10));
                 cursor4.setTickIntervalMilliseconds(20);
-                level().addFreshEntity(cursor4);
+                level.addFreshEntity(cursor4);
             }
         }));
     }
@@ -266,7 +267,7 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
     //If entity is rightclicked, drop item
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             this.kill();
         }
         return InteractionResult.SUCCESS;

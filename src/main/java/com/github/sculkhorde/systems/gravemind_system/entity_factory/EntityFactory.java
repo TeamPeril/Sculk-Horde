@@ -7,6 +7,8 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -241,7 +243,7 @@ public class EntityFactory {
         Optional<EntityFactoryEntry> entry = getEntry(entityType);
         if(entry.isPresent())
         {
-            entry.get().getEntity().spawn((ServerLevel) level, pos, MobSpawnType.SPAWNER);
+            entry.get().getEntity().spawn((ServerLevel) level, (CompoundTag)null, (Component)null, (Player)null, pos, MobSpawnType.SPAWNER, false, false);
             SculkHorde.statisticsData.incrementTotalUnitsSpawned();
         }
     }
@@ -320,7 +322,7 @@ public class EntityFactory {
             if(mobsToSpawn[i] == null) { continue; }
 
             EntityFactoryEntry mob = mobsToSpawn[i];
-            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, context.positions[i], MobSpawnType.SPAWNER);
+            context.spawnedEntities[i] = (LivingEntity) mob.getEntity().spawn((ServerLevel) world, (CompoundTag)null, (Component)null, (Player)null, context.positions[i], MobSpawnType.SPAWNER, false, false);
             ((ServerLevel)world).sendParticles(ParticleTypes.SCULK_SOUL, context.positions[i].getX() + 0.5D, context.positions[i].getY() + 1.15D, context.positions[i].getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
             ((ServerLevel)world).playSound((Player)null, context.positions[i], SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
             if (!noCost)
@@ -381,7 +383,7 @@ public class EntityFactory {
             //Set Remaining Balance
             context.remaining_balance = context.budget - randomEntry.getCost();
             //Spawn Mob
-            randomEntry.getEntity().spawn((ServerLevel) world, pos, MobSpawnType.SPAWNER);
+            randomEntry.getEntity().spawn((ServerLevel) world, (CompoundTag)null, (Component)null, (Player)null, pos, MobSpawnType.SPAWNER, false, false);
             ((ServerLevel)world).sendParticles(ParticleTypes.SCULK_SOUL, pos.getX() + 0.5D, pos.getY() + 1.15D, pos.getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
             ((ServerLevel)world).playSound((Player)null, pos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
         }

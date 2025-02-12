@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
-import org.jetbrains.annotations.Nullable;
 
 public class SoulHarvesterMenu extends AbstractContainerMenu {
     public final SoulHarvesterBlockEntity blockEntity;
@@ -21,14 +20,14 @@ public class SoulHarvesterMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public SoulHarvesterMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
+        this(pContainerId, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
     }
 
     public SoulHarvesterMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModMenuTypes.SOUL_HARVESTER_MENU.get(), pContainerId);
         checkContainerSize(inv, 2);
         blockEntity = ((SoulHarvesterBlockEntity) entity);
-        this.level = inv.player.level();
+        this.level = inv.player.level;
         this.data = data;
 
         addPlayerInventory(inv);
@@ -44,14 +43,6 @@ public class SoulHarvesterMenu extends AbstractContainerMenu {
 
     public boolean isCrafting() {
         return data.get(0) > 0;
-    }
-
-    public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);  // Max Progress
-        int progressArrowSize = 26; // This is the height in pixels of your arrow
-
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }
 
     public int getScaledSoulProgress() {

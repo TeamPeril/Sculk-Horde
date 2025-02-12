@@ -24,7 +24,7 @@ public class ImprovedFlyingNavigator extends FlyingPathNavigation {
         double distanceY = Math.abs(this.mob.getY() - (double) nextNodePosition.getY());
         double distanceZ = Math.abs(this.mob.getZ() - ((double) nextNodePosition.getZ() + 0.5D));
         boolean isNearNextNode  = distanceX < (double) this.maxDistanceToWaypoint && distanceZ < (double) this.maxDistanceToWaypoint && distanceY < 1.0D;
-        boolean canCutCorner = this.canCutCorner(this.path.getNextNode().type);
+        boolean canCutCorner = this.mob.canCutCorner(this.path.getNextNode().type);
         boolean shouldTargetNextNodeInDirection = this.shouldTargetNextNodeInDirection(mobPosition);
         boolean shouldAdvance = isNearNextNode || canCutCorner && shouldTargetNextNodeInDirection;
         if (shouldAdvance) {

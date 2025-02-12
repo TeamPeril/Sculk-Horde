@@ -3,7 +3,11 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -11,9 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
     @Override
     public void tick() {
 
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         currentLifeTicks++;
 
@@ -47,7 +48,7 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
 
         AABB hitbox = getBoundingBox().inflate(0,5,0);
 
-        List<LivingEntity> damageHitList = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox(getOwner(), (ServerLevel) level(), hitbox);
+        List<LivingEntity> damageHitList = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox(getOwner(), (ServerLevel) level, hitbox);
 
         for (LivingEntity entity : damageHitList)
         {
@@ -58,7 +59,7 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
 
             if(getOwner() != null)
             {
-                boolean didHurt = entity.hurt(damageSources().magic(), DAMAGE);
+                boolean didHurt = entity.hurt(DamageSource.MAGIC, DAMAGE);
                 if(didHurt)
                 {
                     double damageResistance = entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
@@ -70,7 +71,7 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
             }
             else
             {
-                entity.hurt(damageSources().magic(), DAMAGE);
+                entity.hurt(DamageSource.MAGIC, DAMAGE);
             }
             entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertSecondsToTicks(10), 0));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, TickUnits.convertSecondsToTicks(10), 0));
@@ -81,7 +82,7 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
     }
 
     // ### GECKOLIB Animation Code ###
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

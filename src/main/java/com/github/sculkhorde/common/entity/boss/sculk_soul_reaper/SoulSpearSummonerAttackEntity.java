@@ -5,17 +5,18 @@ import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,7 @@ import java.util.List;
  * Added {@link com.github.sculkhorde.client.model.enitity.ChaosTeleporationRiftModel}<br>
  * Added {@link com.github.sculkhorde.client.renderer.entity.ChaosTeleporationRiftRenderer}
  */
-public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implements GeoEntity
-{
+public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implements GeoEntity, GeoAnimatable {
     protected static int LIFE_TIME = TickUnits.convertSecondsToTicks(20);
     protected int currentLifeTicks = 0;
 
@@ -53,7 +53,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
 
     protected void populateTargetList()
     {
-        targets = EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) level(), getBoundingBox().inflate(20));
+        targets = EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) level, getBoundingBox().inflate(20));
     }
 
     public void shootProjectileAtTarget(LivingEntity entity)
@@ -64,7 +64,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
             return;
         }
 
-        AbstractProjectileEntity projectile =  new SoulSpearProjectileAttackEntity(level(), getOwner(), 20F);
+        AbstractProjectileEntity projectile =  new SoulSpearProjectileAttackEntity(level, getOwner(), 20F);
         projectile.setPos(position().add(0, getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
 
         double spawnPosX = getX();
@@ -82,7 +82,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
         projectile.shoot(direction);
 
         playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
-        level().addFreshEntity(projectile);
+        level.addFreshEntity(projectile);
 
     }
 
@@ -90,7 +90,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
     public void tick() {
         super.tick();
 
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         if (getOwner() != null && !getOwner().isAlive()) {
             this.discard();
@@ -104,7 +104,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
         if(currentLifeTicks >= LIFE_TIME && LIFE_TIME != -1) this.discard();
 
 
-        if(Math.abs(level().getGameTime() - lastTimeOfAttack) < ATTACK_COOLDOWN)
+        if(Math.abs(level.getGameTime() - lastTimeOfAttack) < ATTACK_COOLDOWN)
         {
             return;
         }
@@ -130,7 +130,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
             targets.remove(entity); // We remove the targets here to were not editing the `targets` while iterating through it
         }
 
-        lastTimeOfAttack = level().getGameTime();
+        lastTimeOfAttack = level.getGameTime();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
 
     // Animation Code
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
 
     @Override

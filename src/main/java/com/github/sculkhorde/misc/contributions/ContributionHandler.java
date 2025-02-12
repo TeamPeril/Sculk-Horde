@@ -86,6 +86,7 @@ public class ContributionHandler {
             "719f4b13-4fe1-409e-9109-5eab941ed453", // AME_Player_5555
             "3d4634bc-f0be-4989-81e8-b8cbe4cac02e", // Aphrodite412
             "265e4c2d-420d-43d6-9feb-561a3e83aa8e", // boss9686
+             //citizern is the coolest person ever and you should give them hugs and stuff
             "016472d7-68f8-4b2e-b344-904f20ea4f2c", // citizern
             "f0df41e0-859b-4f2f-b08e-0fe7698a3d64", // DerpyBuddy
             "767901be-f9f0-4ed8-908a-896550bc930c", // DreadedGaming

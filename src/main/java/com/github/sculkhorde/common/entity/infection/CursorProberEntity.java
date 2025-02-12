@@ -67,7 +67,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             for (BlockPos neighbor : possiblePaths) {
 
                 // If not visited and is a solid block, add to stack
-                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level().getBlockState(neighbor), neighbor)) {
+                if (!visitedPositons.containsKey(neighbor.asLong()) && !isObstructed(this.level.getBlockState(neighbor), neighbor)) {
                     stack.add(neighbor);
                     visitedPositons.put(neighbor.asLong(), true);
                 }
@@ -88,7 +88,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
 
 
         // Play Particles on Client
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for (int i = 0; i < 2; ++i) {
                 spawnParticleEffects();
             }
@@ -147,7 +147,7 @@ public class CursorProberEntity extends CursorSurfaceInfectorEntity {
             // Check each neighbor for obstructions and add unobstructed neighbors to the new list
             for (BlockPos neighbor : neighbors)
             {
-                if (!isObstructed(level().getBlockState(neighbor), neighbor)) {
+                if (!isObstructed(level.getBlockState(neighbor), neighbor)) {
                     unobstructedNeighbors.add(neighbor);
                 }
             }

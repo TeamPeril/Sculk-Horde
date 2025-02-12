@@ -3,16 +3,16 @@ package com.github.sculkhorde.client.model.enitity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.common.entity.SculkSquidEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import mod.azure.azurelib.constant.DataTickets;
+import mod.azure.azurelib.core.animatable.model.CoreGeoBone;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.model.DefaultedEntityGeoModel;
+import mod.azure.azurelib.model.data.EntityModelData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
-import software.bernie.geckolib.model.data.EntityModelData;
 
 public class SculkSquidModel extends DefaultedEntityGeoModel<SculkSquidEntity> {
 

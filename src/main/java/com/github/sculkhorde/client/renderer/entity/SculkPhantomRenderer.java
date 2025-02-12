@@ -2,9 +2,9 @@ package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.client.model.enitity.SculkPhantomModel;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+import mod.azure.azurelib.renderer.GeoEntityRenderer;
+import mod.azure.azurelib.renderer.layer.AutoGlowingGeoLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 
 public class SculkPhantomRenderer extends GeoEntityRenderer<SculkPhantomEntity> {

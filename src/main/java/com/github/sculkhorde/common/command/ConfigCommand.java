@@ -482,7 +482,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
         // Provide feedback to the player
         if (success) {
-            context.getSource().sendSuccess(() -> Component.literal("Config option updated successfully. " + configKey + " is now: " + rawValue), false);
+            context.getSource().sendSuccess(Component.literal("Config option updated successfully. " + configKey + " is now: " + rawValue), false);
         } else {
             context.getSource().sendFailure(Component.literal("Failed to update config option. Check your input."));
         }

@@ -7,7 +7,7 @@ import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEnt
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.SpawnPlacements;

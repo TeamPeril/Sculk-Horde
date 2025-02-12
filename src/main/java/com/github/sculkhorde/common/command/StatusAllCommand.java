@@ -22,7 +22,7 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context)
     {
-        context.getSource().sendSuccess(()->Component.literal(
+        context.getSource().sendSuccess(Component.literal(
                 "Horde State: " + SculkHorde.savedData.getHordeState().toString()
                         + "\n"
                         + "Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString()
@@ -58,8 +58,6 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "Performance Mode Max Nodes Active: " + SculkHorde.autoPerformanceSystem.getMaxNodesActive()
                         + "\n"
                         + "Cursors being Ticked: " + SculkHorde.cursorSystem.getSizeOfCursorList() + " / " + SculkHorde.autoPerformanceSystem.getMaxInfectorCursorPopulation()
-                        + "\n"
-                        + "Virtual Cursors being Ticked: " + SculkHorde.cursorSystem.getSizeOfVirtualCursorList() + " / " + SculkHorde.autoPerformanceSystem.getMaxInfectorCursorPopulation()
                         + "\n"
                         + "Sculk Unit Population: " + SculkHorde.populationHandler.getPopulationSize() + " / " + SculkHorde.populationHandler.getMaxPopulation()
                 ), false);

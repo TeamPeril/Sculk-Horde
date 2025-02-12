@@ -9,8 +9,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
@@ -63,9 +65,8 @@ public class BlockAlgorithms {
 
     public static boolean isAir(BlockState blockState)
     {
-        return blockState.isAir() || blockState.is(Blocks.AIR) || blockState.is(Blocks.CAVE_AIR);
+        return blockState.isAir();
     }
-
     public static boolean doesNotNeedToolForDrops(BlockState blockState)
     {
         return !blockState.requiresCorrectToolForDrops();
@@ -98,7 +99,7 @@ public class BlockAlgorithms {
 
     public static boolean isReplaceable(BlockState blockState)
     {
-        return isReplaceableByWater(blockState) || blockState.canBeReplaced();
+        return isReplaceableByWater(blockState) || blockState.canBeReplaced(Fluids.WATER);
     }
 
     public static boolean isReplaceableByWater(BlockState blockState)
@@ -648,7 +649,7 @@ public class BlockAlgorithms {
     public static boolean isNotSolid(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         boolean canNotOcclude = !state.canOcclude();
-        boolean isNotSolid = !state.isSolid();
+        boolean isNotSolid = !state.getMaterial().isSolid();
         boolean isAir = state.isAir();
         boolean isNotSolidRender = !state.isSolidRender(level, pos);
         return canNotOcclude || isNotSolid || isAir || isNotSolidRender;

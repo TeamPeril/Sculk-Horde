@@ -75,9 +75,9 @@ public class TomeOfSporeItem extends TomeItem implements IForgeItem {
 			{
 				player.addEffect(new MobEffectInstance(MobEffects.HUNGER, TickUnits.convertSecondsToTicks(10), 90));
 				player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertSecondsToTicks(30), 9));
-				SculkSporeSpewerEntity entity = new SculkSporeSpewerEntity(player.level());
+				SculkSporeSpewerEntity entity = new SculkSporeSpewerEntity(player.level);
 				entity.setPos(player.position());
-				player.level().addFreshEntity(entity);
+				player.level.addFreshEntity(entity);
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,7 +47,7 @@ public class DiseasedCystsEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity sourceEntity, int amp) {
 
-        if(sourceEntity.level().isClientSide())
+        if(sourceEntity.level.isClientSide())
         {
             return;
         }
@@ -54,7 +55,7 @@ public class DiseasedCystsEffect extends MobEffect {
         // Create AABB bounding box around entity and check if there are any non-sculk entities inside
         AABB boundingBox = sourceEntity.getBoundingBox();
         boundingBox = boundingBox.inflate(10.0D, 10.0D, 10.0D);
-        List<LivingEntity> entities = sourceEntity.level().getEntitiesOfClass(LivingEntity.class, boundingBox);
+        List<LivingEntity> entities = sourceEntity.level.getEntitiesOfClass(LivingEntity.class, boundingBox);
         if(!entities.isEmpty())
         {
             // If there are non-sculk entities inside, give them infection.
@@ -78,7 +79,7 @@ public class DiseasedCystsEffect extends MobEffect {
                     continue;
                 }
                 float damage = (victim.getMaxHealth() * 0.1F);
-                victim.hurt(victim.damageSources().magic(), damage);
+                victim.hurt(DamageSource.MAGIC, damage);
                 SculkHorde.savedData.addSculkAccumulatedMass((int) damage);
                 SculkHorde.statisticsData.addTotalMassFromDiseasedCysts((int) damage);
 

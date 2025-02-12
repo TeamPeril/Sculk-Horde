@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.entity.goal.AttackStepGoal;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 
 public class ReaperCastSpellGoal extends AttackStepGoal {
     protected final SculkSoulReaperEntity mob;
@@ -58,13 +59,13 @@ public class ReaperCastSpellGoal extends AttackStepGoal {
     {
         super.start();
 
-        if(mob.level().isClientSide())
+        if(mob.level.isClientSide())
         {
             return;
         }
 
         playCastingAnimation();
-        mob.level().playSound(mob, mob.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.HOSTILE, 1.0F, 1.0F);
+        mob.level.playSound((Player)null, mob.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.HOSTILE, 1.0F, 1.0F);
     }
 
     protected void playCastingAnimation()
@@ -87,7 +88,7 @@ public class ReaperCastSpellGoal extends AttackStepGoal {
     {
         super.tick();
 
-        if(mob.level().isClientSide())
+        if(mob.level.isClientSide())
         {
             return;
         }

@@ -17,7 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -85,8 +86,7 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_BLUE)
+        Properties prop = Properties.of(Material.STONE, MaterialColor.COLOR_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
         return prop;

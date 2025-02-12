@@ -3,23 +3,11 @@ package com.github.sculkhorde.client.renderer.entity;
 import com.github.sculkhorde.client.model.enitity.SoulSpearProjectileModel;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulSpearProjectileAttackEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
+import com.mojang.math.Vector3f;
+import mod.azure.azurelib.renderer.GeoEntityRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
-
-import java.util.Objects;
 
 public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProjectileAttackEntity> {
     public SoulSpearProjectileRenderer(EntityRendererProvider.Context renderManager) {
@@ -27,41 +15,12 @@ public class SoulSpearProjectileRenderer extends GeoEntityRenderer<SoulSpearProj
     }
 
     @Override
-    public void actuallyRender(PoseStack poseStack, SoulSpearProjectileAttackEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void render(SoulSpearProjectileAttackEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.getYRot())));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.getXRot())));
 
-        if (!isReRender) {
-            float motionThreshold = this.getMotionAnimThreshold(animatable);
-            Vec3 velocity = animatable.getDeltaMovement();
-            float avgVelocity = (float)((Math.abs(velocity.x) + Math.abs(velocity.z)) / 2.0);
-            AnimationState<SoulSpearProjectileAttackEntity> animationState = new AnimationState(animatable, 0, 0, partialTick, avgVelocity >= motionThreshold);
-            long instanceId = this.getInstanceId(animatable);
-            GeoModel<SoulSpearProjectileAttackEntity> currentModel = this.getGeoModel();
-            animationState.setData(DataTickets.TICK, ((GeoAnimatable)animatable).getTick(animatable));
-            animationState.setData(DataTickets.ENTITY, animatable);
-            Objects.requireNonNull(animationState);
-            currentModel.addAdditionalStateData(animatable, instanceId, animationState::setData);
-            currentModel.handleAnimations(animatable, instanceId, animationState);
-        }
-
-        // Apply entity rotation
-        poseStack.mulPose(Axis.YN.rotationDegrees(Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot())));
-        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, animatable.xRotO, animatable.getXRot())));
-
-        poseStack.translate(0.0F, 0.01F, 0.0F);
-        this.modelRenderTranslations = new Matrix4f(poseStack.last().pose());
-        if (animatable.isInvisibleTo(Minecraft.getInstance().player)) {
-            if (Minecraft.getInstance().shouldEntityAppearGlowing(animatable)) {
-                buffer = bufferSource.getBuffer(renderType = RenderType.outline(this.getTextureLocation(animatable)));
-            } else {
-                renderType = null;
-            }
-        }
-
-        if (renderType != null) {
-            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-        }
-
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
         poseStack.popPose();
     }
 }

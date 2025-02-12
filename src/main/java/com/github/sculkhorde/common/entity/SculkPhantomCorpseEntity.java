@@ -1,14 +1,22 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.*;
-import com.github.sculkhorde.systems.cursor_system.CursorSystem;
-import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -31,20 +39,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Random;
 
-public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -74,7 +73,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
 
-    private VirtualSurfaceInfestorCursor cursor;
+    private CursorSurfaceInfectorEntity cursor;
 
     private long INFECTION_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(2);
     private long lastInfectionTime = 0;
@@ -212,7 +211,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
 
         // Only on the client side, spawn dust particles with a specific color
         // Have the partciles fly in random directions
-        if (level().isClientSide)
+        if (level.isClientSide)
         {
             Random random = new Random();
             //Choose a random position in the hitbox
@@ -220,7 +219,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
 
             for (int i = 0; i < 1; i++)
             {
-                level().addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), randomPos.x, randomPos.y, randomPos.z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
+                level.addParticle(ModParticles.SCULK_CRUST_PARTICLE.get(), randomPos.x, randomPos.y, randomPos.z, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3, (random.nextDouble() - 0.5) * 3);
             }
             return;
         }
@@ -230,7 +229,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
 
         Random random = new Random();
         boolean passRandomChance = random.nextInt(100) == 0;
-        boolean isCursorNullOrDead = cursor == null || cursor.isSetToBeDeleted();
+        boolean isCursorNullOrDead = cursor == null || !cursor.isAlive();
         boolean isBlockInfestationEnabled = ModConfig.SERVER.block_infestation_enabled.get();
         // The reason we do this instead of just checking if the horde is active is because sometimes people will spawn these
         // without activating the horde.
@@ -238,27 +237,24 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         boolean canSpawnCursor = passRandomChance && isCursorNullOrDead && isBlockInfestationEnabled && isTheHordeNotDefeated;
 
         if (canSpawnCursor && !SculkHorde.cursorSystem.isCursorPopulationAtMax()) {
-            level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
-
+            level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 1, () -> {
                 // Spawn Block Traverser
-                Optional<VirtualSurfaceInfestorCursor> possibleCursor = CursorSystem.createSurfaceInfestorVirtualCursor(level(), blockPosition());
-                if(possibleCursor.isPresent())
-                {
-                    cursor = possibleCursor.get();
-                    cursor.setMaxTransformations(100);
-                    cursor.setMaxRange(100);
-                    cursor.setTickIntervalTicks(TickUnits.convertSecondsToTicks(0.5F));
-                    cursor.setSearchIterationsPerTick(1);
-                }
+                cursor = new CursorSurfaceInfectorEntity(level);
+                cursor.setPos(this.blockPosition().getX(), this.blockPosition().getY() - 1, this.blockPosition().getZ());
+                cursor.setMaxTransformations(100);
+                cursor.setMaxRange(100);
+                cursor.setTickIntervalMilliseconds(50);
+                cursor.setSearchIterationsPerTick(1);
+                level.addFreshEntity(cursor);
             }));
             triggerAnim("spread_controller", "spread_animation");
         }
 
-        if (level().getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
+        if (level.getGameTime() - lastInfectionTime > INFECTION_INTERVAL_TICKS)
         {
-            lastInfectionTime = level().getGameTime();
+            lastInfectionTime = level.getGameTime();
             // Any entity within 10 blocks of the spewer will be infected
-            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), this.blockPosition(), 10);
+            ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level, this.blockPosition(), 10);
             for (LivingEntity victim : entities)
             {
                 if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
@@ -283,12 +279,12 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         return SoundEvents.PHANTOM_DEATH;
     }
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
     private static final RawAnimation CORPSE_IDLE_ANIMATION = RawAnimation.begin().thenLoop("corpse");
 
     private static final RawAnimation SPREAD_ANIMATION = RawAnimation.begin().thenPlay("corpse.spread");
     private final AnimationController<SculkPhantomCorpseEntity> SPREAD_ANIMATION_CONTROLLER = new AnimationController<>(this, "spread_controller", state -> PlayState.STOP)
-            .triggerableAnim("spread_animation", SPREAD_ANIMATION).transitionLength(5);
+            .triggerableAnim("spread_animation", SPREAD_ANIMATION);
     protected PlayState pose(AnimationState<SculkPhantomCorpseEntity> state)
     {
         state.setAnimation(CORPSE_IDLE_ANIMATION);
@@ -330,7 +326,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         @Override
         public void tick()
         {
-            if(level().isClientSide())
+            if(level.isClientSide())
             {
                 return;
             }
@@ -359,7 +355,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
         @Override
         public boolean canUse() {
 
-            return entity.level().getGameTime() - lastExecutionTime > EXECUTION_COOLDOWN;
+            return entity.level.getGameTime() - lastExecutionTime > EXECUTION_COOLDOWN;
         }
 
         @Override
@@ -373,12 +369,12 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
                     for (int z = (int) hitBox.minZ; z < hitBox.maxZ; z++)
                     {
                         BlockPos pos = new BlockPos(x, y, z);
-                        BlockState blockAtPosition = entity.level().getBlockState(pos);
+                        BlockState blockAtPosition = entity.level.getBlockState(pos);
 
                         if (blockAtPosition.is(isLeaves))
                         {
-                            entity.level().destroyBlock(pos, false);
-                            lastExecutionTime = entity.level().getGameTime();
+                            entity.level.destroyBlock(pos, false);
+                            lastExecutionTime = entity.level.getGameTime();
                         }
                     }
                 }

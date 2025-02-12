@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.TooltipFlag;
@@ -39,7 +40,8 @@ public class SculkResinItem extends Item implements IForgeItem {
      */
     public static Properties getProperties()
     {
-        return new Properties();
+        return new Properties()
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     //This changes the text you see when hovering over an item

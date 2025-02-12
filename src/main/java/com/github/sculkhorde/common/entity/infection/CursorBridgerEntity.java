@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.infection;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -81,11 +82,11 @@ public class CursorBridgerEntity extends Entity {
         lastTickTime = System.nanoTime();
 
         // Play Particles on Client
-        if (this.level().isClientSide)
+        if (this.level.isClientSide)
         {
             for(int i = 0; i < 2; ++i)
             {
-                this.level().addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
             }
             return;
         }
@@ -107,9 +108,9 @@ public class CursorBridgerEntity extends Entity {
         for (BlockPos pos : neighbors)
         {
             closest = pos;
-            if(this.level().getBlockState(closest).isAir())
+            if(this.level.getBlockState(closest).isAir())
             {
-                this.level().setBlockAndUpdate(closest, ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+                this.level.setBlockAndUpdate(closest, ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
             }
 
         }
@@ -122,9 +123,9 @@ public class CursorBridgerEntity extends Entity {
         lastKnownBlockPos = this.blockPosition();
 
         // If block break speed is < 3, then covert it to a sculk block
-        if (this.level().getBlockState(this.blockPosition()).getDestroySpeed(this.level(), this.blockPosition()) <= 3)
+        if (this.level.getBlockState(this.blockPosition()).getDestroySpeed(this.level, this.blockPosition()) <= 3)
         {
-            this.level().setBlockAndUpdate(this.blockPosition(), ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
+            this.level.setBlockAndUpdate(this.blockPosition(), ModBlocks.SCULK_LIVING_ROCK_BLOCK.get().defaultBlockState());
         }
 
         // Keep track of how far we've traveled
@@ -145,6 +146,11 @@ public class CursorBridgerEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
 
+    }
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return null;
     }
 
     /*

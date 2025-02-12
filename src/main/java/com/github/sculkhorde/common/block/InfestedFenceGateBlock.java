@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.ITagInfestedBlock;
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.ITagInfestedBlockEntity;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 public class InfestedFenceGateBlock extends FenceGateBlock implements EntityBlock, IForgeBlock, ITagInfestedBlock {
 
 	public InfestedFenceGateBlock(Properties properties) {
-        super(properties, SoundEvents.NETHER_WOOD_FENCE_GATE_OPEN, SoundEvents.NETHER_WOOD_FENCE_GATE_CLOSE);
+        super(properties);
     }
 	/* Properties from BaseEntityBlock */
 	

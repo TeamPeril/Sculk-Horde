@@ -30,13 +30,13 @@ public class ShortRangeFloorSoulsAttackGoal extends ReaperCastSpellGoal
 
         for(Vec3 position: pos)
         {
-            AreaEffectCloud cloud = new AreaEffectCloud(mob.level(), position.x, position.y, position.z);
+            AreaEffectCloud cloud = new AreaEffectCloud(mob.level, position.x, position.y, position.z);
             cloud.setOwner(mob);
             cloud.setRadius(3);
             cloud.setDuration(TickUnits.convertSecondsToTicks(20));
             cloud.addEffect(new MobEffectInstance(MobEffects.HARM));
             cloud.setParticle(ParticleTypes.SCULK_SOUL);
-            mob.level().addFreshEntity(cloud);
+            mob.level.addFreshEntity(cloud);
         }
     }
 

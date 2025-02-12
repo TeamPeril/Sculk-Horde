@@ -1,7 +1,6 @@
 package com.github.sculkhorde.compat;
 
 import com.github.sculkhorde.common.recipe.SoulHarvestingRecipe;
-import com.github.sculkhorde.common.screen.SoulHarvesterScreen;
 import com.github.sculkhorde.core.SculkHorde;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;

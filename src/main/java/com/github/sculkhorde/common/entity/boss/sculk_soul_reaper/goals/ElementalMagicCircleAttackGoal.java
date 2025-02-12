@@ -22,7 +22,7 @@ public class ElementalMagicCircleAttackGoal extends ReaperCastSpellGoal
     public void start()
     {
         super.start();
-        elementType = mob.level().getRandom().nextInt(4);
+        elementType = mob.level.getRandom().nextInt(4);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ElementalMagicCircleAttackGoal extends ReaperCastSpellGoal
         {
             return false;
         }
-        if(!mob.getTarget().onGround())
+        if(!mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -92,18 +92,18 @@ public class ElementalMagicCircleAttackGoal extends ReaperCastSpellGoal
 
     // Creates a spell entity at the specified coordinates
     private void createSpellEntity(double x, double z, double minY, double maxY, float angle, int delay) {
-        BlockPos blockPos = BlockPos.containing(x, maxY, z);
+        BlockPos blockPos = new BlockPos(x, maxY, z);
         boolean foundSuitablePosition = false;
         double yOffset = 0.0D;
 
         // Find a suitable position for the spell entity
         do {
             BlockPos belowBlockPos = blockPos.below();
-            BlockState belowBlockState = mob.level().getBlockState(belowBlockPos);
-            if (belowBlockState.isFaceSturdy(mob.level(), belowBlockPos, Direction.UP)) {
-                if (!mob.level().isEmptyBlock(blockPos)) {
-                    BlockState blockState = mob.level().getBlockState(blockPos);
-                    VoxelShape voxelShape = blockState.getCollisionShape(mob.level(), blockPos);
+            BlockState belowBlockState = mob.level.getBlockState(belowBlockPos);
+            if (belowBlockState.isFaceSturdy(mob.level, belowBlockPos, Direction.UP)) {
+                if (!mob.level.isEmptyBlock(blockPos)) {
+                    BlockState blockState = mob.level.getBlockState(blockPos);
+                    VoxelShape voxelShape = blockState.getCollisionShape(mob.level, blockPos);
                     if (!voxelShape.isEmpty()) {
                         yOffset = voxelShape.max(Direction.Axis.Y);
                     }
@@ -118,18 +118,18 @@ public class ElementalMagicCircleAttackGoal extends ReaperCastSpellGoal
 
         // Add the spell entity to the world if a suitable position is found
         if (foundSuitablePosition) {
-            mob.level().addFreshEntity(getElementalSpellEntity(x, (double)blockPos.getY() + yOffset, z, angle, mob));
+            mob.level.addFreshEntity(getElementalSpellEntity(x, (double)blockPos.getY() + yOffset, z, angle, mob));
         }
     }
 
     public ElementalFireMagicCircleAttackEntity getElementalSpellEntity(double x, double y, double z, float angle, LivingEntity owner)
     {
         return switch (elementType) {
-            case 0 -> new ElementalFireMagicCircleAttackEntity(mob.level(), x, y, z, angle, owner);
-            case 1 -> new ElementalPoisonMagicCircleAttackEntity(mob.level(), x, y, z, angle, owner);
-            case 2 -> new ElementalIceMagicCircleAttackEntity(mob.level(), x, y, z, angle, owner);
-            case 3 -> new ElementalBreezeMagicCircleAttackAttackEntity(mob.level(), x, y, z, angle, owner);
-            default -> new ElementalFireMagicCircleAttackEntity(mob.level(), x, y, z, angle, owner);
+            case 0 -> new ElementalFireMagicCircleAttackEntity(mob.level, x, y, z, angle, owner);
+            case 1 -> new ElementalPoisonMagicCircleAttackEntity(mob.level, x, y, z, angle, owner);
+            case 2 -> new ElementalIceMagicCircleAttackEntity(mob.level, x, y, z, angle, owner);
+            case 3 -> new ElementalBreezeMagicCircleAttackAttackEntity(mob.level, x, y, z, angle, owner);
+            default -> new ElementalFireMagicCircleAttackEntity(mob.level, x, y, z, angle, owner);
         };
     }
 }

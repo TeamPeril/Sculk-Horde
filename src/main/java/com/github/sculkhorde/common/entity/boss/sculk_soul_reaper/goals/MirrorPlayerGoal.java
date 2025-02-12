@@ -35,14 +35,14 @@ public class MirrorPlayerGoal extends ReaperCastSpellGoal
 
     @Override
     protected void doAttackTick() {
-        if(mob.level().isClientSide())
+        if(mob.level.isClientSide())
         {
             return;
         }
 
         shootFakeBeam(mob.getEyePosition(), mob, mob.getTarget(), 0.1F, 5F);
-        LivingArmorEntity entity = new LivingArmorEntity(mob.level(), mob.position());
-        mob.level().addFreshEntity(entity);
+        LivingArmorEntity entity = new LivingArmorEntity(mob.level, mob.position());
+        mob.level.addFreshEntity(entity);
         setSpellCompleted();
     }
     public void shootFakeBeam(Vec3 origin, Mob shooter, LivingEntity target, float radius, float thickness)
@@ -72,9 +72,9 @@ public class MirrorPlayerGoal extends ReaperCastSpellGoal
                 double xOffset = radius * Math.cos(angle);
                 double zOffset = radius * Math.sin(angle);
                 Vec3 offset = right.scale(xOffset).add(forward.scale(zOffset));
-                ((ServerLevel) shooter.level()).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, vec33.x + offset.x, vec33.y + offset.y, vec33.z + offset.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                ((ServerLevel) shooter.level).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, vec33.x + offset.x, vec33.y + offset.y, vec33.z + offset.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
             }
         }
-        shooter.level().playSound(shooter,shooter.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.HOSTILE, 1.0F, 1.0F);
+        shooter.level.playSound((Player)null,shooter, SoundEvents.TOTEM_USE, SoundSource.HOSTILE, 1.0F, 1.0F);
     }
 }

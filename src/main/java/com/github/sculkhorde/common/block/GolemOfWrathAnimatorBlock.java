@@ -15,7 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -84,8 +85,7 @@ public class GolemOfWrathAnimatorBlock extends BaseEntityBlock implements IForge
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_YELLOW)
+        Properties prop = Properties.of(Material.AMETHYST, MaterialColor.COLOR_YELLOW)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .sound(SoundType.AMETHYST);

@@ -22,7 +22,7 @@ public class StatusCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context)
     {
-        context.getSource().sendSuccess(()->Component.literal(
+        context.getSource().sendSuccess(Component.literal(
                 "Horde State: " + SculkHorde.savedData.getHordeState().toString()
                         + "\n"
                         + "Gravemind State: " + SculkHorde.gravemind.getEvolutionState().toString()

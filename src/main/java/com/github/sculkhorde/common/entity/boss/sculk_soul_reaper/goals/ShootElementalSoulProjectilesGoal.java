@@ -32,7 +32,7 @@ public class ShootElementalSoulProjectilesGoal extends ReaperCastSpellGoal
     public void start()
     {
         super.start();
-        projectileType = mob.level().getRandom().nextInt(4);
+        projectileType = mob.level.getRandom().nextInt(4);
     }
 
 
@@ -64,11 +64,11 @@ public class ShootElementalSoulProjectilesGoal extends ReaperCastSpellGoal
     public AbstractProjectileEntity getProjectile()
     {
         return switch (projectileType) {
-            case 0 -> new SoulFireProjectileAttackEntity(mob.level(), mob, 2.5F);
-            case 1 -> new SoulPoisonProjectileAttackEntity(mob.level(), mob, 2.5F);
-            case 2 -> new SoulIceProjectileAttackEntity(mob.level(), mob, 2.5F);
-            case 3 -> new SoulBreezeProjectileAttackEntity(mob.level(), mob, 2.5F);
-            default -> new SoulFireProjectileAttackEntity(mob.level(), mob, 2.5F);
+            case 0 -> new SoulFireProjectileAttackEntity(mob.level, mob, 2.5F);
+            case 1 -> new SoulPoisonProjectileAttackEntity(mob.level, mob, 2.5F);
+            case 2 -> new SoulIceProjectileAttackEntity(mob.level, mob, 2.5F);
+            case 3 -> new SoulBreezeProjectileAttackEntity(mob.level, mob, 2.5F);
+            default -> new SoulFireProjectileAttackEntity(mob.level, mob, 2.5F);
         };
     }
 
@@ -105,7 +105,7 @@ public class ShootElementalSoulProjectilesGoal extends ReaperCastSpellGoal
         projectile.shoot(direction);
 
         mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level().addFreshEntity(projectile);
+        mob.level.addFreshEntity(projectile);
 
         attackkIntervalCooldown = attackIntervalTicks;
     }

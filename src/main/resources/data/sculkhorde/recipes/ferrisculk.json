@@ -1,0 +1,12 @@
+{
+  "type": "sculkhorde:soul_harvesting",
+  "ingredients" : [
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "output": {
+    "count": 1,
+    "item": "sculkhorde:ferrisculk"
+  }
+}

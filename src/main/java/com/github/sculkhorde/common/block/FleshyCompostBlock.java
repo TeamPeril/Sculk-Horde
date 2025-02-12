@@ -21,10 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.*;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -82,8 +79,7 @@ public class FleshyCompostBlock extends BaseEntityBlock implements IForgeBlock, 
      */
     public static Properties getProperties()
     {
-        return Properties.of()
-                .mapColor(MapColor.CLAY)
+        return Properties.of(Material.CLAY, MaterialColor.CLAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.SLIME_BLOCK)
                 .noOcclusion();
@@ -96,13 +92,13 @@ public class FleshyCompostBlock extends BaseEntityBlock implements IForgeBlock, 
 
         for(int i = 0; i < maxDistanceToCheck; i++)
         {
-            if(entity.level().getBlockState(placementPos.below()).canBeReplaced(Fluids.WATER))
+            if(entity.level.getBlockState(placementPos.below()).canBeReplaced(Fluids.WATER))
             {
                 placementPos = placementPos.below();
             }
         }
         FleshyCompostBlock flesh = ModBlocks.PASTY_ORGANIC_MASS.get();
-        flesh.spawn(entity.level(), placementPos.below(), entity);
+        flesh.spawn(entity.level, placementPos.below(), entity);
 
     }
 

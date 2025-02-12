@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -74,7 +73,6 @@ public class SouliteClusterBlock extends AmethystBlock implements SimpleWaterlog
    public static Properties getProperties()
    {
       Properties prop = Properties.copy(Blocks.STONE)
-              .mapColor(MapColor.COLOR_CYAN)
               .strength(HARDNESS, BLAST_RESISTANCE)//Hardness & Resistance
               .sound(SoundType.HONEY_BLOCK)
               .destroyTime(5f)

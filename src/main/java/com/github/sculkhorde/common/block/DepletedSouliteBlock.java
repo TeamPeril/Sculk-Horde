@@ -6,7 +6,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 public class DepletedSouliteBlock extends HalfTransparentBlock implements IForgeBlock {
@@ -55,7 +54,6 @@ public class DepletedSouliteBlock extends HalfTransparentBlock implements IForge
     public static Properties getProperties()
     {
         Properties prop = Properties.copy(Blocks.STONE)
-                .mapColor(MapColor.COLOR_CYAN)
                 .strength(HARDNESS, BLAST_RESISTANCE)//Hardness & Resistance
                 .sound(SoundType.HONEY_BLOCK)
                 .destroyTime(5f)

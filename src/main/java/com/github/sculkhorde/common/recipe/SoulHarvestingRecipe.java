@@ -34,12 +34,16 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
+    public ItemStack assemble(SimpleContainer simpleContainer) {
+        return null;
+    }
+
+    @Override
     public NonNullList<Ingredient> getIngredients()
     {
         return inputItems;
     }
 
-    @Override
     public ItemStack assemble(SimpleContainer p_44001_, RegistryAccess p_267165_) {
         return output.copy();
     }
@@ -50,6 +54,10 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
+    public ItemStack getResultItem() {
+        return null;
+    }
+
     public ItemStack getResultItem(RegistryAccess p_267052_) {
         return output.copy();
     }

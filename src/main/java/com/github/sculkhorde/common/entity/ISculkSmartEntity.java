@@ -20,7 +20,7 @@ public interface ISculkSmartEntity {
     }
 
     default ModSavedData.NodeEntry getClosestNode() {
-        return SculkHorde.savedData.getClosestNodeEntry((ServerLevel) ((Mob) this).level(), ((Mob) this).blockPosition());
+        return SculkHorde.savedData.getClosestNodeEntry((ServerLevel) ((Mob) this).level, ((Mob) this).blockPosition());
     }
 
     default BlockPos getClosestNodePosition() {
@@ -30,7 +30,7 @@ public interface ISculkSmartEntity {
     SquadHandler getSquad();
 
     default Optional<SculkNodeBlockEntity> getClosestNodeBlockEntity() {
-        return ((Mob)this).level().getBlockEntity(getClosestNodePosition(), ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+        return ((Mob)this).level.getBlockEntity(getClosestNodePosition(), ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
     }
 
     boolean isParticipatingInRaid();

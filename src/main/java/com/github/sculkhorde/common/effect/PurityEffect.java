@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.effect;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +40,7 @@ public class PurityEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity entity, int amp) {
 
-        if(entity.level().isClientSide()) { return;}
+        if(entity.level.isClientSide()) { return;}
         // IF entity has a sculk infection, remove it
         if(entity.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
         {
@@ -59,7 +60,7 @@ public class PurityEffect extends MobEffect {
         // If Sculk Living Entity, do damage
         if(EntityAlgorithms.isSculkLivingEntity.test(entity) || EntityAlgorithms.isLivingEntityAllyToSculkHorde(entity))
         {
-            entity.hurt(entity.damageSources().magic(), 1);
+            entity.hurt(DamageSource.MAGIC, 1);
         }
 
     }

@@ -7,6 +7,15 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -34,18 +43,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSmartEntity {
+public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -72,7 +73,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             .disableTargetWalkers()
             .enableMustSeeTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
 
     /**
@@ -229,7 +230,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
             Vec3 directionVector = targetPosition.subtract(squidPosition).normalize();
 
             for (int i = 0; i < 30; ++i) {
-                ((ServerLevel)this.level()).sendParticles(ParticleTypes.SQUID_INK,
+                ((ServerLevel)this.level).sendParticles(ParticleTypes.SQUID_INK,
                         squidPosition.x, squidPosition.y, squidPosition.z,
                         1, // count of particles
                         directionVector.x, directionVector.y, directionVector.z,
@@ -266,7 +267,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     protected PlayState poseSwimCycle(AnimationState<SculkSquidEntity> state)
     {
 
-        if(state.getAnimatable().level().getFluidState(state.getAnimatable().blockPosition()).isEmpty())
+        if(state.getAnimatable().level.getFluidState(state.getAnimatable().blockPosition()).isEmpty())
         {
             state.setAnimation(STUCK_ANIMATION);
         }
@@ -321,7 +322,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         }
 
         public void tick() {
-            if(fish.level().isClientSide()) { return; }
+            if(fish.level.isClientSide()) { return; }
 
             if(!mob.isEyeInFluid(FluidTags.WATER))
             {
@@ -362,7 +363,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         long attackStartTime = 0;
 
         public ChargeAttackGoal(PathfinderMob mob) {
-            lastTimeOfAttack = mob.level().getGameTime();
+            lastTimeOfAttack = mob.level.getGameTime();
             this.mob = mob;
         }
 
@@ -379,7 +380,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
                 return false;
             }
 
-            if(level().getGameTime() - lastTimeOfAttack < ATTACK_COOLDOWN)
+            if(level.getGameTime() - lastTimeOfAttack < ATTACK_COOLDOWN)
             {
                 return false;
             }
@@ -395,14 +396,14 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         @Override
         public boolean canContinueToUse()
         {
-            return level().getGameTime() - attackStartTime < CHARGE_DURATION;
+            return level.getGameTime() - attackStartTime < CHARGE_DURATION;
         }
 
         @Override
         public void start() {
             EntityAlgorithms.applyEffectToTarget(mob, MobEffects.MOVEMENT_SPEED, TickUnits.convertSecondsToTicks(CHARGE_DURATION), 4);
-            lastTimeOfAttack = level().getGameTime();
-            attackStartTime = level().getGameTime();
+            lastTimeOfAttack = level.getGameTime();
+            attackStartTime = level.getGameTime();
             triggerAnim("boost_controller", "boost");
         }
 

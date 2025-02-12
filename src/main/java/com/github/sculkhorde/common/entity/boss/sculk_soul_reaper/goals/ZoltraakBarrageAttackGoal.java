@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,13 +61,13 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
         int maxTargets = 5;
 
         AABB targetHitBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(mob.position(), 10);
-        targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
+        targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level, targetHitBox));
 
         if(targets.size() < maxTargets)
         {
             targets.clear();
             targetHitBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(mob.position(), 20);
-            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
+            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level, targetHitBox));
             //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 20");
         }
 
@@ -74,7 +75,7 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
         {
             targets.clear();
             targetHitBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(mob.position(), 30);
-            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
+            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level, targetHitBox));
             //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 30");
         }
 
@@ -82,7 +83,7 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
         {
             targets.clear();
             targetHitBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(mob.position(), 40);
-            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
+            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level, targetHitBox));
             //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 40");
         }
 
@@ -90,7 +91,7 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
         {
             targets.clear();
             targetHitBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(mob.position(), 50);
-            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
+            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level, targetHitBox));
             //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 50");
         }
 
@@ -98,7 +99,7 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
         {
             targets.clear();
             targetHitBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(mob.position(), 60);
-            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
+            targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level, targetHitBox));
             //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 60");
         }
 
@@ -141,7 +142,7 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
         }
 
         //SculkSoulReaperEntity.performTargetedZoltraakAttack(mob, getRandomBlockPosAboveEntity().getCenter(), mob.getTarget(), DAMAGE);
-        ZoltraakAttackEntity.castZoltraakOnEntity(mob, mob.getTarget(), getRandomBlockPosAboveEntity().getCenter());
+        ZoltraakAttackEntity.castZoltraakOnEntity(mob, mob.getTarget(), Vec3.atCenterOf(getRandomBlockPosAboveEntity()));
 
         attackkIntervalCooldown = attackIntervalTicks;
     }

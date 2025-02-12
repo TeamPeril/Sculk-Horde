@@ -23,7 +23,7 @@ public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<Grave
     }
 
     @Override
-    public GravemindEvoleImmatureCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
+    public GravemindEvoleImmatureCriterion createInstance(JsonObject jsonObject, EntityPredicate.Composite awarePredicate, DeserializationContext deserializationContext) {
         return new GravemindEvoleImmatureCriterion(awarePredicate);
     }
 
@@ -33,7 +33,7 @@ public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<Grave
 
     public static class GravemindEvoleImmatureCriterion extends AbstractCriterionTriggerInstance {
 
-        public GravemindEvoleImmatureCriterion(ContextAwarePredicate awarePredicate) {
+        public GravemindEvoleImmatureCriterion(EntityPredicate.Composite awarePredicate) {
             super(ID, awarePredicate);
         }
     }

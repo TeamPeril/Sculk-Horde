@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -85,7 +86,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
         double targetZ = target.getZ();
         double distance = Math.sqrt(Math.pow(mobX-targetX, 2) + Math.pow(mobY-targetY, 2) + Math.pow(mobZ-targetZ, 2));
         //If in infect range & not client side & current mob health is less than or equal to 50% of max health
-        if(distance <= SculkMiteEntity.INFECT_RANGE && !(this.mob.level().isClientSide))
+        if(distance <= SculkMiteEntity.INFECT_RANGE && !(this.mob.level.isClientSide))
         {
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
             if(targetMobRemainingHealth <= 0.5 && !target.hasEffect(SculkMiteEntity.INFECT_EFFECT))
@@ -98,7 +99,7 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
                  *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
                  */
                 //thisMob.die(DamageSource.GENERIC);
-                thisMob.hurt(thisMob.damageSources().generic(), thisMob.getHealth());
+                thisMob.hurt(DamageSource.GENERIC, thisMob.getHealth());
             }
         }
     }

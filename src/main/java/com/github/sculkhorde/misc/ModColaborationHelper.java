@@ -1,7 +1,8 @@
 package com.github.sculkhorde.misc;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -12,7 +13,7 @@ import net.minecraftforge.fml.ModList;
 public class ModColaborationHelper {
 
     protected static String extractModId(Entity entity) {
-        return extractModId(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
+        return extractModId(Registry.ENTITY_TYPE.getKey(entity.getType()).toString());
     }
 
     protected static String extractModId(String entityNamespace) {
@@ -29,7 +30,7 @@ public class ModColaborationHelper {
 
     // https://www.curseforge.com/minecraft/mc-mods/from-another-world
     public static String FROM_ANOTHER_WORLD_ID = "fromanotherworld";
-    private static TagKey<EntityType<?>> FROM_ANOTHER_WORLD_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(FROM_ANOTHER_WORLD_ID + ":things"));
+    private static TagKey<EntityType<?>> FROM_ANOTHER_WORLD_TAG_KEY = TagKey.create(Registry.ENTITY_TYPE.key(), new ResourceLocation(FROM_ANOTHER_WORLD_ID + ":things"));
 
     public static boolean isFromAnotherWorldLoaded()
     {
@@ -55,7 +56,7 @@ public class ModColaborationHelper {
         return ModList.get().isLoaded(SPORE_ID);
     }
 
-    private static TagKey<EntityType<?>> SPORE_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SPORE_ID + ":fungus_entities"));
+    private static TagKey<EntityType<?>> SPORE_TAG_KEY = TagKey.create(Registry.ENTITY_TYPE.key(), new ResourceLocation(SPORE_ID + ":fungus_entities"));
 
     public static boolean doesEntityBelongToSporeMod(LivingEntity entity)
     {
@@ -150,7 +151,7 @@ public class ModColaborationHelper {
 
     /// #### The Flesh That Hates ####
     public static String FLESH_THAT_HATES_ID = "the_flesh_that_hates";
-    private static TagKey<EntityType<?>> FLESH_THAT_HATES_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(FLESH_THAT_HATES_ID + ":fleshy_entities"));
+    private static TagKey<EntityType<?>> FLESH_THAT_HATES_TAG_KEY = TagKey.create(Registry.ENTITY_TYPE.key(), new ResourceLocation(FLESH_THAT_HATES_ID + ":fleshy_entities"));
     public static boolean isTheFleshThatHatesLoaded()
     {
         return ModList.get().isLoaded(FLESH_THAT_HATES_ID);
@@ -355,7 +356,7 @@ public class ModColaborationHelper {
             return false;
         }
 
-        ResourceLocation targetEntityResourceLocation = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        ResourceLocation targetEntityResourceLocation = Registry.ENTITY_TYPE.getKey(entity.getType());
         String entityNameSpace = targetEntityResourceLocation.toString();
         if(entityNameSpace.equals("ars_nouveau:drygmy"))
         {

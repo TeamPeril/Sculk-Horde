@@ -2,7 +2,7 @@ package com.github.sculkhorde.systems.event_system;
 
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -183,7 +183,7 @@ public class Event {
 
     public static Event load(CompoundTag tag)
     {
-        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));
+        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimension")));
 
         Event event = Event.createEvent(dimensionResourceKey);
         event.setEventID(tag.getInt("eventID"));

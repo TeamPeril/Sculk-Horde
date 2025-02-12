@@ -10,7 +10,7 @@ import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFacto
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -565,17 +565,17 @@ public class RaidData {
             return true;
         }
         // If block above is not
-        if(!getDimension().getBlockState(blockPos.above()).canBeReplaced() || getDimension().getBlockState(blockPos.above()).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above()).is(Blocks.LAVA))
+        if(!getDimension().getBlockState(blockPos.above()).canOcclude() || getDimension().getBlockState(blockPos.above()).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above()).is(Blocks.LAVA))
         {
             return true;
         }
 
-        if(!getDimension().getBlockState(blockPos.above()).canBeReplaced() || getDimension().getBlockState(blockPos.above(1)).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above(1)).is(Blocks.LAVA))
+        if(!getDimension().getBlockState(blockPos.above()).canOcclude() || getDimension().getBlockState(blockPos.above(1)).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above(1)).is(Blocks.LAVA))
         {
             return true;
         }
 
-        return !getDimension().getBlockState(blockPos.above()).canBeReplaced() || getDimension().getBlockState(blockPos.above(2)).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above(2)).is(Blocks.LAVA);
+        return !getDimension().getBlockState(blockPos.above()).canOcclude() || getDimension().getBlockState(blockPos.above(2)).is(Blocks.WATER) || getDimension().getBlockState(blockPos.above(2)).is(Blocks.LAVA);
     };
 
     /**
@@ -717,7 +717,7 @@ public class RaidData {
         RaidHandler.raidData.setCurrentWave(tag.getInt("currentWave"));
         RaidHandler.raidData.setRemainingWaveParticipants(tag.getInt("remainingWaveParticipants"));
 
-        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));
+        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimension")));
         RaidHandler.raidData.setDimension(dimensionResourceKey);
 
         // Load the wave participants from a list of UUIDs

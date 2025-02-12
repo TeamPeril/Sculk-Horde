@@ -22,7 +22,7 @@ public class FangsAttackGoal extends ReaperCastSpellGoal
         {
             return false;
         }
-        else if(!mob.getTarget().onGround())
+        else if(!mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -68,18 +68,18 @@ public class FangsAttackGoal extends ReaperCastSpellGoal
 
     // Creates a spell entity at the specified coordinates
     private void createSpellEntity(double x, double z, double minY, double maxY, float angle, int delay) {
-        BlockPos blockPos = BlockPos.containing(x, maxY, z);
+        BlockPos blockPos = new BlockPos(x, maxY, z);
         boolean foundSuitablePosition = false;
         double yOffset = 0.0D;
 
         // Find a suitable position for the spell entity
         do {
             BlockPos belowBlockPos = blockPos.below();
-            BlockState belowBlockState = mob.level().getBlockState(belowBlockPos);
-            if (belowBlockState.isFaceSturdy(mob.level(), belowBlockPos, Direction.UP)) {
-                if (!mob.level().isEmptyBlock(blockPos)) {
-                    BlockState blockState = mob.level().getBlockState(blockPos);
-                    VoxelShape voxelShape = blockState.getCollisionShape(mob.level(), blockPos);
+            BlockState belowBlockState = mob.level.getBlockState(belowBlockPos);
+            if (belowBlockState.isFaceSturdy(mob.level, belowBlockPos, Direction.UP)) {
+                if (!mob.level.isEmptyBlock(blockPos)) {
+                    BlockState blockState = mob.level.getBlockState(blockPos);
+                    VoxelShape voxelShape = blockState.getCollisionShape(mob.level, blockPos);
                     if (!voxelShape.isEmpty()) {
                         yOffset = voxelShape.max(Direction.Axis.Y);
                     }
@@ -94,7 +94,7 @@ public class FangsAttackGoal extends ReaperCastSpellGoal
 
         // Add the spell entity to the world if a suitable position is found
         if (foundSuitablePosition) {
-            mob.level().addFreshEntity(new EvokerFangs(mob.level(), x, (double)blockPos.getY() + yOffset, z, angle, delay, mob));
+            mob.level.addFreshEntity(new EvokerFangs(mob.level, x, (double)blockPos.getY() + yOffset, z, angle, delay, mob));
         }
     }
 }

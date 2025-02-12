@@ -14,7 +14,7 @@ public class SculkBeeNestCellBlockEntity extends BlockEntity {
 
     /**
      * The Constructor that takes in properties
-     * @param type The Tile Entity Type
+     * @param
      */
     public SculkBeeNestCellBlockEntity(BlockPos pos, BlockState state)
     {

@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -80,10 +81,10 @@ public class TomeOfSpinesItem extends TomeItem implements IForgeItem {
 			Vec3 spawnPos = possibleSpawns.get(i);
 			SculkSpineSpikeAttackEntity entity = new SculkSpineSpikeAttackEntity(player, player.getX(), player.getY(), player.getZ(), delayTicks);
 
-			double spawnHeight = getSpawnHeight(player, BlockPos.containing(spawnPos));
+			double spawnHeight = getSpawnHeight(player, new BlockPos(spawnPos));
 			Vec3 possibleSpawnPosition = new Vec3(spawnPos.x(), spawnHeight, spawnPos.z());
 			// If the block below our spawn is solid, spawn the entity
-			if(!player.level().getBlockState(BlockPos.containing(possibleSpawnPosition).below()).canBeReplaced())
+			if(!player.level.getBlockState(new BlockPos(possibleSpawnPosition).below()).canBeReplaced(Fluids.WATER))
 			{
 				entity.setPos(possibleSpawnPosition.x(), possibleSpawnPosition.y(), possibleSpawnPosition.z());
 				entities.add(entity);
@@ -92,7 +93,7 @@ public class TomeOfSpinesItem extends TomeItem implements IForgeItem {
 		}
 
 		for (SculkSpineSpikeAttackEntity entity : entities) {
-			player.level().addFreshEntity(entity);
+			player.level.addFreshEntity(entity);
 		}
 	}
 
@@ -106,7 +107,7 @@ public class TomeOfSpinesItem extends TomeItem implements IForgeItem {
 
 			iterationsElapsed++;
 
-			if(!player.level().getBlockState(mutablePos).canBeReplaced())
+			if(!player.level.getBlockState(mutablePos).canBeReplaced(Fluids.WATER))
 			{
 				continue;
 			}

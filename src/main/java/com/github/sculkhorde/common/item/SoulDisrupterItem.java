@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -60,7 +61,8 @@ public class SoulDisrupterItem extends Item implements IForgeItem {
 	{
 		return new Properties()
 				.rarity(Rarity.RARE)
-				.stacksTo(1);
+				.stacksTo(1)
+				.tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
 	}
 
@@ -134,7 +136,7 @@ public class SoulDisrupterItem extends Item implements IForgeItem {
 	{
 
 		// Perform ray trace
-		HitResult hitResult = getPlayerHitResult(player.level(), player, ClipContext.Fluid.NONE);
+		HitResult hitResult = getPlayerHitResult(player.level, player, ClipContext.Fluid.NONE);
 
 		Vec3 hitVector = hitResult.getLocation();
 
@@ -153,7 +155,7 @@ public class SoulDisrupterItem extends Item implements IForgeItem {
 		AABB hitbox = new AABB(origin, hitVector).inflate(radius);
 
 		// Check for entities within the hitbox
-		List<Entity> entitiesHit = player.level().getEntities(null, hitbox);
+		List<Entity> entitiesHit = player.level.getEntities(null, hitbox);
 
 		for (Entity entity : entitiesHit) {
 			// Handle entity hit logic here
@@ -176,10 +178,10 @@ public class SoulDisrupterItem extends Item implements IForgeItem {
 				double xOffset = radius * Math.cos(angle);
 				double zOffset = radius * Math.sin(angle);
 				Vec3 offset = right.scale(xOffset).add(forward.scale(zOffset));
-				((ServerLevel) player.level()).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, vec33.x + offset.x, vec33.y + offset.y, vec33.z + offset.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+				((ServerLevel) player.level).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, vec33.x + offset.x, vec33.y + offset.y, vec33.z + offset.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
 			}
 		}
-		player.level().playSound(player,player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+		player.level.playSound(player,player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
 	}
 
 	public void executePower(Player player)

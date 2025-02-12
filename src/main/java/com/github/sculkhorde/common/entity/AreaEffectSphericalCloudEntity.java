@@ -7,11 +7,12 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -24,6 +25,8 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -31,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class AreaEffectSphericalCloudEntity extends Entity implements TraceableEntity {
+public class AreaEffectSphericalCloudEntity extends Entity {
 
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int TIME_BETWEEN_APPLICATIONS = 5;
@@ -82,7 +85,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
     }
 
     public void setRadius(float radius) {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             this.getEntityData().set(DATA_RADIUS, Mth.clamp(radius, 0.0F, MAX_RADIUS));
         }
 
@@ -162,7 +165,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
         super.tick();
         boolean isWaiting = this.isWaiting();
         float radius = this.getRadius();
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             boolean isRandomlySkipping = isWaiting && this.random.nextBoolean();
             if (isRandomlySkipping) {
                 return;
@@ -206,7 +209,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
                     particleMotionZ = (0.5D - this.random.nextDouble()) * 0.15D;
                 }
 
-                this.level().addAlwaysVisibleParticle(particleType, particleX, particleY, particleZ, particleMotionX, particleMotionY, particleMotionZ);
+                this.level.addAlwaysVisibleParticle(particleType, particleX, particleY, particleZ, particleMotionX, particleMotionY, particleMotionZ);
             }
         } else {
             if (this.tickCount >= this.waitTime + this.duration) {
@@ -240,16 +243,14 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
                 List<MobEffectInstance> list = Lists.newArrayList();
 
                 for(MobEffectInstance mobeffectinstance : this.potion.getEffects()) {
-                    list.add(new MobEffectInstance(mobeffectinstance.getEffect(), mobeffectinstance.mapDuration((p_267926_) -> {
-                        return p_267926_ / 4;
-                    }), mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()));
+                    list.add(new MobEffectInstance(mobeffectinstance.getEffect(), mobeffectinstance.getDuration(), mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()));
                 }
 
                 list.addAll(this.effects);
                 if (list.isEmpty()) {
                     this.victims.clear();
                 } else {
-                    List<LivingEntity> entitiesInHitBox = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
+                    List<LivingEntity> entitiesInHitBox = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
                     if (!entitiesInHitBox.isEmpty()) {
                         for(LivingEntity livingentity : entitiesInHitBox) {
                             if (!this.victims.containsKey(livingentity) && livingentity.isAffectedByPotions()) {
@@ -333,8 +334,8 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUUID != null && this.level() instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level()).getEntity(this.ownerUUID);
+        if (this.owner == null && this.ownerUUID != null && this.level instanceof ServerLevel) {
+            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerUUID);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -358,7 +359,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
 
         if (p_19727_.contains("Particle", 8)) {
             try {
-                this.setParticle(ParticleArgument.readParticle(new StringReader(p_19727_.getString("Particle")), BuiltInRegistries.PARTICLE_TYPE.asLookup()));
+                this.setParticle(ParticleArgument.readParticle(new StringReader(p_19727_.getString("Particle"))));
             } catch (CommandSyntaxException commandsyntaxexception) {
                 LOGGER.warn("Couldn't load custom particle {}", p_19727_.getString("Particle"), commandsyntaxexception);
             }
@@ -405,7 +406,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
         }
 
         if (this.potion != Potions.EMPTY) {
-            p_19737_.putString("Potion", BuiltInRegistries.POTION.getKey(this.potion).toString());
+            p_19737_.putString("Potion", Registry.POTION.getKey(this.potion).toString());
         }
 
         if (!this.effects.isEmpty()) {
@@ -434,6 +435,11 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
 
     public PushReaction getPistonPushReaction() {
         return PushReaction.IGNORE;
+    }
+
+    @Override
+    public @NotNull Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     public EntityDimensions getDimensions(Pose p_19721_) {

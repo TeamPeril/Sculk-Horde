@@ -5,7 +5,7 @@ import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedBlockGeoModel;
+import mod.azure.azurelib.model.DefaultedBlockGeoModel;
 
 public class SoulHarvesterModel extends DefaultedBlockGeoModel<SoulHarvesterBlockEntity>
 {

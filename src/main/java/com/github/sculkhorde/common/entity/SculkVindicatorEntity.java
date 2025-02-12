@@ -6,6 +6,16 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -22,17 +32,8 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -62,7 +63,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -203,14 +204,14 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("jaw.attack");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack_animation", ATTACK_ANIMATION).transitionLength(5);
+            .triggerableAnim("attack_animation", ATTACK_ANIMATION);
 
 
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                DefaultAnimations.genericWalkRunIdleController(this).transitionLength(5),
+                DefaultAnimations.genericWalkRunIdleController(this),
                 ATTACK_ANIMATION_CONTROLLER,
                 new AnimationController<>(this, "Legs", 5, this::poseJawCycle),
                 new AnimationController<>(this, "Tumor", 5, this::poseTumorCycle),

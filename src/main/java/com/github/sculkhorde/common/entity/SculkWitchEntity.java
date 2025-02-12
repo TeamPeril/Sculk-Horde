@@ -6,12 +6,20 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -38,21 +46,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartEntity, RangedAttackMob {
+public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartEntity, RangedAttackMob, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -84,7 +84,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -248,8 +248,8 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     @Override
     public boolean hurt(DamageSource damageSource, float amount)
     {
-        boolean isIndirectMagicDamageType = damageSource.is(DamageTypes.INDIRECT_MAGIC);
-        boolean isMagicDamageType = damageSource.is(DamageTypes.MAGIC);
+        boolean isIndirectMagicDamageType = damageSource.isMagic();
+        boolean isMagicDamageType = damageSource.isMagic();
         if(isIndirectMagicDamageType || isMagicDamageType)
         {
             return false;
@@ -291,15 +291,15 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             potion = Potions.WEAKNESS;
         }
 
-        ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
+        ThrownPotion thrownpotion = new ThrownPotion(this.level, this);
         thrownpotion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
         thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
         thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
         if (!this.isSilent()) {
-            this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+            this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
         }
 
-        this.level().addFreshEntity(thrownpotion);
+        this.level.addFreshEntity(thrownpotion);
 
     }
 
@@ -309,15 +309,15 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     private static final RawAnimation BUFF_ALLIES_ANIMATION = RawAnimation.begin().thenPlay("dispense");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("throwpotion", THROW_POTION_ANIMATION).transitionLength(5)
-            .triggerableAnim("dispense", BUFF_ALLIES_ANIMATION).transitionLength(5);
+            .triggerableAnim("throwpotion", THROW_POTION_ANIMATION)
+            .triggerableAnim("dispense", BUFF_ALLIES_ANIMATION);
 
 
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                DefaultAnimations.genericWalkIdleController(this).transitionLength(5),
+                DefaultAnimations.genericWalkIdleController(this),
                 ATTACK_ANIMATION_CONTROLLER,
                 DefaultAnimations.genericLivingController(this)
         );
@@ -372,7 +372,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
          */
         public boolean canUse()
         {
-            long currentTime = getMob().level().getGameTime();
+            long currentTime = getMob().level.getGameTime();
             if(currentTime - lastTimeOfGoalExecution < EXECUTION_INTERVAL)
             {
                 return false;
@@ -393,9 +393,9 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         public void start()
         {
             this.timeToRecalcPath = 0;
-            lastTimeOfGoalExecution = level().getGameTime();
+            lastTimeOfGoalExecution = level.getGameTime();
 
-            hurtUnits = EntityAlgorithms.getSculkHordeEntitiesInBoundingBox((ServerLevel) level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
+            hurtUnits = EntityAlgorithms.getSculkHordeEntitiesInBoundingBox((ServerLevel) level, EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
 
             for(LivingEntity e : hurtUnits)
             {
@@ -408,7 +408,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         @Override
         public void tick()
         {
-            if(level().isClientSide())
+            if(level.isClientSide())
             {
                 return;
             }
@@ -438,7 +438,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
         public boolean canUse()
         {
-            this.toAvoid = EntityAlgorithms.getNearestHostile((ServerLevel) level(), blockPosition(), getBoundingBox().inflate(triggerDistance));
+            this.toAvoid = EntityAlgorithms.getNearestHostile((ServerLevel) level, blockPosition(), getBoundingBox().inflate(triggerDistance));
             if (this.toAvoid.isEmpty()) {
                 return false;
             } else {
@@ -463,7 +463,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
             if(!hasEffect(MobEffects.INVISIBILITY) && getHealth() < getMaxHealth())
             {
-                level().playSound((Player)null, getX(), getY(), getZ(), SoundEvents.WITCH_DRINK, getSoundSource(), 1.0F, 0.8F + random.nextFloat() * 0.4F);
+                level.playSound((Player)null, getX(), getY(), getZ(), SoundEvents.WITCH_DRINK, getSoundSource(), 1.0F, 0.8F + random.nextFloat() * 0.4F);
                 addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, TickUnits.convertSecondsToTicks(10), 0));
                 addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, TickUnits.convertSecondsToTicks(10), 0));
             }

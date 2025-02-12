@@ -10,8 +10,17 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import mod.azure.azurelib.animatable.GeoBlockEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -50,13 +59,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
@@ -65,7 +67,7 @@ import java.util.Optional;
 import static com.github.sculkhorde.common.block.SoulHarvesterBlock.MAX_HEALTH;
 
 
-public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity, GameEventListener.Holder<SoulHarvesterBlockEntity.SoulHarvesterListener> {
+public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity, GeoAnimatable {
     private final SoulHarvesterListener soulHarvesterListener;
     private AABB searchArea;
     private static final int INPUT_SLOT = 0;
@@ -126,7 +128,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         if(isPrepared() == value) { return; }
 
         this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_PREPARED, value), 3);
-        if(value) { this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_ITEM_INSERTED.get(), SoundSource.BLOCKS); }
+        if(value) { this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_ITEM_INSERTED.get(), SoundSource.BLOCKS, 1, 1); }
     }
 
     public boolean isActive()
@@ -139,7 +141,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         if(isActive() == value) { return; }
 
         this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SoulHarvesterBlock.IS_ACTIVE, value), 3);
-        if(value) {this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_ACTIVE.get(), SoundSource.BLOCKS); }
+        if(value) {this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_ACTIVE.get(), SoundSource.BLOCKS,1,1); }
     }
 
     public int getHealthHarvested()
@@ -274,7 +276,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
         triggerAnim("finish_controller", "finished_animation");
         //FINISH_ANIMATION_CONTROLLER.tryTriggerAnimation("finished");
-        this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_FINISHED.get(), SoundSource.BLOCKS);
+        this.level.playSound(null, this.getBlockPos(), ModSounds.SOUL_HARVESTER_FINISHED.get(), SoundSource.BLOCKS, 1, 1);
     }
 
     public SoulHarvesterListener getListener() {
@@ -297,8 +299,9 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
             return 8;
         }
 
-        public GameEventListener.DeliveryMode getDeliveryMode() {
-            return GameEventListener.DeliveryMode.BY_DISTANCE;
+        @Override
+        public boolean handleGameEvent(ServerLevel serverLevel, GameEvent.Message message) {
+            return false;
         }
 
         public boolean handleGameEvent(ServerLevel ServerLevelIn, GameEvent gameEventIn, GameEvent.Context contextIn, Vec3 sourcePosition) {
@@ -320,12 +323,12 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
             int healthHarvested = (int) livingentity.getMaxHealth();
 
             // Get block entity
-            SoulHarvesterBlockEntity blockEntity = (SoulHarvesterBlockEntity) ServerLevelIn.getBlockEntity(BlockPos.containing(this.positionSource.getPosition(ServerLevelIn).get()));
+            SoulHarvesterBlockEntity blockEntity = (SoulHarvesterBlockEntity) ServerLevelIn.getBlockEntity(new BlockPos(this.positionSource.getPosition(ServerLevelIn).get()));
             blockEntity.increaseHealthHarvested(healthHarvested);
 
             livingentity.skipDropExperience();
             this.positionSource.getPosition(ServerLevelIn).ifPresent((positionVec3) -> {
-                this.spawnCoolParticles(ServerLevelIn, BlockPos.containing(positionVec3), this.blockState, ServerLevelIn.getRandom());
+                this.spawnCoolParticles(ServerLevelIn, new BlockPos(positionVec3), this.blockState, ServerLevelIn.getRandom());
             });
 
             tryAwardAdvancement(ServerLevelIn, livingentity);
@@ -401,7 +404,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     /* ~~~~~~~~~~~~Animation~~~~~~~~~~~~~~~~~~~~ */
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("idle");
     private static final RawAnimation READYUP_ANIMATION = RawAnimation.begin().thenPlay("item_inside").thenLoop("item_inside_idle");
     private static final RawAnimation ACTIVE_ANIMATION = RawAnimation.begin().thenLoop("active");
@@ -438,6 +441,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
                 FINISH_ANIMATION_CONTROLLER
         );
     }
+
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

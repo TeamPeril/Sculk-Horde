@@ -4,20 +4,20 @@ import com.github.sculkhorde.client.model.enitity.LivingArmorModel;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
+import mod.azure.azurelib.cache.object.BakedGeoModel;
+import mod.azure.azurelib.cache.object.GeoBone;
+import mod.azure.azurelib.renderer.GeoEntityRenderer;
+import mod.azure.azurelib.renderer.layer.BlockAndItemGeoLayer;
+import mod.azure.azurelib.renderer.layer.ItemArmorGeoLayer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
-import software.bernie.geckolib.renderer.layer.ItemArmorGeoLayer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -143,37 +143,21 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                 return var10000;
             }
 
-            protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack, LivingArmorEntity animatable) {
-                ItemDisplayContext displayContext;
-                switch (bone.getName()) {
-                    case LEFT_HAND:
-                        displayContext = ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
-                        break;
-                    case RIGHT_HAND:
-                        displayContext = ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
-                        break;
-                    default:
-                        displayContext = ItemDisplayContext.NONE;
-                }
-
-                return displayContext;
-            }
-
             protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
                 if (stack == LivingArmorRenderer.this.mainHandItem) {
                     //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                    poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                    poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
                     if (stack.getItem() instanceof ShieldItem) {
                         //poseStack.translate(0, 0.13, -1.25);
                         poseStack.translate(0.0, 0.125, -0.25);
                     }
                 } else if (stack == LivingArmorRenderer.this.offhandItem) {
                     //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                    poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                    poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
                     if (stack.getItem() instanceof ShieldItem) {
                         //poseStack.translate(0, 0.13, -1.25);
                         poseStack.translate(0.0, 0.125, 0.25);
-                        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                        poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
                     }
                 }
 

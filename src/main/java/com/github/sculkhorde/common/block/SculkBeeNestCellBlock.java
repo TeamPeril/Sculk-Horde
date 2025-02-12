@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
@@ -118,7 +117,6 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     public static Properties getProperties()
     {
         Properties prop = Properties.copy(Blocks.BEE_NEST)
-                .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
                 .requiresCorrectToolForDrops();

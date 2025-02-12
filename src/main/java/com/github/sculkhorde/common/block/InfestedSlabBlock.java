@@ -1,15 +1,18 @@
 package com.github.sculkhorde.common.block;
 
+import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.ITagInfestedBlock;
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.ITagInfestedBlockEntity;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;

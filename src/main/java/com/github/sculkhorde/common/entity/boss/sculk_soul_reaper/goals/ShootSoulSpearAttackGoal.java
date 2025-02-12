@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 public class ShootSoulSpearAttackGoal extends ReaperCastSpellGoal
@@ -24,13 +26,13 @@ public class ShootSoulSpearAttackGoal extends ReaperCastSpellGoal
     public void start()
     {
         super.start();
-        if(mob.level().isClientSide())
+        if(mob.level.isClientSide())
         {
             return;
         }
 
         this.mob.getNavigation().stop();
-        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level(), mob.blockPosition().above(50), MobSpawnType.SPAWNER);
+        EntityType.LIGHTNING_BOLT.spawn((ServerLevel) mob.level, (ItemStack)null, (Player)null, mob.blockPosition().above(50), MobSpawnType.SPAWNER, false, false);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class ShootSoulSpearAttackGoal extends ReaperCastSpellGoal
             return;
         }
 
-        AbstractProjectileEntity projectile =  new SoulSpearProjectileAttackEntity(mob.level(), mob, 20F);
+        AbstractProjectileEntity projectile =  new SoulSpearProjectileAttackEntity(mob.level, mob, 20F);
         projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
 
         double spawnPosX = mob.getX();
@@ -71,7 +73,7 @@ public class ShootSoulSpearAttackGoal extends ReaperCastSpellGoal
         projectile.shoot(direction);
 
         mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level().addFreshEntity(projectile);
+        mob.level.addFreshEntity(projectile);
 
     }
 }

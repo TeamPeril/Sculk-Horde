@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -75,44 +76,44 @@ public class TomeOfSacrificeItem extends TomeItem implements IForgeItem {
 			profile.setVessel(false);
 			explode(player);
 			spawnInfectors(player);
-			SculkNodeBlock.tryPlaceSculkNode((ServerLevel) player.level(), player.blockPosition(), true);
+			SculkNodeBlock.tryPlaceSculkNode((ServerLevel) player.level, player.blockPosition(), true);
 			spawnSculkEnderman(player);
 		}
 	}
 
 	protected static void explode(Entity entity)
 	{
-		entity.level().explode(entity, entity.getX(), entity.getY(), entity.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+		entity.level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), 4.0F, Explosion.BlockInteraction.NONE);
 		entity.kill();
 	}
 
 	protected void spawnInfectors(Entity entity)
 	{
-		entity.level().getServer().tell(new net.minecraft.server.TickTask(entity.level().getServer().getTickCount() + 1, () -> {
+		entity.level.getServer().tell(new net.minecraft.server.TickTask(entity.level.getServer().getTickCount() + 1, () -> {
 			int numToSpawn = 30;
 			int spawnRange = 5;
 			for (int i = 0; i < numToSpawn; i++) {
 
-				double x = entity.getX() + (entity.level().getRandom().nextDouble() * spawnRange) - spawnRange / 2;
-				double z = entity.getZ() + (entity.level().getRandom().nextDouble() * spawnRange) - spawnRange / 2;
-				double y = entity.getY() + (entity.level().getRandom().nextDouble() * spawnRange / 2) - spawnRange / 4;
-				CursorSurfaceInfectorEntity infector = new CursorSurfaceInfectorEntity(ModEntities.CURSOR_SURFACE_INFECTOR.get(), entity.level());
+				double x = entity.getX() + (entity.level.getRandom().nextDouble() * spawnRange) - spawnRange / 2;
+				double z = entity.getZ() + (entity.level.getRandom().nextDouble() * spawnRange) - spawnRange / 2;
+				double y = entity.getY() + (entity.level.getRandom().nextDouble() * spawnRange / 2) - spawnRange / 4;
+				CursorSurfaceInfectorEntity infector = new CursorSurfaceInfectorEntity(ModEntities.CURSOR_SURFACE_INFECTOR.get(), entity.level);
 				infector.setPos(x, y, z);
 				infector.setTickIntervalMilliseconds(3);
 				infector.setMaxTransformations(100);
 				infector.setMaxRange(100);
-				infector.setCanBeManuallyTicked(false);
-				entity.level().addFreshEntity(infector);
+				// infector.setCanBeManuallyTicked(false);
+				entity.level.addFreshEntity(infector);
 			}
 		}));
 	}
 
 	protected void spawnSculkEnderman(Entity e)
 	{
-		SculkEndermanEntity entity = new SculkEndermanEntity(e.level(), e.blockPosition());
+		SculkEndermanEntity entity = new SculkEndermanEntity(e.level, e.blockPosition());
 		entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, TickUnits.convertHoursToTicks(1), 1));
 		entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, TickUnits.convertHoursToTicks(1), 1));
 		entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, TickUnits.convertHoursToTicks(1), 0));
-		e.level().addFreshEntity(entity);
+		e.level.addFreshEntity(entity);
 	}
 }

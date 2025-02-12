@@ -55,7 +55,7 @@ public class ShootSoulFlySwatterAttackGoal extends ReaperCastSpellGoal
             return;
         }
 
-        AbstractProjectileEntity projectile =  new SoulFlySwatterProjectileAttackEntity(mob.level(), mob, 10F);
+        AbstractProjectileEntity projectile =  new SoulFlySwatterProjectileAttackEntity(mob.level, mob, 10F);
         projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
 
         double spawnPosX = mob.getX();
@@ -73,7 +73,7 @@ public class ShootSoulFlySwatterAttackGoal extends ReaperCastSpellGoal
         projectile.shoot(direction);
 
         mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
-        mob.level().addFreshEntity(projectile);
+        mob.level.addFreshEntity(projectile);
 
     }
 }

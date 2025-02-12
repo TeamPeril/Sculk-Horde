@@ -7,10 +7,7 @@ import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.systems.AutoPerformanceSystem;
 import com.github.sculkhorde.systems.BeeNestActivitySystem;
-import com.github.sculkhorde.systems.DebugSlimeSystem;
 import com.github.sculkhorde.systems.SculkNodesSystem;
-import com.github.sculkhorde.systems.chunk_cursor_system.ChunkInfestationSystem;
-import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.raid_system.RaidHandler;
@@ -62,7 +59,6 @@ public class ForgeEventSubscriber {
             SculkHorde.statisticsData = new StatisticsData(); // Keep this above "SculkHorde.savedData". Otherwise, stats won't be loaded correctly.
             SculkHorde.savedData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID); //Initialize Saved Data
             SculkHorde.gravemind = new Gravemind(); //Initialize Gravemind
-            SculkHorde.debugSlimeSystem = new DebugSlimeSystem();
             SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator(); //Initialize Death Area Investigator
             SculkHorde.raidHandler = new RaidHandler((ServerLevel) event.getLevel()); //Initialize Raid Handler
             SculkHorde.sculkNodesSystem = new SculkNodesSystem(); //Initialize Sculk Nodes Handler
@@ -71,8 +67,6 @@ public class ForgeEventSubscriber {
             SculkHorde.eventSystem = new EventSystem(); //Initialize Event Handler
             SculkHorde.beeNestActivitySystem = new BeeNestActivitySystem();
             SculkHorde.autoPerformanceSystem = new AutoPerformanceSystem();
-            SculkHorde.chunkInfestationSystem = new ChunkInfestationSystem();
-            SculkHorde.cursorSystem = new CursorSystem();
             ModConfig.SERVER.loadItemsInfectionCursorsCanEat();
             ModConfig.SERVER.loadConfiguredInfestableBlocks();
 
@@ -124,8 +118,6 @@ public class ForgeEventSubscriber {
         SculkHorde.blockEntityChunkLoaderHelper.processBlockChunkLoadRequests();
         SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();
         SculkHorde.beeNestActivitySystem.serverTick();
-        SculkHorde.chunkInfestationSystem.serverTick();
-        SculkHorde.debugSlimeSystem.serverTick();
 
         if(ModConfig.isExperimentalFeaturesEnabled())
         {
@@ -159,14 +151,14 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onLivingEntityDeathEvent(LivingDeathEvent event)
     {
-        if(event.getEntity().level().isClientSide())
+        if(event.getEntity().level.isClientSide())
         {
             return;
         }
 
         if(EntityAlgorithms.isSculkLivingEntity.test(event.getEntity()))
         {
-            SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
+            SculkHorde.savedData.reportDeath((ServerLevel) event.getEntity().level, event.getEntity().blockPosition());
             SculkHorde.savedData.addHostileToMemory(event.getEntity().getLastHurtByMob());
             SculkHorde.statisticsData.incrementTotalUnitDeaths();
             SculkHorde.statisticsData.addTotalMassRemovedFromHorde((int) event.getEntity().getMaxHealth());
@@ -183,23 +175,12 @@ public class ForgeEventSubscriber {
             }
         }
 
-        // If a player kills an entity (That is not sculk)
-        if(killerEntity instanceof ServerPlayer player)
-        {
-            if(EntityAlgorithms.isSculkLivingEntity.test(event.getEntity()))
-            {
-                return;
-            }
-
-            InventoryUtil.repairIHealthRepairableItemStacks(player.getInventory(), (int) event.getEntity().getMaxHealth());
-        }
-
     }
 
     @SubscribeEvent
     public static void onPotionExpireEvent(MobEffectEvent.Expired event)
     {
-        if(event.getEntity().level().isClientSide() || SculkHorde.gravemind == null)
+        if(event.getEntity().level.isClientSide() || SculkHorde.gravemind == null)
         {
             return;
         }
@@ -252,21 +233,21 @@ public class ForgeEventSubscriber {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
-        if(event.player.level().isClientSide())
+        if(event.player.level.isClientSide())
         {
             return;
         }
 
         if(event.player.tickCount % 20 == 0)
         {
-            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
+            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerLogIn(PlayerEvent.PlayerLoggedInEvent event)
     {
-        if(event.getEntity().level().isClientSide())
+        if(event.getEntity().level.isClientSide())
         {
             return;
         }

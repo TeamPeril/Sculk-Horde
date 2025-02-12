@@ -1,6 +1,5 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.block.ISpecialStructurePlacementConditionsBlock;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.mixin.structures.StructureTemplateAccessor;
@@ -110,7 +109,7 @@ public class StructureUtil {
                     f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
                     p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
                     if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null, compoundtag);
+                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(new BlockPos(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null, compoundtag);
                     }
 
                     p_74524_.addFreshEntityWithPassengers(p_275190_);
@@ -146,13 +145,13 @@ public class StructureUtil {
 
                 // Process each block in the structure
                 for (StructureTemplate.StructureBlockInfo blockInfo : processBlockInfos(world, startPos, offsetPos, settings, blockInfoList, structureTemplate)) {
-                    BlockPos blockPos = blockInfo.pos();
+                    BlockPos blockPos = blockInfo.pos;
                     if (boundingBox == null || boundingBox.isInside(blockPos)) {
                         FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(blockPos) : null;
-                        BlockState blockState = blockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
+                        BlockState blockState = blockInfo.state.mirror(settings.getMirror()).rotate(settings.getRotation());
 
                         // Handle block entities
-                        if (blockInfo.nbt() != null) {
+                        if (blockInfo.nbt != null) {
                             BlockEntity blockEntity = world.getBlockEntity(blockPos);
                             Clearable.tryClear(blockEntity);
                             world.setBlock(blockPos, Blocks.BARRIER.defaultBlockState(), 20);
@@ -166,16 +165,16 @@ public class StructureUtil {
                             maxX = Math.max(maxX, blockPos.getX());
                             maxY = Math.max(maxY, blockPos.getY());
                             maxZ = Math.max(maxZ, blockPos.getZ());
-                            blockEntityDataList.add(Pair.of(blockPos, blockInfo.nbt()));
+                            blockEntityDataList.add(Pair.of(blockPos, blockInfo.nbt));
 
                             // Load block entity data
-                            if (blockInfo.nbt() != null) {
+                            if (blockInfo.nbt != null) {
                                 BlockEntity blockEntity1 = world.getBlockEntity(blockPos);
                                 if (blockEntity1 != null) {
                                     if (blockEntity1 instanceof RandomizableContainerBlockEntity) {
-                                        blockInfo.nbt().putLong("LootTableSeed", random.nextLong());
+                                        blockInfo.nbt.putLong("LootTableSeed", random.nextLong());
                                     }
-                                    blockEntity1.load(blockInfo.nbt());
+                                    blockEntity1.load(blockInfo.nbt);
                                 }
                             }
 
@@ -419,9 +418,9 @@ public class StructureUtil {
             Optional<BlockPos> result = Optional.empty();
             for(StructureTemplate.StructureBlockInfo block : blockInfoList)
             {
-                if(block.state().is(ModBlocks.STRUCTURE_ORIGIN_BLOCK.get()))
+                if(block.state.is(ModBlocks.STRUCTURE_ORIGIN_BLOCK.get()))
                 {
-                    result = Optional.of(block.pos());
+                    result = Optional.of(block.pos);
                     break;
                 }
             }
@@ -443,7 +442,7 @@ public class StructureUtil {
 
 
 
-            BlockPos placePosition = blockInfo.pos().offset(originOffset.getX(), originOffset.getY(), originOffset.getZ());
+            BlockPos placePosition = blockInfo.pos.offset(originOffset.getX(), originOffset.getY(), originOffset.getZ());
 
             //SculkHorde.LOGGER.debug("StructureUtil | Old Pos: " + blockInfo.pos().toShortString());
             //SculkHorde.LOGGER.debug("StructureUtil | Offset: " + originOffset.toShortString());
@@ -458,10 +457,10 @@ public class StructureUtil {
             if (boundingBox == null || boundingBox.isInside(placePosition))
             {
                 FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(placePosition) : null;
-                BlockState blockState = blockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
+                BlockState blockState = blockInfo.state.mirror(settings.getMirror()).rotate(settings.getRotation());
 
                 // Handle block entities
-                if (blockInfo.nbt() != null) {
+                if (blockInfo.nbt != null) {
                     BlockEntity blockEntity = world.getBlockEntity(placePosition);
                     Clearable.tryClear(blockEntity);
                     world.setBlock(placePosition, Blocks.BARRIER.defaultBlockState(), 20);
@@ -475,16 +474,16 @@ public class StructureUtil {
                     maxX = Math.max(maxX, placePosition.getX());
                     maxY = Math.max(maxY, placePosition.getY());
                     maxZ = Math.max(maxZ, placePosition.getZ());
-                    blockEntityDataList.add(Pair.of(placePosition, blockInfo.nbt()));
+                    blockEntityDataList.add(Pair.of(placePosition, blockInfo.nbt));
 
                     // Load block entity data
-                    if (blockInfo.nbt() != null) {
+                    if (blockInfo.nbt != null) {
                         BlockEntity blockEntity1 = world.getBlockEntity(placePosition);
                         if (blockEntity1 != null) {
                             if (blockEntity1 instanceof RandomizableContainerBlockEntity) {
-                                blockInfo.nbt().putLong("LootTableSeed", random.nextLong());
+                                blockInfo.nbt.putLong("LootTableSeed", random.nextLong());
                             }
-                            blockEntity1.load(blockInfo.nbt());
+                            blockEntity1.load(blockInfo.nbt);
                         }
                     }
 
@@ -498,12 +497,6 @@ public class StructureUtil {
                                 liquidPositions.add(placePosition);
                             }
                         }
-                    }
-
-                    // Handle Blocks with special placement conditions
-                    if(blockInfo.state().getBlock() instanceof ISpecialStructurePlacementConditionsBlock specialBlock)
-                    {
-                        specialBlock.executeSpecialCondition(world, placePosition);
                     }
                 }
             }

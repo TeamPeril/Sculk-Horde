@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 public class SculkArachnoidBlock extends Block implements IForgeBlock {
@@ -62,7 +62,6 @@ public class SculkArachnoidBlock extends Block implements IForgeBlock {
     public static Properties getProperties()
     {
         Properties prop = Properties.copy(Blocks.STONE)
-                .mapColor(MapColor.COLOR_CYAN)
                 .strength(10f, 6f)//Hardness & Resistance
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.HONEY_BLOCK);

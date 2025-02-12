@@ -5,7 +5,6 @@ import com.github.sculkhorde.client.particle.SculkCrustParticle;
 import com.github.sculkhorde.client.renderer.block.SculkSummonerBlockRenderer;
 import com.github.sculkhorde.client.renderer.block.SoulHarvesterBlockRenderer;
 import com.github.sculkhorde.client.renderer.entity.*;
-import com.github.sculkhorde.common.screen.SoulHarvesterScreen;
 import com.github.sculkhorde.core.*;
 import com.google.common.collect.Maps;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -98,8 +97,8 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void registerRenderers(final RegisterParticleProvidersEvent event)
     {
-        event.registerSpriteSet(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
-        event.registerSpriteSet(ModParticles.BURROWED_BURST_PARTICLE.get(), BurrowedBurstParticle.Factory::new);
+        event.register(ModParticles.SCULK_CRUST_PARTICLE.get(), SculkCrustParticle.Provider::new);
+        event.register(ModParticles.BURROWED_BURST_PARTICLE.get(), BurrowedBurstParticle.Factory::new);
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -108,7 +107,6 @@ public class ClientModEventSubscriber {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
-            MenuScreens.register(ModMenuTypes.SOUL_HARVESTER_MENU.get(), SoulHarvesterScreen::new);
         }
     }
 }

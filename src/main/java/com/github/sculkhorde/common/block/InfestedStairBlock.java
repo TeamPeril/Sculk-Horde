@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.ITagInfestedBlock;
-import com.github.sculkhorde.systems.block_infestation_system.infestation_entries.ITagInfestedBlockEntity;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlock;
+import com.github.sculkhorde.common.block.InfestationEntries.ITagInfestedBlockEntity;
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 
 import net.minecraft.core.BlockPos;

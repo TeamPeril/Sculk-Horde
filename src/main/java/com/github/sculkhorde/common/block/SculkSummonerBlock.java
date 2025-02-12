@@ -1,15 +1,26 @@
 package com.github.sculkhorde.common.block;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Direction;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,26 +28,15 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
-import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock {
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -58,6 +58,20 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
      * 1,200f = obsidian
      */
     public static float BLAST_RESISTANCE = 0.5f;
+
+    /**
+     *  Harvest Level Affects what level of tool can mine this block and have the item drop<br>
+     *
+     *  -1 = All<br>
+     *  0 = Wood<br>
+     *  1 = Stone<br>
+     *  2 = Iron<br>
+     *  3 = Diamond<br>
+     *  4 = Netherite
+     */
+    public static int HARVEST_LEVEL = -1;
+
+    public static final BooleanProperty IS_ACTIVE = BooleanProperty.create("is_active");
     public static final BooleanProperty VIBRATION_COOLDOWN = BooleanProperty.create("vibration_cooldown");
     /**
      * The Constructor that takes in properties
@@ -66,6 +80,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
     public SculkSummonerBlock(Properties prop) {
         super(prop);
         this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(IS_ACTIVE, false)
                 .setValue(VIBRATION_COOLDOWN, false)
                 .setValue(WATERLOGGED, false));
     }
@@ -101,19 +116,20 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
      * @param context
      * @return
      */
-    @Nullable
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context)
+    {
         FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
         BlockState blockstate = this.defaultBlockState();
         if (blockstate.canSurvive(context.getLevel(), context.getClickedPos())) {
-            return blockstate.setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER)).setValue(VIBRATION_COOLDOWN, false);
+            return blockstate.setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER)).setValue(VIBRATION_COOLDOWN, false).setValue(IS_ACTIVE, false);
 
         }
+
         return null;
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(VIBRATION_COOLDOWN).add(WATERLOGGED);
+        pBuilder.add(IS_ACTIVE).add(VIBRATION_COOLDOWN).add(WATERLOGGED);
     }
 
     /**
@@ -142,18 +158,10 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
-        if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
-        {
-            tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_summoner.functionality"));
-        }
-        else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
-        {
-            tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_summoner.lore"));
-        }
-        else
-        {
-            tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
-        }
+
+        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_summoner")); //Text that displays if not holding shift
+
     }
 
     @Nullable
@@ -176,14 +184,14 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
         }
 
 
-        if(blockState.getValue(VIBRATION_COOLDOWN))
+        if(blockState.getValue(VIBRATION_COOLDOWN) || !blockState.getValue(IS_ACTIVE))
         {
             return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), SculkSummonerBlockEntity::tickOnCoolDown);
         }
 
 
         return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.SCULK_SUMMONER_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
-            VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
+            entity.getListener().tick(level1);
         });
     }
 
@@ -198,18 +206,5 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
-    }
-
-    // Water Log Handling, stole this from BaseRailBlock
-    public BlockState updateShape(BlockState p_152151_, Direction p_152152_, BlockState p_152153_, LevelAccessor p_152154_, BlockPos p_152155_, BlockPos p_152156_) {
-        if (p_152151_.getValue(WATERLOGGED)) {
-            p_152154_.scheduleTick(p_152155_, Fluids.WATER, Fluids.WATER.getTickDelay(p_152154_));
-        }
-
-        return super.updateShape(p_152151_, p_152152_, p_152153_, p_152154_, p_152155_, p_152156_);
-    }
-
-    public FluidState getFluidState(BlockState p_152158_) {
-        return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);
     }
 }

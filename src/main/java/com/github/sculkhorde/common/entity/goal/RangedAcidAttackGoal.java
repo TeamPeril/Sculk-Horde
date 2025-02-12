@@ -102,7 +102,7 @@ public class RangedAcidAttackGoal extends Goal {
                 }
 
                 this.mob.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
-                Entity entity = this.mob.getControlledVehicle();
+                Entity entity = this.mob.getVehicle();
                 if (entity instanceof Mob) {
                     Mob mob = (Mob)entity;
                     mob.lookAt(livingentity, 30.0F, 30.0F);

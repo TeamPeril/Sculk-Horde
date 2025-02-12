@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ForgeEventSubscriber;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeItem;
@@ -61,7 +63,8 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
     {
         return new Item.Properties()
                 .rarity(Rarity.EPIC)
-                .stacksTo(8);
+                .stacksTo(8)
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     //This changes the text you see when hovering over an item
@@ -121,7 +124,7 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
 
             purifier = new InfestationPurifierEntity(level);
             EntityAlgorithms.applyEffectToTarget(purifier, MobEffects.GLOWING, Integer.MAX_VALUE, 0);
-            purifier.setPos(spawnPosition.getCenter().x, spawnPosition.getCenter().y, spawnPosition.getCenter().z);
+            purifier.setPos(Vec3.atCenterOf(spawnPosition));
             level.addFreshEntity(purifier);
 
             if (purifier == null)

@@ -66,7 +66,7 @@ public class TomeOfReinforcementItem extends TomeItem implements IForgeItem {
 	@Override
 	public void executePower(Player player)
 	{
-		summonReinforcement((ServerLevel) player.level(), player.blockPosition());
+		summonReinforcement((ServerLevel) player.level, player.blockPosition());
 	}
 
 	protected static void summonReinforcement(ServerLevel level, BlockPos blockPos)

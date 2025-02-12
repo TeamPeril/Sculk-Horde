@@ -47,9 +47,9 @@ public class ModItems {
 		}
 	});
 
-    public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SCULK_MATTER = ITEMS.register("sculk_matter", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 
-	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> CRYING_SOULS = ITEMS.register("crying_souls", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -68,7 +68,7 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<Item> PURE_SOULS = ITEMS.register("pure_souls", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> PURE_SOULS = ITEMS.register("pure_souls", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -87,7 +87,7 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<Item> ESSENCE_OF_PURITY = ITEMS.register("essence_of_purity", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> ESSENCE_OF_PURITY = ITEMS.register("essence_of_purity", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -180,7 +180,7 @@ public class ModItems {
 	public static final RegistryObject<WardenBeefItem> WARDEN_BEEF = ITEMS.register("warden_beef",
 			WardenBeefItem::new);
 
-	public static final RegistryObject<Item> CHUNK_O_BRAIN = ITEMS.register("chunk_o_brain", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> CHUNK_O_BRAIN = ITEMS.register("chunk_o_brain", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -199,7 +199,7 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<Item> DORMANT_HEART_OF_THE_HORDE = ITEMS.register("dormant_heart_of_the_horde", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> DORMANT_HEART_OF_THE_HORDE = ITEMS.register("dormant_heart_of_the_horde", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -218,7 +218,7 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<Item> HEART_OF_THE_HORDE = ITEMS.register("heart_of_the_horde", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> HEART_OF_THE_HORDE = ITEMS.register("heart_of_the_horde", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -238,7 +238,7 @@ public class ModItems {
 	});
 
 
-	public static final RegistryObject<Item> HEART_OF_PURITY = ITEMS.register("heart_of_purity", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> HEART_OF_PURITY = ITEMS.register("heart_of_purity", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -299,7 +299,7 @@ public class ModItems {
 	public static final RegistryObject<TomeOfSacrificeItem> TOME_OF_SACRIFICE = ITEMS.register("tome_of_sacrifice",
 			TomeOfSacrificeItem::new);
 
-	public static final RegistryObject<Item> SOULITE_SHARD = ITEMS.register("soulite_shard", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> SOULITE_SHARD = ITEMS.register("soulite_shard", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -321,7 +321,7 @@ public class ModItems {
 	public static final RegistryObject<SoulDisrupterItem> SOUL_DISRUPTER = ITEMS.register("soul_disrupter",
 			SoulDisrupterItem::new);
 
-	public static final RegistryObject<Item> FERRISCITE = ITEMS.register("ferriscite", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> FERRISCITE = ITEMS.register("ferriscite", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -340,7 +340,7 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<Item> DIASCITE = ITEMS.register("diascite", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> DIASCITE = ITEMS.register("diascite", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -359,7 +359,7 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<Item> SOUL_ANIMATOR = ITEMS.register("soul_animator", () -> new Item(new Item.Properties()){
+	public static final RegistryObject<Item> SOUL_ANIMATOR = ITEMS.register("soul_animator", () -> new Item(new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)){
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -378,46 +378,21 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<FerriscitePickaxeItem> FERRISCITE_PICKAXE = ITEMS.register("ferriscite_pickaxe",
-			FerriscitePickaxeItem::new);
-	public static final RegistryObject<FerrisciteShovelItem> FERRISCITE_SHOVEL = ITEMS.register("ferriscite_shovel",
-			FerrisciteShovelItem::new);
-
-	public static final RegistryObject<FerrisciteAxeItem> FERRISCITE_AXE = ITEMS.register("ferriscite_axe",
-			FerrisciteAxeItem::new);
-
-	public static final RegistryObject<FerrisciteHoeItem> FERRISCITE_HOE = ITEMS.register("ferriscite_hoe",
-			FerrisciteHoeItem::new);
-
-	public static final RegistryObject<DiascitePickaxeItem> DIASCITE_PICKAXE = ITEMS.register("diascite_pickaxe",
-			DiascitePickaxeItem::new);
-	public static final RegistryObject<DiasciteShovelItem> DIASCITE_SHOVEL = ITEMS.register("diascite_shovel",
-			DiasciteShovelItem::new);
-
-	public static final RegistryObject<DiasciteAxeItem> DIASCITE_AXE = ITEMS.register("diascite_axe",
-			DiasciteAxeItem::new);
-
-	public static final RegistryObject<DiasciteHoeItem> DIASCITE_HOE = ITEMS.register("diascite_hoe",
-			DiasciteHoeItem::new);
-
-	public static final RegistryObject<BladeOfPurityItem> BLADE_OF_PURITY = ITEMS.register("blade_of_purity",
-			BladeOfPurityItem::new);
-
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPORE_SPEWER_SPAWN_EGG = ITEMS.register("sculk_spore_spewer_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPORE_SPEWER, 0x111B21, 0xD1D6B6, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_SPAWN_EGG = ITEMS.register("sculk_mite_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_MITE, 0x062E37, 0x034150, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_AGGRESSOR_SPAWN_EGG = ITEMS.register("sculk_mite_aggressor_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_MITE_AGGRESSOR, 0x062E37, 0xA2AF86, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ZOMBIE_SPAWN_EGG = ITEMS.register("sculk_zombie_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ZOMBIE, 0x44975c, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPITTER_SPAWN_EGG = ITEMS.register("sculk_spitter_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPITTER, 0xD1D6B6, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_CREEPER_SPAWN_EGG = ITEMS.register("sculk_creeper_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_CREEPER, 0x0DA70B, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_HATCHER_SPAWN_EGG = ITEMS.register("sculk_hatcher_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_HATCHER, 0x443626, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_VINDICATOR_SPAWN_EGG = ITEMS.register("sculk_vindicator_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_VINDICATOR, 0x959B9B, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_RAVAGER_SPAWN_EGG = ITEMS.register("sculk_ravager_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_RAVAGER, 0x5B5049, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ENDERMAN_SPAWN_EGG = ITEMS.register("sculk_enderman_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ENDERMAN, 0x111B21, 0xE079FA, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_PHANTOM_SPAWN_EGG = ITEMS.register("sculk_phantom_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_PHANTOM, 0x88FF00, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SALMON_SPAWN_EGG = ITEMS.register("sculk_salmon_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SALMON, 0xA93432, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SQUID_SPAWN_EGG = ITEMS.register("sculk_squid_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SQUID, 0x1D3241, 0x0A5C70, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPORE_SPEWER_SPAWN_EGG = ITEMS.register("sculk_spore_spewer_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPORE_SPEWER, 0x111B21, 0xD1D6B6, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_SPAWN_EGG = ITEMS.register("sculk_mite_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_MITE, 0x062E37, 0x034150, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_AGGRESSOR_SPAWN_EGG = ITEMS.register("sculk_mite_aggressor_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_MITE_AGGRESSOR, 0x062E37, 0xA2AF86, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ZOMBIE_SPAWN_EGG = ITEMS.register("sculk_zombie_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ZOMBIE, 0x44975c, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPITTER_SPAWN_EGG = ITEMS.register("sculk_spitter_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPITTER, 0xD1D6B6, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_CREEPER_SPAWN_EGG = ITEMS.register("sculk_creeper_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_CREEPER, 0x0DA70B, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_HATCHER_SPAWN_EGG = ITEMS.register("sculk_hatcher_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_HATCHER, 0x443626, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_VINDICATOR_SPAWN_EGG = ITEMS.register("sculk_vindicator_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_VINDICATOR, 0x959B9B, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_RAVAGER_SPAWN_EGG = ITEMS.register("sculk_ravager_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_RAVAGER, 0x5B5049, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_ENDERMAN_SPAWN_EGG = ITEMS.register("sculk_enderman_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_ENDERMAN, 0x111B21, 0xE079FA, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_PHANTOM_SPAWN_EGG = ITEMS.register("sculk_phantom_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_PHANTOM, 0x88FF00, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SALMON_SPAWN_EGG = ITEMS.register("sculk_salmon_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SALMON, 0xA93432, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SQUID_SPAWN_EGG = ITEMS.register("sculk_squid_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SQUID, 0x1D3241, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_PUFFERFISH_SPAWN_EGG = ITEMS.register("sculk_pufferfish_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_PUFFERFISH, 0xE7A701, 0x0A5C70, new Item.Properties()));
-	public static final RegistryObject<ForgeSpawnEggItem> SCULK_WITCH_SPAWN_EGG = ITEMS.register("sculk_witch_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_WITCH, 0x310000, 0x0A5C70, new Item.Properties()));
+	public static final RegistryObject<ForgeSpawnEggItem> SCULK_WITCH_SPAWN_EGG = ITEMS.register("sculk_witch_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_WITCH, 0x310000, 0x0A5C70, new Item.Properties().tab(ModCreativeModeTab.SCULK_HORDE_TAB)));
 
 	public static final RegistryObject<Item> DEEP_GREEN_MUSIC_DISC = ITEMS.register("deep_green_music_disc", () -> new RecordItem(6, ModSounds.DEEP_GREEN, new Item.Properties().stacksTo(1), 5120));
 	public static final RegistryObject<Item> BLIND_AND_ALONE_MUSIC_DISC = ITEMS.register("blind_and_alone_music_disc", () -> new RecordItem(6, ModSounds.BLIND_AND_ALONE, new Item.Properties().stacksTo(1), 4920));

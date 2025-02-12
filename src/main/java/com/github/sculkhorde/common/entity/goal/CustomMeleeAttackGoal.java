@@ -44,7 +44,7 @@ public class CustomMeleeAttackGoal extends Goal{
     }
 
     public boolean canUse() {
-        long i = this.mob.level().getGameTime();
+        long i = this.mob.level.getGameTime();
         if (i - this.lastCanUseCheck < COOLDOWN_BETWEEN_CAN_USE_CHECKS)
         {
             return false;
@@ -131,7 +131,7 @@ public class CustomMeleeAttackGoal extends Goal{
 
         this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-        double perceivedTargetDistanceSquareForMeleeAttack = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
+        double perceivedTargetDistanceSquareForMeleeAttack = this.mob.getMeleeAttackRangeSqr(target);
 
         this.ticksUntilNextAttack = Math.max(getTicksUntilNextAttack()- 1, 0);
 

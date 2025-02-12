@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.core.ModCreativeModeTab;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.TooltipFlag;
@@ -52,7 +53,8 @@ public class DevConversionWand extends Item implements IForgeItem {
 		return new Item.Properties()
 				.durability(5)
 				.rarity(Rarity.EPIC)
-				.fireResistant();
+				.fireResistant()
+				.tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
 	}
 

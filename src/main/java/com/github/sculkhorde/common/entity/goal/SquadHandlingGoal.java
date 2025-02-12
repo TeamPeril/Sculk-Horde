@@ -41,13 +41,13 @@ public class SquadHandlingGoal extends Goal {
     @Override
     public boolean canUse()
     {
-        return !SculkHorde.gravemind.getEvolutionState().equals(Gravemind.evolution_states.Immature) || getMob().level().getGameTime() - timeOfLastSquadUpdate > SQUAD_UPDATE_DELAY;
+        return !SculkHorde.gravemind.getEvolutionState().equals(Gravemind.evolution_states.Immature) || getMob().level.getGameTime() - timeOfLastSquadUpdate > SQUAD_UPDATE_DELAY;
     }
 
     @Override
     public void start()
     {
-        timeOfLastSquadUpdate = getMob().level().getGameTime();
+        timeOfLastSquadUpdate = getMob().level.getGameTime();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class SquadHandlingGoal extends Goal {
     {
         AABB boundingBox = getMob().getBoundingBox().inflate(16.0D, 8.0D, 16.0D);
         // Get list of mobs in range
-        List<? extends Mob> list = getMob().level().getEntitiesOfClass(Mob.class, boundingBox);
+        List<? extends Mob> list = getMob().level.getEntitiesOfClass(Mob.class, boundingBox);
 
 
         // Early exit if list is empty

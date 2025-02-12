@@ -11,7 +11,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
@@ -76,8 +77,7 @@ public class StructureCoreBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_CYAN)
+        Properties prop = Properties.of(Material.AMETHYST, MaterialColor.COLOR_CYAN)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .sound(SoundType.AMETHYST);

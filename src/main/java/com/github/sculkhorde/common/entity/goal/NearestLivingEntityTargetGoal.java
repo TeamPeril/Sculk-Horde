@@ -60,15 +60,15 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
 
     protected void findTarget()
     {
-        if(this.mob.level().getGameTime() - lastTimeSinceTargetSearch < targetSearchInterval)
+        if(this.mob.level.getGameTime() - lastTimeSinceTargetSearch < targetSearchInterval)
         {
             return;
         }
 
-        lastTimeSinceTargetSearch = this.mob.level().getGameTime();
+        lastTimeSinceTargetSearch = this.mob.level.getGameTime();
 
         possibleTargets =
-                this.mob.level().getEntitiesOfClass(
+                this.mob.level.getEntitiesOfClass(
                 LivingEntity.class,
                 this.getTargetSearchArea(this.getFollowDistance()),
                         ((ISculkSmartEntity)this.mob).getTargetParameters().isPossibleNewTargetValid);

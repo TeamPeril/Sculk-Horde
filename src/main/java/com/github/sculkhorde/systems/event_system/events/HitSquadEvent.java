@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 import java.util.Random;
@@ -142,7 +143,7 @@ public class HitSquadEvent extends Event {
         if(spawnFinder.isEmpty())
         {
             desiredSpawnPos = Optional.of(getDesiredSpawnLocation(player.blockPosition()));
-            spawnFinder = Optional.of(new HitSquadSpawnFinder((ServerLevel) player.level(), getEventLocation(), desiredSpawnPos.get()));
+            spawnFinder = Optional.of(new HitSquadSpawnFinder((ServerLevel) player.getLevel(), getEventLocation(), desiredSpawnPos.get()));
             //spawnFinder.get().enableDebugMode();
             spawnFinder.get().setTargetBlockPredicate(isValidSpawnPos);
             spawnFinder.get().setObstructionPredicate(isObstructed);
@@ -157,7 +158,7 @@ public class HitSquadEvent extends Event {
 
         if(spawnFinder.get().isPathFound())
         {
-            reaper = SculkSoulReaperEntity.spawnWithDifficulty(player.level(), spawnFinder.get().getFoundBlock().getCenter(), getTargetProfile().getDifficultyOfNextHit());
+            reaper = SculkSoulReaperEntity.spawnWithDifficulty(player.getLevel(), Vec3.atCenterOf(spawnFinder.get().getFoundBlock()), getTargetProfile().getDifficultyOfNextHit());
             reaper.setHitTarget(player);
             setState(State.PURSUIT);
         }

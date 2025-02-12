@@ -52,7 +52,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
             searchCoolDownTicksRemaining = searchCoolDownTicks;
         }
 
-        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level(), this.removerMob))
+        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level, this.removerMob))
         {
             return false;
         }
@@ -85,7 +85,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     public void tick() {
         super.tick();
-        Level level = this.removerMob.level();
+        Level level = this.removerMob.level;
         BlockPos mobPosition = this.removerMob.blockPosition();
         BlockPos blockPosition = this.blockPos;
         RandomSource randomsource = this.removerMob.getRandom();
@@ -188,15 +188,15 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     // New Predicate for isValidTarget
     public final Predicate<BlockState> IS_VALID_TARGET = (blockState) -> {
-        return isValidTarget(this.mob.level(), blockState);
+        return isValidTarget(this.mob.level, blockState);
     };
 
     @Override
     protected boolean findNearestBlock() {
-        Optional<BlockPos> optionalTargetBlock = BlockAlgorithms.findBlockInCube((ServerLevel) this.mob.level(), this.mob.blockPosition(), IS_VALID_TARGET, 16);
+        Optional<BlockPos> optionalTargetBlock = BlockAlgorithms.findBlockInCube((ServerLevel) this.mob.level, this.mob.blockPosition(), IS_VALID_TARGET, 16);
         optionalTargetBlock.ifPresent((blockPos) -> {
             this.blockPos = blockPos;
-            SculkHorde.LOGGER.debug("Sculk Creeper New Raid Target: " + this.mob.level().getBlockState(this.blockPos).toString());
+            SculkHorde.LOGGER.debug("Sculk Creeper New Raid Target: " + this.mob.level.getBlockState(this.blockPos).toString());
         });
 
         return optionalTargetBlock.isPresent();

@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -99,7 +100,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
      */
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return (Packet<ClientGamePacketListener>) NetworkHooks.getEntitySpawningPacket(this);
     }
 
 
@@ -145,7 +146,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         }
 
 
-        raytrace.getEntity().hurt(damageSources().thrown(this, getOwner()), damage);
+        raytrace.getEntity().hurt(DamageSource.thrown(this, getOwner()), damage);
         this.playSound(SoundEvents.HONEY_BLOCK_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);
 
         if(raytrace.getEntity() instanceof LivingEntity)
@@ -169,8 +170,8 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
         if (random.nextFloat() < 0.028F && !(getOwner() instanceof Player && ((Player) getOwner()).isCreative()))
         {
             final Vec3 vec = raytrace.getLocation();
-            final ItemEntity item = new ItemEntity(this.level(), vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
-            this.level().addFreshEntity(item);
+            final ItemEntity item = new ItemEntity(this.level, vec.x, vec.y + 0.25D, vec.z, new ItemStack(getDefaultItem()));
+            this.level.addFreshEntity(item);
         }
         else
         {
@@ -191,7 +192,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
     public Entity changeDimension(ServerLevel serverWorld, ITeleporter iTeleporter)
     {
         Entity entity = this.getOwner();
-        if (entity != null && entity.level().dimension() != serverWorld.dimension())
+        if (entity != null && entity.level.dimension() != serverWorld.dimension())
         {
             setOwner(null);
         }
@@ -208,7 +209,7 @@ public class CustomItemProjectileEntity extends ThrowableItemProjectile {
             ParticleOptions iparticledata = this.getParticle();
 
             for(int i = 0; i < 8; ++i) {
-                this.level().addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(iparticledata, this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             }
         }
 

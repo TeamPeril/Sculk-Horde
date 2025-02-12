@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -56,7 +57,8 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
      */
     public static Properties getProperties()
     {
-        return new Properties();
+        return new Properties()
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     //This changes the text you see when hovering over an item

@@ -37,7 +37,7 @@ public class MountNearestRavager extends Goal {
         AABB boundingBox = this.mob.getBoundingBox().inflate(8.0D, 4.0D, 8.0D);
 
         // Get list of mobs in range
-        List<? extends Mob> list = this.mob.level().getEntitiesOfClass(mobClass, boundingBox);
+        List<? extends Mob> list = this.mob.level.getEntitiesOfClass(mobClass, boundingBox);
 
         // Early exit if list is empty
         if (list.isEmpty()) {

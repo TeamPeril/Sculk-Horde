@@ -5,9 +5,9 @@ package com.github.sculkhorde.client.model.enitity;// Made with Blockbench 4.10.
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFlySwatterProjectileAttackEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import mod.azure.azurelib.model.DefaultedEntityGeoModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SoulFlySwatterProjectileModel extends DefaultedEntityGeoModel<SoulFlySwatterProjectileAttackEntity> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor

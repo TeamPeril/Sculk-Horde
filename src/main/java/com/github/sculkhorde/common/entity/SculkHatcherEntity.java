@@ -5,6 +5,16 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -19,26 +29,19 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * The Sculk Hatcher.
  * @see com.github.sculkhorde.client.renderer.entity.SculkHatcherRenderer
  * @see com.github.sculkhorde.client.model.enitity.SculkHatcherModel
  */
-public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -69,7 +72,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().ignoreTargetBelow50PercentHealth().enableMustReachTarget();
     private SquadHandler squad = new SquadHandler(this);
     //factory The animation factory used for animations
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -323,7 +326,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
             {
                 return;
             }
-            if(Math.abs(mob.level().getGameTime() - timeOfLastMiteSpawn) < MITE_SPAWN_COOLDOWN)
+            if(Math.abs(mob.level.getGameTime() - timeOfLastMiteSpawn) < MITE_SPAWN_COOLDOWN)
             {
                 return;
             }
@@ -333,7 +336,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 return;
             }
 
-            timeOfLastMiteSpawn = mob.level().getGameTime();
+            timeOfLastMiteSpawn = mob.level.getGameTime();
             spawnMite();
         }
     }
@@ -341,9 +344,9 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     protected void spawnMite()
     {
 
-        level().getServer().tell(new TickTask(level().getServer().getTickCount() + 1, () -> {
+        level.getServer().tell(new TickTask(level.getServer().getTickCount() + 1, () -> {
 
-            SculkMiteEntity mite = ModEntities.SCULK_MITE.get().spawn((ServerLevel) this.level(), this.blockPosition().above(), MobSpawnType.SPAWNER);
+            SculkMiteEntity mite = (SculkMiteEntity) ModEntities.SCULK_MITE.get().spawn((ServerLevel) this.level, (ItemStack)null, (Player)null, this.blockPosition().above(), MobSpawnType.SPAWNER, false, false);
 
             // Get the target (can be null)
             LivingEntity target = getTarget();
@@ -365,7 +368,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
             }
 
-            this.hurt(damageSources().generic(), SculkMiteEntity.MAX_HEALTH);
+            this.hurt(DamageSource.GENERIC, SculkMiteEntity.MAX_HEALTH);
         }));
     }
 

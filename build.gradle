@@ -6,7 +6,7 @@ plugins {
 }
 
 
-version = '1.20.1-0.10.-Beta15'
+version = '1.19.2-0.8.2'
 group = 'com.github.sculkhorde' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sculkhorde'
 
@@ -14,7 +14,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Mojang ships Java
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.20.1'
+    mappings channel: 'official', version: '1.19.2'
    
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -94,7 +94,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven {url 'https://maven.azuredoom.com/mods'}
 	maven {
 			url 'https://www.cursemaven.com'
 			// FG4: It's recommended to uncomment the following block
@@ -109,15 +109,16 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.1.0'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.7')
+    minecraft 'net.minecraftforge:forge:1.19.2-43.4.0'
+    implementation fg.deobf("mod.azure.azurelib:azurelib-forge-1.19.2:1.0.56")
 	// Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:jei-238222:5101366")
-	implementation fg.deobf("curse.maven:spore-678295:4764840")
-	implementation fg.deobf("curse.maven:spark-361579:4738952")
-	implementation fg.deobf("curse.maven:crash-utilities-371813:4716086")
-	implementation fg.deobf("curse.maven:deeperdarker-659011:5698212")
+	implementation fg.deobf("curse.maven:jei-238222:5846858")
+	implementation fg.deobf("curse.maven:spore-678295:5939631")
+	implementation fg.deobf("curse.maven:spark-361579:4505309")
+	implementation fg.deobf("curse.maven:crash-utilities-371813:4406293")
+	implementation fg.deobf("curse.maven:deeperdarker-659011:4812297")
+
 
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))

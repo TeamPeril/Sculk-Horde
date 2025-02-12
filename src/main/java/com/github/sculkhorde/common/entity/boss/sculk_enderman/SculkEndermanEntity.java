@@ -10,6 +10,15 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,11 +31,9 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,18 +46,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Random;
 
-public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -93,7 +92,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     public static final EntityDataAccessor<Boolean> DATA_SCOUTING = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
 
     // Animation
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -102,7 +101,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public SculkEndermanEntity(EntityType<? extends SculkEndermanEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setMaxUpStep(1.0F);
+        this.maxUpStep = 1.0F;
         this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
@@ -238,7 +237,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     @Override
     public boolean hurt(DamageSource damageSource, float amount)
     {
-        boolean isIndirectMagicDamageType = damageSource.is(DamageTypes.INDIRECT_MAGIC);
+        boolean isIndirectMagicDamageType = damageSource.isMagic();
         if(isIndirectMagicDamageType)
         {
             return false;
@@ -258,9 +257,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public void aiStep()
     {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+                this.level.addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
         // IF target isnt null and we cannot see them, teleport to them
@@ -269,7 +268,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             teleportBehindEntity(getTarget());
         }
 
-        if(this.getTarget() != null && !this.getTarget().onGround())
+        if(this.getTarget() != null && !this.getTarget().isOnGround())
         {
             stayInSpecificRangeOfTarget(16, 32);
         }
@@ -340,7 +339,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     protected void teleportRandomly(int distance)
     {
-        if (this.level().isClientSide() || !this.isAlive() || !canTeleport)
+        if (this.level.isClientSide() || !this.isAlive() || !canTeleport)
         {
             return;
         }
@@ -443,13 +442,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
 
-        while(blockpos$mutableblockpos.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockpos$mutableblockpos).blocksMotion())
+        while(blockpos$mutableblockpos.getY() > this.level.getMinBuildHeight() && !this.level.getBlockState(blockpos$mutableblockpos).getMaterial().blocksMotion())
         {
             blockpos$mutableblockpos.move(Direction.DOWN);
         }
 
-        BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
-        boolean isMotionBlockFlag = false; blockstate.blocksMotion();
+        BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
+        boolean isMotionBlockFlag = false; blockstate.getMaterial().blocksMotion();
         boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
         if (!isWaterFlag)
         {
@@ -462,10 +461,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             boolean ifCanRandomTeleport = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
             if (ifCanRandomTeleport)
             {
-                this.level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
+                this.level.gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(this));
                 if (!this.isSilent())
                 {
-                    this.level().playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+                    this.level.playSound((Player)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
                     this.playSound(ModSounds.SCULK_ENDERMAN_PORTAL.get(), 1.0F, 1.0F);
                     ticksSinceLastTeleport = 0;
                 }
@@ -520,11 +519,6 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         this.entityData.set(DATA_AGGRO, nbt.getBoolean(DATA_IS_AGGRO_IDENTIFIER));
     }
 
-    @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        return source.is(DamageTypeTags.WITHER_IMMUNE_TO);
-    }
-
     // ####### Animation Code ###########
 
     private static final RawAnimation IDLE_BODY_ANIMATION = RawAnimation.begin().thenPlay("idle");
@@ -549,7 +543,6 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     private static final RawAnimation COMBAT_BUBBLE_TWITCH = RawAnimation.begin().thenPlay("combat.forcefieldbubble.twitch");
 
     private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .transitionLength(5)
             .triggerableAnim("melee_attack_animation_1", COMBAT_ATTACK_ANIMATION_1)
             .triggerableAnim("melee_attack_animation_2", COMBAT_ATTACK_ANIMATION_2)
             .triggerableAnim("melee_attack_animation_3", COMBAT_ATTACK_ANIMATION_3)
@@ -563,7 +556,6 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             .triggerableAnim("bubble_animation", COMBAT_BUBBLE);
 
     private final AnimationController COMBAT_TWITCH_ANIMATION_CONTROLLER = new AnimationController<>(this, "twitch_controller", state -> PlayState.STOP)
-            .transitionLength(5)
             .triggerableAnim("fireball_sky_twitch_animation", COMBAT_FIREBALL_SKY_TWITCH_ANIMATION)
             .triggerableAnim("summon_twitch_animation", COMBAT_SUMMON_TWITCH_ANIMATION)
             .triggerableAnim("spike_line_twitch_animation", COMBAT_SPIKE_TWITCH)

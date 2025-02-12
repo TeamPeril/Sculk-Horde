@@ -23,7 +23,7 @@ public class NodesStatusCommand implements Command<CommandSourceStack> {
     @Override
     public int run(CommandContext<CommandSourceStack> context)
     {
-        context.getSource().sendSuccess(()->Component.literal(
+        context.getSource().sendSuccess(Component.literal(
                 "Sculk Nodes Present: " + SculkHorde.savedData.getNodeEntries().size()
                         + "\n"
                         + " Are there too many nodes? " + (SculkHorde.savedData.getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)

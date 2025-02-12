@@ -65,9 +65,9 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     protected void onHitEntity(EntityHitResult raytrace) {
         super.onHitEntity(raytrace);
 
-        if(this.level().isClientSide())
+        if(this.level.isClientSide())
         {
-            this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             return;
         }
 
@@ -108,9 +108,9 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     protected void onHitBlock(BlockHitResult raytrace) {
         super.onHitBlock(raytrace);
-        if(this.level().isClientSide())
+        if(this.level.isClientSide())
         {
-            this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
             return;
         }
     }
@@ -122,8 +122,8 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide) {
-            this.level().addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
+        if (this.level.isClientSide) {
+            this.level.addParticle(getParticle(), this.getX(), this.getY(), this.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 }

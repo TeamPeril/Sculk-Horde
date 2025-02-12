@@ -203,7 +203,7 @@ public class EntityChunkLoaderHelper
         }
         createChunkLoadRequest(owner, chunkPositionsToLoad, priority, requestID, ticksUnitExpiration);
 
-        ServerLevel serverLevel = ((ServerLevel) owner.level());
+        ServerLevel serverLevel = ((ServerLevel) owner.level);
 
         serverLevel.getServer().tell(new TickTask(serverLevel.getServer().getTickCount() + 1, () -> {
             loadChunksWithOwner(owner.getUUID(), serverLevel);
@@ -217,7 +217,7 @@ public class EntityChunkLoaderHelper
         {
             return;
         }
-        EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level().dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
+        EntityChunkLoadRequest request = new EntityChunkLoadRequest(owner.level.dimension(), owner.getUUID(), chunkPositionsToLoad, priority, requestID, ticksUntilExpiration);
         entityChunkLoadRequests.add(request);
         loadChunksWithOwner(request.getOwner(), request.getDimension());
     }

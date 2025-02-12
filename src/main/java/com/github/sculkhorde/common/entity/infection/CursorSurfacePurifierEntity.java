@@ -1,17 +1,21 @@
 package com.github.sculkhorde.common.entity.infection;
 
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.systems.block_infestation_system.BlockInfestationSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.systems.BlockInfestationSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,12 +52,12 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
 
     }
 
-
     @Override
-    public boolean canBeManuallyTicked()
-    {
-        return false; // Purifiers should never be manually ticked
+    public @NotNull Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+
 
     /**
      * Returns true if the block is considered obstructed.
@@ -63,7 +67,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected boolean isTarget(BlockPos pos)
     {
-        return BlockInfestationSystem.isCurable((ServerLevel) level(), pos);
+        return BlockInfestationSystem.isCurable((ServerLevel) level, pos);
     }
 
     /**
@@ -73,15 +77,17 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
     @Override
     protected void transformBlock(BlockPos pos)
     {
-        BlockInfestationSystem.tryToCureBlock((ServerLevel) this.level(), pos);
+        BlockInfestationSystem.tryToCureBlock((ServerLevel) this.level, pos);
 
         // Get all infector cursor entities in area and kill them
         Predicate<CursorSurfaceInfectorEntity> isCursor = Objects::nonNull;
-        List<CursorSurfaceInfectorEntity> Infectors = this.level().getEntitiesOfClass(CursorSurfaceInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
+        List<CursorSurfaceInfectorEntity> Infectors = this.level.getEntitiesOfClass(CursorSurfaceInfectorEntity.class, this.getBoundingBox().inflate(5.0D), isCursor);
         for(CursorSurfaceInfectorEntity infector : Infectors)
         {
-            infector.setMaxTransformations(0);
-            setMaxTransformations(0);
+            level.getServer().tell(new TickTask(level.getServer().getTickCount() + 1, () -> {
+                infector.discard();
+                this.discard();
+            }));
             break;
         }
     }
@@ -94,7 +100,7 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
         float randomXOffset = random.nextFloat(maxOffset * 2) - maxOffset;
         float randomYOffset = random.nextFloat(maxOffset * 2) - maxOffset;
         float randomZOffset = random.nextFloat(maxOffset * 2) - maxOffset;
-        this.level().addParticle(ParticleTypes.TOTEM_OF_UNDYING, getX() + randomXOffset, getY() + randomYOffset, getZ() + randomZOffset, randomXOffset * 0.1, randomYOffset * 0.1, randomZOffset * 0.1);
+        this.level.addParticle(ParticleTypes.TOTEM_OF_UNDYING, getX() + randomXOffset, getY() + randomYOffset, getZ() + randomZOffset, randomXOffset * 0.1, randomYOffset * 0.1, randomZOffset * 0.1);
     }
 
     /**
@@ -138,11 +144,12 @@ public class CursorSurfacePurifierEntity extends CursorEntity{
             return true;
         }
 
-        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level(), pos))
+        if(!BlockAlgorithms.isExposedToAir((ServerLevel) this.level, pos))
         {
             return true;
         }
 
         return false;
     }
+
 }

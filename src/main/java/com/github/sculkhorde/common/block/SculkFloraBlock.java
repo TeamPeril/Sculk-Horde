@@ -7,7 +7,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -84,7 +83,6 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
     public static Properties getProperties()
     {
         return Properties.copy(Blocks.POPPY)
-                .mapColor(MapColor.TERRACOTTA_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
                 .noCollission()

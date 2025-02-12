@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -36,11 +37,17 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
         super(tier, baseDamage, baseAttackSpeed, prop);
     }
 
+    public static Properties getProperties()
+    {
+        return new Item.Properties()
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
+    }
+
     private void doSpikeAttack(LivingEntity ownerEntity, LivingEntity targetEntity, ItemStack itemStack)
     {
         AABB spikeHitbox = new AABB(targetEntity.blockPosition());
         spikeHitbox = spikeHitbox.inflate(20.0D);
-        for(LivingEntity possibleSpikeTargets : targetEntity.level().getEntitiesOfClass(LivingEntity.class, spikeHitbox))
+        for(LivingEntity possibleSpikeTargets : targetEntity.level.getEntitiesOfClass(LivingEntity.class, spikeHitbox))
         {
             if(possibleSpikeTargets != ownerEntity)
             {
@@ -48,7 +55,7 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
                 if(isSculkLivingEntity)
                 {
                     SculkSpineSpikeAttackEntity sculkSpineSpikeAttackEntity = new SculkSpineSpikeAttackEntity(ownerEntity, possibleSpikeTargets.getX(), possibleSpikeTargets.getY(), possibleSpikeTargets.getZ(), 0);
-                    targetEntity.level().addFreshEntity(sculkSpineSpikeAttackEntity);
+                    targetEntity.level.addFreshEntity(sculkSpineSpikeAttackEntity);
                     // Give effect
                     EntityAlgorithms.applyEffectToTarget(possibleSpikeTargets, MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(5), 1);
                 }
@@ -77,7 +84,7 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
         if(!itemstack.isDamaged() && !level.isClientSide())
         {
             doSpikeAttack(player, player, itemstack);
-            level.playSound(player, player.blockPosition(), SoundEvents.EVOKER_FANGS_ATTACK, player.getSoundSource());
+            level.playSound(player, player.blockPosition(), SoundEvents.EVOKER_FANGS_ATTACK, player.getSoundSource(), 1, 1);
             return InteractionResultHolder.success(itemstack);
         }
         return InteractionResultHolder.pass(itemstack);

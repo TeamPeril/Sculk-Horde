@@ -45,7 +45,7 @@ public class DenseEffect extends MobEffect {
     @Override
     public void applyEffectTick(LivingEntity victimEntity, int amp) {
 
-        if(!victimEntity.onGround() && isBeyondRequiredDistanceFromGround(victimEntity))
+        if(!victimEntity.isOnGround() && isBeyondRequiredDistanceFromGround(victimEntity))
         {
             // Note: This needs to happen on the client AND server
             victimEntity.push(0, -0.07 - (0.1 * victimEntity.getSpeed()), 0);
@@ -54,7 +54,7 @@ public class DenseEffect extends MobEffect {
     }
 
     public static boolean isBeyondRequiredDistanceFromGround(LivingEntity e) {
-        Level world = e.level();
+        Level world = e.level;
         BlockPos pos = e.blockPosition();
         int y = pos.getY();
 

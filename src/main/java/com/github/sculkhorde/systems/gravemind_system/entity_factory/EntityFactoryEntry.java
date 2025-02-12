@@ -4,10 +4,13 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
@@ -244,6 +247,6 @@ public class EntityFactoryEntry {
     {
         SculkHorde.savedData.subtractSculkAccumulatedMass(getCost());
         SculkHorde.statisticsData.incrementTotalUnitsSpawned();
-        return getEntity().spawn(level, pos, MobSpawnType.EVENT);
+        return getEntity().spawn(level, (CompoundTag)null, (Component)null, (Player)null, pos, MobSpawnType.EVENT, false, false);
     }
 }

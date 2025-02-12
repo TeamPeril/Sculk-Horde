@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.TooltipFlag;
@@ -47,7 +48,8 @@ public class DevNodeSpawner extends Item implements IForgeItem {
 	{
 		return new Properties()
 				.rarity(Rarity.EPIC)
-				.fireResistant();
+				.fireResistant()
+				.tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
 	}
 
@@ -69,7 +71,7 @@ public class DevNodeSpawner extends Item implements IForgeItem {
 		//IF successful, try to place a node
 		Vec3 result = rayTrace.getTo();
 
-		SculkNodeBlock.tryPlaceSculkNode((ServerLevel) level, BlockPos.containing(result), true);
+		SculkNodeBlock.tryPlaceSculkNode((ServerLevel) level, new BlockPos(result), true);
 		return InteractionResultHolder.pass(itemstack);
 	}
 

@@ -6,33 +6,36 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEntity {
+public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEntity, GeoAnimatable {
     public static int ATTACK_DELAY = TickUnits.convertSecondsToTicks(1);
     protected static int ATTACK_ANIOMATION_DELAY = TickUnits.convertSecondsToTicks(1);
     public int attackDelayRemaining = ATTACK_DELAY;
@@ -66,7 +69,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
     public void setYRot(float value) {
         super.setYRot(value);
 
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         setYaw(value);
     }
@@ -75,7 +78,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
     public void setXRot(float value) {
         super.setXRot(value);
 
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         setPitch(value);
     }
@@ -113,12 +116,12 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
 
     public static ZoltraakAttackEntity castZoltraakOnEntity(LivingEntity owner, LivingEntity target, Vec3 spawnPos)
     {
-        ZoltraakAttackEntity zoltraak = new ZoltraakAttackEntity(target.level());
+        ZoltraakAttackEntity zoltraak = new ZoltraakAttackEntity(target.level);
         zoltraak.setPos(spawnPos);
         zoltraak.setOwner(owner);
         zoltraak.setTarget(target);
         EntityAlgorithms.lookAt(zoltraak, target);
-        target.level().addFreshEntity(zoltraak);
+        target.level.addFreshEntity(zoltraak);
         return zoltraak;
     }
 
@@ -126,7 +129,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
     public void tick() {
         super.tick();
 
-        if(level().isClientSide())
+        if(level.isClientSide())
         {
             syncPitchAndYaw();
             float yrot = getYRot();
@@ -151,17 +154,17 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
             {
 
                 performTargetedZoltraakAttack(target.get());
-                timeOfDespawnStart = level().getGameTime();
+                timeOfDespawnStart = level.getGameTime();
                 completedAttack = true;
                 triggerAnim(DESPAWN_ANIMATION_CONTROLLER_ID, DESPAWN_ANIMATION_ID);
             }
-            else if(targetPos.isEmpty())
+            else if(targetPos.isPresent())
             {
-                discard();
+                // TODO Implement zoltraak without living entity target
             }
         }
 
-        if(completedAttack && Math.abs(timeOfDespawnStart - level().getGameTime()) >= DESPAWN_DELAY)
+        if(completedAttack && Math.abs(timeOfDespawnStart - level.getGameTime()) >= DESPAWN_DELAY)
         {
             discard();
         }
@@ -196,23 +199,23 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         doMagicDamageToTargetsInHitBox(getOwner(), hitbox, damage);
 
         // Spawn magic particles
-        ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, origin, direction, (float) beamPath.length(), radius, thickness);
+        ParticleUtil.spawnParticleBeam((ServerLevel) this.level, ParticleTypes.SOUL_FIRE_FLAME, origin, direction, (float) beamPath.length(), radius, thickness);
 
         // Make Sound
-        level().playSound(this,this.blockPosition(), ModSounds.ZOLTRAAK_ATTACK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+        level.playSound((Player)null,this.blockPosition(), ModSounds.ZOLTRAAK_ATTACK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
 
     }
 
     public static void doMagicDamageToTargetsInHitBox(LivingEntity sourceEntity, AABB hitbox, float damage)
     {
         // Check for entities within the hitbox
-        List<LivingEntity> entitiesHit = EntityAlgorithms.getNonSculkUnitsInBoundingBox(sourceEntity.level(), hitbox);
+        List<LivingEntity> entitiesHit = EntityAlgorithms.getNonSculkUnitsInBoundingBox(sourceEntity.level, hitbox);
 
         for (LivingEntity entity : entitiesHit) {
             // Handle entity hit logic here
             if(entity.getUUID() != sourceEntity.getUUID() && !entity.isBlocking())
             {
-                entity.hurt(sourceEntity.damageSources().magic(), damage);
+                entity.hurt(DamageSource.MAGIC, damage);
             }
         }
     }
@@ -233,17 +236,15 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
 
     public static final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     protected final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
-            .transitionLength(5)
             .triggerableAnim(ATTACK_ID, ATTACK);
 
     public static final String DESPAWN_ANIMATION_CONTROLLER_ID = "depsawn_controller";
     public static final RawAnimation DESPAWN = RawAnimation.begin().thenPlayAndHold("misc.die");
     public static final String DESPAWN_ANIMATION_ID = "die";
     protected final AnimationController DESPAWN_ANIMATION_CONTROLLER  = new AnimationController<>(this, DESPAWN_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
-            .transitionLength(5)
             .triggerableAnim(DESPAWN_ANIMATION_ID, DESPAWN);
 
-    protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    protected final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

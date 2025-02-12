@@ -3,7 +3,7 @@ package com.github.sculkhorde.core;
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -107,7 +107,7 @@ public class ModConfig {
         {
             ItemStack itemStack = itemEntity.getItem();
             Item item = itemStack.getItem();
-            ResourceLocation itemResourceLocation = BuiltInRegistries.ITEM.getKey(item);
+            ResourceLocation itemResourceLocation = Registry.ITEM.getKey(item);
 
 
             if(itemResourceLocation == null)
@@ -145,7 +145,7 @@ public class ModConfig {
         public boolean isBlockConfiguredToBeInfestable(BlockState blockState)
         {
             Block block = blockState.getBlock();
-            ResourceLocation itemResourceLocation = BuiltInRegistries.BLOCK.getKey(block);
+            ResourceLocation itemResourceLocation = Registry.BLOCK.getKey(block);
 
 
             if(itemResourceLocation == null)
@@ -164,7 +164,7 @@ public class ModConfig {
 
         public boolean isEntityOnSculkHordeTargetBlacklist(Entity entity)
         {
-            ResourceLocation entityResourceLocation = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+            ResourceLocation entityResourceLocation = Registry.ENTITY_TYPE.getKey(entity.getType());
             String entityNameSpace = entityResourceLocation.toString();
 
             if(sculk_horde_target_blacklist.get().contains(entityNameSpace))

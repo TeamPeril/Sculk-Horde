@@ -20,7 +20,7 @@ public class DespawnWhenIdle extends Goal {
         super();
         this.mob = mob;
         this.ticksIdleThreshold = ticksIdleThreshold;
-        lastTimeSinceNotIdle = ((Mob) mob).level().getGameTime();
+        lastTimeSinceNotIdle = ((Mob) mob).level.getGameTime();
     }
 
     /**
@@ -32,10 +32,10 @@ public class DespawnWhenIdle extends Goal {
     {
         if(!mob.isIdle() || mob.isParticipatingInRaid() || ((Mob) mob).hasCustomName())
         {
-            lastTimeSinceNotIdle = ((Mob) mob).level().getGameTime();
+            lastTimeSinceNotIdle = ((Mob) mob).level.getGameTime();
         }
 
-        timeElapsed = ((Mob) mob).level().getGameTime() - lastTimeSinceNotIdle;
+        timeElapsed = ((Mob) mob).level.getGameTime() - lastTimeSinceNotIdle;
         return timeElapsed > ticksIdleThreshold;
     }
 

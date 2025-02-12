@@ -7,6 +7,15 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -35,21 +44,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISculkSmartEntity {
+public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following files were created/edited.<br>
@@ -76,7 +77,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
             //.disableTargetWalkers()
             .enableMustSeeTarget();
     private SquadHandler squad = new SquadHandler(this);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
 
     /**
@@ -252,7 +253,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     protected PlayState poseSwimCycle(AnimationState<SculkPufferfishEntity> state)
     {
 
-        if(state.getAnimatable().level().getFluidState(state.getAnimatable().blockPosition()).isEmpty())
+        if(state.getAnimatable().level.getFluidState(state.getAnimatable().blockPosition()).isEmpty())
         {
             state.setAnimation(STUCK_ANIMATION);
         }
@@ -301,12 +302,12 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     private void spawnLingeringCloud(MobEffect effect) {
 
         playSound(SoundEvents.GENERIC_EXPLODE, 3.0F, 1.0F);
-        AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(level(), getX(), getY() - 1, getZ());
+        AreaEffectSphericalCloudEntity areaeffectcloud = new AreaEffectSphericalCloudEntity(level, getX(), getY() - 1, getZ());
         areaeffectcloud.setOwner((LivingEntity) this);
         areaeffectcloud.setRadius(2F);
         areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(10));
         areaeffectcloud.addEffect(new MobEffectInstance(effect, TickUnits.convertSecondsToTicks(10), 0));
-        level().addFreshEntity(areaeffectcloud);
+        level.addFreshEntity(areaeffectcloud);
     }
 
     static class FishMoveControl extends MoveControl {
@@ -318,7 +319,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         }
 
         public void tick() {
-            if(fish.level().isClientSide()) { return; }
+            if(fish.level.isClientSide()) { return; }
 
             if(!mob.isEyeInFluid(FluidTags.WATER))
             {
@@ -386,7 +387,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         @Override
         public void tick()
         {
-            if(getTarget() == null || level().isClientSide())
+            if(getTarget() == null || level.isClientSide())
             {
                 return;
             }
@@ -395,7 +396,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
                 // stop the navigation
                 spawnLingeringCloud(MobEffects.POISON);
                 spawnLingeringCloud(ModMobEffects.SCULK_INFECTION.get());
-                getMob().hurt(damageSources().genericKill(), Integer.MAX_VALUE);
+                getMob().hurt(DamageSource.GENERIC, Integer.MAX_VALUE);
 
             }
 
@@ -429,7 +430,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
          */
         public boolean canUse()
         {
-            long currentTime = getMob().level().getGameTime();
+            long currentTime = getMob().level.getGameTime();
             long timeElapsed = currentTime - lastTimeOfCheck;
             boolean hasEnoughTimeElapsed = timeElapsed >= CHECK_INTERVAL;
 
@@ -437,7 +438,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
 
             if(hasEnoughTimeElapsed)
             {
-                hurtSculkUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) getMob().level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), 15));
+                hurtSculkUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) getMob().level, EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), 15));
                 if(!hurtSculkUnits.isEmpty()) { targetToHeal = hurtSculkUnits.get(0); }
             }
 
@@ -456,14 +457,14 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
         public void start()
         {
             this.timeToRecalcPath = 0;
-            lastTimeOfCheck = level().getGameTime();
+            lastTimeOfCheck = level.getGameTime();
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         @Override
         public void tick()
         {
-            if(targetToHeal == null || level().isClientSide())
+            if(targetToHeal == null || level.isClientSide())
             {
                 return;
             }
@@ -472,7 +473,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
                 // stop the navigation
                 spawnLingeringCloud(MobEffects.REGENERATION);
                 addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(60)), getTarget());
-                getMob().hurt(damageSources().genericKill(), Integer.MAX_VALUE);
+                getMob().hurt(DamageSource.GENERIC, Integer.MAX_VALUE);
 
             }
 

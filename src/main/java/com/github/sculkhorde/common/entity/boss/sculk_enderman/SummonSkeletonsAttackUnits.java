@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,7 @@ public class SummonSkeletonsAttackUnits extends MeleeAttackGoal
             return false;
         }
 
-        if(!mob.closerThan(mob.getTarget(), 8.0D) && mob.getTarget().onGround())
+        if(!mob.closerThan(mob.getTarget(), 8.0D) && mob.getTarget().isOnGround())
         {
             return false;
         }
@@ -62,15 +63,15 @@ public class SummonSkeletonsAttackUnits extends MeleeAttackGoal
     private Predicate<BlockPos> isValidSpawn = (pos) -> {
 
         // If air or water or lava, return false
-        if(mob.level().getBlockState(pos).isAir() || mob.level().getBlockState(pos).getFluidState().isSource())
+        if(mob.level.getBlockState(pos).isAir() || mob.level.getBlockState(pos).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level().getBlockState(pos.above()).canBeReplaced() || mob.level().getBlockState(pos.above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above()).getFluidState().isSource())
         {
             return false;
         }
-        else if(!mob.level().getBlockState(pos.above().above()).canBeReplaced() || mob.level().getBlockState(pos.above().above()).getFluidState().isSource())
+        else if(!mob.level.getBlockState(pos.above().above()).canBeReplaced(Fluids.WATER) || mob.level.getBlockState(pos.above().above()).getFluidState().isSource())
         {
             return false;
         }
@@ -89,7 +90,7 @@ public class SummonSkeletonsAttackUnits extends MeleeAttackGoal
         this.mob.getNavigation().stop();
         // Teleport the enderman away from the mob
         getSculkEnderman().teleportAwayFromEntity(mob.getTarget());
-        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level(), mob.blockPosition(), isValidSpawn, 5);
+        ArrayList<BlockPos> possibleSpawns = BlockAlgorithms.getBlocksInAreaWithBlockPosPredicate((ServerLevel) mob.level, mob.blockPosition(), isValidSpawn, 5);
         // Shuffle
         Collections.shuffle(possibleSpawns);
 
@@ -97,7 +98,7 @@ public class SummonSkeletonsAttackUnits extends MeleeAttackGoal
         for(int i = 0; i < 7 && i < possibleSpawns.size(); i++)
         {
             BlockPos spawnPos = possibleSpawns.get(i);
-            EntityFactory.spawnReinforcementOfThisEntityType(ModEntities.SCULK_SPITTER.get(), mob.level(), spawnPos.above());
+            EntityFactory.spawnReinforcementOfThisEntityType(ModEntities.SCULK_SPITTER.get(), mob.level, spawnPos.above());
         }
     }
 

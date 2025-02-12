@@ -16,6 +16,15 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -24,12 +33,10 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -43,18 +50,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 
-public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -87,7 +86,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     protected ServerBossEvent bossEvent;
 
     // Animation
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     protected Optional<LivingEntity> hitTarget = Optional.empty();
 
@@ -102,7 +101,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
      */
     public SculkSoulReaperEntity(EntityType<? extends SculkSoulReaperEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setMaxUpStep(1.0F);
+        this.maxUpStep = 1.0F;
         this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
@@ -386,7 +385,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     @Override
     public boolean hurt(DamageSource damageSource, float amount)
     {
-        boolean isIndirectMagicDamageType = damageSource.is(DamageTypes.INDIRECT_MAGIC);
+        boolean isIndirectMagicDamageType = damageSource.isMagic();
         if(isIndirectMagicDamageType)
         {
             return false;
@@ -401,9 +400,9 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
      */
     public void aiStep()
     {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.level().addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 0.8D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 0.8D);
+                this.level.addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 0.8D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 0.8D);
             }
         }
 
@@ -458,11 +457,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         setMobDifficultyLevel(nbt.getInt("difficulty"));
     }
 
-    @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        return source.is(DamageTypeTags.WITHER_IMMUNE_TO);
-    }
-
     // ####### Animation Code ###########
 
     public static final String ATTACK_SPELL_CHARGE_ID = "attack.spell_charge";
@@ -472,7 +466,6 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     public static final String COMBAT_ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
-            .transitionLength(5)
             .triggerableAnim(ATTACK_SPELL_CHARGE_ID, ATTACK_SPELL_CHARGE)
             .triggerableAnim(ATTACK_SPELL_USE_ID, ATTACK_SPELL_USE);
 
@@ -480,7 +473,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
     {
         controllers.add(
-                DefaultAnimations.genericWalkIdleController(this).transitionLength(5),
+                DefaultAnimations.genericWalkIdleController(this),
                 COMBAT_ATTACK_ANIMATION_CONTROLLER
         );
     }
@@ -519,7 +512,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 
-        if(player.level().isClientSide())
+        if(player.level.isClientSide())
         {
             return super.mobInteract(player, hand);
         }
@@ -534,14 +527,14 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
                 {
                     continue;
                 }
-                GoalDebuggerUtility.printGoalToConsole(player.level(), goal);
+                GoalDebuggerUtility.printGoalToConsole(player.level, goal);
             }
 
             SculkHorde.LOGGER.info("\nINACTIVE GOALS\n");
             for(WrappedGoal wrapGoal : goalSelector.getAvailableGoals())
             {
                 Goal goal = wrapGoal.getGoal();
-                GoalDebuggerUtility.printGoalToConsole(player.level(), goal);
+                GoalDebuggerUtility.printGoalToConsole(player.level, goal);
             }
         }
 

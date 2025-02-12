@@ -38,7 +38,7 @@ public class SummonVexAttackGoal extends Goal
     public boolean canUse()
     {
 
-        if(mob.level().getGameTime() - lastTimeOfExecution < executionCooldown)
+        if(mob.level.getGameTime() - lastTimeOfExecution < executionCooldown)
         {
             return false;
         }
@@ -71,7 +71,7 @@ public class SummonVexAttackGoal extends Goal
         super.start();
         mob.startUsingSpell();
         performSpellCasting();
-        lastTimeOfExecution = mob.level().getGameTime();
+        lastTimeOfExecution = mob.level.getGameTime();
     }
 
     // Performs the spell casting action
@@ -79,14 +79,14 @@ public class SummonVexAttackGoal extends Goal
 
         for(int i = 0; i < 3; i++)
         {
-            SculkVexEntity entity = new SculkVexEntity(mob.level());
+            SculkVexEntity entity = new SculkVexEntity(mob.level);
             entity.setPos(mob.getX(), mob.getY() + 1, mob.getZ());
-            entity.finalizeSpawn((ServerLevelAccessor) mob.level(), mob.level().getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null, (CompoundTag)null);
+            entity.finalizeSpawn((ServerLevelAccessor) mob.level, mob.level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null, (CompoundTag)null);
             entity.setOwner(mob);
             entity.setBoundOrigin(mob.blockPosition());
             entity.setLimitedLife(TickUnits.convertMinutesToTicks(5));
             entity.setTarget(mob.getTarget());
-            mob.level().addFreshEntity(entity);
+            mob.level.addFreshEntity(entity);
         }
     }
 

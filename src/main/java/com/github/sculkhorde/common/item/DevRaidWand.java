@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.systems.raid_system.RaidHandler;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -48,7 +49,8 @@ public class DevRaidWand extends Item implements IForgeItem {
 	{
 		return new Properties()
 				.rarity(Rarity.EPIC)
-				.fireResistant();
+				.fireResistant()
+				.tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
 	}
 

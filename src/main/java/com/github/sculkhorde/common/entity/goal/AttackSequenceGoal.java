@@ -68,7 +68,7 @@ public class AttackSequenceGoal extends Goal implements IDebuggableGoal
             return false;
         }
 
-        if(Math.abs(mob.level().getGameTime() - timeOfLastExecution) < getExecutionCooldown())
+        if(Math.abs(mob.level.getGameTime() - timeOfLastExecution) < getExecutionCooldown())
         {
             reasonForNoStart = "On Attack Cooldown";
             return false;
@@ -110,7 +110,7 @@ public class AttackSequenceGoal extends Goal implements IDebuggableGoal
         if(finishedAttackSequence)
         {
             currentAttackIndex = 0;
-            timeOfLastExecution = mob.level().getGameTime();
+            timeOfLastExecution = mob.level.getGameTime();
             finishedAttackSequence = false;
         }
         else
@@ -148,6 +148,6 @@ public class AttackSequenceGoal extends Goal implements IDebuggableGoal
 
     @Override
     public long getTimeRemainingBeforeCooldownOver() {
-        return mob.level().getGameTime() - timeOfLastExecution;
+        return mob.level.getGameTime() - timeOfLastExecution;
     }
 }

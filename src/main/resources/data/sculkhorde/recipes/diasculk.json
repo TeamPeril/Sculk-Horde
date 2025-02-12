@@ -1,0 +1,12 @@
+{
+  "type": "sculkhorde:soul_harvesting",
+  "ingredients" : [
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "output": {
+    "count": 1,
+    "item": "sculkhorde:diasculk"
+  }
+}

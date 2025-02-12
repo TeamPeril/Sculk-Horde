@@ -17,7 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -111,8 +112,7 @@ public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBl
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.TERRACOTTA_BLUE)
+        Properties prop = Properties.of(Material.STONE, MaterialColor.TERRACOTTA_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .sound(SoundType.ANCIENT_DEBRIS);

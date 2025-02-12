@@ -1,42 +1,42 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.infection.CursorSurfaceInfectorEntity;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.systems.cursor_system.CursorSystem;
-import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.BlockPos;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.SwellGoal;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, GeoEntity
-{
+public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, GeoEntity, GeoAnimatable {
     private boolean isParticipatingInRaid = false;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     public SculkCreeperEntity(EntityType<? extends Creeper> entityType, Level level) {
         super(entityType, level);
@@ -92,7 +92,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public void spawnInfectors()
     {
-        level().getServer().tell(new net.minecraft.server.TickTask(level().getServer().getTickCount() + 1, () -> {
+        new net.minecraft.server.TickTask(level.getServer().getTickCount() + 1, () -> {
             int numToSpawn = 15;
             int spawnRange = 5;
             for (int i = 0; i < numToSpawn; i++) {
@@ -100,14 +100,15 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
                 double x = this.getX() + (this.getRandom().nextDouble() * spawnRange) - spawnRange / 2;
                 double z = this.getZ() + (this.getRandom().nextDouble() * spawnRange) - spawnRange / 2;
                 double y = this.getY() + (this.getRandom().nextDouble() * spawnRange / 2) - spawnRange / 4;
-                BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
-
-                VirtualSurfaceInfestorCursor cursor = CursorSystem.createPerformanceExemptSurfaceInfestorVirtualCursor(level(), pos);
-                cursor.setTickIntervalTicks(0);
-                cursor.setMaxTransformations(10);
-                cursor.setMaxRange(10);
+                CursorSurfaceInfectorEntity infector = new CursorSurfaceInfectorEntity(ModEntities.CURSOR_SURFACE_INFECTOR.get(), this.level);
+                infector.setPos(x, y, z);
+                infector.setTickIntervalMilliseconds(3);
+                infector.setMaxTransformations(10);
+                infector.setMaxRange(10);
+               // infector.setCanBeManuallyTicked(false);
+                this.level.addFreshEntity(infector);
             }
-        }));
+        });
     }
 
     public void infectEntitiesAroundMe()
@@ -116,7 +117,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         //For each entity, infect them
         //If the entity is a sculk creeper, don't infect it
         AABB aabb = this.getBoundingBox().inflate(5);
-        this.level().getEntitiesOfClass(LivingEntity.class, aabb).forEach(victim -> {
+        this.level.getEntitiesOfClass(LivingEntity.class, aabb).forEach(victim -> {
             if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
             {
                 return;
@@ -132,7 +133,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     @Override
     public void tick() {
         super.tick();
-        if(level().isClientSide()) { return; }
+        if(level.isClientSide()) { return; }
 
         // The reason I do this is because I need my custom explode function to run before the regular creeper one does.
         // This shit honestly sucks ass, but it works.
@@ -146,18 +147,18 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public void explodeSculkCreeper()
     {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             return;
         }
 
         if(!isParticipatingInRaid())
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Explosion.BlockInteraction.NONE);
             if(ModConfig.SERVER.block_infestation_enabled.get()) {spawnInfectors();}
         }
         else
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Explosion.BlockInteraction.NONE);
         }
         this.dead = true;
 

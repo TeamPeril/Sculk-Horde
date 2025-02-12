@@ -2,10 +2,12 @@ package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.projectile.CustomItemProjectileEntity;
 import com.github.sculkhorde.common.entity.projectile.PurificationFlaskProjectileEntity;
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -14,11 +16,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import java.util.Properties;
 
 public class PurificationFlaskItem extends CustomItemProjectile{
 
     public PurificationFlaskItem() {
         super();
+    }
+
+    public static Properties getProperties()
+    {
+        return new Item.Properties()
+                .tab(ModCreativeModeTab.SCULK_HORDE_TAB);
     }
 
     @Override

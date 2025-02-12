@@ -6,6 +6,16 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import mod.azure.azurelib.animatable.GeoEntity;
+import mod.azure.azurelib.constant.DefaultAnimations;
+import mod.azure.azurelib.core.animatable.GeoAnimatable;
+import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
+import mod.azure.azurelib.core.animation.AnimatableManager;
+import mod.azure.azurelib.core.animation.AnimationController;
+import mod.azure.azurelib.core.animation.AnimationState;
+import mod.azure.azurelib.core.animation.RawAnimation;
+import mod.azure.azurelib.core.object.PlayState;
+import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -23,17 +33,8 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
+public class SculkSpitterEntity extends Monster implements GeoEntity, ISculkSmartEntity, GeoAnimatable {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
@@ -65,7 +66,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
 
     /**
      * The Constructor
@@ -204,14 +205,14 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     }
 
     public void performRangedAttack(LivingEntity target) {
-        SculkAcidicProjectileEntity acid = new SculkAcidicProjectileEntity(target.level(), this, 1);
+        SculkAcidicProjectileEntity acid = new SculkAcidicProjectileEntity(target.level, this, 1);
         double d0 = target.getX() - this.getX();
         double d1 = target.getY(0.3333333333333333D) - acid.getY();
         double d2 = target.getZ() - this.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        acid.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
+        acid.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level().addFreshEntity(acid);
+        this.level.addFreshEntity(acid);
     }
 
     // Synced Data

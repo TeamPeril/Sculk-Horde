@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -24,8 +25,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
@@ -102,16 +105,16 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             level.players().forEach(player -> level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_DEATH, SoundSource.HOSTILE, 1.0F, 1.0F));
 
             //Spawn Explosion that Does No Damage
-            level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Level.ExplosionInteraction.NONE);
+            level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 0.0F, Explosion.BlockInteraction.NONE);
 
-            setDefeated((ServerLevel) playerIn.level(), blockState, pos, true);
+            setDefeated((ServerLevel) playerIn.level, blockState, pos, true);
 
             playerIn.getMainHandItem().grow(-1);
 
             for(int i = 0; i < 10; i++)
             {
                 CursorSurfacePurifierEntity purifier = new CursorSurfacePurifierEntity(level);
-                purifier.setPos(pos.getCenter());
+                purifier.setPos(Vec3.atCenterOf(pos));
                 purifier.setMaxTransformations(100);
                 purifier.setMaxRange(30);
                 purifier.setMaxLifeTimeMillis(TimeUnit.MINUTES.toMillis(5));
@@ -125,7 +128,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         if(IsHordeRevivalItem && !savedData.isHordeActive())
         {
             savedData.setHordeState(ModSavedData.HordeState.ACTIVE);
-            setDefeated((ServerLevel) playerIn.level(), blockState, pos, false);
+            setDefeated((ServerLevel) playerIn.level, blockState, pos, false);
             playerIn.getMainHandItem().grow(-1);
             return InteractionResult.CONSUME;
         }
@@ -151,8 +154,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.of()
-                .mapColor(MapColor.COLOR_BLUE)
+        Properties prop = Properties.of(Material.HEAVY_METAL, MaterialColor.COLOR_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS);
         return prop;

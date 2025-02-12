@@ -9,6 +9,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -82,26 +83,9 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     @Override
     public void checkDespawn() {
-        if (level() instanceof ServerLevel serverLevel && !serverLevel.getChunkSource().chunkMap.getDistanceManager().inEntityTickingRange(this.chunkPosition().toLong())) {
+        if (level instanceof ServerLevel serverLevel && !serverLevel.getChunkSource().chunkMap.getDistanceManager().inEntityTickingRange(this.chunkPosition().toLong())) {
             this.discard();
         }
-    }
-
-    @Override
-    protected boolean canHitEntity(Entity entityIn) {
-        if (!entityIn.canBeHitByProjectile())
-        {
-            return false;
-        }
-        else if(entityIn instanceof LivingEntity livingEntity)
-        {
-            if(ProjectileUtil.isEntityBlockingProjectile(livingEntity, this))
-            {
-                return false;
-            }
-        }
-        Entity entity = this.getOwner();
-        return entity == null || !entity.isPassengerOfSameVehicle(entityIn);
     }
 
     abstract protected void applyEffectToEntity(LivingEntity entity);
@@ -109,12 +93,12 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
-        if (!this.level().isClientSide()) {
+        if (!this.level.isClientSide()) {
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity livingEntity){
                 if(!EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
                 {
-                    entity.hurt(damageSources().generic(),this.getDamage());
+                    entity.hurt(DamageSource.GENERIC,this.getDamage());
                     applyEffectToEntity(livingEntity);
                 }
             }
@@ -126,7 +110,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
     @Override
     protected void onHitBlock(BlockHitResult hitResult) {
         super.onHitBlock(hitResult);
-        if (level().getBlockState(hitResult.getBlockPos()).isSolidRender(level(),hitResult.getBlockPos()))
+        if (level.getBlockState(hitResult.getBlockPos()).isSolidRender(level,hitResult.getBlockPos()))
             discard();
     }
 
@@ -143,7 +127,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
             discard();
             return;
         }
-        if (level().isClientSide) {
+        if (level.isClientSide) {
             trailParticles();
         }
         handleHitDetection();
@@ -205,7 +189,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
     }
 
     protected void doImpactSound(SoundEvent sound) {
-        level().playSound(null, getX(), getY(), getZ(), sound, SoundSource.NEUTRAL, 2, .9f + level().random.nextFloat() * .2f);
+        level.playSound(null, getX(), getY(), getZ(), sound, SoundSource.NEUTRAL, 2, .9f + level.random.nextFloat() * .2f);
     }
 
     @Override
@@ -235,7 +219,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return (Packet<ClientGamePacketListener>) NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

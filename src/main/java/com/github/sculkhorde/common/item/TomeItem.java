@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.ModCreativeModeTab;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,8 @@ public abstract class TomeItem extends Item implements IForgeItem {
 	public static Properties getProperties()
 	{
 		return new Properties()
-				.rarity(Rarity.EPIC);
+				.rarity(Rarity.EPIC)
+				.tab(ModCreativeModeTab.SCULK_HORDE_TAB);
 
 	}
 
