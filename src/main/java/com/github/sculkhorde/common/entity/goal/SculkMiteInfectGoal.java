@@ -6,6 +6,8 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
@@ -102,13 +104,20 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
                     EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 }
 
+                // Teleport to the entity to look like the mite is jumping inside it
+                thisMob.teleportTo(targetX,targetY+target.getEyeHeight()/2,targetZ);
+                target.level().playSound(null, target.blockPosition().getX(), target.blockPosition().getY(), target.blockPosition().getZ(), SoundEvents.PLAYER_BURP, SoundSource.HOSTILE, 0.6F, 0.6f);
+
                 //Kill The Bastard
-                /**
+                /*
                  *  Note:
                  *  Never call thisMob.die(). This is not meant to be used, but is a public method for whatever reason.
                  */
                 //thisMob.die(DamageSource.GENERIC);
-                thisMob.hurt(thisMob.damageSources().generic(), thisMob.getHealth());
+                thisMob.hurt(thisMob.damageSources().generic(), thisMob.getHealth()*4);
+                // Speed up death animation
+                thisMob.deathTime = 14;
+
             }
         }
     }
