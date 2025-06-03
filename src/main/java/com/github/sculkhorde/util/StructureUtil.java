@@ -412,6 +412,24 @@ public class StructureUtil {
                     originOffset = new BlockPos(0,0,0);
                 }
 
+                final BlockPos startWithOffset = startPos.offset(originOffset.multiply(-1));
+
+                // Sort blocks so that they appear near each other (non-full blocks will be placed last)
+                processedBlockInfoList.sort((block1, block2) -> {
+
+                    int cmp = Boolean.compare(!block1.state().isCollisionShapeFullBlock(world, startPos), !block2.state().isCollisionShapeFullBlock(world, startPos));
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+
+                    cmp = Double.compare(startWithOffset.distSqr(block1.pos()), startWithOffset.distSqr(block2.pos()));
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+
+                    return block1.pos().compareTo(block2.pos());
+                });
+
                 setState(State.PLACING);
         }
 
