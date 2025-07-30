@@ -81,6 +81,7 @@ public class ModConfig {
 
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> make_block_infestable;
         public static final HashMap<String, Boolean> manually_configured_infestable_blocks = new HashMap<>();
+        public static final HashMap<String, Boolean> manually_configured_uninfestable_blocks = new HashMap<>();
 
         public final ForgeConfigSpec.DoubleValue infection_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> max_nodes_active;
@@ -149,6 +150,13 @@ public class ModConfig {
             }
         }
 
+        public void loadConfiguredUninfestableBlocks() {
+            manually_configured_uninfestable_blocks.clear();
+            for(String block : ModConfig.SERVER.make_block_uninfestable.get()) {
+                manually_configured_uninfestable_blocks.put(block, true);
+            }
+        }
+
         public boolean isBlockConfiguredToBeInfestable(BlockState blockState)
         {
             Block block = blockState.getBlock();
@@ -166,6 +174,19 @@ public class ModConfig {
                 return true;
             }
 
+            return false;
+        }
+
+        public boolean isBlockConfiguredToBeUninfestable(BlockState blockState) {
+            Block block = blockState.getBlock();
+            ResourceLocation itemResourceLocation = BuiltInRegistries.BLOCK.getKey(block);
+            if(itemResourceLocation == null) {
+                return false;
+            }
+            String blockName = itemResourceLocation.toString();
+            if(manually_configured_uninfestable_blocks.containsKey(blockName)) {
+                return true;
+            }
             return false;
         }
 

@@ -22,8 +22,10 @@ public class ConfigInfestationTableEntry implements IBlockInfestationEntry
         return priority;
     }
 
-    public boolean isNormalVariant(BlockState blockState)
-    {
+    public boolean isNormalVariant(BlockState blockState) {
+        if (ModConfig.SERVER.isBlockConfiguredToBeUninfestable(blockState)) {
+            return false;
+        }
         return ModConfig.SERVER.isBlockConfiguredToBeInfestable(blockState);
     }
 

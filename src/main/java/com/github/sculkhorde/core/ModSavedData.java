@@ -217,6 +217,7 @@ public class ModSavedData extends SavedData {
         SculkHorde.LOGGER.info("ModSavedData | Loaded list of items cursors can eat Successfully.");
         SculkHorde.LOGGER.info("ModSavedData | Loading list of configured infestable blocks.");
         ModConfig.SERVER.loadConfiguredInfestableBlocks();
+        ModConfig.SERVER.loadConfiguredUninfestableBlocks();
         SculkHorde.LOGGER.info("ModSavedData | Loaded list of configured infestable blocks Successfully.");
 
         if(ModConfig.SERVER.purification_speed_multiplier.get() <= 0)
