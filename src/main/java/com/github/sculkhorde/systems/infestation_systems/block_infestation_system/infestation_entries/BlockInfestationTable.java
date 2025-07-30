@@ -125,6 +125,11 @@ public class BlockInfestationTable{
     {
         BlockState blockState = level.getBlockState(pos);
 
+        // Early exit for explicitly uninfestable blocks
+        if(ModConfig.SERVER.isBlockConfiguredToBeUninfestable(blockState)) {
+            return false;
+        }
+
         // If we are denying non-solid blocks, then we need to check if the block is solid.
         boolean areWeDenyingNonSolidBlocks = isDenyNonSolidBlocks();
         boolean isBlockNotSolid = BlockAlgorithms.isNotSolid(level, pos);
