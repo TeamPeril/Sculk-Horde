@@ -153,7 +153,7 @@ public class ModConfig {
 
         public void loadConfiguredUninfestableBlocks() {
             manually_configured_uninfestable_blocks.clear();
-            for(String block : ModConfig.SERVER.make_block_infestable.get()) {
+            for(String block : ModConfig.SERVER.make_block_uninfestable.get()) {
                 manually_configured_uninfestable_blocks.put(block, true);
             }
         }
@@ -258,6 +258,8 @@ public class ModConfig {
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
             items_infection_cursors_can_eat = builder.comment("What dropped items should cursors eat? This prevents lag and boosts their lifespan.").defineList("items_infection_cursors_can_eat", Arrays.asList("minecraft:wheat_seeds", "minecraft:bamboo", "minecraft:stick", "minecraft:poppy", "minecraft:dandelion", "minecraft:blue_orchid", "minecraft:allium", "minecraft:azure_bluet", "minecraft:red_tulip", "minecraft:orange_tulip", "minecraft:white_tulip", "minecraft:pink_tulip", "minecraft:oxeye_daisy", "minecraft:cornflower", "minecraft:lily_of_the_valley", "minecraft:sunflower", "minecraft:lilac", "minecraft:rose_bush", "minecraft:peony"), entry -> true);
             make_block_infestable = builder.comment("Add blocks to this list to make them infestable. I.E. minecraft:dirt. Be careful what you put in here, this can potentially lead to issues. This will not work with blocks that are air, have a block entity, are already considered an infested block, or have the not infestable tag.").defineList("make_block_infestable", Arrays.asList(""), entry -> true);
+            make_block_uninfestable = builder.comment("Add blocks to this list to make them uninfestable. I.E. minecraft:dirt.").defineList("make_block_uninfestable", Arrays.asList(""), entry -> true);
+
             builder.pop();
 
             builder.push("Gravemind Variables");
