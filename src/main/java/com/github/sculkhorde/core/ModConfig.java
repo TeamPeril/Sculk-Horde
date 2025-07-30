@@ -80,6 +80,7 @@ public class ModConfig {
         public static final HashMap<String, Boolean> infection_cursor_item_eat_list = new HashMap<>();
 
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> make_block_infestable;
+        private final ForgeConfigSpec.ConfigValue<List<? extends String>> make_block_uninfestable;
         public static final HashMap<String, Boolean> manually_configured_infestable_blocks = new HashMap<>();
         public static final HashMap<String, Boolean> manually_configured_uninfestable_blocks = new HashMap<>();
 
@@ -152,7 +153,7 @@ public class ModConfig {
 
         public void loadConfiguredUninfestableBlocks() {
             manually_configured_uninfestable_blocks.clear();
-            for(String block : ModConfig.SERVER.make_block_uninfestable.get()) {
+            for(String block : ModConfig.SERVER.make_block_infestable.get()) {
                 manually_configured_uninfestable_blocks.put(block, true);
             }
         }
