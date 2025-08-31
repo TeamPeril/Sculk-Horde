@@ -21,7 +21,7 @@ public class ShortRangeFloorSoulsAttackGoal extends ReaperCastSpellGoal
     protected void doAttackTick() {
         spawnSoulSuckersOnFloorInCircle(0, 1);
         spawnSoulSuckersOnFloorInCircle(6, 6);
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
 
     public void spawnSoulSuckersOnFloorInCircle(int radius, int amount)

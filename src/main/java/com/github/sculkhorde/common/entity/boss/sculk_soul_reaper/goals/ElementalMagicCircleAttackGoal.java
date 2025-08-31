@@ -45,7 +45,7 @@ public class ElementalMagicCircleAttackGoal extends ReaperCastSpellGoal
     @Override
     protected void doAttackTick() {
         performSpellCasting();
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
 
     // Performs the spell casting action
@@ -136,13 +136,13 @@ public class ElementalMagicCircleAttackGoal extends ReaperCastSpellGoal
     }
 
     @Override
-    protected int getBaseCastingTime() {
+    protected int getPreAttackDelay() {
         return TickUnits.convertSecondsToTicks(0.96F);
     }
 
     @Override
-    protected void playCastingAnimation()
+    protected void playPreAttackAnimation()
     {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.MAGIC_CIRCLE_SPELL_USE_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.MAGIC_CIRCLE_SPELL_USE_ID);
     }
 }

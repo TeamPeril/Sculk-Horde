@@ -33,7 +33,7 @@ public class FangsAttackGoal extends ReaperCastSpellGoal
     @Override
     protected void doAttackTick() {
         performSpellCasting();
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
 
     // Performs the spell casting action
@@ -100,6 +100,6 @@ public class FangsAttackGoal extends ReaperCastSpellGoal
 
     @Override
     protected void playAttackAnimation() {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ATTACK_SPELL_USE_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ATTACK_SPELL_USE_ID);
     }
 }

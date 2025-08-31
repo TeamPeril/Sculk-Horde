@@ -29,7 +29,7 @@ public class ShootSoulSpearAttackGoal extends ReaperCastSpellGoal
     @Override
     protected void doAttackTick() {
         shootProjectileAtTarget();
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
 
 
@@ -69,13 +69,13 @@ public class ShootSoulSpearAttackGoal extends ReaperCastSpellGoal
     }
 
     @Override
-    protected int getBaseCastingTime() {
+    protected int getPreAttackDelay() {
         return TickUnits.convertSecondsToTicks(0.52F);
     }
 
     @Override
-    protected void playCastingAnimation()
+    protected void playPreAttackAnimation()
     {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.SOUL_SPEAR_SPELL_USE_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.SOUL_SPEAR_SPELL_USE_ID);
     }
 }

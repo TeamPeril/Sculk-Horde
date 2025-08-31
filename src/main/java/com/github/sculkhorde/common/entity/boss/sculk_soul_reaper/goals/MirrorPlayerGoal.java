@@ -43,7 +43,7 @@ public class MirrorPlayerGoal extends ReaperCastSpellGoal
         shootFakeBeam(mob.getEyePosition(), mob, mob.getTarget(), 0.1F, 5F);
         LivingArmorEntity entity = new LivingArmorEntity(mob.level(), mob.position());
         mob.level().addFreshEntity(entity);
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
     public void shootFakeBeam(Vec3 origin, Mob shooter, LivingEntity target, float radius, float thickness)
     {

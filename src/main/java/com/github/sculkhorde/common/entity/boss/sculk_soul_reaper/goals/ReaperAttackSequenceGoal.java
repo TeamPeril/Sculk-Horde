@@ -62,6 +62,17 @@ public class ReaperAttackSequenceGoal extends AttackSequenceGoal {
     }
 
     @Override
+    public boolean canContinueToUse() {
+
+        if(getReaper().isThereAnotherAttackActive(this))
+        {
+            return false;
+        }
+
+        return super.canContinueToUse();
+    }
+
+    @Override
     public void start() {
         super.start();
         getReaper().setCurrentAttack(this);

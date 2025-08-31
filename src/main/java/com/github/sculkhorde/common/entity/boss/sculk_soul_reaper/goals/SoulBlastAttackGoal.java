@@ -33,7 +33,7 @@ public class SoulBlastAttackGoal extends ReaperCastSpellGoal implements IDebugga
     @Override
     protected void doAttackTick() {
         summonAttackEntity();
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
 
     public void summonAttackEntity()
@@ -49,13 +49,13 @@ public class SoulBlastAttackGoal extends ReaperCastSpellGoal implements IDebugga
 
 
     @Override
-    protected int getBaseCastingTime() {
+    protected int getPreAttackDelay() {
         return TickUnits.convertSecondsToTicks(1F);
     }
 
     @Override
     protected void playAttackAnimation() {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ATTACK_SPELL_USE_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ATTACK_SPELL_USE_ID);
     }
 
     @Override

@@ -39,7 +39,7 @@ public class ShootSoulFlySwatterAttackGoal extends ReaperCastSpellGoal
     protected void doAttackTick() {
         super.doAttackTick();
         shootProjectileAtTarget();
-        setAttackStepComplete(true);
+        setPostAttack(true);
     }
 
 

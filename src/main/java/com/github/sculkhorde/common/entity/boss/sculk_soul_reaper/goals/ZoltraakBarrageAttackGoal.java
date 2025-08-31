@@ -40,7 +40,7 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
 
         if(elapsedAttackDuration >= maxAttackDuration)
         {
-            setAttackStepComplete(true);
+            setPostAttack(true);
             return;
         }
 
@@ -147,12 +147,12 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
     }
 
     @Override
-    protected int getBaseCastingTime() {
+    protected int getPreAttackDelay() {
         return TickUnits.convertSecondsToTicks(1);
     }
 
     @Override
-    protected void playCastingAnimation() {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ATTACK_SPELL_USE_ID);
+    protected void playPreAttackAnimation() {
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ATTACK_SPELL_USE_ID);
     }
 }

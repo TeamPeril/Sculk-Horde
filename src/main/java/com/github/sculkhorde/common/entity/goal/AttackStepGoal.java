@@ -1,15 +1,32 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
+import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.Optional;
 
-public class AttackStepGoal extends Goal implements IDebuggableGoal
-{
-    protected boolean isAttackStepComplete = false;
+public class AttackStepGoal extends Goal implements IDebuggableGoal {
+    protected Mob mob;
+    protected boolean isReadyForNextAttackStep = false;
+    protected boolean isPreAttack = true;
+    protected boolean isPostAttack = false;
+
+    protected int preAttackDelayRemaining = 0;
+    protected int postAttackDelayRemaining = 0;
+
+    protected boolean hasPlayedPreAttackAnimation = false;
+    protected boolean hasPlayedAttackAnimation = false;
+    protected boolean hasPlayedPostAttackAnimation = false;
     protected String lastReasonOfNoStart = "None";
     protected AttackSequenceGoal sequenceParent;
+
+    public AttackStepGoal(Mob mob)
+    {
+        this.mob = mob;
+
+    }
 
     protected AttackSequenceGoal getSequenceParent()
     {
@@ -21,13 +38,6 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal
         sequenceParent = parent;
     }
 
-
-    @Override
-    public void start() {
-        super.start();
-        setAttackStepComplete(false);
-    }
-
     @Override
     public boolean canUse() {
         return true;
@@ -35,13 +45,7 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal
 
     @Override
     public boolean canContinueToUse() {
-        return !isAttackStepComplete();
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        setAttackStepComplete(false);
+        return !isPostAttack();
     }
 
     @Override
@@ -64,11 +68,156 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal
         return -1;
     }
 
-    public boolean isAttackStepComplete() {
-        return isAttackStepComplete;
+    public boolean isAttackTickComplete() {
+        return isPostAttack;
     }
 
-    public void setAttackStepComplete(boolean attackStepComplete) {
-        isAttackStepComplete = attackStepComplete;
+    public boolean isPostAttack() {
+        return isPostAttack;
+    }
+
+    public boolean isPreAttack() { return isPreAttack; }
+
+    public boolean isReadyForNextAttackStep() {
+        return isReadyForNextAttackStep;
+    }
+
+    protected int getPreAttackDelay() { return TickUnits.convertSecondsToTicks(1);}
+    protected int getPreAttackDelayRemaining()
+    {
+        return preAttackDelayRemaining;
+    }
+
+    public void setPreAttackDelayRemaining(int preAttackDelayRemaining) {
+        this.preAttackDelayRemaining = preAttackDelayRemaining;
+    }
+
+    public void setPreAttack(boolean preAttack) {
+        isPreAttack = preAttack;
+    }
+
+    protected int getPostAttackDelay() { return TickUnits.convertSecondsToTicks(3);}
+    protected int getPostAttackDelayRemaining() { return postAttackDelayRemaining; }
+
+    public void setPostAttackDelayRemaining(int postAttackDelayRemaining) {
+        this.postAttackDelayRemaining = postAttackDelayRemaining;
+    }
+
+    public void setPostAttack(boolean postAttack) {
+        isPostAttack = postAttack;
+    }
+
+    public void setReadyForNextAttackStep(boolean readyForNextAttackStep) {
+        isReadyForNextAttackStep = readyForNextAttackStep;
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        setPostAttack(false);
+        setPreAttack(true);
+
+        setPreAttackDelayRemaining(getPreAttackDelay());
+        setPostAttackDelayRemaining(getPostAttackDelay());
+        hasPlayedPreAttackAnimation = false;
+        hasPlayedAttackAnimation = false;
+        hasPlayedPostAttackAnimation = false;
+        isReadyForNextAttackStep = false;
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        setPreAttackDelayRemaining(getPreAttackDelay());
+        isReadyForNextAttackStep = false;
+        playPreAttackAnimation();
+        hasPlayedPreAttackAnimation = true;
+    }
+
+    @Override
+    public void tick()
+    {
+        super.tick();
+
+        if(isReadyForNextAttackStep())
+        {
+            return;
+        }
+
+        if(isPreAttack())
+        {
+            setPreAttackDelayRemaining(getPreAttackDelayRemaining() - 1);
+            doPreAttackTick();
+
+            if(getPreAttackDelayRemaining() <= 0)
+            {
+                setPreAttack(false);
+            }
+        }
+        else if(isPostAttack())
+        {
+            if(!hasPlayedPostAttackAnimation)
+            {
+                playPostAttackAnimation();
+                hasPlayedPostAttackAnimation = true;
+            }
+
+            setPostAttackDelayRemaining(getPostAttackDelayRemaining() - 1);
+            doPostAttackTick();
+
+            if(getPostAttackDelayRemaining() <= 0)
+            {
+                setReadyForNextAttackStep(true);
+            }
+        }
+        else
+        {
+            if(!hasPlayedAttackAnimation)
+            {
+                playAttackAnimation();
+                hasPlayedAttackAnimation = true;
+            }
+
+            doAttackTick();
+
+            if(isAttackTickComplete())
+            {
+                setPostAttack(true);
+                playPostAttackAnimation();
+                hasPlayedPostAttackAnimation = true;
+            }
+        }
+
+
+    }
+
+    protected void doPreAttackTick()
+    {
+
+    }
+
+    protected void doAttackTick()
+    {
+
+    }
+
+    protected void doPostAttackTick()
+    {
+
+    }
+
+    protected void playPreAttackAnimation()
+    {
+
+    }
+
+    protected void playAttackAnimation()
+    {
+
+    }
+
+    protected void playPostAttackAnimation()
+    {
+
     }
 }

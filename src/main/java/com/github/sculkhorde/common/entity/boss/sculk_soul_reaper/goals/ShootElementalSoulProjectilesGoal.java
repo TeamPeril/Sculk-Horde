@@ -48,7 +48,7 @@ public class ShootElementalSoulProjectilesGoal extends ReaperCastSpellGoal
         if(elapsedAttackDuration >= maxAttackDuration)
         {
             mob.setFlagIsShootingElementals(false);
-            setAttackStepComplete(true);
+            setPostAttack(true);
         }
     }
 
@@ -117,19 +117,19 @@ public class ShootElementalSoulProjectilesGoal extends ReaperCastSpellGoal
     }
 
     @Override
-    protected int getBaseCastingTime() {
+    protected int getPreAttackDelay() {
         return TickUnits.convertSecondsToTicks(1.44F);
     }
 
     @Override
-    protected void playCastingAnimation()
+    protected void playPreAttackAnimation()
     {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ELEMENTAL_PROJECTILE_SPELL_CHARGE_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ELEMENTAL_PROJECTILE_SPELL_CHARGE_ID);
     }
 
     @Override
     protected void playAttackAnimation() {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ELEMENTAL_PROJECTILE_SPELL_SHOOT_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.ELEMENTAL_PROJECTILE_SPELL_SHOOT_ID);
     }
 }
 //projectileEntity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - mob.level().getDifficulty().getId() * 4));

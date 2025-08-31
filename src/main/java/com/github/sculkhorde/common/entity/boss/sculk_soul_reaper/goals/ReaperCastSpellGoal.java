@@ -2,25 +2,26 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.common.entity.goal.AttackStepGoal;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 
 public class ReaperCastSpellGoal extends AttackStepGoal {
-    protected final SculkSoulReaperEntity mob;
-    protected int castingTime = 0;
-
     public ReaperCastSpellGoal(SculkSoulReaperEntity mob) {
-        this.mob = mob;
+        super(mob);
+    }
+
+    SculkSoulReaperEntity getReaper()
+    {
+        if(mob instanceof SculkSoulReaperEntity reaper)
+        {
+            return reaper;
+        }
+
+        return null;
     }
 
     public boolean requiresUpdateEveryTick() {
         return true;
-    }
-    protected int getBaseCastingTime() { return TickUnits.convertSecondsToTicks(1);}
-    protected int getCastingTimeElapsed()
-    {
-        return castingTime;
     }
 
     @Override
@@ -33,53 +34,7 @@ public class ReaperCastSpellGoal extends AttackStepGoal {
             return;
         }
 
-        playCastingAnimation();
         mob.level().playSound(mob, mob.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.HOSTILE, 1.0F, 1.0F);
     }
 
-    protected void playCastingAnimation()
-    {
-
-    }
-
-    protected void playAttackAnimation()
-    {
-
-    }
-
-    protected void doAttackTick()
-    {
-        setAttackStepComplete(true);
-    }
-
-    @Override
-    public void tick()
-    {
-        super.tick();
-
-        if(mob.level().isClientSide())
-        {
-            return;
-        }
-
-        if(getCastingTimeElapsed() < getBaseCastingTime())
-        {
-            castingTime++;
-            return;
-        }
-
-        if(isAttackStepComplete())
-        {
-            return;
-        }
-        playAttackAnimation();
-        doAttackTick();
-    }
-
-    @Override
-    public void stop()
-    {
-        super.stop();
-        castingTime = 0;
-    }
 }

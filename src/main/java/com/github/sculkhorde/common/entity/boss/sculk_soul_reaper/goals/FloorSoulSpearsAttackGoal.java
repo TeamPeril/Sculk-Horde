@@ -67,7 +67,7 @@ public class FloorSoulSpearsAttackGoal extends ReaperCastSpellGoal
 
         if(elapsedAttackDuration >= maxAttackDuration || areAllTargetsDead())
         {
-            setAttackStepComplete(true);
+            setPostAttack(true);
             return;
         }
 
@@ -95,14 +95,14 @@ public class FloorSoulSpearsAttackGoal extends ReaperCastSpellGoal
     }
 
     @Override
-    protected int getBaseCastingTime() {
+    protected int getPreAttackDelay() {
         return TickUnits.convertSecondsToTicks(0.72F);
     }
 
     @Override
-    protected void playCastingAnimation()
+    protected void playPreAttackAnimation()
     {
-        mob.triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.FLOOR_SPEARS_SPELL_USE_ID);
+        getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.FLOOR_SPEARS_SPELL_USE_ID);
     }
 
 
