@@ -92,7 +92,24 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
 
         if(lifeTicks == 0)
         {
-            triggerAnim("attack_controller", "emerge");
+            int rng = random.nextIntBetweenInclusive(1,3);
+
+            switch (rng)
+            {
+                case 1:
+                    triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, EMERGE_ANIMATION_1_ID);
+                    break;
+                case 2:
+                    triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, EMERGE_ANIMATION_2_ID);
+                    break;
+                case 3:
+                    triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, EMERGE_ANIMATION_3_ID);
+                    break;
+                default:
+                    triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, EMERGE_ANIMATION_1_ID);
+                    break;
+            }
+
             SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SOUL_SPEAR_EMERGE.get());
         }
 
@@ -112,13 +129,21 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
         super.handleEntityEvent(b);
     }
 
-    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("emerge");
+    private static final String EMERGE_ANIMATION_1_ID = "emerge_1";
+    private static final RawAnimation EMERGE_ANIMATION_1 = RawAnimation.begin().thenPlay(EMERGE_ANIMATION_1_ID);
+    private static final String EMERGE_ANIMATION_2_ID = "emerge_2";
+    private static final RawAnimation EMERGE_ANIMATION_2 = RawAnimation.begin().thenPlay(EMERGE_ANIMATION_2_ID);
+    private static final String EMERGE_ANIMATION_3_ID = "emerge_3";
+    private static final RawAnimation EMERGE_ANIMATION_3 = RawAnimation.begin().thenPlay(EMERGE_ANIMATION_3_ID);
+    private static final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private static final RawAnimation UNDERGROUND_ANIMATION = RawAnimation.begin().thenPlay("underground");
 
     // ### GECKOLIB Animation Code ###
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("emerge", ATTACK_ANIMATION)
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
+            .triggerableAnim(EMERGE_ANIMATION_1_ID, EMERGE_ANIMATION_1)
+            .triggerableAnim(EMERGE_ANIMATION_2_ID, EMERGE_ANIMATION_2)
+            .triggerableAnim(EMERGE_ANIMATION_3_ID, EMERGE_ANIMATION_3)
             .triggerableAnim("underground", UNDERGROUND_ANIMATION)
             .setCustomInstructionKeyframeHandler(this::instructionListener);
 
