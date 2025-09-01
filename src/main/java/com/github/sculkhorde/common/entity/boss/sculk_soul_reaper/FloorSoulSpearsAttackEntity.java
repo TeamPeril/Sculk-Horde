@@ -2,15 +2,17 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -91,7 +93,7 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
         if(lifeTicks == 0)
         {
             triggerAnim("attack_controller", "emerge");
-            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.EVOKER_FANGS_ATTACK, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
+            SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SOUL_SPEAR_EMERGE.get());
         }
 
         this.lifeTicks++;
@@ -131,12 +133,14 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
     }
 
     private <ENTITY extends GeoEntity> void instructionListener(CustomInstructionKeyframeEvent<ENTITY> event) {
-        if(event.getKeyframeData().getInstructions().contains("DoDamageInstruction"))
+        if(event.getKeyframeData().getInstructions().contains("DoVFXInstruction"))
         {
             if(this.level().isClientSide())
             {
                 for(int i = 0; i < 12; ++i)
                 {
+                    Vec3 pos = position();
+
                     double d0 = this.getX() + (this.random.nextDouble() * 2.0D - 1.0D) * (double)this.getBbWidth() * 0.5D;
                     double d1 = this.getY() + 0.05D + this.random.nextDouble();
                     double d2 = this.getZ() + (this.random.nextDouble() * 2.0D - 1.0D) * (double)this.getBbWidth() * 0.5D;
@@ -144,6 +148,7 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
                     double d4 = 0.3D + this.random.nextDouble() * 0.3D;
                     double d5 = (this.random.nextDouble() * 2.0D - 1.0D) * 0.3D;
                     this.level().addParticle(ParticleTypes.CRIT, d0, d1 + 1.0D, d2, d3, d4, d5);
+                    SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SOUL_SPEAR_EMERGE.get());
                 }
             }
         }

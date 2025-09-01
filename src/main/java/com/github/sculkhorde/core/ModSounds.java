@@ -52,6 +52,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SCULK_RAVAGER_SCREECH = registerSoundEvent("sculk_ravager_screech");
     public static final RegistryObject<SoundEvent> SOULITE_AMBIENCE = registerSoundEvent("soulite_ambience");
     public static final RegistryObject<SoundEvent> INFESTATION_AMBIENCE = registerSoundEvent("infestation_ambience");
+    public static final RegistryObject<SoundEvent> SOUL_SPEAR_EMERGE = registerSoundEvent("soul_spear_emerge");
 
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {

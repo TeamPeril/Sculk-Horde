@@ -242,5 +242,13 @@
     "sounds": [
       "sculkhorde:infestation_ambience"
     ]
+  },
+  "soul_spear_emerge": {
+    "subtitle": "sounds.sculkhorde.soul_spear_emerge",
+    "sounds": [
+      "sculkhorde:soul_spear_emerge_1",
+      "sculkhorde:soul_spear_emerge_2",
+      "sculkhorde:soul_spear_emerge_3"
+    ]
   }
 }
