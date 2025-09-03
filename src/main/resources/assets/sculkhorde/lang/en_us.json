@@ -457,7 +457,8 @@
   "item.sculkhorde.soul_animator": "Soul Animator",
   "tooltip.sculkhorde.soul_animator.functionality": "§7§oA crafting ingredient dropped from the Soul Reaper.",
   "tooltip.sculkhorde.soul_animator.lore": "§7§oAn artifact with the ability to animate both living and unliving things. It can both hold the power of tortured and pure souls to create constructs and golems.",
-
+  "sounds.sculkhorde.soul_spear_emerge": "Soul Spear Emerges",
+  
   "effect.sculkhorde.diseased_atmosphere": "Diseased Atmosphere",
   "effect.sculkhorde.diseased_atmosphere.description": "Causes entities to take damage and exhaustion.",
   "effect.sculkhorde.sculk_fog": "Sculk Fog",
