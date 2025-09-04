@@ -3,13 +3,16 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -86,11 +89,26 @@ public class ElementalFireMagicCircleAttackEntity extends SpecialEffectEntity im
         }
     }
 
+    public void spawnPartilcesRandomlyInHitboxClientSide() {
+        AABB boundingBox = getBoundingBox();
+        float spawnX = (float) (boundingBox.minX + (boundingBox.maxX - boundingBox.minX) * level().getRandom().nextFloat());
+        float spawnY = (float) (boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * level().getRandom().nextFloat());
+        float spawnZ = (float) (boundingBox.minZ + (boundingBox.maxZ - boundingBox.minZ) * level().getRandom().nextFloat());
+
+        Vector3f spawn = new Vector3f(spawnX, spawnY, spawnZ);
+        Vector3f deltaMovement = new Vector3f(0, 1, 0);
+
+        ParticleUtil.spawnFlameParticleOnClient((ClientLevel) level(), spawn, deltaMovement);
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        if(level().isClientSide()) { return; }
+        if(level().isClientSide()) {
+            spawnPartilcesRandomlyInHitboxClientSide();
+            return;
+        }
 
         currentLifeTicks++;
 

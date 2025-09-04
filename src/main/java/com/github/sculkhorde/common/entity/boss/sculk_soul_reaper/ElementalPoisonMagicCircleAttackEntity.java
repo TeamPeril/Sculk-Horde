@@ -1,12 +1,17 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.ColorUtil;
+import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import org.joml.Vector3f;
 
 public class ElementalPoisonMagicCircleAttackEntity extends ElementalFireMagicCircleAttackEntity {
 
@@ -45,6 +50,18 @@ public class ElementalPoisonMagicCircleAttackEntity extends ElementalFireMagicCi
             entity.addEffect(new MobEffectInstance(MobEffects.POISON, TickUnits.convertSecondsToTicks(10), 0));
         }
 
+    }
+
+    public void spawnPartilcesRandomlyInHitboxClientSide() {
+        AABB boundingBox = getBoundingBox();
+        float spawnX = (float) (boundingBox.minX + (boundingBox.maxX - boundingBox.minX) * level().getRandom().nextFloat());
+        float spawnY = (float) (boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * level().getRandom().nextFloat());
+        float spawnZ = (float) (boundingBox.minZ + (boundingBox.maxZ - boundingBox.minZ) * level().getRandom().nextFloat());
+
+        Vector3f spawn = new Vector3f(spawnX, spawnY, spawnZ);
+        Vector3f deltaMovement = new Vector3f(0, 3, 0);
+
+        ParticleUtil.spawnColoredDustParticleOnClient((ClientLevel) level(), ColorUtil.getRandomHexAcidColor(level().getRandom()), 0.8F, spawn, deltaMovement);
     }
 
 }
