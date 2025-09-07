@@ -11,5 +11,6 @@ public class ModParticles {
 
     public static final RegistryObject<SimpleParticleType> SCULK_CRUST_PARTICLE = PARTICLE_TYPES.register("sculk_crust_particle", () -> new SimpleParticleType(false));
     public static final RegistryObject<SimpleParticleType> BURROWED_BURST_PARTICLE = PARTICLE_TYPES.register("burrowed_burst_particle", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> ANCIENT_DIALECT_PARTICLE = PARTICLE_TYPES.register("ancient_dialect_particle", () -> new SimpleParticleType(false));
 
 }
