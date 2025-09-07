@@ -36,6 +36,7 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
 
     public SoulBlastAttackEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
+        noPhysics = true;
     }
 
     public SoulBlastAttackEntity(Level level) {

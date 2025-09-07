@@ -40,7 +40,7 @@ public class SoulBlastAttackGoal extends ReaperCastSpellGoal implements IDebugga
     {
 
         SoulBlastAttackEntity attackEntity =  new SoulBlastAttackEntity(mob.level(), mob);
-        attackEntity.setPos(mob.position().add(0, mob.getEyeHeight() + 5, 0));
+        attackEntity.setPos(mob.position().add(0, mob.getEyeHeight() + 1, 0));
 
         mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
         mob.level().addFreshEntity(attackEntity);
