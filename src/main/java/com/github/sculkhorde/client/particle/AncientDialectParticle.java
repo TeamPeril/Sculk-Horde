@@ -15,6 +15,30 @@ public class AncientDialectParticle extends TextureSheetParticle
         super(clientLevel, x, y, z);
     }
 
+    @Override
+    public void tick()
+    {
+        if (this.age++ >= this.lifetime)
+        {
+            this.remove();
+            return;
+        }
+
+        this.xo = this.x;
+        this.yo = this.y;
+        this.zo = this.z;
+
+        this.xd = 0;
+        this.yd += 0.04 * gravity;
+        this.zd = 0;
+
+        this.move(this.xd, yd, zd);
+
+        if (this.onGround) {
+            this.xd *= 0.699999988079071;
+            this.zd *= 0.699999988079071;
+        }
+    }
 
     @Override
     public ParticleRenderType getRenderType() {
@@ -34,7 +58,7 @@ public class AncientDialectParticle extends TextureSheetParticle
             AncientDialectParticle particle = new AncientDialectParticle(clientWorld, d, e, f, g, h, i);
             particle.pickSprite(this.spriteProvider);
             particle.quadSize *= random.nextFloat() * 0.4F + 0.5F;
-            particle.lifetime = (int)(16.0D / (Math.random() * 0.8D + 0.2D));
+            particle.lifetime = random.nextIntBetweenInclusive(1,3);
             particle.setLifetime(20 * 10);
             return particle;
         }

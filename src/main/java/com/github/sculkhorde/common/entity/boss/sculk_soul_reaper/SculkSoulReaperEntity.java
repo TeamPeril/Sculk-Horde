@@ -1,6 +1,9 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
-import com.github.sculkhorde.common.entity.*;
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.SculkRavagerEntity;
+import com.github.sculkhorde.common.entity.SculkVindicatorEntity;
+import com.github.sculkhorde.common.entity.SculkWitchEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.*;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.entity_debugging.GoalDebuggerUtility;
@@ -11,13 +14,13 @@ import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -432,10 +435,19 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
      */
     public void aiStep()
     {
-        if (this.level().isClientSide) {
-            for(int i = 0; i < 2; ++i) {
-                this.level().addParticle(ParticleTypes.SCULK_SOUL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 0.8D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 0.8D);
+        if (this.level().isClientSide)
+        {
+            if(random.nextBoolean())
+            {
+                this.level().addParticle(ModParticles.ANCIENT_DIALECT_PARTICLE.get(),
+                        this.getRandomX(3D),
+                        this.getRandomY() - 0.25D,
+                        this.getRandomZ(3D),
+                        0,
+                        0,
+                        0);
             }
+
         }
 
         this.jumping = false;
