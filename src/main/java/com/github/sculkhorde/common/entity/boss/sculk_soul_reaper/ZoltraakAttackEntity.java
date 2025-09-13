@@ -18,6 +18,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -34,6 +36,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -223,28 +226,95 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
     public void performZoltraakAttack(HitResult hitResult, Vec3 origin, float damage)
     {
 
-        Vec3 hitVector = hitResult.getLocation();
+        Vec3 hitLocation = hitResult.getLocation();
 
-        Vec3 targetVector = hitVector.subtract(origin);
+        Vec3 targetVector = hitLocation.subtract(origin);
         Vec3 direction = targetVector.normalize();
 
-        Vec3 beamPath = hitVector.subtract(origin);
+        Vec3 beamPath = hitLocation.subtract(origin);
 
         float radius = 0.3F;
         float thickness = 10F;
 
-        // Create a hitbox along the beam path
-        AABB hitbox = new AABB(origin, hitVector).inflate(radius);
-
-        // Damage entities in hit box
-        doMagicDamageToTargetsInHitBox(getOwner(), hitbox, damage);
-
-        // Spawn magic particles
-        ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, origin, direction, (float) beamPath.length(), radius, thickness);
-
         // Make Sound
         level().playSound(this,this.blockPosition(), ModSounds.ZOLTRAAK_ATTACK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
 
+        // We now need to check if any of these entities to be hit are playes
+        // holding a shield up at the right time, to deflect zoltraak.
+        AABB beamAttackHitBox = new AABB(origin, hitLocation).inflate(radius); // Create a hitbox along the beam path
+        List<LivingEntity> entitiesToBeHitSorted = getEntitiesToBeHitByBeamSorted(getOwner(), beamAttackHitBox); // Damage entities in hit box
+        Optional<Player> closestPlayerDeflecting = getClosestPlayerDeflecting(entitiesToBeHitSorted);
+
+        if(closestPlayerDeflecting.isPresent())
+        {
+            // Stop Particle at Player
+            double distanceToDeflector = origin.distanceTo(closestPlayerDeflecting.get().position());
+            ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, origin, direction, (float) distanceToDeflector, radius, thickness);
+
+            // New particle beam in the direction the player is looking
+            Vec3 deflectedBeamOrigin = closestPlayerDeflecting.get().getEyePosition();
+            Vec3 deflectedBeamDirection = closestPlayerDeflecting.get().getLookAngle();
+
+            // Do Clip Ray cast from player's eyes to block location
+            ClipContext rayTrace = new ClipContext(
+                    closestPlayerDeflecting.get().getEyePosition(1.0F),
+                    closestPlayerDeflecting.get().getEyePosition(1.0F).add(deflectedBeamDirection.scale(32)),
+                    ClipContext.Block.OUTLINE,
+                    ClipContext.Fluid.NONE,
+                    closestPlayerDeflecting.get());
+
+            Vec3 PlayerEyesHitResult = rayTrace.getTo();
+            Float deflectedBeamPathLength = (float) PlayerEyesHitResult.subtract(deflectedBeamOrigin).length();
+            ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, deflectedBeamOrigin, deflectedBeamDirection, deflectedBeamPathLength, radius, thickness);
+            AABB deflectedBeamAttackHitBox = new AABB(deflectedBeamOrigin, PlayerEyesHitResult).inflate(radius); // Create a hitbox along the beam path
+            doMagicDamageToTargetsInHitBox(closestPlayerDeflecting.get(), deflectedBeamAttackHitBox, damage);
+        }
+        else
+        {
+            doMagicDamageToTargetsInHitBox(getOwner(), beamAttackHitBox, damage);
+            ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, origin, direction, (float) beamPath.length(), radius, thickness);
+        }
+    }
+
+    public static Optional<Player> getClosestPlayerDeflecting(List<LivingEntity> entityListSorted)
+    {
+        Optional<Player> result = Optional.empty();
+
+        for(LivingEntity entity : entityListSorted)
+        {
+            if(entity instanceof Player player && player.isBlocking())
+            {
+                ItemStack usedItem = player.getUseItem();
+
+                // Make sure the item is a shield
+                if (usedItem.getItem() instanceof ShieldItem)
+                {
+                    result = Optional.of(player);
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<LivingEntity> getEntitiesToBeHitByBeamSorted(LivingEntity sourceEntity, AABB hitbox)
+    {
+        // Check for entities within the hitbox
+        List<LivingEntity> entitiesHit;
+
+        if(sourceEntity instanceof Player)
+        {
+            entitiesHit = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox(sourceEntity, (ServerLevel) sourceEntity.level(), hitbox);
+        }
+        else
+        {
+            entitiesHit = EntityAlgorithms.getNonSculkUnitsInBoundingBox(sourceEntity.level(), hitbox);
+        }
+
+        entitiesHit.sort(Comparator.comparingDouble(sourceEntity::distanceTo));
+
+        return entitiesHit;
     }
 
     public static void doMagicDamageToTargetsInHitBox(LivingEntity sourceEntity, AABB hitbox, float damage)
@@ -270,7 +340,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
 
             if(entity instanceof Player player && entity.isBlocking())
             {
-                ZoltraakAttackEntity.castZoltraakFromPlayer(player);
+                //ZoltraakAttackEntity.castZoltraakFromPlayer(player);
             }
 
             entity.hurt(sourceEntity.damageSources().magic(), damage);
