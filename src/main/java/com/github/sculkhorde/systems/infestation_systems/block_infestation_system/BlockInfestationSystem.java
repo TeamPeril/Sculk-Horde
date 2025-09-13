@@ -19,9 +19,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.MultifaceBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Fluids;
@@ -36,6 +38,7 @@ import java.util.function.Predicate;
 public class BlockInfestationSystem {
 
     public static ArrayList<BlockInfestationTable> INFESTATION_TABLES = new ArrayList<>();
+    public static BlockInfestationTable explicitInfectableBlockEntityBlocks;
     public static BlockInfestationTable explicitInfectableBlocks;
     public static BlockInfestationTable explicitCurableBlocks;
     public static BlockInfestationTable tagInfectableBlocks;
@@ -77,6 +80,8 @@ public class BlockInfestationSystem {
     private static void initializeInfestationTables()
     {
         // Used to infect blocks that are explicitly listed. Priority Matters
+        explicitInfectableBlockEntityBlocks = new BlockInfestationTable(0, false);
+
         explicitInfectableBlocks = new BlockInfestationTable(0, false);
 
         explicitInfectableBlocks.addEntry(1, Blocks.DIRT, Blocks.SCULK.defaultBlockState());
@@ -264,24 +269,38 @@ public class BlockInfestationSystem {
         configInfectableBlocks = new BlockInfestationTable(4, false);
         configInfectableBlocks.addEntry(ModBlocks.INFESTED_STURDY_MASS.get());
 
+        BlockInfestationAPI.addBlockInfestationTable(explicitInfectableBlockEntityBlocks);
         BlockInfestationAPI.addBlockInfestationTable(explicitInfectableBlocks);
         BlockInfestationAPI.addBlockInfestationTable(tagInfectableNonFullBlocks);
         BlockInfestationAPI.addBlockInfestationTable(tagInfectableBlocks);
         BlockInfestationAPI.addBlockInfestationTable(configInfectableBlocks);
     }
 
-    public static boolean isExplicitlyNotInfectable(BlockState blockState)
+    public static boolean isExplicitlyNotInfectable(Level level, BlockPos pos)
     {
-        return blockState.is(ModBlocks.BlockTags.NOT_INFESTABLE) ||
-                blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK) ||
-                blockState.isAir() ||
-                blockState.hasBlockEntity();
+        BlockState blockState = level.getBlockState(pos);
+
+        boolean isNotInfestable = blockState.is(ModBlocks.BlockTags.NOT_INFESTABLE);
+        boolean isAlreadyInfested = blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK);
+        boolean isAir = blockState.isAir();
+
+        if(isNotInfestable) { return true; }
+        if(isAlreadyInfested) { return true; }
+        if(isAir) { return true; }
+
+        Optional<BlockEntity> possibleBlockEntity = Optional.ofNullable(level.getBlockEntity(pos));
+
+        if(possibleBlockEntity.isPresent() && !explicitInfectableBlockEntityBlocks.canBeInfectedByThisTable((ServerLevel) level, pos))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public static boolean isInfectable(ServerLevel level, BlockPos pos)
     {
-        BlockState blockState = level.getBlockState(pos);
-        if(isExplicitlyNotInfectable(blockState))
+        if(isExplicitlyNotInfectable(level, pos))
         {
             return false;
         }
@@ -316,10 +335,9 @@ public class BlockInfestationSystem {
             return;
         }
 
-        BlockState victimBlockState = world.getBlockState(targetPos);
         boolean wasAbleToInfestBlock = false;
 
-        if(isExplicitlyNotInfectable(victimBlockState))
+        if(isExplicitlyNotInfectable(world, targetPos))
         {
             return;
         }

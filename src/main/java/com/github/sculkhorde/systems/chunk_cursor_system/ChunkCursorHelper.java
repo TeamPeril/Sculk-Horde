@@ -94,10 +94,9 @@ public class ChunkCursorHelper {
     public static void tryToInfestBlock(ServerLevel world, BlockPos targetPos, Boolean noSpawners) {
         if(!ModConfig.SERVER.block_infestation_enabled.get()) {return;}
 
-        BlockState victimBlockState = world.getBlockState(targetPos);
         boolean wasAbleToInfestBlock = false;
 
-        if(BlockInfestationSystem.isExplicitlyNotInfectable(victimBlockState)) {return;}
+        if(BlockInfestationSystem.isExplicitlyNotInfectable(world, targetPos)) {return;}
 
         for(BlockInfestationTable table : BlockInfestationSystem.INFESTATION_TABLES) {
             if(table.canBeInfectedByThisTable(world, targetPos)) {
