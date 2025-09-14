@@ -12,6 +12,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -137,7 +138,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private boolean areAnyTargetsNearBy(BlockPos blockPos, SculkSummonerBlockEntity blockEntity)
     {
         //Create bounding box to detect targets
-        blockEntity.searchArea = EntityAlgorithms.createBoundingBoxRectableAtBlockPos(blockPos.getCenter(), blockEntity.ACTIVATION_DISTANCE, 10, blockEntity.ACTIVATION_DISTANCE);
+        blockEntity.searchArea = HitboxUtil.createBoundingBoxRectableAtBlockPos(blockPos.getCenter(), blockEntity.ACTIVATION_DISTANCE, 10, blockEntity.ACTIVATION_DISTANCE);
 
         //Get targets inside bounding box.
         blockEntity.possibleAggressorTargets =

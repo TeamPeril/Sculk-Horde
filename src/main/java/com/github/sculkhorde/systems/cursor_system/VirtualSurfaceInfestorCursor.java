@@ -6,7 +6,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -54,7 +54,7 @@ public class VirtualSurfaceInfestorCursor extends VirtualCursor{
 
         // Get all infector cursor entities in area and kill them
         Predicate<CursorSurfacePurifierEntity> isCursor = Objects::nonNull;
-        AABB searchBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(getBlockPosition().getCenter(),5);
+        AABB searchBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(getBlockPosition().getCenter(),5);
         List<CursorSurfacePurifierEntity> cursors = getLevel().getEntitiesOfClass(CursorSurfacePurifierEntity.class, searchBox, isCursor);
         for(CursorSurfacePurifierEntity cursor : cursors)
         {

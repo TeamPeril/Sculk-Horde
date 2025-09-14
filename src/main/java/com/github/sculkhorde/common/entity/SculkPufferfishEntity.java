@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -438,7 +439,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
 
             if(hasEnoughTimeElapsed)
             {
-                hurtSculkUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) getMob().level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), 15));
+                hurtSculkUnits = EntityAlgorithms.getHurtSculkHordeEntitiesInBoundingBox((ServerLevel) getMob().level(), HitboxUtil.createBoundingBoxCubeAtBlockPos(position(), 15));
                 if(!hurtSculkUnits.isEmpty()) { targetToHeal = hurtSculkUnits.get(0); }
             }
 
@@ -474,7 +475,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
                 spawnLingeringCloud(MobEffects.REGENERATION);
                 addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(60)), getTarget());
                 getMob().hurt(damageSources().genericKill(), Integer.MAX_VALUE);
-                AABB hithox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(getEyePosition(), 8);
+                AABB hithox = HitboxUtil.createBoundingBoxCubeAtBlockPos(getEyePosition(), 8);
                 List<LivingEntity> mobsToHeal = EntityAlgorithms.getSculkHordeEntitiesInBoundingBox((ServerLevel) level(), hithox);
                 for(LivingEntity e : mobsToHeal)
                 {

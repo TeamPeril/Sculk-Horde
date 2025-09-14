@@ -10,6 +10,7 @@ import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.misc.ModColaborationHelper;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
@@ -545,11 +546,24 @@ public class EntityAlgorithms {
         }
     };
 
-    public static Predicate<LivingEntity> isNotSculkHordeEntity = new Predicate<LivingEntity>()
+    public static Predicate<LivingEntity> isNotSculkHordeLivingEntity = new Predicate<LivingEntity>()
     {
         @Override
         public boolean test(LivingEntity livingEntity) {
             return !isSculkLivingEntity.test(livingEntity);
+        }
+    };
+
+    public static Predicate<Entity> isNotSculkHordeEntity = new Predicate<Entity>()
+    {
+        @Override
+        public boolean test(Entity entity) {
+
+            if(entity instanceof LivingEntity livingEntity)
+            {
+                return !isSculkLivingEntity.test(livingEntity);
+            }
+            return true;
         }
     };
 
@@ -621,7 +635,7 @@ public class EntityAlgorithms {
 
     public static List<LivingEntity> getNonSculkUnitsInBoundingBox(Level serverLevel, AABB boundingBox)
     {
-        List<LivingEntity> entities = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, isNotSculkHordeEntity);
+        List<LivingEntity> entities = serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox, isNotSculkHordeLivingEntity);
         return entities;
     }
 
@@ -657,27 +671,9 @@ public class EntityAlgorithms {
     }
 
 
-
-    public static AABB createBoundingBoxCubeAtBlockPos(Vec3 origin, int squareLength)
-    {
-        double halfLength = squareLength/2;
-        AABB boundingBox = new AABB(origin.x() - halfLength, origin.y() - halfLength, origin.z() - halfLength, origin.x() + halfLength, origin.y() + halfLength, origin.z() + halfLength);
-        return boundingBox;
-    }
-
-    public static AABB createBoundingBoxRectableAtBlockPos(Vec3 origin, int width, int height, int length)
-    {
-        double halfWidth = width/2;
-        double halfHeight = height/2;
-        double halfLength = length/2;
-
-        AABB boundingBox = new AABB(origin.x() - halfWidth, origin.y() - halfHeight, origin.z() - halfLength, origin.x() + halfWidth, origin.y() + halfHeight, origin.z() + halfLength);
-        return boundingBox;
-    }
-
     public static List<LivingEntity> getNonSculkEntitiesAtBlockPos(ServerLevel level, BlockPos origin, int squareLength)
     {
-        AABB boundingBox = createBoundingBoxCubeAtBlockPos(origin.getCenter(), squareLength);
+        AABB boundingBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(origin.getCenter(), squareLength);
         List<LivingEntity> livingEntitiesInRange = level.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
             @Override
             public boolean test(LivingEntity livingEntity) {

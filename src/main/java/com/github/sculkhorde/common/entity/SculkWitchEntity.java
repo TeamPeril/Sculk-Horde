@@ -6,6 +6,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -395,7 +396,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             this.timeToRecalcPath = 0;
             lastTimeOfGoalExecution = level().getGameTime();
 
-            hurtUnits = EntityAlgorithms.getSculkHordeEntitiesInBoundingBox((ServerLevel) level(), EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
+            hurtUnits = EntityAlgorithms.getSculkHordeEntitiesInBoundingBox((ServerLevel) level(), HitboxUtil.createBoundingBoxCubeAtBlockPos(position(), BUFF_RADIUS));
 
             for(LivingEntity e : hurtUnits)
             {

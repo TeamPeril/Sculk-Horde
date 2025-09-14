@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
@@ -682,7 +683,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
             if(level().getGameTime() - timeOfLastSearch >= MOB_SEARCH_COOLDOWN)
             {
-                AABB searchBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(position(), 128);
+                AABB searchBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(position(), 128);
                 targets = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) level(), searchBox, canStoreMobPredicate);
                 timeOfLastSearch = level().getGameTime();
             }

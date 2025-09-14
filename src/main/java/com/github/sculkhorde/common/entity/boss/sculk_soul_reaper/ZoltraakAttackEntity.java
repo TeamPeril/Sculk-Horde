@@ -6,6 +6,8 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.BeamHitbox;
+import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,7 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -241,8 +242,9 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
 
         // We now need to check if any of these entities to be hit are playes
         // holding a shield up at the right time, to deflect zoltraak.
-        AABB beamAttackHitBox = new AABB(origin, hitLocation).inflate(radius); // Create a hitbox along the beam path
-        List<LivingEntity> entitiesToBeHitSorted = getEntitiesToBeHitByBeamSorted(getOwner(), beamAttackHitBox); // Damage entities in hit box
+        //AABB beamAttackHitBox = new AABB(origin, hitLocation).inflate(radius); // Create a hitbox along the beam path
+        BeamHitbox beamAttackHitBox = new BeamHitbox(origin, hitLocation, radius);
+        List<LivingEntity> entitiesToBeHitSorted = getEntitiesInBeamHitbox(getOwner(), beamAttackHitBox); // Damage entities in hit box
         Optional<Player> closestPlayerDeflecting = getClosestPlayerDeflecting(entitiesToBeHitSorted);
 
         if(closestPlayerDeflecting.isPresent())
@@ -266,7 +268,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
             Vec3 PlayerEyesHitResult = rayTrace.getTo();
             Float deflectedBeamPathLength = (float) PlayerEyesHitResult.subtract(deflectedBeamOrigin).length();
             ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, deflectedBeamOrigin, deflectedBeamDirection, deflectedBeamPathLength, radius, thickness);
-            AABB deflectedBeamAttackHitBox = new AABB(deflectedBeamOrigin, PlayerEyesHitResult).inflate(radius); // Create a hitbox along the beam path
+            BeamHitbox deflectedBeamAttackHitBox = new BeamHitbox(deflectedBeamOrigin, PlayerEyesHitResult, radius);
             doMagicDamageToTargetsInHitBox(closestPlayerDeflecting.get(), deflectedBeamAttackHitBox, damage);
         }
         else
@@ -298,18 +300,18 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         return result;
     }
 
-    public static List<LivingEntity> getEntitiesToBeHitByBeamSorted(LivingEntity sourceEntity, AABB hitbox)
+    public static List<LivingEntity> getEntitiesInBeamHitbox(LivingEntity sourceEntity, BeamHitbox hitbox)
     {
         // Check for entities within the hitbox
         List<LivingEntity> entitiesHit;
 
         if(sourceEntity instanceof Player)
         {
-            entitiesHit = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox(sourceEntity, (ServerLevel) sourceEntity.level(), hitbox);
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, Predicates.alwaysTrue());
         }
         else
         {
-            entitiesHit = EntityAlgorithms.getNonSculkUnitsInBoundingBox(sourceEntity.level(), hitbox);
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
         }
 
         entitiesHit.sort(Comparator.comparingDouble(sourceEntity::distanceTo));
@@ -317,18 +319,18 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         return entitiesHit;
     }
 
-    public static void doMagicDamageToTargetsInHitBox(LivingEntity sourceEntity, AABB hitbox, float damage)
+    public static void doMagicDamageToTargetsInHitBox(LivingEntity sourceEntity, BeamHitbox hitbox, float damage)
     {
         // Check for entities within the hitbox
         List<LivingEntity> entitiesHit;
 
         if(sourceEntity instanceof Player)
         {
-            entitiesHit = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox(sourceEntity, (ServerLevel) sourceEntity.level(), hitbox);
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, Predicates.alwaysTrue());
         }
         else
         {
-            entitiesHit = EntityAlgorithms.getNonSculkUnitsInBoundingBox(sourceEntity.level(), hitbox);
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
         }
 
         for (LivingEntity entity : entitiesHit) {

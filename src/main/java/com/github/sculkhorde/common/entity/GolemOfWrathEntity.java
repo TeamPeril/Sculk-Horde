@@ -11,6 +11,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -359,7 +360,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         @Override
         public void onTargetHurt(LivingEntity target)
         {
-            AABB hitbox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(target.position(), 10);
+            AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(target.position(), 10);
             List<LivingEntity> enemies = EntityAlgorithms.getAllInfectionModEntitiesInBoundingBox((ServerLevel) mob.level(), hitbox);
             for(LivingEntity entity : enemies)
             {

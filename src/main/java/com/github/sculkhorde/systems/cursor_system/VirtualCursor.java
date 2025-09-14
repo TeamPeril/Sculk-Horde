@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -336,7 +337,7 @@ public class VirtualCursor implements ICursor{
             return;
         }
 
-        AABB boundingBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(getBlockPosition().getCenter(), 20);
+        AABB boundingBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(getBlockPosition().getCenter(), 20);
         List<Entity> entities = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) getLevel(), boundingBox, IS_DROPPED_ITEM);
         for(Entity entity : entities)
         {

@@ -2,13 +2,21 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.structures.procedural.ProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.StructureUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.BeamHitbox;
+import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 /**
  * Chunkloader code created by SuperMartijn642
@@ -18,7 +26,7 @@ public class DevStructureTesterBlockEntity extends BlockEntity
     StructureUtil.StructurePlacer structurePlacer;
     public long tickedAt = 0;
 
-    public long TICK_COOLDOWN = TickUnits.convertSecondsToTicks(0.5F);
+    public long TICK_COOLDOWN = TickUnits.convertSecondsToTicks(3F);
 
     private ProceduralStructure proceduralStructure;
 
@@ -55,23 +63,26 @@ public class DevStructureTesterBlockEntity extends BlockEntity
 
         blockEntity.tickedAt = level.getGameTime();
 
+        //ParticleUtil.spawnParticleBeam(serverLevel, ParticleTypes.FLAME, blockPos.getCenter(), new Vec3(0, 1, 0), 3, 1, 3);
+        Vec3 beamDirection = new Vec3(2, 1, 2).normalize();
+        int beamLength = serverLevel.random.nextIntBetweenInclusive(3,15);
+        int beamRadius = 3;
+        Vec3 beamEndpoint = blockPos.getCenter().add(beamDirection.normalize().scale(beamLength));
 
+        ParticleUtil.spawnParticleBeam(serverLevel, ParticleTypes.END_ROD, blockPos.getCenter(), beamDirection, beamLength, beamRadius, 30);
+        BeamHitbox hitbox = new BeamHitbox(blockPos.getCenter(), beamEndpoint, beamRadius);
 
-        /*
-        if(blockEntity.structurePlacer == null)
+        List<LivingEntity> entities = hitbox.getLivingEntitiesInHitbox(level, null, Predicates.alwaysTrue());
+
+        for(LivingEntity e : entities)
         {
-            ResourceLocation structure = new ResourceLocation("sculkhorde:test_soulite_structure");
-            StructureTemplateManager structuretemplatemanager = serverLevel.getStructureManager();
-            Optional<StructureTemplate> structureTemplate;
-            structureTemplate = structuretemplatemanager.get(structure);
+            Vec3 EntityToBlockVector = blockPos.getCenter().subtract(e.getEyePosition());
+            Vec3 EntityToBlockVectorDirection = EntityToBlockVector.normalize();
 
-            StructurePlaceSettings structureplacesettings = (new StructurePlaceSettings());
-            blockEntity.structurePlacer = new StructureUtil.StructurePlacer(structureTemplate.get(), serverLevel, blockPos, blockPos, structureplacesettings, serverLevel.getRandom());
-            blockEntity.structurePlacer.appendIgnoreBlockPosList(blockPos);
+
+            //ParticleUtil.spawnParticleBeam(serverLevel, ParticleTypes.FLAME, e.getEyePosition(), EntityToBlockVectorDirection, (float) EntityToBlockVector.length(), 0.2F, 5);
         }
 
-         */
 
-        //blockEntity.structurePlacer.tick();
     }
 }

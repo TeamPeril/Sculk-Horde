@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -302,7 +303,7 @@ public abstract class CursorEntity extends Entity
 
         if(this.random.nextFloat() <= 0.1 && this instanceof CursorSurfaceInfectorEntity)
         {
-            AABB boundingBox = EntityAlgorithms.createBoundingBoxCubeAtBlockPos(blockPosition().getCenter(), 20);
+            AABB boundingBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(blockPosition().getCenter(), 20);
             List<Entity> entities = EntityAlgorithms.getEntitiesInBoundingBox((ServerLevel) this.level(), boundingBox, IS_DROPPED_ITEM);
             for(Entity entity : entities)
             {
