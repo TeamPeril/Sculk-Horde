@@ -52,15 +52,22 @@ public class BeamHitbox implements IModHitbox{
 
         // Calculate the closest point on the beam's infinite line to the entity's center.
         Vec3 entityVector = entity.getEyePosition().subtract(startPoint);
-        double t = entityVector.dot(direction);
 
-        // If the beam has a length, clamp t to the beam's segment [0, 1].
-        if (length != 0) {
-            t = Math.max(0.0, Math.min(1.0, t / length));
+        // Calculate the squared length of the beam's direction vector.
+        double directionLengthSq = direction.lengthSqr();
+
+        double t;
+        // Check if the beam has length
+        if (directionLengthSq != 0) {
+            // Calculate the dot product and the parameter t
+            t = entityVector.dot(direction) / directionLengthSq;
         } else {
-            // The beam has no length, it's just a point.
+            // The beam is just a point, so t should be 0.
             t = 0;
         }
+
+        // Clamp t to the beam's segment [0, 1].
+        t = Math.max(0.0, Math.min(1.0, t));
 
         // Project the closest point onto the beam's segment.
         Vec3 closestPoint = startPoint.add(direction.scale(t));
