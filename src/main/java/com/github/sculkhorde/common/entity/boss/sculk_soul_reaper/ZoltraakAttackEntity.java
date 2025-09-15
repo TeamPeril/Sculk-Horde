@@ -20,7 +20,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -278,22 +277,27 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         }
     }
 
+    public static boolean isPlayerUsingShieldAndForValidDeflectDuration(Player player)
+    {
+        if(player.getTicksUsingItem() <= 0) { return false; }
+
+        if(!(player.getUseItem().getItem() instanceof ShieldItem)) { return false; }
+
+        int ticksUsingShield = player.getTicksUsingItem();
+
+        return ticksUsingShield <= TickUnits.convertSecondsToTicks(0.5F);
+    }
+
     public static Optional<Player> getClosestPlayerDeflecting(List<LivingEntity> entityListSorted)
     {
         Optional<Player> result = Optional.empty();
 
         for(LivingEntity entity : entityListSorted)
         {
-            if(entity instanceof Player player && player.isBlocking())
+            if(entity instanceof Player player && isPlayerUsingShieldAndForValidDeflectDuration(player))
             {
-                ItemStack usedItem = player.getUseItem();
-
-                // Make sure the item is a shield
-                if (usedItem.getItem() instanceof ShieldItem)
-                {
-                    result = Optional.of(player);
-                    break;
-                }
+                result = Optional.of(player);
+                break;
             }
         }
 
@@ -338,11 +342,6 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
             if(entity.getUUID() == sourceEntity.getUUID())
             {
                 continue;
-            }
-
-            if(entity instanceof Player player && entity.isBlocking())
-            {
-                //ZoltraakAttackEntity.castZoltraakFromPlayer(player);
             }
 
             entity.hurt(sourceEntity.damageSources().magic(), damage);
