@@ -462,23 +462,26 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
             return;
         }
 
-        String customDebugName = "";
-        for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
+        if(SculkHorde.isDebugMode())
         {
-            Goal goal = wrappedGoal.getGoal();
-            if(goal instanceof IDebuggableGoal debugGoal)
+            String customDebugName = "";
+            for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
             {
-                customDebugName += debugGoal.getGoalName().get();
+                Goal goal = wrappedGoal.getGoal();
+                if(goal instanceof IDebuggableGoal debugGoal)
+                {
+                    customDebugName += debugGoal.getGoalName().get();
 
+                }
+                else
+                {
+                    customDebugName += goal.getClass().getSimpleName();
+                }
+                customDebugName += " | ";
             }
-            else
-            {
-                customDebugName += goal.getClass().getSimpleName();
-            }
-            customDebugName += " | ";
+
+            setCustomName(Component.literal(customDebugName));
         }
-
-        setCustomName(Component.literal(customDebugName));
     }
 
     // ####### Boss Bar Event Stuff #######
