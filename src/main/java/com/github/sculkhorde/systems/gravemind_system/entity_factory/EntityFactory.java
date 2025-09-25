@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -61,7 +62,8 @@ public class EntityFactory {
                         .setCost((int) SculkSporeSpewerEntity.MAX_HEALTH)
                         .setLimit(1)
                         .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.SculkMass)
-                        .addStrategicValues(EntityFactoryEntry.StrategicValues.Infector, EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        .addStrategicValues(EntityFactoryEntry.StrategicValues.Infector, EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_PHANTOM.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
@@ -73,7 +75,8 @@ public class EntityFactory {
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
                         EntityFactoryEntry.StrategicValues.EffectiveOnGround,
-                        EntityFactoryEntry.StrategicValues.EffectiveInSkies),
+                        EntityFactoryEntry.StrategicValues.EffectiveInSkies)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_RAVAGER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
@@ -84,7 +87,8 @@ public class EntityFactory {
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Tank,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_HATCHER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -93,7 +97,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_CREEPER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
@@ -101,7 +106,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_SPITTER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -109,7 +115,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Ranged,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_ZOMBIE.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -117,7 +124,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_VINDICATOR.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
@@ -125,7 +133,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_MITE_AGGRESSOR.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -133,7 +142,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_MITE.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -141,14 +151,16 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_SALMON.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
                         .setCost((int) SculkSalmonEntity.MAX_HEALTH)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.Aquatic),
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_LEECH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -156,7 +168,8 @@ public class EntityFactory {
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Infector,
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.Aquatic),
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .setMinimumDifficulty(Difficulty.EASY),
 
                 new EntityFactoryEntry(ModEntities.SCULK_STINGER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
@@ -164,7 +177,8 @@ public class EntityFactory {
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Infector,
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.EffectiveInSkies),
+                                EntityFactoryEntry.StrategicValues.EffectiveInSkies)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_SQUID.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
@@ -173,7 +187,8 @@ public class EntityFactory {
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Infector,
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.Aquatic),
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_PUFFERFISH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
@@ -182,7 +197,8 @@ public class EntityFactory {
                                 EntityFactoryEntry.StrategicValues.Support,
                                 EntityFactoryEntry.StrategicValues.Combat,
                                 EntityFactoryEntry.StrategicValues.Melee,
-                                EntityFactoryEntry.StrategicValues.Aquatic),
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_WITCH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
@@ -193,7 +209,8 @@ public class EntityFactory {
                         EntityFactoryEntry.StrategicValues.Support,
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_BROOD_HATCHER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
@@ -203,7 +220,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_BROODLING.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
@@ -212,7 +230,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
 
                 new EntityFactoryEntry(ModEntities.SCULK_SHEEP.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
@@ -220,7 +239,8 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Combat,
                         EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround),
+                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
         };
 
         SculkHorde.entityFactory.addEntriesToFactory(entries);

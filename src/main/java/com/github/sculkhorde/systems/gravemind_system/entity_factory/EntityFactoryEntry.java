@@ -4,8 +4,10 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
+import com.github.sculkhorde.util.DifficultyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -25,19 +27,19 @@ public class EntityFactoryEntry {
 
     public enum StrategicValues {Combat, Infector, Melee, Ranged, Boss, Support, Tank, EffectiveInSkies, Aquatic, EffectiveOnGround}
 
-    private int orderCost;
-    private EntityType<Mob> entity;
-    private int squad_limit = Integer.MAX_VALUE;
+    protected int orderCost;
+    protected EntityType<Mob> entity;
+    protected int squad_limit = Integer.MAX_VALUE;
 
-    private float chanceToSpawn = 1.0F;
+    protected float chanceToSpawn = 1.0F;
 
-    private StrategicValues[] strategicValues = new StrategicValues[]{};
+    protected StrategicValues[] strategicValues = new StrategicValues[]{};
 
-    private ReinforcementRequest.senderType explicitDeniedSenders[] = new ReinforcementRequest.senderType[]{};
-    private Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
+    protected ReinforcementRequest.senderType explicitDeniedSenders[] = new ReinforcementRequest.senderType[]{};
+    protected Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
 
     boolean experimentalMode = false;
-    private ForgeConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.experimental_features_enabled;
+    protected ForgeConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.experimental_features_enabled;
 
     public EntityFactoryEntry(EntityType entity)
     {
@@ -49,12 +51,21 @@ public class EntityFactoryEntry {
         return entity;
     }
 
+    protected Difficulty minimumDifficulty = Difficulty.EASY;
+
     // Getters and Setters
     public EntityFactoryEntry setCost(int cost)
     {
         orderCost = cost;
         return this;
     }
+
+
+    public boolean meetsRequiredDifficulty()
+    {
+        return DifficultyUtil.isCurrentDifficultyEqualToOrGreaterThan(minimumDifficulty);
+    }
+
 
     public int getCost()
     {
@@ -64,6 +75,12 @@ public class EntityFactoryEntry {
     public boolean getChanceToSpawn()
     {
         return rng.nextFloat() <= chanceToSpawn;
+    }
+
+    public EntityFactoryEntry setMinimumDifficulty(Difficulty difficulty)
+    {
+        minimumDifficulty = difficulty;
+        return this;
     }
 
     public EntityFactoryEntry setChanceToSpawn(float value)
@@ -229,6 +246,10 @@ public class EntityFactoryEntry {
             return false;
         }
         else if(!getChanceToSpawn())
+        {
+            return false;
+        }
+        else if(!meetsRequiredDifficulty())
         {
             return false;
         }
