@@ -1,10 +1,12 @@
 package com.github.sculkhorde.systems.event_system;
 
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.util.DifficultyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -24,11 +26,20 @@ public class Event {
     protected boolean isEventActive = false;
     protected boolean toBeRemoved = false;
 
+    protected Difficulty minimumDifficulty = Difficulty.EASY;
 
     public Event(ResourceKey<Level> dimension)
     {
         this.dimension = dimension;
         setEventUUID(UUID.randomUUID());
+        minimumDifficulty = Difficulty.EASY;
+    }
+
+    public Event(ResourceKey<Level> dimension, Difficulty difficultyRequired)
+    {
+        this.dimension = dimension;
+        setEventUUID(UUID.randomUUID());
+        minimumDifficulty = difficultyRequired;
     }
 
     // Getters and Setters
@@ -37,12 +48,17 @@ public class Event {
         return eventUUID;
     }
 
+    public Difficulty getMinimumDifficulty()
+    {
+        return minimumDifficulty;
+    }
+
     // Logic
 
     public boolean canStart()
     {
         boolean hasEnoughTimePassed = getDimension().getGameTime() - lastGameTimeOfEventExecution >= EXECUTION_COOLDOWN;
-        return hasEnoughTimePassed;
+        return hasEnoughTimePassed && DifficultyUtil.isCurrentDifficultyEqualToOrGreaterThan(minimumDifficulty);
     }
 
     public boolean canContinue()
@@ -93,6 +109,18 @@ public class Event {
 
     protected Event setEventUUID(UUID eventUUID) {
         this.eventUUID = eventUUID;
+        return this;
+    }
+
+    public Event setMinimumDifficulty(Difficulty difficulty)
+    {
+        minimumDifficulty = difficulty;
+        return this;
+    }
+
+    public Event setMinimumDifficulty(int difficulty)
+    {
+        minimumDifficulty = Difficulty.byId(difficulty);
         return this;
     }
 
@@ -201,6 +229,7 @@ public class Event {
     public static void loadCommonPropertiesFromTag(Event event, CompoundTag tag) {
         Optional.of(tag.getUUID("eventID")).ifPresent(event::setEventUUID);
         Optional.of(tag.getInt("eventCost")).ifPresent(event::setEventCost);
+        Optional.of(tag.getInt(Difficulty.class.getSimpleName())).ifPresent(event::setMinimumDifficulty);
         Optional.of(tag.getLong("EXECUTION_COOLDOWN")).ifPresent(event::setEXECUTION_COOLDOWN);
         Optional.of(tag.getLong("lastGameTimeOfEventExecution")).ifPresent(event::setLastGameTimeOfEventExecution);
         Optional.of(tag.getBoolean("isEventReoccurring")).ifPresent(event::setEventReocurring);

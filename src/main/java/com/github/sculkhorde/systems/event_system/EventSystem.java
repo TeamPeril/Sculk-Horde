@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -134,6 +135,7 @@ public class EventSystem {
             }
 
             eventsTag.put(event.getClass().getName(), eventTag);
+            eventTag.putInt(Difficulty.class.getSimpleName(), event.getMinimumDifficulty().getId());
             SculkHorde.LOGGER.info("Saved " + event.getClass().getName() + " event.");
         }
         tag.put("events", eventsTag);

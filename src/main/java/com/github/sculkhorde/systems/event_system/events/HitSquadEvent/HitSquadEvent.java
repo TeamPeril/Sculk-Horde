@@ -14,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -56,6 +57,7 @@ public class HitSquadEvent extends Event {
         super(dimension);
         setEventCost(100);
         setState(State.INITIALIZATION);
+        setMinimumDifficulty(Difficulty.NORMAL);
     }
 
     public Optional<SculkSoulReaperEntity> getReaper()
