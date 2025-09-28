@@ -98,6 +98,7 @@ public class ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_hit_squad_event_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_brood_hatcher_enabled;
+        public final ForgeConfigSpec.ConfigValue<String> difficulty_mode;
 
         public void loadItemsInfectionCursorsCanEat()
         {
@@ -212,6 +213,7 @@ public class ModConfig {
             builder.pop();
 
             builder.push("General Variables");
+            difficulty_mode = builder.comment("Set your difficulty for Sculk Horde. Auto means the difficulty will be whatever the game's difficulty is. OPTIONS = {AUTO, EASY, NORMAL, HARD} (Default AUTO)").define("difficulty_mode","AUTO");
             should_all_other_mobs_attack_the_sculk_horde = builder.comment("Should all other entities attack the sculk horde by default? (Default true)").define("should_all_other_mobs_attack_the_sculk_horde",true);
             should_animals_and_villagers_avoid_the_sculk_horde = builder.comment("Should all animals and villagers avoid the sculk horde by default? (Default true)").define("should_animals_and_villagers_avoid_the_sculk_horde",true);
             block_infestation_enabled = builder.comment("Should the Sculk Horde infest blocks? (Default true)").define("block_infestation_enabled",true);

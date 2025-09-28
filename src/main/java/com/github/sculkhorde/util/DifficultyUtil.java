@@ -1,13 +1,32 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.core.ModConfig;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class DifficultyUtil {
-
+    
     public static Difficulty getCurrentDifficulty()
     {
-        return ServerLifecycleHooks.getCurrentServer().overworld().getDifficulty();
+        String modConfigDifficulty = ModConfig.SERVER.difficulty_mode.get();
+        if(modConfigDifficulty.equals("EASY"))
+        {
+            return Difficulty.EASY;
+        }
+        else if(modConfigDifficulty.equals("NORMAL"))
+        {
+            return Difficulty.NORMAL;
+        }
+        else if(modConfigDifficulty.equals("HARD"))
+        {
+            return Difficulty.HARD;
+        }
+        else
+        {
+            return ServerLifecycleHooks.getCurrentServer().overworld().getDifficulty();
+        }
+
+
     }
 
     public static boolean isCurrentDifficultyEqualToOrGreaterThan(Difficulty difficulty)
