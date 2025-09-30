@@ -5,7 +5,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class DifficultyUtil {
-    
+
     public static Difficulty getCurrentDifficulty()
     {
         String modConfigDifficulty = ModConfig.SERVER.difficulty_mode.get();

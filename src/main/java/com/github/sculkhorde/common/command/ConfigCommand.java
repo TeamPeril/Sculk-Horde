@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.command;
 
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.SculkHorde;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -67,6 +68,16 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         .executes(context -> setConfigValue(context, configKey)));
     }
 
+    // Create a new method for the difficulty command with specific options
+    private static ArgumentBuilder<CommandSourceStack, ?> difficultyConfigOption(String configKey) {
+        return Commands.literal(configKey)
+                // The command logic is attached directly to each final option
+                .then(Commands.literal("AUTO").executes(context -> setDifficultyModeConfig(context, "AUTO")))
+                .then(Commands.literal("EASY").executes(context -> setDifficultyModeConfig(context, "EASY")))
+                .then(Commands.literal("NORMAL").executes(context -> setDifficultyModeConfig(context, "NORMAL")))
+                .then(Commands.literal("HARD").executes(context -> setDifficultyModeConfig(context, "HARD")));
+    }
+
     private static ArgumentBuilder<CommandSourceStack, ?> performance(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("performance")
                 .then(booleanConfigOption("disable_auto_performance_system"))
@@ -98,6 +109,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
 
     private static ArgumentBuilder<CommandSourceStack, ?> generalConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("general")
+                .then(difficultyConfigOption("difficulty_mode"))
                 .then(booleanConfigOption("should_all_other_mobs_attack_the_sculk_horde"))
                 .then(booleanConfigOption("should_animals_and_villagers_avoid_the_sculk_horde"))
                 .then(booleanConfigOption("chunk_loading_enabled"))
@@ -160,7 +172,49 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 .then(integerConfigOption("sculk_raid_no_raid_zone_duration_minutes", 0, Integer.MAX_VALUE));
     }
 
-    // Repeat similar patterns for other config sections...
+    /**
+     * Executes the configuration change for difficulty_mode.
+     * @param context The command context.
+     * @param difficulty The literal string value passed from the command (e.g., "AUTO", "EASY").
+     * @return The result code for the command execution (1 for success).
+     */
+    private static int setDifficultyModeConfig(CommandContext<CommandSourceStack> context, String difficulty) {
+        // 1. Convert the input to uppercase for case-insensitive comparison
+        difficulty = difficulty.toUpperCase();
+        String finalDifficulty = difficulty;
+
+        // 2. Validate and set the configuration value
+        if(difficulty.equals("EASY"))
+        {
+            ModConfig.SERVER.difficulty_mode.set(difficulty);
+            SculkHorde.LOGGER.info("Difficulty set to " + difficulty);
+
+            context.getSource().sendSuccess(() -> Component.literal("Config option updated successfully. " + "difficulty_mode" + " is now: " + finalDifficulty), false);
+            return 1;
+        }
+        else if(difficulty.equals("NORMAL"))
+        {
+            ModConfig.SERVER.difficulty_mode.set(difficulty);
+            SculkHorde.LOGGER.info("Difficulty set to " + difficulty);
+            context.getSource().sendSuccess(() -> Component.literal("Config option updated successfully. " + "difficulty_mode" + " is now: " + finalDifficulty), false);
+            return 1;
+        }
+        else if(difficulty.equals("HARD"))
+        {
+            ModConfig.SERVER.difficulty_mode.set(difficulty);
+            SculkHorde.LOGGER.info("Difficulty set to " + difficulty);
+            context.getSource().sendSuccess(() -> Component.literal("Config option updated successfully. " + "difficulty_mode" + " is now: " + finalDifficulty), false);
+            return 1;
+        }
+        else
+        {
+            ModConfig.SERVER.difficulty_mode.set("AUTO");
+            SculkHorde.LOGGER.info("Difficulty set to AUTO");
+            context.getSource().sendSuccess(() -> Component.literal("Config option updated successfully. " + "difficulty_mode" + " is now: " + finalDifficulty), false);
+            return 1;
+        }
+    }
+
 
     private static int setConfigValue(CommandContext<CommandSourceStack> context, String configKey) {
         boolean success = false;
