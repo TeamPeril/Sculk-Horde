@@ -150,6 +150,12 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         super.tick();
         if(level().isClientSide()) { return; }
 
+        // On Hard Creepers will explode regardless if their target backs away
+        if(getSwelling(1) >= 0.2F && DifficultyUtil.isCurrentDifficultyHard() && !isIgnited())
+        {
+            ignite();
+        }
+
         // The reason I do this is because I need my custom explode function to run before the regular creeper one does.
         // This shit honestly sucks ass, but it works.
         // Creeper expodes when get swelling is 1.1, but if we run it at 1.0, should hopefully work.
@@ -158,6 +164,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
             infectEntitiesAroundMe();
             explodeSculkCreeper();
         }
+
+
     }
 
     public void explodeSculkCreeper()
