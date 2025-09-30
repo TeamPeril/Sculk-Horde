@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
@@ -278,6 +279,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         double d2 = target.getZ() + vec3.z - this.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         Potion potion = Potions.HARMING;
+        int duration = 0;
         float rng = random.nextFloat();
 
         if(rng > 0.9)
@@ -287,13 +289,28 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         else if(rng > 0.6)
         {
             potion = Potions.POISON;
+            duration = TickUnits.convertSecondsToTicks(10);
         }
         else {
             potion = Potions.WEAKNESS;
+            duration = TickUnits.convertSecondsToTicks(30);
+        }
+
+        ItemStack potionStack = new ItemStack(Items.SPLASH_POTION);
+        if(duration > 0)
+        {
+            // For effects with duration, create a custom potion with the specified duration
+            PotionUtils.setCustomEffects(potionStack, java.util.List.of(
+                    new MobEffectInstance(potion.getEffects().get(0).getEffect(), duration)
+            ));
+        } else
+        {
+            // For instant effects like harming
+            PotionUtils.setPotion(potionStack, potion);
         }
 
         ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
-        thrownpotion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+        thrownpotion.setItem(potionStack);
         thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
         thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
         if (!this.isSilent()) {
@@ -462,7 +479,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         public void start() {
             this.pathNav.moveTo(this.path, this.walkSpeedModifier);
 
-            if(!hasEffect(MobEffects.INVISIBILITY) && getHealth() < getMaxHealth())
+            if(!hasEffect(MobEffects.INVISIBILITY) && getHealth() < getMaxHealth() && DifficultyUtil.isCurrentDifficultyHard())
             {
                 level().playSound((Player)null, getX(), getY(), getZ(), SoundEvents.WITCH_DRINK, getSoundSource(), 1.0F, 0.8F + random.nextFloat() * 0.4F);
                 addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, TickUnits.convertSecondsToTicks(10), 0));
