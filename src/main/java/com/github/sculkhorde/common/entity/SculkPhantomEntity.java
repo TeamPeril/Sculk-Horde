@@ -10,7 +10,6 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -335,8 +334,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F);
             float f3 = Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F);
             float f4 = (0.3F + f * 0.45F) * (0.2F + 1.0F);
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)f2, this.getY() + (double)f4, this.getZ() + (double)f3, 0.0D, 0.0D, 0.0D);
-            this.level().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)f2, this.getY() + (double)f4, this.getZ() - (double)f3, 0.0D, 0.0D, 0.0D);
             return;
         }
 
@@ -632,11 +629,29 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             //boolean doesPhantomIntersectTarget = boundingBox.intersects(target.getBoundingBox());
             boolean doesPhantomIntersectTarget = SculkPhantomEntity.this.distanceTo(target) <= attackReach;
 
-            if (doesPhantomIntersectTarget)
+            if(doesPhantomIntersectTarget)
             {
                 SculkPhantomEntity.this.doHurtTarget(target);
-                EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(5));
-                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+
+                if(DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
+                {
+                    EntityAlgorithms.reducePurityEffectDuration(target, TickUnits.convertMinutesToTicks(1));
+                }
+
+                if(DifficultyUtil.isCurrentDifficultyEasy())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyNormal())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyHard())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(15), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+
+
                 lastTimeOfAttack = level().getGameTime();
                 return;
             }
