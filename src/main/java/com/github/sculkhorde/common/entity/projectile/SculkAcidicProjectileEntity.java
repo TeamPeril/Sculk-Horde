@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.projectile;
 import com.github.sculkhorde.common.effect.CorrodingEffect;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModItems;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ProjectileUtil;
 import com.github.sculkhorde.util.TickUnits;
@@ -100,14 +101,33 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
                 return;
             }
 
-            if(CorrodingEffect.isEntityAffectableByCorroded(target))
-            {
-                CorrodingEffect.applyToEntity(owner, target, TickUnits.convertSecondsToTicks(5));
-            }
-            else
+            if(DifficultyUtil.isCurrentDifficultyEasy())
             {
                 EntityAlgorithms.doSculkTypeDamageToEntity(owner, target, 6F, 5F);
             }
+            else if(DifficultyUtil.isCurrentDifficultyNormal())
+            {
+                if(CorrodingEffect.isEntityAffectableByCorroded(target))
+                {
+                    CorrodingEffect.applyToEntity(owner, target, TickUnits.convertSecondsToTicks(3));
+                }
+                else
+                {
+                    EntityAlgorithms.doSculkTypeDamageToEntity(owner, target, 6F, 2F);
+                }
+            }
+            else if(DifficultyUtil.isCurrentDifficultyHard())
+            {
+                if(CorrodingEffect.isEntityAffectableByCorroded(target))
+                {
+                    CorrodingEffect.applyToEntity(owner, target, TickUnits.convertSecondsToTicks(5));
+                }
+                else
+                {
+                    EntityAlgorithms.doSculkTypeDamageToEntity(owner, target, 6F, 5F);
+                }
+            }
+
         }
     }
 
