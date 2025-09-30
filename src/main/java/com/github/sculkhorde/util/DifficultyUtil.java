@@ -34,5 +34,40 @@ public class DifficultyUtil {
         return getCurrentDifficulty().getId() >= difficulty.getId();
     }
 
+    public static boolean isCurrentDifficultyGreaterThanEasy()
+    {
+        return getCurrentDifficulty().getId() > Difficulty.EASY.getId();
+    }
+
+    public static boolean isCurrentDifficultyEasy()
+    {
+        return getCurrentDifficulty().getId() == Difficulty.EASY.getId();
+    }
+
+    public static boolean isCurrentDifficultyLessThanNormal()
+    {
+        return getCurrentDifficulty().getId() < Difficulty.NORMAL.getId();
+    }
+
+    public static boolean isCurrentDifficultyGreaterThanNormal()
+    {
+        return getCurrentDifficulty().getId() > Difficulty.NORMAL.getId();
+    }
+
+    public static boolean isCurrentDifficultyNormal()
+    {
+        return getCurrentDifficulty().getId() == Difficulty.NORMAL.getId();
+    }
+
+    public static boolean isCurrentDifficultyLessThanHard()
+    {
+        return getCurrentDifficulty().getId() < Difficulty.HARD.getId();
+    }
+
+    public static boolean isCurrentDifficultyHard()
+    {
+        return getCurrentDifficulty().getId() == Difficulty.HARD.getId();
+    }
+
 
 }

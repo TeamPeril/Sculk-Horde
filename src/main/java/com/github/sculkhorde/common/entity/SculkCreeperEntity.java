@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
@@ -121,8 +122,24 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
                 return;
             }
 
-            EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(5));
-            EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+            if(DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
+            {
+                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(5));
+            }
+
+            if(DifficultyUtil.isCurrentDifficultyEasy())
+            {
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+            }
+            else if(DifficultyUtil.isCurrentDifficultyNormal())
+            {
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(20), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+            }
+            else if(DifficultyUtil.isCurrentDifficultyHard())
+            {
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+            }
+
         });
 
 
@@ -149,14 +166,30 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
             return;
         }
 
+        float explosionPower = 1.0F;
+
+        if(DifficultyUtil.isCurrentDifficultyEasy())
+        {
+            explosionPower = 2.0F;
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            explosionPower = 3.0F;
+        }
+        else if(DifficultyUtil.isCurrentDifficultyHard())
+        {
+            explosionPower = 4.0F;
+        }
+
+
         if(!isParticipatingInRaid())
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), explosionPower, Level.ExplosionInteraction.NONE);
             if(ModConfig.SERVER.block_infestation_enabled.get()) {spawnInfectors();}
         }
         else
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 4.0F, Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), explosionPower, Level.ExplosionInteraction.MOB);
         }
         this.dead = true;
 
