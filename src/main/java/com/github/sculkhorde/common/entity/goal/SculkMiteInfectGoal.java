@@ -2,16 +2,14 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkMiteEntity;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.EnumSet;
-
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class SculkMiteInfectGoal extends MeleeAttackGoal {
 
@@ -90,7 +88,19 @@ public class SculkMiteInfectGoal extends MeleeAttackGoal {
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
             if(targetMobRemainingHealth <= 0.5 && !target.hasEffect(SculkMiteEntity.INFECT_EFFECT))
             {
-                EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, SculkMiteEntity.INFECT_DURATION, SculkMiteEntity.INFECT_LEVEL);
+
+                if(DifficultyUtil.isCurrentDifficultyEasy())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyNormal())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyHard())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
 
                 //Kill The Bastard
                 /**

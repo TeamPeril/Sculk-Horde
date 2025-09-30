@@ -68,11 +68,6 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked
     public static MobEffect INFECT_EFFECT = ModMobEffects.SCULK_INFECTION.get();
-    //INFECT_DURATION The duration of the effect
-    public static int INFECT_DURATION = 500;
-    //INFECT_LEVEL The level of the effect
-    public static int INFECT_LEVEL = 1;
-    //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
