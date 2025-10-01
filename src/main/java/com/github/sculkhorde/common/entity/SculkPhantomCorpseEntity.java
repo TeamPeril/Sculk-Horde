@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.util.TickUnits;
@@ -266,10 +267,24 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
                     return;
                 }
 
-                EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
-                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(15), 0);
-                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+                if(DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
+                {
+                    EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
+                    EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+                }
 
+                if(DifficultyUtil.isCurrentDifficultyEasy())
+                {
+                    EntityAlgorithms.applyEffectToTarget(victim, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyNormal())
+                {
+                    EntityAlgorithms.applyEffectToTarget(victim, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyHard())
+                {
+                    EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
             }
         }
     }
