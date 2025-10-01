@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -126,11 +127,18 @@ public class SoulHarvesterBlock extends BaseEntityBlock implements IForgeBlock {
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof SoulHarvesterBlockEntity) {
-                ((SoulHarvesterBlockEntity) blockEntity).drops();
+            if (blockEntity instanceof SoulHarvesterBlockEntity soulHarvester)
+            {
+                soulHarvester.drops();
+
+                // Do not spawn cursors if on easy.
+                if(DifficultyUtil.isCurrentDifficultyEasy())
+                {
+                    return;
+                }
 
                 // Get the health harvested
-                int healthHarvested = ((SoulHarvesterBlockEntity) blockEntity).getHealthHarvested();
+                int healthHarvested = soulHarvester.getHealthHarvested();
 
                 //Spawn 20 Infector Cursors and divide the mass evenly between them
                 int massPerCursor = healthHarvested / 10;
