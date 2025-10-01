@@ -9,6 +9,7 @@ import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStr
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
@@ -165,7 +166,7 @@ public class SculkNodeBlockEntity extends BlockEntity
             return;
         }
 
-        if(SculkHorde.gravemind.isEvolutionInMatureState() && ModConfig.isExperimentalFeaturesEnabled())
+        if(SculkHorde.gravemind.isEvolutionInMatureState() && DifficultyUtil.isCurrentDifficultyGreaterThanEasy() && ModConfig.isExperimentalFeaturesEnabled())
         {
             blockEntity.matureInfestationSystem.serverTick();
             return;

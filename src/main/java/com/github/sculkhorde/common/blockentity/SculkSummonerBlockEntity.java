@@ -9,6 +9,7 @@ import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFacto
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -87,9 +88,25 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     /** ~~~~~~~~ Accessors ~~~~~~~~ **/
 
+    protected long getCooldownBasedOnDifficulty()
+    {
+        if(DifficultyUtil.isCurrentDifficultyEasy())
+        {
+            return TickUnits.convertMinutesToTicks(1);
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            return TickUnits.convertSecondsToTicks(30);
+        }
+        else
+        {
+            return TickUnits.convertSecondsToTicks(15);
+        }
+    }
+
     private boolean isVibrationCooldownOver()
     {
-        return level.getGameTime() - lastGameTimeOfVibrationRecieve > TickUnits.convertSecondsToTicks(15);
+        return level.getGameTime() - lastGameTimeOfVibrationRecieve > getCooldownBasedOnDifficulty();
     }
 
     private boolean isBlockStateVibrationCooldownTrue()
