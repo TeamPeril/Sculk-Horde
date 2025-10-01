@@ -221,7 +221,8 @@ public class EntityFactory {
                         EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
                         EntityFactoryEntry.StrategicValues.EffectiveOnGround)
-                        .setMinimumDifficulty(Difficulty.NORMAL),
+                        .setMinimumDifficulty(Difficulty.NORMAL)
+                        .setChanceToSpawn(0.1F),
 
                 new EntityFactoryEntry(ModEntities.SCULK_BROODLING.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
