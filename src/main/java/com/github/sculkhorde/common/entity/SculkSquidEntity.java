@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
@@ -429,10 +430,22 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
             if(target.getHealth() < target.getMaxHealth()/2)
             {
-                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0);
+
+                if(DifficultyUtil.isCurrentDifficultyEasy())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyNormal())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
+                else if(DifficultyUtil.isCurrentDifficultyHard())
+                {
+                    EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                }
             }
 
-            if(this.mob instanceof SculkSquidEntity squid)
+            if(this.mob instanceof SculkSquidEntity squid && DifficultyUtil.isCurrentDifficultyHard())
             {
                 EntityAlgorithms.applyEffectToTarget(target, MobEffects.BLINDNESS, TickUnits.convertSecondsToTicks(3), 0);
                 squid.spawnInk();
