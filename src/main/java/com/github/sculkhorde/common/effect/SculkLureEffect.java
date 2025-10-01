@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.effect;
 
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
@@ -17,8 +18,7 @@ public class SculkLureEffect extends MobEffect {
 
     public static int liquidColor = 338997;
     public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
-    public long COOLDOWN = TickUnits.convertMinutesToTicks(5);
-    public long cooldownTicksRemaining = COOLDOWN;
+    public long cooldownTicksRemaining = 0;
 
 
     /**
@@ -37,6 +37,21 @@ public class SculkLureEffect extends MobEffect {
         this(effectType, liquidColor);
     }
 
+    public long getCooldownBasedOnDifficulty()
+    {
+        if(DifficultyUtil.isCurrentDifficultyEasy())
+        {
+            return TickUnits.convertMinutesToTicks(5);
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            return TickUnits.convertMinutesToTicks(2);
+        }
+        else
+        {
+            return TickUnits.convertMinutesToTicks(1);
+        }
+    }
 
     @Override
     public void applyEffectTick(LivingEntity entity, int p_19468_) {
@@ -69,7 +84,7 @@ public class SculkLureEffect extends MobEffect {
             cooldownTicksRemaining--;
             return false;
         }
-        cooldownTicksRemaining = COOLDOWN;
+        cooldownTicksRemaining = getCooldownBasedOnDifficulty();
         return true;
 
     }
