@@ -17,7 +17,7 @@ public class NodeAtmosphereInfestationSystem {
     // The parent tile entity
     protected SculkNodeBlockEntity parent = null;
     protected long timeOfLastInfestationTick = 0;
-    protected long INFESTATION_TICK_COOLDOWN = TickUnits.convertMinutesToTicks(15);
+    protected long INFESTATION_TICK_COOLDOWN = TickUnits.convertMinutesToTicks(9);
     protected long timeOfLastDiseasedAtmosphereTick = 0;
     protected long DISEASED_ATMOSPHERE_TICK_COOLDOWN = TickUnits.convertSecondsToTicks(10);
     protected int currentBlockInfestationRadius = 50;
