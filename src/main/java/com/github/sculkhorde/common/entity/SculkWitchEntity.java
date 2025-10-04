@@ -370,15 +370,15 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         ThrownPotion projectile = new ThrownPotion(this.level(), this);
         projectile.setItem(potionStack);
 
-        float inaccuracyFactor = 0.5F;
+        float inaccuracyFactor = 1F;
 
         if(DifficultyUtil.isCurrentDifficultyEasy())
         {
-            inaccuracyFactor = 2.0F;
+            inaccuracyFactor = 5.0F;
         }
         else if(DifficultyUtil.isCurrentDifficultyNormal())
         {
-            inaccuracyFactor = 1.0F;
+            inaccuracyFactor = 3.0F;
         }
 
         // Constants (adjust these to match your projectile's characteristics)
