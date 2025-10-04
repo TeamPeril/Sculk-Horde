@@ -1,10 +1,11 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.SquadHandler;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -203,15 +204,68 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         return goals;
     }
 
-    public void performRangedAttack(LivingEntity target) {
-        SculkAcidicProjectileEntity acid = new SculkAcidicProjectileEntity(target.level(), this, 1);
-        double d0 = target.getX() - this.getX();
-        double d1 = target.getY(0.3333333333333333D) - acid.getY();
-        double d2 = target.getZ() - this.getZ();
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        acid.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
+    public void performRangedAttack(LivingEntity attackTarget) {
+        // 1. Initialize the projectile
+        SculkAcidicProjectileEntity projectile = new SculkAcidicProjectileEntity(attackTarget.level(), this, 1);
+
+        float inaccuracyFactor = 0.5F;
+
+        if(DifficultyUtil.isCurrentDifficultyEasy())
+        {
+            inaccuracyFactor = 2.0F;
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            inaccuracyFactor = 1.0F;
+        }
+
+        // Constants (adjust these to match your projectile's characteristics)
+        final float PROJECTILE_SPEED = 1.6F;
+        final double GRAVITY = 0.03;
+
+        // 2. Calculate Distances
+        double deltaX = attackTarget.getX() - this.getX();
+        double deltaY = attackTarget.getEyeY() - projectile.getY();
+        double deltaZ = attackTarget.getZ() - this.getZ();
+        double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+
+        // 3. Solve for Flight Time (T)
+
+        // Calculate the time needed to cover the horizontal distance
+        // using a fixed fraction of the total speed (e.g., assuming 90% is horizontal)
+        double speedFraction = 0.9D;
+        double timeToTarget = horizontalDistance / (PROJECTILE_SPEED * speedFraction);
+
+        // 4. Calculate Required Vertical Velocity (V_Y)
+
+        // Rearranging the vertical motion equation: V_Y = (deltaY + 0.5 * G * T^2) / T
+        double requiredVerticalVelocity = (deltaY + 0.5 * GRAVITY * timeToTarget * timeToTarget) / timeToTarget;
+
+        // 5. Create the Unit Vector
+
+        // V_H = horizontalDistance / timeToTarget
+        double horizontalVelocityMagnitude = horizontalDistance / timeToTarget;
+
+        // Normalize the horizontal components (deltaX, deltaZ) to get a direction vector
+        double xUnitVector = deltaX / horizontalDistance;
+        double zUnitVector = deltaZ / horizontalDistance;
+
+        // Calculate the final X, Y, Z shot components
+        double finalXVelocity = xUnitVector * horizontalVelocityMagnitude;
+        double finalYVelocity = requiredVerticalVelocity;
+        double finalZVelocity = zUnitVector * horizontalVelocityMagnitude;
+
+        // 6. Shoot the projectile (with zero inaccuracy for a perfect shot)
+        projectile.shoot(finalXVelocity,
+                finalYVelocity,
+                finalZVelocity,
+                PROJECTILE_SPEED, // This is just the "scale" for the initial velocity
+                inaccuracyFactor);
+
+        // 6. Finalize (sound and spawn)
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level().addFreshEntity(acid);
+        triggerAnim("attack_controller", "attack_animation");
+        this.level().addFreshEntity(projectile);
     }
 
     // Synced Data
