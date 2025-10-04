@@ -16,6 +16,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -168,14 +169,11 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new FloatGoal(this),
                         new SquadHandlingGoal(this),
                         new MountNearestRavager(this),
-                        new RangedAcidAttackGoal(this, 1.0D, TickUnits.convertSecondsToTicks(3), 40),
+                        //new RangedAcidAttackGoal(this, 1.0D, TickUnits.convertSecondsToTicks(3), 40),
+                        new SpitAttackGoal(this,  40, 10),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
-                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        //new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        //new RangedAttackGoal(this, new AcidAttack(this), 20),
-                        //LookAtGoal(mob, targetType, lookDistance)
                         new LookAtPlayerGoal(this, Pig.class, 8.0F),
                         //LookRandomlyGoal(mob)
                         new RandomLookAroundGoal(this),
@@ -264,7 +262,6 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
         // 6. Finalize (sound and spawn)
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        triggerAnim("attack_controller", "attack_animation");
         this.level().addFreshEntity(projectile);
     }
 
@@ -291,8 +288,10 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
-    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("attack_animation", ATTACK_ANIMATION);
+    private static final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
+    private static final String ATTACK_ANIMATION_ID = "attack_animation";
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
+            .triggerableAnim(ATTACK_ANIMATION_ID, ATTACK_ANIMATION).transitionLength(5);
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
@@ -347,5 +346,36 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     public boolean dampensVibrations() {
         return true;
+    }
+
+    protected class SpitAttackGoal extends CustomAttackGoal
+    {
+
+        public SpitAttackGoal(Mob mob, float maxDistanceForAttackIn, int attackDelay) {
+            super(mob, maxDistanceForAttackIn, attackDelay);
+        }
+
+        @Override
+        protected long getExecutionCooldown() {
+            return TickUnits.convertSecondsToTicks(3);
+        }
+
+        protected void checkAndAttack(LivingEntity targetMob) {
+
+            if (isTargetInvalid()) {
+                return;
+            }
+
+            if (!isExecutionCooldownOver()) {
+                return;
+            }
+
+            performRangedAttack(targetMob);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_ANIMATION_ID);
+        }
     }
 }
