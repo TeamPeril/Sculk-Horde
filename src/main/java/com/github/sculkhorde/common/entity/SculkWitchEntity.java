@@ -1,12 +1,9 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.util.DifficultyUtil;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -22,8 +19,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Monster;
@@ -229,8 +228,9 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
                         new SquadHandlingGoal(this),
                         new RunFromHostilesGoal<>(this, 4, 1.0F, 1.0F),
                         new BuffNearbyAllies(this),
+                        new ThrowPotionAttackGoal(this, 20, 10),
                         // RangedAttackGoal(thisMob, speedModifier, Min Attack Interval, Max Attack Interval, Attack Radius)
-                        new RangedAttackGoal(this, 1.0D, 30, 30, 10.0F),
+                        //new RangedAttackGoal(this, 1.0D, 30, 30, 10.0F),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
@@ -285,8 +285,8 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         super.customServerAiStep();
     }
 
-    public void performRangedAttack(LivingEntity target, float p_34144_) {
-
+    public void performRangedAttack(LivingEntity target, float power) {
+        /*
         triggerAnim("attack_controller", "throwpotion");
 
         Vec3 vec3 = target.getDeltaMovement();
@@ -334,17 +334,113 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         }
 
         this.level().addFreshEntity(thrownpotion);
+        */
 
+        Potion potion = Potions.HARMING;
+        int duration = 0;
+        float rng = random.nextFloat();
+
+        if(rng > 0.9)
+        {
+            potion = Potions.HARMING;
+        }
+        else if(rng > 0.6)
+        {
+            potion = Potions.POISON;
+            duration = TickUnits.convertSecondsToTicks(10);
+        }
+        else {
+            potion = Potions.WEAKNESS;
+            duration = TickUnits.convertSecondsToTicks(30);
+        }
+
+        ItemStack potionStack = new ItemStack(Items.SPLASH_POTION);
+        if(duration > 0)
+        {
+            // For effects with duration, create a custom potion with the specified duration
+            PotionUtils.setCustomEffects(potionStack, java.util.List.of(
+                    new MobEffectInstance(potion.getEffects().get(0).getEffect(), duration)
+            ));
+        } else
+        {
+            // For instant effects like harming
+            PotionUtils.setPotion(potionStack, potion);
+        }
+
+        ThrownPotion projectile = new ThrownPotion(this.level(), this);
+        projectile.setItem(potionStack);
+
+        float inaccuracyFactor = 0.5F;
+
+        if(DifficultyUtil.isCurrentDifficultyEasy())
+        {
+            inaccuracyFactor = 2.0F;
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            inaccuracyFactor = 1.0F;
+        }
+
+        // Constants (adjust these to match your projectile's characteristics)
+        final float PROJECTILE_SPEED = 1.6F;
+        final double GRAVITY = 0.03;
+
+        // 2. Calculate Distances
+        double deltaX = target.getX() - this.getX();
+        double deltaY = target.getEyeY() - projectile.getY();
+        double deltaZ = target.getZ() - this.getZ();
+        double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+
+        // 3. Solve for Flight Time (T)
+
+        // Calculate the time needed to cover the horizontal distance
+        // using a fixed fraction of the total speed (e.g., assuming 90% is horizontal)
+        double speedFraction = 0.9D;
+        double timeToTarget = horizontalDistance / (PROJECTILE_SPEED * speedFraction);
+
+        // 4. Calculate Required Vertical Velocity (V_Y)
+
+        // Rearranging the vertical motion equation: V_Y = (deltaY + 0.5 * G * T^2) / T
+        double requiredVerticalVelocity = (deltaY + 0.5 * GRAVITY * timeToTarget * timeToTarget) / timeToTarget;
+
+        // 5. Create the Unit Vector
+
+        // V_H = horizontalDistance / timeToTarget
+        double horizontalVelocityMagnitude = horizontalDistance / timeToTarget;
+
+        // Normalize the horizontal components (deltaX, deltaZ) to get a direction vector
+        double xUnitVector = deltaX / horizontalDistance;
+        double zUnitVector = deltaZ / horizontalDistance;
+
+        // Calculate the final X, Y, Z shot components
+        double finalXVelocity = xUnitVector * horizontalVelocityMagnitude;
+        double finalYVelocity = requiredVerticalVelocity;
+        double finalZVelocity = zUnitVector * horizontalVelocityMagnitude;
+
+        // 6. Shoot the projectile (with zero inaccuracy for a perfect shot)
+        projectile.shoot(finalXVelocity,
+                finalYVelocity,
+                finalZVelocity,
+                PROJECTILE_SPEED, // This is just the "scale" for the initial velocity
+                inaccuracyFactor);
+
+        if (!this.isSilent()) {
+            SoundUtil.playHostileSoundInLevel(level(), blockPosition(), SoundEvents.WITCH_THROW);
+        }
+        this.level().addFreshEntity(projectile);
     }
 
     // Animation Code
 
-    private static final RawAnimation THROW_POTION_ANIMATION = RawAnimation.begin().thenPlay("throwpotion");
+    private static final RawAnimation THROW_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("throwpotion");
     private static final RawAnimation BUFF_ALLIES_ANIMATION = RawAnimation.begin().thenPlay("dispense");
 
-    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
-            .triggerableAnim("throwpotion", THROW_POTION_ANIMATION).transitionLength(5)
-            .triggerableAnim("dispense", BUFF_ALLIES_ANIMATION).transitionLength(5);
+    private final String POTION_ATTACK_ANIMATION_ID = "throwpotion";
+    private final String DISPENSE_ATTACK_ANIMATION_ID = "dispense";
+    private final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
+            .triggerableAnim(POTION_ATTACK_ANIMATION_ID, THROW_ATTACK_ANIMATION).transitionLength(5)
+            .triggerableAnim(DISPENSE_ATTACK_ANIMATION_ID, BUFF_ALLIES_ANIMATION).transitionLength(5);
 
 
 
@@ -380,6 +476,37 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
     public boolean dampensVibrations() {
         return true;
+    }
+
+    protected class ThrowPotionAttackGoal extends CustomAttackGoal
+    {
+
+        public ThrowPotionAttackGoal(Mob mob, float maxDistanceForAttackIn, int attackDelay) {
+            super(mob, maxDistanceForAttackIn, attackDelay);
+        }
+
+        @Override
+        protected long getExecutionCooldown() {
+            return TickUnits.convertSecondsToTicks(3);
+        }
+
+        protected void checkAndAttack(LivingEntity targetMob) {
+
+            if (isTargetInvalid()) {
+                return;
+            }
+
+            if (!isExecutionCooldownOver()) {
+                return;
+            }
+
+            performRangedAttack(targetMob, 0);
+        }
+
+        @Override
+        protected void triggerAnimation() {
+            triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, POTION_ATTACK_ANIMATION_ID);
+        }
     }
 
     private class BuffNearbyAllies extends Goal {
