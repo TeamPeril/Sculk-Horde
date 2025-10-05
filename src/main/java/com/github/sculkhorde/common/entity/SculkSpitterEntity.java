@@ -301,7 +301,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
 
     // ANIMATIONS
-    private static final RawAnimation STRAFE_ANIMATION = RawAnimation.begin().thenPlay("move.strafe");
+    private static final RawAnimation SIT_ANIMATION = RawAnimation.begin().thenLoop("misc.sit");
     private static final RawAnimation WALK_ANIMATION = RawAnimation.begin().thenLoop("move.walk");
     private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenPlay("misc.idle");
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
@@ -321,9 +321,9 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
     {
 
-        if(state.getAnimatable().isStrafing())
+        if(state.getAnimatable().isPassenger())
         {
-            state.setAnimation(STRAFE_ANIMATION);
+            state.setAnimation(SIT_ANIMATION);
         }
         else if(state.isMoving())
         {
