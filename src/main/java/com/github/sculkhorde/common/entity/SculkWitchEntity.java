@@ -432,14 +432,16 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
     // Animation Code
 
-    private static final RawAnimation THROW_ATTACK_ANIMATION = RawAnimation.begin().thenPlay("throwpotion");
-    private static final RawAnimation BUFF_ALLIES_ANIMATION = RawAnimation.begin().thenPlay("dispense");
+    private static final String POTION_ATTACK_ANIMATION_ID = "throwpotion";
+    private static final RawAnimation POTION_ATTACK_ANIMATION = RawAnimation.begin().thenPlay(POTION_ATTACK_ANIMATION_ID);
+    private static final String DISPENSE_ATTACK_ANIMATION_ID = "dispense";
+    private static final RawAnimation BUFF_ALLIES_ANIMATION = RawAnimation.begin().thenPlay(DISPENSE_ATTACK_ANIMATION_ID);
 
-    private final String POTION_ATTACK_ANIMATION_ID = "throwpotion";
-    private final String DISPENSE_ATTACK_ANIMATION_ID = "dispense";
-    private final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
+
+
+    private static final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
-            .triggerableAnim(POTION_ATTACK_ANIMATION_ID, THROW_ATTACK_ANIMATION).transitionLength(5)
+            .triggerableAnim(POTION_ATTACK_ANIMATION_ID, POTION_ATTACK_ANIMATION).transitionLength(5)
             .triggerableAnim(DISPENSE_ATTACK_ANIMATION_ID, BUFF_ALLIES_ANIMATION).transitionLength(5);
 
 
