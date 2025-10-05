@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.LookAtTargetOrRandom;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
@@ -17,14 +18,18 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -34,6 +39,8 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.EnumSet;
 
 public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmartEntity {
 
@@ -167,6 +174,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
+                        new StayInRangeOfTarget(this, 20, 10),
                         new SquadHandlingGoal(this),
                         new MountNearestRavager(this),
                         //new RangedAcidAttackGoal(this, 1.0D, TickUnits.convertSecondsToTicks(3), 40),
@@ -174,9 +182,9 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        new LookAtPlayerGoal(this, Pig.class, 8.0F),
+                        new LookAtTargetOrRandom(this, 10, 0.5F, false),
                         //LookRandomlyGoal(mob)
-                        new RandomLookAroundGoal(this),
+                        //new RandomLookAroundGoal(this),
                         new OpenDoorGoal(this, true)
                 };
         return goals;
@@ -200,6 +208,15 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new NearestLivingEntityTargetGoal<>(this, true, true)
                 };
         return goals;
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        if (getTarget() != null) {
+            // The mob's LookControl handles the rotation.
+            // It will face the target's eyes with a high priority (30.0F is common)
+            //lookAt(getTarget(), 15F, 15F);
+        }
     }
 
     public void performRangedAttack(LivingEntity attackTarget) {
@@ -303,14 +320,12 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     protected PlayState poseWalkCycle(AnimationState<SculkSpitterEntity> state)
     {
-        /*
+
         if(state.getAnimatable().isStrafing())
         {
             state.setAnimation(STRAFE_ANIMATION);
         }
-         */
-
-        if(state.isMoving())
+        else if(state.isMoving())
         {
             state.setAnimation(WALK_ANIMATION);
         }
@@ -376,6 +391,84 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         @Override
         protected void triggerAnimation() {
             triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_ANIMATION_ID);
+        }
+    }
+
+    public class StayInRangeOfTarget extends Goal {
+        private final Mob mob;
+        private double wantedX;
+        private double wantedY;
+        private double wantedZ;
+        private final double speedModifier;
+        private final float maxDistance;
+        private final float minDistance;
+
+        public StayInRangeOfTarget(Mob reaper, float maxDistance, float minDistance) {
+            this.mob = reaper;
+            this.speedModifier = 1;
+            this.maxDistance = maxDistance;
+            this.minDistance = minDistance;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        }
+
+        public boolean canUse()
+        {
+
+            if (mob.getTarget() == null)
+            {
+                return false;
+            }
+            else if (mob.getTarget().distanceTo(this.mob) < this.minDistance)
+            {
+                Vec3 vec3 = DefaultRandomPos.getPosAway((PathfinderMob) this.mob, 16, 7, mob.getTarget().position());
+                if (vec3 == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    this.wantedX = vec3.x;
+                    this.wantedY = vec3.y;
+                    this.wantedZ = vec3.z;
+                    return true;
+                }
+            }
+            else if (mob.getTarget().distanceTo(this.mob) > this.maxDistance || !mob.getSensing().hasLineOfSight(mob.getTarget()))
+            {
+                Vec3 vec3 = DefaultRandomPos.getPosTowards((PathfinderMob) this.mob, 16, 7, mob.getTarget().position(), (double)((float)Math.PI / 2F));
+                if (vec3 == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    this.wantedX = vec3.x;
+                    this.wantedY = vec3.y;
+                    this.wantedZ = vec3.z;
+                    return true;
+                }
+            }
+
+
+
+            return false;
+        }
+
+        public boolean canContinueToUse() {
+
+            if(mob.getTarget() == null)
+            {
+                return false;
+            }
+
+            return !this.mob.getNavigation().isDone() && mob.getTarget().isAlive() && mob.getTarget().distanceTo(this.mob) <= this.maxDistance && mob.getTarget().distanceTo(this.mob) >= this.minDistance;
+        }
+
+        public void stop() {
+        }
+
+        public void start() {
+            this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.speedModifier);
         }
     }
 }
