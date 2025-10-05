@@ -1,12 +1,14 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.util.DifficultyUtil;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -15,10 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -30,10 +29,13 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.EnumSet;
 
 public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -203,6 +205,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkMiteInfectGoal(this, 1.0D, true),
                         new FollowSquadLeader(this),
+                        new MiteLeapAtTargetGoal(this, 0.5F, TickUnits.convertSecondsToTicks(1)), // Only works on hard
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -276,6 +279,87 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
     public boolean isPushedByFluid() {
         return false;
+    }
+
+
+    protected class MiteLeapAtTargetGoal extends Goal
+    {
+
+        protected final Mob mob;
+        protected final float yd;
+
+        protected long timeOfLastLeap = 0;
+        protected long cooldown;
+
+        public MiteLeapAtTargetGoal(Mob mob, float leapDistance, long cooldown) {
+            this.mob = mob;
+            this.yd = leapDistance;
+            this.setFlags(EnumSet.of(Flag.JUMP));
+            this.cooldown = cooldown;
+        }
+
+        public boolean canUse() {
+            if(level().getGameTime() - timeOfLastLeap < cooldown)
+            {
+                return false;
+            }
+            else if(DifficultyUtil.isCurrentDifficultyLessThanHard())
+            {
+                return false;
+            }
+            else if (this.mob.isVehicle())
+            {
+                return false;
+            }
+            else if(mob.getTarget() == null)
+            {
+                return false;
+            }
+
+            double $$distanceFromTarget = EntityAlgorithms.getDistanceBetweenEntities(mob, mob.getTarget());
+            if ($$distanceFromTarget > 7)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public boolean canContinueToUse() {
+            return false;
+        }
+
+        public void start() {
+            timeOfLastLeap = level().getGameTime();
+
+            // 1. Calculate the initial horizontal delta movement toward the target
+            // We only care about the X and Z components for the horizontal direction.
+            Vec3 directionHorizontal = new Vec3(
+                    mob.getTarget().getX() - this.mob.getX(),
+                    0.0, // Set Y component to 0 to only get the horizontal direction
+                    mob.getTarget().getZ() - this.mob.getZ()
+            );
+
+            Vec3 finalDeltaMovement;
+
+            // Check if the horizontal distance is great enough to normalize
+            if (directionHorizontal.lengthSqr() > 1.0E-7) {
+                // Normalize the vector, scale by the 'power' parameter, and add existing momentum
+                finalDeltaMovement = directionHorizontal
+                        .normalize()
+                        // Scale by the 'power' parameter for horizontal speed
+                        .scale(this.yd)
+                        // Add a small fraction of the mob's current horizontal momentum to smooth the transition
+                        .add(this.mob.getDeltaMovement().scale(0.2));
+            } else {
+                // If the target is directly above/below, use the mob's existing horizontal momentum
+                finalDeltaMovement = this.mob.getDeltaMovement().scale(0.2);
+            }
+
+            // 2. Set the mob's new delta movement.
+            // Use the calculated X and Z from the finalDeltaMovement vector,
+            // and explicitly use the 'yd' parameter for the vertical jump strength.
+            this.mob.setDeltaMovement(finalDeltaMovement.x, (double)this.yd, finalDeltaMovement.z);
+        }
     }
 
 }
