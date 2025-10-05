@@ -295,6 +295,12 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         return getMaxDistanceFromBoundBlockBeforeDeath() - 20;
     }
 
+    @Override
+    public void checkDespawn() {
+
+    }
+
+
     // #### Animation Code ####
 
     public static final String ATTACK_MELEE_ID = "attack.melee";

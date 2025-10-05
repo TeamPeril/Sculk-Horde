@@ -9,6 +9,8 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -138,6 +140,7 @@ public class GolemOfWrathAnimatorBlockEntity extends BlockEntity {
         level.addFreshEntity((LivingEntity)golem);
         setGolem(golem);
         getGolem().get().setBoundBlockPos(getBlockPos());
+        getGolemAsLivingEntity().get().addEffect(new MobEffectInstance(MobEffects.GLOWING, Integer.MAX_VALUE, 0));
         return golem;
     }
 

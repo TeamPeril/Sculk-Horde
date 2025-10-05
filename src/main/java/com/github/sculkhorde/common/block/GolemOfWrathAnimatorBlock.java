@@ -6,6 +6,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -18,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -25,6 +29,7 @@ import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
@@ -119,6 +124,31 @@ public class GolemOfWrathAnimatorBlock extends BaseEntityBlock implements IForge
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
         }
+    }
+
+
+    public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
+
+
+        if(level.getBlockEntity(pos) instanceof GolemOfWrathAnimatorBlockEntity blockEntity)
+        {
+            if(blockEntity.getGolemAsLivingEntity().isEmpty())
+            {
+                return InteractionResult.FAIL;
+            }
+
+            Optional<BlockPos> spawnPos = blockEntity.getSpawnPositionsInCube(level, pos, 20);
+            if(spawnPos.isPresent())
+            {
+                blockEntity.getGolemAsLivingEntity().get().teleportTo(spawnPos.get().getX(), spawnPos.get().getY(), spawnPos.get().getZ());
+            }
+            else
+            {
+                blockEntity.getGolemAsLivingEntity().get().teleportTo(spawnPos.get().getX(), spawnPos.get().getY(), spawnPos.get().getZ());
+            }
+        }
+
+        return InteractionResult.FAIL;
     }
 
     // Block Entity Related
