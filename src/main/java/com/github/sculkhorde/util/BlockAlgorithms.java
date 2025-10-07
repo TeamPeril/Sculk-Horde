@@ -779,6 +779,11 @@ public class BlockAlgorithms {
         return dimension1.dimension().location().equals(dimension2.dimension().location());
     }
 
+    public static boolean isFluid(ServerLevel level, BlockPos pos)
+    {
+       return level.getFluidState(pos).getType() != Fluids.EMPTY;
+    }
+
     public static boolean isNearFluid(ServerLevel level, BlockPos origin, int range)
     {
         for(BlockPos pos : getBlockPosInCube(origin, range, true))

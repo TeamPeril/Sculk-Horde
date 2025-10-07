@@ -128,8 +128,8 @@ public class HitSquadEvent extends Event {
                 for (int z = minZ; z <= maxZ; z++) {
                     mutablePos.set(x, y, z);
 
-                    // Check if the block is air
-                    if (BlockAlgorithms.isReplaceable(getDimension().getBlockState(mutablePos))) {
+                    // Check if the block is air and not water
+                    if (BlockAlgorithms.isReplaceable(getDimension().getBlockState(mutablePos)) && !BlockAlgorithms.isFluid(getDimension(), mutablePos)) {
                         // Check if the position is a valid spawn position
                         if (isValidSpawnPos(mutablePos)) {
                             return Optional.of(mutablePos.immutable());
