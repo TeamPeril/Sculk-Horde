@@ -10,6 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import com.github.sculkhorde.systems.chunk_cursor_system.ChunkCursorInfector;
+import com.github.sculkhorde.systems.chunk_cursor_system.ChunkCursorPurifier;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -86,6 +88,18 @@ public class CursorSystem {
                 index++;
             }
         }
+    }
+
+    // Chunk Cursor Factory Methods ------------------------------------------------------------------------------------
+    // These are the only valid entry points for creating Chunk Cursors (except the abstract/base cursor)
+    public ChunkCursorInfector createChunkInfector()
+    {
+        return new ChunkCursorInfector();
+    }
+
+    public ChunkCursorPurifier createChunkPurifier()
+    {
+        return new ChunkCursorPurifier();
     }
 
     // Virtual Cursors Methods -----------------------------------------------------------------------------------------

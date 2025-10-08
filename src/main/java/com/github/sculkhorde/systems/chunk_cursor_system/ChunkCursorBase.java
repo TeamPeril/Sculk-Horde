@@ -14,12 +14,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
+import com.github.sculkhorde.systems.cursor_system.VirtualCursor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChunkCursorBase<T extends ChunkCursorBase<T>> {
+public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor {
 
     protected final Log debug = new Log(this.toString().replaceAll("com.github.sculkhorde.systems.chunk_cursor_system.", ""));
     protected final Log fullDebug = new Log(this.toString().replaceAll("com.github.sculkhorde.systems.chunk_cursor_system.", ""));
@@ -97,7 +98,8 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> {
     }
 
     // Control Functions -----------------------------------------------------------------------------------------------
-    public void tick() {
+    @Override
+    protected void cursorTick() {
         if (!shouldTick) return;
 
         if (totalTime == 0 && startTime == 0) {
@@ -681,6 +683,10 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> {
             else {debug.info("    Center: BlockPos{#N/A}                 | OFFLINE");}
             debug.info("Position 1: " + pos1 +   " | CONFIRMED");
             debug.info("Position 2: " + pos2 +   " | CONFIRMED");
+            // Ensure VirtualCursor's position is valid for debug/particles; default to center if set, else pos1
+            if (super.pos == null) {
+                super.pos = (center != null) ? center : pos1;
+            }
             debug.info("System is now ready for execution!");
             status = State.READY;
         }
@@ -692,6 +698,9 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> {
             debug.info("Setting level set: " + serverLevel);
             this.serverLevel = serverLevel;
             this.level = serverLevel;
+            super.level = serverLevel;
+            // Ensure VirtualCursor timing is initialized now that a Level is assigned
+            super.creationTickTime = serverLevel.getGameTime();
             this.lowestY = level.getMinBuildHeight();
             checkReady();
         }
@@ -975,7 +984,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> {
     public BlockPos getPos2() {return pos2;}
     public BlockPos getCenter() {return center;}
     public int getFadeDistance() {return fadeDistance;}
-    public int getMaxAdjacentBlocks() {return fadeDistance;}
+    public int getMaxAdjacentBlocks() {return maxAdjacentBlocks;}
 
     public boolean shouldIgnoreObstruction() {return disableObstruction;}
     public boolean shouldCave() {return caveMode;}

@@ -3,6 +3,7 @@ package com.github.sculkhorde.systems.chunk_cursor_system;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.systems.cursor_system.VirtualCursor;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +18,10 @@ public class ChunkCursorInfector extends ChunkCursorBase<ChunkCursorInfector> {
         super();
     }
 
+    /**
+     * Deprecated: Use SculkHorde.cursorSystem.createChunkInfector() instead.
+     */
+    @Deprecated
     public static ChunkCursorInfector of() {
         return new ChunkCursorInfector();
     }
@@ -30,6 +35,8 @@ public class ChunkCursorInfector extends ChunkCursorBase<ChunkCursorInfector> {
                 .spawnSurfaceCursorsAtEnd()
                 .enableAdjacentBlocks();
 
+        // Align with VirtualCursor semantics
+        this.cursorType = VirtualCursor.CursorType.INFESTOR;
         this.fullDebug.enabled = false;
     }
 

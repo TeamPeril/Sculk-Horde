@@ -87,6 +87,12 @@ public class VirtualCursor implements ICursor{
         creationTickTime = level.getGameTime();
     }
 
+    // Protected no-arg constructor for subclasses that will set level later
+    protected VirtualCursor() {
+        this.level = null;
+        this.creationTickTime = 0;
+    }
+
     @Override
     public UUID getUUID() {
         return uuid;

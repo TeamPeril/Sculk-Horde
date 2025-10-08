@@ -86,7 +86,7 @@ public class NodeAtmosphereInfestationSystem {
 
     protected int blockInfectionRectangle(int radius) {
 
-        ChunkCursorInfector infector = ChunkCursorInfector.of()
+        ChunkCursorInfector infector = SculkHorde.cursorSystem.createChunkInfector()
                 .level((ServerLevel) parent.getLevel())
                 .center(parent.getBlockPos(), radius)
                 .caveMode(false)

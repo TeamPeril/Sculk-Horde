@@ -182,7 +182,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         ServerLevel level = context.getSource().getLevel();
         int radius = 2;
 
-        ChunkCursorInfector infector = ChunkCursorInfector.of()
+        ChunkCursorInfector infector = SculkHorde.cursorSystem.createChunkInfector()
                 .chunkCenter(level, center, radius)
                 .caveMode(cave_mode)
                 .disableObstruction(disable_obstruction)
@@ -433,7 +433,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         ServerLevel level = context.getSource().getLevel();
         int radius = context.getArgument("radius", Integer.class);
 
-        ChunkCursorInfector infector = ChunkCursorInfector.of()
+        ChunkCursorInfector infector = SculkHorde.cursorSystem.createChunkInfector()
                 .chunkCenter(level, center, radius)
                 .caveMode(cave_mode)
                 .fillMode(fill)
@@ -460,7 +460,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         LevelChunk chunk1 = level.getChunkAt(pos1);
         LevelChunk chunk2 = level.getChunkAt(pos2);
 
-        ChunkCursorInfector infector = ChunkCursorInfector.of()
+        ChunkCursorInfector infector = SculkHorde.cursorSystem.createChunkInfector()
                 .chunkArea(chunk1, chunk2)
                 .caveMode(cave_mode)
                 .fillMode(fill)
@@ -484,7 +484,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         BlockPos center = BlockPosArgument.getBlockPos(context, "center");
         int radius = context.getArgument("radius", Integer.class);
 
-        ChunkCursorPurifier purifier = ChunkCursorPurifier.of()
+        ChunkCursorPurifier purifier = SculkHorde.cursorSystem.createChunkPurifier()
                 .level(context.getSource().getLevel())
                 .center(center, radius)
                 .caveMode(cave_mode)
@@ -507,7 +507,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         BlockPos pos1 = BlockPosArgument.getBlockPos(context, "pos1");
         BlockPos pos2 = BlockPosArgument.getBlockPos(context, "pos2");
 
-        ChunkCursorPurifier purifier = ChunkCursorPurifier.of()
+        ChunkCursorPurifier purifier = SculkHorde.cursorSystem.createChunkPurifier()
                 .level(context.getSource().getLevel())
                 .pos1(pos1)
                 .pos2(pos2)
@@ -532,7 +532,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         ServerLevel level = context.getSource().getLevel();
         int radius = context.getArgument("radius", Integer.class);
 
-        ChunkCursorPurifier purifier = ChunkCursorPurifier.of()
+        ChunkCursorPurifier purifier = SculkHorde.cursorSystem.createChunkPurifier()
                 .chunkCenter(level, center, radius)
                 .caveMode(cave_mode)
                 .fillMode(fill)
@@ -559,7 +559,7 @@ public class DevCommand implements Command<CommandSourceStack> {
         LevelChunk chunk1 = level.getChunkAt(pos1);
         LevelChunk chunk2 = level.getChunkAt(pos2);
 
-        ChunkCursorPurifier purifier = ChunkCursorPurifier.of()
+        ChunkCursorPurifier purifier = SculkHorde.cursorSystem.createChunkPurifier()
                 .chunkArea(chunk1, chunk2)
                 .caveMode(cave_mode)
                 .fillMode(fill)
