@@ -7,28 +7,32 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public class PathBuilderSystem {
     //Hash Map of Events using event IDs as keys
-    private HashMap<UUID, PathBuilderRequest> pathBuilderRequests;
+    private LinkedHashMap<UUID, PathBuilderRequest> pathBuilderRequests;
     private HashMap<UUID, PathBuilder> pathBuilders;
 
     private long lastGameTimeOfExecution;
     private final long EXECUTION_COOLDOWN_TICKS = TickUnits.convertSecondsToTicks(0.5F);
+    private static final int MAX_ACTIVE_BUILDERS = 3;
 
     public PathBuilderSystem()
     {
-        pathBuilderRequests = new HashMap<UUID, PathBuilderRequest>();
+        pathBuilderRequests = new LinkedHashMap<UUID, PathBuilderRequest>();
         pathBuilders = new HashMap<UUID, PathBuilder>();
     }
 
-    public HashMap<UUID, PathBuilderRequest> getPathBuilderRequests()
+    public Map<UUID, PathBuilderRequest> getPathBuilderRequests()
     {
         return pathBuilderRequests;
     }
-    public HashMap<UUID, PathBuilder> getPathBuilders()
+    public Map<UUID, PathBuilder> getPathBuilders()
     {
         return pathBuilders;
     }
@@ -89,7 +93,7 @@ public class PathBuilderSystem {
 
     public boolean isActivePathBuildersAtMax()
     {
-        return getActivePathBuilders() >= 3;
+        return getActivePathBuilders() >= MAX_ACTIVE_BUILDERS;
     }
 
     public int getActivePathBuilders()
@@ -117,19 +121,22 @@ public class PathBuilderSystem {
     {
         if(!canExecute())
         {
-            //return;
+            return;
         }
 
         lastGameTimeOfExecution = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
 
-        // Iterate through each pathBuilder. Remove them if necessary, ignore finished ones, and tick active ones.
-        for(PathBuilder currentPathBuilder : pathBuilders.values())
+        // Iterate through each pathBuilder. Remove expired ones safely, skip finished ones, and tick active ones.
+        Iterator<PathBuilder> iterator = pathBuilders.values().iterator();
+        while (iterator.hasNext())
         {
+            PathBuilder currentPathBuilder = iterator.next();
+
             if(currentPathBuilder.isFinished() && currentPathBuilder.isExpired())
             {
-                // Remove then return so that we do not get a concurrent modification exception.
-                removePathBuilder(currentPathBuilder.uuid);
-                return;
+                // Safe removal during iteration to avoid ConcurrentModificationException
+                iterator.remove();
+                continue;
             }
 
             if(currentPathBuilder.isFinished())
