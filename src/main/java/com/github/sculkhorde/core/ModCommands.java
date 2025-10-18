@@ -21,7 +21,7 @@ public class ModCommands {
     }
 
     public static void registerSubCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
-        LiteralArgumentBuilder<CommandSourceStack> cmd = Commands.literal(SculkHorde.MOD_ID)
+        LiteralArgumentBuilder<CommandSourceStack> sculkHordeCommands = Commands.literal(SculkHorde.MOD_ID)
                 .then(MassCommand.register(dispatcher, buildContext))
                 .then(GravemindCommand.register(dispatcher, buildContext))
                 .then(StatusCommand.register(dispatcher, buildContext))
@@ -37,6 +37,10 @@ public class ModCommands {
                 .then(SoulReaperCommand.register(dispatcher, buildContext))
                 .then(HitSquadCommand.register(dispatcher, buildContext))
                 .then(DevCommand.register(dispatcher, buildContext));
-        dispatcher.register(cmd);
+        LiteralArgumentBuilder<CommandSourceStack> sculkHordeDevCommands = Commands.literal("SHD")
+                        .then(InfestChunkCommand.register(dispatcher, buildContext));
+
+        dispatcher.register(sculkHordeCommands);
+        dispatcher.register(sculkHordeDevCommands);
     }
 }
