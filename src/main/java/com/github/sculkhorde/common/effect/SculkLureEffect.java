@@ -10,6 +10,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,11 @@ public class SculkLureEffect extends MobEffect {
 
     public long getCooldownBasedOnDifficulty()
     {
+        if(ServerLifecycleHooks.getCurrentServer() == null)
+        {
+            return TickUnits.convertMinutesToTicks(1);
+        }
+
         if(DifficultyUtil.isCurrentDifficultyEasy())
         {
             return TickUnits.convertMinutesToTicks(5);
