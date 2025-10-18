@@ -1,5 +1,6 @@
 package com.github.sculkhorde.modding_api;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.BlockInfestationTable;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
@@ -126,5 +127,14 @@ public class BlockInfestationAPI {
     public static void addSculkFloraEntry(Block flora, int spawnWeight)
     {
         SculkHorde.randomSculkFlora.addEntry(flora, spawnWeight);
+    }
+
+    /**
+     * Adds an item to the list of items that infection cursors can eat. Only call this once per item.
+     * @param itemID The registry ID of the item to add.
+     */
+    public static void addToListOfItemsCursorsCanEat(String itemID)
+    {
+        ModConfig.Server.infection_cursor_item_eat_list.put(itemID, true);
     }
 }

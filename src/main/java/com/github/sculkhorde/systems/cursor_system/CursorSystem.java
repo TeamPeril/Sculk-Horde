@@ -102,6 +102,79 @@ public class CursorSystem {
         return new ChunkCursorPurifier();
     }
 
+    /**
+     * Creates ChunkCursorInfector instances in every chunk whose center is within a circle.
+     * @param level The server level to operate in.
+     * @param center The center of the circle.
+     * @param radius The radius of the circle (in blocks).
+     * @return A list of created (but not started) ChunkCursorInfector instances.
+     */
+    public ArrayList<ChunkCursorInfector> createChunkInfectorCircle(ServerLevel level, BlockPos center, int radius)
+    {
+        ArrayList<ChunkCursorInfector> list = new ArrayList<>();
+        int points = Math.max(8, (int)Math.round((2 * Math.PI * Math.max(radius, 1)) / 32.0)); // roughly every 32 blocks on circumference
+        int cursorAreaRadius = 3; // default area radius for each cursor
+        for(BlockPos p : BlockAlgorithms.getPointsOnCircumference(center, points, radius))
+        {
+            ChunkCursorInfector infector = createChunkInfector()
+                    .level(level)
+                    .center(p, cursorAreaRadius);
+            list.add(infector);
+        }
+        return list;
+    }
+
+    /**
+     * Creates a circle (ring) of ChunkCursorPurifier instances around a center point.
+     * Only level, center, and radius are required.
+     * @param level The server level to operate in.
+     * @param center The center of the circle.
+     * @param radius The radius of the circle (in blocks) on which to place each cursor.
+     * @return A list of created (but not started) ChunkCursorPurifier instances.
+     */
+    public ArrayList<ChunkCursorPurifier> createChunkPurifierCircle(ServerLevel level, BlockPos center, int radius)
+    {
+        ArrayList<ChunkCursorPurifier> list = new ArrayList<>();
+        int points = Math.max(8, (int)Math.round((2 * Math.PI * Math.max(radius, 1)) / 32.0)); // roughly every 32 blocks on circumference
+        int cursorAreaRadius = 3; // default area radius for each cursor
+        for(BlockPos p : BlockAlgorithms.getPointsOnCircumference(center, points, radius))
+        {
+            ChunkCursorPurifier pur = createChunkPurifier()
+                    .level(level)
+                    .center(p, cursorAreaRadius);
+            list.add(pur);
+        }
+        return list;
+    }
+
+    /**
+     * Spawns chunk cursors (infector or purifier) in a ring around a point with radius r.
+     * @param level The server level to operate in.
+     * @param center The center of the ring.
+     * @param radius The radius of the ring (in blocks).
+     * @param infector If true, spawns ChunkCursorInfector; if false, spawns ChunkCursorPurifier.
+     * @return A list of created (but not started) chunk cursors.
+     */
+    public ArrayList<Object> createChunkCursorsRing(ServerLevel level, BlockPos center, int radius, boolean infector) {
+        ArrayList<Object> cursors = new ArrayList<>();
+        int points = Math.max(8, (int)Math.round((2 * Math.PI * Math.max(radius, 1)) / 32.0)); // roughly every 32 blocks on circumference
+        int cursorAreaRadius = 3; // default area radius for each cursor
+        for (BlockPos p : BlockAlgorithms.getPointsOnCircumference(center, points, radius)) {
+            if (infector) {
+                ChunkCursorInfector inf = createChunkInfector()
+                        .level(level)
+                        .center(p, cursorAreaRadius);
+                cursors.add(inf);
+            } else {
+                ChunkCursorPurifier pur = createChunkPurifier()
+                        .level(level)
+                        .center(p, cursorAreaRadius);
+                cursors.add(pur);
+            }
+        }
+        return cursors;
+    }
+
     // Virtual Cursors Methods -----------------------------------------------------------------------------------------
 
     public void debugHowManyVirtualCursorsAreInThisArea(Level level, BlockPos pos, int radius)

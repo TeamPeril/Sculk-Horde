@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class ModConfig {
+public class    ModConfig {
 
     public static final Server SERVER;
     public static final ForgeConfigSpec SERVER_SPEC;
