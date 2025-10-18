@@ -97,6 +97,11 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
         return isFinished;
     }
 
+    @Override
+    public boolean isSetToBeDeleted() {
+        return isFinished;
+    }
+
     // Control Functions -----------------------------------------------------------------------------------------------
     @Override
     protected void cursorTick() {

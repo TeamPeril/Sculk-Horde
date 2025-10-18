@@ -26,20 +26,21 @@ public class ModCommands {
                 .then(GravemindCommand.register(dispatcher, buildContext))
                 .then(StatusCommand.register(dispatcher, buildContext))
                 .then(StatusAllCommand.register(dispatcher, buildContext))
-                .then(RaidCommand.register(dispatcher, buildContext))
                 .then(StatisticsCommand.register(dispatcher, buildContext))
                 .then(PlayerStatusCommand.register(dispatcher, buildContext))
                 .then(ConfigCommand.register(dispatcher, buildContext))
-                .then(SummonReinforcementsCommand.register(dispatcher, buildContext))
-                .then(NodesStatusCommand.register(dispatcher, buildContext))
+                .then(NodesStatusCommand.register(dispatcher, buildContext));
+
+        LiteralArgumentBuilder<CommandSourceStack> sculkHordeDevCommands = Commands.literal("shd")
+                .then(InfestChunkCommand.register(dispatcher, buildContext))
+                .then(InfestChunksCommand.register(dispatcher, buildContext))
                 .then(VesselCommand.register(dispatcher, buildContext))
                 .then(ResetCommand.register(dispatcher, buildContext))
+                .then(DevCommand.register(dispatcher, buildContext))
+                .then(SummonReinforcementsCommand.register(dispatcher, buildContext))
+                .then(RaidCommand.register(dispatcher, buildContext))
                 .then(SoulReaperCommand.register(dispatcher, buildContext))
-                .then(HitSquadCommand.register(dispatcher, buildContext))
-                .then(DevCommand.register(dispatcher, buildContext));
-        LiteralArgumentBuilder<CommandSourceStack> sculkHordeDevCommands = Commands.literal("shd")
-                        .then(InfestChunkCommand.register(dispatcher, buildContext))
-                        .then(InfestChunksCommand.register(dispatcher, buildContext));
+                .then(HitSquadCommand.register(dispatcher, buildContext));
 
         dispatcher.register(sculkHordeCommands);
         dispatcher.register(sculkHordeDevCommands);
