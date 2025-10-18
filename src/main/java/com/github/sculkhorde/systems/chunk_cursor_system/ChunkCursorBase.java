@@ -2,6 +2,7 @@
 package com.github.sculkhorde.systems.chunk_cursor_system;
 
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.Log;
 import net.minecraft.core.BlockPos;
@@ -110,22 +111,26 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
         if (totalTime == 0 && startTime == 0) {
             startTime = System.currentTimeMillis();
 
-            debug.info("------ Settings Dump ------");
-            debug.info("    Server Level: " + serverLevel);
-            debug.info("    Center: " + center);
-            debug.info("    POS_1: " + pos1);
-            debug.info("    POS_2: " + pos2);
-            debug.info("    maxTicks: " + maxTicks);
-            debug.info("    blocksPerTick: " + blocksPerTick);
-            debug.info("    fadeDistance: " + fadeDistance);
-            debug.info("    caveMode: " + caveMode);
-            debug.info("    fillMode: " + fillMode);
-            debug.info("    solidFill: " + solidFill);
-            debug.info("    disableObstruction: " + disableObstruction);
-            debug.info("    doNotPlaceFeatures: " + doNotPlaceFeatures);
+            if( SculkHorde.isDebugMode())
+            {
+                debug.info("------ Settings Dump ------");
+                debug.info("    Server Level: " + serverLevel);
+                debug.info("    Center: " + center);
+                debug.info("    POS_1: " + pos1);
+                debug.info("    POS_2: " + pos2);
+                debug.info("    maxTicks: " + maxTicks);
+                debug.info("    blocksPerTick: " + blocksPerTick);
+                debug.info("    fadeDistance: " + fadeDistance);
+                debug.info("    caveMode: " + caveMode);
+                debug.info("    fillMode: " + fillMode);
+                debug.info("    solidFill: " + solidFill);
+                debug.info("    disableObstruction: " + disableObstruction);
+                debug.info("    doNotPlaceFeatures: " + doNotPlaceFeatures);
+            }
+
 
             if (executeOnStart != null) {
-                debug.info("Executing the following command: " + executeOnStart);
+                if(SculkHorde.isDebugMode()) {debug.info("Executing the following command: " + executeOnStart);}
                 executeOnStart.run();
             }
         }
@@ -349,11 +354,11 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
         if (maxTicks > 0) {
             if (!warningTriggered && totalTicks >= maxTicksWarning) {
-                debug.error("Potential Runaway Cursor Detected! totalTicks has used 50% of its maxTicks [" + totalTicks + " ticks | " + maxTicks + " ticks] - Continuing...");
+                if(SculkHorde.isDebugMode()) {debug.error("Potential Runaway Cursor Detected! totalTicks has used 50% of its maxTicks [" + totalTicks + " ticks | " + maxTicks + " ticks] - Continuing...");}
                 warningTriggered = true;
             }
             if (totalTicks >= maxTicks) {
-                debug.error("Runaway Cursor Detected! totalTicks has exceeded maxTicks [" + totalTicks + " ticks >= " + maxTicks + " ticks] - Stopping...");
+                if(SculkHorde.isDebugMode()) {debug.error("Runaway Cursor Detected! totalTicks has exceeded maxTicks [" + totalTicks + " ticks >= " + maxTicks + " ticks] - Stopping...");}
                 finish();
                 return;
             }
@@ -375,7 +380,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
         if (executeOnEnd != null) executeOnEnd.run();
 
         totalTime = totalTime + (System.currentTimeMillis() - startTime);
-        debug.info("Complete! | Total Time Taken: " + ChunkCursorHelper.textTime(totalTime) +  " | Ticks: " + totalTicks);
+        if(SculkHorde.isDebugMode()) {debug.info("Complete! | Total Time Taken: " + ChunkCursorHelper.textTime(totalTime) +  " | Ticks: " + totalTicks);}
 
         active = false;
         shouldTick = false;
@@ -399,13 +404,13 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
         if (isFinished) return;
 
-        debug.info("Task: " + status + " Complete! | Time Taken: " + ChunkCursorHelper.getTimeSince(functionStartTime));
+        if(SculkHorde.isDebugMode()) {debug.info("Task: " + status + " Complete! | Time Taken: " + ChunkCursorHelper.getTimeSince(functionStartTime));}
 
         switch (status) {
             case INIT -> {
                 int times = caveMode ? 8 : 1;
                 maxExtraBlocks = (maxAdjacentBlocks < 0) ? topBlocks.size() * times : maxAdjacentBlocks;
-                debug.info("Max Extra Blocks: " + maxExtraBlocks);
+                if(SculkHorde.isDebugMode()) {debug.info("Max Extra Blocks: " + maxExtraBlocks);}
 
                 if (caveMode) {
                     status = State.CAVER;
@@ -475,7 +480,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     }
 
     protected void init() {
-        debug.info("INIT");
+        if(SculkHorde.isDebugMode()) {debug.info("INIT");}
         // Get Top Blocks
         int minX = Math.min(pos1.getX(), pos2.getX());
         int minY = Math.min(pos1.getY(), pos2.getY());
@@ -495,7 +500,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
             else {
                 initAABB(new BlockPos(minX, lowestY, minZ), new BlockPos(maxX, serverLevel.getMaxBuildHeight(), maxZ));
             }
-            debug.info("New AABB: " + boundingBox);
+            if(SculkHorde.isDebugMode()) {debug.info("New AABB: " + boundingBox);}
         }
 
         initResume = false;
@@ -539,8 +544,8 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
         if (!initResume) {
             Collections.shuffle(topBlocks);
-            debug.info("Total Blocks Found: " + topBlocks.size());
-            fullDebug.info("Blocks Found: " + topBlocks);
+            if(SculkHorde.isDebugMode()) {debug.info("Total Blocks Found: " + topBlocks.size());}
+            if(SculkHorde.isDebugMode()) {fullDebug.info("Blocks Found: " + topBlocks);}
             completeTask();
         }
 
@@ -551,7 +556,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
 
     protected void searchAndChange() {
-        fullDebug.info("SEARCH_CHANGE");
+        if(SculkHorde.isDebugMode()) {fullDebug.info("SEARCH_CHANGE");}
 
         int blocksChecked = 0;
         int blocksChanged = 0;
@@ -566,7 +571,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
             BlockPos pos = topBlocks.get(currentBlock);
             int maxY = fillMode ? pos.getY() - areaLowestY : pos.getY() - lowestY;
 
-            fullDebug.info("Current Top Position: " + pos + " | Max Y: " + maxY);
+            if(SculkHorde.isDebugMode()) {fullDebug.info("Current Top Position: " + pos + " | Max Y: " + maxY);}
 
             boolean addedN = false;
             boolean addedE = false;
@@ -574,7 +579,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
             boolean addedW = false;
 
             if (pos.equals(finalTopBlock)) {
-                debug.info("Primary Area complete! Awaiting adjacent completion...");
+                if(SculkHorde.isDebugMode()) {debug.info("Primary Area complete! Awaiting adjacent completion...");}
                 primaryComplete = true;
             }
 
@@ -656,10 +661,10 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
         // Add any adjacent blocks found in this batch to the topBlocks array for processing
         if (maxExtraBlocks > 0) {
             topBlocks.addAll(adjacentBlocks);
-            fullDebug.info("Adding Adjacent Blocks to Top Blocks | Total: " + adjacentBlocks.size() + " | Total Adjacent: " + totalExtraBlocks + " - Max: " + maxExtraBlocks);
+            if(SculkHorde.isDebugMode()) {fullDebug.info("Adding Adjacent Blocks to Top Blocks | Total: " + adjacentBlocks.size() + " | Total Adjacent: " + totalExtraBlocks + " - Max: " + maxExtraBlocks); }
         }
 
-        fullDebug.info("Batch Complete! Checked " + blocksChecked + " blocks | Changed " + blocksChanged + " blocks");
+        if(SculkHorde.isDebugMode()) {fullDebug.info("Batch Complete! Checked " + blocksChecked + " blocks | Changed " + blocksChanged + " blocks");}
 
         // Every 32 batches, run the periodic check
         if (currentBatch % 32 == 0) checkBoundingBox(serverLevel, boundingBox);
@@ -669,7 +674,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
         // Exit early if all topBlocks have been run through and none of the last 12 batches of adjacentBlocks found anything changeable
         if (primaryComplete && batchesSinceLastChange >= 16) {
-            debug.info("The last 16 batches did not find any changeable blocks. Primary area is complete, terminating early...");
+            if(SculkHorde.isDebugMode()) {debug.info("The last 16 batches did not find any changeable blocks. Primary area is complete, terminating early...");}
             completeTask();
         }
 
@@ -683,16 +688,19 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     protected void checkReady() {
         clear();
         if (serverLevel != null && pos1 != null && pos2 != null) {
-            debug.info("ServerLevel: " + serverLevel + " | CONFIRMED");
+            if(SculkHorde.isDebugMode()) {debug.info("ServerLevel: " + serverLevel + " | CONFIRMED");}
             if (center != null) {debug.info("Center:     " + center + " | CONFIRMED");}
-            else {debug.info("    Center: BlockPos{#N/A}                 | OFFLINE");}
-            debug.info("Position 1: " + pos1 +   " | CONFIRMED");
-            debug.info("Position 2: " + pos2 +   " | CONFIRMED");
+            else if(SculkHorde.isDebugMode()) {debug.info("    Center: BlockPos{#N/A}                 | OFFLINE");}
+            if(SculkHorde.isDebugMode()) {
+                debug.info("Position 1: " + pos1 +   " | CONFIRMED");
+                debug.info("Position 2: " + pos2 +   " | CONFIRMED");
+            }
+
             // Ensure VirtualCursor's position is valid for debug/particles; default to center if set, else pos1
             if (super.pos == null) {
                 super.pos = (center != null) ? center : pos1;
             }
-            debug.info("System is now ready for execution!");
+            if(SculkHorde.isDebugMode()) {debug.info("System is now ready for execution!");}
             status = State.READY;
         }
     }
@@ -700,7 +708,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     // Builder ---------------------------------------------------------------------------------------------------------
     public T level(ServerLevel serverLevel) {
         if (!active) {
-            debug.info("Setting level set: " + serverLevel);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting level set: " + serverLevel);}
             this.serverLevel = serverLevel;
             this.level = serverLevel;
             super.level = serverLevel;
@@ -713,7 +721,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     }
 
     public T blocksPerTick(int blocksPerTick) {
-        debug.info("Setting blocksPerTick set: " + blocksPerTick);
+        if(SculkHorde.isDebugMode()) {debug.info("Setting blocksPerTick set: " + blocksPerTick);}
         this.blocksPerTick = blocksPerTick;
         return (T) this;
     }
@@ -728,7 +736,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     public T center(BlockPos center, int radius) {
         // N: -Z | E: +X | S: +Z | W: -X
         if (!active) {
-            debug.info("Setting center set: " + center + " | r = " + radius);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting center set: " + center + " | r = " + radius);}
             this.center = center;
             this.pos1 = center.north(radius).west(radius).below(radius);
             this.pos2 = center.south(radius).east(radius).above(radius);
@@ -739,7 +747,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T pos1(BlockPos pos1) {
         if (!active) {
-            debug.info("Setting pos1 set: " + pos1);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting pos1 set: " + pos1);}
             this.center = null;
             this.pos1 = pos1;
             checkReady();
@@ -749,7 +757,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T pos2(BlockPos pos2) {
         if (!active) {
-            debug.info("Setting pos2 set: " + pos2);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting pos2 set: " + pos2);}
             this.center = null;
             this.pos2 = pos2;
             checkReady();
@@ -767,7 +775,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     public T chunkCenter(ServerLevel level, BlockPos pos, int radius) {
         // N: -Z | E: +X | S: +Z | W: -X
         if (!active) {
-            debug.info("Setting center set: [Block: " + pos + " | Chunk: " + level.getChunkAt(pos) + "] | r = " + radius);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting center set: [Block: " + pos + " | Chunk: " + level.getChunkAt(pos) + "] | r = " + radius);}
 
             LevelChunk centerChunk =  level.getChunkAt(pos);
             LevelChunk nwChunk = level.getChunk(centerChunk.getPos().x - radius, centerChunk.getPos().z - radius);
@@ -812,7 +820,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T fadeDistance(int fadeDistance) {
         if (!active) {
-            debug.info("Setting fadeDistance set: " + fadeDistance);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting fadeDistance set: " + fadeDistance);}
             this.fadeDistance = fadeDistance;
         }
         return (T) this;
@@ -826,7 +834,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T maxAdjacentBlocks(int max) {
         if (!active) {
-            debug.info("Setting maxAdjacentBlocks set: " + maxAdjacentBlocks);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting maxAdjacentBlocks set: " + maxAdjacentBlocks);}
             this.maxAdjacentBlocks = max;
         }
         return (T) this;
@@ -854,7 +862,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     public T caveMode(boolean caveMode) {
         if (!active) {
             if (caveMode) fillMode(false);
-            debug.info("Setting caveMode set: " + caveMode);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting caveMode set: " + caveMode);}
             this.caveMode = caveMode;
         }
         return (T) this;
@@ -875,7 +883,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
     public T fillMode(boolean fillMode) {
         if (!active) {
             if (fillMode) caveMode(false);
-            debug.info("Setting fillMode set: " + fillMode);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting fillMode set: " + fillMode);}
             this.fillMode = fillMode;
         }
         return (T) this;
@@ -894,7 +902,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T solidFill(boolean solidFill) {
         if (!active) {
-            debug.info("Setting solidFill set: " + solidFill);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting solidFill set: " + solidFill);}
             this.solidFill = solidFill;
         }
         return (T) this;
@@ -911,7 +919,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T disableObstruction(boolean disableObstruction) {
         if (!active) {
-            debug.info("Setting disableObstruction set: " + disableObstruction);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting disableObstruction set: " + disableObstruction);}
             this.disableObstruction = disableObstruction;
         }
         return (T) this;
@@ -928,7 +936,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T doNotPlaceFeatures(boolean doNotPlaceFeatures) {
         if (!active) {
-            debug.info("Setting doNotPlaceFeatures set: " + doNotPlaceFeatures);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting doNotPlaceFeatures set: " + doNotPlaceFeatures);}
             this.doNotPlaceFeatures = doNotPlaceFeatures;
         }
         return (T) this;
@@ -945,7 +953,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T spawnSurfaceCursorsAtEnd(boolean spawnSurfaceCursorsAtEnd) {
         if (!active) {
-            debug.info("Setting spawnSurfaceCursorsAtEnd set: " + spawnSurfaceCursorsAtEnd);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting spawnSurfaceCursorsAtEnd set: " + spawnSurfaceCursorsAtEnd);}
             this.spawnSurfaceCursorsAtEnd = spawnSurfaceCursorsAtEnd;
         }
         return (T) this;
@@ -953,7 +961,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T executeOnStart(Runnable runnable) {
         if (!active) {
-            debug.info("Setting executeOnStart set: " + runnable);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting executeOnStart set: " + runnable);}
             this.executeOnStart = runnable;
         }
         return (T) this;
@@ -961,7 +969,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T executeOnPause(Runnable runnable) {
         if (!active) {
-            debug.info("Setting executeOnPause set: " + runnable);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting executeOnPause set: " + runnable);}
             this.executeOnPause = runnable;
         }
         return (T) this;
@@ -969,14 +977,14 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
 
     public T executeOnEnd(Runnable runnable) {
         if (!active) {
-            debug.info("Setting executeOnEnd set: " + runnable);
+            if(SculkHorde.isDebugMode()) {debug.info("Setting executeOnEnd set: " + runnable);}
             this.executeOnEnd = runnable;
         }
         return (T) this;
     }
 
     public T maxTicks(int ticks) {
-        debug.info("Setting maxTicks set: " + ticks + " | maxTicksWarning set: " + ticks/2);
+        if(SculkHorde.isDebugMode()) {debug.info("Setting maxTicks set: " + ticks + " | maxTicksWarning set: " + ticks/2);}
         this.maxTicks = ticks;
         this.maxTicksWarning = ticks/2;
         return (T) this;

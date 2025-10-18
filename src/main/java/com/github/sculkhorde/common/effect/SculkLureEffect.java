@@ -45,7 +45,7 @@ public class SculkLureEffect extends MobEffect {
             return TickUnits.convertMinutesToTicks(1);
         }
 
-        if(DifficultyUtil.isCurrentDifficultyEasy())
+        else if(DifficultyUtil.isCurrentDifficultyEasy())
         {
             return TickUnits.convertMinutesToTicks(5);
         }
