@@ -21,16 +21,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import java.util.ArrayList;
 
 public class DevCommand implements Command<CommandSourceStack> {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         defaults();
         return Commands.literal("dev")
-                .then(Commands.literal("test")
-                        .executes(DevCommand::test)
-                )
                 .then(Commands.literal("clear_chunkload_requests")
                         .executes(DevCommand::clearChunkLoadRequests)
                 )
@@ -66,13 +62,6 @@ public class DevCommand implements Command<CommandSourceStack> {
                                                 )
                                         )
                                 )
-                                .then(Commands.literal("circle")
-                                        .then(Commands.argument("center", BlockPosArgument.blockPos())
-                                                .then(Commands.argument("radius", IntegerArgumentType.integer(1))
-                                                        .executes(DevCommand::chunkInfectionCircle)
-                                                )
-                                        )
-                                )
                         )
                 )
                 .then(Commands.literal("purify")
@@ -104,13 +93,6 @@ public class DevCommand implements Command<CommandSourceStack> {
                                         .then(Commands.argument("pos1", BlockPosArgument.blockPos())
                                                 .then(Commands.argument("pos2", BlockPosArgument.blockPos())
                                                         .executes(DevCommand::chunkPurificationRectangle)
-                                                )
-                                        )
-                                )
-                                .then(Commands.literal("circle")
-                                        .then(Commands.argument("center", BlockPosArgument.blockPos())
-                                                .then(Commands.argument("radius", IntegerArgumentType.integer(1))
-                                                        .executes(DevCommand::chunkPurificationCircle)
                                                 )
                                         )
                                 )
@@ -593,52 +575,6 @@ public class DevCommand implements Command<CommandSourceStack> {
     }
 
     @Override public int run(CommandContext<CommandSourceStack> context) {return 0;}
-
-    public static int chunkInfectionCircle (CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        BlockPos center = BlockPosArgument.getBlockPos(context, "center");
-        ServerLevel level = context.getSource().getLevel();
-        int radius = context.getArgument("radius", Integer.class);
-
-        ArrayList<ChunkCursorInfector> cursors = SculkHorde.cursorSystem.createChunkInfectorCircle(level, center, radius);
-        for(ChunkCursorInfector infector : cursors) {
-            infector
-                .caveMode(cave_mode)
-                .fillMode(fill)
-                .blocksPerTick(blocksPerTick)
-                .fadeDistance(fadeDistance);
-            if (!defaulted) {
-                infector.doNotPlaceFeatures(no_features)
-                        .maxAdjacentBlocks(maxAdjacent)
-                        .disableObstruction(disable_obstruction)
-                        .solidFill(solid_fill);
-            }
-            SculkHorde.chunkInfestationSystem.addChunkInfector(infector);
-        }
-        return 0;
-    }
-
-    public static int chunkPurificationCircle (CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        BlockPos center = BlockPosArgument.getBlockPos(context, "center");
-        ServerLevel level = context.getSource().getLevel();
-        int radius = context.getArgument("radius", Integer.class);
-
-        ArrayList<ChunkCursorPurifier> cursors = SculkHorde.cursorSystem.createChunkPurifierCircle(level, center, radius);
-        for(ChunkCursorPurifier purifier : cursors) {
-            purifier
-                .caveMode(cave_mode)
-                .fillMode(fill)
-                .blocksPerTick(blocksPerTick)
-                .fadeDistance(fadeDistance);
-            if (!defaulted) {
-                purifier.doNotPlaceFeatures(no_features)
-                        .maxAdjacentBlocks(maxAdjacent)
-                        .disableObstruction(disable_obstruction)
-                        .solidFill(solid_fill);
-            }
-            SculkHorde.chunkInfestationSystem.addChunkPurifier(purifier);
-        }
-        return 0;
-    }
 }
 
 /*
