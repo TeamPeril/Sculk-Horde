@@ -187,7 +187,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         level.players().forEach((player) -> {
             if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator() && !PlayerProfileHandler.isPlayerVessel(player))
             {
-                EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertHoursToTicks(1), 0);
+                EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 0);
             }
         });
     }
