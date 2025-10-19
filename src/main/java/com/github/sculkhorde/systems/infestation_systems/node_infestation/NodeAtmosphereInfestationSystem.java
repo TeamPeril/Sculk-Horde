@@ -3,11 +3,10 @@ package com.github.sculkhorde.systems.infestation_systems.node_infestation;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.common.effect.DiseasedAtmosphereEffect;
 import com.github.sculkhorde.core.ModConfig;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.chunk_cursor_system.ChunkCursorInfector;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.InfestationUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -17,10 +16,10 @@ public class NodeAtmosphereInfestationSystem {
     // The parent tile entity
     protected SculkNodeBlockEntity parent = null;
     protected long timeOfLastInfestationTick = 0;
-    protected long INFESTATION_TICK_COOLDOWN = TickUnits.convertMinutesToTicks(1);
+    protected long INFESTATION_TICK_COOLDOWN = TickUnits.convertMinutesToTicks(10);
     protected long timeOfLastDiseasedAtmosphereTick = 0;
-    protected long DISEASED_ATMOSPHERE_TICK_COOLDOWN = TickUnits.convertSecondsToTicks(10);
-    protected int currentBlockInfestationRadius = 1;
+    protected long DISEASED_ATMOSPHERE_TICK_COOLDOWN = TickUnits.convertSecondsToTicks(1);
+    protected int currentBlockInfestationRadius = 50;
 
 
     public NodeAtmosphereInfestationSystem(SculkNodeBlockEntity parent) {
@@ -77,7 +76,9 @@ public class NodeAtmosphereInfestationSystem {
         //blockInfectionRectangle(currentBlockInfestationRadius);
         //SculkHorde.cursorSystem.createChunkCursorsRing((ServerLevel) parent.getLevel(), parent.getBlockPos(), currentBlockInfestationRadius, true);
 
-        currentBlockInfestationRadius += 32;
+        InfestationUtil.infestChunksInCircle((ServerLevel) parent.getLevel(), parent.getBlockPos(), currentBlockInfestationRadius / 16);
+
+        currentBlockInfestationRadius += 50;
 
         if(currentBlockInfestationRadius > Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
         {
@@ -86,17 +87,4 @@ public class NodeAtmosphereInfestationSystem {
         }
     }
 
-    protected int blockInfectionRectangle(int radius) {
-
-        ChunkCursorInfector infector = SculkHorde.cursorSystem.createChunkInfector()
-                .level((ServerLevel) parent.getLevel())
-                .center(parent.getBlockPos(), radius)
-                .caveMode(false)
-                .fillMode(false)
-                .blocksPerTick(128)
-                .fadeDistance(0);
-
-        SculkHorde.chunkInfestationSystem.addChunkInfector(infector);
-        return 0;
-    }
 }

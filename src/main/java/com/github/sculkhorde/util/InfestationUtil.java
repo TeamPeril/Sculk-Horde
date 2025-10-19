@@ -37,7 +37,7 @@ public class InfestationUtil {
                 .level(level)
                 .pos1(pos1)
                 .pos2(pos2)
-                .blocksPerTick(1);
+                .blocksPerTick(2);
 
         SculkHorde.cursorSystem.addVirtualCursor(infector);
     }
