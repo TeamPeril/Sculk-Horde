@@ -491,7 +491,7 @@ public class RaidData {
         return progress / maxProgress;
     }
 
-    protected void updateRemainingWaveParticipantsAmount()
+    public void updateRemainingWaveParticipantsAmount()
     {
         setRemainingWaveParticipants(0);
         for(ISculkSmartEntity entity : waveParticipants)
@@ -513,7 +513,7 @@ public class RaidData {
      * Just removes them from the waveParticipantsList. Does not kill them.
      * Will also removing the glowing effect.
      */
-    protected void removeWaveParticipantsFromList()
+    public void removeWaveParticipantsFromList()
     {
         for(ISculkSmartEntity entity : waveParticipants)
         {

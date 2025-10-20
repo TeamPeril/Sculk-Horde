@@ -1,7 +1,12 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent;
 import com.github.sculkhorde.systems.raid_system.RaidHandler;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -21,6 +26,7 @@ import net.minecraftforge.common.extensions.IForgeItem;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DevRaidWand extends Item implements IForgeItem {
 
@@ -82,10 +88,45 @@ public class DevRaidWand extends Item implements IForgeItem {
 		//If item is not on cool down
 		if(!playerIn.getCooldowns().isOnCooldown(this) && !worldIn.isClientSide() && targetPos != null)
 		{
-			RaidHandler.raidData.startRaidArtificially((ServerLevel) worldIn, targetPos);
+			//RaidHandler.raidData.startRaidArtificially((ServerLevel) worldIn, targetPos);
+            createRaidEvent((ServerLevel) worldIn, targetPos);
 			playerIn.getCooldowns().addCooldown(this, 5); //Cool down for second (20 ticks per second)
 			return InteractionResultHolder.pass(itemstack);
 		}
 		return InteractionResultHolder.fail(itemstack);
 	}
+
+    public void createRaidEvent(ServerLevel level, BlockPos raidLocationIn)
+    {
+
+        if(ModSavedData.getSaveData().getSculkAccumulatedMass() < ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000)
+        {
+            ModSavedData.getSaveData().setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
+            SculkHorde.gravemind.calulateCurrentState();
+            SculkHorde.LOGGER.info("Artificially Starting Raid. Mass is now: " + ModSavedData.getSaveData().getSculkAccumulatedMass());
+            SculkHorde.LOGGER.info("Artificially Starting Raid. Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState());
+        }
+
+        RaidEvent raidEvent = new RaidEvent(level.dimension());
+
+        removeNoRaidZoneAtBlockPos(level, raidLocationIn);
+        Optional<ModSavedData.AreaOfInterestEntry> possibleAreaOfInterestEntry = ModSavedData.getSaveData().addAreaOfInterestToMemory(level, raidLocationIn);
+        if(possibleAreaOfInterestEntry.isPresent())
+        {
+
+            RaidHandler.raidData.setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
+            RaidHandler.raidData.setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
+            ModSavedData.getSaveData().setTicksSinceLastRaid(TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_global_cooldown_between_raids_minutes.get()));
+            SculkHorde.eventSystem.addEvent(raidEvent);
+        }
+        else
+        {
+            RaidHandler.raidData.reset();
+        }
+    }
+
+    public void removeNoRaidZoneAtBlockPos(ServerLevel level, BlockPos pos)
+    {
+        ModSavedData.getSaveData().getNoRaidZoneEntries().removeIf(entry -> entry.isBlockPosInRadius(level, pos));
+    }
 }
