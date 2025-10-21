@@ -58,7 +58,7 @@ public class RaidHandler {
         COMPLETE,
         FAILED
     }
-    protected enum failureType {
+    public enum failureType {
         NONE,
         FAILED_INITIALIZATION,
         ENDERMAN_DEFEATED,
