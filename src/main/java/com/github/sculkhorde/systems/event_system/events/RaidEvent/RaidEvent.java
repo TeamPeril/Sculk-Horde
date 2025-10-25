@@ -303,25 +303,12 @@ public class RaidEvent extends Event {
         return distance;
     }
 
-    public Optional<BlockPos> getNextObjectiveLocation()
-    {
-        Optional<BlockPos> objective = Optional.empty();
-        if(!high_priority_targets.isEmpty())
-        {
-            objective = Optional.of(high_priority_targets.get(0));
-        }
-        else if(!medium_priority_targets.isEmpty())
-        {
-            objective = Optional.of(medium_priority_targets.get(0));
-        }
-        return objective;
-    }
-
     /**
      * Will Pop Next Objective Location and set it as the objective location
      */
-    public void setNextObjectiveLocation()
+    public void advanceToNextObjective()
     {
+        getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.BELL_RESONATE, SoundSource.AMBIENT, 1.0F, 1.0F));
         Optional<BlockPos> objectiveOptional = popObjectiveLocation();
         if(objectiveOptional.isPresent())
         {
@@ -954,7 +941,7 @@ public class RaidEvent extends Event {
             setState(State.WAVE_INITIALIZATION);
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Found Spawn Location at " + getSpawnLocation().toShortString() + " in " + blockSearcher.getDimension().dimension() + ". Initializing Raid.");
 
-            setNextObjectiveLocation();
+            advanceToNextObjective();
             setSpawnLocation(blockSearcher.foundTargets.get(0));
 
             setCurrentRaidRadius(getDistanceOfFurthestObjective());
@@ -1002,7 +989,7 @@ public class RaidEvent extends Event {
 
         if(getObjectiveLocationAtStartOfWave().equals(getObjectiveLocation()))
         {
-            setNextObjectiveLocation();
+            advanceToNextObjective();
         }
         setObjectiveLocationAtStartOfWave(getObjectiveLocation());
         SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Spawning mobs at: " + getSpawnLocation());
@@ -1041,13 +1028,6 @@ public class RaidEvent extends Event {
         {
             endWave();
         }
-
-        if(isCurrentObjectiveCompleted())
-        {
-            setNextObjectiveLocation();
-
-            getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.BELL_RESONATE, SoundSource.AMBIENT, 1.0F, 1.0F));
-        }
     }
 
     protected void successTick()
@@ -1060,6 +1040,7 @@ public class RaidEvent extends Event {
         sporeSpewer.setPos(getRaidLocation().getX(), getRaidLocation().getY(), getRaidLocation().getZ());
         getDimension().addFreshEntity(sporeSpewer);
         setState(State.FINISHED);
+        bossEvent.removeAllPlayers();
     }
 
     protected void failureTick()
@@ -1097,6 +1078,7 @@ public class RaidEvent extends Event {
             ModSavedData.getSaveData().addNoRaidZoneToMemory(getDimension(), getRaidLocation());
         }
 
+        bossEvent.removeAllPlayers();
         setState(State.FINISHED);
     }
 

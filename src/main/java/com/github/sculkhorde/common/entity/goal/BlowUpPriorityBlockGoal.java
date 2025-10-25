@@ -123,27 +123,18 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
         {
             Vec3 vec31 = this.removerMob.getDeltaMovement();
             this.removerMob.setDeltaMovement(vec31.x, -0.3D, vec31.z);
-            if (this.ticksSinceReachedGoal % 6 == 0) {
-                this.playDestroyProgressSound(level, this.blockPos);
-            }
         }
 
         if (this.ticksSinceReachedGoal > ticksRequiredToBreakBlock)
         {
             this.removerMob.explodeSculkCreeper();
-            level.destroyBlock(blockPosition, true);
-
-            if (!level.isClientSide)
+            Optional<RaidEvent> event = EventSystem.getNearestRaidEvent((ServerLevel) level, blockPosition);
+            if(event.isEmpty())
             {
-                for(int i = 0; i < 20; ++i) {
-                    double d3 = randomsource.nextGaussian() * 0.02D;
-                    double d1 = randomsource.nextGaussian() * 0.02D;
-                    double d2 = randomsource.nextGaussian() * 0.02D;
-                    ((ServerLevel)level).sendParticles(ParticleTypes.POOF, (double)blockPosition.getX() + 0.5D, (double)blockPosition.getY(), (double)blockPosition.getZ() + 0.5D, 1, d3, d1, d2, (double)0.15F);
-                }
-
-                this.playBreakSound(level, blockPosition);
+                return;
             }
+
+            event.get().advanceToNextObjective();
         }
     }
 

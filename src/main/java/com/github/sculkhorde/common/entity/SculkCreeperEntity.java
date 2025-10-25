@@ -110,6 +110,24 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         }
     }
 
+    public void spawnInfectorsForRaid()
+    {
+        int numToSpawn = 35;
+        int spawnRange = 5;
+        for (int i = 0; i < numToSpawn; i++) {
+
+            double x = this.getX() + (this.getRandom().nextDouble() * spawnRange) - spawnRange / 2;
+            double z = this.getZ() + (this.getRandom().nextDouble() * spawnRange) - spawnRange / 2;
+            double y = this.getY() + (this.getRandom().nextDouble() * spawnRange / 2) - spawnRange / 4;
+            BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
+
+            VirtualSurfaceInfestorCursor cursor = CursorSystem.createPerformanceExemptSurfaceInfestorVirtualCursor(level(), pos);
+            cursor.setTickIntervalTicks(1);
+            cursor.setMaxTransformations(20);
+            cursor.setMaxRange(100);
+        }
+    }
+
     public void infectEntitiesAroundMe()
     {
         //Create a list of all entities within a 5 block radius
@@ -197,7 +215,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         }
         else
         {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), explosionPower, Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), 0, Level.ExplosionInteraction.NONE);
+            if(ModConfig.SERVER.block_infestation_enabled.get()) {spawnInfectorsForRaid();}
         }
         this.dead = true;
 
