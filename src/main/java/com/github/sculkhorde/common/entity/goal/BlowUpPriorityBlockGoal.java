@@ -18,7 +18,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -79,11 +78,6 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
         super.start();
     }
 
-    public void playDestroyProgressSound(LevelAccessor level, BlockPos blockPos) {
-    }
-
-    public void playBreakSound(Level level, BlockPos blockPos) {
-    }
 
     public void tick() {
         super.tick();

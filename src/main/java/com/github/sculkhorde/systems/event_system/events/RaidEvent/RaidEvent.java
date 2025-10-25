@@ -314,7 +314,7 @@ public class RaidEvent extends Event {
         {
             setObjectiveLocation(objectiveOptional.get());
         }
-        else
+        else if(currentState != State.SUCCESS && currentState != State.FINISHED)
         {
             setState(State.SUCCESS);
         }

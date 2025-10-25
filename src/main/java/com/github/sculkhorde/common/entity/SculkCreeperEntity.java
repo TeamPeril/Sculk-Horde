@@ -112,7 +112,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public void spawnInfectorsForRaid()
     {
-        int numToSpawn = 35;
+        int numToSpawn = 10;
         int spawnRange = 5;
         for (int i = 0; i < numToSpawn; i++) {
 
@@ -123,7 +123,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
             VirtualSurfaceInfestorCursor cursor = CursorSystem.createPerformanceExemptSurfaceInfestorVirtualCursor(level(), pos);
             cursor.setTickIntervalTicks(1);
-            cursor.setMaxTransformations(20);
+            cursor.setMaxTransformations(15);
             cursor.setMaxRange(100);
         }
     }
