@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -9,6 +10,15 @@ public class DifficultyUtil {
     public static Difficulty getCurrentDifficulty()
     {
         String modConfigDifficulty = ModConfig.SERVER.difficulty_mode.get();
+
+        // Edge case this gets called on client
+        if(ServerLifecycleHooks.getCurrentServer() == null)
+        {
+            SculkHorde.LOGGER.error("DifficultyUtil | ERROR: getCurrentDifficulty getting called on client, rather than server.");
+            return Difficulty.NORMAL;
+        }
+
+
         if(modConfigDifficulty.equals("EASY"))
         {
             return Difficulty.EASY;
