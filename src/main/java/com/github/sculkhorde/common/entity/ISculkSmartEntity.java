@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.core.ModSavedData;
-import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
+import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.util.SquadHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ISculkSmartEntity {
 
     default boolean canParticipatingInRaid() {
-        return RaidEvent.howManyActiveRaids() > 0 && isParticipatingInRaid();
+        return EventSystem.howManyActiveRaids() > 0 && isParticipatingInRaid();
     }
 
     default Optional<ModSavedData.NodeEntry> getClosestNode() {

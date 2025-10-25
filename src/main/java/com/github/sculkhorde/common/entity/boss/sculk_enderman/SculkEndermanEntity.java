@@ -346,7 +346,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         {
             discard();
         }
-        else if(parentEventUUID.isPresent() && !SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()) && !isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
+        else if(parentEventUUID.isPresent() && SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()) && !isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
         {
             teleportToRaidLocationIfOutside();
         }

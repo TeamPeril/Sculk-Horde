@@ -28,6 +28,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -51,7 +52,8 @@ public class RaidEvent extends Event {
         WAVE_INITIALIZATION,
         WAVE_ACTIVE,
         SUCCESS,
-        FAILURE
+        FAILURE,
+        FINISHED
     }
     
     public enum failureType {
@@ -108,20 +110,6 @@ public class RaidEvent extends Event {
     protected int ticksSpentTryingToChunkLoad;
 
     public int MAX_TICKS_SPENT_TRYING_TO_CHUNK_LOAD = TickUnits.convertMinutesToTicks(15);
-
-    public static int howManyActiveRaids()
-    {
-        int result = 0;
-        for(Event e : SculkHorde.eventSystem.getEvents().values())
-        {
-            if(e instanceof RaidEvent)
-            {
-                result++;
-            }
-        }
-
-        return result;
-    }
 
 
     /**
@@ -196,31 +184,6 @@ public class RaidEvent extends Event {
             medium_priority_targets.remove(0);
         }
         return objective;
-    }
-
-
-    public void startRaidArtificially(ServerLevel level, BlockPos raidLocationIn)
-    {
-
-        if(ModSavedData.getSaveData().getSculkAccumulatedMass() < ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000)
-        {
-            ModSavedData.getSaveData().setSculkAccumulatedMass(ModConfig.SERVER.gravemind_mass_goal_for_immature_stage.get() + 1000);
-            SculkHorde.gravemind.calulateCurrentState();
-            SculkHorde.LOGGER.info("Artificially Starting Raid. Mass is now: " + ModSavedData.getSaveData().getSculkAccumulatedMass());
-            SculkHorde.LOGGER.info("Artificially Starting Raid. Gravemind is now in state: " + SculkHorde.gravemind.getEvolutionState());
-        }
-        removeNoRaidZoneAtBlockPos(level, raidLocationIn);
-        Optional<ModSavedData.AreaOfInterestEntry> possibleAreaOfInterestEntry = ModSavedData.getSaveData().addAreaOfInterestToMemory(level, raidLocationIn);
-        if(possibleAreaOfInterestEntry.isPresent())
-        {
-            setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
-            setState(State.EVENT_INITIALIZATION);
-            ModSavedData.getSaveData().setTicksSinceLastRaid(TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_global_cooldown_between_raids_minutes.get()));
-        }
-        else
-        {
-            endEvent();
-        }
     }
 
     public void removeNoRaidZoneAtBlockPos(ServerLevel level, BlockPos pos)
@@ -367,7 +330,6 @@ public class RaidEvent extends Event {
         else
         {
             setState(State.SUCCESS);
-            setEventActive(false);
         }
     }
 
@@ -654,6 +616,10 @@ public class RaidEvent extends Event {
         {
             return false;
         }
+        else if(currentState.equals(State.FINISHED))
+        {
+            return false;
+        }
 
         return isEventActive;
     }
@@ -906,7 +872,7 @@ public class RaidEvent extends Event {
             getDimension().addFreshEntity(getScoutEnderman());
             getScoutEnderman().setScouting(true);
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Sculk Enderman Scouting at " + getAreaOfInterestEntry().getPosition().toShortString() + " in the " + getDimensionResourceKey() + " for " + ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get() + " minutes");
-            //announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + getFormattedCoordinates(areaOfInterestEntry.getPosition()) + " in the " + getFormattedDimension(getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), getCurrentRaidRadius() * 8);
+            announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + areaOfInterestEntry.getPosition().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), getCurrentRaidRadius() * 8);
             EntityAlgorithms.applyEffectToTarget(getScoutEnderman(), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
             SoundUtil.playSoundForEveryPlayer(getDimension(), ModSounds.RAID_SCOUT_SOUND.get());
 
@@ -996,7 +962,7 @@ public class RaidEvent extends Event {
 
             loadRaidChunksCenter();
 
-            //announceToPlayersInRange(Component.literal("The Sculk Horde is Raiding " + getRaidLocation().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) + "!"), getCurrentRaidRadius() * 8);
+            announceToPlayersInRange(Component.literal("The Sculk Horde is Raiding " + getRaidLocation().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) + "!"), getCurrentRaidRadius() * 8);
 
         }
         // If not successful
@@ -1028,11 +994,11 @@ public class RaidEvent extends Event {
 
         populateRaidParticipants(getSpawnLocation());
 
-        //announceToPlayersInRange(Component.literal(" Starting Wave " + getCurrentWave() + " out of " + getMaxWaves() + "."), getCurrentRaidRadius() * 8);
+        announceToPlayersInRange(Component.literal(" Starting Wave " + getCurrentWave() + " out of " + getMaxWaves() + "."), getCurrentRaidRadius() * 8);
 
         spawnWaveParticipants(getSpawnLocation());
 
-        //SoundUtil.playSoundForEveryPlayer(getDimension(), ModSounds.RAID_START_SOUND.get());
+        SoundUtil.playSoundForEveryPlayer(getDimension(), ModSounds.RAID_START_SOUND.get());
 
         if(getObjectiveLocationAtStartOfWave().equals(getObjectiveLocation()))
         {
@@ -1088,12 +1054,12 @@ public class RaidEvent extends Event {
     {
         ModSavedData.getSaveData().addNoRaidZoneToMemory(getDimension(), getRaidLocation());
         SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Complete.");
-        //announceToPlayersInRange(Component.literal("The Sculk Horde's raid was successful!"), getCurrentRaidRadius() * 8);
+        announceToPlayersInRange(Component.literal("The Sculk Horde's raid was successful!"), getCurrentRaidRadius() * 8);
         // Summon Sculk Spore Spewer
         SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(ModEntities.SCULK_SPORE_SPEWER.get(), getDimension());
         sporeSpewer.setPos(getRaidLocation().getX(), getRaidLocation().getY(), getRaidLocation().getZ());
         getDimension().addFreshEntity(sporeSpewer);
-        endEvent();
+        setState(State.FINISHED);
     }
 
     protected void failureTick()
@@ -1103,22 +1069,22 @@ public class RaidEvent extends Event {
         {
             case FAILED_OBJECTIVE_COMPLETION:
                 SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Objectives Not Destroyed.");
-                //announceToPlayersInRange(Component.literal("The Sculk Horde has failed to destroy all objectives!"), getCurrentRaidRadius() * 8);
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to destroy all objectives!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case ENDERMAN_DEFEATED:
                 SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Sculk Enderman Defeated.");
-                //announceToPlayersInRange(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"), getCurrentRaidRadius() * 8);
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case FAILED_INITIALIZATION:
                 SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Unable to Initialize.");
-                //announceToPlayersInRange(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"), getCurrentRaidRadius() * 8);
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case FAILED_TO_LOAD_CHUNKS:
                 SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Unable to Load Chunks.");
-                //announceToPlayersInRange(Component.literal("The Sculk Horde has failed to load the chunks required to raid the location. Raid Prevented!"), getCurrentRaidRadius() * 8);
+                announceToPlayersInRange(Component.literal("The Sculk Horde has failed to load the chunks required to raid the location. Raid Prevented!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case NONE:
@@ -1126,12 +1092,12 @@ public class RaidEvent extends Event {
                 break;
         }
 
-        if(getRaidLocation() != null && getRaidLocation() != BlockPos.ZERO && getRaidLocation() != null)
+        if(getRaidLocation() != null && getRaidLocation() != BlockPos.ZERO)
         {
             ModSavedData.getSaveData().addNoRaidZoneToMemory(getDimension(), getRaidLocation());
         }
 
-        endEvent();
+        setState(State.FINISHED);
     }
 
 
@@ -1313,11 +1279,11 @@ public class RaidEvent extends Event {
         {
             setFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
-            //announceToPlayersInRange(Component.literal("Final Wave Complete."), getCurrentRaidRadius() * 8);
+            announceToPlayersInRange(Component.literal("Final Wave Complete."), getCurrentRaidRadius() * 8);
             return;
         }
 
-        //announceToPlayersInRange(Component.literal("Wave " + (getCurrentWave() - 1) + " complete."), getCurrentRaidRadius() * 8);
+        announceToPlayersInRange(Component.literal("Wave " + (getCurrentWave() - 1) + " complete."), getCurrentRaidRadius() * 8);
 
         setState(State.WAVE_INITIALIZATION);
     }
@@ -1480,5 +1446,38 @@ public class RaidEvent extends Event {
         }
         tag.put("mediumPriorityTargets", mediumPriorityTargetsTag);
 
+    }
+
+    /**
+     * Sends a message to all players within a specified radius of this entity.
+     * * @param message The text component to send.
+     * @param radius The radius (in blocks) within which players will receive the message.
+     */
+    protected void announceToPlayersInRange(Component message, double radius) {
+        // Check if the entity is in a valid world/level
+        if (getDimension() == null || getDimension().isClientSide) {
+            return;
+        }
+
+        // Define the squared radius for faster calculation (avoiding Math.sqrt in the loop)
+        double radiusSqr = radius * radius;
+
+        // Iterate through all players in the level
+        for (Player player : getDimension().players()) {
+
+            // 1. Check if the player is in the same dimension
+            if (player.level().dimension() != getDimension().dimension()) {
+                continue;
+            }
+
+            // 2. Check the distance
+            // The distanceSq() method returns the squared distance, matching radiusSqr
+            if (BlockAlgorithms.getBlockDistanceXZ(player.blockPosition(), getEventLocation()) <= radiusSqr) {
+
+                // 3. Send the message
+                // Use ChatType.SYSTEM for a non-chat message that cannot be disabled easily
+                player.sendSystemMessage(message);
+            }
+        }
     }
 }

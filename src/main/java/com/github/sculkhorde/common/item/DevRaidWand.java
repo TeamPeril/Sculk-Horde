@@ -121,7 +121,7 @@ public class DevRaidWand extends Item implements IForgeItem {
         }
         else
         {
-            raidEvent.endEvent();
+            raidEvent.setState(RaidEvent.State.FINISHED);
         }
     }
 

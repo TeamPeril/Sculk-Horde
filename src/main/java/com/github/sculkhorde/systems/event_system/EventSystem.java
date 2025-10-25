@@ -17,7 +17,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +35,20 @@ public class EventSystem {
     {
         events = new HashMap<UUID, Event>();
         eventSystemUUID = UUID.randomUUID();
+    }
+
+    public static int howManyActiveRaids()
+    {
+        int result = 0;
+        for(Event e : SculkHorde.eventSystem.getEvents().values())
+        {
+            if(e instanceof RaidEvent)
+            {
+                result++;
+            }
+        }
+
+        return result;
     }
 
     public HashMap<UUID, Event> getEvents()
@@ -114,8 +127,7 @@ public class EventSystem {
 
             if(isEventActive && !canEventContinue)
             {
-                event.end();
-                SculkHorde.LOGGER.info("Ending event " + event.getClass().getSimpleName() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
+                event.markEventAsFinished();
                 continue;
             }
         }

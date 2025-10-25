@@ -35,7 +35,7 @@ public class RaidCommand implements Command<CommandSourceStack> {
         {
             if(e instanceof RaidEvent raidEvent)
             {
-                raidEvent.endEvent();
+                raidEvent.setState(RaidEvent.State.FINISHED);
             }
         }
         return 0;

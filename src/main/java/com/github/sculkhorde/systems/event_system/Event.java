@@ -75,13 +75,14 @@ public class Event {
 
     }
 
-    public void end() {
+    public void markEventAsFinished() {
         if (!isEventReocurring) {
             toBeRemoved = true;
         }
 
         setEventActive(false);
         setLastGameTimeOfEventExecution(getDimension().getGameTime());
+        SculkHorde.LOGGER.info("Finished event " + getClass().getSimpleName() + " with ID: " + getEventUUID());
     }
 
     @Override
@@ -153,11 +154,6 @@ public class Event {
         return this;
     }
 
-    public void endEvent()
-    {
-        toBeRemoved = true;
-        setEventActive(false);
-    }
 
     public boolean isEventActive() {
         return isEventActive;
