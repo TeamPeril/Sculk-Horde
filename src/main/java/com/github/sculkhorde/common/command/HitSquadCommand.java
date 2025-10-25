@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.command;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.mojang.brigadier.Command;
@@ -95,14 +94,5 @@ public class HitSquadCommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context) {
         return 0;
     }
-
-
-    private static int resetGlobalCooldown()
-    {
-
-        RaidHandler.raidData.setRaidState(RaidHandler.RaidState.FAILED);
-        return 0;
-    }
-
 
 }

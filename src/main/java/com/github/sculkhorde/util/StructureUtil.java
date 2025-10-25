@@ -330,7 +330,7 @@ public class StructureUtil {
         }
 
         public void setState(State state) {
-            SculkHorde.LOGGER.debug("StructurePlacer | State is now: " + state);
+            //SculkHorde.LOGGER.debug("StructurePlacer | State is now: " + state);
             this.state = state;
         }
 
@@ -433,7 +433,7 @@ public class StructureUtil {
         {
             if(currentIndex >= processedBlockInfoList.size())
             {
-                SculkHorde.LOGGER.debug("StructurePlacer | Successfully Placed Structure.");
+                //SculkHorde.LOGGER.debug("StructurePlacer | Successfully Placed Structure.");
                 setState(State.FINISHED);
                 return;
             }

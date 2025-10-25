@@ -3,17 +3,23 @@ package com.github.sculkhorde.systems.event_system;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsEvent;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import java.awt.*;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 public class EventSystem {
@@ -60,7 +66,7 @@ public class EventSystem {
         if(!events.containsKey(event.getEventUUID()))
         {
             events.put(event.getEventUUID(), event);
-            SculkHorde.LOGGER.info("Added event " + event.getClass() + " with ID: " + event.getEventUUID() + " to EventSystem " + eventSystemUUID.toString());
+            SculkHorde.LOGGER.info("Added event " + event.getClass().getSimpleName() + " with ID: " + event.getEventUUID() + " to EventSystem " + eventSystemUUID.toString());
         }
     }
 
@@ -83,7 +89,7 @@ public class EventSystem {
             if(event.isToBeRemoved())
             {
                 removeEvent(event.getEventUUID());
-                SculkHorde.LOGGER.info("Removed event " + event.getClass() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
+                SculkHorde.LOGGER.info("Removed event " + event.getClass().getSimpleName() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
 
                 // WE CANNOT CONTINUE, WE NEED TO RETURN AND START OVER SO WE DON'T GET A CONCURRENT MODIFICATION EXCEPTION
                 return;
@@ -96,7 +102,7 @@ public class EventSystem {
             if(!isEventActive && canEventStart)
             {
                 event.start();
-                SculkHorde.LOGGER.info("Starting event " + event.getClass() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
+                SculkHorde.LOGGER.info("Starting event " + event.getClass().getSimpleName() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
                 continue;
             }
 
@@ -109,7 +115,7 @@ public class EventSystem {
             if(isEventActive && !canEventContinue)
             {
                 event.end();
-                SculkHorde.LOGGER.info("Ending event " + event.getClass() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
+                SculkHorde.LOGGER.info("Ending event " + event.getClass().getSimpleName() + " with ID: " + event.getEventUUID() + " from EventSystem " + eventSystemUUID.toString());
                 continue;
             }
         }
@@ -133,10 +139,14 @@ public class EventSystem {
             {
                 phantomsEvent.saveAdditional(eventsTag);
             }
+            else if (event instanceof RaidEvent raidEvent)
+            {
+                raidEvent.saveAdditional(eventsTag);
+            }
 
             eventsTag.put(event.getClass().getName(), eventTag);
             eventTag.putInt(Difficulty.class.getSimpleName(), event.getMinimumDifficulty().getId());
-            SculkHorde.LOGGER.info("Saved " + event.getClass().getName() + " event.");
+            SculkHorde.LOGGER.info("Saved " + event.getClass().getSimpleName() + " event.");
         }
         tag.put("events", eventsTag);
         SculkHorde.LOGGER.info("Saved " + SculkHorde.eventSystem.getEvents().size() + " events. Took " + (System.currentTimeMillis() - startTime) + " Milliseconds.");
@@ -167,7 +177,11 @@ public class EventSystem {
                 SpawnPhantomsEvent phantomEvent = new SpawnPhantomsEvent(dimensionResourceKey);
                 phantomEvent.loadAdditional(eventTag);
                 event = phantomEvent;
-            } else {
+            } else if (RaidEvent.class.getName().equals(eventType)) {
+                RaidEvent raidEvent = new RaidEvent(dimensionResourceKey);
+                raidEvent.loadAdditional(eventTag);
+                event = raidEvent;
+            }else {
                 event = new Event(dimensionResourceKey);
             }
 
@@ -175,6 +189,34 @@ public class EventSystem {
             SculkHorde.eventSystem.addEvent(event);
         }
         SculkHorde.LOGGER.info("Loaded " + SculkHorde.eventSystem.getEvents().size() + " events. Took " + (System.currentTimeMillis() - startTime) + " Milliseconds.");
+    }
+
+
+    public static Optional<RaidEvent> getNearestRaidEvent(ServerLevel dimension, BlockPos location)
+    {
+        Optional<RaidEvent> result = Optional.empty();
+        for(Event e : SculkHorde.eventSystem.getEvents().values())
+        {
+            if(e instanceof RaidEvent raidEvent)
+            {
+                // If not in same dimension, ignore.
+                if(!BlockAlgorithms.areTheseDimensionsEqual(raidEvent.getDimension(), dimension))
+                {
+                    continue;
+                }
+                else if(result.isEmpty())
+                {
+                    result = Optional.of(raidEvent);
+                    continue;
+                }
+                else if(BlockAlgorithms.getBlockDistanceXZ(result.get().getEventLocation(), location) > BlockAlgorithms.getBlockDistanceXZ(raidEvent.getEventLocation(), location))
+                {
+                    result = Optional.of(raidEvent);
+                }
+            }
+        }
+
+        return result;
     }
 
 }

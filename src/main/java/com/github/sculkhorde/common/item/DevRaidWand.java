@@ -3,8 +3,7 @@ package com.github.sculkhorde.common.item;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.event_system.events.RaidEvent;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -110,18 +109,19 @@ public class DevRaidWand extends Item implements IForgeItem {
         RaidEvent raidEvent = new RaidEvent(level.dimension());
 
         removeNoRaidZoneAtBlockPos(level, raidLocationIn);
+        ModSavedData.getSaveData().getAreasOfInterestEntries().clear();
         Optional<ModSavedData.AreaOfInterestEntry> possibleAreaOfInterestEntry = ModSavedData.getSaveData().addAreaOfInterestToMemory(level, raidLocationIn);
         if(possibleAreaOfInterestEntry.isPresent())
         {
 
-            RaidHandler.raidData.setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
-            RaidHandler.raidData.setRaidState(RaidHandler.RaidState.INVESTIGATING_LOCATION);
+            raidEvent.setAreaOfInterestEntry(possibleAreaOfInterestEntry.get());
+            raidEvent.setState(RaidEvent.State.EVENT_INITIALIZATION);
             ModSavedData.getSaveData().setTicksSinceLastRaid(TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_global_cooldown_between_raids_minutes.get()));
             SculkHorde.eventSystem.addEvent(raidEvent);
         }
         else
         {
-            RaidHandler.raidData.reset();
+            raidEvent.endEvent();
         }
     }
 

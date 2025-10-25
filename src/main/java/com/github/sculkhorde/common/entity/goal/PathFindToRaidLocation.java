@@ -1,9 +1,13 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
+import com.github.sculkhorde.systems.event_system.EventSystem;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
+
+import java.util.Optional;
 
 public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
 
@@ -27,7 +31,12 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
 
     public boolean canUse()
     {
-        if(hasReachedLocationOnce)
+        Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) getPathFinderMob().level(), getPathFinderMob().blockPosition());
+        if(nearestRaid.isEmpty())
+        {
+            return false;
+        }
+        else if(hasReachedLocationOnce)
         {
             return false;
         }
@@ -54,17 +63,33 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
     {
         if (!getPathFinderMob().isPathFinding())
         {
-            getPathFinderMob().getNavigation().moveTo(RaidHandler.raidData.getObjectiveLocationVec3().x, RaidHandler.raidData.getObjectiveLocationVec3().y, RaidHandler.raidData.getObjectiveLocationVec3().z, 1.5D);
+            Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) getPathFinderMob().level(), getPathFinderMob().blockPosition());
+
+            if(nearestRaid.isEmpty())
+            {
+                return;
+            }
+
+            getPathFinderMob().getNavigation().moveTo(nearestRaid.get().getObjectiveLocationVec3().x, nearestRaid.get().getObjectiveLocationVec3().y, nearestRaid.get().getObjectiveLocationVec3().z, 1.5D);
         }
     }
 
     private boolean isCloseEnoughToObjective()
     {
-        if(RaidHandler.raidData.getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
+        Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) getPathFinderMob().level(), getPathFinderMob().blockPosition());
+
+        if(nearestRaid.isEmpty())
+        {
+            return true;
+        }
+
+        if(nearestRaid.get().getObjectiveLocation().closerThan(getPathFinderMob().blockPosition(), 7))
         {
             hasReachedLocationOnce = true;
             return true;
         }
+
         return false;
+
     }
 }

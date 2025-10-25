@@ -4,8 +4,8 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.Optional;
@@ -53,7 +53,7 @@ public class DeathAreaInvestigator {
             return;
         }
 
-        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && !RaidHandler.raidData.isRaidActive())
+        if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && RaidEvent.howManyActiveRaids() < 0)
         {
             ticksSinceLastSearch = 0;
             //SculkHorde.LOGGER.info("It has been enough time since last death area check. Will see if there is a valid death area.");

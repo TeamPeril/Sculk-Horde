@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.command;
 
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.Event;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -29,8 +31,13 @@ public class RaidCommand implements Command<CommandSourceStack> {
 
     private static int startOrEndRaid(CommandContext<CommandSourceStack> context, String operation) throws CommandSyntaxException
     {
-
-        RaidHandler.raidData.setRaidState(RaidHandler.RaidState.FAILED);
+        for(Event e : SculkHorde.eventSystem.getEvents().values())
+        {
+            if(e instanceof RaidEvent raidEvent)
+            {
+                raidEvent.endEvent();
+            }
+        }
         return 0;
     }
 

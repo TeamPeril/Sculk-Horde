@@ -12,8 +12,6 @@ import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
-import com.github.sculkhorde.systems.raid_system.RaidData;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
@@ -149,12 +147,6 @@ public class ModSavedData extends SavedData {
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing raidHandler.");
-        SculkHorde.raidHandler = new RaidHandler();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized raidHandler Successfully.");
-
-
-
         SculkHorde.LOGGER.info("ModSavedData | Initializing sculkNodesSystem.");
         SculkHorde.sculkNodesSystem = new SculkNodesSystem();
         SculkHorde.LOGGER.info("ModSavedData | Initialized sculkNodesSystem Successfully.");
@@ -201,9 +193,6 @@ public class ModSavedData extends SavedData {
         SculkHorde.cursorSystem = new CursorSystem();
         SculkHorde.LOGGER.info("ModSavedData | Initialized CursorSystem Successfully.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading raidData.");
-        RaidHandler.raidData = new RaidData();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded raidData Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
         SculkHorde.statisticsData = new StatisticsData();
@@ -310,14 +299,6 @@ public class ModSavedData extends SavedData {
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded PlayerProfile Entries Successfully.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading raidData.");
-        if(RaidHandler.raidData == null)
-        {
-            RaidHandler.raidData = new RaidData();
-        }
-        RaidData.load(nbt);
-        SculkHorde.LOGGER.info("ModSavedData | Loaded raidData Successfully.");
-
         SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
         if(SculkHorde.statisticsData == null)
         {
@@ -391,7 +372,6 @@ public class ModSavedData extends SavedData {
 
         //nbt.put("gravemindData", gravemindData);
 
-        RaidData.save(nbt);
         StatisticsData.save(nbt);
         BlockEntityChunkLoaderHelper.save(nbt);
         EntityChunkLoaderHelper.save(nbt);

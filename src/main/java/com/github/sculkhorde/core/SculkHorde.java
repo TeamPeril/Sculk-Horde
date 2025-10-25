@@ -12,7 +12,6 @@ import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadD
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
@@ -42,7 +41,6 @@ public class SculkHorde {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static PoolBlocks randomSculkFlora;
     public static DeathAreaInvestigator deathAreaInvestigator;
-    public static RaidHandler raidHandler;
     public static EventSystem eventSystem;
     public static CursorSystem cursorSystem = new CursorSystem();
     public static SculkNodesSystem sculkNodesSystem;

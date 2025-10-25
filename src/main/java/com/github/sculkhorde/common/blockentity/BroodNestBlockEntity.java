@@ -78,7 +78,6 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
      */
     public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int length, int amountOfPositions)
     {
-        //TODO Can potentially be optimized by not getting all the possible positions
         ArrayList<BlockPos> listOfPossibleSpawns = getSpawnPositions(worldIn, origin, length);
         ArrayList<BlockPos> finalList = new ArrayList<>();
         Random rng = new Random();

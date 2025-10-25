@@ -268,7 +268,6 @@ public class Gravemind
 
         ModSavedData.getSaveData().incrementNoNodeSpawningTicksElapsed();
 
-        SculkHorde.raidHandler.raidTick(); // Tick the raid handler
         SculkHorde.deathAreaInvestigator.tick();
         SculkHorde.sculkNodesSystem.tick();
         SculkHorde.eventSystem.serverTick();

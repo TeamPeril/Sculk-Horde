@@ -5,6 +5,8 @@ import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.EventSystem;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -183,7 +185,14 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     }
 
     protected boolean isValidTarget(LevelReader levelReader, BlockState blockState) {
-        return isBlockEqualOrHigherPriorityThanCurrentTarget(levelReader.getBlockState(SculkHorde.raidHandler.raidData.getObjectiveLocation()), blockState);
+        Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) mob.level(), mob.blockPosition());
+
+        if(nearestRaid.isEmpty())
+        {
+            return false;
+        }
+
+        return isBlockEqualOrHigherPriorityThanCurrentTarget(levelReader.getBlockState(nearestRaid.get().getObjectiveLocation()), blockState);
     }
 
     // New Predicate for isValidTarget

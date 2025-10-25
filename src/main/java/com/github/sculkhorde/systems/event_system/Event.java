@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.event_system;
 
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -28,59 +29,54 @@ public class Event {
 
     protected Difficulty minimumDifficulty = Difficulty.EASY;
 
-    public Event(ResourceKey<Level> dimension)
-    {
+    public Event(ResourceKey<Level> dimension) {
         this.dimension = dimension;
         setEventUUID(UUID.randomUUID());
         minimumDifficulty = Difficulty.EASY;
+
+        if(dimension == null)
+        {
+            SculkHorde.LOGGER.error(getClass().getSimpleName() + " | ERROR: NULL was passed as a dimension to an event. Event will be set to be deleted. Event UUID: " + getEventUUID().toString());
+            toBeRemoved = true;
+        }
     }
 
-    public Event(ResourceKey<Level> dimension, Difficulty difficultyRequired)
-    {
-        this.dimension = dimension;
-        setEventUUID(UUID.randomUUID());
+    public Event(ResourceKey<Level> dimension, Difficulty difficultyRequired) {
+        this(dimension);
         minimumDifficulty = difficultyRequired;
     }
 
     // Getters and Setters
-    public UUID getEventUUID()
-    {
+    public UUID getEventUUID() {
         return eventUUID;
     }
 
-    public Difficulty getMinimumDifficulty()
-    {
+    public Difficulty getMinimumDifficulty() {
         return minimumDifficulty;
     }
 
     // Logic
 
-    public boolean canStart()
-    {
+    public boolean canStart() {
         boolean hasEnoughTimePassed = getDimension().getGameTime() - lastGameTimeOfEventExecution >= EXECUTION_COOLDOWN;
         return hasEnoughTimePassed && DifficultyUtil.isCurrentDifficultyEqualToOrGreaterThan(minimumDifficulty);
     }
 
-    public boolean canContinue()
-    {
+    public boolean canContinue() {
         return false;
     }
 
-    public void start()
-    {
+    public void start() {
         ModSavedData.getSaveData().subtractSculkAccumulatedMass(eventCost);
         setEventActive(true);
     }
 
-    public void serverTick()
-    {
+    public void serverTick() {
 
     }
 
-    public void end()
-    {
-        if(!isEventReocurring)
-        {
+    public void end() {
+        if (!isEventReocurring) {
             toBeRemoved = true;
         }
 
@@ -90,13 +86,13 @@ public class Event {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null) {
+        if (obj == null) {
             return false;
         }
-        if(!Event.class.isAssignableFrom(obj.getClass())) {
+        if (!Event.class.isAssignableFrom(obj.getClass())) {
             return false;
         }
-        return eventUUID == ((Event)obj).eventUUID;
+        return eventUUID == ((Event) obj).eventUUID;
     }
 
     public void setEventLocation(BlockPos eventLocation) {
@@ -112,14 +108,12 @@ public class Event {
         return this;
     }
 
-    public Event setMinimumDifficulty(Difficulty difficulty)
-    {
+    public Event setMinimumDifficulty(Difficulty difficulty) {
         minimumDifficulty = difficulty;
         return this;
     }
 
-    public Event setMinimumDifficulty(int difficulty)
-    {
+    public Event setMinimumDifficulty(int difficulty) {
         minimumDifficulty = Difficulty.byId(difficulty);
         return this;
     }
@@ -157,6 +151,12 @@ public class Event {
     public Event setEventActive(boolean eventActive) {
         isEventActive = eventActive;
         return this;
+    }
+
+    public void endEvent()
+    {
+        toBeRemoved = true;
+        setEventActive(false);
     }
 
     public boolean isEventActive() {

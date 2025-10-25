@@ -1,14 +1,14 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.raid_system.RaidHandler;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.SquadHandler;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,7 +48,9 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
@@ -91,9 +93,14 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     // Data
     public static final EntityDataAccessor<Boolean> DATA_AGGRO = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> DATA_SCOUTING = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Optional<UUID>> DATA_PARENT_EVENT_UUID = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     // Animation
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // Event
+    protected String PARENT_EVENT_UUID_IDENTIFIER = "parentEventUUID";
+    protected Optional<UUID> parentEventUUID = Optional.empty();
 
     /**
      * The Constructor
@@ -112,6 +119,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     {
         this(ModEntities.SCULK_ENDERMAN.get(), level);
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public SculkEndermanEntity(Level level, BlockPos pos, UUID parentEventUUID)
+    {
+        this(ModEntities.SCULK_ENDERMAN.get(), level);
+        this.setPos(pos.getX(), pos.getY(), pos.getZ());
+        this.parentEventUUID = Optional.of(parentEventUUID);
     }
 
     /**
@@ -263,6 +277,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
                 this.level().addParticle(ParticleTypes.PORTAL, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
             }
         }
+
         // IF target isnt null and we cannot see them, teleport to them
         if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget(getTarget()))
         {
@@ -280,12 +295,15 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
     private boolean isWithinRaidLocation()
     {
-        return BlockAlgorithms.getBlockDistance(RaidHandler.raidData.getRaidLocation(), this.blockPosition()) <= 32;
+
+        RaidEvent raidEvent = (RaidEvent) SculkHorde.eventSystem.getEvent(parentEventUUID.get());
+        return BlockAlgorithms.getBlockDistance(raidEvent.getRaidLocation(), this.blockPosition()) <= 32;
     }
 
     private void teleportToRaidLocationIfOutside()
     {
-        teleport(RaidHandler.raidData.getRaidLocation().getX(), RaidHandler.raidData.getRaidLocation().getY(), RaidHandler.raidData.getRaidLocation().getZ());
+        RaidEvent raidEvent = (RaidEvent) SculkHorde.eventSystem.getEvent(parentEventUUID.get());
+        teleport(raidEvent.getRaidLocation().getX(), raidEvent.getRaidLocation().getY(), raidEvent.getRaidLocation().getZ());
     }
 
     public void stayInSpecificRangeOfTarget(int min, int max)
@@ -324,15 +342,15 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         incrementSpecialAttackCooldown();
 
-        if(!SculkHorde.raidHandler.isRaidInactive() && !isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
+        if(parentEventUUID.isPresent() && !SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()))
+        {
+            discard();
+        }
+        else if(parentEventUUID.isPresent() && !SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()) && !isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
         {
             teleportToRaidLocationIfOutside();
         }
 
-        if(SculkHorde.raidHandler.isRaidInactive() && isScouting())
-        {
-            discard();
-        }
     }
 
     /**
@@ -511,13 +529,25 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         super.addAdditionalSaveData(nbt);
         nbt.putBoolean(DATA_IS_SCOUTING_IDENTIFIER, this.entityData.get(DATA_SCOUTING));
         nbt.putBoolean(DATA_IS_AGGRO_IDENTIFIER, this.entityData.get(DATA_AGGRO));
+
+        parentEventUUID.ifPresent(value -> nbt.putUUID(PARENT_EVENT_UUID_IDENTIFIER, value));
     }
 
     public void readAdditionalSaveData(CompoundTag nbt)
     {
         super.readAdditionalSaveData(nbt);
-        this.entityData.set(DATA_SCOUTING, nbt.getBoolean(DATA_IS_SCOUTING_IDENTIFIER));
-        this.entityData.set(DATA_AGGRO, nbt.getBoolean(DATA_IS_AGGRO_IDENTIFIER));
+
+        if (nbt.contains(DATA_IS_SCOUTING_IDENTIFIER)) {
+            this.entityData.set(DATA_SCOUTING, nbt.getBoolean(DATA_IS_SCOUTING_IDENTIFIER));
+        }
+
+        if (nbt.contains(DATA_IS_AGGRO_IDENTIFIER)) {
+            this.entityData.set(DATA_AGGRO, nbt.getBoolean(DATA_IS_AGGRO_IDENTIFIER));
+        }
+
+        parentEventUUID = nbt.hasUUID(PARENT_EVENT_UUID_IDENTIFIER)
+                ? Optional.of(nbt.getUUID(PARENT_EVENT_UUID_IDENTIFIER))
+                : Optional.empty();
     }
 
     @Override

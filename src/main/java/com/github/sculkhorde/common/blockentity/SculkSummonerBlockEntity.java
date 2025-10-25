@@ -294,7 +294,6 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
      */
     public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int length, int amountOfPositions, boolean requireWater)
     {
-        //TODO Can potentially be optimized by not getting all the possible positions
         ArrayList<BlockPos> listOfPossibleSpawns = getSpawnPositions(worldIn, origin, length, requireWater);
         ArrayList<BlockPos> finalList = new ArrayList<>();
         Random rng = new Random();

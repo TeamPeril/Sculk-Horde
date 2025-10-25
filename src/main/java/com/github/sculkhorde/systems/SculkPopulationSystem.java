@@ -6,14 +6,20 @@ import com.github.sculkhorde.common.entity.SculkPhantomCorpseEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.EventSystem;
+import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 public class SculkPopulationSystem {
 
@@ -120,8 +126,10 @@ public class SculkPopulationSystem {
     {
         for(ISculkSmartEntity entity : population)
         {
-            // We don't want raid entities being killed if raid is active.
-            if(entity.isIdle() && (!entity.isParticipatingInRaid() && !SculkHorde.raidHandler.isRaidInactive()))
+            Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) ((PathfinderMob)entity).level(), ((PathfinderMob)entity).blockPosition());
+            boolean isTooFarFromRaid = BlockAlgorithms.getBlockDistance(nearestRaid.get().getRaidLocation(), ((PathfinderMob)entity).blockPosition()) > 300;
+
+            if((entity.isIdle() && !entity.isParticipatingInRaid()) || (entity.isParticipatingInRaid() && isTooFarFromRaid))
             {
                 ((LivingEntity) entity).discard();
                 ModSavedData.getSaveData().addSculkAccumulatedMass((int) ((LivingEntity) entity).getHealth());
