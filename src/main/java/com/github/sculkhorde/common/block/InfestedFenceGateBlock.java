@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -48,7 +49,7 @@ public class InfestedFenceGateBlock extends FenceGateBlock implements EntityBloc
     }
 	
 	@Override
-    public ITagInfestedBlockEntity getTagInfestedBlockEntity(Level level, BlockPos blockPos) {
+    public ITagInfestedBlockEntity getTagInfestedBlockEntity(LevelReader level, BlockPos blockPos) {
         BlockEntity blockEntity = level.getBlockEntity(blockPos);
         if(blockEntity instanceof ITagInfestedBlockEntity)
         {

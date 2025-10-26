@@ -5,6 +5,7 @@ import com.github.sculkhorde.systems.infestation_systems.block_infestation_syste
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -48,7 +49,7 @@ public class InfestedWallBlock extends WallBlock implements EntityBlock, IForgeB
     }
 
     @Override
-    public ITagInfestedBlockEntity getTagInfestedBlockEntity(Level level, BlockPos blockPos) {
+    public ITagInfestedBlockEntity getTagInfestedBlockEntity(LevelReader level, BlockPos blockPos) {
         BlockEntity blockEntity = level.getBlockEntity(blockPos);
         if(blockEntity instanceof ITagInfestedBlockEntity)
         {

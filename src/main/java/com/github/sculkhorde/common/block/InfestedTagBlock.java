@@ -1,11 +1,12 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.ITagInfestedBlock;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.ITagInfestedBlockEntity;
-import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeBlock;
@@ -37,7 +38,7 @@ public class InfestedTagBlock extends BaseEntityBlock implements IForgeBlock, IT
     }
 
     @Override
-    public ITagInfestedBlockEntity getTagInfestedBlockEntity(Level level, BlockPos blockPos) {
+    public ITagInfestedBlockEntity getTagInfestedBlockEntity(LevelReader level, BlockPos blockPos) {
         BlockEntity blockEntity = level.getBlockEntity(blockPos);
         if(blockEntity instanceof ITagInfestedBlockEntity)
         {

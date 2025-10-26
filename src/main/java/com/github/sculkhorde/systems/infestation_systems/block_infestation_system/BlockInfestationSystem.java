@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.MultifaceBlock;
@@ -315,7 +316,7 @@ public class BlockInfestationSystem {
         return false;
     }
 
-    public static boolean isCurable(ServerLevel level, BlockPos pos)
+    public static boolean isCurable(LevelReader level, BlockPos pos)
     {
         for(BlockInfestationTable table : INFESTATION_TABLES)
         {

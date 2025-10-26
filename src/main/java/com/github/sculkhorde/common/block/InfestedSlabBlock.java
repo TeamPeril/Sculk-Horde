@@ -1,13 +1,11 @@
 package com.github.sculkhorde.common.block;
 
-import javax.annotation.Nullable;
-
+import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.ITagInfestedBlock;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.ITagInfestedBlockEntity;
-import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -15,6 +13,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeBlock;
+
+import javax.annotation.Nullable;
 
 public class InfestedSlabBlock extends SlabBlock implements EntityBlock, IForgeBlock, ITagInfestedBlock {
 
@@ -49,7 +49,7 @@ public class InfestedSlabBlock extends SlabBlock implements EntityBlock, IForgeB
     }
 
     @Override
-    public ITagInfestedBlockEntity getTagInfestedBlockEntity(Level level, BlockPos blockPos) {
+    public ITagInfestedBlockEntity getTagInfestedBlockEntity(LevelReader level, BlockPos blockPos) {
         BlockEntity blockEntity = level.getBlockEntity(blockPos);
         if(blockEntity instanceof ITagInfestedBlockEntity)
         {

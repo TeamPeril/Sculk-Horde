@@ -2,7 +2,7 @@ package com.github.sculkhorde.systems.infestation_systems.block_infestation_syst
 
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -53,7 +53,7 @@ public abstract class BlockEntityInfestationTableEntry implements IBlockInfestat
     }
 
     @Override
-    public BlockState getNormalVariant(Level level, BlockPos blockPos)
+    public BlockState getNormalVariant(LevelReader level, BlockPos blockPos)
     {
         ITagInfestedBlockEntity blockEntity = infectedVariant.getTagInfestedBlockEntity(level, blockPos);
         if(blockEntity == null)
@@ -64,7 +64,7 @@ public abstract class BlockEntityInfestationTableEntry implements IBlockInfestat
     }
 
     @Override
-    public BlockState getInfectedVariant(Level level, BlockPos blockPos)
+    public BlockState getInfectedVariant(LevelReader level, BlockPos blockPos)
     {
         // copy block properties of normal block to infected block
         BlockState infectedState = ((Block)infectedVariant).defaultBlockState();

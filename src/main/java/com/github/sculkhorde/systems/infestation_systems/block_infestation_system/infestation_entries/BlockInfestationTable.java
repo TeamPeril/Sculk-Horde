@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -103,7 +104,7 @@ public class BlockInfestationTable{
         return null;
     }
 
-    public BlockState getNormalVariant(Level level, BlockPos blockPos)
+    public BlockState getNormalVariant(LevelReader level, BlockPos blockPos)
     {
         BlockState blockState = level.getBlockState(blockPos);
         for(IBlockInfestationEntry entry : entries)

@@ -2,7 +2,7 @@ package com.github.sculkhorde.systems.infestation_systems.block_infestation_syst
 
 import com.github.sculkhorde.core.ModConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -32,7 +32,7 @@ public class ConfigInfestationTableEntry implements IBlockInfestationEntry
         return ((Block)infectedVariant).defaultBlockState().is(blockState.getBlock());
     }
 
-    public BlockState getNormalVariant(Level level, BlockPos blockPos)
+    public BlockState getNormalVariant(LevelReader level, BlockPos blockPos)
     {
         ITagInfestedBlockEntity blockEntity = infectedVariant.getTagInfestedBlockEntity(level, blockPos);
         if(blockEntity == null || blockEntity.getNormalBlockState() == null)
@@ -42,7 +42,7 @@ public class ConfigInfestationTableEntry implements IBlockInfestationEntry
         return infectedVariant.getTagInfestedBlockEntity(level, blockPos).getNormalBlockState();
     }
 
-    public BlockState getInfectedVariant(Level level, BlockPos blockPos)
+    public BlockState getInfectedVariant(LevelReader level, BlockPos blockPos)
     {
         return ((Block)infectedVariant).defaultBlockState();
     }

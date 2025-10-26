@@ -162,7 +162,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
         {
             return false;
         }
-        else if(BlockInfestationSystem.isCurable((ServerLevel) worldIn, blockPosIn))
+        else if(BlockInfestationSystem.isCurable(worldIn, blockPosIn))
         {
             return false;
         }
