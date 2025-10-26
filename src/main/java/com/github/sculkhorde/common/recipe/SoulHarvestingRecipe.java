@@ -113,16 +113,33 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf bufferIn, SoulHarvestingRecipe recipeIn) {
+            int initialIndex = bufferIn.writerIndex(); // Capture starting position
             bufferIn.writeInt(recipeIn.inputItems.size());
 
             for (Ingredient ingredient : recipeIn.getIngredients()) {
                 ingredient.toNetwork(bufferIn);
             }
 
-            bufferIn.writeItemStack(recipeIn.getResultItem(null), false);
+            // --- CRITICAL FIX ---
+            // Copy of the output stack.
+            ItemStack clientOutput = recipeIn.getResultItem(null);
+
+            // ONLY KEEP NBT DATA THAT THE CLIENT NEEDS.
+            // If the client doesn't need any NBT, clear it to prevent the crash.
+            if (clientOutput.hasTag()) {
+                // Option A: Clear all NBT (safest)
+                clientOutput = clientOutput.copy();
+                clientOutput.setTag(null);
+            }
+
+            // 3. Write the (now smaller) ItemStack to the network.
+            bufferIn.writeItemStack(clientOutput, false);
 
             // Log the size of the data being written
-            System.out.println("SoulHarvesterRecipe | Data size being written: " + bufferIn.writerIndex());
+            System.out.printf("SoulHarvestingRecipe | Wrote recipe '%s'. Total bytes: %d, Starting index: %d%n",
+                    recipeIn.getId().toString(),
+                    bufferIn.writerIndex() - initialIndex,
+                    initialIndex);
         }
     }
 }
