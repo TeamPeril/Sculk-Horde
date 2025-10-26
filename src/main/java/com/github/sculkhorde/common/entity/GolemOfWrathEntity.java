@@ -319,6 +319,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 DefaultAnimations.genericWalkRunIdleController(this).transitionLength(5),
+                DefaultAnimations.getSpawnController(this, state -> this, 60),
                 COMBAT_ATTACK_ANIMATION_CONTROLLER
         );
     }
