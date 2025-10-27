@@ -111,6 +111,8 @@ public class RaidEvent extends Event {
 
     public int MAX_TICKS_SPENT_TRYING_TO_CHUNK_LOAD = TickUnits.convertMinutesToTicks(15);
 
+    protected ArrayList<BlockPos> alreadyBlewUp = new ArrayList<>();
+
 
     /**
      * Constructor
@@ -126,6 +128,21 @@ public class RaidEvent extends Event {
 
 
     // #### Getters ####
+
+    public ArrayList<BlockPos> getAlreadyBlewUpTargets() { return alreadyBlewUp; }
+
+    public boolean isAreaAlreadyBlownUp(BlockPos pos)
+    {
+        for(BlockPos blownUpPos : getAlreadyBlewUpTargets())
+        {
+            if(BlockAlgorithms.getBlockDistanceXZ(blownUpPos, pos) < 4)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public ArrayList<BlockPos> getHighPriorityTargets()
     {

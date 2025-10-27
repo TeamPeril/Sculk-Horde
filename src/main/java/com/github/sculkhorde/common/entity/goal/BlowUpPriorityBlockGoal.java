@@ -4,7 +4,6 @@ import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModItems;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -128,7 +127,15 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
                 return;
             }
 
-            event.get().advanceToNextObjective();
+            // Only advance to next objective if object blown up is
+            if(BlockAlgorithms.getBlockDistanceXZ(removerMob.blockPosition(), event.get().getObjectiveLocation()) < 4)
+            {
+                event.get().advanceToNextObjective();
+            }
+            else
+            {
+                event.get().getAlreadyBlewUpTargets().add(removerMob.blockPosition());
+            }
         }
     }
 
@@ -188,12 +195,28 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
     @Override
     protected boolean findNearestBlock() {
         Optional<BlockPos> optionalTargetBlock = BlockAlgorithms.findBlockInCube((ServerLevel) this.mob.level(), this.mob.blockPosition(), IS_VALID_TARGET, 16);
-        optionalTargetBlock.ifPresent((blockPos) -> {
-            this.blockPos = blockPos;
-            SculkHorde.LOGGER.debug("Sculk Creeper New Raid Target: " + this.mob.level().getBlockState(this.blockPos).toString());
-        });
 
-        return optionalTargetBlock.isPresent();
+        if(optionalTargetBlock.isEmpty())
+        {
+            return false;
+        }
+
+
+        Optional<RaidEvent> raidEvent = EventSystem.getNearestRaidEvent((ServerLevel) mob.level(), mob.blockPosition());
+
+        if(raidEvent.isEmpty())
+        {
+            return false;
+        }
+
+        if(raidEvent.get().isAreaAlreadyBlownUp(optionalTargetBlock.get()))
+        {
+            return false;
+        }
+
+        blockPos = optionalTargetBlock.get();
+
+        return true;
     }
 
     @Override

@@ -123,7 +123,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
             VirtualSurfaceInfestorCursor cursor = CursorSystem.createPerformanceExemptSurfaceInfestorVirtualCursor(level(), pos);
             cursor.setTickIntervalTicks(1);
-            cursor.setMaxTransformations(15);
+            cursor.setMaxTransformations(30);
             cursor.setMaxRange(100);
         }
     }
