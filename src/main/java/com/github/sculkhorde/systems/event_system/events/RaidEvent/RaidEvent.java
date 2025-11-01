@@ -98,6 +98,7 @@ public class RaidEvent extends Event {
     private int maxWaves = 2;
     private int currentWave = 1;
     private int remainingWaveParticipants = 0;
+    protected int waveParticipantsSpawned = 0;
 
     protected ModSavedData.AreaOfInterestEntry areaOfInterestEntry;
 
@@ -467,16 +468,11 @@ public class RaidEvent extends Event {
     }
 
     public float getWaveProgress() {
-        float progress = 0;
-        float maxProgress = 0;
-        for(ISculkSmartEntity entity : waveParticipants)
+        if(waveParticipantsSpawned <= 0)
         {
-            progress += (int) ((Mob) entity).getHealth();
-            maxProgress += (int) ((Mob) entity).getMaxHealth();
+            return (float) 1;
         }
-
-        //return progress / maxProgress;
-        return (float) (getMaxWaves() - getCurrentWave() - 1) / getMaxWaves();
+        return ((float)getRemainingWaveParticipants()) / ((float)waveParticipantsSpawned);
     }
 
     public void updateRemainingWaveParticipantsAmount()
@@ -1264,9 +1260,10 @@ public class RaidEvent extends Event {
                     return;
                 }
                 getWaveParticipants().add((ISculkSmartEntity) randomEntry.get().spawnEntity(getDimension(), spawnLocation));
+                waveParticipantsSpawned++;
             }
         }
-        
+
         // Add 15 Creepers
         int creepersToSpawn = 15;
         if(DifficultyUtil.isCurrentDifficultyEasy())
@@ -1283,13 +1280,15 @@ public class RaidEvent extends Event {
             SculkCreeperEntity creeper = ModEntities.SCULK_CREEPER.get().create(getDimension());
             creeper.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
             getWaveParticipants().add(creeper);
+            waveParticipantsSpawned++;
         }
 
         if(isLastWave(0))
         {
-            Mob boss = ModEntities.SCULK_ENDERMAN.get().create(getDimension());
+            Mob boss = new SculkEndermanEntity(getDimension(), spawnLocation, getEventUUID());
             boss.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
             getWaveParticipants().add((ISculkSmartEntity) boss);
+            waveParticipantsSpawned++;
         }
     }
 
