@@ -1251,8 +1251,18 @@ public class RaidEvent extends Event {
             getWaveParticipants().add((ISculkSmartEntity) randomEntry.get().spawnEntity(getDimension(), spawnLocation));
         }
 
-        // Add 5 Creepers
-        for(int i = 0; i < 6; i++)
+        // Add 15 Creepers
+        int creepersToSpawn = 15;
+        if(DifficultyUtil.isCurrentDifficultyEasy())
+        {
+            creepersToSpawn = 5;
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            creepersToSpawn = 10;
+        }
+
+        for(int i = 0; i < creepersToSpawn; i++)
         {
             SculkCreeperEntity creeper = ModEntities.SCULK_CREEPER.get().create(getDimension());
             creeper.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());

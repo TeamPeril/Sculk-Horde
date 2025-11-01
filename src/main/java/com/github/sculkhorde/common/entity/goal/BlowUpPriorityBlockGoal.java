@@ -209,7 +209,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
             return false;
         }
 
-        if(raidEvent.get().isAreaAlreadyBlownUp(optionalTargetBlock.get()))
+        if(raidEvent.get().isAreaAlreadyBlownUp(optionalTargetBlock.get()) && BlockAlgorithms.getBlockDistance(raidEvent.get().getObjectiveLocation(), optionalTargetBlock.get()) > 3)
         {
             return false;
         }
