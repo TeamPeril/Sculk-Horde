@@ -68,10 +68,9 @@ public class RaidEvent extends Event {
     protected long MINIMUM_WAVE_LENGTH_TICKS = TickUnits.convertMinutesToTicks(2);
 
     // Timing Variables
-    protected int MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
-    protected int waveDuration = 0;
-    private int timeElapsedScouting = 0;
-    protected long timeOfScoutingStart = -1;
+    protected long MAX_WAVE_DURATION = TickUnits.convertMinutesToTicks(5);
+    protected long waveTimeStart = 0;
+    private long scoutingTimeStart = 0;
 
     // Raid Variables
     protected BlockPos spawnLocation = BlockPos.ZERO;
@@ -225,7 +224,7 @@ public class RaidEvent extends Event {
 
     }
 
-    public int getMAX_WAVE_DURATION() {
+    public long getMAX_WAVE_DURATION() {
         return MAX_WAVE_DURATION;
     }
 
@@ -234,32 +233,33 @@ public class RaidEvent extends Event {
 
     }
 
-    public int getWaveDuration() {
-        return waveDuration;
+    public long getWaveTimeStart() {
+        return waveTimeStart;
     }
 
-    public void setWaveDuration(int waveDuration) {
-        this.waveDuration = waveDuration;
-
-    }
-
-    public void incrementWaveDuration() {
-        waveDuration++;
+    public void setWaveTimeStart(long waveTimeStart) {
+        this.waveTimeStart = waveTimeStart;
 
     }
 
-    public int getTimeElapsedScouting() {
-        return timeElapsedScouting;
+    public long getWaveTimeElapsed()
+    {
+        return getDimension().getGameTime() - getWaveTimeStart();
     }
 
-    public void incrementTimeElapsedScouting() {
-        timeElapsedScouting++;
+
+    public long getScoutingTimeStart() {
+        return scoutingTimeStart;
+    }
+
+    public void setScoutingTimeStart(long scoutingTimeStart) {
+        this.scoutingTimeStart = scoutingTimeStart;
 
     }
 
-    public void setTimeElapsedScouting(int timeElapsedScouting) {
-        this.timeElapsedScouting = timeElapsedScouting;
-
+    public long getScoutingTimeElapsed()
+    {
+        return getDimension().getGameTime() - getScoutingTimeStart();
     }
 
     public BlockPos getSpawnLocation() {
@@ -475,7 +475,8 @@ public class RaidEvent extends Event {
             maxProgress += (int) ((Mob) entity).getMaxHealth();
         }
 
-        return progress / maxProgress;
+        //return progress / maxProgress;
+        return (float) (getMaxWaves() - getCurrentWave() - 1) / getMaxWaves();
     }
 
     public void updateRemainingWaveParticipantsAmount()
@@ -851,12 +852,11 @@ public class RaidEvent extends Event {
         {
             setEventLocation(getAreaOfInterestEntry().getPosition());
             scoutingLocation = Optional.of(getAreaOfInterestEntry().getPosition());
+            setScoutingTimeStart(getDimension().getGameTime());
 
             loadScoutingChunks();
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location: " + scoutingLocation.get().toShortString());
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
-            timeOfScoutingStart = getDimension().getGameTime();
-
         }
 
         if(!isScoutingLocationLoaded())
@@ -865,8 +865,6 @@ public class RaidEvent extends Event {
             incrementTicksSpentTryingToChunkLoad();
             return;
         }
-
-        incrementTimeElapsedScouting();
 
         if(getScoutEnderman() == null)
         {
@@ -892,7 +890,7 @@ public class RaidEvent extends Event {
             return;
         }
 
-        if(getDimension().getGameTime() - timeOfScoutingStart >= TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get()))
+        if(getScoutingTimeElapsed() >= TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get()))
         {
             setState(State.RAID_INITIALIZATION);
             getScoutEnderman().discard();
@@ -979,7 +977,7 @@ public class RaidEvent extends Event {
 
     protected void waveInitializationTick()
     {
-        setWaveDuration(0);
+        setWaveTimeStart(0);
         setCurrentWavePattern(getWavePattern());
 
         if(!isSpawningLocationLoaded())
@@ -1011,6 +1009,7 @@ public class RaidEvent extends Event {
         setObjectiveLocationAtStartOfWave(getObjectiveLocation());
         SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Spawning mobs at: " + getSpawnLocation());
         setState(State.WAVE_ACTIVE);
+        setWaveTimeStart(getDimension().getGameTime());
     }
 
     protected void waveActiveTick()
@@ -1031,10 +1030,8 @@ public class RaidEvent extends Event {
 
         updateRemainingWaveParticipantsAmount();
 
-        incrementWaveDuration();
-
         // If wave has been going on for too long, end it
-        if(getWaveDuration() >= getMAX_WAVE_DURATION() && getWaveDuration() >= MINIMUM_WAVE_LENGTH_TICKS)
+        if(getWaveTimeElapsed() >= getMAX_WAVE_DURATION() && getWaveTimeElapsed() >= MINIMUM_WAVE_LENGTH_TICKS)
         {
             endWave();
             removeWaveParticipantsFromList();
@@ -1239,18 +1236,37 @@ public class RaidEvent extends Event {
 
     private void populateRaidParticipants(BlockPos spawnLocation)
     {
-        for(int i = 0; i < getWavePattern().length; i++)
+        int numberOfSquadsToSpawn = 1;
+        if(DifficultyUtil.isCurrentDifficultyNormal())
         {
-            Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(getWavePattern()[i]));
-            if(randomEntry.isEmpty())
-            {
-                SculkHorde.LOGGER.info("RaidHandler | Unable to find valid entity for raid.");
-                setState(State.RAID_INITIALIZATION);
-                return;
-            }
-            getWaveParticipants().add((ISculkSmartEntity) randomEntry.get().spawnEntity(getDimension(), spawnLocation));
+            numberOfSquadsToSpawn = 2;
+        }
+        else if(DifficultyUtil.isCurrentDifficultyHard())
+        {
+            numberOfSquadsToSpawn = 3;
         }
 
+        ArrayList<EntityFactoryEntry.StrategicValues[]> squads = new ArrayList<>();
+        for(int i = 0; i < numberOfSquadsToSpawn; i++)
+        {
+            squads.add(getWavePattern());
+        }
+
+        for(EntityFactoryEntry.StrategicValues[] squad : squads)
+        {
+            for(EntityFactoryEntry.StrategicValues value : squad)
+            {
+                Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(value));
+                if(randomEntry.isEmpty())
+                {
+                    SculkHorde.LOGGER.info("RaidHandler | Unable to find valid entity for raid.");
+                    setState(State.RAID_INITIALIZATION);
+                    return;
+                }
+                getWaveParticipants().add((ISculkSmartEntity) randomEntry.get().spawnEntity(getDimension(), spawnLocation));
+            }
+        }
+        
         // Add 15 Creepers
         int creepersToSpawn = 15;
         if(DifficultyUtil.isCurrentDifficultyEasy())
@@ -1310,17 +1326,59 @@ public class RaidEvent extends Event {
     @Override
     public void loadAdditional(CompoundTag tag) {
 
-        setState(intToState(tag.getInt("State")));
-        setWaveDuration(tag.getInt("waveDuration"));
-        setTimeElapsedScouting(tag.getInt("timeElapsedScouting"));
-        setSpawnLocation(BlockPos.of(tag.getLong("spawnLocation")));
-        setRaidLocation(BlockPos.of(tag.getLong("raidLocation")));
-        setObjectiveLocation(BlockPos.of(tag.getLong("objectiveLocation")));
-        setObjectiveLocationAtStartOfWave(BlockPos.of(tag.getLong("objectiveLocationAtStartOfWave")));
-        setRaidCenter(BlockPos.of(tag.getLong("raidCenter")));
-        setMaxWaves(tag.getInt("maxWaves"));
-        setCurrentWave(tag.getInt("currentWave"));
-        setRemainingWaveParticipants(tag.getInt("remainingWaveParticipants"));
+        if (tag.contains("State")) {
+            setState(intToState(tag.getInt("State")));
+        }
+
+        if (tag.contains("waveTimeStart")) {
+            Tag t = tag.get("waveTimeStart");
+            if (t instanceof LongTag) {
+                setWaveTimeStart(tag.getLong("waveTimeStart"));
+            } else {
+                setWaveTimeStart(tag.getInt("waveTimeStart"));
+            }
+        }
+
+        if (tag.contains("scoutingTimeStart")) {
+            Tag t = tag.get("scoutingTimeStart");
+            if (t instanceof LongTag) {
+                setScoutingTimeStart(tag.getLong("scoutingTimeStart"));
+            } else {
+                setScoutingTimeStart(tag.getInt("scoutingTimeStart"));
+            }
+        }
+
+        if (tag.contains("spawnLocation")) {
+            setSpawnLocation(BlockPos.of(tag.getLong("spawnLocation")));
+        }
+
+        if (tag.contains("raidLocation")) {
+            setRaidLocation(BlockPos.of(tag.getLong("raidLocation")));
+        }
+
+        if (tag.contains("objectiveLocation")) {
+            setObjectiveLocation(BlockPos.of(tag.getLong("objectiveLocation")));
+        }
+
+        if (tag.contains("objectiveLocationAtStartOfWave")) {
+            setObjectiveLocationAtStartOfWave(BlockPos.of(tag.getLong("objectiveLocationAtStartOfWave")));
+        }
+
+        if (tag.contains("raidCenter")) {
+            setRaidCenter(BlockPos.of(tag.getLong("raidCenter")));
+        }
+
+        if (tag.contains("maxWaves")) {
+            setMaxWaves(tag.getInt("maxWaves"));
+        }
+
+        if (tag.contains("currentWave")) {
+            setCurrentWave(tag.getInt("currentWave"));
+        }
+
+        if (tag.contains("remainingWaveParticipants")) {
+            setRemainingWaveParticipants(tag.getInt("remainingWaveParticipants"));
+        }
 
         ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));
         setDimension(dimensionResourceKey);
@@ -1395,8 +1453,8 @@ public class RaidEvent extends Event {
     public void saveAdditional(CompoundTag tag) {
 
         tag.putInt("State", StateToInt(getState()));
-        tag.putInt("waveDuration", getWaveDuration());
-        tag.putInt("timeElapsedScouting", getTimeElapsedScouting());
+        tag.putLong("waveTimeStart", getWaveTimeStart());
+        tag.putLong("scoutingTimeStart", getScoutingTimeStart());
         tag.putLong("spawnLocation", getSpawnLocation().asLong());
         tag.putLong("raidLocation", getRaidLocation().asLong());
         tag.putLong("objectiveLocation", getObjectiveLocation().asLong());

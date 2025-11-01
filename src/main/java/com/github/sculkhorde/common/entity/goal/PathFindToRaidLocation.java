@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
+import com.github.sculkhorde.util.SquadHandler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -52,7 +53,15 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
         {
             return false;
         }
-         return true;
+
+        // Only Squad leaders can lead to the raid
+        SquadHandler squad = mob.getSquad();
+        if(squad != null && !squad.isSquadLeader())
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean canContinueToUse() {
@@ -70,7 +79,7 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
                 return;
             }
 
-            getPathFinderMob().getNavigation().moveTo(nearestRaid.get().getObjectiveLocationVec3().x, nearestRaid.get().getObjectiveLocationVec3().y, nearestRaid.get().getObjectiveLocationVec3().z, 1.5D);
+            getPathFinderMob().getNavigation().moveTo(nearestRaid.get().getObjectiveLocationVec3().x, nearestRaid.get().getObjectiveLocationVec3().y, nearestRaid.get().getObjectiveLocationVec3().z, 1D);
         }
     }
 
