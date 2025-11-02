@@ -183,7 +183,7 @@ public class EventSystem {
 
             if(!eventTag.contains("dimension"))
             {
-                SculkHorde.LOGGER.error("EventSystem | load | " + "Atempted to load event with no dimension.");
+                SculkHorde.LOGGER.error("EventSystem | load | " + "Attempted to load event with no dimension.");
                 continue;
             }
 
