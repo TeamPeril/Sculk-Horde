@@ -3,24 +3,19 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkCreeperEntity;
 import com.github.sculkhorde.core.ModBlocks;
-import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -52,10 +47,6 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
             searchCoolDownTicksRemaining = searchCoolDownTicks;
         }
 
-        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.removerMob.level(), this.removerMob))
-        {
-            return false;
-        }
         if(!((ISculkSmartEntity)removerMob).isParticipatingInRaid())
         {
             return false;
@@ -67,9 +58,29 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
         return true;
     }
 
+    @Override
+    public boolean canContinueToUse() {
+
+        Optional<RaidEvent> raidEvent = EventSystem.getNearestRaidEvent((ServerLevel) mob.level(), mob.blockPosition());
+
+        if(raidEvent.isEmpty())
+        {
+            return false;
+        }
+
+        if(raidEvent.get().isAreaAlreadyBlownUp(blockPos) && BlockAlgorithms.getBlockDistance(raidEvent.get().getObjectiveLocation(), blockPos) > 3)
+        {
+            return false;
+        }
+
+        return super.canContinueToUse();
+    }
+
     public void stop()
     {
         super.stop();
+        blockPos = null;
+        ticksSinceReachedGoal = 0;
 
     }
 
@@ -101,21 +112,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
         if (this.ticksSinceReachedGoal > 0)
         {
-            Vec3 vec3 = this.removerMob.getDeltaMovement();
-            this.removerMob.setDeltaMovement(vec3.x, 0.3D, vec3.z);
-
             this.removerMob.setSwellDir(1);
-
-            if (!level.isClientSide)
-            {
-                ((ServerLevel)level).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.SCULK_MATTER.get())), (double)blockPosition.getX() + 0.5D, (double)blockPosition.getY() + 0.7D, (double)blockPosition.getZ() + 0.5D, 3, ((double)randomsource.nextFloat() - 0.5D) * 0.08D, ((double)randomsource.nextFloat() - 0.5D) * 0.08D, ((double)randomsource.nextFloat() - 0.5D) * 0.08D, (double)0.15F);
-            }
-        }
-
-        if (this.ticksSinceReachedGoal % 2 == 0)
-        {
-            Vec3 vec31 = this.removerMob.getDeltaMovement();
-            this.removerMob.setDeltaMovement(vec31.x, -0.3D, vec31.z);
         }
 
         if (this.ticksSinceReachedGoal > ticksRequiredToBreakBlock)

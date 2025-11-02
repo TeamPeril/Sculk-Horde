@@ -557,7 +557,7 @@ public class ModSavedData extends SavedData {
         }
     }
 
-    public void addDeathAreaToMemory(ServerLevel dimension, BlockPos positionIn)
+        public void addDeathAreaToMemory(ServerLevel dimension, BlockPos positionIn)
     {
         if(getDeathAreaEntries() == null)
         {

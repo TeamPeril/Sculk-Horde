@@ -1088,7 +1088,7 @@ public class RaidEvent extends Event {
             ModSavedData.getSaveData().addNoRaidZoneToMemory(getDimension(), getRaidLocation());
         }
 
-        bossEvent.removeAllPlayers();
+        if(bossEvent != null) bossEvent.removeAllPlayers();
         setState(State.FINISHED);
     }
 

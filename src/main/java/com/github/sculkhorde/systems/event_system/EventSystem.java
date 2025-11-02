@@ -146,17 +146,20 @@ public class EventSystem {
             if(event instanceof HitSquadEvent hitSquadEvent)
             {
                 hitSquadEvent.saveAdditional(eventTag);
+                eventTag.putString("eventType", hitSquadEvent.getClass().getName());
             }
             else if (event instanceof SpawnPhantomsEvent phantomsEvent)
             {
-                phantomsEvent.saveAdditional(eventsTag);
+                phantomsEvent.saveAdditional(eventTag);
+                eventTag.putString("eventType", phantomsEvent.getClass().getName());
             }
             else if (event instanceof RaidEvent raidEvent)
             {
-                raidEvent.saveAdditional(eventsTag);
+                raidEvent.saveAdditional(eventTag);
+                eventTag.putString("eventType", raidEvent.getClass().getName());
             }
 
-            eventsTag.put(event.getClass().getName(), eventTag);
+            eventsTag.put(event.getEventUUID().toString(), eventTag);
             eventTag.putInt(Difficulty.class.getSimpleName(), event.getMinimumDifficulty().getId());
             SculkHorde.LOGGER.info("Saved " + event.getClass().getSimpleName() + " event.");
         }
@@ -178,6 +181,12 @@ public class EventSystem {
             Event event;
             CompoundTag eventTag = eventsTag.getCompound(key);
 
+            if(!eventTag.contains("dimension"))
+            {
+                SculkHorde.LOGGER.error("EventSystem | load | " + "Atempted to load event with no dimension.");
+                continue;
+            }
+
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(eventTag.getString("dimension")));
             String eventType = eventTag.getString("eventType");
 
@@ -194,7 +203,8 @@ public class EventSystem {
                 raidEvent.loadAdditional(eventTag);
                 event = raidEvent;
             }else {
-                event = new Event(dimensionResourceKey);
+                SculkHorde.LOGGER.error("EventSystem | load | " + "Attempted to load event with no known eventType: " + eventType);
+                continue;
             }
 
             Event.loadCommonPropertiesFromTag(event, eventTag);

@@ -4,14 +4,15 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class Event {
@@ -58,6 +59,11 @@ public class Event {
     // Logic
 
     public boolean canStart() {
+        if(getDimension() == null)
+        {
+            return false;
+        }
+
         boolean hasEnoughTimePassed = getDimension().getGameTime() - lastGameTimeOfEventExecution >= EXECUTION_COOLDOWN;
         return hasEnoughTimePassed && DifficultyUtil.isCurrentDifficultyEqualToOrGreaterThan(minimumDifficulty);
     }
@@ -223,14 +229,56 @@ public class Event {
     }
 
     public static void loadCommonPropertiesFromTag(Event event, CompoundTag tag) {
-        Optional.of(tag.getUUID("eventID")).ifPresent(event::setEventUUID);
-        Optional.of(tag.getInt("eventCost")).ifPresent(event::setEventCost);
-        Optional.of(tag.getInt(Difficulty.class.getSimpleName())).ifPresent(event::setMinimumDifficulty);
-        Optional.of(tag.getLong("EXECUTION_COOLDOWN")).ifPresent(event::setEXECUTION_COOLDOWN);
-        Optional.of(tag.getLong("lastGameTimeOfEventExecution")).ifPresent(event::setLastGameTimeOfEventExecution);
-        Optional.of(tag.getBoolean("isEventReoccurring")).ifPresent(event::setEventReocurring);
-        Optional.of(tag.getBoolean("isEventActive")).ifPresent(event::setEventActive);
-        Optional.of(tag.getBoolean("toBeRemoved")).ifPresent(event::setToBeRemoved);
-        Optional.of(tag.getLong("eventLocation")).map(BlockPos::of).ifPresent(event::setEventLocation);
+
+        if(tag.contains("eventID"))
+        {
+            event.setEventUUID(tag.getUUID("eventID"));
+        }
+        if(tag.contains("eventCost"))
+        {
+            event.setEventCost(tag.getInt("eventCost"));
+        }
+        if(tag.contains(Difficulty.class.getSimpleName()))
+        {
+            event.setMinimumDifficulty(tag.getInt(Difficulty.class.getSimpleName()));
+        }
+        if(tag.contains("EXECUTION_COOLDOWN"))
+        {
+            event.setEXECUTION_COOLDOWN(tag.getLong("EXECUTION_COOLDOWN"));
+        }
+        if(tag.contains("lastGameTimeOfEventExecution"))
+        {
+            event.setLastGameTimeOfEventExecution(tag.getLong("lastGameTimeOfEventExecution"));
+        }
+        if(tag.contains("isEventReoccurring"))
+        {
+            event.setEventReocurring(tag.getBoolean("isEventReoccurring"));
+        }
+        if(tag.contains("isEventActive"))
+        {
+            event.setEventActive(tag.getBoolean("isEventActive"));
+        }
+        if(tag.contains("toBeRemoved"))
+        {
+            event.setToBeRemoved(tag.getBoolean("toBeRemoved"));
+        }
+        if(tag.contains("eventLocation"))
+        {
+            event.setEventLocation(BlockPos.of(tag.getLong("eventLocation")));
+        }
+
+        //TODO Add dimension saving
+
+        if(tag.contains("dimension"))
+        {
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));
+            event.setDimension(dimensionResourceKey);
+        }
+        else
+        {
+            SculkHorde.LOGGER.error(event.getClass().getSimpleName() + " | Attempted to load event from save data with no Dimension.");
+            event.setToBeRemoved(true);
+        }
+
     }
 }

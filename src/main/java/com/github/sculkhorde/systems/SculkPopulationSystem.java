@@ -14,7 +14,6 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
@@ -126,14 +125,21 @@ public class SculkPopulationSystem {
     {
         for(ISculkSmartEntity entity : population)
         {
-            Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) ((PathfinderMob)entity).level(), ((PathfinderMob)entity).blockPosition());
-            boolean isTooFarFromRaid = BlockAlgorithms.getBlockDistance(nearestRaid.get().getRaidLocation(), ((PathfinderMob)entity).blockPosition()) > 300;
+            LivingEntity livingEntity = (LivingEntity) entity;
+            Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) livingEntity.level(), livingEntity.blockPosition());
+
+            if(nearestRaid.isEmpty())
+            {
+                continue;
+            }
+
+            boolean isTooFarFromRaid = BlockAlgorithms.getBlockDistance(nearestRaid.get().getRaidLocation(), livingEntity.blockPosition()) > 300;
 
             if((entity.isIdle() && !entity.isParticipatingInRaid()) || (entity.isParticipatingInRaid() && isTooFarFromRaid))
             {
-                ((LivingEntity) entity).discard();
-                ModSavedData.getSaveData().addSculkAccumulatedMass((int) ((LivingEntity) entity).getHealth());
-                SculkHorde.statisticsData.addTotalMassFromDespawns((int) ((LivingEntity) entity).getHealth());
+                livingEntity.discard();
+                ModSavedData.getSaveData().addSculkAccumulatedMass((int) livingEntity.getHealth());
+                SculkHorde.statisticsData.addTotalMassFromDespawns((int) livingEntity.getHealth());
             }
         }
     }
