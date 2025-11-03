@@ -1010,6 +1010,13 @@ public class RaidEvent extends Event {
 
     protected void waveActiveTick()
     {
+        if(wasLoadedFromSaveData())
+        {
+            setState(State.WAVE_INITIALIZATION);
+            setWasLoadedFromSaveData(false);
+            return;
+        }
+
         if(!isSpawningLocationLoaded())
         {
             loadSpawningChunks();

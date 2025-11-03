@@ -27,6 +27,7 @@ public class Event {
 
     protected boolean isEventActive = false;
     protected boolean toBeRemoved = false;
+    protected boolean wasLoadedFromSaveData = false;
 
     protected Difficulty minimumDifficulty = Difficulty.EASY;
 
@@ -54,6 +55,16 @@ public class Event {
 
     public Difficulty getMinimumDifficulty() {
         return minimumDifficulty;
+    }
+
+    public void setWasLoadedFromSaveData(boolean value)
+    {
+        wasLoadedFromSaveData = value;
+    }
+
+    public boolean wasLoadedFromSaveData()
+    {
+        return wasLoadedFromSaveData;
     }
 
     // Logic

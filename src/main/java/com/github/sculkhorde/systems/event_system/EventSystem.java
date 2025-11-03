@@ -208,6 +208,7 @@ public class EventSystem {
             }
 
             Event.loadCommonPropertiesFromTag(event, eventTag);
+            event.setWasLoadedFromSaveData(true);
             SculkHorde.eventSystem.addEvent(event);
         }
         SculkHorde.LOGGER.info("Loaded " + SculkHorde.eventSystem.getEvents().size() + " events. Took " + (System.currentTimeMillis() - startTime) + " Milliseconds.");
