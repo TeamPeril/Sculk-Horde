@@ -76,19 +76,6 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
         return super.canContinueToUse();
     }
 
-    public void stop()
-    {
-        super.stop();
-        blockPos = null;
-        ticksSinceReachedGoal = 0;
-
-    }
-
-    public void start() {
-        super.start();
-    }
-
-
     public void tick() {
         super.tick();
         Level level = this.removerMob.level();

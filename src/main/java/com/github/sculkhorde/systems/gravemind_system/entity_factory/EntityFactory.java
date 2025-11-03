@@ -157,6 +157,7 @@ public class EntityFactory {
                 new EntityFactoryEntry(ModEntities.SCULK_SALMON.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
                         .setCost((int) SculkSalmonEntity.MAX_HEALTH)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Melee,
                                 EntityFactoryEntry.StrategicValues.Aquatic)
@@ -165,6 +166,7 @@ public class EntityFactory {
                 new EntityFactoryEntry(ModEntities.SCULK_LEECH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
                         .setCost((int) SculkLeechEntity.MAX_HEALTH)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Infector,
                                 EntityFactoryEntry.StrategicValues.Melee,
@@ -174,6 +176,7 @@ public class EntityFactory {
                 new EntityFactoryEntry(ModEntities.SCULK_STINGER.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Undeveloped)
                         .setCost((int) SculkLeechEntity.MAX_HEALTH)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Infector,
                                 EntityFactoryEntry.StrategicValues.Melee,
@@ -184,6 +187,7 @@ public class EntityFactory {
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
                         .setCost((int) SculkSquidEntity.MAX_HEALTH)
                         .setLimit(1)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Infector,
                                 EntityFactoryEntry.StrategicValues.Melee,
@@ -193,6 +197,7 @@ public class EntityFactory {
                 new EntityFactoryEntry(ModEntities.SCULK_PUFFERFISH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
                         .setCost((int) SculkPufferfishEntity.MAX_HEALTH)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.Raid)
                         .addStrategicValues(
                                 EntityFactoryEntry.StrategicValues.Support,
                                 EntityFactoryEntry.StrategicValues.Combat,

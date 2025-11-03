@@ -973,8 +973,9 @@ public class RaidEvent extends Event {
 
     protected void waveInitializationTick()
     {
-        setWaveTimeStart(0);
+        setWaveTimeStart(getDimension().getGameTime());
         setCurrentWavePattern(getWavePattern());
+        waveParticipantsSpawned = 0;
 
         if(!isSpawningLocationLoaded())
         {
