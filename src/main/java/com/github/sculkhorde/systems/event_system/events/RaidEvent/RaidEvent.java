@@ -870,7 +870,7 @@ public class RaidEvent extends Event {
             getDimension().addFreshEntity(getScoutEnderman());
             getScoutEnderman().setScouting(true);
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Sculk Enderman Scouting at " + getAreaOfInterestEntry().getPosition().toShortString() + " in the " + getDimensionResourceKey() + " for " + ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get() + " minutes");
-            announceToPlayersInRange(Component.literal("A Sculk Infested Enderman is scouting out a possible raid location at " + areaOfInterestEntry.getPosition().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), getCurrentRaidRadius() * 8);
+            announceToPlayersInRange(Component.literal("A Sculk Enderman is scouting out a possible raid location at " + areaOfInterestEntry.getPosition().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), getCurrentRaidRadius() * 8);
             EntityAlgorithms.applyEffectToTarget(getScoutEnderman(), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
             SoundUtil.playSoundForEveryPlayer(getDimension(), ModSounds.RAID_SCOUT_SOUND.get());
 
@@ -993,7 +993,7 @@ public class RaidEvent extends Event {
 
         populateRaidParticipants(getSpawnLocation());
 
-        announceToPlayersInRange(Component.literal(" Starting Wave " + getCurrentWave() + " out of " + getMaxWaves() + "."), getCurrentRaidRadius() * 8);
+        //announceToPlayersInRange(Component.literal(" Starting Wave " + getCurrentWave() + " out of " + getMaxWaves() + "."), getCurrentRaidRadius() * 8);
 
         spawnWaveParticipants(getSpawnLocation());
 
@@ -1311,11 +1311,11 @@ public class RaidEvent extends Event {
         {
             setFailure(failureType.FAILED_OBJECTIVE_COMPLETION);
 
-            announceToPlayersInRange(Component.literal("Final Wave Complete."), getCurrentRaidRadius() * 8);
+            //announceToPlayersInRange(Component.literal("Final Wave Complete."), getCurrentRaidRadius() * 8);
             return;
         }
 
-        announceToPlayersInRange(Component.literal("Wave " + (getCurrentWave() - 1) + " complete."), getCurrentRaidRadius() * 8);
+        //announceToPlayersInRange(Component.literal("Wave " + (getCurrentWave() - 1) + " complete."), getCurrentRaidRadius() * 8);
 
         setState(State.WAVE_INITIALIZATION);
     }
