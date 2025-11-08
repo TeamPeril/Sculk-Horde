@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class FloorSoulSpearsAttackGoal extends ReaperCastSpellGoal
+public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
 {
     protected int maxAttackDuration = TickUnits.convertSecondsToTicks(10);
     protected int elapsedAttackDuration = 0;
@@ -30,7 +30,7 @@ public class FloorSoulSpearsAttackGoal extends ReaperCastSpellGoal
     protected long lastUpdate = 0;
 
 
-    public FloorSoulSpearsAttackGoal(SculkSoulReaperEntity mob) {
+    public FloorSoulSpearsFollowingAttackGoal(SculkSoulReaperEntity mob) {
         super(mob);
     }
 

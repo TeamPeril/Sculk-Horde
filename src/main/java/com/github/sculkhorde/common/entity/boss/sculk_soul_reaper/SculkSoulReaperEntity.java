@@ -339,16 +339,16 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
         this.goalSelector.addGoal(1, new ReaperCloseRangeAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 2,2,
                 new SoulBlastAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this)
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(15), 2,2,
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this),
+                new FloorSoulSpearsFollowingAttackGoal(this),
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this)
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(3, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(5), 2,2,
@@ -357,7 +357,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
                 new SummonSoulSpearSummonerGoal(this),
                 new ZoltraakAttackGoal(this),
                 new ShootSoulSpearAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this)
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 2,2,
@@ -372,12 +372,12 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
         this.goalSelector.addGoal(1, new ReaperCloseRangeAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 3,-1,
                 new SoulBlastAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this)
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(20), 3,-1,
                 new ZoltraakAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this),
+                new FloorSoulSpearsFollowingAttackGoal(this),
                 new ZoltraakAttackGoal(this),
                 new ZoltraakBarrageAttackGoal(this),
                 new ZoltraakAttackGoal(this),
@@ -387,10 +387,10 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         this.goalSelector.addGoal(3, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(15), 3,-1,
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this),
+                new FloorSoulSpearsFollowingAttackGoal(this),
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this)
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(2), 3,-1,
@@ -399,7 +399,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
                 new ShootSoulSpearAttackGoal(this),
                 new SummonSoulSpearSummonerGoal(this),
                 new ShootSoulSpearAttackGoal(this),
-                new FloorSoulSpearsAttackGoal(this)
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 3,-1,
