@@ -328,9 +328,9 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         // #### LEVEL 1 ####
 
         this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 1,1,
+                new FloorSoulSpearLineAttackGoal(this),
                 new FangsAttackGoal(this),
-                new FangsAttackGoal(this),
-                new FangsAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
                 new FangsAttackGoal(this),
                 new ZoltraakAttackGoal(this)
         ));
@@ -344,6 +344,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
         this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(15), 2,2,
                 new ShootElementalSoulProjectilesGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
                 new FloorSoulSpearsFollowingAttackGoal(this),
                 new ShootElementalSoulProjectilesGoal(this),
@@ -363,34 +364,39 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 2,2,
                 new ZoltraakAttackGoal(this),
                 new FangsAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
                 new ZoltraakAttackGoal(this),
                 new FangsAttackGoal(this),
-                new ShootElementalSoulProjectilesGoal(this)
+                new FloorSoulSpearLineAttackGoal(this),
+                new ZoltraakAttackGoal(this)
         ));
 
         // #### LEVEL 3+ ####
 
         this.goalSelector.addGoal(1, new ReaperCloseRangeAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 3,-1,
                 new SoulBlastAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
+                new FangsAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
                 new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(20), 3,-1,
                 new ZoltraakAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
                 new FloorSoulSpearsFollowingAttackGoal(this),
                 new ZoltraakAttackGoal(this),
-                new ZoltraakBarrageAttackGoal(this),
-                new ZoltraakAttackGoal(this),
-                new ZoltraakBarrageAttackGoal(this)
+                new FloorSoulSpearLineAttackGoal(this),
+                new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(3, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(15), 3,-1,
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
-                new FloorSoulSpearsFollowingAttackGoal(this),
+                new ElementalMagicCircleAttackGoal(this),
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
-                new FloorSoulSpearsFollowingAttackGoal(this)
+                new ElementalMagicCircleAttackGoal(this)
         ));
 
         this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(2), 3,-1,

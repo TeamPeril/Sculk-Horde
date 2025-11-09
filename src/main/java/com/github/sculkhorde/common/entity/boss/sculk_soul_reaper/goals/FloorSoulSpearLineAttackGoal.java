@@ -65,14 +65,14 @@ public class FloorSoulSpearLineAttackGoal extends ReaperCastSpellGoal
                 this.createSpellEntity(mob.getX() + (double)Mth.cos(angleToTarget) * distanceMultiplier, mob.getZ() + (double)Mth.sin(angleToTarget) * distanceMultiplier, minY, maxY, delay);
             }
 
-            float angleToLeftOfTarget = angleToTarget + 5;
+            float angleToLeftOfTarget = angleToTarget + 0.07F;
             for (int length = 0; length < Math.min(mob.distanceToSqr(targetEntity), 64); ++length) {
                 double distanceMultiplier = 1.25D * (double)(length + 1);
                 int delay = 1 * length;
                 this.createSpellEntity(mob.getX() + (double)Mth.cos(angleToLeftOfTarget) * distanceMultiplier, mob.getZ() + (double)Mth.sin(angleToLeftOfTarget) * distanceMultiplier, minY, maxY, delay);
             }
 
-            float angleToRightOfTarget = angleToTarget - 5;
+            float angleToRightOfTarget = angleToTarget - 0.07F;
             for (int length = 0; length < Math.min(mob.distanceToSqr(targetEntity), 64); ++length) {
                 double distanceMultiplier = 1.25D * (double)(length + 1);
                 int delay = 1 * length;
