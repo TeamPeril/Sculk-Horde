@@ -88,7 +88,7 @@ public class RaidEvent extends Event {
 
 
     // Enderman Scouting
-    private SculkEndermanEntity scoutEnderman = null;
+    private SculkEndermanEntity endermanEntity = null;
 
 
     protected ServerBossEvent bossEvent;
@@ -377,6 +377,18 @@ public class RaidEvent extends Event {
         return waveParticipants;
     }
 
+    public Optional<SculkEndermanEntity> getEndermanEntity()
+    {
+        Optional<SculkEndermanEntity> enderman = Optional.empty();
+
+        if(endermanEntity != null && (getState().equals(State.SCOUTING) || (getState().equals(State.WAVE_ACTIVE) && isLastWave(0))))
+        {
+            enderman = Optional.of(endermanEntity);
+        }
+
+        return enderman;
+    }
+
     public void setWaveParticipants(ArrayList<ISculkSmartEntity> waveParticipants) {
         this.waveParticipants = waveParticipants;
 
@@ -404,12 +416,8 @@ public class RaidEvent extends Event {
 
     }
 
-    public SculkEndermanEntity getScoutEnderman() {
-        return scoutEnderman;
-    }
-
-    public void setScoutEnderman(SculkEndermanEntity scoutEnderman) {
-        this.scoutEnderman = scoutEnderman;
+    public void setEndermanEntity(SculkEndermanEntity endermanEntity) {
+        this.endermanEntity = endermanEntity;
 
     }
 
@@ -472,7 +480,17 @@ public class RaidEvent extends Event {
         {
             return (float) 1;
         }
-        return ((float)getRemainingWaveParticipants()) / ((float)waveParticipantsSpawned);
+
+        // Fall back: If there are more wave participants than what we tracked spawning, update amount spawned.
+        if(getRemainingWaveParticipants() > waveParticipantsSpawned)
+        {
+            waveParticipantsSpawned = getRemainingWaveParticipants();
+        }
+
+
+        float value = ((float)getRemainingWaveParticipants()) / ((float)waveParticipantsSpawned);
+
+        return value;
     }
 
     public void updateRemainingWaveParticipantsAmount()
@@ -862,16 +880,16 @@ public class RaidEvent extends Event {
             return;
         }
 
-        if(getScoutEnderman() == null)
+        if(getEndermanEntity().isEmpty())
         {
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Is Loaded. Continuing.");
 
-            setScoutEnderman(new SculkEndermanEntity(getDimension(), scoutingLocation.get()));
-            getDimension().addFreshEntity(getScoutEnderman());
-            getScoutEnderman().setScouting(true);
+            setEndermanEntity(new SculkEndermanEntity(getDimension(), scoutingLocation.get(), getEventUUID()));
+            getDimension().addFreshEntity(getEndermanEntity().get());
+            getEndermanEntity().get().setScouting(true);
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Sculk Enderman Scouting at " + getAreaOfInterestEntry().getPosition().toShortString() + " in the " + getDimensionResourceKey() + " for " + ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get() + " minutes");
             announceToPlayersInRange(Component.literal("A Sculk Enderman is scouting out a possible raid location at " + areaOfInterestEntry.getPosition().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), getCurrentRaidRadius() * 8);
-            EntityAlgorithms.applyEffectToTarget(getScoutEnderman(), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
+            EntityAlgorithms.applyEffectToTarget(getEndermanEntity().get(), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
             SoundUtil.playSoundForEveryPlayer(getDimension(), ModSounds.RAID_SCOUT_SOUND.get());
 
             //Spawn Sculk Phantoms
@@ -880,7 +898,7 @@ public class RaidEvent extends Event {
             }
         }
 
-        if(!getScoutEnderman().isAlive())
+        if(!getEndermanEntity().get().isAlive())
         {
             setFailure(failureType.ENDERMAN_DEFEATED);
             return;
@@ -889,8 +907,11 @@ public class RaidEvent extends Event {
         if(getScoutingTimeElapsed() >= TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get()))
         {
             setState(State.RAID_INITIALIZATION);
-            getScoutEnderman().discard();
-            setScoutEnderman(null);
+            if(getEndermanEntity().isPresent())
+            {
+                getEndermanEntity().get().discard();
+            }
+            setEndermanEntity(null);
             setBlockSearcher(null);
         }
     }
@@ -901,9 +922,6 @@ public class RaidEvent extends Event {
 
         if(getBlockSearcher().isEmpty())
         {
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
-
-
             if(getHighPriorityTargets().size() + getMediumPriorityTargets().size() <= 0)
             {
                 setFailure(failureType.FAILED_INITIALIZATION);
@@ -922,12 +940,15 @@ public class RaidEvent extends Event {
         //This is just in case we load in the middle of the raid
         scoutingLocation = Optional.of(getAreaOfInterestEntry().getPosition());
 
+
         if(!isScoutingLocationLoaded())
         {
             loadScoutingChunks();
             incrementTicksSpentTryingToChunkLoad();
             return;
         }
+
+        SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
 
         if(getBlockSearcher().isEmpty())
         {
@@ -1116,6 +1137,15 @@ public class RaidEvent extends Event {
         return getDimension().isAreaLoaded(getSpawnLocation(), 1);
     }
 
+    public boolean areYouTheEventEnderman(SculkEndermanEntity enderman)
+    {
+        if(getEndermanEntity().isEmpty())
+        {
+            return false;
+        }
+        return getEndermanEntity().get().getUUID().equals(enderman.getUUID());
+    }
+
     public void loadRaidChunksCenter()
     {
         int distanceXBetweenRaidCenterAndSpawnPos = Math.abs(getRaidCenter().getX() - getSpawnLocation().getX());
@@ -1293,9 +1323,9 @@ public class RaidEvent extends Event {
 
         if(isLastWave(0))
         {
-            Mob boss = new SculkEndermanEntity(getDimension(), spawnLocation, getEventUUID());
-            boss.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
-            getWaveParticipants().add((ISculkSmartEntity) boss);
+            endermanEntity = new SculkEndermanEntity(getDimension(), spawnLocation, getEventUUID());
+            endermanEntity.setPos(spawnLocation.getX(), spawnLocation.getY() + 1, spawnLocation.getZ());
+            getWaveParticipants().add(endermanEntity);
             waveParticipantsSpawned++;
         }
     }
@@ -1405,11 +1435,11 @@ public class RaidEvent extends Event {
         }
 
         // Enderman Scouting
-        if (tag.hasUUID("scoutEnderman")) {
-            UUID uuid = tag.getUUID("scoutEnderman");
+        if (tag.hasUUID("endermanEntity")) {
+            UUID uuid = tag.getUUID("endermanEntity");
             Entity entity = ServerLifecycleHooks.getCurrentServer().getLevel(dimensionResourceKey).getEntity(uuid);
             if (entity instanceof SculkEndermanEntity) {
-                setScoutEnderman((SculkEndermanEntity) entity);
+                setEndermanEntity((SculkEndermanEntity) entity);
             }
         }
 
@@ -1485,8 +1515,8 @@ public class RaidEvent extends Event {
         tag.put("waveParticipants", waveParticipantsTag);
 
         // Enderman Scouting
-        if (getScoutEnderman() != null) {
-            tag.putUUID("scoutEnderman", getScoutEnderman().getUUID());
+        if (getEndermanEntity().isPresent()) {
+            tag.putUUID("endermanEntity", getEndermanEntity().get().getUUID());
         }
 
         // Waves

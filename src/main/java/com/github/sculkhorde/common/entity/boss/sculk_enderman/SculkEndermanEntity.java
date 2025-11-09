@@ -342,11 +342,29 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         incrementSpecialAttackCooldown();
 
-        if(parentEventUUID.isPresent() && !SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()))
+
+        // If we do not belong to an event, ignore the rest of this code
+        if(!parentEventUUID.isPresent())
+        {
+            return;
+        }
+        // If we do belong to an event, but it does not exist, then despawn
+        else if(!SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()))
         {
             discard();
+            return;
         }
-        else if(parentEventUUID.isPresent() && SculkHorde.eventSystem.doesEventExist(parentEventUUID.get()) && !isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
+
+        RaidEvent raidEvent = (RaidEvent) SculkHorde.eventSystem.getEvent(parentEventUUID.get());
+
+        if(!raidEvent.areYouTheEventEnderman(this))
+        {
+            discard();
+            return;
+        }
+
+        // If we belong to an event that exists, but we are too far away, teleport to it
+        if(!isWithinRaidLocation() && isScouting() && isTeleportCooldownOver())
         {
             teleportToRaidLocationIfOutside();
         }
@@ -522,6 +540,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         super.defineSynchedData();
         this.entityData.define(DATA_AGGRO, false);
         this.entityData.define(DATA_SCOUTING, false);
+        // define the parent event UUID synched data so it exists and can be set/read
+        this.entityData.define(DATA_PARENT_EVENT_UUID, Optional.empty());
     }
 
     public void addAdditionalSaveData(CompoundTag nbt)
@@ -531,6 +551,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         nbt.putBoolean(DATA_IS_AGGRO_IDENTIFIER, this.entityData.get(DATA_AGGRO));
 
         parentEventUUID.ifPresent(value -> nbt.putUUID(PARENT_EVENT_UUID_IDENTIFIER, value));
+        // mirror to synched data so clients (or other systems) can read it if needed
+        this.entityData.set(DATA_PARENT_EVENT_UUID, parentEventUUID);
     }
 
     public void readAdditionalSaveData(CompoundTag nbt)
@@ -545,9 +567,18 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
             this.entityData.set(DATA_AGGRO, nbt.getBoolean(DATA_IS_AGGRO_IDENTIFIER));
         }
 
-        parentEventUUID = nbt.hasUUID(PARENT_EVENT_UUID_IDENTIFIER)
-                ? Optional.of(nbt.getUUID(PARENT_EVENT_UUID_IDENTIFIER))
-                : Optional.empty();
+
+        if(nbt.contains(PARENT_EVENT_UUID_IDENTIFIER))
+        {
+            parentEventUUID = Optional.of(nbt.getUUID(PARENT_EVENT_UUID_IDENTIFIER));
+        }
+        else
+        {
+            parentEventUUID = Optional.empty();
+        }
+
+        // update synched data too
+        this.entityData.set(DATA_PARENT_EVENT_UUID, parentEventUUID);
     }
 
     @Override
