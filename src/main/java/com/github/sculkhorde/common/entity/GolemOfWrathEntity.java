@@ -358,7 +358,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
 
 
         public MeleeAttackGoal() {
-            super(GolemOfWrathEntity.this, GolemOfWrathEntity.this.getBbWidth() * 2, TickUnits.convertSecondsToTicks(0.5F));
+            super(GolemOfWrathEntity.this, GolemOfWrathEntity.this.getBbWidth() * 2, TickUnits.convertSecondsToTicks(0.96F));
             this.setFlags(EnumSet.of(Flag.MOVE));
 
         }
@@ -439,7 +439,15 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         @Override
         public boolean canUse() {
 
-            if (!super.canUse()) {
+            long gameTime = this.mob.level().getGameTime();
+            if (gameTime - this.lastCanUseCheck < getCanUseCheckInterval()) {
+                return false;
+            }
+
+            this.lastCanUseCheck = gameTime;
+
+            if(!isExecutionCooldownOver())
+            {
                 return false;
             }
 
@@ -449,7 +457,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
 
         @Override
         public boolean canContinueToUse() {
-            return !canUse();
+            return isAttackInProgress;
         }
 
 
