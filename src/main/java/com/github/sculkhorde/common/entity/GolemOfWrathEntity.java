@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.block.GolemOfWrathAnimatorBlock;
+import com.github.sculkhorde.common.blockentity.GolemOfWrathAnimatorBlockEntity;
 import com.github.sculkhorde.common.entity.goal.CustomAttackGoal;
 import com.github.sculkhorde.common.entity.goal.NearestInfectionModEntityTargetGoal;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
@@ -13,6 +14,7 @@ import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -226,6 +228,23 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         {
             this.hurt(damageSources().genericKill(), Integer.MAX_VALUE);
         }
+        // If we are bound to a block, but the block already has an entity, discard
+        else if(isBoundBlockPresent())
+        {
+            if(level().getBlockEntity(getBoundBlockPos().get()) instanceof GolemOfWrathAnimatorBlockEntity blockEntity)
+            {
+                // If it already has a golem, but we are supposed to be the golem, then just despawn
+                if(blockEntity.getGolem().isPresent() && !blockEntity.getGolemAsLivingEntity().get().getUUID().equals(getUUID()))
+                {
+                    discard();
+                }
+                else // If it has no golem, but we know we're supposed to be the golem, set golem to us.
+                {
+                    blockEntity.setGolem(this);
+                }
+            }
+
+        }
 
     }
 
@@ -298,6 +317,34 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
     @Override
     public void checkDespawn() {
 
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        if (boundBlockPos != null) {
+            compound.putLong("BoundBlockPos", boundBlockPos.asLong());
+        }
+        compound.putBoolean("BelongsToBoundBlock", belongsToBoundBlock);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        if (compound.contains("BoundBlockPos")) {
+            long posLong = compound.getLong("BoundBlockPos");
+            boundBlockPos = BlockPos.of(posLong);
+        } else {
+            boundBlockPos = null;
+        }
+
+        if (compound.contains("BelongsToBoundBlock")) {
+            belongsToBoundBlock = compound.getBoolean("BelongsToBoundBlock");
+        } else {
+            // Fallback: if a position was saved but flag wasn't, consider it bound
+            belongsToBoundBlock = boundBlockPos != null;
+        }
     }
 
 
