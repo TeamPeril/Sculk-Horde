@@ -309,7 +309,11 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         // Check for entities within the hitbox
         List<LivingEntity> entitiesHit;
 
-        if(sourceEntity instanceof Player)
+        if(sourceEntity == null)
+        {
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
+        }
+        else if(sourceEntity instanceof Player)
         {
             entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, Predicates.alwaysTrue());
         }

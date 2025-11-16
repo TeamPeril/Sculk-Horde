@@ -15,6 +15,6 @@ public class BiomeSpecialEffectsMixin {
 
         cir.setReturnValue(overriddenColor);
     }
-    
+
      */
 }
