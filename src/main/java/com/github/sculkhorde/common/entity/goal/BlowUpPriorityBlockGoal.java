@@ -10,7 +10,6 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -29,6 +28,7 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
 
     protected int searchCoolDownTicks = TickUnits.convertSecondsToTicks(5);
     protected int searchCoolDownTicksRemaining = 0;
+    protected boolean hasReachedTarget = false;
 
     public BlowUpPriorityBlockGoal(SculkCreeperEntity sculkCreeperEntity, double p_25842_, int p_25843_, int distanceRequired, int ticksRequiredToBreakBlock) {
         super(sculkCreeperEntity, p_25842_, 24, p_25843_);
@@ -76,36 +76,41 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
         return super.canContinueToUse();
     }
 
+    @Override
     public void tick() {
-        super.tick();
+
         Level level = this.removerMob.level();
         BlockPos mobPosition = this.removerMob.blockPosition();
-        BlockPos blockPosition = this.blockPos;
-        RandomSource randomsource = this.removerMob.getRandom();
+        BlockPos targetBlock = this.blockPos;
 
-        if(blockPosition == null)
+        if(targetBlock == null)
         {
+            clearTargetBlock();
             return;
         }
-
-        if(!blockPosition.closerThan(mobPosition, distanceRequired))
+        else if(!isBlockRaidTarget(level.getBlockState(targetBlock)))
         {
-            ticksSinceReachedGoal = 0;
+            clearTargetBlock();
             return;
         }
-        ticksSinceReachedGoal++;
+        else if(!targetBlock.closerThan(mobPosition, distanceRequired))
+        {
+            hasReachedTarget = true;
+        }
 
+        this.mob.getNavigation().moveTo((double)((float)targetBlock.getX()) + 0.5D, (double)targetBlock.getY(), (double)((float)targetBlock.getZ()) + 0.5D, this.speedModifier);
 
-
-        if (this.ticksSinceReachedGoal > 0)
+        // Once we reach target, there is no stopping the explosion
+        if(hasReachedTarget)
         {
             this.removerMob.setSwellDir(1);
+            ticksSinceReachedGoal++;
         }
 
         if (this.ticksSinceReachedGoal > ticksRequiredToBreakBlock)
         {
             this.removerMob.explodeSculkCreeper();
-            Optional<RaidEvent> event = EventSystem.getNearestRaidEvent((ServerLevel) level, blockPosition);
+            Optional<RaidEvent> event = EventSystem.getNearestRaidEvent((ServerLevel) level, targetBlock);
             if(event.isEmpty())
             {
                 return;
@@ -121,6 +126,16 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
                 event.get().getAlreadyBlewUpTargets().add(removerMob.blockPosition());
             }
         }
+    }
+
+    protected void clearTargetBlock()
+    {
+        blockPos = null;
+    }
+
+    protected static boolean isBlockRaidTarget(BlockState blockState)
+    {
+        return blockState.is(ModBlocks.BlockTags.SCULK_RAID_TARGET_HIGH_PRIORITY) || blockState.is(ModBlocks.BlockTags.SCULK_RAID_TARGET_MEDIUM_PRIORITY);
     }
 
     protected static boolean isBlockEqualOrHigherPriorityThanCurrentTarget(BlockState objectiveBlockState, BlockState blockState)
@@ -164,6 +179,11 @@ public class BlowUpPriorityBlockGoal extends MoveToBlockGoal {
         Optional<RaidEvent> nearestRaid = EventSystem.getNearestRaidEvent((ServerLevel) mob.level(), mob.blockPosition());
 
         if(nearestRaid.isEmpty())
+        {
+            return false;
+        }
+
+        if(!isBlockRaidTarget(blockState))
         {
             return false;
         }
