@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
@@ -37,7 +38,6 @@ public class SculkTombStructure extends Structure {
     private final Optional<Heightmap.Types> projectStartToHeightmap;
     private final int maxDistanceFromCenter;
 
-    private static boolean spawnedStructure = false;
 
     public SculkTombStructure(Structure.StructureSettings config,
                          Holder<StructureTemplatePool> startPool,
@@ -54,7 +54,6 @@ public class SculkTombStructure extends Structure {
         this.startHeight = startHeight;
         this.projectStartToHeightmap = projectStartToHeightmap;
         this.maxDistanceFromCenter = maxDistanceFromCenter;
-        spawnedStructure = false;
     }
 
     /*
@@ -84,21 +83,9 @@ public class SculkTombStructure extends Structure {
      * it to spawn in specific biomes that aren't in the dimension they don't like if they wish.
      */
     private static boolean extraSpawningChecks(Structure.GenerationContext context) {
-
-        if(spawnedStructure) {
-            return false;
-        }
-
-        // Grabs the chunk position we are at
+        // Generate only in the origin chunk to ensure a single, deterministic spawn
         ChunkPos chunkpos = context.chunkPos();
-
-        if(chunkpos.x >= -4 && chunkpos.x <= 4 && chunkpos.z >= -4 && chunkpos.z <= 4) {
-            spawnedStructure = true;
-            return true;
-        }
-
-
-        return false;
+        return chunkpos.x == 0 && chunkpos.z == 0;
     }
 
 
@@ -113,11 +100,13 @@ public class SculkTombStructure extends Structure {
         // Set's our spawning blockpos's y offset to be 5 blocks up from build limit.
         // Since we are going to have heightmap/terrain height spawning set to true further down, this will make it so we spawn 60 blocks above terrain.
         // If we wanted to spawn on ocean floor, we would set heightmap/terrain height spawning to false and the grab the y value of the terrain with OCEAN_FLOOR_WG heightmap.
-        int startY = context.heightAccessor().getMinBuildHeight() + 15;
+        int startY = this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
 
-        // Turns the chunk coordinates into actual coordinates we can use. (Gets corner of that chunk)
+        // Use the exact block position at the origin of the target chunk to be deterministic
         ChunkPos chunkPos = context.chunkPos();
-        BlockPos blockPos = new BlockPos(chunkPos.getMinBlockX(), startY, chunkPos.getMinBlockZ());
+        int targetX = chunkPos.getMinBlockX();
+        int targetZ = chunkPos.getMinBlockZ();
+        BlockPos blockPos = new BlockPos(targetX, startY, targetZ);
 
         Optional<Structure.GenerationStub> structurePiecesGenerator =
                 JigsawPlacement.addPieces(
@@ -127,9 +116,8 @@ public class SculkTombStructure extends Structure {
                         this.size, // How deep a branch of pieces can go away from center piece. (5 means branches cannot be longer than 5 pieces from center piece)
                         blockPos, // Where to spawn the structure.
                         false, // "useExpansionHack" This is for legacy villages to generate properly. You should keep this false always.
-                        this.projectStartToHeightmap, // Adds the terrain height's y value to the passed in blockpos's y value. (This uses WORLD_SURFACE_WG heightmap which stops at top water too)
-                        // Here, blockpos's y value is 60 which means the structure spawn 60 blocks above terrain height.
-                        // Set this to false for structure to be place only at the passed in blockpos's Y value instead.
+                        Optional.empty(), // Do not project to heightmap; use the exact Y from start_height for deterministic placement
+                        // Here, we enforce an exact Y and avoid randomness from terrain height adjustments.
                         // Definitely keep this false when placing structures in the nether as otherwise, heightmap placing will put the structure on the Bedrock roof.
                         this.maxDistanceFromCenter); // Maximum limit for how far pieces can spawn from center. You cannot set this bigger than 128 or else pieces gets cutoff.
 
