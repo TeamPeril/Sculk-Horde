@@ -66,6 +66,44 @@ public class ParticleUtil {
                 position.x, position.y, position.z, deltaMovement.x, deltaMovement.y, deltaMovement.z);
     }
 
+    /**
+     * Spawns a particle beam between two points in the world.
+     * This method calculates the direction and length of the beam
+     * and delegates the actual particle spawning to another method.
+     *
+     * @param level    The server-level instance where the particles will be spawned.
+     * @param particle The type of particle to spawn.
+     * @param start    The starting position of the particle beam as a `Vec3`.
+     * @param end      The ending position of the particle beam as a `Vec3`.
+     * @param radius   The radius of the particle beam's circular cross-section.
+     * @param thickness The number of particles used to create the circular cross-section.
+     */
+    public static void spawnParticleBeam(ServerLevel level, ParticleOptions particle, Vec3 start, Vec3 end, float radius, float thickness)
+    {
+        // Calculate the direction vector from the start to the end position
+        Vec3 direction = end.subtract(start);
+        // Compute the length of the direction vector
+        double length = direction.length();
+        // If the length is zero or negative, there is nothing to draw, so return early
+        if (length <= 0.0D) {
+            return; // nothing to draw
+        }
+        // Delegate to the overloaded method to handle the actual particle spawning
+        spawnParticleBeam(level, particle, start, direction, (float) length, radius, thickness);
+    }
+
+    /**
+     * Spawns a particle beam in the world, represented as a series of particles
+     * arranged in a circular cross-section along the beam's length.
+     *
+     * @param level    The server-level instance where the particles will be spawned.
+     * @param particle The type of particle to spawn.
+     * @param origin   The starting position of the particle beam as a `Vec3`.
+     * @param direction The direction vector of the particle beam as a `Vec3`.
+     * @param length   The total length of the particle beam.
+     * @param radius   The radius of the particle beam's circular cross-section.
+     * @param thickness The number of particles used to create the circular cross-section.
+     */
     public static void spawnParticleBeam(ServerLevel level, ParticleOptions particle, Vec3 origin, Vec3 direction, float length, float radius, float thickness)
     {
         // Normalize the direction vector once to be used throughout the function
@@ -82,6 +120,7 @@ public class ParticleUtil {
             up = new Vec3(0, 1, 0);
         }
 
+        // Calculate the right and forward vectors for the circular cross-section
         Vec3 right = up.cross(directionNormalized).normalize();
         Vec3 forward = directionNormalized.cross(right).normalize();
 
@@ -93,7 +132,7 @@ public class ParticleUtil {
             numSteps = 1; // Ensure at least one particle for very short beams
         }
 
-        // Spawn Particles along the beam's length
+        // Spawn particles along the beam's length
         for (int i = 0; i <= numSteps; i++) {
             // Calculate the current position along the beam
             double t = (double) i / numSteps;
@@ -105,6 +144,7 @@ public class ParticleUtil {
                 double xOffset = radius * Math.cos(angle);
                 double yOffset = radius * Math.sin(angle);
 
+                // Calculate the offset for the particle position
                 Vec3 offset = right.scale(xOffset).add(forward.scale(yOffset));
                 level.sendParticles(particle, currentPoint.x + offset.x, currentPoint.y + offset.y, currentPoint.z + offset.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
             }

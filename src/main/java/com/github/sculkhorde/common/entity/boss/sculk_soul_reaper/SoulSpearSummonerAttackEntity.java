@@ -4,7 +4,9 @@ import com.github.sculkhorde.common.entity.boss.SpecialEffectEntity;
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
@@ -39,6 +41,9 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
     protected List<LivingEntity> targets = new ArrayList<>();
 
     protected final int MAX_ATTACK_TARGETS = 3;
+
+    protected long targetLockStartTime = 0;
+    protected final int TARGET_LOCK_TICKS = TickUnits.convertSecondsToTicks(1);
 
     public SoulSpearSummonerAttackEntity(EntityType<?> entityType, Level level)
     {
@@ -109,9 +114,20 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
             return;
         }
 
-        if(targets.isEmpty())
+        if(targetLockStartTime == 0)
         {
-            populateTargetList();
+            targetLockStartTime = level().getGameTime();
+        }
+
+        // It is time to attack, we now must wait TARGET_LOCK_TICKS then attack.
+        populateTargetList();
+
+        if(level().getGameTime() - targetLockStartTime < TARGET_LOCK_TICKS)
+        {
+            for(int i = 0; i < targets.size() && i < MAX_ATTACK_TARGETS; i++)
+            {
+                ParticleUtil.spawnParticleBeam((ServerLevel) level(), ParticleTypes.END_ROD, position(), targets.get(i).getEyePosition(), 0.1F, 1);
+            }
             return;
         }
 
@@ -130,6 +146,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
             targets.remove(entity); // We remove the targets here to were not editing the `targets` while iterating through it
         }
 
+        targetLockStartTime = 0;
         lastTimeOfAttack = level().getGameTime();
     }
 

@@ -789,6 +789,7 @@ public class RaidEvent extends Event {
         ServerLevel dimension = areaOfInterestEntry.getDimension();
         ResourceKey<Level> dimensionResourceKey = dimension.dimension();
         setDimension(dimensionResourceKey);
+        setEventLocation(areaOfInterestEntry.getPosition());
 
         SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Investigating Location at: " + areaOfInterestEntry.getPosition().toShortString() + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
 
@@ -864,7 +865,6 @@ public class RaidEvent extends Event {
     {
         if(scoutingLocation.isEmpty())
         {
-            setEventLocation(getAreaOfInterestEntry().getPosition());
             scoutingLocation = Optional.of(getAreaOfInterestEntry().getPosition());
             setScoutingTimeStart(getDimension().getGameTime());
 

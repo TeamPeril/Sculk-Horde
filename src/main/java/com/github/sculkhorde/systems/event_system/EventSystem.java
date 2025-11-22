@@ -222,8 +222,8 @@ public class EventSystem {
         {
             if(e instanceof RaidEvent raidEvent)
             {
-                // If not in same dimension, ignore.
-                if(!BlockAlgorithms.areTheseDimensionsEqual(raidEvent.getDimension(), dimension))
+                // If not in same dimension, or location not set yet, ignore.
+                if(!BlockAlgorithms.areTheseDimensionsEqual(raidEvent.getDimension(), dimension) || raidEvent.getEventLocation() == null)
                 {
                     continue;
                 }
