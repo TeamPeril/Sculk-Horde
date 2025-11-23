@@ -516,13 +516,17 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
 
         // Update Boss Title
-        if (!updatedEventTitle && getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty()) {
+        if (!updatedEventTitle) {
             Component title = Component.translatable("entity.sculkhorde.sculk_soul_reaper")
                     .append(Component.literal(" 💀" + getMobDifficultyLevel()));
-            title = title.copy()
-                    .append(Component.literal(" ("))
-                    .append(getHitTarget().get().getDisplayName()) // append the Component directly
-                    .append(Component.literal(")"));
+
+            if (getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty())
+            {
+                title = title.copy()
+                        .append(Component.literal(" ("))
+                        .append(getHitTarget().get().getDisplayName()) // append the Component directly
+                        .append(Component.literal(")"));
+            }
             bossEvent.setName(title);
             updatedEventTitle = true;
         }
