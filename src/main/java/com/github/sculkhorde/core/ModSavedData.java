@@ -1681,7 +1681,7 @@ public class ModSavedData extends SavedData {
 
         public void increaseDifficultyOfNextHit()
         {
-            difficultyOfNextHit = Math.min(3, difficultyOfNextHit + 1);
+            difficultyOfNextHit = Math.min(254, difficultyOfNextHit + 1);
         }
 
         public void decreaseDifficultyOfNextHit()

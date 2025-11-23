@@ -19,7 +19,7 @@ public class SoulReaperCommand implements Command<CommandSourceStack> {
         return Commands.literal("spawn_soul_reaper")
 
                 .requires((commandStack) -> commandStack.hasPermission(2))
-                .then(Commands.argument("difficulty", IntegerArgumentType.integer(1, 100))
+                .then(Commands.argument("difficulty", IntegerArgumentType.integer(1, 254))
                         .then(Commands.argument("spawn_with_squad", BoolArgumentType.bool())
                             .executes((commandStack) -> {
                                 return spawnSoulReaper(

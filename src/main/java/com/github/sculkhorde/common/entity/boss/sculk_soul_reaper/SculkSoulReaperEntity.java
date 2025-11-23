@@ -144,8 +144,8 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
         if(mobDifficultyLevel >= 4)
         {
-            reaper.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, mobDifficultyLevel - 4, Integer.MAX_VALUE));
-            reaper.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, mobDifficultyLevel - 4, Integer.MAX_VALUE));
+            reaper.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, Integer.MAX_VALUE, mobDifficultyLevel - 4));
+            reaper.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, Integer.MAX_VALUE, mobDifficultyLevel - 4));
         }
 
         level.addFreshEntity(reaper);
