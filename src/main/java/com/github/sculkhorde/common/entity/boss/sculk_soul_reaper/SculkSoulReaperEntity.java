@@ -37,6 +37,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -106,6 +108,8 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(SculkSoulReaperEntity.class, EntityDataSerializers.BYTE);
     private static final int FLAG_IS_SHOOTING_ELEMENTALS = 1;
 
+    protected boolean updatedEventTitle = false;
+
     /**
      * The Constructor
      * @param type The Mob Type
@@ -137,6 +141,12 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         reaper.setPos(pos);
         reaper.setMobDifficultyLevel(mobDifficultyLevel);
         reaper.getSquad().createSquad();
+
+        if(mobDifficultyLevel >= 4)
+        {
+            reaper.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, mobDifficultyLevel - 4, Integer.MAX_VALUE));
+            reaper.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, mobDifficultyLevel - 4, Integer.MAX_VALUE));
+        }
 
         level.addFreshEntity(reaper);
         if(!withSquad)
@@ -504,6 +514,19 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
             despawn();
         }
 
+
+        // Update Boss Title
+        if (!updatedEventTitle && getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty()) {
+            Component title = Component.translatable("entity.sculkhorde.sculk_soul_reaper")
+                    .append(Component.literal(" 💀" + getMobDifficultyLevel()));
+            title = title.copy()
+                    .append(Component.literal(" ("))
+                    .append(getHitTarget().get().getDisplayName()) // append the Component directly
+                    .append(Component.literal(")"));
+            bossEvent.setName(title);
+            updatedEventTitle = true;
+        }
+
         // This is to make sure there arent any duplicate soul reapers in the world.
         // I know this is nested if statement hell, but I was tired and it works.
         if(SculkHorde.eventSystem.doesEventExist(parentEventUUID))
@@ -543,11 +566,20 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     }
 
     protected ServerBossEvent createBossEvent() {
-        ServerBossEvent event = new ServerBossEvent(Component.translatable("entity.sculkhorde.sculk_soul_reaper"), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
+        Component title = Component.translatable("entity.sculkhorde.sculk_soul_reaper")
+                .append(Component.literal(" 💀" + getMobDifficultyLevel()));
+
+        if(getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty())
+        {
+            title = title.copy().append(" (" + getHitTarget().get().getDisplayName() + ")");
+        }
+
+
+        ServerBossEvent event = new ServerBossEvent(title, BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
         return event;
     }
 
-    @Override
+        @Override
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
         this.bossEvent.addPlayer(player);
