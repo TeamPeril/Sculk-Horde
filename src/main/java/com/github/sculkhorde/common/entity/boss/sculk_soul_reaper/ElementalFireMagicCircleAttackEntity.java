@@ -53,7 +53,8 @@ public class ElementalFireMagicCircleAttackEntity extends SpecialEffectEntity im
 
     protected void applyEffect(LivingEntity entity)
     {
-        boolean didHurt = entity.hurt(damageSources().magic(), DAMAGE);
+        float finalDamage = DAMAGE + (EntityAlgorithms.getStrengthOfLivingEntity(getOwner()) * 2);
+        boolean didHurt = entity.hurt(damageSources().magic(), finalDamage);
 
         if(!didHurt)
         {
@@ -64,11 +65,11 @@ public class ElementalFireMagicCircleAttackEntity extends SpecialEffectEntity im
 
         if(getOwner() != null)
         {
-            entity.hurt(getOwner().damageSources().magic(), DAMAGE);
+            entity.hurt(getOwner().damageSources().magic(), finalDamage);
         }
         else
         {
-            entity.hurt(damageSources().magic(), DAMAGE);
+            entity.hurt(damageSources().magic(), finalDamage);
         }
 
     }

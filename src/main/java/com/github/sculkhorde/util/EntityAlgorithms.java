@@ -19,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -40,7 +41,27 @@ import java.util.function.Predicate;
 
 public class EntityAlgorithms {
 
+    /**
+     * Returns the strength level of an entity.
+     * If it has no strength effect, it returns 0.
+     * Else it returns the amp value + 1
+     * @param entity The Entity
+     * @return The strength level
+     */
+    public static int getStrengthOfLivingEntity(LivingEntity entity)
+    {
+        if(entity == null)
+        {
+            return 0;
+        }
 
+        if(!entity.hasEffect(MobEffects.DAMAGE_BOOST))
+        {
+            return 0;
+        }
+
+        return entity.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier() + 1;
+    }
 
     public static float getDistanceBetweenEntities(Entity one, Entity two)
     {

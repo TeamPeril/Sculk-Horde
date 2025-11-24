@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.EntityType;
@@ -44,11 +45,12 @@ public class ElementalBreezeMagicCircleAttackEntity extends ElementalFireMagicCi
     protected void applyEffect(LivingEntity entity)
     {
 
+        float finalDamage = DAMAGE + (EntityAlgorithms.getStrengthOfLivingEntity(getOwner()) * 2);
         double damageResistance = entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
         double d1 = Math.max(0.0D, 1.0D - damageResistance);
         entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, 0.3D * d1, 0.0D));
 
-        boolean didHurt = entity.hurt(damageSources().magic(), DAMAGE);
+        boolean didHurt = entity.hurt(damageSources().magic(), finalDamage);
         if(!didHurt)
         {
             return;
@@ -62,11 +64,11 @@ public class ElementalBreezeMagicCircleAttackEntity extends ElementalFireMagicCi
 
         if(getOwner() != null)
         {
-            entity.hurt(getOwner().damageSources().magic(), DAMAGE);
+            entity.hurt(getOwner().damageSources().magic(), finalDamage);
         }
         else
         {
-            entity.hurt(damageSources().magic(), DAMAGE);
+            entity.hurt(damageSources().magic(), finalDamage);
         }
 
     }

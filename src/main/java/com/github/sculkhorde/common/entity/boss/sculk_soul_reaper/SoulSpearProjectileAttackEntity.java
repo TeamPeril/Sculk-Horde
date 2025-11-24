@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -28,6 +29,17 @@ public class SoulSpearProjectileAttackEntity extends AbstractProjectileEntity im
         this(ModEntities.SOUL_SPEAR_PROJECTILE.get(), level);
         setOwner(shooter);
         setDamage(damage);
+    }
+
+    @Override
+    public float getDamage() {
+
+        if(getOwner() instanceof LivingEntity livingEntity)
+        {
+            return super.getDamage() + (EntityAlgorithms.getStrengthOfLivingEntity(livingEntity) * 2);
+        }
+
+        return super.getDamage();
     }
 
     @Override

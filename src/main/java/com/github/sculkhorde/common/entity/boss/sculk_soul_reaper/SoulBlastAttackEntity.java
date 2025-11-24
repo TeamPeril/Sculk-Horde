@@ -114,13 +114,15 @@ public class SoulBlastAttackEntity extends SpecialEffectEntity implements GeoEnt
                 continue;
             }
 
+            float finalDamage = 5 + (EntityAlgorithms.getStrengthOfLivingEntity(getOwner()) * 2);
+
             if(getOwner() != null)
             {
-                entity.hurt(damageSources().indirectMagic(entity, getOwner()), 5);
+                entity.hurt(damageSources().indirectMagic(entity, getOwner()), finalDamage);
             }
             else
             {
-                entity.hurt(damageSources().indirectMagic(entity, this), 5);
+                entity.hurt(damageSources().indirectMagic(entity, this), finalDamage);
             }
         }
 

@@ -40,7 +40,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
 
     protected List<LivingEntity> targets = new ArrayList<>();
 
-    protected final int MAX_ATTACK_TARGETS = 3;
+    protected final int BASE_TARGET_COUNT_LIMIT = 3;
 
     protected long targetLockStartTime = 0;
     protected final int TARGET_LOCK_TICKS = TickUnits.convertSecondsToTicks(1);
@@ -59,6 +59,11 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
     protected void populateTargetList()
     {
         targets = EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) level(), getBoundingBox().inflate(20));
+    }
+
+    public int getMaxAttackTargets()
+    {
+        return BASE_TARGET_COUNT_LIMIT + EntityAlgorithms.getStrengthOfLivingEntity(getOwner());
     }
 
     public void shootProjectileAtTarget(LivingEntity entity)
@@ -124,7 +129,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
 
         if(level().getGameTime() - targetLockStartTime < TARGET_LOCK_TICKS)
         {
-            for(int i = 0; i < targets.size() && i < MAX_ATTACK_TARGETS; i++)
+            for(int i = 0; i < targets.size() && i < getMaxAttackTargets(); i++)
             {
                 ParticleUtil.spawnParticleBeam((ServerLevel) level(), ParticleTypes.END_ROD, position(), targets.get(i).getEyePosition(), 0.1F, 1);
             }
@@ -133,7 +138,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
 
         List<LivingEntity> targetsToShoot = new ArrayList<>();
 
-        for(int i = 0; i < targets.size() && i < MAX_ATTACK_TARGETS; i++)
+        for(int i = 0; i < targets.size() && i < getMaxAttackTargets(); i++)
         {
             targetsToShoot.add(targets.get(i));
         }

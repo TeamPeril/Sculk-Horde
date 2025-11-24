@@ -235,6 +235,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
 
         float radius = 0.3F;
         float thickness = 10F;
+        float finalDamage = damage + (EntityAlgorithms.getStrengthOfLivingEntity(getOwner()) * 2);
 
         // Make Sound
         level().playSound(this,this.blockPosition(), ModSounds.ZOLTRAAK_ATTACK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
@@ -268,11 +269,11 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
             Float deflectedBeamPathLength = (float) PlayerEyesHitResult.subtract(deflectedBeamOrigin).length();
             ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, deflectedBeamOrigin, deflectedBeamDirection, deflectedBeamPathLength, radius, thickness);
             BeamHitbox deflectedBeamAttackHitBox = new BeamHitbox(deflectedBeamOrigin, PlayerEyesHitResult, radius);
-            doMagicDamageToTargetsInHitBox(closestPlayerDeflecting.get(), deflectedBeamAttackHitBox, damage);
+            doMagicDamageToTargetsInHitBox(closestPlayerDeflecting.get(), deflectedBeamAttackHitBox, finalDamage);
         }
         else
         {
-            doMagicDamageToTargetsInHitBox(getOwner(), beamAttackHitBox, damage);
+            doMagicDamageToTargetsInHitBox(getOwner(), beamAttackHitBox, finalDamage);
             ParticleUtil.spawnParticleBeam((ServerLevel) this.level(), ParticleTypes.SOUL_FIRE_FLAME, origin, direction, (float) beamPath.length(), radius, thickness);
         }
     }

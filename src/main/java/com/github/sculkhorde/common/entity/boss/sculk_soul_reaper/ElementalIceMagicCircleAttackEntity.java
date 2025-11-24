@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -32,7 +33,8 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
 
     protected void applyEffect(LivingEntity entity)
     {
-        boolean didHurt = entity.hurt(damageSources().magic(), DAMAGE);
+        float finalDamage = DAMAGE + (EntityAlgorithms.getStrengthOfLivingEntity(getOwner()) * 2);
+        boolean didHurt = entity.hurt(damageSources().magic(), finalDamage);
 
         if(!didHurt)
         {
@@ -43,13 +45,13 @@ public class ElementalIceMagicCircleAttackEntity extends ElementalFireMagicCircl
 
         if(getOwner() != null)
         {
-            entity.hurt(getOwner().damageSources().magic(), DAMAGE);
+            entity.hurt(getOwner().damageSources().magic(), finalDamage);
             entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertSecondsToTicks(10), 0), getOwner());
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, TickUnits.convertSecondsToTicks(10), 0), getOwner());
         }
         else
         {
-            entity.hurt(damageSources().magic(), DAMAGE);
+            entity.hurt(damageSources().magic(), finalDamage);
             entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, TickUnits.convertSecondsToTicks(10), 0));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, TickUnits.convertSecondsToTicks(10), 0));
         }

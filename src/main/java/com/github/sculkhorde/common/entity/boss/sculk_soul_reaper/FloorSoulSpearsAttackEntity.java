@@ -47,9 +47,11 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
         if (targetEntity.isAlive() && !targetEntity.isInvulnerable() && targetEntity != livingentity)
         {
 
+            float finalDamage = 6.0F + (EntityAlgorithms.getStrengthOfLivingEntity(getOwner()) * 2);
+
             if (livingentity == null)
             {
-                targetEntity.hurt(this.damageSources().generic(), 6.0F);
+                targetEntity.hurt(this.damageSources().generic(), finalDamage);
                 return;
             }
 
@@ -63,7 +65,7 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
                 return;
             }
 
-            targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), 6.0F);
+            targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), finalDamage);
             // Give weakness and levitation
             EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0);
         }
