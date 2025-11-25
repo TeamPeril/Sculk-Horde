@@ -239,6 +239,7 @@ public class ModCreativeModeTab {
 
                 event.accept(ModBlocks.BROOD_NEST_BLOCK.get());
                 event.accept(ModBlocks.BROOD_NEST_CORE_BLOCK.get());
+                event.accept(ModBlocks.LIVING_WEB_BLOCK.get());
 
                 event.accept(ModItems.SCULK_GUARDIAN_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_BROOD_HATCHER_SPAWN_EGG.get());
