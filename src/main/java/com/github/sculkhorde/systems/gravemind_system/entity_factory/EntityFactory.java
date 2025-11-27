@@ -1,7 +1,6 @@
 package com.github.sculkhorde.systems.gravemind_system.entity_factory;
 
 import com.github.sculkhorde.common.entity.*;
-import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
@@ -213,28 +212,6 @@ public class EntityFactory {
                         .addStrategicValues(
                         EntityFactoryEntry.StrategicValues.Support,
                         EntityFactoryEntry.StrategicValues.Combat,
-                        EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
-                        .setMinimumDifficulty(Difficulty.NORMAL),
-
-                new EntityFactoryEntry(ModEntities.SCULK_BROOD_HATCHER.get())
-                        .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
-                        .setCost((int) SculkBroodHatcherEntity.MAX_HEALTH)
-                        .setLimit(1)
-                        .enableExperimentalMode(ModConfig.SERVER.experimental_brood_hatcher_enabled)
-                        .addStrategicValues(
-                        EntityFactoryEntry.StrategicValues.Infector,
-                        EntityFactoryEntry.StrategicValues.Melee,
-                        EntityFactoryEntry.StrategicValues.EffectiveOnGround)
-                        .setMinimumDifficulty(Difficulty.NORMAL)
-                        .setChanceToSpawn(0.1F),
-
-                new EntityFactoryEntry(ModEntities.SCULK_BROODLING.get())
-                        .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
-                        .setCost((int) SculkBroodlingEntity.MAX_HEALTH)
-                        .enableExperimentalMode(ModConfig.SERVER.experimental_brood_hatcher_enabled)
-                        .addStrategicValues(
-                        EntityFactoryEntry.StrategicValues.Infector,
                         EntityFactoryEntry.StrategicValues.Melee,
                         EntityFactoryEntry.StrategicValues.EffectiveOnGround)
                         .setMinimumDifficulty(Difficulty.NORMAL),

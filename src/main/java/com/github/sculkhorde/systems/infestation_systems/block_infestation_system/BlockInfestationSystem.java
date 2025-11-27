@@ -46,6 +46,7 @@ public class BlockInfestationSystem {
     public static BlockInfestationTable tagInfectableNonFullBlocks;
     public static BlockInfestationTable configInfectableBlocks;
 
+    public static int WEIGHT_BROOD_NEST = 15;
     public static int WEIGHT_SOULITE = 20;
     public static int WEIGHT_LARGE_FLORA = 100;
     public static int WEIGHT_SCULK_CATALYST = 500;
@@ -64,6 +65,7 @@ public class BlockInfestationSystem {
     private static void initializeSculkFlora()
     {
         SculkHorde.randomSculkFlora = new PoolBlocks();
+        SculkHorde.randomSculkFlora.addEntry(ModBlocks.BROOD_NEST_CORE_BLOCK.get(), WEIGHT_BROOD_NEST);
         SculkHorde.randomSculkFlora.addEntry(ModBlocks.SOULITE_CORE_BLOCK.get(), WEIGHT_SOULITE);
         SculkHorde.randomSculkFlora.addEntry(ModBlocks.FUNGAL_SHROOM_CORE_BLOCK.get(), WEIGHT_LARGE_FLORA);
         SculkHorde.randomSculkFlora.addEntry(ModBlocks.TENDRIL_CORE_BLOCK.get(), WEIGHT_LARGE_FLORA);
