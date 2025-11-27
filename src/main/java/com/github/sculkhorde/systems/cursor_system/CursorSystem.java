@@ -140,6 +140,15 @@ public class CursorSystem {
         }
     }
 
+    public static VirtualWebSpreadCursor createWebSpreadCursor(Level level, BlockPos pos)
+    {
+        VirtualWebSpreadCursor cursor = new VirtualWebSpreadCursor(level, pos);
+        cursor.moveTo(pos.getX(), pos.getY(), pos.getZ());
+        cursor.setImmuneFromPerformanceSystem(true);
+        SculkHorde.cursorSystem.addVirtualCursor(cursor);
+        return cursor;
+    }
+
     public static VirtualOreMinerCursor createOreMinerCursor(Level level, Block blockToTarget, Player owner, BlockPos pos, ItemStack pickaxe)
     {
         VirtualOreMinerCursor cursor = new VirtualOreMinerCursor(level, blockToTarget, owner.getUUID(), pickaxe);

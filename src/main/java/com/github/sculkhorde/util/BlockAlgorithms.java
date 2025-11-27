@@ -517,6 +517,22 @@ public class BlockAlgorithms {
         return Optional.empty();
     }
 
+    public static boolean isTouchingASolidBlock(ServerLevel level, BlockPos pos)
+    {
+        for(net.minecraft.core.Direction direction : net.minecraft.core.Direction.values())
+        {
+            BlockPos neighborPos = pos.relative(direction);
+
+            if(BlockAlgorithms.isSolid(level, neighborPos))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     /**
      * Checks immediate blocks to see if any of them are air
      * @param serverWorld The world

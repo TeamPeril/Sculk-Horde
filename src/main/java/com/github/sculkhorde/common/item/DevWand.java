@@ -1,8 +1,6 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.ModSavedData;
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.path_builder_system.PathBuilderRequest;
+import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -18,8 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.extensions.IForgeItem;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
-import java.util.Optional;
 
 public class DevWand extends Item implements IForgeItem {
 	/* NOTE:
@@ -84,8 +80,11 @@ public class DevWand extends Item implements IForgeItem {
 		ServerLevel serverLevel = (ServerLevel) level;
 
 		ClipContext rayTrace = new ClipContext(playerIn.getEyePosition(1.0F), playerIn.getEyePosition(1.0F).add(playerIn.getLookAngle().scale(5)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, playerIn);
-		Vec3 spawnPosition = rayTrace.getTo();
+		Vec3 hitPos = rayTrace.getTo();
 
+        CursorSystem.createWebSpreadCursor(serverLevel, BlockPos.containing(hitPos)).setMaxTransformations(10);
+
+        /*
 		if(!level.canSeeSky(BlockPos.containing(spawnPosition)))
 		{
 			playerIn.sendSystemMessage(Component.literal("Error: Cannot See Sky."));
@@ -102,6 +101,8 @@ public class DevWand extends Item implements IForgeItem {
 
 		PathBuilderRequest request = new PathBuilderRequest(serverLevel, closestNode.get().getPosition(), BlockPos.containing(playerIn.getEyePosition()), 10, null, null);
 		SculkHorde.pathBuilderSystem.addPathBuilderRequest(request);
+
+         */
 
 		return InteractionResultHolder.pass(itemstack);
 	}
