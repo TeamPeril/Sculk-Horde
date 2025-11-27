@@ -1,8 +1,6 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.effect.NeurotoxinStage1Effect;
-import com.github.sculkhorde.common.effect.NeurotoxinStage2Effect;
-import com.github.sculkhorde.common.effect.NeurotoxinStage3Effect;
+import com.github.sculkhorde.common.effect.RootedEffect;
 import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
@@ -210,11 +208,9 @@ public class EntityAlgorithms {
             return false;
         }
 
-        boolean doesHaveNeurotoxinEffect = entity.hasEffect(ModMobEffects.NEUROTOXIN_STAGE1.get()) ||
-                entity.hasEffect(ModMobEffects.NEUROTOXIN_STAGE2.get()) ||
-                entity.hasEffect(ModMobEffects.NEUROTOXIN_STAGE3.get());
+        boolean doesHaveNeurotoxinEffect = entity.hasEffect(ModMobEffects.ROOTED_EFFECT.get());
 
-        boolean isApplyingNeurotoxinEffect = debuff instanceof NeurotoxinStage1Effect || debuff instanceof NeurotoxinStage2Effect || debuff instanceof NeurotoxinStage3Effect;
+        boolean isApplyingNeurotoxinEffect = debuff instanceof RootedEffect;
 
         if(doesHaveNeurotoxinEffect && isApplyingNeurotoxinEffect)
         {
@@ -237,7 +233,7 @@ public class EntityAlgorithms {
                 entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
             }));
 
-            if(debuff == ModMobEffects.SCULK_INFECTION.get() || debuff == ModMobEffects.DISEASED_CYSTS.get() || debuff == ModMobEffects.NEUROTOXIN_STAGE1.get())
+            if(debuff == ModMobEffects.SCULK_INFECTION.get() || debuff == ModMobEffects.DISEASED_CYSTS.get() || debuff == ModMobEffects.ROOTED_EFFECT.get())
             {
                 SculkHorde.statisticsData.incrementTotalVictimsInfested();
             }
@@ -338,9 +334,7 @@ public class EntityAlgorithms {
     {
         return e.hasEffect(ModMobEffects.SCULK_INFECTION.get()) ||
                 e.hasEffect(ModMobEffects.DISEASED_CYSTS.get()) ||
-                e.hasEffect(ModMobEffects.NEUROTOXIN_STAGE1.get()) ||
-                e.hasEffect(ModMobEffects.NEUROTOXIN_STAGE2.get()) ||
-                e.hasEffect(ModMobEffects.NEUROTOXIN_STAGE3.get());
+                e.hasEffect(ModMobEffects.ROOTED_EFFECT.get());
     }
 
 

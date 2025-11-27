@@ -2,9 +2,13 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.SculkBroodlingEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.cursor_system.CursorSystem;
+import com.github.sculkhorde.systems.cursor_system.VirtualWebSpreadCursor;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
@@ -23,7 +27,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.minecraft.world.level.material.Fluids;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -100,11 +103,13 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
      */
     public boolean isValidSpawnPosition(ServerLevel worldIn, BlockPos pos)
     {
-        boolean isBlockBelowCurable = BlockInfestationSystem.isCurable(worldIn, pos.below());
-        boolean isBaseBlockReplaceable = worldIn.getBlockState(pos).canBeReplaced(Fluids.WATER);
-        boolean isBlockAboveReplaceable = worldIn.getBlockState(pos.above()).canBeReplaced(Fluids.WATER);
+        BlockState belowBlock = worldIn.getBlockState(pos.below());
 
-        return isBlockBelowCurable && isBaseBlockReplaceable && isBlockAboveReplaceable;
+        boolean isBlockBelowCurableOrNest = BlockInfestationSystem.isCurable(worldIn, pos.below()) || belowBlock.is(ModBlocks.BROOD_NEST_BLOCK.get());
+        boolean isBaseBlockNotSolid = BlockAlgorithms.isNotSolid(worldIn, pos);
+        boolean isBlockAboveNotSolid = BlockAlgorithms.isNotSolid(worldIn, pos.above());
+
+        return isBlockBelowCurableOrNest && isBaseBlockNotSolid && isBlockAboveNotSolid;
 
     }
 
@@ -249,7 +254,10 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
         public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
             broodNest.lastTickTime = level.getGameTime();
-
+            VirtualWebSpreadCursor cursor = CursorSystem.createWebSpreadCursor(level, broodNest.worldPosition);
+            cursor.setMaxTransformations(10);
+            cursor.setMaxRange(30);
+            cursor.setMaxLifeTimeTicks(TickUnits.convertMinutesToTicks(2));
             // Spawn Spiders
             if(EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level, blockPos, 16).isEmpty())
             {

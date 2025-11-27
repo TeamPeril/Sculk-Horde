@@ -56,19 +56,9 @@ public class PurityEffect extends MobEffect {
             entity.removeEffect(ModMobEffects.DISEASED_CYSTS.get());
         }
 
-        if(entity.hasEffect(ModMobEffects.NEUROTOXIN_STAGE1.get()))
+        if(entity.hasEffect(ModMobEffects.ROOTED_EFFECT.get()))
         {
-            entity.removeEffect(ModMobEffects.NEUROTOXIN_STAGE1.get());
-        }
-
-        if(entity.hasEffect(ModMobEffects.NEUROTOXIN_STAGE2.get()))
-        {
-            entity.removeEffect(ModMobEffects.NEUROTOXIN_STAGE2.get());
-        }
-
-        if(entity.hasEffect(ModMobEffects.NEUROTOXIN_STAGE3.get()))
-        {
-            entity.removeEffect(ModMobEffects.NEUROTOXIN_STAGE3.get());
+            entity.removeEffect(ModMobEffects.ROOTED_EFFECT.get());
         }
 
         // If Sculk Living Entity, do damage

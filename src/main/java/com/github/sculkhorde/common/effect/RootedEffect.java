@@ -1,12 +1,13 @@
 package com.github.sculkhorde.common.effect;
 
-import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.ColorUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -19,9 +20,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class NeurotoxinStage2Effect extends MobEffect implements IPotionExpireEffect{
+public class RootedEffect extends MobEffect implements IPotionExpireEffect{
 
-    public static int liquidColor = 338997;
+    public static int liquidColor = ColorUtil.hexToInt(ColorUtil.sculkBoneColor1);
     public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
     public long COOLDOWN = TickUnits.convertSecondsToTicks(1);
     public long cooldownTicksRemaining = COOLDOWN;
@@ -33,16 +34,18 @@ public class NeurotoxinStage2Effect extends MobEffect implements IPotionExpireEf
      * @param effectType Determines if harmful or not
      * @param liquidColor The color in some number format
      */
-    protected NeurotoxinStage2Effect(MobEffectCategory effectType, int liquidColor) {
+    protected RootedEffect(MobEffectCategory effectType, int liquidColor) {
         super(effectType, liquidColor);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, -0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
-        addAttributeModifier(Attributes.MAX_HEALTH, -0.8F, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, -0.8F, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.MAX_HEALTH, -0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.ATTACK_KNOCKBACK, -1F, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.ATTACK_SPEED, -0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 
     /**
      * Simpler Constructor
      */
-    public NeurotoxinStage2Effect() {
+    public RootedEffect() {
         this(effectType, liquidColor);
     }
 
@@ -57,7 +60,7 @@ public class NeurotoxinStage2Effect extends MobEffect implements IPotionExpireEf
 
         if(sourceEntity instanceof ServerPlayer player)
         {
-            player.causeFoodExhaustion(4F);
+            player.causeFoodExhaustion(10F);
         }
 
     }
@@ -74,7 +77,11 @@ public class NeurotoxinStage2Effect extends MobEffect implements IPotionExpireEf
             return;
         }
 
-        entity.addEffect(new MobEffectInstance(ModMobEffects.NEUROTOXIN_STAGE3.get(), TickUnits.convertMinutesToTicks(2), 0));
+        BlockAlgorithms.setBlockStructure(entity.level(), entity.blockPosition(), ModBlocks.BROOD_NEST_CORE_BLOCK.get().defaultBlockState());
+        if(!EntityAlgorithms.isLivingEntityExplicitDenyTarget(entity))
+        {
+            entity.hurt(entity.damageSources().magic(), Integer.MAX_VALUE);
+        }
     }
 
     /**
@@ -98,14 +105,14 @@ public class NeurotoxinStage2Effect extends MobEffect implements IPotionExpireEf
 
     }
 
-    public MobEffect addAttributeModifier(Attribute attribute, double value, AttributeModifier.Operation operation) {
-        return addAttributeModifier(attribute, UUID.randomUUID().toString(), value, operation);
-    }
-
     @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;
+    }
+
+    public MobEffect addAttributeModifier(Attribute attribute, double value, AttributeModifier.Operation operation) {
+        return addAttributeModifier(attribute, UUID.randomUUID().toString(), value, operation);
     }
 
 }

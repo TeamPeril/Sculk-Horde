@@ -289,7 +289,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         @Override
         public void onTargetHurt(LivingEntity target) {
             super.onTargetHurt(target);
-            target.addEffect(new MobEffectInstance(ModMobEffects.NEUROTOXIN_STAGE1.get(), TickUnits.convertMinutesToTicks(2), 0), this.mob);
+            target.addEffect(new MobEffectInstance(ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), 0), this.mob);
         }
     }
 }

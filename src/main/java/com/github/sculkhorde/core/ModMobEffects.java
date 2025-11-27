@@ -19,8 +19,6 @@ public class ModMobEffects {
     public static final RegistryObject<SoulDisruptionEffect> SOUL_DISRUPTION = EFFECTS.register("soul_disruption", SoulDisruptionEffect::new);
     public static final RegistryObject<DiseasedAtmosphereEffect> DISEASED_ATMOSPHERE = EFFECTS.register("diseased_atmosphere", DiseasedAtmosphereEffect::new);
     public static final RegistryObject<SculkFogEffect> SCULK_FOG = EFFECTS.register("sculk_fog", SculkFogEffect::new);
-    public static final RegistryObject<NeurotoxinStage1Effect> NEUROTOXIN_STAGE1 = EFFECTS.register("neurotoxin_stage1", NeurotoxinStage1Effect::new);
-    public static final RegistryObject<NeurotoxinStage2Effect> NEUROTOXIN_STAGE2 = EFFECTS.register("neurotoxin_stage2", NeurotoxinStage2Effect::new);
-    public static final RegistryObject<NeurotoxinStage3Effect> NEUROTOXIN_STAGE3 = EFFECTS.register("neurotoxin_stage3", NeurotoxinStage3Effect::new);
+    public static final RegistryObject<RootedEffect> ROOTED_EFFECT = EFFECTS.register("rooted", RootedEffect::new);
 
 }

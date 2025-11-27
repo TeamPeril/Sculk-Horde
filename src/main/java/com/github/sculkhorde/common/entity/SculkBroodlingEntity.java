@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -298,17 +299,17 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
 
             if(DifficultyUtil.isCurrentDifficultyEasy())
             {
-                EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(3), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(5), 0);
             }
             else if(DifficultyUtil.isCurrentDifficultyNormal())
             {
-                EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(10), 0);
             }
             else if(DifficultyUtil.isCurrentDifficultyHard())
             {
-                EntityAlgorithms.applyEffectToTarget(target, SculkMiteEntity.INFECT_EFFECT, TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(1), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(15), 0);
             }
 
