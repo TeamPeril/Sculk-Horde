@@ -421,6 +421,7 @@
   "item.sculkhorde.soul_disrupter": "Soul Disrupter",
   "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oA weapon that when pointed at a Soul Reaper, will weaken it for 1 minute. While the weakness is active, it brings down it's difficulty by one level.",
   "tooltip.sculkhorde.soul_disrupter.lore": "§7§oAn improvised weapon designed to disrupt the powers of the Soul Reaper temporarily.",
+
   "item.sculkhorde.ferriscite": "Ferriscite",
   "tooltip.sculkhorde.ferriscite.functionality": "§7§oA resource that made from putting Iron in a Soul Harvester. Tools made with this material will mine faster the more of the same block you mine; mining a block different than the last block you mined will incur a small speed penalty. Additionally, the tools will be repairable from killing non-sculk mobs.",
   "tooltip.sculkhorde.ferriscite.lore": "§7§oAn unholy fusion of Sculk and Iron, forged from the tormented souls of the living. This eerie metal radiates an unnatural chill and instills a sense of deep unease in those who dare to grasp it.",

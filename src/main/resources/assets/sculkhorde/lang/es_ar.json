@@ -393,12 +393,13 @@
   "item.sculkhorde.soul_disrupter": "Disruptor de almas",
   "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oUn arma que al apuntarse a una segadora de almas, va a debilitarla por 1 minuto. Mientras la debilidad está activa, desciende la dificultad un nivel.",
   "tooltip.sculkhorde.soul_disrupter.lore": "§7§oUn arma improvisada diseñada para disruptir el poder de la segadora de almas temporamente.",
-  "item.sculkhorde.ferriscite": "Ferriscite",
-  "tooltip.sculkhorde.ferriscite.functionality": "WIP",
-  "tooltip.sculkhorde.ferriscite.lore": "WIP",
+
+  "item.sculkhorde.ferriscite": "Ferriscita",
+  "tooltip.sculkhorde.ferriscite.functionality": "§7§oUn recurso que se hace colocando Hierro en un Cosechador de Almas. Las herramientas hechas con este material minarán más rápido cuanto más del mismo bloque mines; minar un bloque diferente al último bloque minado incurrirá en una pequeña penalización de velocidad. Además, las herramientas serán reparables al matar mobs que no son de sculk.",
+  "tooltip.sculkhorde.ferriscite.lore": "§7§oUna fusión impía de Sculk y Hierro, forjada a partir de las almas atormentadas de los vivos. Este espeluznante metal irradia un escalofrío antinatural e infunde una profunda sensación de malestar en quienes se atreven a agarrarlo.",
   "item.sculkhorde.diascite": "Diascita",
-  "tooltip.sculkhorde.diascite.functionality": "WIP",
-  "tooltip.sculkhorde.diascite.lore": "WIP",
+  "tooltip.sculkhorde.diascite.functionality": "§7§oUn recurso que se hace colocando Diamante en un Cosechador de Almas. Las herramientas hechas con este material buscarán y minarán otros bloques del mismo tipo en el área circundante. Además, las herramientas serán reparables al matar mobs que no son de sculk.",
+  "tooltip.sculkhorde.diascite.lore": "§7§oUna fusión impía de Sculk y Diamante, forjada a partir de las almas atormentadas de los vivos. Este espeluznante metal irradia un escalofrío antinatural e infunde una profunda sensación de malestar en quienes se atreven a agarrarlo.",
 
   "itemGroup.sculk_horde_tab_experimental": "Características Experimentales de la Horda de Sculk",
   "item.sculkhorde.sculk_sheep_spawn_egg": "Huevo generador de oveja de sculk",
