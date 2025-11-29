@@ -474,7 +474,9 @@
   "item.minecraft.tipped_arrow.effect.corroded_potion": "Arrow of Corroded",
 
   "sounds.sculkhorde.infestation_ambience": "Infestation Ambience",
-  "sounds.sculkhorde.soulite_ambience": "Soulite Chimes"
+  "sounds.sculkhorde.soulite_ambience": "Soulite Chimes",
+
+  "block.sculkhorde.living_web_block": "Living Web Block"
 }
 
 
