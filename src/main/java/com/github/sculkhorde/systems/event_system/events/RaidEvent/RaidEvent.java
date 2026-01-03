@@ -1240,10 +1240,6 @@ public class RaidEvent extends Event {
         else return !getDimension().getBlockState(getObjectiveLocation()).is(ModBlocks.BlockTags.SCULK_RAID_TARGET_LOW_PRIORITY);
     }
 
-    private Predicate<EntityFactoryEntry> isValidRaidParticipant(EntityFactoryEntry.StrategicValues strategicValue)
-    {
-        return (entityFactoryEntry) -> entityFactoryEntry.doesEntityContainNeededStrategicValue(strategicValue);
-    }
 
     private void spawnWaveParticipants(BlockPos spawnLocation)
     {
@@ -1286,11 +1282,25 @@ public class RaidEvent extends Event {
             squads.add(getWavePattern());
         }
 
-        for(EntityFactoryEntry.StrategicValues[] squad : squads)
+
+
+
+        for(EntityFactoryEntry.StrategicValues[] squadToCreate : squads)
         {
-            for(EntityFactoryEntry.StrategicValues value : squad)
+            for(EntityFactoryEntry.StrategicValues valueInSquad : squadToCreate)
             {
-                Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(isValidRaidParticipant(value));
+                // Aspects we want our combatants to have
+                ArrayList<EntityFactoryEntry.StrategicValues> desiredStrategicValues = new ArrayList<>();
+                desiredStrategicValues.add(EntityFactoryEntry.StrategicValues.Combat);
+                desiredStrategicValues.add(EntityFactoryEntry.StrategicValues.EffectiveOnGround);
+                desiredStrategicValues.add(valueInSquad);
+
+                // Aspects we do not want out combatants to have
+                ArrayList<EntityFactoryEntry.StrategicValues> undesiredStrategicValues = new ArrayList<>();
+                undesiredStrategicValues.add(EntityFactoryEntry.StrategicValues.Aquatic);
+
+
+                Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(undesiredStrategicValues, desiredStrategicValues);
                 if(randomEntry.isEmpty())
                 {
                     SculkHorde.LOGGER.info("RaidHandler | Unable to find valid entity for raid.");

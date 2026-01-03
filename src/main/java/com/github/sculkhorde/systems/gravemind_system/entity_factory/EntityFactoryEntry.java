@@ -171,7 +171,7 @@ public class EntityFactoryEntry {
         return false;
     }
 
-    public boolean doesEntityContainNeededStrategicValues(ArrayList<StrategicValues> requiredValues)
+    public boolean containsAll(ArrayList<StrategicValues> requiredValues)
     {
         int amountOfValuesNeeded = requiredValues.size();
         int amountOfValuesUnitHasFromRequirement = 0;
@@ -190,7 +190,7 @@ public class EntityFactoryEntry {
         return amountOfValuesNeeded == amountOfValuesUnitHasFromRequirement;
     }
 
-    public boolean doesEntityContainAnyDeniedStrategicValues(ArrayList<StrategicValues>  deniedValues)
+    public boolean containsAny(ArrayList<StrategicValues>  deniedValues)
     {
         for(StrategicValues value : deniedValues)
         {
@@ -217,8 +217,8 @@ public class EntityFactoryEntry {
         boolean doesHordeNotHaveEnoughMass = getCost() >= ModSavedData.getSaveData().getSculkAccumulatedMass();
         boolean isSenderExplicitlyDenied = isSenderExplicitlyDenied(context.sender);
         boolean isEvolutionStateNotMet = !SculkHorde.gravemind.isEvolutionStateEqualOrLessThanCurrent(minEvolutionRequired);
-        boolean doesEntityNotContainNeededStrategicValues = !doesEntityContainNeededStrategicValues(context.approvedStrategicValues);
-        boolean doesEntityContainBannedStrategicValues = doesEntityContainAnyDeniedStrategicValues(context.deniedStrategicValues);
+        boolean doesEntityNotContainNeededStrategicValues = !containsAll(context.approvedStrategicValues);
+        boolean doesEntityContainBannedStrategicValues = containsAny(context.deniedStrategicValues);
         boolean doesRequestSpecifyAnyApprovedMobTypes = !context.approvedStrategicValues.isEmpty();
 
         if(doesHordeNotHaveEnoughMass || isOverBudget)

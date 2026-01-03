@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactoryEntry.StrategicValues.Combat;
-
 public class SummonRandomAttackUnits extends MeleeAttackGoal
 {
     protected int maxAttackDuration = 0;
@@ -23,12 +21,9 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
     protected final int executionCooldown = TickUnits.convertSecondsToTicks(40);
     protected int ticksElapsed = executionCooldown;
 
-    protected ArrayList<EntityFactoryEntry.StrategicValues> validStrategicValues = new ArrayList<>();
-
     public SummonRandomAttackUnits(PathfinderMob mob, int durationInTicks) {
         super(mob, 0.0F, true);
         maxAttackDuration = durationInTicks;
-        validStrategicValues.add(Combat);
     }
 
     private SculkEndermanEntity getSculkEnderman()
@@ -78,14 +73,6 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
         return true;
     };
 
-    private Predicate<EntityFactoryEntry> isValidReinforcement()
-    {
-        return (entityFactoryEntry) ->
-        {
-            return entityFactoryEntry.doesEntityContainNeededStrategicValues(validStrategicValues);
-        };
-    }
-
     @Override
     public void start()
     {
@@ -106,7 +93,7 @@ public class SummonRandomAttackUnits extends MeleeAttackGoal
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            Optional<EntityFactoryEntry> entry =  EntityFactory.getRandomEntry(isValidReinforcement());
+            Optional<EntityFactoryEntry> entry =  EntityFactory.getRandomEntry(EntityFactoryEntry.StrategicValues.Combat);
 
             if(entry.isPresent())
             {

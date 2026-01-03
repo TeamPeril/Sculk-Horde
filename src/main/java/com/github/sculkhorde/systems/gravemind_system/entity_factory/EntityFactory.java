@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static com.github.sculkhorde.core.SculkHorde.gravemind;
 
@@ -243,21 +242,46 @@ public class EntityFactory {
         }
     }
 
+    public static Optional<EntityFactoryEntry> getRandomEntry(EntityFactoryEntry.StrategicValues desiredValue)
+    {
+        ArrayList<EntityFactoryEntry.StrategicValues> desiredValues = new ArrayList<>();
+        desiredValues.add(desiredValue);
+        return getRandomEntry(null, desiredValues);
+    }
 
-    public static Optional<EntityFactoryEntry> getRandomEntry(Predicate<EntityFactoryEntry> predicate)
+    public static Optional<EntityFactoryEntry> getRandomEntry(ArrayList<EntityFactoryEntry.StrategicValues> desiredValues)
+    {
+        return getRandomEntry(null, desiredValues);
+    }
+
+    public static Optional<EntityFactoryEntry> getRandomEntry(ArrayList<EntityFactoryEntry.StrategicValues> excludedValues, ArrayList<EntityFactoryEntry.StrategicValues> desiredValues)
     {
         Optional<EntityFactoryEntry> output = Optional.empty();
 
         ArrayList<EntityFactoryEntry> possibleEntries = new ArrayList<>();
         for(EntityFactoryEntry entry : entries)
         {
-            if(predicate.test(entry) && entry.isEntryAppropriateMinimalCheck())
+            // If it includes an excluded value, ignore.
+            if(excludedValues != null && !excludedValues.isEmpty() && entry.containsAny(excludedValues))
             {
-                possibleEntries.add(entry);
+                continue;
+
             }
+            // if the entry is not appropriate, ignore.
+            else if(!entry.isEntryAppropriateMinimalCheck())
+            {
+                continue;
+            }
+            // if the entry doesn't contain an included value, ignore.
+            else if(desiredValues != null && !desiredValues.isEmpty() && !entry.containsAll(desiredValues))
+            {
+                continue;
+            }
+
+            possibleEntries.add(entry);
         }
 
-        if(possibleEntries.size() > 0)
+        if(!possibleEntries.isEmpty())
         {
             output = Optional.of(possibleEntries.get(rng.nextInt(possibleEntries.size())));
         }
