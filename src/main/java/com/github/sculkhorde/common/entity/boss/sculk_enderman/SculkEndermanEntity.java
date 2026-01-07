@@ -8,7 +8,7 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -165,7 +165,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return null;
     }
 

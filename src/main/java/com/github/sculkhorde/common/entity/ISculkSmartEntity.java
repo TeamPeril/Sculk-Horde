@@ -3,8 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.event_system.EventSystem;
-import com.github.sculkhorde.util.SquadHandler;
-import net.minecraft.core.BlockPos;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 
@@ -20,13 +19,7 @@ public interface ISculkSmartEntity {
         return ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) ((Mob) this).level(), ((Mob) this).blockPosition());
     }
 
-    default Optional<BlockPos> getClosestNodePosition() {
-        if(getClosestNode().isEmpty()) { return Optional.empty(); }
-
-        return Optional.ofNullable(getClosestNode().get().getPosition());
-    }
-
-    SquadHandler getSquad();
+    Squad getSquad();
 
     boolean isParticipatingInRaid();
 

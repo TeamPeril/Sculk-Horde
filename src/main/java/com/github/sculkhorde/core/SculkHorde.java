@@ -12,6 +12,7 @@ import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadD
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
@@ -51,6 +52,7 @@ public class SculkHorde {
     public static final SculkPopulationSystem populationHandler = new SculkPopulationSystem();
     public static final HitSquadDispatcherSystem hitSquadDispatcherSystem = new HitSquadDispatcherSystem();
     public static BeeNestActivitySystem beeNestActivitySystem;
+    public static SquadSystem squadSystem = new SquadSystem();
 
     public static AutoPerformanceSystem autoPerformanceSystem;
     public static ChunkInfestationSystem chunkInfestationSystem;

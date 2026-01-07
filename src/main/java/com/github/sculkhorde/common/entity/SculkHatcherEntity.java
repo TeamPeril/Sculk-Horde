@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -67,7 +67,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().ignoreTargetBelow50PercentHealth().enableMustReachTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -163,7 +163,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
-                        new SquadHandlingGoal(this),
+                        new SquadLogicGoal(this),
                         new ChuckMiteAttackGoal(this),
                         new AttackGoal(),
                         new FollowSquadLeader(this),
@@ -259,7 +259,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 

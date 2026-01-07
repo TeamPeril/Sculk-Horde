@@ -6,7 +6,7 @@ import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
@@ -266,7 +266,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     }
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return null;
     }
 

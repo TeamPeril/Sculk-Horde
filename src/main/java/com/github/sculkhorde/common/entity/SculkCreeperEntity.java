@@ -9,7 +9,7 @@ import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
@@ -68,7 +68,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     public void checkDespawn() {}
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return null;
     }
 

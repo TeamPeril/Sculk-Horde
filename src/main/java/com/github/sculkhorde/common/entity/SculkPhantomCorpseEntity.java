@@ -8,7 +8,7 @@ import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -127,7 +127,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return null;
     }
 

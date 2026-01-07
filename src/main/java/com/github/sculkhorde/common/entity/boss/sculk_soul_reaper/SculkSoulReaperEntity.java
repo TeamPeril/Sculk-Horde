@@ -18,7 +18,7 @@ import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -213,9 +213,9 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
     private boolean isParticipatingInRaid = false;
 
-    protected SquadHandler squad = new SquadHandler(this);
+    protected Squad squad = new Squad(this);
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 

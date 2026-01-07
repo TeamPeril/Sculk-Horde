@@ -5,7 +5,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
@@ -77,7 +77,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
             .disableBlackListMobs()
             //.disableTargetWalkers()
             .enableMustSeeTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 
@@ -277,7 +277,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 

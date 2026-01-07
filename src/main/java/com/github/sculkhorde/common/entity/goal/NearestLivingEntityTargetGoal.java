@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -41,8 +41,8 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
         ISculkSmartEntity sculkMob = ((ISculkSmartEntity)this.mob);
         if(sculkMob.getSquad() != null) {
 
-            boolean doesSquadExist = SquadHandler.doesSquadExist(sculkMob.getSquad());
-            boolean isLeaderOfSquad = sculkMob.getSquad().isSquadLeader();
+            boolean doesSquadExist = Squad.doesSquadExist(sculkMob.getSquad());
+            boolean isLeaderOfSquad = sculkMob.getSquad().isLeader();
             if (doesSquadExist && !isLeaderOfSquad) {
                 return false;
             }

@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 
@@ -23,8 +23,8 @@ public class FocusSquadTarget extends TargetGoal {
     {
         ISculkSmartEntity sculkSmartEntity = (ISculkSmartEntity) this.mob;
 
-        boolean squadDoesntExist = !SquadHandler.doesSquadExist(((ISculkSmartEntity)this.mob).getSquad());
-        boolean isSquadLeader = sculkSmartEntity.getSquad().isSquadLeader();
+        boolean squadDoesntExist = !Squad.doesSquadExist(((ISculkSmartEntity)this.mob).getSquad());
+        boolean isSquadLeader = sculkSmartEntity.getSquad().isLeader();
         if(squadDoesntExist || isSquadLeader)
         {
             return false;
@@ -39,14 +39,14 @@ public class FocusSquadTarget extends TargetGoal {
     @Override
     public void start()
     {
-        SquadHandler squad = ((ISculkSmartEntity)this.mob).getSquad();
+        Squad squad = ((ISculkSmartEntity)this.mob).getSquad();
         if(squad == null)
         {
             return;
         }
-        boolean doesSquadExist = SquadHandler.doesSquadExist(squad);
-        boolean isSquadLeader = squad.isSquadLeader();
-        boolean isSquadLeaderNullOrDead = squad.isSquadLeaderDead();
+        boolean doesSquadExist = Squad.doesSquadExist(squad);
+        boolean isSquadLeader = squad.isLeader();
+        boolean isSquadLeaderNullOrDead = squad.isLeaderDead();
         if(!doesSquadExist || isSquadLeader || isSquadLeaderNullOrDead)
         {
             return;

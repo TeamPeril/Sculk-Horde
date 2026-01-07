@@ -3,7 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -62,7 +62,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -99,7 +99,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 
@@ -156,7 +156,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(10)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
-                        new SquadHandlingGoal(this),
+                        new SquadLogicGoal(this),
                         new LeapAtTargetGoal(this, 0.5F),
                         new AttackGoal(),
                         new FollowSquadLeader(this),

@@ -6,7 +6,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.DifficultyUtil;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -117,7 +117,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 
@@ -135,7 +135,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
     }
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
@@ -175,7 +175,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new StayInRangeOfTarget(this, 20, 10),
-                        new SquadHandlingGoal(this),
+                        new SquadLogicGoal(this),
                         new MountNearestRavager(this),
                         //new RangedAcidAttackGoal(this, 1.0D, TickUnits.convertSecondsToTicks(3), 40),
                         new SpitAttackGoal(this,  40, 10),

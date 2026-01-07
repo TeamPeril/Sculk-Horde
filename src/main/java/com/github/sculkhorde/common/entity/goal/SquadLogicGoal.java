@@ -3,7 +3,7 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -15,13 +15,13 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-public class SquadHandlingGoal extends Goal {
+public class SquadLogicGoal extends Goal {
 
     private final ISculkSmartEntity mob; // We use this to retrieve the mob that is using this goal.
     private long timeOfLastSquadUpdate = 0L;
     private final long SQUAD_UPDATE_DELAY = TickUnits.convertSecondsToTicks(5);
 
-    public SquadHandlingGoal(ISculkSmartEntity mob)
+    public SquadLogicGoal(ISculkSmartEntity mob)
     {
         super();
         this.mob = mob;
@@ -54,26 +54,31 @@ public class SquadHandlingGoal extends Goal {
     public void tick() {
         super.tick();
 
-        SquadHandler squad = mob.getSquad();
+        Squad squad = mob.getSquad();
 
-        if(SquadHandler.doesSquadExist(squad))
+        if(Squad.doesSquadExist(squad))
         {
-            if(squad.isSquadLeaderDead())
+            if(squad.isLeaderDead())
             {
-                ISculkSmartEntity mobWithMostHealth = squad.getMobMemberWithMostMaxHealth();
+                ISculkSmartEntity mobWithMostHealth = squad.getMemberWithMostMaxHealth();
                 if(mobWithMostHealth == null)
                 {
                     squad.disbandSquad();
                     return;
                 }
 
-                SquadHandler.promoteToLeaderOfSquad(mobWithMostHealth, squad);
+                Squad.promoteToLeaderOfSquad(mobWithMostHealth, squad);
             }
 
-            if(squad.isSquadLeader() && SculkHorde.isDebugMode())
+            if(squad.isLeader() && SculkHorde.isDebugMode())
             {
                 MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0, false, false);
                 getMob().addEffect(effect);
+            }
+
+            if(squad.isLeader() && getMob().isVehicle())
+            {
+                squad.removeMember();
             }
 
             return;
@@ -100,7 +105,7 @@ public class SquadHandlingGoal extends Goal {
 
         // Use streams to filter out non-iSculkSmartEntities that are squad leaders, and exclude this mob.
         Mob bestMob = list.stream()
-                .filter(mob -> mob instanceof ISculkSmartEntity && ((ISculkSmartEntity) mob).getSquad() != null && ((ISculkSmartEntity) mob).getSquad().isSquadLeader() && mob != getMob())
+                .filter(mob -> mob instanceof ISculkSmartEntity && ((ISculkSmartEntity) mob).getSquad() != null && ((ISculkSmartEntity) mob).getSquad().isLeader() && mob != getMob())
                 .min(Comparator.comparingDouble(getMob()::distanceToSqr))
                 .orElse(null);
 
@@ -109,7 +114,7 @@ public class SquadHandlingGoal extends Goal {
             return false;
         }
 
-        return ((ISculkSmartEntity) bestMob).getSquad().tryToAcceptMemberIntoSquad(mob);
+        return ((ISculkSmartEntity) bestMob).getSquad().attemptAddMember(mob);
 
     }
 

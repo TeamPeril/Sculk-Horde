@@ -6,7 +6,7 @@ import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -75,7 +75,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -100,7 +100,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 
@@ -161,7 +161,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)),
                 //SwimGoal(mob)
                 new FloatGoal(this),
-                new SquadHandlingGoal(this),
+                new SquadLogicGoal(this),
                 //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                 new AttackGoal(),
                 new FollowSquadLeader(this),

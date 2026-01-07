@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModSounds;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -57,7 +57,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -94,7 +94,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 
@@ -151,7 +151,7 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
-                        new SquadHandlingGoal(this),
+                        new SquadLogicGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new AttackGoal(),
                         new FollowSquadLeader(this),

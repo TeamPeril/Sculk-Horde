@@ -8,7 +8,7 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.SquadHandler;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -65,7 +65,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked
@@ -201,7 +201,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(1)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
-                        new SquadHandlingGoal(this),
+                        new SquadLogicGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new SculkMiteInfectGoal(this, 1.0D, true),
                         new FollowSquadLeader(this),
@@ -254,7 +254,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 

@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
@@ -84,7 +85,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-    private SquadHandler squad = new SquadHandler(this);
+    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
@@ -167,7 +168,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     private boolean isParticipatingInRaid = false;
 
     @Override
-    public SquadHandler getSquad() {
+    public Squad getSquad() {
         return squad;
     }
 
@@ -225,7 +226,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
                         new OpenDoorGoal(this, true),
                         //SwimGoal(mob)
                         new FloatGoal(this),
-                        new SquadHandlingGoal(this),
+                        new SquadLogicGoal(this),
                         new RunFromHostilesGoal<>(this, 4, 1.0F, 1.0F),
                         new BuffNearbyAllies(this),
                         new ThrowPotionAttackGoal(this, 20, 10),
