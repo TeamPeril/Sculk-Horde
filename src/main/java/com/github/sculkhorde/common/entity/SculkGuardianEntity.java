@@ -305,10 +305,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
 
     private boolean isParticipatingInRaid = false;
 
-    @Override
-    public Squad getSquad() {
-        return squad;
-    }
+    
 
     @Override
     public boolean isParticipatingInRaid() {

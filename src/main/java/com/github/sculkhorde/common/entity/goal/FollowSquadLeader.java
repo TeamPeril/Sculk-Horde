@@ -1,15 +1,19 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import net.minecraft.world.entity.Entity;
+import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
+
+import java.util.Optional;
 
 public class FollowSquadLeader extends Goal {
     private final ISculkSmartEntity sculkSmartEntity; // the skeleton mob
     private int timeToRecalcPath;
 
-    private final int FOLLOW_RANGE = 20;
+    private final int FOLLOW_RANGE = 7;
 
     public FollowSquadLeader(ISculkSmartEntity mob) {
         this.sculkSmartEntity = mob;
@@ -22,19 +26,23 @@ public class FollowSquadLeader extends Goal {
     @Override
     public boolean canUse() {
 
-        // check if the entity is riding something
-        boolean isRiding = getMob().isPassenger();
-        boolean isSquadLeaderNull = sculkSmartEntity.getSquad().leaderUUID.isEmpty();
-        boolean isSquadNull = sculkSmartEntity.getSquad() == null;
-        boolean isSquadLeaderDead = sculkSmartEntity.getSquad().isLeaderDead();
-        boolean areWeTheSquadLeader = sculkSmartEntity.getSquad().isLeader();
-        boolean doWeHaveTarget = getMob().getTarget() != null;
 
-        if (isRiding || isSquadLeaderNull || isSquadNull || isSquadLeaderDead || areWeTheSquadLeader || doWeHaveTarget) {
+
+        Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(getMob());
+
+        if(squad.isEmpty() || squad.get().getLeader().isEmpty() || squad.get().isLeader(getMob().getUUID()))
+        {
             return false;
         }
 
-        if(!sculkSmartEntity.getSquad().isLeaderDead() && getMob().distanceToSqr((Entity) sculkSmartEntity.getSquad().leaderUUID.get()) < FOLLOW_RANGE)
+        boolean doWeHaveTarget = getMob().getTarget() != null;
+        boolean isBeingRidden = getMob().isVehicle();
+
+        if (isBeingRidden || doWeHaveTarget || squad.get().isLeaderDead()) {
+            return false;
+        }
+
+        if(EntityAlgorithms.getDistanceBetweenEntities(squad.get().getLeader().get(), getMob()) <= FOLLOW_RANGE)
         {
             return false;
         }
@@ -48,24 +56,22 @@ public class FollowSquadLeader extends Goal {
     }
 
     @Override
-    public void tick() {
-        boolean isSquadNull = sculkSmartEntity.getSquad() == null;
-        boolean isSquadLeaderNull = sculkSmartEntity.getSquad().leaderUUID.isEmpty();
+    public void tick()
+    {
+        Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(getMob());
 
-        if(isSquadNull || isSquadLeaderNull)
+        if(squad.isEmpty() || squad.get().getLeader().isEmpty() || squad.get().isLeaderDead())
         {
             return;
         }
 
-        if (getMob().distanceToSqr((Entity) sculkSmartEntity.getSquad().leaderUUID.get()) < FOLLOW_RANGE) {
-            // stop the navigation
+        if (EntityAlgorithms.getDistanceBetweenEntities(squad.get().getLeader().get(), getMob()) <= FOLLOW_RANGE) {
             getMob().getNavigation().stop();
-
         }
 
         if (--this.timeToRecalcPath <= 0) {
             this.timeToRecalcPath = this.adjustedTickDelay(20);
-            this.getMob().getNavigation().moveTo((Entity) sculkSmartEntity.getSquad().leaderUUID.get(), 1.0);
+            this.getMob().getNavigation().moveTo(squad.get().getLeader().get(), 1.0);
         }
     }
 }

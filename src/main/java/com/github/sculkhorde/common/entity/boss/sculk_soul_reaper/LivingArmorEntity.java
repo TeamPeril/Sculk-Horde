@@ -122,10 +122,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
     private boolean isParticipatingInRaid = false;
 
-    @Override
-    public Squad getSquad() {
-        return squad;
-    }
+    
 
     @Override
     public boolean isParticipatingInRaid() {

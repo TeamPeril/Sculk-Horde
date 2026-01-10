@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -55,8 +56,8 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
         }
 
         // Only Squad leaders can lead to the raid
-        Squad squad = mob.getSquad();
-        if(squad != null && !squad.isLeader())
+        Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(getPathFinderMob());
+        if(squad.isPresent() && squad.get().isLeader(getPathFinderMob().getUUID()))
         {
             return false;
         }

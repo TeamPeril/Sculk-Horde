@@ -1,31 +1,31 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.phys.AABB;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class SquadLogicGoal extends Goal {
 
-    private final ISculkSmartEntity mob; // We use this to retrieve the mob that is using this goal.
+    private final LivingEntity mob; // We use this to retrieve the mob that is using this goal.
     private long timeOfLastSquadUpdate = 0L;
     private final long SQUAD_UPDATE_DELAY = TickUnits.convertSecondsToTicks(5);
+    protected int squadSearchAttempts = 0;
+    protected final int MAX_SQUAD_SEARCHES = 5;
 
-    public SquadLogicGoal(ISculkSmartEntity mob)
+    public SquadLogicGoal(LivingEntity mob)
     {
         super();
         this.mob = mob;
-        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     public Mob getMob()
@@ -54,68 +54,52 @@ public class SquadLogicGoal extends Goal {
     public void tick() {
         super.tick();
 
-        Squad squad = mob.getSquad();
 
-        if(Squad.doesSquadExist(squad))
+
+        if(SquadSystem.getSquadIdForMember(mob).isEmpty() && !mob.isVehicle())
         {
-            if(squad.isLeaderDead())
+            // Try to join squad, if this fails. Make one
+            if(!tryToJoinNearBySquad())
             {
-                ISculkSmartEntity mobWithMostHealth = squad.getMemberWithMostMaxHealth();
-                if(mobWithMostHealth == null)
+                squadSearchAttempts++;
+
+                if(squadSearchAttempts >= MAX_SQUAD_SEARCHES)
                 {
-                    squad.disbandSquad();
-                    return;
+                    SquadSystem.createSquad(mob);
+                    squadSearchAttempts = 0;
                 }
 
-                Squad.promoteToLeaderOfSquad(mobWithMostHealth, squad);
             }
-
-            if(squad.isLeader() && SculkHorde.isDebugMode())
+            else
             {
-                MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0, false, false);
-                getMob().addEffect(effect);
+                squadSearchAttempts = 0;
             }
-
-            if(squad.isLeader() && getMob().isVehicle())
-            {
-                squad.removeMember();
-            }
-
             return;
         }
 
-        // If we fail to join a squad, create one and make us leader.
-        if(!tryToJoinNearBySquad())
+        UUID squadUUID = SquadSystem.getSquadIdForMember(mob).get();
+        Optional<Squad> squad = SquadSystem.getSquad(squadUUID);
+
+        if(squad.isEmpty()) {
+            return;
+        }
+
+        if(squad.get().isLeader(mob.getUUID()) && SculkHorde.isDebugMode())
         {
-            squad.createSquad();
+            MobEffectInstance effect = new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0, false, false);
+            getMob().addEffect(effect);
         }
     }
 
     protected boolean tryToJoinNearBySquad()
     {
-        AABB boundingBox = getMob().getBoundingBox().inflate(16.0D, 8.0D, 16.0D);
-        // Get list of mobs in range
-        List<? extends Mob> list = getMob().level().getEntitiesOfClass(Mob.class, boundingBox);
-
-
-        // Early exit if list is empty
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        // Use streams to filter out non-iSculkSmartEntities that are squad leaders, and exclude this mob.
-        Mob bestMob = list.stream()
-                .filter(mob -> mob instanceof ISculkSmartEntity && ((ISculkSmartEntity) mob).getSquad() != null && ((ISculkSmartEntity) mob).getSquad().isLeader() && mob != getMob())
-                .min(Comparator.comparingDouble(getMob()::distanceToSqr))
-                .orElse(null);
-
-        if(bestMob == null)
+        Optional<Squad> squad = SquadSystem.getSquadNearPos(mob.blockPosition());
+        if(squad.isPresent())
         {
-            return false;
+            return squad.get().attemptAddMember(mob);
         }
 
-        return ((ISculkSmartEntity) bestMob).getSquad().attemptAddMember(mob);
-
+        return false;
     }
 
     @Override

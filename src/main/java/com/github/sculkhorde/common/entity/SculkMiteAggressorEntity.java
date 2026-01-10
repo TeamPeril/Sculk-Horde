@@ -95,10 +95,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
 
     private boolean isParticipatingInRaid = false;
 
-    @Override
-    public Squad getSquad() {
-        return squad;
-    }
+    
 
     @Override
     public boolean isParticipatingInRaid() {

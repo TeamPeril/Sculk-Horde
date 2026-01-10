@@ -7,9 +7,11 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.squad_system.Squad;
-import com.github.sculkhorde.util.*;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+import com.github.sculkhorde.util.DifficultyUtil;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.TickTask;
@@ -195,11 +197,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     public Vec3 getAnchorPoint() {
         return this.anchorPoint.getCenter();
-    }
-
-    @Override
-    public Squad getSquad() {
-        return null;
     }
 
     @Override

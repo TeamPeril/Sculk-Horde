@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -12,6 +13,7 @@ import net.minecraft.world.phys.AABB;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends TargetGoal {
@@ -38,12 +40,11 @@ public class NearestLivingEntityTargetGoal<T extends LivingEntity> extends Targe
     @Override
     public boolean canUse()
     {
-        ISculkSmartEntity sculkMob = ((ISculkSmartEntity)this.mob);
-        if(sculkMob.getSquad() != null) {
+        Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(mob);
+        if(squad.isPresent()) {
 
-            boolean doesSquadExist = Squad.doesSquadExist(sculkMob.getSquad());
-            boolean isLeaderOfSquad = sculkMob.getSquad().isLeader();
-            if (doesSquadExist && !isLeaderOfSquad) {
+            boolean isLeaderOfSquad = squad.get().isLeader(mob.getUUID());
+            if (!isLeaderOfSquad) {
                 return false;
             }
         }

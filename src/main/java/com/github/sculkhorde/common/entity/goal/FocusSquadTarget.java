@@ -1,11 +1,13 @@
 package com.github.sculkhorde.common.entity.goal;
 
-import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 
 import java.util.EnumSet;
+import java.util.Optional;
+import java.util.UUID;
 
 public class FocusSquadTarget extends TargetGoal {
 
@@ -21,11 +23,21 @@ public class FocusSquadTarget extends TargetGoal {
      */
     public boolean canUse()
     {
-        ISculkSmartEntity sculkSmartEntity = (ISculkSmartEntity) this.mob;
+        Optional<UUID> squadUUID = SquadSystem.getSquadIdForMember(mob);
 
-        boolean squadDoesntExist = !Squad.doesSquadExist(((ISculkSmartEntity)this.mob).getSquad());
-        boolean isSquadLeader = sculkSmartEntity.getSquad().isLeader();
-        if(squadDoesntExist || isSquadLeader)
+        if(squadUUID.isEmpty())
+        {
+            return false;
+        }
+
+        Optional<Squad> squad = SquadSystem.getSquad(squadUUID.get());
+
+        if(squad.isEmpty())
+        {
+            return false;
+        }
+
+        if(squad.get().isLeader(mob.getUUID()))
         {
             return false;
         }
@@ -39,20 +51,26 @@ public class FocusSquadTarget extends TargetGoal {
     @Override
     public void start()
     {
-        Squad squad = ((ISculkSmartEntity)this.mob).getSquad();
-        if(squad == null)
-        {
-            return;
-        }
-        boolean doesSquadExist = Squad.doesSquadExist(squad);
-        boolean isSquadLeader = squad.isLeader();
-        boolean isSquadLeaderNullOrDead = squad.isLeaderDead();
-        if(!doesSquadExist || isSquadLeader || isSquadLeaderNullOrDead)
+        Optional<UUID> squadUUID = SquadSystem.getSquadIdForMember(mob);
+
+        if(squadUUID.isEmpty())
         {
             return;
         }
 
-        this.mob.setTarget(squad.getSquadTarget());
+        Optional<Squad> squad = SquadSystem.getSquad(squadUUID.get());
+
+        if(squad.isEmpty())
+        {
+            return;
+        }
+
+        if(squad.get().isLeader(mob.getUUID()))
+        {
+            return;
+        }
+
+        this.mob.setTarget(squad.get().getSquadTarget());
     }
 
 }

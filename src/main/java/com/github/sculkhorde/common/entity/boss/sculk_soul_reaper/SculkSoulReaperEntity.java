@@ -140,7 +140,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         SculkSoulReaperEntity reaper = new SculkSoulReaperEntity(ModEntities.SCULK_SOUL_REAPER.get(), level);
         reaper.setPos(pos);
         reaper.setMobDifficultyLevel(mobDifficultyLevel);
-        reaper.getSquad().createSquad();
+        Squad squad = new Squad(reaper);
 
         if(mobDifficultyLevel >= 4)
         {
@@ -176,12 +176,12 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         vindicator3.setPos(pos);
         level.addFreshEntity(vindicator3);
 
-        reaper.getSquad().forceAcceptMemberIntoSquad(ravager);
-        reaper.getSquad().forceAcceptMemberIntoSquad(witch1);
-        reaper.getSquad().forceAcceptMemberIntoSquad(witch2);
-        reaper.getSquad().forceAcceptMemberIntoSquad(vindicator1);
-        reaper.getSquad().forceAcceptMemberIntoSquad(vindicator2);
-        reaper.getSquad().forceAcceptMemberIntoSquad(vindicator3);
+        squad.forceAcceptMemberIntoSquad(ravager);
+        squad.forceAcceptMemberIntoSquad(witch1);
+        squad.forceAcceptMemberIntoSquad(witch2);
+        squad.forceAcceptMemberIntoSquad(vindicator1);
+        squad.forceAcceptMemberIntoSquad(vindicator2);
+        squad.forceAcceptMemberIntoSquad(vindicator3);
         return reaper;
     }
 
@@ -214,10 +214,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     private boolean isParticipatingInRaid = false;
 
     protected Squad squad = new Squad(this);
-    @Override
-    public Squad getSquad() {
-        return squad;
-    }
+    
 
     @Override
     public boolean isParticipatingInRaid() {

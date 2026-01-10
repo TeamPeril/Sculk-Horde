@@ -106,6 +106,7 @@ public class Squad {
         return leader.isPresent() && leader.get().isDeadOrDying();
     }
 
+
     public boolean canJoinSquad() {
         return squadMembers.size() < MAX_SQUAD_SIZE;
     }
@@ -177,19 +178,17 @@ public class Squad {
     {
         if(isAllMembersDead())
         {
-            return null;
+            return Optional.empty();
         }
 
         Optional<LivingEntity> result = Optional.empty();
 
         double squadLeaderMaxHealth = 0;
 
-        for(int i = 0; i < squadMembers.size(); i++)
-        {
-            Mob compareMob = (Mob) squadMembers.get(i);
-            if(compareMob.getMaxHealth() > squadLeaderMaxHealth)
-            {
-                result = Optional.of(squadMembers.get(i));
+        for (LivingEntity squadMember : squadMembers) {
+            Mob compareMob = (Mob) squadMember;
+            if (compareMob.getMaxHealth() > squadLeaderMaxHealth) {
+                result = Optional.of(squadMember);
             }
         }
         return result;

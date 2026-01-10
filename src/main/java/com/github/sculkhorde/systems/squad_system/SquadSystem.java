@@ -1,6 +1,8 @@
 package com.github.sculkhorde.systems.squad_system;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.BlockAlgorithms;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.*;
@@ -29,6 +31,20 @@ public class SquadSystem {
         if (squad != null) {
             squad.disband();
         }
+    }
+
+    public static Optional<Squad> getSquadOfLivingEntity(LivingEntity entity)
+    {
+        Optional<Squad> result = Optional.empty();
+
+        Optional<UUID> squadUUID = SquadSystem.getSquadIdForMember(entity);
+
+        if(squadUUID.isPresent())
+        {
+            return SquadSystem.getSquad(squadUUID.get());
+        }
+
+        return result;
     }
 
     // Try to add a member to the squad. Returns true if successful.
@@ -73,6 +89,33 @@ public class SquadSystem {
     // Return an unmodifiable view of current squads
     public static Map<UUID, Squad> getAllSquads() {
         return Collections.unmodifiableMap(SculkHorde.squadSystem.SQUADS);
+    }
+
+    // Return an unmodifiable view of current squads
+    public static Collection<Squad> getAllSquadsAsList() {
+        return getAllSquads().values();
+    }
+
+    public static Optional<Squad> getSquadNearPos(BlockPos pos)
+    {
+        Optional<Squad> result = Optional.empty();
+
+        for(Squad squad : getAllSquadsAsList())
+        {
+            if(squad.isAllMembersDead() || squad.getLeader().isEmpty())
+            {
+                continue;
+            }
+
+            if(BlockAlgorithms.getBlockDistance(pos, squad.getLeader().get().blockPosition()) > 20)
+            {
+                continue;
+            }
+
+            result = Optional.of(squad);
+        }
+
+        return result;
     }
 
     // Instance method called each server tick to update squads

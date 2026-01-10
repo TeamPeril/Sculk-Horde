@@ -102,10 +102,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
 
     private boolean isParticipatingInRaid = false;
 
-    @Override
-    public Squad getSquad() {
-        return squad;
-    }
+    
 
     @Override
     public boolean isParticipatingInRaid() {

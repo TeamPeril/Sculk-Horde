@@ -2,7 +2,7 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.systems.squad_system.Squad;
-import net.minecraft.world.entity.Entity;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -97,10 +97,9 @@ public class ImprovedRandomStrollGoal extends Goal{
     protected Optional<Vec3> getPositionAvoidWater()
     {
         Optional<Vec3> output = Optional.empty();
-        boolean doesSquadExist = Squad.doesSquadExist(getSculkMob().getSquad());
         boolean isInWater = this.mob.isInWaterOrBubble();
 
-        if(!doesSquadExist)
+        if(SquadSystem.getSquadOfLivingEntity(mob).isEmpty())
         {
             if (isInWater)
             {
@@ -128,7 +127,15 @@ public class ImprovedRandomStrollGoal extends Goal{
         }
         else
         {
-            Vec3 squadLeaderPos = ((Entity) getSculkMob().getSquad().leaderUUID.get()).position();
+            Squad squad = SquadSystem.getSquadOfLivingEntity(mob).get();
+
+
+            if(squad.getLeader().isEmpty())
+            {
+                return getPosition();
+            }
+
+            Vec3 squadLeaderPos = squad.getLeader().get().position();
 
             if (isInWater)
             {

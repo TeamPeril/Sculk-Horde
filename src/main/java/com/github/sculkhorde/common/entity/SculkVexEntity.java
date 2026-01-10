@@ -153,10 +153,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
     private boolean isParticipatingInRaid = false;
 
-    @Override
-    public Squad getSquad() {
-        return squad;
-    }
+    
 
     @Override
     public boolean isParticipatingInRaid() {
