@@ -57,7 +57,7 @@ public class PathFindToRaidLocation<T extends ISculkSmartEntity> extends Goal {
 
         // Only Squad leaders can lead to the raid
         Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(getPathFinderMob());
-        if(squad.isPresent() && squad.get().isLeader(getPathFinderMob().getUUID()))
+        if(squad.isPresent() && !squad.get().isLeader(getPathFinderMob().getUUID()))
         {
             return false;
         }

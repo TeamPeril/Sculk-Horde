@@ -54,9 +54,12 @@ public class SquadLogicGoal extends Goal {
     public void tick() {
         super.tick();
 
+        if(mob.isVehicle())
+        {
+            return;
+        }
 
-
-        if(SquadSystem.getSquadIdForMember(mob).isEmpty() && !mob.isVehicle())
+        if(SquadSystem.getSquadIdForMember(mob).isEmpty())
         {
             // Try to join squad, if this fails. Make one
             if(!tryToJoinNearBySquad())
