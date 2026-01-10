@@ -1,7 +1,9 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -31,6 +33,15 @@ public class LivingWebBlock extends SculkVeinBlock {
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        entity.makeStuckInBlock(state, new Vec3(0.75F, 1F, 0.75F));
+
+        if(entity instanceof LivingEntity livingEntity)
+        {
+            if(EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
+            {
+                return;
+            }
+
+            entity.makeStuckInBlock(state, new Vec3(0.75F, 1F, 0.75F));
+        }
     }
 }
