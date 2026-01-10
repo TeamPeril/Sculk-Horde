@@ -145,10 +145,8 @@ public class SculkSheepEntity extends Monster implements GeoEntity, ISculkSmartE
                 {
                         new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(5)),
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
-                        //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
-                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
                         new AttackGoal(),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
