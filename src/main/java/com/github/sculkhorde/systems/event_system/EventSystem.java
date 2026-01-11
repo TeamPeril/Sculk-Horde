@@ -135,6 +135,11 @@ public class EventSystem {
 
     public static void save(CompoundTag tag)
     {
+        if(SculkHorde.eventSystem.getEvents().isEmpty())
+        {
+            return;
+        }
+
         SculkHorde.LOGGER.info("Saving " + SculkHorde.eventSystem.getEvents().size() + " events.");
         CompoundTag eventsTag = new CompoundTag();
         long startTime = System.currentTimeMillis();
