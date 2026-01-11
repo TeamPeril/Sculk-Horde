@@ -61,7 +61,6 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

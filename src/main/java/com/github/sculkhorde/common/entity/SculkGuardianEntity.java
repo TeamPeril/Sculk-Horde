@@ -76,7 +76,6 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
             .disableBlackListMobs()
             .disableTargetWalkers()
             .enableMustSeeTarget();
-    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

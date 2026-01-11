@@ -159,8 +159,6 @@ public class RangedAttackGoal extends Goal {
     public void stop() {
         super.stop();
         this.entity.setAggressive(false);
-        //TODO: PORT
-        //this.entity.setAttackingState(0);
         this.seeTime = 0;
         this.attackTime = attackCooldown;
         this.entity.stopUsingItem();
@@ -287,8 +285,5 @@ public class RangedAttackGoal extends Goal {
             else
                 this.attackTime++;
         }
-        //TODO: PORT
-        //this.entity.setAttackingState(attackTime >= attackCooldown * 0.75 ? this.statecheck : 0);
-
     }
 }

@@ -8,13 +8,4 @@ public class ModWorldEvents {
     /* biomeLoadingEvent()
      * @Description Registers stuff when biomeLoadingEvent is called.
      */
-
-    //TODO: PORT
-    //@SubscribeEvent
-    /*public static void biomeLoadingEvent(final BiomeLoadingEvent event)
-    {
-        ModEntityGen.onEntitySpawn(event);
-    }
-
-     */
 }

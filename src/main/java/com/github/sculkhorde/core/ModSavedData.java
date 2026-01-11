@@ -538,7 +538,6 @@ public class ModSavedData extends SavedData {
             getBeeNestEntries().add(new BeeNestEntry(level, positionIn));
             setDirty();
         }
-        // TODO For some reason this continously gets called, find out why
         //else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
     }
 

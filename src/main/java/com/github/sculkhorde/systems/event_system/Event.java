@@ -277,9 +277,6 @@ public class Event {
         {
             event.setEventLocation(BlockPos.of(tag.getLong("eventLocation")));
         }
-
-        //TODO Add dimension saving
-
         if(tag.contains("dimension"))
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));

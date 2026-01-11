@@ -73,7 +73,6 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
-    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

@@ -65,7 +65,6 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
-    private Squad squad = new Squad(this);
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked

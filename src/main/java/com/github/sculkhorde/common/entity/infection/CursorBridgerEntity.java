@@ -44,11 +44,6 @@ public class CursorBridgerEntity extends Entity {
     public CursorBridgerEntity(EntityType<?> pType, Level pLevel) {
         super(pType, pLevel);
         this.distanceTraveled = 0;
-        /**
-         * BUG: This is not working properly. The entity is not being removed after 30 seconds.
-         * When the entity is spawned, the creationTickTime is not altered in the statement below.
-         * TODO Fix this bug.
-         */
         creationTickTime = System.nanoTime();
     }
 

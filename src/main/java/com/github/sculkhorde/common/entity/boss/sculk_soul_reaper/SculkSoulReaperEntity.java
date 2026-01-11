@@ -19,6 +19,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
 import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -140,7 +141,9 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         SculkSoulReaperEntity reaper = new SculkSoulReaperEntity(ModEntities.SCULK_SOUL_REAPER.get(), level);
         reaper.setPos(pos);
         reaper.setMobDifficultyLevel(mobDifficultyLevel);
-        Squad squad = new Squad(reaper);
+
+        UUID squadUUID = SquadSystem.createSquad(reaper);
+        Squad squad = SquadSystem.getSquad(squadUUID).get();
 
         if(mobDifficultyLevel >= 4)
         {

@@ -52,7 +52,6 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
             .enableTargetHostiles()
             .enableTargetSwimmers()
             .enableTargetInfected();
-    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

@@ -10,7 +10,7 @@ public class BiomeSpecialEffectsMixin {
     // Inject at the start of the method and cancel original execution
     @Inject(method = "getSkyColor", at = @At("HEAD"), cancellable = true)
     private void onGetSkyColor(CallbackInfoReturnable<Integer> cir) {
-        // TODO: change this value to whatever sky color you want (RGB integer)
+        // change this value to whatever sky color you want (RGB integer)
         int overriddenColor = ColorUtil.hexToInt(ColorUtil.sculkBaseColor1);
 
         cir.setReturnValue(overriddenColor);

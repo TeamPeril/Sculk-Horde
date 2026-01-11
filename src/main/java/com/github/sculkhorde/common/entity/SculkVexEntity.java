@@ -73,7 +73,6 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
-    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public static final float FLAP_DEGREES_PER_TICK = 45.836624F;

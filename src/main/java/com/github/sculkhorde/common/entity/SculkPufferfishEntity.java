@@ -77,7 +77,6 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
             .disableBlackListMobs()
             //.disableTargetWalkers()
             .enableMustSeeTarget();
-    private Squad squad = new Squad(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

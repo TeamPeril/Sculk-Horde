@@ -132,7 +132,6 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public TargetParameters getTargetParameters() {
         return TARGET_PARAMETERS;
     }
-    private Squad squad = new Squad(this);
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.
      * Each goal has a priority with 0 being the highest and as the value increases, the priority is lower.
