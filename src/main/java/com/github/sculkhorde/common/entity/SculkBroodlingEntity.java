@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProjectileAttackEntity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
@@ -7,7 +8,6 @@ import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -16,11 +16,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
@@ -163,11 +163,15 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
-                        new LeapAtTargetGoal(this, 0.5F),
-                        new AttackGoal(),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
-                        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
+                        //new LeapAtTargetGoal(this, 0.5F),
+                        //new AttackGoal(),
+                        new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
+                                new ShootWebAttackStep(this),
+                                new ShootWebAttackStep(this),
+                                new ShootWebAttackStep(this)
+                        ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
                         new OpenDoorGoal(this, true)
                 };
@@ -257,7 +261,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     }
     */
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    public class AttackGoal extends CustomMeleeAttackGoal
     {
 
         public AttackGoal()
@@ -308,7 +312,76 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                 EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(1), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(15), 0);
             }
+        }
+    }
 
+    public class ShootWebAttackStep extends AttackStepGoal
+    {
+        protected int ATTACK_ANIMATION_DELAY = TickUnits.convertSecondsToTicks(0.5F);
+        protected int projectilesFired = 0;
+
+        public ShootWebAttackStep(Mob mob) {
+            super(mob);
+        }
+
+        public int getProjectileAmount()
+        {
+            return 3;
+        }
+
+        @Override
+        protected int getPreAttackDelay() {
+            return ATTACK_ANIMATION_DELAY;
+        }
+
+        @Override
+        protected void playPreAttackAnimation()
+        {
+            //getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.FLOOR_SPEARS_SPELL_USE_ID);
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            projectilesFired = 0;
+        }
+
+        @Override
+        protected void doAttackTick() {
+            super.doAttackTick();
+
+            if(getTarget() == null)
+            {
+                setAttackTickComplete();
+                return;
+            }
+
+            while(projectilesFired < getProjectileAmount())
+            {
+                SoulPoisonProjectileAttackEntity projectile = new SoulPoisonProjectileAttackEntity(level(), SculkBroodlingEntity.this, 1);
+
+                projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
+
+                double spawnPosX = mob.getX() + mob.getRandom().nextFloat();
+                double spawnPosY = mob.getY() + mob.getEyeHeight() + mob.getRandom().nextFloat();
+                double spawnPosZ = mob.getZ() + mob.getRandom().nextFloat();
+
+                double targetPosX = mob.getTarget().getX() - spawnPosX  + + mob.getRandom().nextFloat();
+                double targetPosY = mob.getTarget().getY(1) - spawnPosY + + mob.getRandom().nextFloat();
+                double targetPosZ = mob.getTarget().getZ() - spawnPosZ + + mob.getRandom().nextFloat();
+
+                // Create a vector for the direction
+                Vec3 direction = new Vec3(targetPosX, targetPosY, targetPosZ).normalize();
+
+                // Shoot the projectile in the direction vector
+                projectile.shoot(direction);
+
+                mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
+                mob.level().addFreshEntity(projectile);
+                projectilesFired++;
+            }
+
+            setAttackTickComplete();
         }
     }
 }

@@ -45,7 +45,7 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return !isPostAttack();
+        return !isReadyForNextAttackStep();
     }
 
     @Override
@@ -70,6 +70,11 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal {
 
     public boolean isAttackTickComplete() {
         return isPostAttack;
+    }
+
+    public void setAttackTickComplete()
+    {
+        isPostAttack = true;
     }
 
     public boolean isPostAttack() {
@@ -117,8 +122,6 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal {
         setPostAttack(false);
         setPreAttack(true);
 
-        setPreAttackDelayRemaining(getPreAttackDelay());
-        setPostAttackDelayRemaining(getPostAttackDelay());
         hasPlayedPreAttackAnimation = false;
         hasPlayedAttackAnimation = false;
         hasPlayedPostAttackAnimation = false;
@@ -129,9 +132,12 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal {
     public void start() {
         super.start();
         setPreAttackDelayRemaining(getPreAttackDelay());
+        setPostAttackDelayRemaining(getPostAttackDelay());
         isReadyForNextAttackStep = false;
+        
         playPreAttackAnimation();
         hasPlayedPreAttackAnimation = true;
+
     }
 
     @Override
@@ -183,8 +189,6 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal {
             if(isAttackTickComplete())
             {
                 setPostAttack(true);
-                playPostAttackAnimation();
-                hasPlayedPostAttackAnimation = true;
             }
         }
 

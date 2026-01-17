@@ -29,11 +29,6 @@ public class ReaperAttackSequenceGoal extends AttackSequenceGoal {
             return false;
         }
 
-        if(getReaper().getTarget() == null)
-        {
-            return false;
-        }
-
         if(getReaper().isThereAnotherAttackActive(this))
         {
             if(getReaper().getCurrentAttack().getCurrentGoal() == null)

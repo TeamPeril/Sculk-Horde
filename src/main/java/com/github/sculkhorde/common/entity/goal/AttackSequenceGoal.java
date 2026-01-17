@@ -64,6 +64,11 @@ public class AttackSequenceGoal extends Goal implements IDebuggableGoal
     @Override
     public boolean canUse() {
 
+        if(mob.getTarget() == null)
+        {
+            return false;
+        }
+
         if(attacks.isEmpty())
         {
             reasonForNoStart = "No attacks in this attack sequence.";
