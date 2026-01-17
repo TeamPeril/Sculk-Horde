@@ -81,6 +81,8 @@ public class DevConversionWand extends Item implements IForgeItem {
 			} else {
 				BlockInfestationSystem.tryToInfestBlock((ServerLevel) context.getLevel(), context.getClickedPos());
 			}
+
+            BlockInfestationSystem.explicitInfectableBlockEntityBlocks.canBeInfectedByThisTable((ServerLevel) context.getLevel(), context.getClickedPos());
 		}
 		return InteractionResult.SUCCESS;
 	}

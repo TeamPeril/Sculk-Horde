@@ -12,6 +12,7 @@
 
     "sculkhorde:fungal_shroom_core_block",
     "sculkhorde:fungal_sculk_block",
-    "sculkhorde:fungal_sculk_stem_block"
+    "sculkhorde:fungal_sculk_stem_block",
+    "infested_crafting_table_block"
   ]
 }

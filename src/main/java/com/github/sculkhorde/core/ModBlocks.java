@@ -1018,6 +1018,15 @@ public class ModBlocks {
     public static final RegistryObject<LivingWebBlock> LIVING_WEB_BLOCK =
             registerBlock("living_web_block", LivingWebBlock::new);
 
+    public static final RegistryObject<CraftingTableBlock> INFESTED_CRAFTING_TABLE_BLOCK =
+            registerBlock("infested_crafting_table_block", () -> new CraftingTableBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_BLUE)
+                    .strength(4f, 30f)//Hardness & Resistance
+                    .destroyTime(5f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.WOOD)
+            ));
+
 	static {
 		datagen(INFESTED_STONE_BRICKS);
 		datagen(INFESTED_MOSSY_STONE_BRICKS, "infested_stone_bricks");

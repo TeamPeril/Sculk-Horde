@@ -19,7 +19,7 @@ import java.util.List;
 
 public class BlockInfestationTable{
 
-    private List<IBlockInfestationEntry> entries;
+    private final List<IBlockInfestationEntry> entries;
     protected boolean denyNonSolidBlocks = true;
     protected float priority = 0F;
 
@@ -55,31 +55,31 @@ public class BlockInfestationTable{
         entries.sort(Comparator.comparing(IBlockInfestationEntry::getPriority));
     }
 
-    public void addEntry(float priority, TagKey<Block> normalTag, ITagInfestedBlock infectedVariant, Block defaultNormalVariant)
+    public void addBlockTagEntry(float priority, TagKey<Block> normalTag, ITagInfestedBlock infectedVariant, Block defaultNormalVariant)
     {
         entries.add(new BlockTagInfestationTableEntry(priority, normalTag, infectedVariant, defaultNormalVariant));
         entries.sort(Comparator.comparing(IBlockInfestationEntry::getPriority));
     }
 
-    public void addEntry(float priority, String normalBlockID, String infectedBlockID)
+    public void addOnlyCurableEntry(float priority, String normalBlockID, String infectedBlockID)
     {
         entries.add(new BlockIDOnlyCurableTableEntry(priority, normalBlockID, infectedBlockID));
         entries.sort(Comparator.comparing(IBlockInfestationEntry::getPriority));
     }
 
-    public void addEntry(float priority, TagKey<Block> toolRequired, Tier tier, ITagInfestedBlock infectedVariant, Block defaultNormalVariant)
+    public void addToolTagEntry(float priority, TagKey<Block> toolRequired, Tier tier, ITagInfestedBlock infectedVariant, Block defaultNormalVariant)
     {
         entries.add(new ToolTaglInfestationTableEntry(priority, toolRequired, tier, infectedVariant, defaultNormalVariant));
         entries.sort(Comparator.comparing(IBlockInfestationEntry::getPriority));
     }
 
-    public void addEntry(float priority, TagKey<Block> tag1, TagKey<Block> tag2, Tier tier, ITagInfestedBlock infestedVariant, Block defaultNormalVariant)
+    public void addMultiTagEntry(float priority, TagKey<Block> tag1, TagKey<Block> tag2, Tier tier, ITagInfestedBlock infestedVariant, Block defaultNormalVariant)
     {
         entries.add(new MultiTagInfestationTableEntry(priority, tag1, tag2, tier, infestedVariant, defaultNormalVariant));
         entries.sort(Comparator.comparing(IBlockInfestationEntry::getPriority));
     }
 
-    public void addEntry(ITagInfestedBlock infectedVariant)
+    public void addConfigEntry(ITagInfestedBlock infectedVariant)
     {
         entries.add(new ConfigInfestationTableEntry(infectedVariant));
         entries.sort(Comparator.comparing(IBlockInfestationEntry::getPriority));

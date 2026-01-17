@@ -134,7 +134,7 @@ public class AttackStepGoal extends Goal implements IDebuggableGoal {
         setPreAttackDelayRemaining(getPreAttackDelay());
         setPostAttackDelayRemaining(getPostAttackDelay());
         isReadyForNextAttackStep = false;
-        
+
         playPreAttackAnimation();
         hasPlayedPreAttackAnimation = true;
 

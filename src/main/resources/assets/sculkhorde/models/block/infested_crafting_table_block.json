@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "sculkhorde:block/infested_crafting_table_top",
+    "east": "sculkhorde:block/infested_crafting_table_side",
+    "north": "sculkhorde:block/infested_crafting_table_side",
+    "particle": "sculkhorde:block/infested_crafting_table_side",
+    "south": "sculkhorde:block/infested_crafting_table_side",
+    "up": "sculkhorde:block/infested_crafting_table_top",
+    "west": "sculkhorde:block/infested_crafting_table_side"
+  }
+}

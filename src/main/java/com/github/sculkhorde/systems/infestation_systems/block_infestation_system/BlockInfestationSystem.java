@@ -182,54 +182,54 @@ public class BlockInfestationSystem {
         explicitInfectableBlocks.addEntry(93, Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
 
         // Deeper and Darker Compatibility
-        explicitInfectableBlocks.addEntry(1, "minecraft:deepslate", "deeperdarker:sculk_stone");
-        explicitInfectableBlocks.addEntry(2, "minecraft:cobbled_deepslate", "deeperdarker:cobbled_sculk_stone");
-        explicitInfectableBlocks.addEntry(3,"minecraft:deepslate_coal_ore", "deeperdarker:sculk_stone_coal_ore");
-        explicitInfectableBlocks.addEntry(4, "minecraft:deepslate_iron_ore", "deeperdarker:sculk_stone_iron_ore");
-        explicitInfectableBlocks.addEntry(5, "minecraft:deepslate_gold_ore", "deeperdarker:sculk_stone_gold_ore");
-        explicitInfectableBlocks.addEntry(6, "minecraft:deepslate_copper_ore", "deeperdarker:sculk_stone_copper_ore");
-        explicitInfectableBlocks.addEntry(7, "minecraft:deepslate_lapis_ore", "deeperdarker:sculk_stone_lapis_ore");
-        explicitInfectableBlocks.addEntry(8, "minecraft:deepslate_redstone_ore", "deeperdarker:sculk_stone_redstone_ore");
-        explicitInfectableBlocks.addEntry(9, "minecraft:deepslate_emerald_ore", "deeperdarker:sculk_stone_emerald_ore");
-        explicitInfectableBlocks.addEntry(10, "minecraft:deepslate_diamond_ore", "deeperdarker:sculk_stone_diamond_ore");
-        explicitInfectableBlocks.addEntry(11, "minecraft:moss_block", "deeperdarker:echo_soil");
-        explicitInfectableBlocks.addEntry(12, "minecraft:flowering_azalea_leaves", "deeperdarker:echo_leaves");
-        explicitInfectableBlocks.addEntry(13, "minecraft:oak_sapling", "deeperdarker:echo_sapling");
-        explicitInfectableBlocks.addEntry(14, "minecraft:oak_log", "deeperdarker:echo_log");
-        explicitInfectableBlocks.addEntry(15, "minecraft:oak_wood", "deeperdarker:echo_wood");
-        explicitInfectableBlocks.addEntry(16, "minecraft:pearlescent_froglight", "deeperdarker:sculk_gleam");
+        explicitInfectableBlocks.addOnlyCurableEntry(1, "minecraft:deepslate", "deeperdarker:sculk_stone");
+        explicitInfectableBlocks.addOnlyCurableEntry(2, "minecraft:cobbled_deepslate", "deeperdarker:cobbled_sculk_stone");
+        explicitInfectableBlocks.addOnlyCurableEntry(3,"minecraft:deepslate_coal_ore", "deeperdarker:sculk_stone_coal_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(4, "minecraft:deepslate_iron_ore", "deeperdarker:sculk_stone_iron_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(5, "minecraft:deepslate_gold_ore", "deeperdarker:sculk_stone_gold_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(6, "minecraft:deepslate_copper_ore", "deeperdarker:sculk_stone_copper_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(7, "minecraft:deepslate_lapis_ore", "deeperdarker:sculk_stone_lapis_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(8, "minecraft:deepslate_redstone_ore", "deeperdarker:sculk_stone_redstone_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(9, "minecraft:deepslate_emerald_ore", "deeperdarker:sculk_stone_emerald_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(10, "minecraft:deepslate_diamond_ore", "deeperdarker:sculk_stone_diamond_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(11, "minecraft:moss_block", "deeperdarker:echo_soil");
+        explicitInfectableBlocks.addOnlyCurableEntry(12, "minecraft:flowering_azalea_leaves", "deeperdarker:echo_leaves");
+        explicitInfectableBlocks.addOnlyCurableEntry(13, "minecraft:oak_sapling", "deeperdarker:echo_sapling");
+        explicitInfectableBlocks.addOnlyCurableEntry(14, "minecraft:oak_log", "deeperdarker:echo_log");
+        explicitInfectableBlocks.addOnlyCurableEntry(15, "minecraft:oak_wood", "deeperdarker:echo_wood");
+        explicitInfectableBlocks.addOnlyCurableEntry(16, "minecraft:pearlescent_froglight", "deeperdarker:sculk_gleam");
 
-        explicitInfectableBlocks.addEntry(17, "minecraft:blackstone", "deeperdarker:gloomslate");
-        explicitInfectableBlocks.addEntry(18, "minecraft:blackstone", "deeperdarker:cobbled_gloomslate");
-        explicitInfectableBlocks.addEntry(19, "minecraft:deepslate_coal_ore", "deeperdarker:gloomslate_coal_ore");
-        explicitInfectableBlocks.addEntry(20, "minecraft:deepslate_iron_ore", "deeperdarker:gloomslate_iron_ore");
-        explicitInfectableBlocks.addEntry(21, "minecraft:deepslate_gold_ore", "deeperdarker:gloomslate_gold_ore");
-        explicitInfectableBlocks.addEntry(22, "minecraft:deepslate_copper_ore", "deeperdarker:gloomslate_copper_ore");
-        explicitInfectableBlocks.addEntry(23, "minecraft:deepslate_lapis_ore", "deeperdarker:gloomslate_lapis_ore");
-        explicitInfectableBlocks.addEntry(24, "minecraft:deepslate_redstone_ore", "deeperdarker:gloomslate_redstone_ore");
-        explicitInfectableBlocks.addEntry(25, "minecraft:deepslate_emerald_ore", "deeperdarker:gloomslate_emerald_ore");
-        explicitInfectableBlocks.addEntry(26, "minecraft:deepslate_diamond_ore", "deeperdarker:gloomslate_diamond_ore");
-        explicitInfectableBlocks.addEntry(27, "minecraft:lava", "deeperdarker:gloomy_geyser");
-        explicitInfectableBlocks.addEntry(28, "minecraft:smooth_basalt", "deeperdarker:gloomy_sculk");
-        explicitInfectableBlocks.addEntry(29, "minecraft:ochre_froglight", "deeperdarker:crystallized_amber");
+        explicitInfectableBlocks.addOnlyCurableEntry(17, "minecraft:blackstone", "deeperdarker:gloomslate");
+        explicitInfectableBlocks.addOnlyCurableEntry(18, "minecraft:blackstone", "deeperdarker:cobbled_gloomslate");
+        explicitInfectableBlocks.addOnlyCurableEntry(19, "minecraft:deepslate_coal_ore", "deeperdarker:gloomslate_coal_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(20, "minecraft:deepslate_iron_ore", "deeperdarker:gloomslate_iron_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(21, "minecraft:deepslate_gold_ore", "deeperdarker:gloomslate_gold_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(22, "minecraft:deepslate_copper_ore", "deeperdarker:gloomslate_copper_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(23, "minecraft:deepslate_lapis_ore", "deeperdarker:gloomslate_lapis_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(24, "minecraft:deepslate_redstone_ore", "deeperdarker:gloomslate_redstone_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(25, "minecraft:deepslate_emerald_ore", "deeperdarker:gloomslate_emerald_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(26, "minecraft:deepslate_diamond_ore", "deeperdarker:gloomslate_diamond_ore");
+        explicitInfectableBlocks.addOnlyCurableEntry(27, "minecraft:lava", "deeperdarker:gloomy_geyser");
+        explicitInfectableBlocks.addOnlyCurableEntry(28, "minecraft:smooth_basalt", "deeperdarker:gloomy_sculk");
+        explicitInfectableBlocks.addOnlyCurableEntry(29, "minecraft:ochre_froglight", "deeperdarker:crystallized_amber");
 
-        explicitInfectableBlocks.addEntry(30, "minecraft:mud", "deeperdarker:sculk_grime");
-        explicitInfectableBlocks.addEntry(31, "minecraft:air", "deeperdarker:sculk_tendrils");
-        explicitInfectableBlocks.addEntry(32, "minecraft:mud", "deeperdarker:sculk_jaw");
+        explicitInfectableBlocks.addOnlyCurableEntry(30, "minecraft:mud", "deeperdarker:sculk_grime");
+        explicitInfectableBlocks.addOnlyCurableEntry(31, "minecraft:air", "deeperdarker:sculk_tendrils");
+        explicitInfectableBlocks.addOnlyCurableEntry(32, "minecraft:mud", "deeperdarker:sculk_jaw");
 
-        explicitInfectableBlocks.addEntry(33, "minecraft:moss_block", "deeperdarker:blooming_moss_block");
-        explicitInfectableBlocks.addEntry(34, "minecraft:grass_block", "deeperdarker:blooming_sculk_stone");
-        explicitInfectableBlocks.addEntry(35, "minecraft:cave_vines", "deeperdarker:glowing_vines");
-        explicitInfectableBlocks.addEntry(36, "minecraft:cave_vines", "deeperdarker:glowing_vines_plant");
-        explicitInfectableBlocks.addEntry(37, "minecraft:air", "deeperdarker:glowing_roots");
-        explicitInfectableBlocks.addEntry(38, "minecraft:air", "deeperdarker:glowing_flowers");
-        explicitInfectableBlocks.addEntry(39, "minecraft:cave_vines", "deeperdarker:sculk_vines");
-        explicitInfectableBlocks.addEntry(40, "minecraft:torchflower", "deeperdarker:lily_flower");
-        explicitInfectableBlocks.addEntry(41, "minecraft:lily_pad", "deeperdarker:ice_lily");
+        explicitInfectableBlocks.addOnlyCurableEntry(33, "minecraft:moss_block", "deeperdarker:blooming_moss_block");
+        explicitInfectableBlocks.addOnlyCurableEntry(34, "minecraft:grass_block", "deeperdarker:blooming_sculk_stone");
+        explicitInfectableBlocks.addOnlyCurableEntry(35, "minecraft:cave_vines", "deeperdarker:glowing_vines");
+        explicitInfectableBlocks.addOnlyCurableEntry(36, "minecraft:cave_vines", "deeperdarker:glowing_vines_plant");
+        explicitInfectableBlocks.addOnlyCurableEntry(37, "minecraft:air", "deeperdarker:glowing_roots");
+        explicitInfectableBlocks.addOnlyCurableEntry(38, "minecraft:air", "deeperdarker:glowing_flowers");
+        explicitInfectableBlocks.addOnlyCurableEntry(39, "minecraft:cave_vines", "deeperdarker:sculk_vines");
+        explicitInfectableBlocks.addOnlyCurableEntry(40, "minecraft:torchflower", "deeperdarker:lily_flower");
+        explicitInfectableBlocks.addOnlyCurableEntry(41, "minecraft:lily_pad", "deeperdarker:ice_lily");
 
         // Remove Sculk Vein
-        explicitInfectableBlocks.addEntry(0, "minecraft:air", "minecraft:sculk_vein");
-        explicitInfectableBlocks.addEntry(0, "minecraft:air", "sculkhorde:tendrils");
+        explicitInfectableBlocks.addOnlyCurableEntry(0, "minecraft:air", "minecraft:sculk_vein");
+        explicitInfectableBlocks.addOnlyCurableEntry(0, "minecraft:air", "sculkhorde:tendrils");
 
         // Used for blocks that only have a cured version, like sculk shroom blocks and living rock
         explicitCurableBlocks = new BlockInfestationTable(1, false);
@@ -245,32 +245,32 @@ public class BlockInfestationSystem {
 
         // Used to infect non-full blocks. Priority Matters
         tagInfectableNonFullBlocks = new BlockInfestationTable(2, false);
-        tagInfectableNonFullBlocks.addEntry(1, BlockTags.STAIRS, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_STAIRS.get(), Blocks.OAK_STAIRS);
-        tagInfectableNonFullBlocks.addEntry(2, BlockTags.STAIRS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
-        tagInfectableNonFullBlocks.addEntry(3, BlockTags.STAIRS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_STAIRS.get(), Blocks.MOSSY_COBBLESTONE_STAIRS); //vanilla doesn't have any stairs that match these criteria so this is about the best i could get
-        tagInfectableNonFullBlocks.addEntry(4, BlockTags.SLABS, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_SLAB.get(), Blocks.OAK_SLAB);
-        tagInfectableNonFullBlocks.addEntry(5, BlockTags.SLABS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_SLAB.get(), Blocks.COBBLESTONE_SLAB);
-        tagInfectableNonFullBlocks.addEntry(6, BlockTags.SLABS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_SLAB.get(), Blocks.MOSSY_COBBLESTONE_SLAB);
-        tagInfectableNonFullBlocks.addEntry(7, BlockTags.WALLS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_WALL.get(), Blocks.MOSSY_COBBLESTONE_WALL);
-        tagInfectableNonFullBlocks.addEntry(8, BlockTags.WALLS, Tiers.IRON, ModBlocks.INFESTED_STURDY_WALL.get(), Blocks.COBBLESTONE_WALL);
-        tagInfectableNonFullBlocks.addEntry(9, BlockTags.WOODEN_FENCES, ModBlocks.INFESTED_WOOD_FENCE.get(), Blocks.OAK_FENCE);
-        tagInfectableNonFullBlocks.addEntry(10, BlockTags.FENCES, ModBlocks.INFESTED_STURDY_FENCE.get(), Blocks.NETHER_BRICK_FENCE);
-        tagInfectableNonFullBlocks.addEntry(11, BlockTags.FENCE_GATES, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
-        tagInfectableNonFullBlocks.addEntry(12, BlockTags.FENCE_GATES, ModBlocks.INFESTED_STURDY_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
+        tagInfectableNonFullBlocks.addMultiTagEntry(1, BlockTags.STAIRS, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_STAIRS.get(), Blocks.OAK_STAIRS);
+        tagInfectableNonFullBlocks.addMultiTagEntry(2, BlockTags.STAIRS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_STAIRS.get(), Blocks.COBBLESTONE_STAIRS);
+        tagInfectableNonFullBlocks.addMultiTagEntry(3, BlockTags.STAIRS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_STAIRS.get(), Blocks.MOSSY_COBBLESTONE_STAIRS); //vanilla doesn't have any stairs that match these criteria so this is about the best i could get
+        tagInfectableNonFullBlocks.addMultiTagEntry(4, BlockTags.SLABS, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_SLAB.get(), Blocks.OAK_SLAB);
+        tagInfectableNonFullBlocks.addMultiTagEntry(5, BlockTags.SLABS, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_SLAB.get(), Blocks.COBBLESTONE_SLAB);
+        tagInfectableNonFullBlocks.addMultiTagEntry(6, BlockTags.SLABS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_SLAB.get(), Blocks.MOSSY_COBBLESTONE_SLAB);
+        tagInfectableNonFullBlocks.addMultiTagEntry(7, BlockTags.WALLS, ModBlocks.BlockTags.CONVERTS_TO_CRUMBLING_VARIANT, Tiers.IRON, ModBlocks.INFESTED_CRUMBLING_WALL.get(), Blocks.MOSSY_COBBLESTONE_WALL);
+        tagInfectableNonFullBlocks.addToolTagEntry(8, BlockTags.WALLS, Tiers.IRON, ModBlocks.INFESTED_STURDY_WALL.get(), Blocks.COBBLESTONE_WALL);
+        tagInfectableNonFullBlocks.addBlockTagEntry(9, BlockTags.WOODEN_FENCES, ModBlocks.INFESTED_WOOD_FENCE.get(), Blocks.OAK_FENCE);
+        tagInfectableNonFullBlocks.addBlockTagEntry(10, BlockTags.FENCES, ModBlocks.INFESTED_STURDY_FENCE.get(), Blocks.NETHER_BRICK_FENCE);
+        tagInfectableNonFullBlocks.addMultiTagEntry(11, BlockTags.FENCE_GATES, BlockTags.MINEABLE_WITH_AXE, Tiers.IRON, ModBlocks.INFESTED_WOOD_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
+        tagInfectableNonFullBlocks.addBlockTagEntry(12, BlockTags.FENCE_GATES, ModBlocks.INFESTED_STURDY_FENCE_GATE.get(), Blocks.OAK_FENCE_GATE);
 
         // Used to infect generic types of blocks like wood-like, stone-like, etc. Priority Matters
         tagInfectableBlocks = new BlockInfestationTable(3, true);
-        tagInfectableBlocks.addEntry(1, net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get(), Blocks.OAK_LOG);
-        tagInfectableBlocks.addEntry(2, BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get(), Blocks.OAK_PLANKS);
-        tagInfectableBlocks.addEntry(3, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get(), Blocks.COBBLESTONE);
-        tagInfectableBlocks.addEntry(4, BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get(), Blocks.COARSE_DIRT);
-        tagInfectableBlocks.addEntry(5, BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
-        tagInfectableBlocks.addEntry(5, BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
-        tagInfectableBlocks.addEntry(5, BlockTags.WOOL, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
+        tagInfectableBlocks.addBlockTagEntry(1, net.minecraft.tags.BlockTags.LOGS, ModBlocks.INFESTED_LOG.get(), Blocks.OAK_LOG);
+        tagInfectableBlocks.addBlockTagEntry(2, BlockTags.MINEABLE_WITH_AXE, ModBlocks.INFESTED_WOOD_MASS.get(), Blocks.OAK_PLANKS);
+        tagInfectableBlocks.addToolTagEntry(3, BlockTags.MINEABLE_WITH_PICKAXE, Tiers.IRON, ModBlocks.INFESTED_STURDY_MASS.get(), Blocks.COBBLESTONE);
+        tagInfectableBlocks.addToolTagEntry(4, BlockTags.MINEABLE_WITH_SHOVEL, Tiers.IRON, ModBlocks.INFESTED_CRUMPLED_MASS.get(), Blocks.COARSE_DIRT);
+        tagInfectableBlocks.addToolTagEntry(5, BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
+        tagInfectableBlocks.addToolTagEntry(5, BlockTags.MINEABLE_WITH_HOE, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
+        tagInfectableBlocks.addToolTagEntry(5, BlockTags.WOOL, Tiers.IRON, ModBlocks.INFESTED_COMPOST_MASS.get(), Blocks.MOSS_BLOCK);
 
 
         configInfectableBlocks = new BlockInfestationTable(4, false);
-        configInfectableBlocks.addEntry(ModBlocks.INFESTED_STURDY_MASS.get());
+        configInfectableBlocks.addConfigEntry(ModBlocks.INFESTED_STURDY_MASS.get());
 
         BlockInfestationAPI.addBlockInfestationTable(explicitInfectableBlockEntityBlocks);
         BlockInfestationAPI.addBlockInfestationTable(explicitInfectableBlocks);
