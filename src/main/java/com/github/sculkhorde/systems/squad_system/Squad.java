@@ -23,7 +23,7 @@ public class Squad {
 
     public Squad(LivingEntity leader) {
         squadMembers.add(leader);
-        leaderUUID = Optional.of(((Mob)leader).getUUID());
+        leaderUUID = Optional.of((leader).getUUID());
     }
 
     public void serverTick()
@@ -36,13 +36,13 @@ public class Squad {
         // If leader is dead, promote mob with most max health
         if(isLeaderDead())
         {
-            Optional<LivingEntity> mob = getMemberWithMostMaxHealth();
-            if(mob.isEmpty())
+            Optional<LivingEntity> livingEntity = getMemberWithMostMaxHealth();
+            if(livingEntity.isEmpty())
             {
                 toBeRemoved = true;
                 return;
             }
-            promoteToLeaderOfSquad(mob.get());
+            promoteToLeaderOfSquad(livingEntity.get());
         }
     }
 
@@ -131,7 +131,7 @@ public class Squad {
 
         for(int i = 0; i < squadMembers.size(); i++)
         {
-            Mob member = (Mob) squadMembers.get(i);
+            LivingEntity member = squadMembers.get(i);
             if(member.isAlive())
             {
                 continue;
@@ -186,8 +186,8 @@ public class Squad {
         double squadLeaderMaxHealth = 0;
 
         for (LivingEntity squadMember : squadMembers) {
-            Mob compareMob = (Mob) squadMember;
-            if (compareMob.getMaxHealth() > squadLeaderMaxHealth) {
+            LivingEntity compareEntity = squadMember;
+            if (compareEntity.getMaxHealth() > squadLeaderMaxHealth) {
                 result = Optional.of(squadMember);
             }
         }
