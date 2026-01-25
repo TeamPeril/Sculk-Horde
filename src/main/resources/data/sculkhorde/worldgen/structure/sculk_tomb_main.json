@@ -31,8 +31,8 @@
   // So a start height that gives -5 will sink the structure 5 blocks into the terrain.
   "start_height": {
     "type": "minecraft:uniform",
-    "min_inclusive": { "above_bottom": 10 },
-    "max_inclusive": { "above_bottom": 32 }
+    "min_inclusive": { "above_bottom": 20 },
+    "max_inclusive": { "above_bottom": 40 }
   },
 
   // Makes our house snap to top land to spawn at. WORLD_SURFACE_WG will stop at first non-air block.
