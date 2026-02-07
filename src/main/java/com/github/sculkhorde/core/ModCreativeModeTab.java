@@ -120,6 +120,7 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.DEEP_GREEN_MUSIC_DISC.get());
                 event.accept(ModItems.BLIND_AND_ALONE_MUSIC_DISC.get());
 
+                event.accept(ModBlocks.ANCIENT_BOOKSHELF_BLOCK.get());
                 event.accept(ModBlocks.INFESTED_LOG.get());
                 event.accept(ModBlocks.INFESTED_SAND.get());
                 event.accept(ModBlocks.INFESTED_RED_SAND.get());
@@ -222,6 +223,7 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.INFESTED_WOOD_FENCE.get());
                 event.accept(ModBlocks.INFESTED_WOOD_FENCE_GATE.get());
                 event.accept(ModBlocks.INFESTED_STURDY_FENCE_GATE.get());
+
             })
             .build());
 

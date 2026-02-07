@@ -1027,6 +1027,15 @@ public class ModBlocks {
                     .sound(SoundType.WOOD)
             ));
 
+    public static final RegistryObject<Block> ANCIENT_BOOKSHELF_BLOCK =
+            registerBlock("ancient_bookshelf_block", () -> new Block(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_BLUE)
+                    .strength(4f, 30f)//Hardness & Resistance
+                    .destroyTime(5f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.ANCIENT_DEBRIS)
+            ));
+
 	static {
 		datagen(INFESTED_STONE_BRICKS);
 		datagen(INFESTED_MOSSY_STONE_BRICKS, "infested_stone_bricks");

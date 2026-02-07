@@ -180,6 +180,7 @@ public class BlockInfestationSystem {
         explicitInfectableBlocks.addEntry(91, Blocks.END_STONE, ModBlocks.INFESTED_ENDSTONE.get().defaultBlockState());
         explicitInfectableBlocks.addEntry(92, Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
         explicitInfectableBlocks.addEntry(93, Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
+        explicitInfectableBlocks.addEntry(94, Blocks.BOOKSHELF, ModBlocks.ANCIENT_BOOKSHELF_BLOCK.get().defaultBlockState());
 
         // Deeper and Darker Compatibility
         explicitInfectableBlocks.addOnlyCurableEntry(1, "minecraft:deepslate", "deeperdarker:sculk_stone");

@@ -26,7 +26,6 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
@@ -169,7 +168,6 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         //new AttackGoal(),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
                                 new LeapAwayAttackStep(this),
-                                new ShootWebAttackStep(this),
                                 new ShootWebAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
@@ -204,12 +202,20 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     protected @NotNull PathNavigation createNavigation(@NotNull Level p_33802_) {
         return new WallClimberNavigation(this, p_33802_);
     }
-    @Override
-    public void makeStuckInBlock(BlockState p_33796_, @NotNull Vec3 p_33797_) {
-        if (!p_33796_.is(Blocks.COBWEB)) {
-            super.makeStuckInBlock(p_33796_, p_33797_);
-        }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+
+        Vec3 movementVector = this.getDeltaMovement();
+        if (!this.onGround() && movementVector.y < 0.0D) {
+            this.setDeltaMovement(movementVector.multiply(1.0D, 0.6D, 1.0D));
+        }
+    }
+
+    @Override
+    public void makeStuckInBlock(BlockState blockState, @NotNull Vec3 p_33797_) {
+        return;
     }
 
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
