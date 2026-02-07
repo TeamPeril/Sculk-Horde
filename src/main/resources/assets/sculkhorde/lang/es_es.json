@@ -473,5 +473,7 @@
   "item.minecraft.tipped_arrow.effect.corroded_potion": "Flecha de Corroído",
   "sounds.sculkhorde.infestation_ambience": "Ambiente de infestación",
   "sounds.sculkhorde.soulite_ambience": "Campanadas de almita",
-  "block.sculkhorde.living_web_block": "Bloque de telaraña viviente"
+  "block.sculkhorde.living_web_block": "Bloque de telaraña viviente",
+  "block.sculkhorde.infested_crafting_table_block": "Mesa de trabajo infestada",
+  "block.sculkhorde.ancient_bookshelf_block": "Librería ancestral"
 }

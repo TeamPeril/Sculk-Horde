@@ -467,5 +467,7 @@
   "item.minecraft.tipped_arrow.effect.corroded_potion": "palisa pana 'pakala'",
   "sounds.sculkhorde.infestation_ambience": "kalama awen pi jaki",
   "sounds.sculkhorde.soulite_ambience": "kalama anpa pi kiwen kon",
-  "block.sculkhorde.living_web_block": "leko palisa olin"
+  "block.sculkhorde.living_web_block": "leko palisa olin",
+  "block.sculkhorde.infested_crafting_table_block": "ilo pali jaki Sculk",
+  "block.sculkhorde.ancient_bookshelf_block": "poki lipu Sculk pi tenpo pini suli"
 }

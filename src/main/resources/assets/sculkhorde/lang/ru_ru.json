@@ -472,5 +472,7 @@
   "sounds.sculkhorde.soul_spear_emerge": "Появление копья души",
   "sounds.sculkhorde.infestation_ambience": "Атмосфера заражения",
   "sounds.sculkhorde.soulite_ambience": "Перезвон душелита",
-  "block.sculkhorde.living_web_block": "Блок живой паутины"
+  "block.sculkhorde.living_web_block": "Блок живой паутины",
+  "block.sculkhorde.infested_crafting_table_block": "Инфицированный верстак",
+  "block.sculkhorde.ancient_bookshelf_block": "Древняя книжная полка"
 }

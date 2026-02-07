@@ -472,5 +472,7 @@
   "item.minecraft.tipped_arrow.effect.corroded_potion": "Pfeil des Korrodierten",
   "sounds.sculkhorde.infestation_ambience": "Infestations-Ambiente",
   "sounds.sculkhorde.soulite_ambience": "Soulite-Klangspiel",
-  "block.sculkhorde.living_web_block": "Lebender Netzblock"
+  "block.sculkhorde.living_web_block": "Lebender Netzblock",
+  "block.sculkhorde.infested_crafting_table_block": "Infizierter Werkbankblock",
+  "block.sculkhorde.ancient_bookshelf_block": "Antiker Bücherregalblock"
 }

@@ -468,6 +468,6 @@
     "item.minecraft.lingering_potion.effect.corroded_potion": "滞留型腐蚀药水",
     "item.minecraft.tipped_arrow.effect.corroded_potion": "腐蚀之箭",
     "sounds.sculkhorde.infestation_ambience": "感染环境音",
-    "sounds.sculkhorde.soulite_ambience": "魂石鸣响",
-    "block.sculkhorde.living_web_block": "活体网块"
+    "block.sculkhorde.infested_crafting_table_block": "幽匿化的工作台",
+    "block.sculkhorde.ancient_bookshelf_block": "古代书架"
 }

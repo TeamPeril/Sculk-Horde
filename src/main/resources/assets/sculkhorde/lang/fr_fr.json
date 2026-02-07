@@ -462,5 +462,7 @@
   "item.minecraft.tipped_arrow.effect.corroded_potion": "Flèche de Corrodé",
   "sounds.sculkhorde.infestation_ambience": "Ambiance d'Infestation",
   "sounds.sculkhorde.soulite_ambience": "Carillons de Soulite",
-  "block.sculkhorde.living_web_block": "Bloc de Toile Vivante"
+  "block.sculkhorde.living_web_block": "Bloc de Toile Vivante",
+  "block.sculkhorde.infested_crafting_table_block": "Établi infesté",
+  "block.sculkhorde.ancient_bookshelf_block": "Bibliothèque ancienne"
 }
