@@ -120,6 +120,7 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.DEEP_GREEN_MUSIC_DISC.get());
                 event.accept(ModItems.BLIND_AND_ALONE_MUSIC_DISC.get());
 
+                event.accept(ModBlocks.INFESTED_CRAFTING_TABLE_BLOCK.get());
                 event.accept(ModBlocks.ANCIENT_BOOKSHELF_BLOCK.get());
                 event.accept(ModBlocks.INFESTED_LOG.get());
                 event.accept(ModBlocks.INFESTED_SAND.get());
@@ -253,6 +254,5 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SOUL_ANIMATOR.get());
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.DEPLETED_GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
-                event.accept(ModBlocks.INFESTED_CRAFTING_TABLE_BLOCK.get());
             }).build());
 }

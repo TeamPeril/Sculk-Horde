@@ -181,6 +181,7 @@ public class BlockInfestationSystem {
         explicitInfectableBlocks.addEntry(92, Blocks.KELP_PLANT, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
         explicitInfectableBlocks.addEntry(93, Blocks.KELP, ModBlocks.DISEASED_KELP_BLOCK.get().defaultBlockState());
         explicitInfectableBlocks.addEntry(94, Blocks.BOOKSHELF, ModBlocks.ANCIENT_BOOKSHELF_BLOCK.get().defaultBlockState());
+        explicitInfectableBlocks.addEntry(94, Blocks.CRAFTING_TABLE, ModBlocks.INFESTED_CRAFTING_TABLE_BLOCK.get().defaultBlockState());
 
 
         // Deeper and Darker Compatibility
@@ -228,7 +229,7 @@ public class BlockInfestationSystem {
         explicitInfectableBlocks.addOnlyCurableEntry(39, "minecraft:cave_vines", "deeperdarker:sculk_vines");
         explicitInfectableBlocks.addOnlyCurableEntry(40, "minecraft:torchflower", "deeperdarker:lily_flower");
         explicitInfectableBlocks.addOnlyCurableEntry(41, "minecraft:lily_pad", "deeperdarker:ice_lily");
-        explicitInfectableBlocks.addOnlyCurableEntry(41, "minecraft:air", "sculkhorde:living_web_block");
+        explicitInfectableBlocks.addOnlyCurableEntry(42, "minecraft:air", "sculkhorde:living_web_block");
 
         // Remove Sculk Vein
         explicitInfectableBlocks.addOnlyCurableEntry(0, "minecraft:air", "minecraft:sculk_vein");

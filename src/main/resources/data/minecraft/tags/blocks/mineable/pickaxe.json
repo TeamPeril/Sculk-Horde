@@ -81,7 +81,6 @@
     "sculkhorde:soulite_cluster",
     "sculkhorde:soulite_bud_block",
     "sculkhorde:depleted_soulite_block",
-    "sculkhorde:budding_soulite_block",
-    "sculkhorde:ancient_bookshelf_block"
+    "sculkhorde:budding_soulite_block"
   ]
 }

@@ -1019,13 +1019,7 @@ public class ModBlocks {
             registerBlock("living_web_block", LivingWebBlock::new);
 
     public static final RegistryObject<CraftingTableBlock> INFESTED_CRAFTING_TABLE_BLOCK =
-            registerBlock("infested_crafting_table_block", () -> new CraftingTableBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.TERRACOTTA_BLUE)
-                    .strength(4f, 30f)//Hardness & Resistance
-                    .destroyTime(5f)
-                    .requiresCorrectToolForDrops()
-                    .sound(SoundType.WOOD)
-            ));
+            registerBlock("infested_crafting_table_block", InfestedCraftingTableBlock::new);
 
     public static final RegistryObject<Block> ANCIENT_BOOKSHELF_BLOCK =
             registerBlock("ancient_bookshelf_block", () -> new Block(BlockBehaviour.Properties.of()
