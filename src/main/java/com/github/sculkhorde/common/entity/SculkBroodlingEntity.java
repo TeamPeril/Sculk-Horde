@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProjectileAttackEntity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -10,18 +11,18 @@ import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
@@ -58,13 +59,17 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 16F;
+    public static final float FOLLOW_RANGE = 32F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    protected boolean isLeaping = false;
+    protected long leapStartTime = 0;
+    protected long MIN_LEAP_TIME = TickUnits.convertSecondsToTicks(1);
 
     /**
      * The Constructor
@@ -106,7 +111,10 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
 
     private boolean isParticipatingInRaid = false;
 
-    
+    @Override
+    protected int calculateFallDamage(float p_21237_, float p_21238_) {
+        return 0;
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -167,8 +175,9 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         //new LeapAtTargetGoal(this, 0.5F),
                         //new AttackGoal(),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
-                                new LeapAwayAttackStep(this),
-                                new ShootWebAttackStep(this)
+                                new GetInRangeAttackStep(this),
+                                new ShootWebAttackStep(this),
+                                new LeapAwayAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
                         new OpenDoorGoal(this, true)
@@ -203,6 +212,18 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         return new WallClimberNavigation(this, p_33802_);
     }
 
+    // Inside your Mob class
+    @Override
+    public void travel(Vec3 m) {
+        if (this.isLeaping)
+        { // Set this flag in your Goal
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.08, 0)); // Apply gravity manually
+        } else {
+            super.travel(m);
+        }
+    }
+
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
@@ -211,6 +232,35 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         if (!this.onGround() && movementVector.y < 0.0D) {
             this.setDeltaMovement(movementVector.multiply(1.0D, 0.6D, 1.0D));
         }
+
+
+        if(isLeaping && level().getGameTime() - leapStartTime > MIN_LEAP_TIME && onGround())
+        {
+            isLeaping = false;
+        }
+
+
+        if(SculkHorde.isDebugMode())
+        {
+            String customDebugName = "";
+            for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
+            {
+                Goal goal = wrappedGoal.getGoal();
+                if(goal instanceof IDebuggableGoal debugGoal)
+                {
+                    customDebugName += debugGoal.getGoalName().get();
+
+                }
+                else
+                {
+                    customDebugName += goal.getClass().getSimpleName();
+                }
+                customDebugName += " | ";
+            }
+
+            setCustomName(Component.literal(customDebugName));
+        }
+
     }
 
     @Override
@@ -258,14 +308,10 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         return true;
     }
 
-
-    /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC
     @Override
-    public void onRemovedFromWorld() {
-        ModSavedData.getSaveData().addSculkAccumulatedMass((int) this.getHealth());
-        super.onRemovedFromWorld();
+    public float getEyeHeight(Pose p_20237_) {
+        return getBbHeight();
     }
-    */
 
     public class AttackGoal extends CustomMeleeAttackGoal
     {
@@ -382,7 +428,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
          */
         @Override
         protected int getPostAttackDelay() {
-            return TickUnits.convertSecondsToTicks(0.25F);
+            return TickUnits.convertSecondsToTicks(0F);
         }
 
         /**
@@ -610,6 +656,8 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         public void doPreAttackTick()
         {
             super.doPreAttackTick();
+            isLeaping = true;
+            leapStartTime = level().getGameTime();
             if(leapDestination == null)
             {
                 leapDestination = findReachableDestinationAwayFromTarget();
@@ -720,6 +768,11 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         }
 
         @Override
+        protected int getPostAttackDelay() {
+            return 0;
+        }
+
+        @Override
         protected void playPreAttackAnimation()
         {
             //getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.FLOOR_SPEARS_SPELL_USE_ID);
@@ -729,6 +782,11 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         public void stop() {
             super.stop();
             projectilesFired = 0;
+        }
+
+        @Override
+        protected void doPreAttackTick() {
+            super.doPreAttackTick();
         }
 
         @Override
@@ -761,12 +819,46 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                 // Shoot the projectile in the direction vector
                 projectile.shoot(direction);
 
-                mob.playSound(SoundEvents.BLAZE_SHOOT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
+                mob.playSound(SoundEvents.LLAMA_SPIT, 1.0F, 1.0F / (mob.getRandom().nextFloat() * 0.4F + 0.8F));
                 mob.level().addFreshEntity(projectile);
                 projectilesFired++;
             }
 
             setAttackTickComplete();
+        }
+    }
+
+    public class GetInRangeAttackStep extends AttackStepGoal
+    {
+
+        public GetInRangeAttackStep(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        protected int getPreAttackDelay() {
+            return 0;
+        }
+
+        @Override
+        protected int getPostAttackDelay() {
+            return 0;
+        }
+
+        @Override
+        protected void doAttackTick() {
+            super.doAttackTick();
+
+            float MIN_DISTANCE = 15;
+
+            if(getTarget() == null || (EntityAlgorithms.getDistanceBetweenEntities(mob, getTarget()) < MIN_DISTANCE && getSensing().hasLineOfSight(getTarget())))
+            {
+                setAttackTickComplete();
+                navigation.stop();
+                return;
+            }
+
+            navigation.moveTo(getTarget(), 1.0F);
         }
     }
 }
