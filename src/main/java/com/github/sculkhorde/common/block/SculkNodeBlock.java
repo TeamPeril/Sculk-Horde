@@ -39,6 +39,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static com.github.sculkhorde.util.BlockAlgorithms.getBlockDistance;
@@ -196,26 +197,38 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         // Play sound for each player
         level.players().forEach(player -> level.playSound(null, player.blockPosition(), ModSounds.NODE_SPAWN_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
         if (ModConfig.SERVER.should_sculk_nodes_and_raids_spawn_phantoms.get()) {
-        	spawnSculkPhantomsAtTopOfWorld(level, newOrigin, 10);
+            spawnScoutPhantoms(level, newOrigin, 10);
         }
     }
 
-    private static void spawnSculkPhantomsAtTopOfWorld(ServerLevel level, BlockPos origin, int amount)
+    private static void spawnScoutPhantoms(ServerLevel level, BlockPos origin, int amount)
     {
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
+        Optional<BlockPos> largestSpaceOrigin = BlockAlgorithms.findLargestAreaAboveBlock(level, origin);
+
+        if(largestSpaceOrigin.isEmpty())
+        {
+            for(int i = 0; i < amount; i++)
+            {
+                int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+                int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+                int y = level.getMaxBuildHeight();
+                BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
+
+                SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
+            }
+            return;
+        }
+
         for(int i = 0; i < amount; i++)
         {
-            int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
-            int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
-            int y = level.getMaxBuildHeight();
-            BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
-
-            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
-
+            SculkPhantomEntity.spawnPhantom(level, largestSpaceOrigin.get(), true);
         }
+
     }
+
 
     /**
      * This function is called when this block is placed. <br>

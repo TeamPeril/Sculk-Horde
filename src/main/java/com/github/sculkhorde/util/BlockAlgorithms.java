@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -859,6 +860,59 @@ public class BlockAlgorithms {
 
         // If no valid spawn position is found, return an empty Optional
         return Optional.empty();
+    }
+
+    public static Optional<BlockPos> findLargestAreaAboveBlock(Level level, BlockPos origin)
+    {
+        ArrayList<Tuple<Integer, Integer>> y_values = new ArrayList<>();
+
+        for(int startY = origin.getY(); startY < level.getMaxBuildHeight(); startY++)
+        {
+            BlockPos startPos = new BlockPos(origin.getX(), startY, origin.getZ());
+
+            if(startY >= level.getMaxBuildHeight() - 1 || level.getBlockState(startPos).is(Blocks.BEDROCK))
+            {
+                break;
+            }
+
+            for(int endY = startY; endY < level.getMaxBuildHeight(); endY++)
+            {
+                BlockPos checkPos = new BlockPos(origin.getX(), endY, origin.getZ());
+
+                if(!BlockAlgorithms.isReplaceableByWater(level.getBlockState(checkPos))
+                        || endY >= level.getMaxBuildHeight() - 1
+                        || level.getBlockState(checkPos).is(Blocks.BEDROCK))
+                {
+                    if(startY != endY)
+                    {
+                        y_values.add(new Tuple<>(startY, endY));
+                        //SculkHorde.LOGGER.debug("findLargestAreaAboveBlock | Found New Space: Y=" + startY + " to Y=" + endY + ".");
+                        startY = endY;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if(y_values.isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        Tuple<Integer, Integer> largestTuple = y_values.get(0);
+
+        for(Tuple<Integer, Integer> currentTuple : y_values)
+        {
+            if(Math.abs(currentTuple.getB()-currentTuple.getA()) > Math.abs(largestTuple.getB()-largestTuple.getA()))
+            {
+                largestTuple = currentTuple;
+            }
+        }
+
+        int newY = largestTuple.getA() + ((largestTuple.getB() - largestTuple.getA()) / 2);
+
+        //SculkHorde.LOGGER.debug("findLargestAreaAboveBlock | Found Largest at Space: Y=" + newY + ".");
+        return Optional.of(new BlockPos(origin.getX(), newY, origin.getZ()));
     }
 
 }
