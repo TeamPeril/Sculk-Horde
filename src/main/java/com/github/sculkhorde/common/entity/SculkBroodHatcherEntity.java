@@ -3,7 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -63,6 +63,10 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    protected SculkBroodlingEntity child1;
+    protected SculkBroodlingEntity child2;
+    protected SculkBroodlingEntity child3;
 
     /**
      * The Constructor
@@ -153,7 +157,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
-                        new LeapAtTargetGoal(this, 0.5F),
+                        new LeapAtTargetGoal(this, 0.7F),
                         new AttackGoal(),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
@@ -192,10 +196,50 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
     }
     @Override
     public void makeStuckInBlock(BlockState p_33796_, Vec3 p_33797_) {
-        if (!p_33796_.is(Blocks.COBWEB)) {
-            super.makeStuckInBlock(p_33796_, p_33797_);
+        if (p_33796_.is(Blocks.COBWEB)) {
+            // do nothing
         }
 
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+
+
+        // I know this code is simple and kinda dumb, but idc. It works just fine
+        if(child1 == null || child1.isDeadOrDying())
+        {
+            child1 = new SculkBroodlingEntity(level(), blockPosition());
+            level().addFreshEntity(child1);
+
+            if(SquadSystem.getSquadOfLivingEntity(this).isPresent())
+            {
+                SquadSystem.getSquadOfLivingEntity(this).get().forceAcceptMemberIntoSquad(child1);
+            }
+        }
+
+        if(child2 == null || child2.isDeadOrDying())
+        {
+            child2 = new SculkBroodlingEntity(level(), blockPosition());
+            level().addFreshEntity(child2);
+
+            if(SquadSystem.getSquadOfLivingEntity(this).isPresent())
+            {
+                SquadSystem.getSquadOfLivingEntity(this).get().forceAcceptMemberIntoSquad(child2);
+            }
+        }
+
+        if(child3 == null || child3.isDeadOrDying())
+        {
+            child3 = new SculkBroodlingEntity(level(), blockPosition());
+            level().addFreshEntity(child3);
+
+            if(SquadSystem.getSquadOfLivingEntity(this).isPresent())
+            {
+                SquadSystem.getSquadOfLivingEntity(this).get().forceAcceptMemberIntoSquad(child3);
+            }
+        }
     }
 
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
