@@ -206,7 +206,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
-        Optional<BlockPos> largestSpaceOrigin = BlockAlgorithms.findLargestAreaAboveBlock(level, origin);
+        Optional<BlockPos> largestSpaceOrigin = BlockAlgorithms.getLargestAreaAboveBlock(level, origin);
 
         if(largestSpaceOrigin.isEmpty())
         {

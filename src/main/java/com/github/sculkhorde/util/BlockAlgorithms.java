@@ -862,7 +862,7 @@ public class BlockAlgorithms {
         return Optional.empty();
     }
 
-    public static Optional<BlockPos> findLargestAreaAboveBlock(Level level, BlockPos origin)
+    public static Optional<BlockPos> getLargestAreaAboveBlock(Level level, BlockPos origin)
     {
         ArrayList<Tuple<Integer, Integer>> y_values = new ArrayList<>();
 

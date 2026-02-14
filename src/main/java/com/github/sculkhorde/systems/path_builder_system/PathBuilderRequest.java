@@ -3,7 +3,6 @@ package com.github.sculkhorde.systems.path_builder_system;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +26,7 @@ public class PathBuilderRequest {
     protected ServerLevel level;
     protected int requiredProximityToDesiredLocation = 5;
 
-    protected List<BlockPos> path = new ArrayList<>();
+    protected BuiltPath builtPath = new BuiltPath();
 
     public PathBuilderRequest(ServerLevel levelIn, BlockPos desiredDestinationIn, BlockPos startLocationIn, int requiredProximityIn, Predicate<BlockPos> isObstructedIn, Predicate<BlockPos> isValidTargetBlockIn)
     {
@@ -69,11 +68,11 @@ public class PathBuilderRequest {
         {
             return Optional.empty();
         }
-        else if(path.isEmpty())
+        else if(!builtPath.hasPath())
         {
             return Optional.empty();
         }
-        return Optional.of(path);
+        return Optional.of(builtPath.getSteps());
     }
 
     public BlockPos getDesiredDestination()
@@ -93,7 +92,7 @@ public class PathBuilderRequest {
 
     public void setPath(List<BlockPos> pathIn)
     {
-        path = pathIn;
+        builtPath.setSteps(pathIn);
     }
 
     public void startPathBuilding()
@@ -106,4 +105,136 @@ public class PathBuilderRequest {
         isPathBuildingInProgress = value;
     }
 
+    public List<BlockPos> getPath()
+    {
+        return builtPath.getSteps();
+    }
+
+    /**
+     * Direct access to the built path object for advanced operations.
+     */
+    public BuiltPath getBuiltPath()
+    {
+        return builtPath;
+    }
+
+    /**
+     * Returns true if this request currently has a non-empty path.
+     */
+    public boolean hasPath()
+    {
+        return builtPath.hasPath();
+    }
+
+    /**
+     * Returns the index of the next step the mob should move toward.
+     */
+    public int getCurrentStepIndex()
+    {
+        return builtPath.getCurrentStepIndex();
+    }
+
+    /**
+     * Returns the total number of steps in the path.
+     */
+    public int getTotalSteps()
+    {
+        return builtPath.getTotalSteps();
+    }
+
+    /**
+     * Returns how many steps have been completed (i.e., how many indices we have advanced past).
+     */
+    public int getCompletedSteps()
+    {
+        return builtPath.getCompletedSteps();
+    }
+
+    /**
+     * Returns how many steps remain (including the next target step, if any).
+     */
+    public int getRemainingSteps()
+    {
+        int total = getTotalSteps();
+        int completed = getCompletedSteps();
+        return Math.max(0, total - completed);
+    }
+
+    /**
+     * Returns a value in [0.0, 1.0] representing progress along the path.
+     * When there are no steps, returns 0.0.
+     */
+    public double getProgressFraction()
+    {
+        int total = getTotalSteps();
+        if (total <= 0) { return 0.0; }
+        return Math.min(1.0, (double) getCompletedSteps() / (double) total);
+    }
+
+    /**
+     * Returns the next BlockPos the mob should move toward, if any.
+     */
+    public Optional<BlockPos> getNextStep()
+    {
+        return builtPath.getNextStep();
+    }
+
+    /**
+     * Advances to the next step in the path. Returns true if successfully advanced, false if already complete.
+     */
+    public boolean advanceToNextStep()
+    {
+        return builtPath.advanceToNextStep();
+    }
+
+    /**
+     * Returns true if the mob has completed all steps along the path.
+     */
+    public boolean isPathComplete()
+    {
+        return getRemainingSteps() == 0;
+    }
+
+    /**
+     * Resets following progress back to the first step (does not change the path list itself).
+     */
+    public void resetProgress()
+    {
+        builtPath.resetProgress();
+    }
+
+    /**
+     * The proximity (in blocks) considered close enough to the desired destination.
+     */
+    public int getRequiredProximityToDesiredLocation()
+    {
+        return requiredProximityToDesiredLocation;
+    }
+
+    /**
+     * Creates a new PathBuilderRequest that is a copy of this instance.
+     * Note: The UUID of the copy will be different, as UUID is generated per-instance.
+     */
+    public PathBuilderRequest createCopy()
+    {
+        PathBuilderRequest copy = new PathBuilderRequest(
+                this.level,
+                this.desiredDestination,
+                this.startLocation,
+                this.requiredProximityToDesiredLocation,
+                this.isObstructed,
+                this.isValidTargetBlock
+        );
+
+        // Copy internal state flags
+        copy.hasPathBuildingStarted = this.hasPathBuildingStarted;
+        copy.isPathBuildingInProgress = this.isPathBuildingInProgress;
+        copy.isSearching = this.isSearching;
+        copy.isPathBuildSuccessful = this.isPathBuildSuccessful;
+
+        // Deep copy built path
+        copy.builtPath = this.builtPath == null ? new BuiltPath() : this.builtPath.createCopy();
+
+        return copy;
+    }
 }

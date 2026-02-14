@@ -24,7 +24,7 @@ public class SpawnPhantomsEvent extends Event {
         int spawnRange = 100;
         int minimumSpawnRange = 50;
         Random rng = new Random();
-        Optional<BlockPos> largestSpaceOrigin = BlockAlgorithms.findLargestAreaAboveBlock(getDimension(), getEventLocation());
+        Optional<BlockPos> largestSpaceOrigin = BlockAlgorithms.getLargestAreaAboveBlock(getDimension(), getEventLocation());
 
         if(largestSpaceOrigin.isEmpty())
         {

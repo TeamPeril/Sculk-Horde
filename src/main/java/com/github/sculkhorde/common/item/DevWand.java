@@ -1,5 +1,7 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
@@ -82,7 +84,7 @@ public class DevWand extends Item implements IForgeItem {
 		ClipContext rayTrace = new ClipContext(playerIn.getEyePosition(1.0F), playerIn.getEyePosition(1.0F).add(playerIn.getLookAngle().scale(5)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, playerIn);
 		Vec3 hitPos = rayTrace.getTo();
 
-        BlockAlgorithms.findLargestAreaAboveBlock(serverLevel, BlockPos.containing(playerIn.getEyePosition()));
+        BlockAlgorithms.getLargestAreaAboveBlock(serverLevel, BlockPos.containing(playerIn.getEyePosition()));
 
         /*
 		if(!level.canSeeSky(BlockPos.containing(hitPos)))
@@ -103,6 +105,10 @@ public class DevWand extends Item implements IForgeItem {
 		SculkHorde.pathBuilderSystem.addPathBuilderRequest(request);
 
          */
+
+        GhastDeploymentEvent event = new GhastDeploymentEvent(playerIn.level().dimension(), playerIn.blockPosition().above(20));
+
+        SculkHorde.eventSystem.addEvent(event);
 
 
 		return InteractionResultHolder.pass(itemstack);
