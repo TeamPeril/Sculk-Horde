@@ -12,15 +12,16 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class PathBuilder {
     private final PriorityQueue<BlockPos> priorityQueue = new PriorityQueue<>(Comparator.comparingDouble(this::getHeuristic));
-    private final Map<Long, Boolean> visitedPositions = new HashMap<>();
+    private final Set<Long> visitedPositions = new HashSet<>();
     private final Map<BlockPos, BlockPos> cameFrom = new HashMap<>();
     private boolean debugMode = true;
     private ArmorStand debugStand;
     private int MAX_DISTANCE = 150;
+    private int nodesSearched = 0;
+    private static final int MAX_SEARCH_NODES = 10000;
 
     protected Optional<PathBuilderRequest> request = Optional.empty();
     protected boolean foundTarget = false;
@@ -50,24 +51,30 @@ public class PathBuilder {
 
         if(request.isEmpty())
         {
-            SculkHorde.LOGGER.error("PathBuilderSystem | Attempted to getHeuristic for non-existent request.");
-            return -1;
+            throw new IllegalStateException("PathBuilder | Attempted to getHeuristic for non-existent request.");
         }
 
-        float heuristic = Math.abs(pos.getX() - request.get().getDesiredDestination().getX())
-                + Math.abs(pos.getY() - request.get().getDesiredDestination().getY()
-                +Math.abs(pos.getZ() - request.get().getDesiredDestination().getZ()));
+        PathBuilderRequest current = request.get();
+        BlockPos dest = current.getDesiredDestination();
 
-        // Modifier for preference above ground
-        ServerLevel level = getCurrentRequest().get().getLevel(); // Assuming PathBuilderRequest has getLevel()
+        // Manhattan distance (sum of absolute differences) computed correctly for X, Y, Z
+        float heuristic = Math.abs(pos.getX() - dest.getX())
+                + Math.abs(pos.getY() - dest.getY())
+                + Math.abs(pos.getZ() - dest.getZ());
 
+        // Modifier for preference above ground. Penalize nodes that are too close to ground
+        ServerLevel level = current.getLevel(); // Assuming PathBuilderRequest has getLevel()
+        /*
         BlockPos groundPos = BlockAlgorithms.getGroundBlockPos(level, pos, pos.getY());
         int heightOffTheGround = pos.getY() - groundPos.getY();
 
-        if(heightOffTheGround < 10 && BlockAlgorithms.getBlockDistance(request.get().desiredDestination, pos) > 10)
+        // Previously this set heuristic to 0 which biased the queue incorrectly. Add a penalty instead.
+        if(heightOffTheGround < 10 && BlockAlgorithms.getBlockDistance(dest, pos) > 10)
         {
-            heuristic = 0;
+            heuristic += 50.0f; // penalty value; tune as necessary
         }
+
+         */
 
         return Math.max(0, heuristic);
 
@@ -107,6 +114,7 @@ public class PathBuilder {
 
     /**
      * Checks if a cube of blocks defined by an origin and length contains any obstructed blocks.
+     *
      * @param level The Level (or World) instance to check blocks in.
      * @param origin The BlockPos representing the center of the cube.
      *               - If 'length' is odd (e.g., 3), 'origin' is the exact center block.
@@ -118,32 +126,24 @@ public class PathBuilder {
      *                 (e.g., for length 2, offsets are -1, 0 from origin's coordinates).
      * @param length The side length of the cube. For example, a length of 1 checks only the origin block.
      *               A length of 2 checks a 2x2x2 cube. A length of 3 checks a 3x3x3 cube.
-     * @return {@code true} if all blocks in the cube are unobstructed, {@code false} if any block is obstructed.
+     * @return {@code true} if any block in the cube is obstructed (non-replaceable), {@code false} if all blocks are replaceable.
      */
     public static boolean isCubeObstructed(ServerLevel level, BlockPos origin, int length) {
         // Handle invalid length: an empty or negatively sized cube could be considered "not obstructed".
         // Adjust this behavior if needed (e.g., throw IllegalArgumentException).
         if (length <= 0) {
-            return true; // Or false, or throw exception, depending on desired behavior for invalid input
+            return true; // treat invalid length as obstructed for safety
         }
 
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
         // Calculate the starting coordinate (minimum corner) for iteration based on the center 'origin'.
-        // 'extentNegativeDir' is how many blocks the cube extends from the origin's coordinate
-        // in the negative direction along an axis.
-        // For length 3: extentNegativeDir = 3/2 = 1. Min coord = origin.coord - 1.
-        // For length 2: extentNegativeDir = 2/2 = 1. Min coord = origin.coord - 1.
         int extentNegativeDir = length / 2; // Integer division handles odd/even cases appropriately
 
         int minX = origin.getX() - extentNegativeDir;
         int minY = origin.getY() - extentNegativeDir;
         int minZ = origin.getZ() - extentNegativeDir;
 
-        // The loop for each axis will run 'length' times.
-        // So, the maximum coordinate is min_coord + length - 1.
-        // For length 3 (minX = originX - 1): maxX = (originX - 1) + 3 - 1 = originX + 1. Iterates originX-1, originX, originX+1.
-        // For length 2 (minX = originX - 1): maxX = (originX - 1) + 2 - 1 = originX. Iterates originX-1, originX.
         int maxX = minX + length - 1;
         int maxY = minY + length - 1;
         int maxZ = minZ + length - 1;
@@ -154,7 +154,7 @@ public class PathBuilder {
                     // Set the mutable BlockPos to the current position in the cube
                     mutablePos.set(x, y, z);
 
-                    // Check if the block at the current position is unobstructed
+                    // If any block in the cube is not replaceable then the cube is obstructed
                     if (!BlockAlgorithms.isReplaceable(level.getBlockState(mutablePos))) {
                         return true;
                     }
@@ -162,38 +162,26 @@ public class PathBuilder {
             }
         }
 
-        // If the loops complete, it means all blocks checked were air.
-        return false; // No obstructions found, the cube is clear.
+        // No obstructions found
+        return false;
     }
-
-    public final Predicate<BlockPos> isObstructed = (blockPos) ->
-    {
-        if(isCubeObstructed(request.get().level, blockPos, 5))
-        {
-            return true;
-        }
-
-        return false;
-    };
-    protected Predicate<BlockPos> isValidTargetBlock  = (blockPos) ->
-    {
-        if(BlockAlgorithms.getBlockDistance(blockPos, request.get().desiredDestination) <= request.get().requiredProximityToDesiredLocation)
-        {
-            return true;
-        }
-
-        return false;
-    };
 
     protected void initializationTick()
     {
+        // Ensure any previous search state is cleared when starting a new request
+        priorityQueue.clear();
+        visitedPositions.clear();
+        cameFrom.clear();
+        foundTarget = false;
+        nodesSearched = 0;
+
         PathBuilderRequest currentRequest = request.get();
         currentRequest.hasPathBuildingStarted = true;
         currentRequest.isPathBuildingInProgress = true;
         currentRequest.isSearching = true;
-        priorityQueue.add(request.get().startLocation);
-        visitedPositions.put(request.get().startLocation.asLong(), true);
-        SculkHorde.LOGGER.debug("PathBuilder | Path Builder Initialized.");
+        priorityQueue.add(currentRequest.startLocation);
+        visitedPositions.add(currentRequest.startLocation.asLong());
+        SculkHorde.LOGGER.debug("PathBuilder | Path Builder Initialized at " + currentRequest.startLocation.toShortString());
     }
 
     protected void processingTick()
@@ -211,6 +199,15 @@ public class PathBuilder {
             return;
         }
 
+        // Safety check: abort if we've searched too many nodes
+        if (nodesSearched >= MAX_SEARCH_NODES) {
+            if (debugMode) {
+                SculkHorde.LOGGER.debug("PathBuilder | Max search nodes ({}) exceeded. Aborting.", MAX_SEARCH_NODES);
+            }
+            currentRequest.isSearching = false;
+            return;
+        }
+
         // Spawn Debug Stand if Necessary
         if(debugStand == null && debugMode)
         {
@@ -222,30 +219,45 @@ public class PathBuilder {
         }
 
         BlockPos currentPos = priorityQueue.poll();
+        nodesSearched++;
 
-        if(debugMode)
+        if(debugMode && debugStand != null)
         {
             debugStand.teleportTo(currentPos.getX() + 0.5, currentPos.getY(), currentPos.getZ() + 0.5);
         }
 
-        if (isValidTargetBlock.test(currentPos))
+        // Check if we've reached the target, validating with the request's isValidTarget predicate
+        if(BlockAlgorithms.getBlockDistance(currentPos, currentRequest.getDesiredDestination()) <= currentRequest.requiredProximityToDesiredLocation)
         {
-            if(debugMode)
-            {
-                SculkHorde.LOGGER.debug("PathBuilder | Found Target Block");
+            // Validate the target position using the request's predicate
+            if (currentRequest.isValidTargetBlock != null && !currentRequest.isValidTargetBlock.test(currentPos)) {
+                if (debugMode) {
+                    SculkHorde.LOGGER.debug("PathBuilder | Proximity reached but target invalid at {}", currentPos.toShortString());
+                }
+                // Continue searching; don't return
+            } else {
+                if(debugMode)
+                {
+                    SculkHorde.LOGGER.debug("PathBuilder | Found Target Block at {}", currentPos.toShortString());
+                }
+                currentRequest.setPath(getPath(currentPos));
+                currentRequest.isPathBuildSuccessful = true;
+                currentRequest.isSearching = false;
+                return;
             }
-            currentRequest.setPath(reconstructPath(currentPos));
-            currentRequest.isPathBuildSuccessful = true;
-            currentRequest.isSearching = false;
-            return;
         }
 
         for (BlockPos neighbor : BlockAlgorithms.getNeighborsCube(currentPos, false)) {
-            if (visitedPositions.getOrDefault(neighbor.asLong(), false)) {
+            if (visitedPositions.contains(neighbor.asLong())) {
                 continue;
             }
 
-            if (isObstructed.test(neighbor)) {
+            // Check obstruction using the request's predicate if available, otherwise use cube check
+            if (currentRequest.isObstructed != null && currentRequest.isObstructed.test(neighbor)) {
+                continue;
+            }
+
+            if (isCubeObstructed(currentRequest.getLevel(), neighbor, 5)) {
                 continue;
             }
 
@@ -255,7 +267,7 @@ public class PathBuilder {
             }
 
             priorityQueue.add(neighbor);
-            visitedPositions.put(neighbor.asLong(), true);
+            visitedPositions.add(neighbor.asLong());
             cameFrom.put(neighbor, currentPos);
         }
     }
@@ -264,6 +276,13 @@ public class PathBuilder {
     {
         timeOfLastCompletion = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
         request.get().isPathBuildingInProgress = false;
+
+        // Clean up debug stand to prevent memory leak
+        if (debugStand != null) {
+            debugStand.discard();
+            debugStand = null;
+        }
+
         if(request.get().isPathBuildSuccessful())
         {
             if(debugMode)
@@ -300,23 +319,14 @@ public class PathBuilder {
         }
     }
 
-    private List<BlockPos> reconstructPath(BlockPos current) {
+    private BuiltPath getPath(BlockPos current) {
         List<BlockPos> path = new ArrayList<>();
         while (current != null) {
             path.add(current);
             current = cameFrom.get(current);
         }
         Collections.reverse(path);
-        return path;
-    }
-
-
-    public void setTargetBlockPredicate(Predicate<BlockPos> predicate) {
-        //isValidTargetBlock = predicate;
-    }
-
-    public void setObstructionPredicate(Predicate<BlockPos> predicate) {
-        //isObstructed = predicate;
+        return new BuiltPath(path);
     }
 
     public void setMaxDistance(int value) {

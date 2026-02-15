@@ -90,9 +90,9 @@ public class PathBuilderRequest {
         return level;
     }
 
-    public void setPath(List<BlockPos> pathIn)
+    public void setPath(BuiltPath pathIn)
     {
-        builtPath.setSteps(pathIn);
+        builtPath = pathIn;
     }
 
     public void startPathBuilding()
@@ -211,30 +211,4 @@ public class PathBuilderRequest {
         return requiredProximityToDesiredLocation;
     }
 
-    /**
-     * Creates a new PathBuilderRequest that is a copy of this instance.
-     * Note: The UUID of the copy will be different, as UUID is generated per-instance.
-     */
-    public PathBuilderRequest createCopy()
-    {
-        PathBuilderRequest copy = new PathBuilderRequest(
-                this.level,
-                this.desiredDestination,
-                this.startLocation,
-                this.requiredProximityToDesiredLocation,
-                this.isObstructed,
-                this.isValidTargetBlock
-        );
-
-        // Copy internal state flags
-        copy.hasPathBuildingStarted = this.hasPathBuildingStarted;
-        copy.isPathBuildingInProgress = this.isPathBuildingInProgress;
-        copy.isSearching = this.isSearching;
-        copy.isPathBuildSuccessful = this.isPathBuildSuccessful;
-
-        // Deep copy built path
-        copy.builtPath = this.builtPath == null ? new BuiltPath() : this.builtPath.createCopy();
-
-        return copy;
-    }
 }

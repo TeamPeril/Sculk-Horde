@@ -201,30 +201,6 @@ public class GhastDeploymentEvent extends Event {
             SculkHorde.LOGGER.debug("GhastDeploymentEvent | Found Spawn Point.");
         }
 
-        /*
-        if(spawnFinder.isEmpty())
-        {
-
-            spawnFinder = Optional.of(new SculkGhastSpawnFinder(getDimension(), getEventLocation(), cloestNode.get().getPosition()));
-            spawnFinder.get().isObstructed = new Predicate<BlockPos>() {
-                @Override
-                public boolean test(BlockPos pos) {
-                    return !BlockAlgorithms.isAir(getDimension().getBlockState(pos));
-                }
-            };
-            //123;
-
-            spawnFinder.get().isValidTargetBlock = new Predicate<BlockPos>() {
-                @Override
-                public boolean test(BlockPos pos) {
-                    return false;
-                }
-            };
-
-        }
-
-         */
-
         if(pathRequest == null)
         {
             // Define an obstruction predicate: true when the block is non-air
@@ -237,17 +213,15 @@ public class GhastDeploymentEvent extends Event {
             // - the two blocks above must also be air (room for the entity)
             // - the block below must NOT be air (so there is ground beneath)
             Predicate<BlockPos> validTargetPredicate = (pos) -> {
-                if (!BlockAlgorithms.isAir(getDimension().getBlockState(pos))) return false;
-                BlockPos above = pos.above();
-                BlockPos above2 = above.above();
-                if (!BlockAlgorithms.isAir(getDimension().getBlockState(above))) return false;
-                if (!BlockAlgorithms.isAir(getDimension().getBlockState(above2))) return false;
-                BlockPos below = pos.below();
-                if (BlockAlgorithms.isAir(getDimension().getBlockState(below))) return false;
+                if (!BlockAlgorithms.isReplaceableByWater(getDimension().getBlockState(pos)))
+                {
+                    return false;
+                }
+
                 return true;
             };
 
-            pathRequest = new PathBuilderRequest(getDimension(), eventLocation, cloestNode.get().getPosition(), 20, obstructionPredicate, validTargetPredicate);
+            pathRequest = new PathBuilderRequest(getDimension(), eventLocation, potentialSpawnPoint.get(), 20, obstructionPredicate, validTargetPredicate);
              SculkHorde.pathBuilderSystem.addPathBuilderRequest(pathRequest);
              SculkHorde.LOGGER.debug("GhastDeploymentEvent | Created path request.");
          }
