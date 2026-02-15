@@ -155,7 +155,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
                 //new SculkGhastGoToAnchor(this),
                 new ShootGhastProjectile(this,  48, 0),
                 // Follow a built path when provided by PathBuilderSystem
-                new FollowBuiltPathGoal(this, 1.0D),
+                new FollowBuiltPathGoal(this, 2.0D),
                 new SculkGhastDeployTroopsAtGoalPosition(this),
                 new DropOffMobsNearHostiles(),
                 new FindAndStoreIdleMobs(),
@@ -515,10 +515,12 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
     public void addAdditionalSaveData(@NotNull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        tag.putInt("AX", this.goalPos.getX());
-        tag.putInt("AY", this.goalPos.getY());
-        tag.putInt("AZ", this.goalPos.getZ());
-
+        if(this.goalPos != null)
+        {
+            tag.putInt("AX", this.goalPos.getX());
+            tag.putInt("AY", this.goalPos.getY());
+            tag.putInt("AZ", this.goalPos.getZ());
+        }
     }
 
     /** Animation **/
@@ -949,9 +951,9 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         public void stop() {
             // clear navigation on stop; do not delete the path automatically (external systems may reuse it)
             ghast.getNavigation().stop();
-            BuiltPath p = ghast.getBuiltPath();
-            if (p != null && p.isPathComplete()) {
-                // clear completed path to avoid re-entering goal
+            BuiltPath path = ghast.getBuiltPath();
+            if (path != null) {
+                path.setComplete();
                 ghast.setBuiltPath(null);
             }
         }

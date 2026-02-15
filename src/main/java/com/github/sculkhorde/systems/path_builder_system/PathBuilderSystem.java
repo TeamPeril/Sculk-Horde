@@ -2,16 +2,10 @@ package com.github.sculkhorde.systems.path_builder_system;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class PathBuilderSystem {
     //Hash Map of Events using event IDs as keys
@@ -19,7 +13,7 @@ public class PathBuilderSystem {
     private HashMap<UUID, PathBuilder> pathBuilders;
 
     private long lastGameTimeOfExecution;
-    private final long EXECUTION_COOLDOWN_TICKS = TickUnits.convertSecondsToTicks(0.5F);
+    private final long EXECUTION_COOLDOWN_TICKS = 0;//TickUnits.convertSecondsToTicks(0.5F);
     private static final int MAX_ACTIVE_BUILDERS = 3;
 
     public PathBuilderSystem()

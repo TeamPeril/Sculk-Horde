@@ -59,6 +59,11 @@ public class BuiltPath {
         return Math.min(currentStepIndex, getTotalSteps());
     }
 
+    public void setComplete()
+    {
+        currentStepIndex = getTotalSteps();
+    }
+
     public int getRemainingSteps() {
         int total = getTotalSteps();
         int completed = getCompletedSteps();

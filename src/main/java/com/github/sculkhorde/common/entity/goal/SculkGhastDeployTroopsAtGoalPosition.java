@@ -8,6 +8,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.pathfinder.Path;
 
+import java.util.EnumSet;
+
 public class SculkGhastDeployTroopsAtGoalPosition extends Goal {
     protected final SculkGhastEntity mob;
     protected final int MIN_DISTANCE_TO_GOAL_POS = 5;
@@ -25,6 +27,7 @@ public class SculkGhastDeployTroopsAtGoalPosition extends Goal {
     protected boolean finishedDeployment = false;
     public SculkGhastDeployTroopsAtGoalPosition(SculkGhastEntity mob) {
         this.mob = mob;
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     protected Mob getMob() {

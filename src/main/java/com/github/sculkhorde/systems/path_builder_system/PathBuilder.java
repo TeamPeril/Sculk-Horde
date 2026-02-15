@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
@@ -41,7 +40,7 @@ public class PathBuilder {
     private final PriorityQueue<AStarNode> openSet = new PriorityQueue<>();
     private final Set<Long> closedSet = new HashSet<>();
     private final Map<Long, AStarNode> allNodes = new HashMap<>();
-    private boolean debugMode = false;
+    private boolean debugMode = true;
     private ArmorStand debugStand;
     private int MAX_DISTANCE = 150;
     private int nodesSearched = 0;
@@ -289,7 +288,7 @@ public class PathBuilder {
             {
                 for(Long pos : allNodes.keySet())
                 {
-                    request.get().getLevel().setBlockAndUpdate(BlockPos.of(pos), Blocks.GREEN_STAINED_GLASS.defaultBlockState());
+                    //request.get().getLevel().setBlockAndUpdate(BlockPos.of(pos), Blocks.GREEN_STAINED_GLASS.defaultBlockState());
                 }
             }
 

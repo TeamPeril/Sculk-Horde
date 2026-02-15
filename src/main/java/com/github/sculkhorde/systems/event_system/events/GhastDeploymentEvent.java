@@ -24,7 +24,6 @@ import java.util.function.Predicate;
  * 
  */
 public class GhastDeploymentEvent extends Event {
-    protected final int MAX_DISTANCE_FROM_PLAYER = 150;
 
     protected SculkGhastEntity ghast;
         protected UUID ghastUUID;
@@ -33,10 +32,9 @@ public class GhastDeploymentEvent extends Event {
     Optional<BlockPos> potentialSpawnPoint = Optional.empty();
     PathBuilderRequest pathRequest;
 
-
     protected enum State {
         INITIALIZATION,
-        PURSUIT,
+        TRAVEl,
         ENGAGING,
         SUCCESS,
         FAILURE
@@ -44,7 +42,6 @@ public class GhastDeploymentEvent extends Event {
 
     protected State state;
     protected boolean isEventOver = false;
-    protected Optional<BlockPos> desiredSpawnPos = Optional.empty();
 
     public GhastDeploymentEvent(ResourceKey<Level> dimension, BlockPos targetLocation) {
         this(dimension);
@@ -77,13 +74,9 @@ public class GhastDeploymentEvent extends Event {
         {
             initializationTick();
         }
-        else if(state == State.PURSUIT)
+        else if(state == State.TRAVEl)
         {
-            pursuitTick();
-        }
-        else if(state == State.ENGAGING)
-        {
-            engagingTick();
+            travelTick();
         }
         else if(state == State.SUCCESS)
         {
@@ -247,17 +240,18 @@ public class GhastDeploymentEvent extends Event {
             SculkHorde.LOGGER.debug("GhastDeploymentEvent | Assigned built path to ghast UUID: " + ghastUUID);
         }
 
-        setState(State.PURSUIT);
+        setState(State.TRAVEl);
 
     }
 
-    protected void pursuitTick()
+    protected void travelTick()
     {
-        SculkHorde.LOGGER.debug("GhastDeploymentEvent | pursuitTick start");
+
 
         // Reattach ghast if needed
         if(ghast == null && ghastUUID != null)
         {
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | travelTick start");
             ghast = (SculkGhastEntity) getDimension().getEntity(ghastUUID);
             if(ghast != null)
             {
@@ -265,16 +259,16 @@ public class GhastDeploymentEvent extends Event {
             }
         }
 
-        if(ghast == null)
+        if(ghast == null || ghast.isDeadOrDying() || ghast.isRemoved())
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: ghast is null during pursuit.");
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: Ghast is dead.");
             return;
         }
 
         // Make sure we keep chunks loaded around the ghast while moving
         EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(ghast,3, 3, TickUnits.convertMinutesToTicks(1));
-        SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ensured chunk loading around ghast.");
+        //SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ensured chunk loading around ghast.");
 
         if(pathRequest == null || !pathRequest.hasPath())
         {
@@ -283,60 +277,16 @@ public class GhastDeploymentEvent extends Event {
             return;
         }
 
-        // Ensure the ghast has the built path assigned (in case assignment was missed)
-        if(!ghast.hasBuiltPathAssigned())
-        {
-            ghast.setBuiltPath(pathRequest.getBuiltPath());
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | (re)Assigned built path to ghast UUID: " + ghastUUID);
-        }
-
-        // Do not physically move the ghast here. The ghast's FollowBuiltPathGoal will follow the BuiltPath.
-        // Instead, monitor whether the ghast has completed the assigned built path.
         if(ghast.hasCompletedAssignedBuiltPath())
         {
             // clear the assigned flag and advance state to engaging (or success)
             ghast.clearCompletedAssignedBuiltPath();
-            setState(State.ENGAGING);
+            setState(State.SUCCESS);
             SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ghast completed built path; switching to ENGAGING.");
             return;
         }
 
         // Otherwise, just wait while the ghast follows the assigned built path.
-    }
-
-    protected void engagingTick()
-    {
-        // Reattach ghast if needed
-        if(ghast == null && ghastUUID != null)
-        {
-            ghast = (SculkGhastEntity) getDimension().getEntity(ghastUUID);
-            if(ghast != null)
-            {
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Reattached ghast UUID: " + ghastUUID + " in engagingTick.");
-            }
-        }
-
-        if(ghast == null || ghast.isRemoved() || ghast.isDeadOrDying())
-        {
-            setState(State.FAILURE);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: ghast missing or dead during engaging.");
-            return;
-        }
-
-        // Maintain chunkloading around ghast
-        EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(ghast,3, 3, TickUnits.convertMinutesToTicks(1));
-        SculkHorde.LOGGER.debug("GhastDeploymentEvent | Maintained chunk loading during engaging.");
-
-        // The ghast's goal will clear the built path once it finishes. Use the ghast's tracking API to detect completion.
-        if(ghast.hasCompletedAssignedBuiltPath())
-        {
-            ghast.clearCompletedAssignedBuiltPath();
-            setState(State.SUCCESS);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ghast finished its assigned path -> SUCCESS.");
-            return;
-        }
-
-        // If needed, other engaging logic can be placed here. Do not directly move the ghast to the destination.
     }
 
     protected void successTick()
