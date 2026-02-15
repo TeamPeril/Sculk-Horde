@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.systems.path_builder_system.BuiltPath;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -78,6 +79,13 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     protected final ArrayList<Mob> storedMobs = new ArrayList<>();
     protected Position goalPosition; // Used for sending the ghast to a location.
 
+    // Built path assigned by path builder system (nullable)
+    private BuiltPath builtPath;
+
+    // New: track whether an external system assigned a built path that we should report completion for.
+    // The event should call setBuiltPath(...) to assign, poll hasCompletedAssignedBuiltPath(), then call clearCompletedAssignedBuiltPath().
+    private boolean builtPathAssignedFlag = false;
+
     /**
      * The Constructor
      * @param type The Mob Type
@@ -146,6 +154,8 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
                 //new selectRandomLocationToVisit(),
                 //new SculkGhastGoToAnchor(this),
                 new ShootGhastProjectile(this,  48, 0),
+                // Follow a built path when provided by PathBuilderSystem
+                new FollowBuiltPathGoal(this, 1.0D),
                 new SculkGhastDeployTroopsAtGoalPosition(this),
                 new DropOffMobsNearHostiles(),
                 new FindAndStoreIdleMobs(),
@@ -261,9 +271,55 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     }
 
     public Vec3 getGoalPos() {
+
+        if(this.goalPos == null)
+        {
+            return null;
+        }
+
         return this.goalPos.getCenter();
     }
 
+    // New getter & setter for built path (updated to set the assigned flag)
+    public BuiltPath getBuiltPath() {
+        return builtPath;
+    }
+
+    public void setBuiltPath(BuiltPath builtPathIn) {
+        if (builtPathIn == null) {
+            this.builtPath = null;
+            // do not clear the assigned flag here — the event tracks completion by observing hasCompletedAssignedBuiltPath()
+            // when the FollowBuiltPathGoal finishes it clears the path (set to null) and the event will observe that.
+            return;
+        } else {
+            this.builtPath = builtPathIn.createCopy();
+            this.builtPathAssignedFlag = true;
+        }
+    }
+
+    // Signal whether an external system has assigned a non-null built path that the ghast should follow.
+    public boolean hasBuiltPathAssigned() {
+        return builtPathAssignedFlag && builtPath != null && builtPath.hasPath();
+    }
+
+    // Returns true when a previously assigned built path is completed.
+    // Completion is detected either when the BuiltPath reports complete or when the FollowBuiltPathGoal clears the path (builtPath == null).
+    public boolean hasCompletedAssignedBuiltPath() {
+        if (!builtPathAssignedFlag) return false;
+        if (builtPath == null) return true; // cleared by goal -> completed
+        return builtPath.isPathComplete();
+    }
+
+    // Call this from the event after observing completion to reset internal tracking.
+    public void clearCompletedAssignedBuiltPath() {
+        builtPathAssignedFlag = false;
+    }
+
+    // Helpful progress accessor for monitoring
+    public double getBuiltPathProgressFraction() {
+        if (builtPath == null) return 0.0;
+        return builtPath.getProgressFraction();
+    }
 
     @Override
     public boolean isParticipatingInRaid() {
@@ -849,6 +905,89 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         public void clientTick() {
             SculkGhastEntity.this.yHeadRot = SculkGhastEntity.this.yBodyRot;
             SculkGhastEntity.this.yBodyRot = SculkGhastEntity.this.getYRot();
+        }
+    }
+
+    /**
+     * Goal: follow a BuiltPath assigned to the ghast.
+     * Iterative behaviour: each tick move toward the current next step; when within threshold advance to the next step.
+     * Stops when the path is complete or becomes invalid.
+     */
+    protected class FollowBuiltPathGoal extends Goal {
+        private final SculkGhastEntity ghast;
+        private final double speed;
+        private long lastMoveTick = 0L;
+        private final long moveCooldownTicks = TickUnits.convertSecondsToTicks(1F);
+        private final double proximity = 5D; // squared distance threshold
+
+        public FollowBuiltPathGoal(SculkGhastEntity ghastIn, double speedIn) {
+            this.ghast = ghastIn;
+            this.speed = speedIn;
+            this.setFlags(EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            BuiltPath p = ghast.getBuiltPath();
+            return p != null && p.hasPath() && !p.isPathComplete();
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            BuiltPath p = ghast.getBuiltPath();
+            return p != null && p.hasPath() && !p.isPathComplete();
+        }
+
+        @Override
+        public void start() {
+            // ensure navigation is ready
+            ghast.getNavigation().stop();
+            lastMoveTick = 0L;
+        }
+
+        @Override
+        public void stop() {
+            // clear navigation on stop; do not delete the path automatically (external systems may reuse it)
+            ghast.getNavigation().stop();
+            BuiltPath p = ghast.getBuiltPath();
+            if (p != null && p.isPathComplete()) {
+                // clear completed path to avoid re-entering goal
+                ghast.setBuiltPath(null);
+            }
+        }
+
+        @Override
+        public void tick() {
+            BuiltPath p = ghast.getBuiltPath();
+            if (p == null || !p.hasPath() || p.isPathComplete()) {
+                return;
+            }
+
+            Optional<BlockPos> nextOpt = p.getNextStep();
+            if (nextOpt.isEmpty()) {
+                return;
+            }
+            BlockPos next = nextOpt.get();
+            Vec3 target = Vec3.atCenterOf(next);
+
+            // if we're close enough to the next step, advance
+            if (BlockAlgorithms.getBlockDistance(ghast.blockPosition(), BlockPos.containing(target)) <= proximity) {
+                boolean advanced = p.advanceToNextStep();
+                if (!advanced && p.isPathComplete()) {
+                    // finished
+                    ghast.getNavigation().stop();
+                    return;
+                }
+                // immediately try to get the new next step on the same tick
+                return;
+            }
+
+            // throttle navigation commands
+            long gameTime = ghast.level().getGameTime();
+            if (gameTime - lastMoveTick >= moveCooldownTicks) {
+                ghast.getNavigation().moveTo(target.x, target.y, target.z, speed);
+                lastMoveTick = gameTime;
+            }
         }
     }
 }

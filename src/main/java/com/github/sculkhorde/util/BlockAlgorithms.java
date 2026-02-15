@@ -80,6 +80,52 @@ public class BlockAlgorithms {
         return isWeakBlock(blockState) || hasFastDestroySpeed(level, pos) || isMineableWithIronTools(blockState) || isInfestedBlock(blockState);
     }
 
+    /**
+     * Checks if a cube of blocks defined by an origin and length contains any obstructed blocks.
+     * @param level The Level (or World) instance to check blocks in.
+     * @param origin The BlockPos representing the center of the cube.
+     *               - If 'length' is odd (e.g., 3), 'origin' is the exact center block.
+     *                 The cube extends (length-1)/2 blocks in both positive and negative directions from origin.
+     *                 (e.g., for length 3, offsets are -1, 0, +1 from origin's coordinates).
+     *               - If 'length' is even (e.g., 2), 'origin' is one of the conceptual central blocks.
+     *                 The cube extends 'length/2' blocks in the negative direction and '(length/2)-1' blocks
+     *                 in the positive direction from origin's coordinates.
+     *                 (e.g., for length 2, offsets are -1, 0 from origin's coordinates).
+     * @param length The side length of the cube. For example, a length of 1 checks only the origin block.
+     *               A length of 2 checks a 2x2x2 cube. A length of 3 checks a 3x3x3 cube.
+     * @return {@code true} if all blocks in the cube are unobstructed, {@code false} if any block is obstructed.
+     */
+    public static boolean isCubeReplaceable(ServerLevel level, BlockPos origin, int length) {
+        if (length <= 0) {
+            return true;
+        }
+
+        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        int extentNegativeDir = length / 2;
+
+        int minX = origin.getX() - extentNegativeDir;
+        int minY = origin.getY() - extentNegativeDir;
+        int minZ = origin.getZ() - extentNegativeDir;
+
+        int maxX = minX + length - 1;
+        int maxY = minY + length - 1;
+        int maxZ = minZ + length - 1;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    mutablePos.set(x, y, z);
+
+                    if (!BlockAlgorithms.isReplaceable(level.getBlockState(mutablePos))) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static boolean isInfestedBlock(BlockState blockState)
     {
         return blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK);
@@ -838,7 +884,7 @@ public class BlockAlgorithms {
         int maxY = center.getY() + halfLength;
         int maxZ = center.getZ() + halfLength;
 
-        // Create a mutable block position to avoid creating new objects in the loop
+        // Create a mutable block position to avoid creating new ojects in the loop
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
         // Iterate through each block position in the cube

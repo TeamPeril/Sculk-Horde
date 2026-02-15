@@ -11,10 +11,8 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -46,9 +44,6 @@ public class GhastDeploymentEvent extends Event {
 
     protected State state;
     protected boolean isEventOver = false;
-
-    protected Optional<SculkGhastSpawnFinder> spawnFinder = Optional.empty();
-
     protected Optional<BlockPos> desiredSpawnPos = Optional.empty();
 
     public GhastDeploymentEvent(ResourceKey<Level> dimension, BlockPos targetLocation) {
@@ -201,55 +196,15 @@ public class GhastDeploymentEvent extends Event {
             SculkHorde.LOGGER.debug("GhastDeploymentEvent | Found Spawn Point.");
         }
 
-        /*
-        if(spawnFinder.isEmpty())
-        {
-
-            spawnFinder = Optional.of(new SculkGhastSpawnFinder(getDimension(), getEventLocation(), cloestNode.get().getPosition()));
-            spawnFinder.get().isObstructed = new Predicate<BlockPos>() {
-                @Override
-                public boolean test(BlockPos pos) {
-                    return !BlockAlgorithms.isAir(getDimension().getBlockState(pos));
-                }
-            };
-            //123;
-
-            spawnFinder.get().isValidTargetBlock = new Predicate<BlockPos>() {
-                @Override
-                public boolean test(BlockPos pos) {
-                    return false;
-                }
-            };
-
-        }
-
-         */
 
         if(pathRequest == null)
         {
             // Define an obstruction predicate: true when the block is non-air
-            Predicate<BlockPos> obstructionPredicate = (pos) -> {
-                return !BlockAlgorithms.isAir(getDimension().getBlockState(pos));
-            };
+            Predicate<BlockPos> obstructionPredicate = (pos) -> !BlockAlgorithms.isCubeReplaceable(getDimension(), pos, 5);
 
-            // Define a valid target predicate:
-            // - target block must be air
-            // - the two blocks above must also be air (room for the entity)
-            // - the block below must NOT be air (so there is ground beneath)
-            Predicate<BlockPos> validTargetPredicate = (pos) -> {
-                if (!BlockAlgorithms.isAir(getDimension().getBlockState(pos))) return false;
-                BlockPos above = pos.above();
-                BlockPos above2 = above.above();
-                if (!BlockAlgorithms.isAir(getDimension().getBlockState(above))) return false;
-                if (!BlockAlgorithms.isAir(getDimension().getBlockState(above2))) return false;
-                BlockPos below = pos.below();
-                if (BlockAlgorithms.isAir(getDimension().getBlockState(below))) return false;
-                return true;
-            };
-
-            pathRequest = new PathBuilderRequest(getDimension(), eventLocation, cloestNode.get().getPosition(), 20, obstructionPredicate, validTargetPredicate);
-             SculkHorde.pathBuilderSystem.addPathBuilderRequest(pathRequest);
-             SculkHorde.LOGGER.debug("GhastDeploymentEvent | Created path request.");
+            pathRequest = new PathBuilderRequest(getDimension(), eventLocation, potentialSpawnPoint.get(), 32, obstructionPredicate, null);
+            SculkHorde.pathBuilderSystem.addPathBuilderRequest(pathRequest);
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Created path request.");
          }
 
         if(pathRequest.isPathBuildingInProgress() || !pathRequest.hasPathBuildStarted())
@@ -283,6 +238,13 @@ public class GhastDeploymentEvent extends Event {
             ghastUUID = created.getUUID();
 
             SculkHorde.LOGGER.debug("GhastDeploymentEvent | Spawned ghast UUID: " + ghastUUID + " at " + spawnAt.toShortString());
+        }
+
+        // Assign the built path to the ghast (let the ghast's own goal follow it)
+        if(ghast != null && pathRequest != null && pathRequest.hasPath())
+        {
+            ghast.setBuiltPath(pathRequest.getBuiltPath());
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Assigned built path to ghast UUID: " + ghastUUID);
         }
 
         setState(State.PURSUIT);
@@ -321,47 +283,29 @@ public class GhastDeploymentEvent extends Event {
             return;
         }
 
-        // If already close enough to target, start engaging
-        if(BlockAlgorithms.getBlockDistance(ghast.blockPosition(), pathRequest.getDesiredDestination()) <= pathRequest.getRequiredProximityToDesiredLocation())
+        // Ensure the ghast has the built path assigned (in case assignment was missed)
+        if(!ghast.hasBuiltPathAssigned())
         {
+            ghast.setBuiltPath(pathRequest.getBuiltPath());
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | (re)Assigned built path to ghast UUID: " + ghastUUID);
+        }
+
+        // Do not physically move the ghast here. The ghast's FollowBuiltPathGoal will follow the BuiltPath.
+        // Instead, monitor whether the ghast has completed the assigned built path.
+        if(ghast.hasCompletedAssignedBuiltPath())
+        {
+            // clear the assigned flag and advance state to engaging (or success)
+            ghast.clearCompletedAssignedBuiltPath();
             setState(State.ENGAGING);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Reached proximity to desired destination; switching to ENGAGING.");
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ghast completed built path; switching to ENGAGING.");
             return;
         }
 
-        // Follow next step
-        pathRequest.getNextStep().ifPresentOrElse(next -> {
-            double dist = BlockAlgorithms.getBlockDistance(ghast.blockPosition(), next);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Next step: " + next.toShortString() + " distance: " + dist);
-            if(dist <= 2)
-            {
-                pathRequest.advanceToNextStep();
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Advanced to next path step.");
-            }
-            else
-            {
-                ghast.getNavigation().moveTo(next.getX() + 0.5, next.getY() + 0.5, next.getZ() + 0.5, 1.2F);
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Moving ghast towards next step.");
-            }
-        }, () -> {
-            // No next step; if path is complete, engage, else fail
-            if(pathRequest.isPathComplete())
-            {
-                setState(State.ENGAGING);
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Path complete; switching to ENGAGING.");
-            }
-            else
-            {
-                setState(State.FAILURE);
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | No next step and path not complete; failing.");
-            }
-        });
+        // Otherwise, just wait while the ghast follows the assigned built path.
     }
 
     protected void engagingTick()
     {
-        //SculkHorde.LOGGER.debug("GhastDeploymentEvent | engagingTick start");
-
         // Reattach ghast if needed
         if(ghast == null && ghastUUID != null)
         {
@@ -383,22 +327,16 @@ public class GhastDeploymentEvent extends Event {
         EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(ghast,3, 3, TickUnits.convertMinutesToTicks(1));
         SculkHorde.LOGGER.debug("GhastDeploymentEvent | Maintained chunk loading during engaging.");
 
-        // Check for arrival at destination
-        if(pathRequest != null)
+        // The ghast's goal will clear the built path once it finishes. Use the ghast's tracking API to detect completion.
+        if(ghast.hasCompletedAssignedBuiltPath())
         {
-            int proximity = pathRequest.getRequiredProximityToDesiredLocation();
-            if(BlockAlgorithms.getBlockDistance(ghast.blockPosition(), pathRequest.getDesiredDestination()) <= proximity)
-            {
-                setState(State.SUCCESS);
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Arrived at destination; SUCCESS.");
-                return;
-            }
-
-            // Otherwise, ensure it keeps moving to destination
-            BlockPos dest = pathRequest.getDesiredDestination();
-            ghast.getNavigation().moveTo(dest.getX() + 0.5, dest.getY() + 0.5, dest.getZ() + 0.5, 1.2F);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Moving ghast towards destination: " + dest.toShortString());
+            ghast.clearCompletedAssignedBuiltPath();
+            setState(State.SUCCESS);
+            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ghast finished its assigned path -> SUCCESS.");
+            return;
         }
+
+        // If needed, other engaging logic can be placed here. Do not directly move the ghast to the destination.
     }
 
     protected void successTick()
@@ -445,151 +383,6 @@ public class GhastDeploymentEvent extends Event {
         else if(this.ghastUUID != null)
         {
             tag.putUUID("ghastUUID", this.ghastUUID);
-        }
-    }
-
-    public class SculkGhastSpawnFinder {
-        private final ServerLevel level;
-        private final BlockPos origin;
-        private final BlockPos target;
-        private final PriorityQueue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingInt(this::heuristic));
-        private final Map<Long, Boolean> visitedPositions = new HashMap<>();
-        private final Map<BlockPos, BlockPos> cameFrom = new HashMap<>();
-        private boolean debugMode = false;
-        private ArmorStand debugStand;
-        private boolean pathFound = false;
-
-        private boolean isFinished = false;
-        private List<BlockPos> path = new ArrayList<>();
-
-        private int MAX_DISTANCE = 150;
-
-        protected Predicate<BlockPos> isObstructed;
-        protected Predicate<BlockPos> isValidTargetBlock;
-
-        protected BlockPos foundBlock;
-
-        public SculkGhastSpawnFinder(ServerLevel level, BlockPos origin, BlockPos target) {
-            this.level = level;
-            this.origin = origin;
-            this.target = target;
-            queue.add(origin);
-        }
-
-        public void enableDebugMode() {
-            debugMode = true;
-        }
-
-        private int heuristic(BlockPos pos) {
-            // Only consider x and z coordinates
-            return Math.abs(pos.getX() - target.getX()) + Math.abs(pos.getZ() - target.getZ());
-        }
-
-        public void tick() {
-            if (pathFound || queue.isEmpty()) {
-
-                if(pathFound && debugMode)
-                {
-                    SculkHorde.LOGGER.info("HitSquadSpawnFinder | Found Target Block at" + foundBlock.toShortString());
-                }
-                else if(debugMode)
-                {
-                    SculkHorde.LOGGER.info("HitSquadSpawnFinder | Did Not Target Block");
-                }
-
-                isFinished = true;
-                return;
-            }
-
-            // Spawn Debug Stand if Necessary
-            if(debugStand == null && debugMode)
-            {
-                debugStand = new ArmorStand(level, origin.getX(), origin.getY(), origin.getZ());
-                debugStand.setInvisible(true);
-                debugStand.setNoGravity(true);
-                debugStand.addEffect(new MobEffectInstance(MobEffects.GLOWING, TickUnits.convertHoursToTicks(1), 3));
-                level.addFreshEntity(debugStand);
-            }
-
-            BlockPos current = queue.poll();
-
-            if(debugMode)
-            {
-                debugStand.teleportTo(current.getX() + 0.5, current.getY(), current.getZ() + 0.5);
-            }
-
-            // Debug: report current polled node and remaining queue size
-            SculkHorde.LOGGER.debug("GhastSpawnFinder | Polled node: " + (current == null ? "null" : current.toShortString()) + " queueSize: " + queue.size());
-
-            if (isValidTargetBlock.test(current)) {
-                path = reconstructPath(current);
-                pathFound = true;
-                foundBlock = current;
-                return;
-            }
-
-            for (BlockPos neighbor : BlockAlgorithms.getNeighborsCube(current, false)) {
-                if (visitedPositions.getOrDefault(neighbor.asLong(), false)) {
-                    continue;
-                }
-
-                if (isObstructed.test(neighbor)) {
-                    continue;
-                }
-
-                if(neighbor.distManhattan(origin) > MAX_DISTANCE)
-                {
-                    continue;
-                }
-
-                queue.add(neighbor);
-                visitedPositions.put(neighbor.asLong(), true);
-                cameFrom.put(neighbor, current);
-
-                if (debugMode) {
-                    //level.setBlockAndUpdate(neighbor, Blocks.GREEN_STAINED_GLASS.defaultBlockState());
-                }
-            }
-        }
-
-        private List<BlockPos> reconstructPath(BlockPos current) {
-            List<BlockPos> path = new ArrayList<>();
-            while (current != null) {
-                path.add(current);
-                current = cameFrom.get(current);
-            }
-            Collections.reverse(path);
-            return path;
-        }
-
-        public List<BlockPos> getPath() {
-            return path;
-        }
-
-        public boolean isPathFound() {
-            return pathFound;
-        }
-
-        public void setTargetBlockPredicate(Predicate<BlockPos> predicate) {
-            isValidTargetBlock = predicate;
-        }
-
-        public void setObstructionPredicate(Predicate<BlockPos> predicate) {
-            isObstructed = predicate;
-        }
-
-        public void setMaxDistance(int value) {
-            MAX_DISTANCE = value;
-        }
-
-        public boolean isFinished()
-        {
-            return isFinished;
-        }
-
-        public BlockPos getFoundBlock()
-        {
-            return foundBlock;
         }
     }
 }
