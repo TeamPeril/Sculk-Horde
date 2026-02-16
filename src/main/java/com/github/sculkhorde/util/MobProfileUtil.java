@@ -5,7 +5,7 @@ import net.minecraft.world.entity.Mob;
 
 import java.util.Optional;
 
-public class MobProfileHandler {
+public class MobProfileUtil {
 
     private static Optional<ModSavedData.MobProfileEntry> getMobProfile(Mob mob)
     {

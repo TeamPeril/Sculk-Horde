@@ -99,7 +99,7 @@ public class ForgeEventSubscriber {
 
             if(event.getEntity().getLastHurtByMob() instanceof Mob mob)
             {
-                ModSavedData.MobProfileEntry mobProfile = MobProfileHandler.getOrCreateMobProfile(mob);
+                ModSavedData.MobProfileEntry mobProfile = MobProfileUtil.getOrCreateMobProfile(mob);
                 mobProfile.incrementSculkHordeKills();
                 if(mobProfile.isHighPriorityTarget())
                 {
