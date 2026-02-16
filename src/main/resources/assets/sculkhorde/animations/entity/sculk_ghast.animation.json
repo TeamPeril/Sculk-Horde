@@ -1,19 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"misc.living": {
-			"loop": true
-		},
-		"move.walk": {
-			"loop": true
-		},
-		"move.run": {
-			"loop": true
-		},
-		"attack": {
-			"loop": true
-		},
-		"misc.drop": {
+		"animation": {
 			"loop": true
 		}
 	},
