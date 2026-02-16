@@ -101,11 +101,7 @@ public class ForgeEventSubscriber {
             {
                 ModSavedData.MobProfileEntry mobProfile = MobProfileUtil.getOrCreateMobProfile(mob);
                 mobProfile.incrementSculkHordeKills();
-                if(mobProfile.isHighPriorityTarget())
-                {
-                    GhastDeploymentEvent ghastDeploymentEvent = new GhastDeploymentEvent(mob.level().dimension(), mob.blockPosition());
-                    SculkHorde.eventSystem.addEvent(ghastDeploymentEvent);
-                }
+                GhastDeploymentEvent.trySendGhastDepolymentEvent(mob);
             }
 
             SculkHorde.statisticsData.incrementTotalUnitDeaths();

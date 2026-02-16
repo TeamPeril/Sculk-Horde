@@ -1784,6 +1784,8 @@ public class ModSavedData extends SavedData {
         protected long timeUntilNextAmbientSound = 0;
         protected long timeOfLastAmbientSound = 0;
 
+        protected long timeofLastGhastDeployment = 0;
+
         private static final int MAX_RELATIONSHIP_VALUE = 1000;
         private static final int MIN_RELATIONSHIP_VALUE = -1000;
 
@@ -1853,6 +1855,16 @@ public class ModSavedData extends SavedData {
         {
             // Cooldown for hits is twice as long as it takes a node to spawn.
             return ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - getTimeOfLastHit() > TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_node_spawn_cooldown_minutes.get() * 2);
+        }
+
+        public long getTimeofLastGhastDeployment()
+        {
+            return timeofLastGhastDeployment;
+        }
+
+        public void setTimeofLastGhastDeployment(long value)
+        {
+            timeOfLastAmbientSound = value;
         }
 
         public int getRelationshipToTheHorde()

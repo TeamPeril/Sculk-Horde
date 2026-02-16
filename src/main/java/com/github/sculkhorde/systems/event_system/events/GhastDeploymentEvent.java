@@ -7,12 +7,18 @@ import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderRequest;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+import com.github.sculkhorde.util.MobProfileUtil;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -26,7 +32,7 @@ import java.util.function.Predicate;
 public class GhastDeploymentEvent extends Event {
 
     protected SculkGhastEntity ghast;
-        protected UUID ghastUUID;
+    protected UUID ghastUUID;
 
     Optional<ModSavedData.NodeEntry> cloestNode = Optional.empty();
     Optional<BlockPos> potentialSpawnPoint = Optional.empty();
@@ -42,6 +48,34 @@ public class GhastDeploymentEvent extends Event {
 
     protected State state;
     protected boolean isEventOver = false;
+
+    public static Optional<GhastDeploymentEvent> trySendGhastDepolymentEvent(LivingEntity entity)
+    {
+        if(entity == null)
+        {
+            SculkHorde.LOGGER.error("sendGhastDepolymentEvent | Null Target");
+            return Optional.empty();
+        }
+
+        if(!MobProfileUtil.canSendGhastDeployment(entity))
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(forceGhastDeploymentEvent(entity));
+
+    }
+
+    public static GhastDeploymentEvent forceGhastDeploymentEvent(LivingEntity entity)
+    {
+        GhastDeploymentEvent ghastDeploymentEvent = new GhastDeploymentEvent(entity.level().dimension(), entity.blockPosition());
+        SculkHorde.eventSystem.addEvent(ghastDeploymentEvent);
+        if(entity instanceof Mob mob)
+        {
+            MobProfileUtil.updateGhastDeploymentTime(mob);
+        }
+        return ghastDeploymentEvent;
+    }
 
     public GhastDeploymentEvent(ResourceKey<Level> dimension, BlockPos targetLocation) {
         this(dimension);
