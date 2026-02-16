@@ -50,7 +50,7 @@ public class MobProfileUtil {
             {
                 return false;
             }
-            else if(!profile.isHighPriorityTarget())
+            else if(!profile.isHighPriorityTarget() && entity.getMaxHealth() < 50)
             {
                 return false;
             }
