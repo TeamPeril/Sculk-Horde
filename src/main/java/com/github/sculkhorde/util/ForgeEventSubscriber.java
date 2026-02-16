@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.advancement.ContributeTrigger;
 import com.github.sculkhorde.common.block.FleshyCompostBlock;
 import com.github.sculkhorde.common.effect.IPotionExpireEffect;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -95,6 +96,18 @@ public class ForgeEventSubscriber {
         {
             ModSavedData.getSaveData().reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
             ModSavedData.getSaveData().addHostileToMemory(event.getEntity().getLastHurtByMob());
+
+            if(event.getEntity().getLastHurtByMob() instanceof Mob mob)
+            {
+                ModSavedData.MobProfileEntry mobProfile = MobProfileHandler.getOrCreateMobProfile(mob);
+                mobProfile.incrementSculkHordeKills();
+                if(mobProfile.isHighPriorityTarget())
+                {
+                    GhastDeploymentEvent ghastDeploymentEvent = new GhastDeploymentEvent(mob.level().dimension(), mob.blockPosition());
+                    SculkHorde.eventSystem.addEvent(ghastDeploymentEvent);
+                }
+            }
+
             SculkHorde.statisticsData.incrementTotalUnitDeaths();
             SculkHorde.statisticsData.addTotalMassRemovedFromHorde((int) event.getEntity().getMaxHealth());
             return;

@@ -24,7 +24,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -62,6 +64,7 @@ public class ModSavedData extends SavedData {
     private final ArrayList<AreaOfInterestEntry> areasOfInterestEntries = new ArrayList<>();
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
     private final ArrayList<PlayerProfileEntry> playerProfileEntries = new ArrayList<>();
+    private final ArrayList<MobProfileEntry> mobProfileEntries = new ArrayList<>();
 
     private int sculkAccumulatedMass = 0;
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -1754,6 +1757,181 @@ public class ModSavedData extends SavedData {
                     ", isVessel=" + isVessel +
                     ", isActiveVessel=" + isActiveVessel +
                     ", nodesDestroyed=" + nodesDestroyed +
+                    ", timeOfLastHit=" + timeOfLastHit +
+                    ", difficultyOfNextHit=" + difficultyOfNextHit +
+                    ", timeOfLastAmbientSound=" + timeOfLastAmbientSound +
+                    ", timeUntilNextAmbientSound=" + timeUntilNextAmbientSound +
+                    '}';
+        }
+    }
+
+    // ###### MOBS Entries ######
+
+    public ArrayList<MobProfileEntry> getMobProfileEntries() {
+        return mobProfileEntries;
+    }
+
+    public static class MobProfileEntry
+    {
+        private final EntityType entityType;
+        private int relationshipToTheHorde;
+        private int sculkHordeKills = 0;
+
+        private long timeOfLastHit = 0;
+
+        private int difficultyOfNextHit = 1;
+
+        protected long timeUntilNextAmbientSound = 0;
+        protected long timeOfLastAmbientSound = 0;
+
+        private static final int MAX_RELATIONSHIP_VALUE = 1000;
+        private static final int MIN_RELATIONSHIP_VALUE = -1000;
+
+        public MobProfileEntry(Mob mob)
+        {
+            this.entityType = mob.getType();
+        }
+
+        public MobProfileEntry(EntityType entityTypeIn, int sculkHordeKillsIn, int relationshipToTheHordeIn, long timeOfLastHit, int difficultyOfNextHit,long timeOfLastAmbientSound, long timeUntilNextAmbientSound)
+        {
+            this.entityType = entityTypeIn;
+            this.sculkHordeKills = sculkHordeKillsIn;
+            this.relationshipToTheHorde = relationshipToTheHordeIn;
+            this.timeOfLastHit = timeOfLastHit;
+            this.difficultyOfNextHit = difficultyOfNextHit;
+            this.timeOfLastAmbientSound = timeOfLastAmbientSound;
+            this.timeUntilNextAmbientSound = timeUntilNextAmbientSound;
+        }
+
+
+        public EntityType getEntityType()
+        {
+            return entityType;
+        }
+
+        public void setSculkHordeKills(int amount)
+        {
+            sculkHordeKills = amount;
+        }
+
+        public void incrementSculkHordeKills()
+        {
+            sculkHordeKills += 1;
+        }
+
+        public int getSculkHordeKills()
+        {
+            return sculkHordeKills;
+        }
+
+        public boolean isHighPriorityTarget()
+        {
+            return getSculkHordeKills() >= 100;
+        }
+
+        public boolean isMediumPriorityTarget()
+        {
+            return !isHighPriorityTarget() && getSculkHordeKills() >= 50;
+        }
+
+        public boolean isLowPriorityTarget()
+        {
+            return getSculkHordeKills() < 50;
+        }
+
+        public void setTimeOfLastHit(long value)
+        {
+            timeOfLastHit = value;
+        }
+
+        public long getTimeOfLastHit()
+        {
+            return timeOfLastHit;
+        }
+
+        public boolean isHitCooldownOver()
+        {
+            // Cooldown for hits is twice as long as it takes a node to spawn.
+            return ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - getTimeOfLastHit() > TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_node_spawn_cooldown_minutes.get() * 2);
+        }
+
+        public int getRelationshipToTheHorde()
+        {
+            return relationshipToTheHorde;
+        }
+
+        public void setRelationshipToTheHorde(int value)
+        {
+            if(value < 0)
+            {
+                relationshipToTheHorde = Math.max(MIN_RELATIONSHIP_VALUE, value);
+            }
+            else
+            {
+                relationshipToTheHorde = Math.min(MAX_RELATIONSHIP_VALUE, value);
+            }
+        }
+
+        public void increaseOrDecreaseRelationshipToHorde(int value)
+        {
+            setRelationshipToTheHorde(getRelationshipToTheHorde() + value);
+        }
+
+
+        public int getDifficultyOfNextHit()
+        {
+            return difficultyOfNextHit;
+        }
+
+        public void increaseDifficultyOfNextHit()
+        {
+            difficultyOfNextHit = Math.min(254, difficultyOfNextHit + 1);
+        }
+
+        public void decreaseDifficultyOfNextHit()
+        {
+            difficultyOfNextHit = Math.max(1, difficultyOfNextHit - 1);
+        }
+
+
+        /*
+        public CompoundTag deserialize()
+        {
+            CompoundTag nbt = new CompoundTag();
+            //TODO Figure out how to serialize
+            //nbt.putUUID("entityType", entityType);
+            nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
+            nbt.putBoolean("isVessel", isVessel);
+            nbt.putBoolean("isActiveVessel", isActiveVessel);
+            nbt.putInt("nodesDestroyed", nodesDestroyed);
+            nbt.putLong("timeOfLastHit", timeOfLastHit);
+            nbt.putInt("difficultyOfNextHit", difficultyOfNextHit);
+            nbt.putLong("timeUntilNextAmbientSound", timeUntilNextAmbientSound);
+            return nbt;
+        }
+
+        public static MobProfileEntry serialize(CompoundTag nbt)
+        {
+            return new MobProfileEntry(
+                    //TODO Figure out how to serialize
+                    nbt.getUUID("entityType"),
+                    nbt.getInt("relationshipToTheHorde"),
+                    nbt.getBoolean("isVessel"),
+                    nbt.getBoolean("isActiveVessel"),
+                    nbt.getInt("nodesDestroyed"),
+                    nbt.getLong("timeOfLastHit"),
+                    nbt.getInt("difficultyOfNextHit"),
+                    nbt.getLong("timeOfLastAmbientSound"),
+                    nbt.getLong("timeUntilNextAmbientSound")
+            );
+        }
+        */
+
+        @Override
+        public String toString() {
+            return "PlayerProfileEntry{" +
+                    "EntityType=" + entityType +
+                    ", relationshipToTheHorde=" + relationshipToTheHorde +
                     ", timeOfLastHit=" + timeOfLastHit +
                     ", difficultyOfNextHit=" + difficultyOfNextHit +
                     ", timeOfLastAmbientSound=" + timeOfLastAmbientSound +
