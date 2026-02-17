@@ -78,12 +78,12 @@ public class PathBuilder {
         }
 
         BlockPos goal = request.get().getDesiredDestination();
-        double dx = pos.getX() - goal.getX();
-        double dy = pos.getY() - goal.getY();
-        double dz = pos.getZ() - goal.getZ();
+        double dx = Math.abs(pos.getX() - goal.getX());
+        double dy = Math.abs(pos.getY() - goal.getY());
+        double dz = Math.abs(pos.getZ() - goal.getZ());
 
-        // Euclidean heuristic for 3D pathfinding
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        // Manhattan Distance: dx + dy + dz
+        return dx + dy + dz;
     }
 
     protected boolean isEmpty()

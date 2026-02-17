@@ -116,7 +116,7 @@ public class BlockAlgorithms {
                 for (int z = minZ; z <= maxZ; z++) {
                     mutablePos.set(x, y, z);
 
-                    if (!BlockAlgorithms.isReplaceable(level.getBlockState(mutablePos))) {
+                    if (!BlockAlgorithms.isReplaceableByWater(level.getBlockState(mutablePos))) {
                         return true;
                     }
                 }
