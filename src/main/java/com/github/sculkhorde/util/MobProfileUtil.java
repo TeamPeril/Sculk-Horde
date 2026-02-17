@@ -40,16 +40,30 @@ public class MobProfileUtil {
     }
 
     public static boolean canSendGhastDeployment(LivingEntity entity){
+        if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
+        {
+            return false;
+        }
+
+
 
         if(entity instanceof Mob mob)
         {
+            // Cooldown of ghast deployment depends on difficulty
+            long timeRequired = TickUnits.convertMinutesToTicks(10);
+            if(DifficultyUtil.isCurrentDifficultyHard())
+            {
+                timeRequired = TickUnits.convertMinutesToTicks(5);
+            }
+
+
             ModSavedData.MobProfileEntry profile = getOrCreateMobProfile(mob);
 
             long currentTime = entity.level().getGameTime();
             long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
             long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
 
-            if(timeSinceLastDeployment < TickUnits.convertMinutesToTicks(1))
+            if(timeSinceLastDeployment < timeRequired)
             {
                 return false;
             }

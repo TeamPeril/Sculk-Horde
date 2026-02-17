@@ -101,7 +101,12 @@ public class ForgeEventSubscriber {
             {
                 ModSavedData.MobProfileEntry mobProfile = MobProfileUtil.getOrCreateMobProfile(mob);
                 mobProfile.incrementSculkHordeKills();
-                GhastDeploymentEvent.trySendGhastDepolymentEvent(mob);
+                // 25% chance to summon a ghast deployment
+                if(mob.getRandom().nextIntBetweenInclusive(1,4) == 1)
+                {
+                    GhastDeploymentEvent.trySendGhastDepolymentEvent(mob);
+                }
+
             }
 
             SculkHorde.statisticsData.incrementTotalUnitDeaths();
