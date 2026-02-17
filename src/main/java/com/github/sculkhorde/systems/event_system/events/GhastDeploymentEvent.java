@@ -93,10 +93,6 @@ public class GhastDeploymentEvent extends Event {
             {
                 return false;
             }
-            else if(entity.getMaxHealth() < 50)
-            {
-                return false;
-            }
         }
 
         Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
