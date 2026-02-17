@@ -1,14 +1,18 @@
 package com.github.sculkhorde.common.effect;
 
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.MobProfileUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -69,7 +73,13 @@ public class SculkLureEffect extends MobEffect {
             entity.removeEffect(ModMobEffects.SCULK_LURE.get());
             return;
         }
+
         if(ModSavedData.getSaveData() != null) { ModSavedData.getSaveData().reportDeath((ServerLevel) entity.level(), entity.blockPosition()); }
+
+        if(ModConfig.isExperimentalFeaturesEnabled())
+        {
+            GhastDeploymentEvent.trySendGhastDepolymentEvent(entity);
+        }
 
     }
 

@@ -1,8 +1,6 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.ModSavedData;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
 import java.util.Optional;
@@ -37,50 +35,6 @@ public class MobProfileUtil {
             return newEntry;
 
         }
-    }
-
-    public static boolean canSendGhastDeployment(LivingEntity entity){
-        if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
-        {
-            return false;
-        }
-
-
-
-        if(entity instanceof Mob mob)
-        {
-            // Cooldown of ghast deployment depends on difficulty
-            long timeRequired = TickUnits.convertMinutesToTicks(10);
-            if(DifficultyUtil.isCurrentDifficultyHard())
-            {
-                timeRequired = TickUnits.convertMinutesToTicks(5);
-            }
-
-
-            ModSavedData.MobProfileEntry profile = getOrCreateMobProfile(mob);
-
-            long currentTime = entity.level().getGameTime();
-            long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
-            long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
-
-            if(timeSinceLastDeployment < timeRequired)
-            {
-                return false;
-            }
-            else if(!profile.isHighPriorityTarget() && entity.getMaxHealth() < 50)
-            {
-                return false;
-            }
-        }
-
-        Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
-        if(node.isEmpty())
-        {
-            return false;
-        }
-
-        return true;
-
     }
 
     public static void updateGhastDeploymentTime(Mob mob)

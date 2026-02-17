@@ -5,20 +5,17 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderRequest;
-import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
-import com.github.sculkhorde.util.MobProfileUtil;
-import com.github.sculkhorde.util.SoundUtil;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -37,6 +34,78 @@ public class GhastDeploymentEvent extends Event {
     Optional<ModSavedData.NodeEntry> cloestNode = Optional.empty();
     Optional<BlockPos> potentialSpawnPoint = Optional.empty();
     PathBuilderRequest pathRequest;
+
+    public static boolean canSendGhastDeployment(LivingEntity entity){
+        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(entity))
+        {
+            return false;
+        }
+
+        if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
+        {
+            return false;
+        }
+
+        if(entity instanceof Mob mob)
+        {
+            // Cooldown of ghast deployment depends on difficulty
+            long timeRequired = TickUnits.convertMinutesToTicks(10);
+            if(DifficultyUtil.isCurrentDifficultyHard())
+            {
+                timeRequired = TickUnits.convertMinutesToTicks(5);
+            }
+
+
+            ModSavedData.MobProfileEntry profile = MobProfileUtil.getOrCreateMobProfile(mob);
+
+            long currentTime = entity.level().getGameTime();
+            long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
+            long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
+
+            if(timeSinceLastDeployment < timeRequired)
+            {
+                return false;
+            }
+            else if(!profile.isHighPriorityTarget() && entity.getMaxHealth() < 50)
+            {
+                return false;
+            }
+        }
+        else if(entity instanceof Player player)
+        {
+            // Cooldown of ghast deployment depends on difficulty
+            long timeRequired = TickUnits.convertMinutesToTicks(15);
+            if(DifficultyUtil.isCurrentDifficultyHard())
+            {
+                timeRequired = TickUnits.convertMinutesToTicks(10);
+            }
+
+
+            ModSavedData.PlayerProfileEntry profile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
+
+            long currentTime = entity.level().getGameTime();
+            long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
+            long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
+
+            if(timeSinceLastDeployment < timeRequired)
+            {
+                return false;
+            }
+            else if(entity.getMaxHealth() < 50)
+            {
+                return false;
+            }
+        }
+
+        Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
+        if(node.isEmpty())
+        {
+            return false;
+        }
+
+        return true;
+
+    }
 
     protected enum State {
         INITIALIZATION,
@@ -57,7 +126,7 @@ public class GhastDeploymentEvent extends Event {
             return Optional.empty();
         }
 
-        if(!MobProfileUtil.canSendGhastDeployment(entity))
+        if(!canSendGhastDeployment(entity))
         {
             return Optional.empty();
         }

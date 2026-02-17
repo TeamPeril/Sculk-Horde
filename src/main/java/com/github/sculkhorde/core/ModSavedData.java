@@ -1574,6 +1574,8 @@ public class ModSavedData extends SavedData {
         private static final int MAX_RELATIONSHIP_VALUE = 1000;
         private static final int MIN_RELATIONSHIP_VALUE = -1000;
 
+        protected long timeofLastGhastDeployment = 0;
+
         public PlayerProfileEntry(Player playerIn)
         {
             this.playerUUID = playerIn.getUUID();
@@ -1711,7 +1713,17 @@ public class ModSavedData extends SavedData {
             timeUntilNextAmbientSound = time;
         }
 
-        /**
+        public long getTimeofLastGhastDeployment()
+        {
+            return timeofLastGhastDeployment;
+        }
+
+        public void setTimeofLastGhastDeployment(long value)
+        {
+            timeofLastGhastDeployment = value;
+        }
+
+                /**
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
@@ -1726,6 +1738,7 @@ public class ModSavedData extends SavedData {
             nbt.putLong("timeOfLastHit", timeOfLastHit);
             nbt.putInt("difficultyOfNextHit", difficultyOfNextHit);
             nbt.putLong("timeUntilNextAmbientSound", timeUntilNextAmbientSound);
+            nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
             return nbt;
         }
 
@@ -1735,7 +1748,7 @@ public class ModSavedData extends SavedData {
          */
         public static PlayerProfileEntry serialize(CompoundTag nbt)
         {
-            return new PlayerProfileEntry(
+            PlayerProfileEntry profile = new PlayerProfileEntry(
                     nbt.getUUID("playerUUID"),
                     nbt.getInt("relationshipToTheHorde"),
                     nbt.getBoolean("isVessel"),
@@ -1746,6 +1759,13 @@ public class ModSavedData extends SavedData {
                     nbt.getLong("timeOfLastAmbientSound"),
                     nbt.getLong("timeUntilNextAmbientSound")
             );
+
+            if(nbt.contains("timeofLastGhastDeployment"))
+            {
+                profile.setTimeofLastGhastDeployment(nbt.getLong("timeofLastGhastDeployment"));
+            }
+
+            return profile;
         }
 
         @Override
@@ -1941,13 +1961,13 @@ public class ModSavedData extends SavedData {
 
         @Override
         public String toString() {
-            return "PlayerProfileEntry{" +
+            return "MobProfileEntry{" +
                     "EntityType=" + entityType +
                     ", relationshipToTheHorde=" + relationshipToTheHorde +
                     ", timeOfLastHit=" + timeOfLastHit +
                     ", difficultyOfNextHit=" + difficultyOfNextHit +
-                    ", timeOfLastAmbientSound=" + timeOfLastAmbientSound +
-                    ", timeUntilNextAmbientSound=" + timeUntilNextAmbientSound +
+                    ", timeofLastGhastDeployment=" + timeofLastGhastDeployment +
+                    ", sculkHordeKills=" + sculkHordeKills +
                     '}';
         }
     }

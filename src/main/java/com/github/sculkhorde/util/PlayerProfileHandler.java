@@ -2,6 +2,7 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.ModSavedData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -148,6 +149,11 @@ public class PlayerProfileHandler {
         {
             entry.get().setTimeUntilNextAmbientSound(value);
         }
+    }
+
+    public static void updateGhastDeploymentTime(Player player)
+    {
+        getOrCreatePlayerProfile(player).setTimeofLastGhastDeployment(player.level().getGameTime());
     }
 
 }
