@@ -2,7 +2,6 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.ModSavedData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
@@ -46,7 +45,11 @@ public class MobProfileUtil {
         {
             ModSavedData.MobProfileEntry profile = getOrCreateMobProfile(mob);
 
-            if(entity.level().getGameTime() - profile.getTimeofLastGhastDeployment() < TickUnits.convertMinutesToTicks(1))
+            long currentTime = entity.level().getGameTime();
+            long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
+            long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
+
+            if(timeSinceLastDeployment < TickUnits.convertMinutesToTicks(1))
             {
                 return false;
             }

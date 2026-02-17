@@ -97,7 +97,7 @@ public class ForgeEventSubscriber {
             ModSavedData.getSaveData().reportDeath((ServerLevel) event.getEntity().level(), event.getEntity().blockPosition());
             ModSavedData.getSaveData().addHostileToMemory(event.getEntity().getLastHurtByMob());
 
-            if(event.getEntity().getLastHurtByMob() instanceof Mob mob)
+            if(event.getEntity().getLastHurtByMob() instanceof Mob mob && ModConfig.isExperimentalFeaturesEnabled())
             {
                 ModSavedData.MobProfileEntry mobProfile = MobProfileUtil.getOrCreateMobProfile(mob);
                 mobProfile.incrementSculkHordeKills();

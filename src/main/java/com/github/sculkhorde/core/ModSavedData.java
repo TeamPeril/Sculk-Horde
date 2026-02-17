@@ -1864,7 +1864,7 @@ public class ModSavedData extends SavedData {
 
         public void setTimeofLastGhastDeployment(long value)
         {
-            timeOfLastAmbientSound = value;
+            timeofLastGhastDeployment = value;
         }
 
         public int getRelationshipToTheHorde()
