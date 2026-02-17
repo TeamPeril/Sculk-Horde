@@ -144,8 +144,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     {
         return new Goal[]{
                 new Despawn(this, TickUnits.convertMinutesToTicks(15)),
-                //new selectRandomLocationToVisit(),
-                //new SculkGhastGoToAnchor(this),
                 new ShootGhastProjectile(this,  48, 0),
                 // Follow a built path when provided by PathBuilderSystem
                 new FollowBuiltPathGoal(this, 2.0D),
@@ -441,15 +439,37 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             level().levelEvent(null, 1016, blockPosition(), 0);
         }
 
-        Vec3 vec3 = getViewVector(1.0F);
-        double d2 = target.getX() - (getX() + vec3.x * power);
-        double d3 = target.getY(0.5D) - (0.5D + getY(0.5D));
-        double d4 = target.getZ() - (getZ() + vec3.z * power);
+        Vec3 shooterPos = new Vec3(getX(), getY(0.5D) + 0.5D, getZ());
+        Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5D, 0); // Aim for center of mass
+
+        // 1. Calculate distance and estimate time of flight
+        // Fireballs don't have a fixed speed, but they usually travel at roughly 1.0 block/tick
+        // depending on the power and initial acceleration.
+        double distance = shooterPos.distanceTo(targetPos);
+        double estimatedVelocity = 1.0D;
+        double timeOfFlight = distance / estimatedVelocity;
+
+        // 2. Predict target position based on their current velocity
+        // target.getDeltaMovement() gives us their movement per tick
+        Vec3 targetVelocity = target.getDeltaMovement();
+        Vec3 predictedPos = targetPos.add(
+                targetVelocity.x * timeOfFlight,
+                targetVelocity.y * timeOfFlight,
+                targetVelocity.z * timeOfFlight
+        );
+
+        // 3. Calculate direction toward predicted position
+        double d2 = predictedPos.x - shooterPos.x;
+        double d3 = predictedPos.y - shooterPos.y;
+        double d4 = predictedPos.z - shooterPos.z;
 
         LargeFireball largefireball = new LargeFireball(level(), this, d2, d3, d4, (int) power);
-        largefireball.setPos(getX() + vec3.x * 4.0D, getY(0.5D) + 0.5D, largefireball.getZ() + vec3.z * 4.0D);
-        level().addFreshEntity(largefireball);
 
+        // Position the fireball in front of the shooter
+        Vec3 lookVec = getViewVector(1.0F);
+        largefireball.setPos(shooterPos.x + lookVec.x * 2.0D, shooterPos.y, shooterPos.z + lookVec.z * 2.0D);
+
+        level().addFreshEntity(largefireball);
     }
 
     public void tick()
