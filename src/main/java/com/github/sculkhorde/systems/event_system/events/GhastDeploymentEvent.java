@@ -36,12 +36,14 @@ public class GhastDeploymentEvent extends Event {
     PathBuilderRequest pathRequest;
 
     public static boolean canSendGhastDeployment(LivingEntity entity){
-        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(entity))
+
+
+        if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy() || !SculkHorde.gravemind.isEvolutionInMatureState())
         {
             return false;
         }
 
-        if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
+        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(entity))
         {
             return false;
         }
