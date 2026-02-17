@@ -11,12 +11,9 @@ import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -26,12 +23,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -41,7 +36,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -60,9 +54,9 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
      */
 
     //The Health
-    public static final float MAX_HEALTH = 30F;
+    public static final float MAX_HEALTH = 100F;
     //The armor of the mob
-    public static final float ARMOR = 5F;
+    public static final float ARMOR = 10F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
     public static final float ATTACK_DAMAGE = 6F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
@@ -74,7 +68,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().disableTargetingEntitiesInWater();
-    protected BlockPos goalPos;
     protected final double MAX_MOB_MASS_STORED = 1000D;
     protected final ArrayList<Mob> storedMobs = new ArrayList<>();
     protected Position goalPosition; // Used for sending the ghast to a location.
@@ -156,7 +149,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
                 new ShootGhastProjectile(this,  48, 0),
                 // Follow a built path when provided by PathBuilderSystem
                 new FollowBuiltPathGoal(this, 2.0D),
-                new SculkGhastDeployTroopsAtGoalPosition(this),
                 new DropOffMobsNearHostiles(),
                 new FindAndStoreIdleMobs(),
                 new SculkGhastWanderGoal(this, 1.0F, TickUnits.convertSecondsToTicks(3), 20)
@@ -255,10 +247,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
         if(entity instanceof ISculkSmartEntity smartEntity)
         {
-            if(smartEntity.isParticipatingInRaid())
-            {
-                return false;
-            }
+            return !smartEntity.isParticipatingInRaid();
         }
 
         return true;
@@ -268,16 +257,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     {
         storedMobs.add(entity);
         entity.discard();
-    }
-
-    public Vec3 getGoalPos() {
-
-        if(this.goalPos == null)
-        {
-            return null;
-        }
-
-        return this.goalPos.getCenter();
     }
 
     // New getter & setter for built path (updated to set the assigned flag)
@@ -399,11 +378,16 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
     public void releaseMob()
     {
+        if(level() == null) { return; }
 
         if(!storedMobs.isEmpty())
         {
             Mob storedEntity = storedMobs.get(0);
-            Mob spawnedEntity = (Mob) storedEntity.getType().spawn((ServerLevel) level(), blockPosition().below((int) ((getBbHeight()/ 2) + 1)), MobSpawnType.MOB_SUMMONED);
+            int spawnX = (int) (getX() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
+            int spawnZ = (int) (getZ() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
+            Mob spawnedEntity = (Mob) storedEntity.getType().spawn((ServerLevel) level(), new BlockPos(spawnX, (int) getY(), spawnZ), MobSpawnType.MOB_SUMMONED);
+            if(spawnedEntity == null) { return; }
+
             spawnedEntity.setTarget(getTarget());
             spawnedEntity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(10), 0));
             spawnedEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(10), 1));
@@ -452,7 +436,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     /** Events **/
 
     @Override
-    public void performRangedAttack(LivingEntity target, float power) {
+    public void performRangedAttack(@NotNull LivingEntity target, float power) {
         if (!isSilent()) {
             level().levelEvent(null, 1016, blockPosition(), 0);
         }
@@ -476,6 +460,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             return;
         }
 
+        /*
         String customDebugName = "";
         for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
         {
@@ -493,11 +478,8 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         }
 
         setCustomName(Component.literal(customDebugName));
-    }
 
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33126_, @NotNull DifficultyInstance p_33127_, @NotNull MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {
-        this.goalPos = this.blockPosition().above(5);
-        return super.finalizeSpawn(p_33126_, p_33127_, p_33128_, p_33129_, p_33130_);
+         */
     }
 
     protected @NotNull BodyRotationControl createBodyControl() {
@@ -506,22 +488,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
     /** Save Data **/
 
-    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("AX")) {
-            this.goalPos = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
-        }
-    }
-
-    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        if(this.goalPos != null)
-        {
-            tag.putInt("AX", this.goalPos.getX());
-            tag.putInt("AY", this.goalPos.getY());
-            tag.putInt("AZ", this.goalPos.getZ());
-        }
-    }
 
     /** Animation **/
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -606,11 +572,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
                 return false;
             }
 
-            if(goalPos != null)
-            {
-                return false;
-            }
-
             return true;
         }
 
@@ -625,7 +586,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         {
             if(storedMobs.isEmpty())
             {
-                return TickUnits.convertSecondsToTicks(5);
+                return TickUnits.convertSecondsToTicks(30);
             }
 
             return TickUnits.convertSecondsToTicks(1);
@@ -684,6 +645,11 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             timeOfLastMobRelease = level().getGameTime();
             navigation.stop();
             releaseMob();
+            releaseMob();
+            releaseMob();
+            releaseMob();
+            releaseMob();
+            releaseMob();
         }
     }
 
@@ -720,11 +686,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             if(getTarget() != null)
             {
                 lastReasonForGoalNoStart = "Has Target";
-                return false;
-            }
-
-            if(goalPos != null)
-            {
                 return false;
             }
 
@@ -875,8 +836,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
         public long calculateTicksThreshold()
         {
-            if(goalPos != null) { return ticksThreshold; }
-
             return ticksThreshold/3;
         }
 
@@ -890,12 +849,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
                 return true;
             }
             return false;
-        }
-
-        @Override
-        public void start()
-        {
-            if(goalPos != null) { discard(); }
         }
     }
 
