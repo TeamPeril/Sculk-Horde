@@ -2,6 +2,8 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
+import com.github.sculkhorde.common.entity.components.TargetCondition;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
@@ -53,7 +55,10 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.2F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth().disableTargetingEntitiesInWater();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES)
+            .excludeFilter(TargetFilter.ENTITIES_IN_WATER)
+            .addCondition(TargetCondition.healthAbove(50));
     Vec3 moveTargetPoint;
 
     /**

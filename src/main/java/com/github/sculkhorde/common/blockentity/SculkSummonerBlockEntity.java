@@ -11,6 +11,7 @@ import com.github.sculkhorde.systems.infestation_systems.block_infestation_syste
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
@@ -63,12 +64,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
     private final TargetParameters hostileTargetParameters = new TargetParameters()
-            .enableTargetHostiles()
-            .enableTargetInfected()
-            .enableTargetSwimmers();
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.SWIMMERS);
     private final TargetParameters infectableTargetParameters = new TargetParameters()
-            .enableTargetPassives()
-            .enableTargetSwimmers();
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.SWIMMERS);
 
     // Vibration Code
     private final VibrationSystem.User vibrationUser = new VibrationUser(this);

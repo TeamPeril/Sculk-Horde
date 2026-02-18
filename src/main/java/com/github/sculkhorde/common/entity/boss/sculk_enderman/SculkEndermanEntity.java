@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
@@ -77,7 +78,9 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     public static final float MOVEMENT_SPEED = 0.4F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED)
+            .disableBlackListMobs();
 
     // Timing Variables
     public boolean canTeleport = true;
@@ -273,7 +276,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         }
 
         // IF target isnt null and we cannot see them, teleport to them
-        if(this.getTarget() != null && !TARGET_PARAMETERS.canSeeTarget(getTarget()))
+        if(this.getTarget() != null && !this.getSensing().hasLineOfSight(getTarget()))
         {
             teleportBehindEntity(getTarget());
         }

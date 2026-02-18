@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
@@ -72,7 +73,12 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     protected float lastHurtDistanceFromSourceEntity = 0;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES,
+                    TargetFilter.INFECTED,
+                    TargetFilter.HOSTILES,
+                    TargetFilter.WALKERS
+            );
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

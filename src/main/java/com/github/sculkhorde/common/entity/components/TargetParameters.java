@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,160 +9,228 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import static com.github.sculkhorde.util.EntityAlgorithms.*;
 
+/**
+ * Advanced targeting system for Sculk entities.
+ * Supports modular filter configuration, custom conditions, multi-target tracking,
+ * target retention rules, and priority-based target revaluation.
+ */
 public class TargetParameters
 {
     private Mob mob;
 
-    private boolean targetHostiles = false; //Should we attack hostiles?
-    private boolean targetPassives = false; //Should we target passives?
-    private boolean targetInfected = false;//If a passive or hostile is infected, should we attack it?
-    private boolean targetBelow50PercentHealth = true; //Should we target entities below 50% health?
-    private boolean targetSwimmers = false; //Should we target entities that can swim?
-    private boolean targetEntitiesInWater = true; //Should we target entities that are in water?
-    private boolean mustSeeTarget = false; //Should we only target entities we can see?
-    private long lastTargetSeenTime = System.currentTimeMillis(); //The last time we saw the target
-    private long MAX_TARGET_UNSEEN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30); //The max time we can go without seeing the target
-    private boolean mustReachTarget = false; //Should we only target entities we can reach?
-    //A hash map which we store a blacklist of mobs we should not attack. Should use UUIDs of mobs to identify
-    private HashMap<UUID, Long> blacklist = new HashMap<>();
-    private boolean canBlackListMobs = true; //Should we blacklist mobs?
-    private boolean targetWalkers = true;
+    // Modular filter system (replaces individual booleans)
+    private final Set<TargetFilter> enabledFilters = new HashSet<>();
+
+    // Custom composable conditions
+    private final List<TargetCondition> customConditions = new ArrayList<>();
+
+    // Target retention rules
+    private final List<TargetRetention> retentionRules = new ArrayList<>();
+
+    // Blacklist management
+    private final HashMap<UUID, Long> blacklist = new HashMap<>();
+    private boolean canBlackListMobs = true;
+
+    // Multi-target tracking
+    private final TargetStack targetStack;
+
+    // Priority-based revaluation
+    private TargetPrioritizer prioritizer = null;
+    private int priorityCheckInterval = 0; // 0 = disabled
+    private int priorityCheckCounter = 0;
+
+    // Line-of-sight timeout tracking
+    private long lastTargetSeenTime = System.currentTimeMillis();
+    private long maxTargetUnseenTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
 
+    /**
+     * Creates a TargetParameters with no mob (useful for validation-only usage).
+     * Default: 0 secondary targets allowed.
+     */
     public TargetParameters()
     {
-        this.mob = null;
+        this(null, 0);
     }
 
+    /**
+     * Creates a TargetParameters for a specific mob.
+     * Default: 0 secondary targets allowed.
+     *
+     * @param mob The mob using these parameters
+     */
     public TargetParameters(Mob mob)
     {
+        this(mob, 0);
+    }
+
+    /**
+     * Creates a TargetParameters with custom secondary target capacity.
+     *
+     * @param mob The mob using these parameters
+     * @param maxSecondaryTargets Maximum number of secondary targets to track
+     */
+    public TargetParameters(Mob mob, int maxSecondaryTargets)
+    {
         this.mob = mob;
+        this.targetStack = new TargetStack(maxSecondaryTargets);
     }
 
 
-    // Predicate to test if valid target
-    public final Predicate<LivingEntity> isPossibleNewTargetValid = (e) -> {
-        return isEntityValidTarget(e, false);
-    };
+    // ==================== Configuration Builder Methods ====================
 
-    public void debugPrint(boolean validatingExistingTarget, LivingEntity e, String message)
+    /**
+     * Adds target filters for allowed entity types.
+     * Replaces individual enable/disable methods with a modular approach.
+     *
+     * @param filters The filters to enable
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters filterBy(TargetFilter... filters)
     {
-        String Header = "isEntityValid | ";
-        String mob = this.mob == null ? "null " : this.mob.getScoreboardName();
-        String checkType = validatingExistingTarget ? " is Checking Current Target: " : " is Checking Potential Target: ";
-
-        //if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug(Header + mob + checkType + e.getScoreboardName() + " " + message); }
+        for (TargetFilter filter : filters)
+        {
+            enabledFilters.add(filter);
+        }
+        return this;
     }
 
-
-    public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
+    /**
+     * Removes target filters.
+     *
+     * @param filters The filters to disable
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters excludeFilter(TargetFilter... filters)
     {
-        boolean isValid = true;
-
-        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
+        for (TargetFilter filter : filters)
         {
-            isValid = false;
-            //debugPrint(validatingExistingTarget, e, "is explicitly denied.");
+            enabledFilters.remove(filter);
         }
-
-        //If player is in creative or spectator
-        else if(e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is explicitly player in creative or spectator. Denied.");
-        }
-
-        //If we do not attack swimmers and target is a swimmer
-        else if(!isTargetingSwimmers() && isLivingEntitySwimmer(e))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
-        }
-
-        //If we do not attack entities in water and target is in water
-        else if(!isTargetingEntitiesInWater() && e.isInWater())
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is in water. Denied.");
-        }
-
-        else if(isIgnoringTargetBelow50PercentHealth() && (e.getHealth() < e.getMaxHealth() / 2))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is below 50% health. Denied.");
-        }
-
-        else if(!isTargetWalkers() && !e.isInWater())
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is walker. Denied.");
-        }
-
-        else if(isMustSeeTarget() && !canSeeTarget(e))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "cant see target. Denied.");
-        }
-
-        //If we must reach target and cannot reach target
-        // NOTE: validating existing targets gets called significantly more often.
-        // When we do this, we disable reach check because it lags to all hell.
-        else if(!validatingExistingTarget && mustReachTarget() && !canReach(e))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "cannot reach. Denied.");
-        }
-
-        else if(e instanceof InfestationPurifierEntity)
-        {
-            isValid = true;
-            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
-        }
-
-        else if(e instanceof Player)
-        {
-            isValid = true;
-            debugPrint(validatingExistingTarget, e, "is Player. Approved.");
-        }
-
-        // If Blacklisted
-        else if(isOnBlackList((Mob) e))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
-        }
-
-        //If we do not attack infected and entity is infected
-        else if(!isTargetingInfected() && isLivingEntityInfected(e))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is infected. Denied.");
-        }
-
-        //If we do not attack passives and entity is non-hostile
-        else if(!isTargetingPassives() && !isLivingEntityHostile(e)) //NOTE: horde assumes everything is passive until provoked
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is Passive. Denied.");
-        }
-
-        //If we do not attack hostiles and target is hostile
-        else if(!isTargetingHostiles() && isLivingEntityHostile(e))
-        {
-            isValid = false;
-            debugPrint(validatingExistingTarget, e, "is hostile. Denied.");
-        }
-
-        return isValid;
+        return this;
     }
 
+    /**
+     * Checks if a filter is enabled.
+     *
+     * @param filter The filter to check
+     * @return true if the filter is enabled
+     */
+    public boolean isFilterEnabled(TargetFilter filter)
+    {
+        return enabledFilters.contains(filter);
+    }
+
+    /**
+     * Adds a custom targeting condition.
+     * Conditions are evaluated in addition to standard filters.
+     *
+     * @param condition The condition to add
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters addCondition(TargetCondition condition)
+    {
+        if (condition != null)
+        {
+            customConditions.add(condition);
+        }
+        return this;
+    }
+
+    /**
+     * Removes a previously added condition.
+     *
+     * @param condition The condition to remove
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters removeCondition(TargetCondition condition)
+    {
+        customConditions.remove(condition);
+        return this;
+    }
+
+    /**
+     * Adds a target retention rule.
+     * Retention rules determine if existing targets should be kept.
+     *
+     * @param retention The retention rule to add
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters addRetentionRule(TargetRetention retention)
+    {
+        if (retention != null)
+        {
+            retentionRules.add(retention);
+        }
+        return this;
+    }
+
+    /**
+     * Removes a previously added retention rule.
+     *
+     * @param retention The retention rule to remove
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters removeRetentionRule(TargetRetention retention)
+    {
+        retentionRules.remove(retention);
+        return this;
+    }
+
+    /**
+     * Enables priority-based target revaluation.
+     * Periodically checks if the current target remains the highest priority.
+     *
+     * @param prioritizer The prioritizer to use for ranking targets
+     * @param checkIntervalTicks How often to recheck priority (in ticks, 0 = every tick)
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters enableTargetPrioritization(TargetPrioritizer prioritizer, int checkIntervalTicks)
+    {
+        this.prioritizer = prioritizer;
+        this.priorityCheckInterval = Math.max(0, checkIntervalTicks);
+        return this;
+    }
+
+    /**
+     * Disables priority-based target revaluation.
+     *
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters disableTargetPrioritization()
+    {
+        this.prioritizer = null;
+        this.priorityCheckInterval = 0;
+        return this;
+    }
+
+    /**
+     * Sets the maximum time a target can be unseen before being forgotten.
+     * Only relevant if using line-of-sight conditions.
+     *
+     * @param millis Time in milliseconds
+     * @return This TargetParameters for chaining
+     */
+    public TargetParameters setMaxTargetUnseenTime(long millis)
+    {
+        this.maxTargetUnseenTimeMillis = Math.max(0, millis);
+        return this;
+    }
+
+
+    // ==================== Blacklist Management ====================
+
+    /**
+     * Enables/disables the ability to blacklist mobs.
+     *
+     * @return This TargetParameters for chaining
+     */
     public TargetParameters enableBlackListMobs()
     {
         canBlackListMobs = true;
@@ -181,127 +248,336 @@ public class TargetParameters
         return canBlackListMobs;
     }
 
-    public TargetParameters enableTargetHostiles()
+
+    // ==================== Multi-Target Management ====================
+
+    /**
+     * Gets the primary target (same as mob.getTarget()).
+     *
+     * @return The primary target or null
+     */
+    public LivingEntity getPrimaryTarget()
     {
-        targetHostiles = true;
-        return this;
+        return targetStack.getPrimaryTarget();
     }
 
-    public boolean isTargetingHostiles()
+    /**
+     * Sets the primary target.
+     *
+     * @param target The target to set
+     */
+    public void setPrimaryTarget(LivingEntity target)
     {
-        return targetHostiles;
-    }
-
-    public TargetParameters enableTargetPassives()
-    {
-        targetPassives = true;
-        return this;
-    }
-
-    public boolean isTargetingPassives()
-    {
-        return targetPassives;
-    }
-
-    public TargetParameters enableTargetInfected()
-    {
-        targetInfected = true;
-        return this;
-    }
-
-    public boolean isTargetingInfected()
-    {
-        return targetInfected;
-    }
-
-    public TargetParameters ignoreTargetBelow50PercentHealth()
-    {
-        targetBelow50PercentHealth = false;
-        return this;
-    }
-
-
-    public boolean isIgnoringTargetBelow50PercentHealth()
-    {
-        return !targetBelow50PercentHealth;
-    }
-
-    public TargetParameters disableTargetWalkers()
-    {
-        targetWalkers = false;
-        return this;
-    }
-
-    public boolean isTargetWalkers()
-    {
-        return targetWalkers;
-    }
-
-    public TargetParameters enableTargetSwimmers()
-    {
-        targetSwimmers = true;
-        return this;
-    }
-
-    public boolean isTargetingSwimmers()
-    {
-        return targetSwimmers;
-    }
-
-    public TargetParameters disableTargetingEntitiesInWater()
-    {
-        targetEntitiesInWater = false;
-        return this;
-    }
-
-    public boolean isTargetingEntitiesInWater()
-    {
-        return targetEntitiesInWater;
-    }
-
-    public TargetParameters enableMustSeeTarget()
-    {
-        if(this.mob == null)
+        targetStack.setPrimaryTarget(target);
+        if (target != null)
         {
-            throw new IllegalStateException("Cannot enable must reach target without a mob");
+            lastTargetSeenTime = System.currentTimeMillis();
         }
-        mustSeeTarget = true;
-        return this;
     }
 
-    public boolean isMustSeeTarget()
+    /**
+     * Adds a secondary target for multi-target tracking.
+     *
+     * @param target The target to add
+     */
+    public void addSecondaryTarget(LivingEntity target)
     {
-        return mustSeeTarget;
+        targetStack.addSecondaryTarget(target);
     }
 
-    public boolean canSeeTarget(LivingEntity e)
+    /**
+     * Gets secondary targets.
+     *
+     * @return List of secondary targets
+     */
+    public List<LivingEntity> getSecondaryTargets()
     {
-        if(this.mob == null)
+        return targetStack.getSecondaryTargets();
+    }
+
+    /**
+     * Gets up to N secondary targets.
+     *
+     * @param count Number of targets to retrieve
+     * @return List of secondary targets
+     */
+    public List<LivingEntity> getSecondaryTargets(int count)
+    {
+        return targetStack.getSecondaryTargets(count);
+    }
+
+    /**
+     * Gets all targets (primary + secondary).
+     *
+     * @return List of all targets
+     */
+    public List<LivingEntity> getAllTargets()
+    {
+        return targetStack.getAllTargets();
+    }
+
+    /**
+     * Checks if we have any targets.
+     *
+     * @return true if primary or secondary targets exist
+     */
+    public boolean hasTargets()
+    {
+        return targetStack.hasTargets();
+    }
+
+    /**
+     * Gets the TargetStack for direct manipulation if needed.
+     *
+     * @return The TargetStack
+     */
+    public TargetStack getTargetStack()
+    {
+        return targetStack;
+    }
+
+
+    // ==================== Core Targeting Logic ====================
+
+    // Predicate to test if valid target
+    public final Predicate<LivingEntity> isPossibleNewTargetValid = (e) -> {
+        return isEntityValidTarget(e, false);
+    };
+
+    public void debugPrint(boolean validatingExistingTarget, LivingEntity e, String message)
+    {
+        String Header = "isEntityValid | ";
+        String mob = this.mob == null ? "null " : this.mob.getScoreboardName();
+        String checkType = validatingExistingTarget ? " is Checking Current Target: " : " is Checking Potential Target: ";
+
+        //if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug(Header + mob + checkType + e.getScoreboardName() + " " + message); }
+    }
+
+
+    /**
+     * Core validation logic for targeting entities.
+     * Uses modular filters, custom conditions, and legacy settings.
+     *
+     * @param e The entity to validate
+     * @param validatingExistingTarget Whether this is validating an existing target (optimization hint)
+     * @return true if the entity is a valid target
+     */
+    public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
+    {
+        // Check blacklist first (fast path)
+        if (e instanceof Mob && isOnBlackList((Mob) e))
         {
-            throw new IllegalStateException("Cannot enable must see target without a mob");
+            debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
+            return false;
         }
-        if(e == null)
+
+        // Check explicit deny list
+        if (EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
+        {
+            debugPrint(validatingExistingTarget, e, "is explicitly denied.");
+            return false;
+        }
+
+        // Players in creative/spectator are always invalid
+        if (e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
+        {
+            debugPrint(validatingExistingTarget, e, "is player in creative or spectator. Denied.");
+            return false;
+        }
+
+        // Special entity types are always valid
+        if (e instanceof InfestationPurifierEntity)
+        {
+            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
+            return true;
+        }
+
+        if (e instanceof Player)
+        {
+            debugPrint(validatingExistingTarget, e, "is Player. Approved.");
+            return true;
+        }
+
+        // Check built-in filters
+        if (!checkBuiltInFilters(e, validatingExistingTarget))
         {
             return false;
         }
-        return mob.getSensing().hasLineOfSight(e);
-    }
 
-    public TargetParameters enableMustReachTarget()
-    {
-        if(this.mob == null)
+        // Check custom conditions
+        for (TargetCondition condition : customConditions)
         {
-            throw new IllegalStateException("Cannot enable must reach target without a mob");
+            if (!condition.isMet(e, validatingExistingTarget, mob))
+            {
+                debugPrint(validatingExistingTarget, e, "failed custom condition. Denied.");
+                return false;
+            }
         }
-        mustReachTarget = true;
-        return this;
+
+        return true;
     }
 
-    public boolean mustReachTarget()
+    /**
+     * Checks built-in filter configuration against entity properties.
+     *
+     * @param e The entity to check
+     * @param validatingExistingTarget Optimization hint
+     * @return true if entity passes all enabled filters
+     */
+    private boolean checkBuiltInFilters(LivingEntity e, boolean validatingExistingTarget)
     {
-        return mustReachTarget;
+        // Check swimmer/walker filters
+        boolean isSwimmer = isLivingEntitySwimmer(e);
+        if (isSwimmer && !isFilterEnabled(TargetFilter.SWIMMERS))
+        {
+            debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
+            return false;
+        }
+
+        if (!isSwimmer && !isFilterEnabled(TargetFilter.WALKERS))
+        {
+            debugPrint(validatingExistingTarget, e, "is walker. Denied.");
+            return false;
+        }
+
+        // Check water status
+        if (e.isInWater() && !isFilterEnabled(TargetFilter.ENTITIES_IN_WATER))
+        {
+            debugPrint(validatingExistingTarget, e, "is in water. Denied.");
+            return false;
+        }
+
+        // Check infection status
+        boolean isInfected = isLivingEntityInfected(e);
+        if (isInfected && !isFilterEnabled(TargetFilter.INFECTED))
+        {
+            debugPrint(validatingExistingTarget, e, "is infected but we don't target infected. Denied.");
+            return false;
+        }
+
+        // Check hostility status
+        boolean isHostile = isLivingEntityHostile(e);
+
+        if (isHostile && !isFilterEnabled(TargetFilter.HOSTILES))
+        {
+            debugPrint(validatingExistingTarget, e, "is hostile but we don't target hostiles. Denied.");
+            return false;
+        }
+
+        if (!isHostile && !isFilterEnabled(TargetFilter.PASSIVES))
+        {
+            debugPrint(validatingExistingTarget, e, "is passive but we don't target passives. Denied.");
+            return false;
+        }
+
+        return true;
     }
 
+    /**
+     * Updates target validity based on retention rules.
+     * Called periodically to validate that current targets should be kept.
+     * Also handles priority revaluation if enabled.
+     */
+    public void updateTargets()
+    {
+        if (mob == null)
+        {
+            return;
+        }
+
+        // Check if primary target should be retained
+        LivingEntity primary = targetStack.getPrimaryTarget();
+        if (primary != null)
+        {
+            // Check retention rules
+            boolean shouldKeep = true;
+            for (TargetRetention rule : retentionRules)
+            {
+                if (!rule.shouldRetain(primary, mob))
+                {
+                    shouldKeep = false;
+                    break;
+                }
+            }
+
+            if (!shouldKeep)
+            {
+                targetStack.setPrimaryTarget(null);
+            }
+        }
+
+        // Clean up invalid secondary targets
+        List<LivingEntity> secondaryTargets = targetStack.getSecondaryTargets();
+        secondaryTargets.removeIf(target -> {
+            for (TargetRetention rule : retentionRules)
+            {
+                if (!rule.shouldRetain(target, mob))
+                {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        // Handle priority revaluation if enabled
+        if (prioritizer != null && priorityCheckInterval >= 0)
+        {
+            priorityCheckCounter++;
+            if (priorityCheckCounter >= priorityCheckInterval || priorityCheckInterval == 0)
+            {
+                priorityCheckCounter = 0;
+                revaluateTargetPriority();
+            }
+        }
+    }
+
+    /**
+     * Revaluates if the current primary target remains the highest priority.
+     * If not, promotes a better secondary target or clears primary target.
+     */
+    private void revaluateTargetPriority()
+    {
+        if (prioritizer == null || mob == null)
+        {
+            return;
+        }
+
+        List<LivingEntity> allTargets = targetStack.getAllTargets();
+        if (allTargets.isEmpty())
+        {
+            return;
+        }
+
+        // Find the highest priority target
+        LivingEntity bestTarget = allTargets.get(0);
+        double bestScore = prioritizer.getPriorityScore(bestTarget, mob);
+
+        for (LivingEntity target : allTargets)
+        {
+            double score = prioritizer.getPriorityScore(target, mob);
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestTarget = target;
+            }
+        }
+
+        // If best target is not the primary, promote it
+        if (bestTarget != targetStack.getPrimaryTarget() && targetStack.getSecondaryTargets().contains(bestTarget))
+        {
+            targetStack.promoteSecondaryTarget(bestTarget);
+        }
+    }
+
+    // ==================== Utility Methods ====================
+
+    /**
+     * Checks if an entity can be reached via pathfinding.
+     * Used for reach-based targeting constraints.
+     *
+     * @param pTarget The target entity
+     * @return true if reachable within 50 blocks
+     */
     private boolean canReach(LivingEntity pTarget)
     {
         Path path = this.mob.getNavigation().createPath(pTarget, 0);
@@ -309,36 +585,72 @@ public class TargetParameters
         {
             return false;
         }
-        else
+
+        Node pathpoint = path.getEndNode();
+        if (pathpoint == null)
         {
-            Node pathpoint = path.getEndNode();
-            if (pathpoint == null)
-            {
-                return false;
-            }
-            else
-            {
-                int i = pathpoint.x - Mth.floor(pTarget.getX());
-                int j = pathpoint.z - Mth.floor(pTarget.getZ());
-                return (double)(i * i + j * j) <= 50;
-            }
+            return false;
+        }
+
+        int i = pathpoint.x - Mth.floor(pTarget.getX());
+        int j = pathpoint.z - Mth.floor(pTarget.getZ());
+        return (double)(i * i + j * j) <= 50;
+    }
+
+    // ==================== Blacklist Management ====================
+
+    /**
+     * Adds an entity to the blacklist.
+     *
+     * @param entity The entity to blacklist
+     */
+    public void addToBlackList(Mob entity)
+    {
+        if (canBlackListMobs && entity != null)
+        {
+            blacklist.put(entity.getUUID(), System.currentTimeMillis());
         }
     }
 
-
-    public void addToBlackList(Mob entity)
-    {
-        blacklist.put(entity.getUUID(), System.currentTimeMillis());
-    }
-
+    /**
+     * Removes an entity from the blacklist.
+     *
+     * @param entity The entity to remove
+     */
     public void removeFromBlackList(Mob entity)
     {
-        blacklist.remove(entity.getUUID());
+        if (entity != null)
+        {
+            blacklist.remove(entity.getUUID());
+        }
     }
 
-    // Is mob on blacklist
+    /**
+     * Checks if an entity is on the blacklist.
+     *
+     * @param entity The entity to check
+     * @return true if blacklisted
+     */
     public boolean isOnBlackList(Mob entity)
     {
-        return blacklist.containsKey(entity.getUUID());
+        return entity != null && blacklist.containsKey(entity.getUUID());
+    }
+
+    /**
+     * Clears the blacklist completely.
+     */
+    public void clearBlackList()
+    {
+        blacklist.clear();
+    }
+
+    /**
+     * Gets the size of the blacklist.
+     *
+     * @return Number of blacklisted entities
+     */
+    public int getBlacklistSize()
+    {
+        return blacklist.size();
     }
 }

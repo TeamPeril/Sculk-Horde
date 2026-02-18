@@ -5,6 +5,7 @@ import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.common.entity.SculkVindicatorEntity;
 import com.github.sculkhorde.common.entity.SculkWitchEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.*;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.entity_debugging.GoalDebuggerUtility;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
@@ -91,7 +92,8 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
     protected int mobDifficultyLevel = 1;
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().disableBlackListMobs();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED).disableBlackListMobs();
     protected ServerBossEvent bossEvent;
 
     // Animation

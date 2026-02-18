@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
@@ -40,7 +41,8 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
 
     public static final float MAX_HEALTH = 15F;
     public static final float ARMOR = 20F;
-    protected TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES);
     protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     protected long timeUntilSpawn = TickUnits.convertSecondsToTicks(5);
     protected ArrayList<Entity> entitiesToSpawn = new ArrayList<>();

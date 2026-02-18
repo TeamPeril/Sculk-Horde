@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProjectileAttackEntity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
@@ -64,7 +65,8 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     protected boolean isLeaping = false;

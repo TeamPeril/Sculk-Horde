@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.AcidBlobProjectileEntity;
@@ -70,12 +71,10 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .enableTargetHostiles()
-            .enableTargetPassives()
-            .enableTargetSwimmers()
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.PASSIVES, TargetFilter.SWIMMERS)
+            .excludeFilter(TargetFilter.WALKERS)
             .disableBlackListMobs()
-            .disableTargetWalkers()
-            .enableMustSeeTarget();
+            .addCondition((target, isCurrentTarget, mob) -> mob.getSensing().hasLineOfSight(target));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

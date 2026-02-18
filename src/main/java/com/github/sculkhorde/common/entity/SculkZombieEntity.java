@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.TickUnits;
@@ -55,8 +56,9 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
-    
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

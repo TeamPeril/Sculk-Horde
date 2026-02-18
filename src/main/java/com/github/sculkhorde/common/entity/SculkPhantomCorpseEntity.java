@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.*;
@@ -72,7 +73,8 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
     public static final float MOVEMENT_SPEED = 0F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES);
 
     private VirtualSurfaceInfestorCursor cursor;
 

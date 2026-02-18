@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
@@ -50,7 +51,8 @@ public class SculkLeechEntity extends Salmon implements GeoEntity, ISculkSmartEn
     public static final float MOVEMENT_SPEED = 2.0F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableTargetSwimmers();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES, TargetFilter.SWIMMERS);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

@@ -1,9 +1,9 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
@@ -84,7 +84,8 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     public static MobEffectInstance effect = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

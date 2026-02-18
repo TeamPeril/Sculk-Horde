@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -35,7 +36,8 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     private boolean isParticipatingInRaid = false;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableMustReachTarget();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

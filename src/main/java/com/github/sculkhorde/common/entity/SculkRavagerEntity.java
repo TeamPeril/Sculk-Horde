@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
@@ -74,7 +75,18 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED)
+            .addCondition((target, isCurrentTarget, mob) -> {
+                // Can only target if reachable via pathfinding
+                net.minecraft.world.level.pathfinder.Path path = mob.getNavigation().createPath(target, 0);
+                if (path == null) return false;
+                net.minecraft.world.level.pathfinder.Node node = path.getEndNode();
+                if (node == null) return false;
+                int dx = node.x - net.minecraft.util.Mth.floor(target.getX());
+                int dz = node.z - net.minecraft.util.Mth.floor(target.getZ());
+                return (dx * dx + dz * dz) <= 50;
+            });
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

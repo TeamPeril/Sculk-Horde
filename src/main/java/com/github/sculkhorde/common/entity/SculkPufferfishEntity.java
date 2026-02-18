@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -71,12 +72,11 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .enableTargetHostiles()
-            .enableTargetPassives()
-            .enableTargetSwimmers()
-            .disableBlackListMobs()
-            //.disableTargetWalkers()
-            .enableMustSeeTarget();
+            .filterBy(TargetFilter.HOSTILES,
+                    TargetFilter.INFECTED,
+                    TargetFilter.ENTITIES_IN_WATER,
+                    TargetFilter.PASSIVES
+            );
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
@@ -68,7 +69,9 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().disableTargetingEntitiesInWater();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES)
+            .excludeFilter(TargetFilter.ENTITIES_IN_WATER);
     protected final double MAX_MOB_MASS_STORED = 1000D;
     protected final ArrayList<Mob> storedMobs = new ArrayList<>();
     protected Position goalPosition; // Used for sending the ghast to a location.

@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
@@ -65,13 +66,12 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .enableTargetHostiles()
-            .enableTargetPassives()
-            .enableTargetSwimmers()
-            .disableBlackListMobs()
-            .disableTargetWalkers()
-            .enableMustSeeTarget();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES,
+                    TargetFilter.INFECTED,
+                    TargetFilter.ENTITIES_IN_WATER,
+                    TargetFilter.PASSIVES
+            );
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

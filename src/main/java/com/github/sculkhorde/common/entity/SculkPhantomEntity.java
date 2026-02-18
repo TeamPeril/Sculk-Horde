@@ -2,6 +2,8 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
+import com.github.sculkhorde.common.entity.components.TargetCondition;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModEntities;
@@ -75,7 +77,10 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().ignoreTargetBelow50PercentHealth().disableTargetingEntitiesInWater();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES)
+            .excludeFilter(TargetFilter.ENTITIES_IN_WATER)
+            .addCondition(TargetCondition.healthAbove(50));
 
     protected BlockPos anchorPoint = BlockPos.ZERO;
     public static final int TICKS_PER_FLAP = Mth.ceil(24.166098F);

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
@@ -67,7 +68,8 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     public static final float MOVEMENT_SPEED = 0F;
 
     // Controls what types of entities this mob can target
-    protected TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles();
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES);
 
     protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

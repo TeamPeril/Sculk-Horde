@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModConfig;
@@ -64,7 +65,11 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetPassives().enableTargetHostiles().enableMustReachTarget();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES,
+                    TargetFilter.WALKERS,
+                    TargetFilter.PASSIVES
+            );
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked

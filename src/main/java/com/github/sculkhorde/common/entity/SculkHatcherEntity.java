@@ -4,6 +4,8 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
+import com.github.sculkhorde.common.entity.components.TargetCondition;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.TickTask;
@@ -66,7 +68,9 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().ignoreTargetBelow50PercentHealth().enableMustReachTarget();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS)
+            .addCondition(TargetCondition.healthAbove(50));
     //factory The animation factory used for animations
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

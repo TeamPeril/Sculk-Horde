@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -57,7 +58,10 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected().enableMustReachTarget();
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES,
+                    TargetFilter.WALKERS
+            );
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.LookAtTargetOrRandom;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
@@ -70,7 +71,8 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this).enableTargetHostiles().enableTargetInfected();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED);
 
     private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
 
