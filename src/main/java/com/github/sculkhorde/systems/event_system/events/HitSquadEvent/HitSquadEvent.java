@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -182,7 +183,7 @@ public class HitSquadEvent extends Event {
         }
 
         Player player = getPlayerIfOnline().get();
-        Optional<ModSavedData.NodeEntry> entry = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) player.level(), player.blockPosition());
+        Optional<ModSavedData.NodeEntry> entry = NodeUtil.getClosestNode((ServerLevel) player.level(), player.blockPosition());
 
         if(entry.isEmpty() || !entry.get().isEntryValid()) {
             SculkHorde.LOGGER.error("HitSquadEvent | Error: Could not initialize, no valid nodes nearby.");

@@ -95,7 +95,7 @@ public class GhastDeploymentEvent extends Event {
             }
         }
 
-        Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
+        Optional<ModSavedData.NodeEntry> node = NodeUtil.getClosestNode((ServerLevel) entity.level(), entity.blockPosition());
         if(node.isEmpty())
         {
             return false;
@@ -260,7 +260,7 @@ public class GhastDeploymentEvent extends Event {
         {
             if(cloestNode.isEmpty())
             {
-                cloestNode = ModSavedData.getSaveData().getClosestNodeEntry(getDimension(), getEventLocation());
+                cloestNode = NodeUtil.getClosestNode(getDimension(), getEventLocation());
                 if(cloestNode.isEmpty())
                 {
                     setState(State.FAILURE);

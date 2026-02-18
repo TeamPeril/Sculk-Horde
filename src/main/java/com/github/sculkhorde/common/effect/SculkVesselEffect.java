@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.effect;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
@@ -45,7 +46,7 @@ public class SculkVesselEffect extends MobEffect {
         if(entity.level().isClientSide() ) { return;}
 
         // Give strength and speed to the player if near sculk node
-        Optional<ModSavedData.NodeEntry> nearestNode = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
+        Optional<ModSavedData.NodeEntry> nearestNode = NodeUtil.getClosestNode((ServerLevel) entity.level(), entity.blockPosition());
 
         if(nearestNode.isEmpty() || ModSavedData.getSaveData().isHordeDefeated())
         {

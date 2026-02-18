@@ -93,7 +93,7 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		Optional<ModSavedData.NodeEntry> closestNode = ModSavedData.getSaveData().getClosestNodeEntry(serverLevel, playerIn.blockPosition());
+		Optional<ModSavedData.NodeEntry> closestNode = NodeUtil.getClosestNode(serverLevel, playerIn.blockPosition());
 
 		if(closestNode.isEmpty())
 		{
