@@ -10,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -26,7 +27,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Optional;
 
 
-public class AcidBlobProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
+public class FireBallProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
 
     /** CONSTRUCTORS **/
 
@@ -35,7 +36,7 @@ public class AcidBlobProjectileEntity extends AbstractProjectileEntity implement
      * @param entityIn The Entity we are Shooting
      * @param worldIn The world the projectile will exist in
      */
-    public AcidBlobProjectileEntity(EntityType<? extends Projectile> entityIn, Level worldIn) {
+    public FireBallProjectileEntity(EntityType<? extends Projectile> entityIn, Level worldIn) {
         super(entityIn, worldIn);
     }
 
@@ -44,9 +45,9 @@ public class AcidBlobProjectileEntity extends AbstractProjectileEntity implement
 
     }
 
-    public AcidBlobProjectileEntity(Level level, LivingEntity shooter, float damage)
+    public FireBallProjectileEntity(Level level, LivingEntity shooter, float damage)
     {
-        this(ModEntities.ACID_BLOB_PROJECTILE_ENTITY.get(), level);
+        this(ModEntities.FIRE_BALL_PROJECTILE_ENTITY.get(), level);
         setOwner(shooter);
         setDamage(damage);
     }
@@ -72,9 +73,9 @@ public class AcidBlobProjectileEntity extends AbstractProjectileEntity implement
     {
         AreaEffectSphericalCloudEntity effectCloud = new AreaEffectSphericalCloudEntity(level(), getX(), getY(), getZ());
         if(getOwner() instanceof LivingEntity livingOwner) { effectCloud.setOwner(livingOwner); }
-        effectCloud.setRadius(3.0F);
+        effectCloud.setRadius(7.0F);
         effectCloud.setDuration(TickUnits.convertSecondsToTicks(5));
-        effectCloud.addEffect(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(30), 1));
+        effectCloud.addEffect(new MobEffectInstance(MobEffects.WITHER, TickUnits.convertSecondsToTicks(30), 1));
         level().addFreshEntity(effectCloud);
         discard();
     }
@@ -85,7 +86,7 @@ public class AcidBlobProjectileEntity extends AbstractProjectileEntity implement
         float spawnY = (float) (getY() + level().getRandom().nextFloat());
         float spawnZ = (float) (getZ() + level().getRandom().nextFloat());
         ParticleUtil.spawnColoredDustParticleOnClient((ClientLevel) level(),
-                ColorUtil.getRandomHexAcidColor(this.random),
+                ColorUtil.purityLightColor4,
                 0.8F,
                 new Vector3f(spawnX, spawnY, spawnZ),
                 new Vector3f(0, this.random.nextFloat() * - 1, 0));

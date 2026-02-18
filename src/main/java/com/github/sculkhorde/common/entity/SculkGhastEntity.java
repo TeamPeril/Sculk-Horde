@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.components.ImprovedFlyingNavigator;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.projectile.FireBallProjectileEntity;
 import com.github.sculkhorde.systems.path_builder_system.BuiltPath;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -463,13 +464,16 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         double d3 = predictedPos.y - shooterPos.y;
         double d4 = predictedPos.z - shooterPos.z;
 
-        LargeFireball largefireball = new LargeFireball(level(), this, d2, d3, d4, (int) power);
+        float accuracy = 1;
+
+        FireBallProjectileEntity projectile = new FireBallProjectileEntity(level(), this, 7);
+        projectile.shoot(d2, d3, d4, (int) power, accuracy);
 
         // Position the fireball in front of the shooter
         Vec3 lookVec = getViewVector(1.0F);
-        largefireball.setPos(shooterPos.x + lookVec.x * 2.0D, shooterPos.y, shooterPos.z + lookVec.z * 2.0D);
+        projectile.setPos(shooterPos.x + lookVec.x * 2.0D, shooterPos.y, shooterPos.z + lookVec.z * 2.0D);
 
-        level().addFreshEntity(largefireball);
+        level().addFreshEntity(projectile);
     }
 
     public void tick()
