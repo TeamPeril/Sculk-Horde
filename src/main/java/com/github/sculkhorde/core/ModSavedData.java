@@ -831,29 +831,6 @@ public class ModSavedData extends SavedData {
         return false;
     }
 
-    /**
-     * Returns a list of known node positions
-     *
-     * @return The Closest TreeNode
-     */
-    public Optional<NodeEntry> getClosestNodeEntry(ServerLevel dimension, BlockPos pos) {
-        Optional<NodeEntry> closestNode = Optional.empty();
-        double closestDistance = Double.MAX_VALUE;
-
-        for (NodeEntry node : getNodeEntries()) {
-            if(!node.isEntryValid())
-            {
-                continue;
-            }
-
-            if (pos.distSqr(node.position) < closestDistance && node.getDimension().equals(dimension)) {
-                closestNode = Optional.of(node);
-                closestDistance = pos.distSqr(node.position);
-            }
-        }
-        return closestNode;
-    }
-
     public void removeNodeFromMemory(BlockPos positionIn)
     {
         if(getNodeEntries() == null)

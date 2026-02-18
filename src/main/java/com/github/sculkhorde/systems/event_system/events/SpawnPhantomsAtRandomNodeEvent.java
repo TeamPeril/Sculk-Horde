@@ -1,0 +1,90 @@
+package com.github.sculkhorde.systems.event_system.events;
+
+
+import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.Event;
+import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.NodeUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
+
+import java.util.Optional;
+import java.util.Random;
+
+public class SpawnPhantomsAtRandomNodeEvent extends Event {
+
+
+    public SpawnPhantomsAtRandomNodeEvent(ResourceKey<net.minecraft.world.level.Level> dimension) {
+        super(dimension);
+    }
+
+    private void spawnScoutPhantoms(int amount)
+    {
+
+        if(NodeUtil.getRandomActiveNode(getDimension().getLevel()).isEmpty())
+        {
+            return;
+        }
+
+        ModSavedData.NodeEntry node = NodeUtil.getRandomActiveNode(getDimension().getLevel()).get();
+
+        int spawnRange = 100;
+        int minimumSpawnRange = 50;
+
+        RandomSource rng = getDimension().getLevel().getRandom();
+
+        Optional<BlockPos> largestSpaceOrigin = BlockAlgorithms.getLargestAreaAboveBlock(node.getDimension(), node.getPosition());
+
+        if(largestSpaceOrigin.isEmpty())
+        {
+            for(int i = 0; i < amount; i++)
+            {
+                int x = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+                int z = minimumSpawnRange + rng.nextInt(spawnRange) - (spawnRange/2);
+                int y = getDimension().getMaxBuildHeight();
+                BlockPos spawnPosition = new BlockPos(getEventLocation().getX() + x, y, getEventLocation().getZ() + z);
+
+                SculkPhantomEntity.spawnPhantom(getDimension(), spawnPosition, true);
+            }
+            return;
+        }
+
+        for(int i = 0; i < amount; i++)
+        {
+            SculkPhantomEntity.spawnPhantom(getDimension(), largestSpaceOrigin.get(), true);
+        }
+
+    }
+
+    @Override
+    public boolean canStart() {
+
+        if(SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax())
+        {
+            return false;
+        }
+
+        if(!ModConfig.SERVER.should_sculk_nodes_and_raids_spawn_phantoms.get())
+        {
+            return false;
+        }
+
+        if(NodeUtil.getRandomActiveNode(getDimension().getLevel()).isEmpty())
+        {
+            return false;
+        }
+
+        return super.canStart();
+    }
+
+    @Override
+    public void start()
+    {
+        super.start();
+        spawnScoutPhantoms(10);
+    }
+}

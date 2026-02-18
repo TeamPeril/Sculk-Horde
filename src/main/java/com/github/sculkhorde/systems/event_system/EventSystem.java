@@ -2,8 +2,10 @@ package com.github.sculkhorde.systems.event_system;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
+import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsAtRandomNodeEvent;
 import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -163,6 +165,16 @@ public class EventSystem {
                 raidEvent.saveAdditional(eventTag);
                 eventTag.putString("eventType", raidEvent.getClass().getName());
             }
+            else if(event instanceof SpawnPhantomsAtRandomNodeEvent rngNode)
+            {
+                rngNode.saveAdditional(eventTag);
+                eventTag.putString("eventType", rngNode.getClass().getName());
+            }
+            else if(event instanceof GhastDeploymentEvent ghastDeploymentEvent)
+            {
+                ghastDeploymentEvent.saveAdditional(eventTag);
+                eventTag.putString("eventType", ghastDeploymentEvent.getClass().getName());
+            }
 
             eventsTag.put(event.getEventUUID().toString(), eventTag);
             eventTag.putInt(Difficulty.class.getSimpleName(), event.getMinimumDifficulty().getId());
@@ -199,15 +211,29 @@ public class EventSystem {
                 HitSquadEvent hitSquadEvent = new HitSquadEvent(dimensionResourceKey);
                 hitSquadEvent.loadAdditional(eventTag);
                 event = hitSquadEvent;
-            } else if (SpawnPhantomsEvent.class.getName().equals(eventType)) {
+            }
+            else if (SpawnPhantomsEvent.class.getName().equals(eventType)) {
                 SpawnPhantomsEvent phantomEvent = new SpawnPhantomsEvent(dimensionResourceKey);
                 phantomEvent.loadAdditional(eventTag);
                 event = phantomEvent;
-            } else if (RaidEvent.class.getName().equals(eventType)) {
+            }
+            else if (RaidEvent.class.getName().equals(eventType)) {
                 RaidEvent raidEvent = new RaidEvent(dimensionResourceKey);
                 raidEvent.loadAdditional(eventTag);
                 event = raidEvent;
-            }else {
+            }
+            else if (SpawnPhantomsAtRandomNodeEvent.class.getName().equals(eventType)){
+                SpawnPhantomsAtRandomNodeEvent rngNodeEvent = new SpawnPhantomsAtRandomNodeEvent(dimensionResourceKey);
+                rngNodeEvent.loadAdditional(eventTag);
+                event = rngNodeEvent;
+
+            }
+            else if(GhastDeploymentEvent.class.getName().equals(eventType)) {
+                GhastDeploymentEvent ghastDeploymentEvent = new GhastDeploymentEvent(dimensionResourceKey);
+                ghastDeploymentEvent.loadAdditional(eventTag);
+                event = ghastDeploymentEvent;
+            }
+            else {
                 SculkHorde.LOGGER.error("EventSystem | load | " + "Attempted to load event with no known eventType: " + eventType);
                 continue;
             }
