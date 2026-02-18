@@ -466,8 +466,9 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
         float accuracy = 0;
 
-        FireBallProjectileEntity projectile = new FireBallProjectileEntity(level(), this, 7);
+        FireBallProjectileEntity projectile = new FireBallProjectileEntity(level(), this, 10);
         projectile.shoot(d2, d3, d4, (int) power, accuracy);
+        projectile.target = target;
 
         // Position the fireball in front of the shooter
         Vec3 lookVec = getViewVector(1.0F);

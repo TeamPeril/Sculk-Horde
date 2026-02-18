@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -32,6 +33,10 @@ import java.util.Optional;
 public class FireBallProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
 
     protected final int EXPLODE_RADIUS = 4;
+    public LivingEntity target;
+
+    /** Steering strength factor (0.0 to 1.0). Higher values = more aggressive steering towards target. */
+    protected float steeringStrength = 0.01F;
 
     /** CONSTRUCTORS **/
 
@@ -65,6 +70,51 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
 
     /** MODIFIERS **/
 
+    /**
+     * Sets the steering strength factor
+     * @param strength Value between 0.0 and 1.0. Higher values = more aggressive steering.
+     */
+    public void setSteeringStrength(float strength) {
+        this.steeringStrength = Math.max(0.0F, Math.min(1.0F, strength));
+    }
+
+    /**
+     * Adjusts the projectile's velocity to steer towards the target
+     */
+    private void steerTowardsTarget() {
+        if (target == null || !target.isAlive()) {
+            return;
+        }
+
+        // Get current position and velocity
+        Vec3 currentPos = this.position();
+        Vec3 currentVelocity = this.getDeltaMovement();
+
+        // Calculate direction to target
+        Vec3 targetPos = target.position().add(0, target.getEyeHeight(), 0);
+        Vec3 directionToTarget = targetPos.subtract(currentPos).normalize();
+
+        // Blend current velocity with direction to target based on steering strength
+        Vec3 steeringVector = currentVelocity.scale(1.0F - steeringStrength).add(directionToTarget.scale(currentVelocity.length() * steeringStrength));
+
+        // Apply the new velocity
+        this.setDeltaMovement(steeringVector);
+    }
+
+    protected void blowUpIfNearTarget()
+    {
+        if(target == null || !target.isAlive())
+        {
+            return;
+        }
+
+        float distanceToTarget = EntityAlgorithms.getDistanceBetweenEntities(this, target);
+        if(distanceToTarget <= EXPLODE_RADIUS / 2.0F)
+        {
+            explode();
+        }
+    }
+
     /** ACCESSORS **/
 
     @Override
@@ -77,6 +127,18 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
     protected void onHitBlock(BlockHitResult hitResult) {
         super.onHitBlock(hitResult);
         explode();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        blowUpIfNearTarget();
+
+        // Apply steering towards target before calling super
+        if (!level().isClientSide() && target != null && target.isAlive()) {
+            steerTowardsTarget();
+        }
     }
 
     protected void explode()
