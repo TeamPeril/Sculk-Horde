@@ -3,10 +3,10 @@ package com.github.sculkhorde.common.entity.projectile;
 import com.github.sculkhorde.common.entity.AreaEffectSphericalCloudEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.util.ColorUtil;
-import com.github.sculkhorde.util.ParticleUtil;
-import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.*;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.joml.Vector3f;
@@ -24,10 +25,13 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
 import java.util.Optional;
 
 
 public class FireBallProjectileEntity extends AbstractProjectileEntity implements GeoEntity {
+
+    protected final int EXPLODE_RADIUS = 4;
 
     /** CONSTRUCTORS **/
 
@@ -38,6 +42,12 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
      */
     public FireBallProjectileEntity(EntityType<? extends Projectile> entityIn, Level worldIn) {
         super(entityIn, worldIn);
+        setNoGravity(true);
+    }
+
+    @Override
+    public boolean isNoGravity() {
+        return true;
     }
 
     @Override
@@ -71,12 +81,23 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
 
     protected void explode()
     {
-        AreaEffectSphericalCloudEntity effectCloud = new AreaEffectSphericalCloudEntity(level(), getX(), getY(), getZ());
-        if(getOwner() instanceof LivingEntity livingOwner) { effectCloud.setOwner(livingOwner); }
-        effectCloud.setRadius(7.0F);
-        effectCloud.setDuration(TickUnits.convertSecondsToTicks(5));
-        effectCloud.addEffect(new MobEffectInstance(MobEffects.WITHER, TickUnits.convertSecondsToTicks(30), 1));
-        level().addFreshEntity(effectCloud);
+        if(level().isClientSide())
+        {
+            return;
+        }
+
+        AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(position(), EXPLODE_RADIUS * 2);
+        List<LivingEntity> entitiesInHitBox = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox((LivingEntity) getOwner(), (ServerLevel) level(), hitbox);
+
+        for(LivingEntity entity : entitiesInHitBox)
+        {
+            if(EntityAlgorithms.getDistanceBetweenEntities(this, entity) <= EXPLODE_RADIUS)
+            {
+                entity.hurt(damageSources().onFire(), getDamage());
+                entity.setSecondsOnFire(5 + (5 * DifficultyUtil.getCurrentDifficulty().getId()));
+            }
+        }
+
         discard();
     }
 
@@ -99,12 +120,12 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
 
     @Override
     public float getSpeed() {
-        return 1.75F;
+        return 0.35F;
     }
 
     @Override
     public Optional<SoundEvent> getImpactSound() {
-        return Optional.of(SoundEvents.FIREWORK_ROCKET_BLAST);
+        return Optional.of(SoundEvents.GENERIC_EXPLODE);
     }
 
 

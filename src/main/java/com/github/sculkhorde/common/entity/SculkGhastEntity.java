@@ -464,7 +464,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         double d3 = predictedPos.y - shooterPos.y;
         double d4 = predictedPos.z - shooterPos.z;
 
-        float accuracy = 1;
+        float accuracy = 0;
 
         FireBallProjectileEntity projectile = new FireBallProjectileEntity(level(), this, 7);
         projectile.shoot(d2, d3, d4, (int) power, accuracy);
@@ -571,7 +571,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             if (isTargetInvalid()) {
                 return;
             }
-            performRangedAttack(targetMob, 2.0F);
+            performRangedAttack(targetMob, 1F);
         }
     }
 
