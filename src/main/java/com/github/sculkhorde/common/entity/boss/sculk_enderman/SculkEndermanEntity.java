@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_enderman;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
@@ -78,9 +79,10 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     public static final float MOVEMENT_SPEED = 0.4F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED)
-            .disableBlackListMobs();
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, 5)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS)
+            .disableBlackListMobs()
+            .enableTargetPrioritization(TargetPrioritizer.byHealth(), TickUnits.convertSecondsToTicks(10));
 
     // Timing Variables
     public boolean canTeleport = true;
