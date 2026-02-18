@@ -34,9 +34,10 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
 
     protected final int EXPLODE_RADIUS = 4;
     public LivingEntity target;
+    protected float closestDistanceToTarget = Float.MAX_VALUE;
 
     /** Steering strength factor (0.0 to 1.0). Higher values = more aggressive steering towards target. */
-    protected float steeringStrength = 0.01F;
+    protected float steeringStrength = 0.05F;
 
     /** CONSTRUCTORS **/
 
@@ -82,7 +83,15 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
      * Adjusts the projectile's velocity to steer towards the target
      */
     private void steerTowardsTarget() {
-        if (target == null || !target.isAlive()) {
+        if (target == null || !target.isAlive() || getOwner() == null) {
+            return;
+        }
+
+        closestDistanceToTarget = Math.min(closestDistanceToTarget, EntityAlgorithms.getDistanceBetweenEntities(this, target));
+
+        // Only steer towards enemy if we have not passed it.
+        if(EntityAlgorithms.getDistanceBetweenEntities(this, target) > closestDistanceToTarget)
+        {
             return;
         }
 
@@ -155,7 +164,15 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
         {
             if(EntityAlgorithms.getDistanceBetweenEntities(this, entity) <= EXPLODE_RADIUS)
             {
-                entity.hurt(damageSources().onFire(), getDamage());
+                if(getOwner() != null)
+                {
+                    entity.hurt(damageSources().mobAttack((LivingEntity) getOwner()), getDamage());
+                }
+                else
+                {
+                    entity.hurt(damageSources().generic(), getDamage());
+                }
+
                 entity.setSecondsOnFire(5 + (5 * DifficultyUtil.getCurrentDifficulty().getId()));
             }
         }
