@@ -7,7 +7,7 @@ import java.util.UUID;
 public class DebuggerModule {
 
     public final UUID uuid = UUID.randomUUID();
-    boolean isActive = true;
+    boolean isActive = false;
     boolean debuggingEnabled = true;
     boolean loggingEnabled = true;
 

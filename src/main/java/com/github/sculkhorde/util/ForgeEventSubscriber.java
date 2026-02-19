@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.advancement.ContributeTrigger;
 import com.github.sculkhorde.common.block.FleshyCompostBlock;
 import com.github.sculkhorde.common.effect.IPotionExpireEffect;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -168,23 +170,38 @@ public class ForgeEventSubscriber {
         Entity damageSourceEntity = event.getSource().getEntity();
         LivingEntity targetEntity = event.getEntity();
 
-        if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity) && damageSourceEntity instanceof LivingEntity)
+        if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity) && damageSourceEntity instanceof LivingEntity livingEntity)
         {
-            ModSavedData.getSaveData().addHostileToMemory((LivingEntity) damageSourceEntity);
+            ModSavedData.getSaveData().addHostileToMemory(livingEntity);
         }
 
-
+        // Sculk Sweeper Sword Repair System
         if(damageSourceEntity instanceof LivingEntity attackingEntity)
         {
             itemStack = attackingEntity.getMainHandItem();
-            if(!itemStack.getItem().equals(ModItems.SCULK_SWEEPER_SWORD.get()))
+            if(itemStack.getItem().equals(ModItems.SCULK_SWEEPER_SWORD.get()))
             {
-               return;
+                if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
+                {
+                    itemStack.setDamageValue((int) Math.max(0, itemStack.getDamageValue() - event.getAmount()));
+                }
             }
+        }
 
-            if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
+        // Player Entity Debugging System
+        if(damageSourceEntity instanceof Player player)
+        {
+            if(DebuggerSystem.entityDebuggerModule != null && DebuggerSystem.entityDebuggerModule.isDebuggingEnabled() &&
+                    player.isCreative() && player.getMainHandItem().isEmpty() && targetEntity instanceof Mob mob)
             {
-                itemStack.setDamageValue((int) Math.max(0, itemStack.getDamageValue() - event.getAmount()));
+                if (DebuggerSystem.entityDebuggerModule.isMobBeingDebugged(mob))
+                {
+                    DebuggerSystem.entityDebuggerModule.removeMobFromDebug(mob);
+                }
+                else
+                {
+                    DebuggerSystem.entityDebuggerModule.addMobToDebug(mob);
+                }
             }
         }
     }

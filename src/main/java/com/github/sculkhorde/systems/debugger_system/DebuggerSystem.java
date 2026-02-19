@@ -10,10 +10,12 @@ public class DebuggerSystem {
     public final UUID uuid = UUID.randomUUID();
 
     public static CursorDebuggerModule cursorDebuggerModule = new CursorDebuggerModule();
+    public static EntityDebuggerModule entityDebuggerModule = new EntityDebuggerModule();
 
     public DebuggerSystem()
     {
         addModule(cursorDebuggerModule);
+        addModule(entityDebuggerModule);
     }
 
     public void addModule(DebuggerModule module)

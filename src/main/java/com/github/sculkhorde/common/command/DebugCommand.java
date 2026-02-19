@@ -45,27 +45,20 @@ public class DebugCommand implements Command<CommandSourceStack> {
                         .then(Commands.literal("debug")
                                 .executes((DebugCommand::toggleCursorDebug))
                         )
+                )
+                .then(Commands.literal("entity")
+                        .then(Commands.literal("toggle")
+                                .executes((DebugCommand::toggleEntity))
+                        )
+                        .then(Commands.literal("debug")
+                                .executes((DebugCommand::toggleEntityDebug))
+                        )
                 );
-
     }
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) {
         return 0;
-    }
-
-    protected static int getPlayerProfile(CommandSourceStack context, Collection<ServerPlayer> players)
-    {
-        for(ServerPlayer player : players)
-        {
-            ModSavedData.PlayerProfileEntry playerProfile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
-
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(playerProfile.toString());
-
-            context.sendSuccess(() -> { return Component.literal(stringBuilder.toString());}, false);
-        }
-        return players.size();
     }
 
     private static int setDebugMode(CommandContext<CommandSourceStack> context, boolean operation) throws CommandSyntaxException {
@@ -77,7 +70,7 @@ public class DebugCommand implements Command<CommandSourceStack> {
     private static int toggleCursor(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         if(DebuggerSystem.cursorDebuggerModule == null)
         {
-            context.getSource().sendFailure(Component.literal("Cursor Debugger Module is not initialized."));
+            context.getSource().sendFailure(Component.literal("CursorDebuggerModule is not initialized."));
             return 0;
         }
 
@@ -97,7 +90,7 @@ public class DebugCommand implements Command<CommandSourceStack> {
     private static int toggleCursorDebug(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         if(DebuggerSystem.cursorDebuggerModule == null)
         {
-            context.getSource().sendFailure(Component.literal("Cursor Debugger Module is not initialized."));
+            context.getSource().sendFailure(Component.literal("CursorDebuggerModule is not initialized."));
             return 0;
         }
 
@@ -113,6 +106,47 @@ public class DebugCommand implements Command<CommandSourceStack> {
         }
         return 1;
     }
+
+    private static int toggleEntity(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.entityDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("EntityDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.entityDebuggerModule.isActive())
+        {
+            DebuggerSystem.entityDebuggerModule.setActive(false);
+            context.getSource().sendSuccess(()->Component.literal("EntityDebuggerModule | Active=" + DebuggerSystem.entityDebuggerModule.isActive()), false);
+        }
+        else
+        {
+            DebuggerSystem.entityDebuggerModule.setActive(true);
+            context.getSource().sendSuccess(()->Component.literal("EntityDebuggerModule | Active=" + DebuggerSystem.entityDebuggerModule.isActive()), false);
+        }
+        return 1;
+    }
+
+    private static int toggleEntityDebug(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.entityDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("EntityDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.entityDebuggerModule.isDebuggingEnabled())
+        {
+            DebuggerSystem.entityDebuggerModule.setDebuggingEnabled(false);
+            context.getSource().sendSuccess(()->Component.literal("EntityDebuggerModule | Debugging=" + DebuggerSystem.entityDebuggerModule.isDebuggingEnabled()), false);
+        }
+        else
+        {
+            DebuggerSystem.entityDebuggerModule.setDebuggingEnabled(true);
+            context.getSource().sendSuccess(()->Component.literal("EntityDebuggerModule | Debugging=" + DebuggerSystem.entityDebuggerModule.isDebuggingEnabled()), false);
+        }
+        return 1;
+    }
+
 
 
 }

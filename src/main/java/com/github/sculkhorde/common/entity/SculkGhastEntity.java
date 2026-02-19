@@ -484,27 +484,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         {
             return;
         }
-
-        /*
-        String customDebugName = "";
-        for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
-        {
-            Goal goal = wrappedGoal.getGoal();
-            if(goal instanceof IDebuggableGoal debugGoal)
-            {
-                customDebugName += debugGoal.getGoalName().get();
-
-            }
-            else
-            {
-                customDebugName += goal.getClass().getSimpleName();
-            }
-            customDebugName += " | ";
-        }
-
-        setCustomName(Component.literal(customDebugName));
-
-         */
     }
 
     protected @NotNull BodyRotationControl createBodyControl() {
