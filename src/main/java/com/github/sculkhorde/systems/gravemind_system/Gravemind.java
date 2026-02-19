@@ -278,11 +278,11 @@ public class Gravemind
         SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();
         SculkHorde.beeNestActivitySystem.serverTick();
         SculkHorde.chunkInfestationSystem.serverTick();
-        SculkHorde.debugSlimeSystem.serverTick();
         SculkHorde.pathBuilderSystem.serverTick();
         SculkHorde.autoPerformanceSystem.onServerTick();
         SculkHorde.ambientSFXSystem.serverTick();
         SculkHorde.squadSystem.serverTick();
+        SculkHorde.debuggerSystem.serverTick();
 
 
         if(ModConfig.isExperimentalFeaturesEnabled())
