@@ -63,6 +63,10 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "Virtual Cursors being Ticked: " + SculkHorde.cursorSystem.getSizeOfVirtualCursorList() + " / " + SculkHorde.autoPerformanceSystem.getMaxInfectorCursorPopulation()
                         + "\n"
                         + "Sculk Unit Population: " + SculkHorde.populationHandler.getPopulationSize() + " / " + SculkHorde.populationHandler.getMaxPopulation()
+                        + "\n"
+                        + "Player Profiles: " + ModSavedData.getSaveData().getPlayerProfileEntries().size()
+                        + "\n"
+                        + "Mob Profiles: " + ModSavedData.getSaveData().getMobProfileEntries().size()
                 ), false);
         return 0;
     }

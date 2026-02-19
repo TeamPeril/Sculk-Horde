@@ -12,12 +12,9 @@ import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
-import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
-import com.github.sculkhorde.util.DeathAreaInvestigator;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -262,46 +259,53 @@ public class ModSavedData extends SavedData {
 
         SculkHorde.LOGGER.info("ModSavedData | Loading Node Entries.");
         for (int i = 0; nbt.contains("node_entry" + i); i++) {
-            savedData.getNodeEntries().add(NodeEntry.serialize(nbt.getCompound("node_entry" + i)));
+            savedData.getNodeEntries().add(NodeEntry.load(nbt.getCompound("node_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded Node Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading BeeNest Entries.");
         for (int i = 0; nbt.contains("bee_nest_entry" + i); i++) {
-            savedData.getBeeNestEntries().add(BeeNestEntry.serialize(nbt.getCompound("bee_nest_entry" + i)));
+            savedData.getBeeNestEntries().add(BeeNestEntry.load(nbt.getCompound("bee_nest_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded BeeNest Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading Hostile Entries.");
         for (int i = 0; nbt.contains("hostile_entry" + i); i++) {
-            HostileEntry hostileEntry = HostileEntry.serialize(nbt.getCompound("hostile_entry" + i));
+            HostileEntry hostileEntry = HostileEntry.load(nbt.getCompound("hostile_entry" + i));
             savedData.getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded Hostile Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading Death Area Entries.");
         for (int i = 0; nbt.contains("death_area_entry" + i); i++) {
-            savedData.getDeathAreaEntries().add(DeathAreaEntry.serialize(nbt.getCompound("death_area_entry" + i)));
+            savedData.getDeathAreaEntries().add(DeathAreaEntry.load(nbt.getCompound("death_area_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded Death Area Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading AreaOfInterest Entries.");
         for (int i = 0; nbt.contains("area_of_interest_entry" + i); i++) {
-            savedData.getAreasOfInterestEntries().add(AreaOfInterestEntry.serialize(nbt.getCompound("area_of_interest_entry" + i)));
+            savedData.getAreasOfInterestEntries().add(AreaOfInterestEntry.load(nbt.getCompound("area_of_interest_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded AreaOfInterest Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading NoRaidZone Entries.");
         for(int i = 0; nbt.contains("no_raid_zone_entry" + i); i++) {
-            savedData.getNoRaidZoneEntries().add(NoRaidZoneEntry.serialize(nbt.getCompound("no_raid_zone_entry" + i)));
+            savedData.getNoRaidZoneEntries().add(NoRaidZoneEntry.load(nbt.getCompound("no_raid_zone_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded NoRaidZone Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading PlayerProfile Entries.");
         for(int i = 0; nbt.contains("player_profile_entry" + i); i++) {
-            savedData.getPlayerProfileEntries().add(PlayerProfileEntry.serialize(nbt.getCompound("player_profile_entry" + i)));
+            savedData.getPlayerProfileEntries().add(PlayerProfileEntry.load(nbt.getCompound("player_profile_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded PlayerProfile Entries Successfully.");
+
+        SculkHorde.LOGGER.info("ModSavedData | Loading MobProfile Entries.");
+        for(int i = 0; nbt.contains("mob_profile_entry" + i); i++) {
+            savedData.getMobProfileEntries().add(MobProfileEntry.load(nbt.getCompound("mob_profile_entry" + i)));
+        }
+        MobProfileUtil.cleanUpInvalidMobProfiles();
+        SculkHorde.LOGGER.info("ModSavedData | Loaded MobProfile Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
         if(SculkHorde.statisticsData == null)
@@ -345,33 +349,37 @@ public class ModSavedData extends SavedData {
         nbt.putBoolean(debugModeIdentifier, SculkHorde.isDebugMode());
 
         for (ListIterator<NodeEntry> iterator = getNodeEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("node_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("node_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<BeeNestEntry> iterator = getBeeNestEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("bee_nest_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("bee_nest_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         int hostileIndex = 0;
         for (Map.Entry<String, HostileEntry> entry : getHostileEntries().entrySet()) {
-            nbt.put("hostile_entry" + hostileIndex, entry.getValue().deserialize());
+            nbt.put("hostile_entry" + hostileIndex, entry.getValue().save());
             hostileIndex++;
         }
 
         for (ListIterator<DeathAreaEntry> iterator = getDeathAreaEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("death_area_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("death_area_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<AreaOfInterestEntry> iterator = getAreasOfInterestEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("area_of_interest_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("area_of_interest_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<NoRaidZoneEntry> iterator = getNoRaidZoneEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("no_raid_zone_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("no_raid_zone_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<PlayerProfileEntry> iterator = getPlayerProfileEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("player_profile_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("player_profile_entry" + iterator.nextIndex(), iterator.next().save());
+        }
+
+        for (ListIterator<MobProfileEntry> iterator = getMobProfileEntries().listIterator(); iterator.hasNext(); ) {
+            nbt.put("mob_profile_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         //nbt.put("gravemindData", gravemindData);
@@ -1021,7 +1029,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1037,7 +1045,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static NodeEntry serialize(CompoundTag nbt)
+        public static NodeEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
@@ -1217,7 +1225,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1231,7 +1239,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static BeeNestEntry serialize(CompoundTag nbt)
+        public static BeeNestEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
 
@@ -1263,7 +1271,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putString("identifier", identifier);
@@ -1274,7 +1282,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static HostileEntry serialize(CompoundTag nbt)
+        public static HostileEntry load(CompoundTag nbt)
         {
             return new HostileEntry(nbt.getString("identifier"));
         }
@@ -1339,7 +1347,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1352,7 +1360,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static DeathAreaEntry serialize(CompoundTag nbt) {
+        public static DeathAreaEntry load(CompoundTag nbt) {
 
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
@@ -1412,7 +1420,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1425,7 +1433,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static AreaOfInterestEntry serialize(CompoundTag nbt) {
+        public static AreaOfInterestEntry load(CompoundTag nbt) {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
@@ -1506,7 +1514,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1521,7 +1529,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static NoRaidZoneEntry serialize(CompoundTag nbt)
+        public static NoRaidZoneEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
@@ -1705,7 +1713,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putUUID("playerUUID", playerUUID);
@@ -1724,7 +1732,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static PlayerProfileEntry serialize(CompoundTag nbt)
+        public static PlayerProfileEntry load(CompoundTag nbt)
         {
             PlayerProfileEntry profile = new PlayerProfileEntry(
                     nbt.getUUID("playerUUID"),
@@ -1788,6 +1796,15 @@ public class ModSavedData extends SavedData {
         public MobProfileEntry(EntityType entityTypeIn)
         {
             this.entityType = entityTypeIn;
+        }
+
+        public boolean isValid()
+        {
+            if(entityType.equals(EntityType.PIG))
+            {
+                return false;
+            }
+            return ForgeRegistries.ENTITY_TYPES.containsKey(ForgeRegistries.ENTITY_TYPES.getKey(entityType));
         }
 
         public EntityType getEntityType()

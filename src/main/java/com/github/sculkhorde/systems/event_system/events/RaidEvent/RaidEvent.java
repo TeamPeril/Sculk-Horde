@@ -1470,7 +1470,7 @@ public class RaidEvent extends Event {
         // Area of Interest Entry
         if (tag.contains("areaOfInterestEntry")) {
             CompoundTag areaOfInterestEntryTag = tag.getCompound("areaOfInterestEntry");
-            setAreaOfInterestEntry(ModSavedData.AreaOfInterestEntry.serialize(areaOfInterestEntryTag));
+            setAreaOfInterestEntry(ModSavedData.AreaOfInterestEntry.load(areaOfInterestEntryTag));
         }
 
         // Targets
@@ -1541,7 +1541,7 @@ public class RaidEvent extends Event {
 
         // Area of Interest Entry
         if (getAreaOfInterestEntry() != null) {
-            CompoundTag areaOfInterestEntryTag = getAreaOfInterestEntry().deserialize();
+            CompoundTag areaOfInterestEntryTag = getAreaOfInterestEntry().save();
             tag.put("areaOfInterestEntry", areaOfInterestEntryTag);
         }
 
