@@ -304,7 +304,6 @@ public class ModSavedData extends SavedData {
         for(int i = 0; nbt.contains("mob_profile_entry" + i); i++) {
             savedData.getMobProfileEntries().add(MobProfileEntry.load(nbt.getCompound("mob_profile_entry" + i)));
         }
-        MobProfileUtil.cleanUpInvalidMobProfiles();
         SculkHorde.LOGGER.info("ModSavedData | Loaded MobProfile Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");

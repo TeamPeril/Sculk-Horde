@@ -7,6 +7,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.MobProfileUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -315,5 +316,6 @@ public class Gravemind
         ModSavedData.getSaveData().validateBeeNestEntries();
         ModSavedData.getSaveData().validateNoRaidZoneEntries();
         ModSavedData.getSaveData().validateAreasOfInterest();
+        MobProfileUtil.cleanUpInvalidMobProfiles();
     }
 }
