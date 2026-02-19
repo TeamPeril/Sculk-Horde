@@ -32,6 +32,7 @@ public class ModCommands {
                 .then(NodesStatusCommand.register(dispatcher, buildContext));
 
         LiteralArgumentBuilder<CommandSourceStack> sculkHordeDevCommands = Commands.literal("shd")
+                .then(DebugCommand.register(dispatcher, buildContext))
                 .then(InfestChunkCommand.register(dispatcher, buildContext))
                 .then(InfestChunksCommand.register(dispatcher, buildContext))
                 .then(VesselCommand.register(dispatcher, buildContext))
