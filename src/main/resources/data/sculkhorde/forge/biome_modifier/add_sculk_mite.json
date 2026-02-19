@@ -7,6 +7,7 @@
     "type": "sculkhorde:sculk_mite",
     "weight": 100,
     "minCount": 2,
-    "maxCount": 8
+    "maxCount": 8,
+    "category": "monster"
   }
 }

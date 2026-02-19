@@ -12,6 +12,7 @@ import com.github.sculkhorde.systems.infestation_systems.block_infestation_syste
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
