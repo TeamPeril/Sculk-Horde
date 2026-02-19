@@ -32,6 +32,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
@@ -1770,38 +1771,24 @@ public class ModSavedData extends SavedData {
 
     public static class MobProfileEntry
     {
-        private final EntityType entityType;
-        private int relationshipToTheHorde;
-        private int sculkHordeKills = 0;
-
-        private long timeOfLastHit = 0;
-
-        private int difficultyOfNextHit = 1;
-
-        protected long timeUntilNextAmbientSound = 0;
-        protected long timeOfLastAmbientSound = 0;
-
-        protected long timeofLastGhastDeployment = 0;
-
-        private static final int MAX_RELATIONSHIP_VALUE = 1000;
-        private static final int MIN_RELATIONSHIP_VALUE = -1000;
+        public final EntityType entityType;
+        public int relationshipToTheHorde;
+        public int sculkHordeKills = 0;
+        public long timeOfLastHit = 0;
+        public int difficultyOfNextHit = 1;
+        public long timeofLastGhastDeployment = 0;
+        public static final int MAX_RELATIONSHIP_VALUE = 1000;
+        public static final int MIN_RELATIONSHIP_VALUE = -1000;
 
         public MobProfileEntry(Mob mob)
         {
             this.entityType = mob.getType();
         }
 
-        public MobProfileEntry(EntityType entityTypeIn, int sculkHordeKillsIn, int relationshipToTheHordeIn, long timeOfLastHit, int difficultyOfNextHit,long timeOfLastAmbientSound, long timeUntilNextAmbientSound)
+        public MobProfileEntry(EntityType entityTypeIn)
         {
             this.entityType = entityTypeIn;
-            this.sculkHordeKills = sculkHordeKillsIn;
-            this.relationshipToTheHorde = relationshipToTheHordeIn;
-            this.timeOfLastHit = timeOfLastHit;
-            this.difficultyOfNextHit = difficultyOfNextHit;
-            this.timeOfLastAmbientSound = timeOfLastAmbientSound;
-            this.timeUntilNextAmbientSound = timeUntilNextAmbientSound;
         }
-
 
         public EntityType getEntityType()
         {
@@ -1903,38 +1890,53 @@ public class ModSavedData extends SavedData {
         }
 
 
-        /*
-        public CompoundTag deserialize()
+
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
-            //TODO Figure out how to serialize
-            //nbt.putUUID("entityType", entityType);
+
+            nbt.putString("entityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
             nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
-            nbt.putBoolean("isVessel", isVessel);
-            nbt.putBoolean("isActiveVessel", isActiveVessel);
-            nbt.putInt("nodesDestroyed", nodesDestroyed);
+            nbt.putInt("sculkHordeKills", sculkHordeKills);
+            nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
             nbt.putLong("timeOfLastHit", timeOfLastHit);
             nbt.putInt("difficultyOfNextHit", difficultyOfNextHit);
-            nbt.putLong("timeUntilNextAmbientSound", timeUntilNextAmbientSound);
             return nbt;
         }
 
-        public static MobProfileEntry serialize(CompoundTag nbt)
+        public static MobProfileEntry load(CompoundTag nbt)
         {
-            return new MobProfileEntry(
-                    //TODO Figure out how to serialize
-                    nbt.getUUID("entityType"),
-                    nbt.getInt("relationshipToTheHorde"),
-                    nbt.getBoolean("isVessel"),
-                    nbt.getBoolean("isActiveVessel"),
-                    nbt.getInt("nodesDestroyed"),
-                    nbt.getLong("timeOfLastHit"),
-                    nbt.getInt("difficultyOfNextHit"),
-                    nbt.getLong("timeOfLastAmbientSound"),
-                    nbt.getLong("timeUntilNextAmbientSound")
-            );
+            ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
+            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
+            if(type == null) {
+                SculkHorde.LOGGER.error("Failed to load MobProfileEntry. EntityType was null for id: " + id);
+                type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.
+            }
+
+            MobProfileEntry entry = new MobProfileEntry(type);
+            if(nbt.contains("relationshipToTheHorde"))
+            {
+                entry.setRelationshipToTheHorde(nbt.getInt("relationshipToTheHorde"));
+            }
+            if(nbt.contains("sculkHordeKills"))
+            {
+                entry.setSculkHordeKills(nbt.getInt("sculkHordeKills"));
+            }
+            if(nbt.contains("timeofLastGhastDeployment"))
+            {
+                entry.setTimeofLastGhastDeployment(nbt.getLong("timeofLastGhastDeployment"));
+            }
+            if(nbt.contains("timeOfLastHit"))
+            {
+                entry.setTimeofLastGhastDeployment(nbt.getLong("timeOfLastHit"));
+            }
+            if(nbt.contains("difficultyOfNextHit"))
+            {
+                entry.difficultyOfNextHit = nbt.getInt("difficultyOfNextHit");
+            }
+            return entry;
         }
-        */
+
 
         @Override
         public String toString() {
