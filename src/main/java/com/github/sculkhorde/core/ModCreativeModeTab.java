@@ -259,5 +259,6 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.CHICKEN_OF_PURITY.get());
                 event.accept(ModItems.BEEF_OF_PURITY.get());
                 event.accept(ModItems.BAKED_POTATO_OF_PURITY.get());
+                event.accept(ModBlocks.PERIMETER_INFESTATION_WARD_RELAY_BLOCK.get());
             }).build());
 }
