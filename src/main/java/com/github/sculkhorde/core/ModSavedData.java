@@ -9,6 +9,7 @@ import com.github.sculkhorde.systems.DebugSlimeSystem;
 import com.github.sculkhorde.systems.SculkNodesSystem;
 import com.github.sculkhorde.systems.chunk_cursor_system.ChunkInfestationSystem;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
@@ -128,100 +129,100 @@ public class ModSavedData extends SavedData {
      */
     protected static void initializeSystems()
     {
-        SculkHorde.LOGGER.info("ModSavedData | Initializing All Systems.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing All Systems.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing Gravemind.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing Gravemind.");
         SculkHorde.gravemind = new Gravemind();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized Gravemind Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized Gravemind Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing debugSlimeSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing debugSlimeSystem.");
         SculkHorde.debugSlimeSystem = new DebugSlimeSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized debugSlimeSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized debugSlimeSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing deathAreaInvestigator.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing deathAreaInvestigator.");
         SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized deathAreaInvestigator.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized deathAreaInvestigator.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing sculkNodesSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing sculkNodesSystem.");
         SculkHorde.sculkNodesSystem = new SculkNodesSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized sculkNodesSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized sculkNodesSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing entityChunkLoaderHelper.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing entityChunkLoaderHelper.");
         SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized entityChunkLoaderHelper Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized entityChunkLoaderHelper Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing blockEntityChunkLoaderHelper.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing blockEntityChunkLoaderHelper.");
         SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized blockEntityChunkLoaderHelper Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized blockEntityChunkLoaderHelper Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing eventSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing eventSystem.");
         SculkHorde.eventSystem = new EventSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized eventSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized eventSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing beeNestActivitySystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing beeNestActivitySystem.");
         SculkHorde.beeNestActivitySystem = new BeeNestActivitySystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized beeNestActivitySystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized beeNestActivitySystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing autoPerformanceSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing autoPerformanceSystem.");
         SculkHorde.autoPerformanceSystem = new AutoPerformanceSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized autoPerformanceSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized autoPerformanceSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing chunkInfestationSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing chunkInfestationSystem.");
         SculkHorde.chunkInfestationSystem = new ChunkInfestationSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized chunkInfestationSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized chunkInfestationSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing CursorSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing CursorSystem.");
         SculkHorde.cursorSystem = new CursorSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized CursorSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized CursorSystem Successfully.");
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading statisticsData.");
         SculkHorde.statisticsData = new StatisticsData();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded statisticsData Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded statisticsData Successfully.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading pathBuilderSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading pathBuilderSystem.");
         SculkHorde.pathBuilderSystem = new PathBuilderSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded pathBuilderSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded pathBuilderSystem Successfully.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading list of items cursors can eat.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading list of items cursors can eat.");
         ModConfig.SERVER.loadItemsInfectionCursorsCanEat();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded list of items cursors can eat Successfully.");
-        SculkHorde.LOGGER.info("ModSavedData | Loading list of configured infestable blocks.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded list of items cursors can eat Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading list of configured infestable blocks.");
         ModConfig.SERVER.loadConfiguredInfestableBlocks();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded list of configured infestable blocks Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded list of configured infestable blocks Successfully.");
 
         if(ModConfig.SERVER.purification_speed_multiplier.get() <= 0)
         {
             ModConfig.SERVER.purification_speed_multiplier.set(1.0);
-            SculkHorde.LOGGER.info("ModSavedData | Detected configured purification speed below 0. Resetting to 1.0");
+            DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Detected configured purification speed below 0. Resetting to 1.0");
         }
 
         if(ModConfig.SERVER.infection_speed_multiplier.get() <= 0)
         {
             ModConfig.SERVER.infection_speed_multiplier.set(1.0);
-            SculkHorde.LOGGER.info("ModSavedData | Detected configured infestation speed below 0. Resetting to 1.0");
+            DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Detected configured infestation speed below 0. Resetting to 1.0");
         }
-        SculkHorde.LOGGER.info("ModSavedData | Initialed All Systems Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialed All Systems Successfully.");
     }
 
     /**
@@ -571,7 +572,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to add a death area to memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to add a death area to memory but the list was null");
             return;
         }
 
@@ -584,7 +585,7 @@ public class ModSavedData extends SavedData {
             }
         }
 
-        SculkHorde.LOGGER.info("Adding Death Area in " + dimension.dimension() + " at " + positionIn + " to memory");
+        DebuggerSystem.eventDebuggerModule.logInfo("Adding Death Area in " + dimension.dimension() + " at " + positionIn + " to memory");
         getDeathAreaEntries().add(new DeathAreaEntry(dimension, positionIn));
         setDirty();
     }
@@ -592,7 +593,7 @@ public class ModSavedData extends SavedData {
     public Optional<AreaOfInterestEntry> addAreaOfInterestToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getAreasOfInterestEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to add an area of interest to memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to add an area of interest to memory but the list was null");
             return Optional.empty();
         }
 
@@ -605,7 +606,7 @@ public class ModSavedData extends SavedData {
             }
         }
 
-        SculkHorde.LOGGER.info("Adding Area of Interest at " + dimension.dimension() + " at " + positionIn + " to memory");
+        DebuggerSystem.eventDebuggerModule.logDebug("Adding Area of Interest at " + dimension.dimension() + " at " + positionIn + " to memory");
         AreaOfInterestEntry entry = new AreaOfInterestEntry(dimension, positionIn);
         getAreasOfInterestEntries().add(entry);
         setDirty();
@@ -615,19 +616,19 @@ public class ModSavedData extends SavedData {
     public void addNoRaidZoneToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getNoRaidZoneEntries() == null)
         {
-            SculkHorde.LOGGER.error("addNoRaidZoneToMemory | Cannot add, getNoRaidZoneEntries() is null.");
+            DebuggerSystem.eventDebuggerModule.logError("addNoRaidZoneToMemory | Cannot add, getNoRaidZoneEntries() is null.");
             return;
         }
 
         if(dimension == null)
         {
-            SculkHorde.LOGGER.error("addNoRaidZoneToMemory | Cannot add, ServerLevel is null.");
+            DebuggerSystem.eventDebuggerModule.logError("addNoRaidZoneToMemory | Cannot add, ServerLevel is null.");
             return;
         }
 
         if(positionIn == null)
         {
-            SculkHorde.LOGGER.error("addNoRaidZoneToMemory | Cannot add, BlockPos is null.");
+            DebuggerSystem.eventDebuggerModule.logError("addNoRaidZoneToMemory | Cannot add, BlockPos is null.");
             return;
         }
 
@@ -640,14 +641,14 @@ public class ModSavedData extends SavedData {
 
             if((areInSameDimension && arePositionsEqual) || (areInSameDimension && isCloserThan100BlocksFromPosition))
             {
-                if(isCloserThan100BlocksFromPosition) { SculkHorde.LOGGER.debug("Attempted to add a no raid zone to memory but it was too close to another no raid zone"); }
-                else if(arePositionsEqual) { SculkHorde.LOGGER.debug("Attempted to add a no raid zone to memory but it already existed"); }
+                if(isCloserThan100BlocksFromPosition) { DebuggerSystem.eventDebuggerModule.logInfo("Attempted to add a no raid zone to memory but it was too close to another no raid zone"); }
+                else if(arePositionsEqual) { DebuggerSystem.eventDebuggerModule.logInfo("Attempted to add a no raid zone to memory but it already existed"); }
 
                 return;
             }
         }
 
-        SculkHorde.LOGGER.info("Adding No Raid Zone at " + positionIn + " in " + dimension.dimension() + " to memory");
+        DebuggerSystem.eventDebuggerModule.logInfo("Adding No Raid Zone at " + positionIn + " in " + dimension.dimension() + " to memory");
         getNoRaidZoneEntries().add(new NoRaidZoneEntry(dimension, positionIn, 1000, ServerLifecycleHooks.getCurrentServer().overworld().getGameTime(), TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_no_raid_zone_duration_minutes.get())));
         setDirty();
     }
@@ -656,7 +657,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to get a death area from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get a death area from memory but the list was null");
             return Optional.empty();
         }
 
@@ -674,7 +675,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to get a death area from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get a death area from memory but the list was null");
             return Optional.empty();
         }
 
@@ -706,7 +707,7 @@ public class ModSavedData extends SavedData {
     {
         if(getAreasOfInterestEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to get an area of interest from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get an area of interest from memory but the list was null");
             return null;
         }
 
@@ -777,14 +778,14 @@ public class ModSavedData extends SavedData {
         while (iterator.hasNext()) {
             AreaOfInterestEntry entry = iterator.next();
             if (!entry.isInNoRaidZone()) {
-                SculkHorde.LOGGER.info("Area of Interest at " + entry.position + " is on no raid zone. Removing from memory.");
+                DebuggerSystem.eventDebuggerModule.logInfo("Area of Interest at " + entry.position + " is on no raid zone. Removing from memory.");
                 iterator.remove();
                 setDirty();
             }
         }
         long endTime = System.currentTimeMillis();
         if (SculkHorde.isDebugMode()) {
-            SculkHorde.LOGGER.info("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
+            DebuggerSystem.eventDebuggerModule.logInfo("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
 
@@ -794,14 +795,14 @@ public class ModSavedData extends SavedData {
         while (iterator.hasNext()) {
             NoRaidZoneEntry entry = iterator.next();
             if (entry.isExpired(ServerLifecycleHooks.getCurrentServer().overworld().getGameTime())) {
-                SculkHorde.LOGGER.info("No Raid Zone Entry at " + entry.position + " has expired. Removing from memory.");
+                DebuggerSystem.eventDebuggerModule.logInfo("No Raid Zone Entry at " + entry.position + " has expired. Removing from memory.");
                 iterator.remove();
                 setDirty();
             }
         }
         long endTime = System.currentTimeMillis();
         if (SculkHorde.isDebugMode()) {
-            SculkHorde.LOGGER.info("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
+            DebuggerSystem.eventDebuggerModule.logInfo("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
 
@@ -843,7 +844,7 @@ public class ModSavedData extends SavedData {
     {
         if(getNodeEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to remove an area of interest from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove an area of interest from memory but the list was null");
             return;
         }
 
@@ -864,7 +865,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to remove a death area from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove a death area from memory but the list was null");
             return;
         }
 
@@ -884,7 +885,7 @@ public class ModSavedData extends SavedData {
     {
         if(getAreasOfInterestEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to remove an area of interest from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove an area of interest from memory but the list was null");
             return;
         }
 
@@ -975,17 +976,17 @@ public class ModSavedData extends SavedData {
         {
             if(getDimension() == null)
             {
-                SculkHorde.LOGGER.error("Failed To Set Node Active. Dimension was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Set Node Active. Dimension was null.");
                 return;
             }
             else if(getDimension().getBlockEntity(position) == null)
             {
-                SculkHorde.LOGGER.error("Failed To Set Node Active. Block Entity was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Set Node Active. Block Entity was null.");
                 return;
             }
             else if(!(getDimension().getBlockEntity(position) instanceof SculkNodeBlockEntity))
             {
-                SculkHorde.LOGGER.error("Failed To Set Node Active. Block Entity was not instance of Sculk Node Block Entity.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Set Node Active. Block Entity was not instance of Sculk Node Block Entity.");
                 return;
             }
 
@@ -1111,12 +1112,12 @@ public class ModSavedData extends SavedData {
 
             if(dimension == null)
             {
-                SculkHorde.LOGGER.error("Failed To Validate Bee Nest Entry. Dimension was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Validate Bee Nest Entry. Dimension was null.");
                 return false;
             }
             else if(dimension.getBlockEntity(position) == null)
             {
-                SculkHorde.LOGGER.error("Failed To Validate Bee Nest Entry. Block Entity was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Validate Bee Nest Entry. Block Entity was null.");
                 return false;
             }
 
@@ -1199,7 +1200,7 @@ public class ModSavedData extends SavedData {
 
                     if(Optional.of(entry).isEmpty())
                     {
-                        SculkHorde.LOGGER.error("Failed To Set Parent Node To Closest. Node Entry was null.");
+                        DebuggerSystem.eventDebuggerModule.logError("Failed To Set Parent Node To Closest. Node Entry was null.");
                         continue;
                     }
 
@@ -1925,7 +1926,7 @@ public class ModSavedData extends SavedData {
             ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
             EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
             if(type == null) {
-                SculkHorde.LOGGER.error("Failed to load MobProfileEntry. EntityType was null for id: " + id);
+                DebuggerSystem.eventDebuggerModule.logError("Failed to load MobProfileEntry. EntityType was null for id: " + id);
                 type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.
             }
 
