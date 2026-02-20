@@ -53,6 +53,30 @@ public class DebugCommand implements Command<CommandSourceStack> {
                         .then(Commands.literal("debug")
                                 .executes((DebugCommand::toggleEntityDebug))
                         )
+                )
+                .then(Commands.literal("chunk")
+                        .then(Commands.literal("toggle")
+                                .executes((DebugCommand::toggleChunk))
+                        )
+                        .then(Commands.literal("debug")
+                                .executes((DebugCommand::toggleChunkDebug))
+                        )
+                )
+                .then(Commands.literal("event")
+                        .then(Commands.literal("toggle")
+                                .executes((DebugCommand::toggleEvent))
+                        )
+                        .then(Commands.literal("debug")
+                                .executes((DebugCommand::toggleEventDebug))
+                        )
+                )
+                .then(Commands.literal("structure")
+                        .then(Commands.literal("toggle")
+                                .executes((DebugCommand::toggleStructure))
+                        )
+                        .then(Commands.literal("debug")
+                                .executes((DebugCommand::toggleStructure))
+                        )
                 );
     }
 
@@ -147,6 +171,124 @@ public class DebugCommand implements Command<CommandSourceStack> {
         return 1;
     }
 
+    private static int toggleChunk(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.chunkLoaderDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("ChunkLoaderDebuggerModule is not initialized."));
+            return 0;
+        }
 
+        if(DebuggerSystem.chunkLoaderDebuggerModule.isActive())
+        {
+            DebuggerSystem.chunkLoaderDebuggerModule.setActive(false);
+            context.getSource().sendSuccess(()->Component.literal("ChunkLoaderDebuggerModule | Active=" + DebuggerSystem.chunkLoaderDebuggerModule.isActive()), false);
+        }
+        else
+        {
+            DebuggerSystem.chunkLoaderDebuggerModule.setActive(true);
+            context.getSource().sendSuccess(()->Component.literal("ChunkLoaderDebuggerModule | Active=" + DebuggerSystem.chunkLoaderDebuggerModule.isActive()), false);
+        }
+        return 1;
+    }
+
+    private static int toggleChunkDebug(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.chunkLoaderDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("ChunkLoaderDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.chunkLoaderDebuggerModule.isDebuggingEnabled())
+        {
+            DebuggerSystem.chunkLoaderDebuggerModule.setDebuggingEnabled(false);
+            context.getSource().sendSuccess(()->Component.literal("ChunkLoaderDebuggerModule | Debugging=" + DebuggerSystem.chunkLoaderDebuggerModule.isDebuggingEnabled()), false);
+        }
+        else
+        {
+            DebuggerSystem.chunkLoaderDebuggerModule.setDebuggingEnabled(true);
+            context.getSource().sendSuccess(()->Component.literal("ChunkLoaderDebuggerModule | Debugging=" + DebuggerSystem.chunkLoaderDebuggerModule.isDebuggingEnabled()), false);
+        }
+        return 1;
+    }
+
+    private static int toggleEvent(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.eventDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("EventDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.eventDebuggerModule.isActive())
+        {
+            DebuggerSystem.eventDebuggerModule.setActive(false);
+            context.getSource().sendSuccess(()->Component.literal("EventDebuggerModule | Active=" + DebuggerSystem.eventDebuggerModule.isActive()), false);
+        }
+        else
+        {
+            DebuggerSystem.eventDebuggerModule.setActive(true);
+            context.getSource().sendSuccess(()->Component.literal("EventDebuggerModule | Active=" + DebuggerSystem.eventDebuggerModule.isActive()), false);
+        }
+        return 1;
+    }
+
+    private static int toggleEventDebug(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.eventDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("EventDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.eventDebuggerModule.isDebuggingEnabled())
+        {
+            DebuggerSystem.eventDebuggerModule.setDebuggingEnabled(false);
+            context.getSource().sendSuccess(()->Component.literal("EventDebuggerModule | Debugging=" + DebuggerSystem.eventDebuggerModule.isDebuggingEnabled()), false);
+        }
+        else
+        {
+            DebuggerSystem.eventDebuggerModule.setDebuggingEnabled(true);
+            context.getSource().sendSuccess(()->Component.literal("EventDebuggerModule | Debugging=" + DebuggerSystem.eventDebuggerModule.isDebuggingEnabled()), false);
+        }
+        return 1;
+    }
+
+    private static int toggleStructure(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.structureDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("StructureDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.structureDebuggerModule.isActive())
+        {
+            DebuggerSystem.structureDebuggerModule.setActive(false);
+            context.getSource().sendSuccess(()->Component.literal("StructureDebuggerModule | Active=" + DebuggerSystem.structureDebuggerModule.isActive()), false);
+        }
+        else
+        {
+            DebuggerSystem.structureDebuggerModule.setActive(true);
+            context.getSource().sendSuccess(()->Component.literal("StructureDebuggerModule | Active=" + DebuggerSystem.structureDebuggerModule.isActive()), false);
+        }
+        return 1;
+    }
+
+    private static int toggleStructureDebug(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(DebuggerSystem.structureDebuggerModule == null)
+        {
+            context.getSource().sendFailure(Component.literal("StructureDebuggerModule is not initialized."));
+            return 0;
+        }
+
+        if(DebuggerSystem.structureDebuggerModule.isDebuggingEnabled())
+        {
+            DebuggerSystem.structureDebuggerModule.setDebuggingEnabled(false);
+            context.getSource().sendSuccess(()->Component.literal("StructureDebuggerModule | Debugging=" + DebuggerSystem.structureDebuggerModule.isDebuggingEnabled()), false);
+        }
+        else
+        {
+            DebuggerSystem.structureDebuggerModule.setDebuggingEnabled(true);
+            context.getSource().sendSuccess(()->Component.literal("StructureDebuggerModule | Debugging=" + DebuggerSystem.structureDebuggerModule.isDebuggingEnabled()), false);
+        }
+        return 1;
+    }
 
 }

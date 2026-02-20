@@ -15,7 +15,7 @@ public class DebuggerSystem {
     public static EntityDebuggerModule entityDebuggerModule = new EntityDebuggerModule();
     public static ChunkLoaderDebuggerModule chunkLoaderDebuggerModule = new ChunkLoaderDebuggerModule();
     public static EventDebuggerModule eventDebuggerModule = new EventDebuggerModule();
-    public static EventDebuggerModule structureDebuggerModule = new EventDebuggerModule();
+    public static StructureDebuggerModule structureDebuggerModule = new StructureDebuggerModule();
 
     public DebuggerSystem()
     {
