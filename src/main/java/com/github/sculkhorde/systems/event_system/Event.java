@@ -2,6 +2,7 @@ package com.github.sculkhorde.systems.event_system;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.DifficultyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -38,7 +39,7 @@ public class Event {
 
         if(dimension == null)
         {
-            SculkHorde.LOGGER.error(getClass().getSimpleName() + " | ERROR: NULL was passed as a dimension to an event. Event will be set to be deleted. Event UUID: " + getEventUUID().toString());
+            DebuggerSystem.eventDebuggerModule.logError(getClass().getSimpleName() + " | ERROR: NULL was passed as a dimension to an event. Event will be set to be deleted. Event UUID: " + getEventUUID().toString());
             toBeRemoved = true;
         }
     }
@@ -99,7 +100,7 @@ public class Event {
 
         setEventActive(false);
         setLastGameTimeOfEventExecution(getDimension().getGameTime());
-        SculkHorde.LOGGER.info("Finished event " + getClass().getSimpleName() + " with ID: " + getEventUUID());
+        DebuggerSystem.eventDebuggerModule.logInfo("Finished event " + getClass().getSimpleName() + " with ID: " + getEventUUID());
     }
 
     @Override
@@ -284,7 +285,7 @@ public class Event {
         }
         else
         {
-            SculkHorde.LOGGER.error(event.getClass().getSimpleName() + " | Attempted to load event from save data with no Dimension.");
+            DebuggerSystem.eventDebuggerModule.logError(event.getClass().getSimpleName() + " | Attempted to load event from save data with no Dimension.");
             event.setToBeRemoved(true);
         }
 

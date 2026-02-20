@@ -177,17 +177,14 @@ public class BlockSearcher
                 // If not visited and is a solid block, add to queue
                 if (visitedPositons.getOrDefault(neighbor.asLong(), false))
                 {
-                    //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because visited."); }
                     continue;
                 }
                 else if(isObstructed.test(neighbor))
                 {
-                    //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because obstructed."); }
                     continue;
                 }
                 else if(BlockAlgorithms.getBlockDistance(origin, neighbor) > MAX_DISTANCE)
                 {
-                    //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because too far."); }
                     continue;
                 }
 

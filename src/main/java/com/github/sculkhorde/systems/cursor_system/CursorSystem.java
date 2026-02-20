@@ -104,20 +104,6 @@ public class CursorSystem {
 
     // Virtual Cursors Methods -----------------------------------------------------------------------------------------
 
-    public void debugHowManyVirtualCursorsAreInThisArea(Level level, BlockPos pos, int radius)
-    {
-        ArrayList<ICursor> listOfCursors = virtualCursors.getList();
-        int count = 0;
-        for(ICursor cursorAtIndex : listOfCursors)
-        {
-            if(BlockAlgorithms.areTheseDimensionsEqual((ServerLevel) level, (ServerLevel) cursorAtIndex.getLevel()) && cursorAtIndex.getBlockPosition().distSqr(pos) <= radius * radius)
-            {
-                count++;
-            }
-        }
-        SculkHorde.LOGGER.info("There are " + count + " virtual cursors in this area " + pos);
-    }
-
     public static Optional<VirtualSurfaceInfestorCursor> createSurfaceInfestorVirtualCursor(Level level, BlockPos pos)
     {
         //SculkHorde.cursorSystem.debugHowManyVirtualCursorsAreInThisArea(level, pos, 5);

@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -57,7 +58,7 @@ public class AttackSequenceGoal extends Goal implements IDebuggableGoal
     @Override
     public void start() {
         super.start();
-        //SculkHorde.LOGGER.debug("Sculk Reaper Entity | Starting Attack: " + getCurrentGoal().getClass());
+        DebuggerSystem.entityDebuggerModule.logDebug("Sculk Reaper Entity | Starting Attack: " + getCurrentGoal().getClass());
         getCurrentGoal().start();
     }
 

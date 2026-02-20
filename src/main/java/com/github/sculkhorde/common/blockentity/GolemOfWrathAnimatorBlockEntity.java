@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.GolemOfWrathEntity;
 import com.github.sculkhorde.common.entity.IPurityGolemEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -135,7 +136,7 @@ public class GolemOfWrathAnimatorBlockEntity extends BlockEntity {
             ((LivingEntity)golem).setPos(getBlockPos().above().getCenter());
         }
 
-        if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("Spawning Golem at " + ((LivingEntity) golem).position());}
+        DebuggerSystem.entityDebuggerModule.logInfo("Spawning Golem at " + ((LivingEntity) golem).position());
 
         level.addFreshEntity((LivingEntity)golem);
         setGolem(golem);

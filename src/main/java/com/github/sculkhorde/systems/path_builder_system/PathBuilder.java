@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.path_builder_system;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -40,7 +41,6 @@ public class PathBuilder {
     private final PriorityQueue<AStarNode> openSet = new PriorityQueue<>();
     private final Set<Long> closedSet = new HashSet<>();
     private final Map<Long, AStarNode> allNodes = new HashMap<>();
-    private boolean debugMode = true;
     private ArmorStand debugStand;
     private int MAX_DISTANCE = 150;
     private int nodesSearched = 0;
@@ -61,10 +61,6 @@ public class PathBuilder {
         uuid = uuidIn;
     }
 
-    public void enableDebugMode() {
-        debugMode = true;
-    }
-
     protected Optional<PathBuilderRequest> getCurrentRequest()
     {
         return request;
@@ -73,7 +69,7 @@ public class PathBuilder {
     protected double getHeuristic(BlockPos pos) {
         if(request.isEmpty())
         {
-            SculkHorde.LOGGER.error("PathBuilderSystem | Attempted to getHeuristic for non-existent request.");
+            DebuggerSystem.eventDebuggerModule.logError("PathBuilderSystem | Attempted to getHeuristic for non-existent request.");
             return 0;
         }
 
@@ -165,7 +161,7 @@ public class PathBuilder {
         openSet.add(startNode);
         allNodes.put(startPos.asLong(), startNode);
 
-        SculkHorde.LOGGER.debug("PathBuilder | A* Path Builder Initialized at {}", startPos.toShortString());
+        DebuggerSystem.eventDebuggerModule.logDebug("PathBuilder | A* Path Builder Initialized at " + startPos.toShortString());
         setMaxDistance((int) (BlockAlgorithms.getBlockDistance(currentRequest.startLocation, currentRequest.desiredDestination) * 1.25F));
     }
 
@@ -174,26 +170,21 @@ public class PathBuilder {
         PathBuilderRequest currentRequest = request.get();
 
         if (openSet.isEmpty()) {
-            if(debugMode)
-            {
-                SculkHorde.LOGGER.debug("PathBuilder | Open set is empty. No path found.");
-            }
 
+            DebuggerSystem.eventDebuggerModule.logDebug("PathBuilder | Open set is empty. No path found.");
             currentRequest.isSearching = false;
             return;
         }
 
         // Safety check: abort if we've searched too many nodes
         if (nodesSearched >= MAX_SEARCH_NODES) {
-            if (debugMode) {
-                SculkHorde.LOGGER.debug("PathBuilder | Max search nodes ({}) exceeded. Aborting.", MAX_SEARCH_NODES);
-            }
+            DebuggerSystem.eventDebuggerModule.logDebug("PathBuilder | Max search nodes (" + MAX_SEARCH_NODES + ") exceeded. Aborting.");
             currentRequest.isSearching = false;
             return;
         }
 
         // Spawn Debug Stand if Necessary
-        if(debugStand == null && debugMode)
+        if(debugStand == null && DebuggerSystem.eventDebuggerModule.isDebuggingEnabled())
         {
             debugStand = new ArmorStand(currentRequest.getLevel(), currentRequest.getStartLocation().getX(), currentRequest.getStartLocation().getY(), currentRequest.getStartLocation().getZ());
             debugStand.setInvisible(true);
@@ -209,7 +200,7 @@ public class PathBuilder {
         closedSet.add(current.pos.asLong());
         nodesSearched++;
 
-        if(debugMode && debugStand != null)
+        if(DebuggerSystem.eventDebuggerModule.isDebuggingEnabled() && debugStand != null)
         {
             debugStand.teleportTo(current.pos.getX() + 0.5, current.pos.getY(), current.pos.getZ() + 0.5);
         }
@@ -217,10 +208,9 @@ public class PathBuilder {
         // Check if we reached a valid target
         if (isValidTargetBlock.test(current.pos))
         {
-            if(debugMode)
-            {
-                SculkHorde.LOGGER.debug("PathBuilder | Found valid target at {} (g-cost: {})", current.pos.toShortString(), current.g);
-            }
+
+            DebuggerSystem.eventDebuggerModule.logDebug("PathBuilder | Found valid target at " + current.pos.toShortString() + " (g-cost: " + current.g + ")");
+
             currentRequest.setPath(reconstructPath(current));
             currentRequest.isPathBuildSuccessful = true;
             currentRequest.isSearching = false;
@@ -284,18 +274,10 @@ public class PathBuilder {
 
         if(request.get().isPathBuildSuccessful())
         {
-            if(debugMode)
-            {
-                for(Long pos : allNodes.keySet())
-                {
-                    //request.get().getLevel().setBlockAndUpdate(BlockPos.of(pos), Blocks.GREEN_STAINED_GLASS.defaultBlockState());
-                }
-            }
-
-            SculkHorde.LOGGER.info("PathBuilder | Path Built Successfully (nodes searched: {})", nodesSearched);
+            DebuggerSystem.eventDebuggerModule.logInfo("PathBuilder | Path Built Successfully (nodes searched: " + nodesSearched + ")");
             return;
         }
-        SculkHorde.LOGGER.info("PathBuilder | Path Not Built (nodes searched: {})", nodesSearched);
+        DebuggerSystem.eventDebuggerModule.logInfo("PathBuilder | Path Not Built (nodes searched: " + nodesSearched + ")");
     }
 
     public void serverTick()

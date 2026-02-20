@@ -3,6 +3,7 @@ package com.github.sculkhorde.systems;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
@@ -115,7 +116,7 @@ public class SculkNodesSystem {
         if(!nodeWithLongestTimeOfInactivity.isEntryValid()) { return; }
         nodeWithLongestTimeOfInactivity.setActive(true);
         nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
-        SculkHorde.LOGGER.info("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
+        DebuggerSystem.eventDebuggerModule.logInfo("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
 
         SpawnPhantomsEvent phantomEvent = new SpawnPhantomsEvent(nodeWithLongestTimeOfInactivity.getDimension().dimension());
         phantomEvent.setEventLocation(nodeWithLongestTimeOfInactivity.getPosition());
@@ -140,7 +141,7 @@ public class SculkNodesSystem {
             if(!node.isActive()) { continue; }
             node.setActive(false);
             node.setLastTimeWasActive(node.getDimension().getGameTime());
-            SculkHorde.LOGGER.info("Deactivating Node at: " + node.getPosition().toString());
+            DebuggerSystem.eventDebuggerModule.logInfo("Deactivating Node at: " + node.getPosition().toString());
         }
     }
 

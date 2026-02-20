@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.FloorSoulSpearsAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -111,7 +112,6 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
         private final BlockPos origin;
         private final LivingEntity target;
         private final PriorityQueue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingInt(this::heuristic));
-        private boolean debugMode = false;
         private ArmorStand debugStand;
         private boolean pathFound = false;
         private boolean isFinished = false;
@@ -125,11 +125,6 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
             this.target = target;
             queue.add(origin);
         }
-
-        public void enableDebugMode() {
-            debugMode = true;
-        }
-
 
         protected boolean isObstructed(ServerLevel level, BlockPos blockPos)
         {
@@ -147,16 +142,6 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
         public void tick() {
             if (pathFound || queue.isEmpty() || target == null || target.isDeadOrDying())
             {
-
-                if(pathFound && debugMode)
-                {
-                    SculkHorde.LOGGER.info("FloorSoulSpearsSpawner | Reached Target");
-                }
-                else if(debugMode)
-                {
-                    SculkHorde.LOGGER.info("FloorSoulSpearsSpawner | Did Not Target Block");
-                }
-
                 isFinished = true;
                 return;
             }
@@ -164,7 +149,7 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
 
 
             // Spawn Debug Stand if Necessary
-            if(debugStand == null && debugMode)
+            if(debugStand == null && DebuggerSystem.entityDebuggerModule.isDebuggingEnabled())
             {
                 debugStand = new ArmorStand(level, origin.getX(), origin.getY(), origin.getZ());
                 debugStand.setInvisible(true);
@@ -180,7 +165,7 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
             entity.setOwner(mob);
             mob.level().addFreshEntity(entity);
 
-            if(debugMode)
+            if(DebuggerSystem.entityDebuggerModule.isDebuggingEnabled())
             {
                 debugStand.teleportTo(current.getX() + 0.5, current.getY(), current.getZ() + 0.5);
             }
@@ -202,10 +187,6 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
                 }
 
                 queue.add(neighbor);
-
-                if (debugMode) {
-                    //level.setBlockAndUpdate(neighbor, Blocks.GREEN_STAINED_GLASS.defaultBlockState());
-                }
             }
         }
 
@@ -213,8 +194,6 @@ public class FloorSoulSpearsFollowingAttackGoal extends ReaperCastSpellGoal
         public boolean isPathFound() {
             return pathFound;
         }
-
-
 
         public void setMaxDistance(int value) {
             MAX_DISTANCE = value;

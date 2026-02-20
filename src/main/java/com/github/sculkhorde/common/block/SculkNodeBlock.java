@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -115,7 +116,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         boolean failRandomChance = new Random().nextInt(1000) > 1;
         boolean isSavedDataNull = ModSavedData.getSaveData() == null;
         if(isSavedDataNull) {
-            SculkHorde.LOGGER.error("Tried to place Node. ModSavedData.getSaveData() is null");
+            DebuggerSystem.eventDebuggerModule.logError("Tried to place Node. ModSavedData.getSaveData() is null");
             return;
         }
 

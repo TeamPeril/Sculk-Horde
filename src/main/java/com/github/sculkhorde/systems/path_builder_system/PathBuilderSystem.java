@@ -2,6 +2,7 @@ package com.github.sculkhorde.systems.path_builder_system;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -62,7 +63,7 @@ public class PathBuilderSystem {
         if(!pathBuilders.containsKey(pathBuilder.uuid))
         {
             pathBuilders.put(pathBuilder.uuid, pathBuilder);
-            SculkHorde.LOGGER.info("Added pathBuilder " + pathBuilder.getClass() + " with ID: " + pathBuilder.uuid + " to PathBuilderSystem");
+            DebuggerSystem.eventDebuggerModule.logInfo("Added pathBuilder " + pathBuilder.getClass() + " with ID: " + pathBuilder.uuid + " to PathBuilderSystem");
         }
     }
 
@@ -72,7 +73,7 @@ public class PathBuilderSystem {
         if(!pathBuilderRequests.containsKey(pathBuilderRequest.uuid))
         {
             pathBuilderRequests.put(pathBuilderRequest.uuid, pathBuilderRequest);
-            SculkHorde.LOGGER.info("Added pathBuilderRequest " + pathBuilderRequest.getClass() + " with ID: " + pathBuilderRequest.uuid + " to PathBuilderSystem");
+            DebuggerSystem.eventDebuggerModule.logInfo("Added pathBuilderRequest " + pathBuilderRequest.getClass() + " with ID: " + pathBuilderRequest.uuid + " to PathBuilderSystem");
         }
     }
 
@@ -152,22 +153,4 @@ public class PathBuilderSystem {
         pathBuilder.request = Optional.of(popNextPathBuilderRequest());
         addPathBuilder(pathBuilder);
     }
-
-    public static void save(CompoundTag tag)
-    {
-        //SculkHorde.LOGGER.info("Saving " + SculkHorde.eventSystem.getEvents().size() + " events.");
-        //CompoundTag eventsTag = new CompoundTag();
-        //long startTime = System.currentTimeMillis();
-        //tag.put("events", eventsTag);
-        //SculkHorde.LOGGER.info("Saved Path Builder System. Took " + (System.currentTimeMillis() - startTime) + " Milliseconds.");
-    }
-
-    public static void load(CompoundTag tag)
-    {
-
-        SculkHorde.pathBuilderSystem = new PathBuilderSystem();
-        SculkHorde.LOGGER.info("Loading Path Builder System.");
-        SculkHorde.LOGGER.info("Loaded Path Builder System.");
-    }
-
 }

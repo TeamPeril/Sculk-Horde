@@ -932,7 +932,6 @@ public class BlockAlgorithms {
                     if(startY != endY)
                     {
                         y_values.add(new Tuple<>(startY, endY));
-                        //SculkHorde.LOGGER.debug("findLargestAreaAboveBlock | Found New Space: Y=" + startY + " to Y=" + endY + ".");
                         startY = endY;
                     }
                     break;
@@ -957,7 +956,6 @@ public class BlockAlgorithms {
 
         int newY = largestTuple.getA() + ((largestTuple.getB() - largestTuple.getA()) / 2);
 
-        //SculkHorde.LOGGER.debug("findLargestAreaAboveBlock | Found Largest at Space: Y=" + newY + ".");
         return Optional.of(new BlockPos(origin.getX(), newY, origin.getZ()));
     }
 

@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
@@ -617,7 +618,7 @@ public class RaidEvent extends Event {
         // If the target is outside of the current raid radius, increase the raid radius
         if (isTarget && BlockAlgorithms.getBlockDistance(getAreaOfInterestEntry().getPosition(), blockPos) > getCurrentRaidRadius()) {
             setCurrentRaidRadius((int) BlockAlgorithms.getBlockDistance(getRaidLocation(), blockPos));
-            SculkHorde.LOGGER.debug("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
+            DebuggerSystem.eventDebuggerModule.logError("Raid Radius is now " + getCurrentRaidRadius() + " blocks.");
         }
 
         if(isTarget && !blockSearcher.get().foundTargets.isEmpty() && blockSearcher.get().isAnyTargetCloserThan(blockPos, 5))
@@ -760,7 +761,7 @@ public class RaidEvent extends Event {
     public void setState(State state)
     {
         this.currentState = state;
-        SculkHorde.LOGGER.info(getClass().getSimpleName() + "State: " + state.toString());
+        DebuggerSystem.eventDebuggerModule.logError(getClass().getSimpleName() + "State: " + state.toString());
     }
 
 
@@ -791,13 +792,13 @@ public class RaidEvent extends Event {
         setDimension(dimensionResourceKey);
         setEventLocation(areaOfInterestEntry.getPosition());
 
-        SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Investigating Location at: " + areaOfInterestEntry.getPosition().toShortString() + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
+        DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Investigating Location at: " + areaOfInterestEntry.getPosition().toShortString() + " in dimension " + getFormattedDimension(dimensionResourceKey) + ".");
 
         setBlockSearcher(new BlockSearcher(dimension, areaOfInterestEntry.getPosition()));
 
         if(getBlockSearcher().isEmpty())
         {
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | BlockSearcher Failed to Initialize");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | BlockSearcher Failed to Initialize");
             setFailure(failureType.FAILED_INITIALIZATION);
             return;
         }
@@ -830,7 +831,7 @@ public class RaidEvent extends Event {
 
         if(blockSearcher.isEmpty())
         {
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | BlockSearcher Failed to Initialize");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | BlockSearcher Failed to Initialize");
             setFailure(failureType.FAILED_INITIALIZATION);
             return;
         }
@@ -848,13 +849,13 @@ public class RaidEvent extends Event {
             getFoundTargetsFromBlockSearcher(blockSearcher.get().foundTargets);
             setMaxWaves(10);
             setRaidLocation(getAreaOfInterestEntry().getPosition());
-            SculkHorde.LOGGER.debug(getClass().getSimpleName() + " | Found " + (getHighPriorityTargets().size() + getMediumPriorityTargets().size()) + " objective targets in " + getAreaOfInterestEntry().getPosition() + " in dimension " + getDimension().dimension());
+            DebuggerSystem.eventDebuggerModule.logDebug(getClass().getSimpleName() + " | Found " + (getHighPriorityTargets().size() + getMediumPriorityTargets().size()) + " objective targets in " + getAreaOfInterestEntry().getPosition() + " in dimension " + getDimension().dimension());
             setState(State.SCOUTING);
         }
         else
         {
             setFailure(failureType.FAILED_INITIALIZATION);
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Found no objective targets in dimension" + getDimensionResourceKey() +". Not Initializing Raid.");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Found no objective targets in dimension" + getDimensionResourceKey() +". Not Initializing Raid.");
         }
         setBlockSearcher(null);
 
@@ -869,8 +870,8 @@ public class RaidEvent extends Event {
             setScoutingTimeStart(getDimension().getGameTime());
 
             loadScoutingChunks();
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location: " + scoutingLocation.get().toShortString());
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Scouting Location: " + scoutingLocation.get().toShortString());
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
         }
 
         if(!isScoutingLocationLoaded())
@@ -882,12 +883,12 @@ public class RaidEvent extends Event {
 
         if(getEndermanEntity().isEmpty())
         {
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Is Loaded. Continuing.");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Scouting Location Is Loaded. Continuing.");
 
             setEndermanEntity(new SculkEndermanEntity(getDimension(), scoutingLocation.get(), getEventUUID()));
             getDimension().addFreshEntity(getEndermanEntity().get());
             getEndermanEntity().get().setScouting(true);
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Sculk Enderman Scouting at " + getAreaOfInterestEntry().getPosition().toShortString() + " in the " + getDimensionResourceKey() + " for " + ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get() + " minutes");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Sculk Enderman Scouting at " + getAreaOfInterestEntry().getPosition().toShortString() + " in the " + getDimensionResourceKey() + " for " + ModConfig.SERVER.sculk_raid_enderman_scouting_duration_minutes.get() + " minutes");
             announceToPlayersInRange(Component.literal("A Sculk Enderman is scouting out a possible raid location at " + areaOfInterestEntry.getPosition().toShortString() + " in the " + getFormattedDimension(getDimensionResourceKey()) +  ". Kill it to stop the raid from happening!"), getCurrentRaidRadius() * 8);
             EntityAlgorithms.applyEffectToTarget(getEndermanEntity().get(), MobEffects.GLOWING, TickUnits.convertMinutesToTicks(15), 0);
             SoundUtil.playSoundForEveryPlayer(getDimension(), ModSounds.RAID_SCOUT_SOUND.get());
@@ -934,7 +935,7 @@ public class RaidEvent extends Event {
             initializeBlockSearcherForSpawnSearch(100, 1);
 
 
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Initializing Block Searcher");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Initializing Block Searcher");
         }
 
         //This is just in case we load in the middle of the raid
@@ -948,11 +949,11 @@ public class RaidEvent extends Event {
             return;
         }
 
-        SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
+        DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Scouting Location Loaded: " + isScoutingLocationLoaded());
 
         if(getBlockSearcher().isEmpty())
         {
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | BlockSearcher Failed to Initialize");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | BlockSearcher Failed to Initialize");
             setFailure(failureType.FAILED_INITIALIZATION);
             return;
         }
@@ -971,13 +972,13 @@ public class RaidEvent extends Event {
         if(blockSearcher.isSuccessful)
         {
             setState(State.WAVE_INITIALIZATION);
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Found Spawn Location at " + getSpawnLocation().toShortString() + " in " + blockSearcher.getDimension().dimension() + ". Initializing Raid.");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Found Spawn Location at " + getSpawnLocation().toShortString() + " in " + blockSearcher.getDimension().dimension() + ". Initializing Raid.");
 
             advanceToNextObjective();
             setSpawnLocation(blockSearcher.foundTargets.get(0));
 
             setCurrentRaidRadius(getDistanceOfFurthestObjective());
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Current Raid Radius: " + getCurrentRaidRadius());
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Current Raid Radius: " + getCurrentRaidRadius());
 
             loadRaidChunksCenter();
 
@@ -988,7 +989,7 @@ public class RaidEvent extends Event {
         else
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Unable to Find Spawn Location. Not Initializing Raid.");
+            DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Unable to Find Spawn Location. Not Initializing Raid.");
         }
     }
 
@@ -1025,7 +1026,7 @@ public class RaidEvent extends Event {
             advanceToNextObjective();
         }
         setObjectiveLocationAtStartOfWave(getObjectiveLocation());
-        SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Spawning mobs at: " + getSpawnLocation());
+        DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Spawning mobs at: " + getSpawnLocation());
         setState(State.WAVE_ACTIVE);
         setWaveTimeStart(getDimension().getGameTime());
     }
@@ -1072,7 +1073,7 @@ public class RaidEvent extends Event {
     protected void successTick()
     {
         ModSavedData.getSaveData().addNoRaidZoneToMemory(getDimension(), getRaidLocation());
-        SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Complete.");
+        DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Raid Complete.");
         announceToPlayersInRange(Component.literal("The Sculk Horde's raid was successful!"), getCurrentRaidRadius() * 8);
         // Summon Sculk Spore Spewer
         SculkSporeSpewerEntity sporeSpewer = new SculkSporeSpewerEntity(ModEntities.SCULK_SPORE_SPEWER.get(), getDimension());
@@ -1088,27 +1089,27 @@ public class RaidEvent extends Event {
         switch (getFailure())
         {
             case FAILED_OBJECTIVE_COMPLETION:
-                SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Objectives Not Destroyed.");
+                DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Raid Failed. Objectives Not Destroyed.");
                 announceToPlayersInRange(Component.literal("The Sculk Horde has failed to destroy all objectives!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case ENDERMAN_DEFEATED:
-                SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Sculk Enderman Defeated.");
+                DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Raid Failed. Sculk Enderman Defeated.");
                 announceToPlayersInRange(Component.literal("The Sculk Horde has failed to scout out a potential raid location. Raid Prevented!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case FAILED_INITIALIZATION:
-                SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Unable to Initialize.");
+                DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Raid Failed. Unable to Initialize.");
                 announceToPlayersInRange(Component.literal("The Sculk Horde has failed to find a suitable way to raid the location. Raid Prevented!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case FAILED_TO_LOAD_CHUNKS:
-                SculkHorde.LOGGER.info(getClass().getSimpleName() + " | Raid Failed. Unable to Load Chunks.");
+                DebuggerSystem.eventDebuggerModule.logInfo(getClass().getSimpleName() + " | Raid Failed. Unable to Load Chunks.");
                 announceToPlayersInRange(Component.literal("The Sculk Horde has failed to load the chunks required to raid the location. Raid Prevented!"), getCurrentRaidRadius() * 8);
                 getDimension().players().forEach((player) -> getDimension().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.AMBIENT, 1.0F, 7.0F));
                 break;
             case NONE:
-                SculkHorde.LOGGER.error(getClass().getSimpleName() + " | Raid Failed. Unknown Reason.");
+                DebuggerSystem.eventDebuggerModule.logError(getClass().getSimpleName() + " | Raid Failed. Unknown Reason.");
                 break;
         }
 
@@ -1205,7 +1206,7 @@ public class RaidEvent extends Event {
 
         if(getBlockSearcher().isEmpty())
         {
-            SculkHorde.LOGGER.info("RaidHandler | BlockSearcher Failed to Initialize");
+            DebuggerSystem.eventDebuggerModule.logInfo("RaidHandler | BlockSearcher Failed to Initialize");
             setFailure(failureType.FAILED_INITIALIZATION);
             return;
         }
@@ -1303,7 +1304,7 @@ public class RaidEvent extends Event {
                 Optional<EntityFactoryEntry> randomEntry = EntityFactory.getRandomEntry(undesiredStrategicValues, desiredStrategicValues);
                 if(randomEntry.isEmpty())
                 {
-                    SculkHorde.LOGGER.info("RaidHandler | Unable to find valid entity for raid.");
+                    DebuggerSystem.eventDebuggerModule.logInfo("RaidHandler | Unable to find valid entity for raid.");
                     setState(State.RAID_INITIALIZATION);
                     return;
                 }
@@ -1361,12 +1362,12 @@ public class RaidEvent extends Event {
     }
 
     private static int StateToInt(State state) {
-        SculkHorde.LOGGER.debug("Saving Raid State: " + state.name() + " as " + state.ordinal() + ".");
+        DebuggerSystem.eventDebuggerModule.logDebug("Saving Raid State: " + state.name() + " as " + state.ordinal() + ".");
         return state.ordinal();
     }
 
     private static State intToState(int state) {
-        SculkHorde.LOGGER.debug("Loading Raid State: " + state + " as " + State.values()[state].name() + ".");
+        DebuggerSystem.eventDebuggerModule.logDebug("Loading Raid State: " + state + " as " + State.values()[state].name() + ".");
         return State.values()[state];
     }
 
