@@ -254,5 +254,6 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SOUL_ANIMATOR.get());
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.DEPLETED_GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
+                event.accept(ModItems.BREAD_OF_PURITY.get());
             }).build());
 }
