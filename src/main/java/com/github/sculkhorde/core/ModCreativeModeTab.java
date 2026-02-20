@@ -255,5 +255,9 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.DEPLETED_GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModItems.BREAD_OF_PURITY.get());
+                event.accept(ModItems.PORK_OF_PURITY.get());
+                event.accept(ModItems.CHICKEN_OF_PURITY.get());
+                event.accept(ModItems.BEEF_OF_PURITY.get());
+                event.accept(ModItems.BAKED_POTATO_OF_PURITY.get());
             }).build());
 }

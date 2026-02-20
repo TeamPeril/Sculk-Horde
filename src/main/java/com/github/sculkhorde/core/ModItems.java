@@ -378,7 +378,11 @@ public class ModItems {
 	public static final RegistryObject<BladeOfPurityItem> BLADE_OF_PURITY = ITEMS.register("blade_of_purity",
 			BladeOfPurityItem::new);
 
-	public static final RegistryObject<BreadofPurityItem> BREAD_OF_PURITY = ITEMS.register("bread_of_purity", BreadofPurityItem::new);
+	public static final RegistryObject<BreadOfPurityItem> BREAD_OF_PURITY = ITEMS.register("bread_of_purity", BreadOfPurityItem::new);
+	public static final RegistryObject<BeefOfPurityItem> BEEF_OF_PURITY = ITEMS.register("beef_of_purity", BeefOfPurityItem::new);
+	public static final RegistryObject<PorkOfPurityItem> PORK_OF_PURITY = ITEMS.register("pork_of_purity", PorkOfPurityItem::new);
+	public static final RegistryObject<ChickenOfPurityItem> CHICKEN_OF_PURITY = ITEMS.register("chicken_of_purity", ChickenOfPurityItem::new);
+	public static final RegistryObject<BakedPotatoOfPurityItem> BAKED_POTATO_OF_PURITY = ITEMS.register("baked_potato_of_purity", BakedPotatoOfPurityItem::new);
 
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_SPORE_SPEWER_SPAWN_EGG = ITEMS.register("sculk_spore_spewer_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_SPORE_SPEWER, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkBaseColor1), new Item.Properties()));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_MITE_SPAWN_EGG = ITEMS.register("sculk_mite_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_MITE, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkLightColor6), new Item.Properties()));

@@ -11,18 +11,18 @@ import net.minecraft.world.item.Rarity;
 import net.minecraftforge.common.extensions.IForgeItem;
 import org.jetbrains.annotations.Nullable;
 
-public class BreadofPurityItem extends Item implements IForgeItem {
-    public BreadofPurityItem(Properties p_41383_) {
+public class PorkOfPurityItem extends Item implements IForgeItem {
+    public PorkOfPurityItem(Properties p_41383_) {
         super(p_41383_);
     }
 
-    public BreadofPurityItem() {
+    public PorkOfPurityItem() {
         super(getProperties());
     }
 
     public static Properties getProperties()
     {
-        return new Item.Properties()
+        return new Properties()
                 .rarity(Rarity.UNCOMMON);
 
     }
