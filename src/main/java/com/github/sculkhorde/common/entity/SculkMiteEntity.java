@@ -137,7 +137,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
      */
     @Override
     public boolean isPersistenceRequired() {
-        return true;
+        return !ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get();
     }
 
     /**
