@@ -2,6 +2,7 @@ package com.github.sculkhorde.util.ChunkLoading;
 
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -91,14 +92,14 @@ public class EntityChunkLoaderHelper
 
             if(request.getDimension() == null)
             {
-                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.error("EntityChunkLoader | Dimension is null, Removing");}
+                DebuggerSystem.chunkLoaderDebuggerModule.logError("EntityChunkLoader | Dimension is null, Removing");
                 indexesToRemove.add(i);
                 continue;
             }
 
             if(request.isExpired())
             {
-                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Chunk EXPIRED, Unloading and Removing");}
+                DebuggerSystem.chunkLoaderDebuggerModule.logInfo("EntityChunkLoader | Chunk EXPIRED, Unloading and Removing");
                 indexesToRemove.add(i);
             }
         }
@@ -119,7 +120,7 @@ public class EntityChunkLoaderHelper
 
         if(world == null)
         {
-            SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("World is null. Cannot Force Load Chunk");
             return;
         }
         world.setChunkForced(chunkX, chunkZ, true);
@@ -128,7 +129,7 @@ public class EntityChunkLoaderHelper
 
         if(world == null)
         {
-            SculkHorde.LOGGER.error("World is null. Cannot Force Unload Chunk");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("World is null. Cannot Force Unload Chunk");
             return;
         }
         world.setChunkForced(chunkX, chunkZ, false);
@@ -224,7 +225,7 @@ public class EntityChunkLoaderHelper
     {
         if(getEntityChunkLoaderHelper() == null)
         {
-            SculkHorde.LOGGER.error("EntityChunkLoaderHelper is null. Cannot Load");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("EntityChunkLoaderHelper is null. Cannot Load");
             return;
         }
 
@@ -242,7 +243,7 @@ public class EntityChunkLoaderHelper
     {
         if(getEntityChunkLoaderHelper() == null)
         {
-            SculkHorde.LOGGER.error("EntityChunkLoaderHelper is null. Cannot Save");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("EntityChunkLoaderHelper is null. Cannot Save");
             return tag;
         }
 

@@ -1,5 +1,7 @@
 package com.github.sculkhorde.systems.debugger_system;
 
+import com.github.sculkhorde.core.SculkHorde;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,11 +13,17 @@ public class DebuggerSystem {
 
     public static CursorDebuggerModule cursorDebuggerModule = new CursorDebuggerModule();
     public static EntityDebuggerModule entityDebuggerModule = new EntityDebuggerModule();
+    public static ChunkLoaderDebuggerModule chunkLoaderDebuggerModule = new ChunkLoaderDebuggerModule();
+    public static EventDebuggerModule eventDebuggerModule = new EventDebuggerModule();
+    public static EventDebuggerModule structureDebuggerModule = new EventDebuggerModule();
 
     public DebuggerSystem()
     {
         addModule(cursorDebuggerModule);
         addModule(entityDebuggerModule);
+        addModule(chunkLoaderDebuggerModule);
+        addModule(eventDebuggerModule);
+        addModule(structureDebuggerModule);
     }
 
     public void addModule(DebuggerModule module)

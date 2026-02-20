@@ -16,6 +16,7 @@ import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModParticles;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
 import com.github.sculkhorde.systems.squad_system.Squad;
@@ -480,7 +481,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
 
         if(!SculkHorde.eventSystem.doesEventExist(parentEventUUID) && parentEventUUID != null)
         {
-            SculkHorde.LOGGER.info("SculkSoulReaperEntity | Despawned myself because parent event does not exist.");
+            DebuggerSystem.entityDebuggerModule.logDebug("SculkSoulReaperEntity | Despawned myself because parent event does not exist.");
             despawn();
         }
 
@@ -513,19 +514,19 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
                 {
                     if(!hitSquadEvent.getReaper().get().getUUID().equals(getUUID()))
                     {
-                        SculkHorde.LOGGER.info("SculkSoulReaperEntity | Despawned myself because parent event already has a reaper. I am not supposed to exist.");
+                        DebuggerSystem.entityDebuggerModule.logDebug("SculkSoulReaperEntity | Despawned myself because parent event already has a reaper. I am not supposed to exist.");
                         despawn();
                     }
                 }
                 else
                 {
-                    SculkHorde.LOGGER.info("SculkSoulReaperEntity | Despawned myself because parent event has not yet spawned a reaper. I am not supposed to exist.");
+                    DebuggerSystem.entityDebuggerModule.logDebug("SculkSoulReaperEntity | Despawned myself because parent event has not yet spawned a reaper. I am not supposed to exist.");
                     despawn();
                 }
             }
             else
             {
-                SculkHorde.LOGGER.info("SculkSoulReaperEntity | Despawned because parent event was not even a hitsquad event. How did we get here?");
+                DebuggerSystem.entityDebuggerModule.logDebug("SculkSoulReaperEntity | Despawned because parent event was not even a hitsquad event. How did we get here?");
                 despawn();
             }
         }
@@ -699,37 +700,4 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         return true;
     }
 
-
-    //#### Debug Function ####
-    @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-
-        if(player.level().isClientSide())
-        {
-            return super.mobInteract(player, hand);
-        }
-
-        if(SculkHorde.isDebugMode())
-        {
-            SculkHorde.LOGGER.info("\nACTIVE GOALS\n");
-            for(WrappedGoal wrapGoal : goalSelector.getRunningGoals().toList())
-            {
-                Goal goal = wrapGoal.getGoal();
-                if(!(goal instanceof ReaperCloseRangeAttackSequenceGoal))
-                {
-                    continue;
-                }
-                GoalDebuggerUtility.printGoalToConsole(player.level(), goal);
-            }
-
-            SculkHorde.LOGGER.info("\nINACTIVE GOALS\n");
-            for(WrappedGoal wrapGoal : goalSelector.getAvailableGoals())
-            {
-                Goal goal = wrapGoal.getGoal();
-                GoalDebuggerUtility.printGoalToConsole(player.level(), goal);
-            }
-        }
-
-        return super.mobInteract(player, hand);
-    }
 }

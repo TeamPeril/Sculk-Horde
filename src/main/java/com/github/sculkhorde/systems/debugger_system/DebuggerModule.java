@@ -7,8 +7,8 @@ import java.util.UUID;
 public class DebuggerModule {
 
     public final UUID uuid = UUID.randomUUID();
-    boolean isActive = false;
-    boolean debuggingEnabled = true;
+    boolean isActive = true;
+    boolean debuggingEnabled = false;
     boolean loggingEnabled = true;
 
     public DebuggerModule()
@@ -35,13 +35,13 @@ public class DebuggerModule {
         this.loggingEnabled = value;
     }
 
-    public boolean isLoggingEnabled()
+    public boolean isNonErrorLoggingEnabled()
     {
-        return loggingEnabled && isActive();
+        return loggingEnabled && isActive() && SculkHorde.isDebugMode();
     }
 
     public boolean isDebuggingEnabled() {
-        return debuggingEnabled && SculkHorde.isDebugMode()&& isActive();
+        return debuggingEnabled && isActive() && SculkHorde.isDebugMode();
     }
 
     public void setDebuggingEnabled(boolean debuggingEnabled) {
@@ -50,7 +50,7 @@ public class DebuggerModule {
 
     public void logDebug(String msg)
     {
-        if(isLoggingEnabled() && isDebuggingEnabled())
+        if(isNonErrorLoggingEnabled() && isDebuggingEnabled())
         {
             SculkHorde.LOGGER.debug(getClass().getSimpleName() + " | " + msg);
         }
@@ -58,7 +58,7 @@ public class DebuggerModule {
 
     public void logInfo(String msg)
     {
-        if(isLoggingEnabled())
+        if(isNonErrorLoggingEnabled())
         {
             SculkHorde.LOGGER.info(getClass().getSimpleName() + " | " + msg);
         }
@@ -66,15 +66,12 @@ public class DebuggerModule {
 
     public void logError(String msg)
     {
-        if(isLoggingEnabled())
-        {
-            SculkHorde.LOGGER.error(getClass().getSimpleName() + " | " + msg);
-        }
+        SculkHorde.LOGGER.error(getClass().getSimpleName() + " | " + msg);
     }
 
     public void logWarn(String msg)
     {
-        if(isLoggingEnabled())
+        if(isNonErrorLoggingEnabled())
         {
             SculkHorde.LOGGER.warn(getClass().getSimpleName() + " | " + msg);
         }

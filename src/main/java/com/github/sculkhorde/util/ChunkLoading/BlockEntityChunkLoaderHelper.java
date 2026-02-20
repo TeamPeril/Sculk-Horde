@@ -2,6 +2,7 @@ package com.github.sculkhorde.util.ChunkLoading;
 
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -88,14 +89,14 @@ public class BlockEntityChunkLoaderHelper
 
             if(request.getDimension() == null)
             {
-                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.error("EntityChunkLoader | Dimension is null, Removing");}
+                DebuggerSystem.chunkLoaderDebuggerModule.logError("EntityChunkLoader | Dimension is null, Removing");
                 indexesToRemove.add(i);
                 continue;
             }
 
             if(request.isExpired())
             {
-                if(SculkHorde.isDebugMode()) {SculkHorde.LOGGER.info("EntityChunkLoader | Chunk EXPIRED, Unloading and Removing");}
+                DebuggerSystem.chunkLoaderDebuggerModule.logInfo("EntityChunkLoader | Chunk EXPIRED, Unloading and Removing");
                 indexesToRemove.add(i);
             }
         }
@@ -116,7 +117,7 @@ public class BlockEntityChunkLoaderHelper
 
         if(world == null)
         {
-            SculkHorde.LOGGER.error("World is null. Cannot Force Load Chunk");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("World is null. Cannot Force Load Chunk");
             return;
         }
 
@@ -130,13 +131,13 @@ public class BlockEntityChunkLoaderHelper
 
         if(world == null)
         {
-            SculkHorde.LOGGER.error("World is null. Cannot Force Unload Chunk");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("World is null. Cannot Force Unload Chunk");
             return;
         }
 
         // Old shit method that causes runaway chunks
         //ForgeChunkManager.forceChunk(world, SculkHorde.MOD_ID, owner, chunkX, chunkZ, false, false);
-        SculkHorde.LOGGER.debug("Successfully Unloaded Chunk");
+        DebuggerSystem.chunkLoaderDebuggerModule.logError("Successfully Unloaded Chunk");
         world.setChunkForced(chunkX, chunkZ, false);
     }
     public void unloadChunksWithOwner(BlockPos owner, ServerLevel level)
@@ -236,7 +237,7 @@ public class BlockEntityChunkLoaderHelper
     {
         if(getChunkLoaderHelper() == null)
         {
-            SculkHorde.LOGGER.error("BlockEntityChunkLoaderHelper is null. Cannot Load");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("BlockEntityChunkLoaderHelper is null. Cannot Load");
             return;
         }
 
@@ -254,7 +255,7 @@ public class BlockEntityChunkLoaderHelper
     {
         if(getChunkLoaderHelper() == null)
         {
-            SculkHorde.LOGGER.error("BlockEntityChunkLoaderHelper is null. Cannot Save.");
+            DebuggerSystem.chunkLoaderDebuggerModule.logError("BlockEntityChunkLoaderHelper is null. Cannot Save.");
             return tag;
         }
 

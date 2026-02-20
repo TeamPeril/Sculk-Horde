@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -13,7 +14,6 @@ import java.util.function.Predicate;
 
 public class BlockSearcher
 {
-    protected boolean debugMode = false;
     protected ArmorStand debugStand;
 
     public int searchIterationsPerTick = 20;
@@ -59,13 +59,8 @@ public class BlockSearcher
 
     public void setState(State newState)
     {
-        SculkHorde.LOGGER.debug("BlockSearcher | New State: " + newState.toString());
+        DebuggerSystem.eventDebuggerModule.logDebug("BlockSearcher | New State: " + newState.toString());
         state = newState;
-    }
-
-    public void enableDebugMode()
-    {
-        debugMode = true;
     }
 
     public ServerLevel getDimension()
@@ -102,11 +97,6 @@ public class BlockSearcher
         this.positionToMoveAwayFrom = positionToMoveAwayFrom;
     }
 
-    public void setDebugMode(boolean debugMode)
-    {
-        this.debugMode = debugMode;
-    }
-
     protected boolean isNearOtherTargets(BlockPos position)
     {
         for(BlockPos target : foundTargets)
@@ -127,7 +117,7 @@ public class BlockSearcher
         for (int i = 0; i < searchIterationsPerTick; i++)
         {
             // Spawn Debug Stand if Necessary
-            if(debugStand == null && debugMode)
+            if(debugStand == null && DebuggerSystem.eventDebuggerModule.isDebuggingEnabled())
             {
                 debugStand = new ArmorStand(level, origin.getX(), origin.getY(), origin.getZ());
                 debugStand.setInvisible(true);
@@ -140,14 +130,14 @@ public class BlockSearcher
             if (queue.isEmpty())
             {
                 setState(State.FINISHED);
-                if(debugMode) { SculkHorde.LOGGER.debug("BlockSearcher | Ran out of searchable blocks."); }
+                DebuggerSystem.eventDebuggerModule.logDebug("BlockSearcher | Ran out of searchable blocks.");
                 return;
             }
             // If we have found enough targets, we are finished
             else if(foundTargets.size() >= MAX_TARGETS)
             {
                 setState(State.FINISHED);
-                if(debugMode) { SculkHorde.LOGGER.debug("BlockSearcher | Found the max amount of target."); }
+                DebuggerSystem.eventDebuggerModule.logDebug("BlockSearcher | Found the max amount of target.");
                 return;
             }
 
@@ -166,7 +156,7 @@ public class BlockSearcher
             queue.remove(0);
             if(debugObstruction) { level.setBlockAndUpdate(currentBlock, Blocks.GREEN_STAINED_GLASS.defaultBlockState()); }
 
-            if(debugMode)
+            if(DebuggerSystem.eventDebuggerModule.isDebuggingEnabled())
             {
                 debugStand.teleportTo(currentBlock.getX() + 0.5, currentBlock.getY(), currentBlock.getZ() + 0.5);
 
@@ -187,21 +177,21 @@ public class BlockSearcher
                 // If not visited and is a solid block, add to queue
                 if (visitedPositons.getOrDefault(neighbor.asLong(), false))
                 {
-                    //if(debugMode) { SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because visited."); }
+                    //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because visited."); }
                     continue;
                 }
                 else if(isObstructed.test(neighbor))
                 {
-                    //if(debugMode) { SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because obstructed."); }
+                    //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because obstructed."); }
                     continue;
                 }
                 else if(BlockAlgorithms.getBlockDistance(origin, neighbor) > MAX_DISTANCE)
                 {
-                    //if(debugMode) { SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because too far."); }
+                    //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Not Adding " + level.getBlockState(neighbor).getBlock() + " to queue because too far."); }
                     continue;
                 }
 
-                //if(debugMode) { SculkHorde.LOGGER.info("BlockSearcher | Adding " + level.getBlockState(neighbor).getBlock() + " to queue."); }
+                //DebuggerSystem.eventDebuggerModule.logDebug(SculkHorde.LOGGER.info("BlockSearcher | Adding " + level.getBlockState(neighbor).getBlock() + " to queue."); }
                 queue.add(neighbor);
                 visitedPositons.put(neighbor.asLong(), true);
             }
@@ -217,15 +207,15 @@ public class BlockSearcher
 
     public void finishedTick()
     {
-        if(foundTargets.size() > 0)
+        if(!foundTargets.isEmpty())
         {
             isSuccessful = true;
-            if(debugMode) { SculkHorde.LOGGER.debug("BlockSearcher | Found Target"); }
+            DebuggerSystem.eventDebuggerModule.logDebug("BlockSearcher | Found Target");
         }
         else
         {
             isSuccessful = false;
-            if(debugMode) { SculkHorde.LOGGER.debug("BlockSearcher | Failed Find Target"); }
+            DebuggerSystem.eventDebuggerModule.logDebug("BlockSearcher | Failed Find Target");
         }
         isFinished = true;
     }
