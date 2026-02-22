@@ -96,8 +96,7 @@ public class GolemOfWrathAnimatorBlockEntity extends BlockEntity {
         {
             return;
         }
-        // Tick every 10 seconds
-        if(level.getGameTime() - blockEntity.lastTickTime < blockEntity.tickInterval)
+        if(TickUnits.hasTicksPassed(blockEntity.lastTickTime, level, blockEntity.tickInterval))
         {
             return;
         }

@@ -153,7 +153,7 @@ public class SculkNodeBlockEntity extends BlockEntity
             blockEntity.timeOfLastRepair = blockEntity.getLevel().getGameTime();
         }
         //If enough time has passed, or we haven't built yet, and we can build, start build
-        else if((Math.abs(blockEntity.getLevel().getGameTime() - blockEntity.timeOfLastRepair) >= blockEntity.REPAIR_INTERVAL_TICKS || blockEntity.timeOfLastRepair <= 0) && blockEntity.nodeProceduralStructure.canStartToBuild())
+        else if((TickUnits.hasTicksPassed(blockEntity.timeOfLastRepair, blockEntity.getLevel(), blockEntity.REPAIR_INTERVAL_TICKS) || blockEntity.timeOfLastRepair <= 0) && blockEntity.nodeProceduralStructure.canStartToBuild())
         {
             blockEntity.nodeProceduralStructure.startBuildProcedure();
         }
