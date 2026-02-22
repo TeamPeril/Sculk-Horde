@@ -60,7 +60,7 @@ public class SpawnPhantomsEvent extends Event {
             return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override

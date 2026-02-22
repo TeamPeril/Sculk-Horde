@@ -82,9 +82,22 @@ public class Event {
         {
             return false;
         }
+        lastTimeOfCanStartCheck = getDimension().getGameTime();
 
-        boolean hasEnoughTimePassed = getDimension().getGameTime() - lastGameTimeOfEventExecution >= EXECUTION_COOLDOWN;
-        return hasEnoughTimePassed && DifficultyUtil.isCurrentDifficultyEqualToOrGreaterThan(minimumDifficulty);
+        //boolean hasEnoughTimePassed = getDimension().getGameTime() - lastGameTimeOfEventExecution >= EXECUTION_COOLDOWN;
+        boolean hasEnoughTimePassed = TickUnits.hasTicksPassed(lastGameTimeOfEventExecution, getDimension(), EXECUTION_COOLDOWN);
+
+        if(!hasEnoughTimePassed)
+        {
+            return false;
+        }
+
+        if(!DifficultyUtil.isCurrentDifficultyEqualToOrGreaterThan(minimumDifficulty))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean canContinue() {
