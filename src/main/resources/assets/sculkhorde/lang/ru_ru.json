@@ -11,10 +11,11 @@
   "tooltip.sculkhorde.warden_beef": "§7§oЗапретная пища. Инструмент разработчика, используемый для включения экспериментальных функций при съедении.",
   "item.sculkhorde.dev_node_spawner": "Призыватель скалкового узла",
   "tooltip.sculkhorde.dev_node_spawner": "§7§oВызывает процедуру создания узла в местоположении игрока.",
+
   "item.sculkhorde.custom_item_projectile": "Предмет-снаряд",
   "tooltip.sculkhorde.custom_item_projectile": "Это предмет разработчика для тестирования снарядов. Это родительский класс всех снарядов. Добавлен как предмет только для дурачества",
   "item.sculkhorde.sculk_acidic_projectile": "Кислотная масса",
-  "tooltip.sculkhorde.sculk_acidic_projectile.functionality": "§7Кислотный снаряд §eскалкового плевателя§f§7. Имеет шанс выпасть в виде предмета при попадании в блок. Может быть брошен.",
+  "tooltip.sculkhorde.sculk_acidic_projectile.functionality": "§7Кислотный снаряд §eскалкового плевальщика§f§7. Имеет шанс выпасть в виде предмета при попадании в блок. Может быть брошен.",
   "tooltip.sculkhorde.sculk_acidic_projectile.lore": "§7Кислое вещество, к которому можно прикоснуться. Оно тёплое и летучее. Может растворять любое органическое или неорганическое вещество.",
 
   "item.sculkhorde.sculk_matter": "Скалковая материя",
@@ -149,7 +150,7 @@
   "tooltip.sculkhorde.heart_of_purity.functionality": "§7Деактивирует древний узел при использовании на нём; таким образом, §cпобеждает§r§7 скалковую орду.",
   "tooltip.sculkhorde.heart_of_purity.lore": "§7Живое, бьющееся сердце, излучающее тепло и чистоту. Держа в руках этот монументальный артефакт, вы чувствуете себя чистым и могущественным. Внутри находится коллекция душ, которые вы освободили от орды. Теперь они помогут вам в вашем завоевании в последний раз, прежде чем их упокоят.",
   "item.sculkhorde.eye_of_purity": "Око чистоты",
-  "tooltip.sculkhorde.eye_of_purity.functionality": "§7Используется для определения местоположения скалковых узлов. §eЩёлкните ПКМ§r§7, чтобы переместить его. Если вы находитесь в том же измерении, что и узел, он направится к узлу.",
+  "tooltip.sculkhorde.eye_of_purity.functionality": "§7Используется для определения местоположения скалковых узлов. §eКликните ПКМ§r§7, чтобы переместить его. Если вы находитесь в том же измерении, что и узел, он направится к узлу.",
   "tooltip.sculkhorde.eye_of_purity.lore": "§7Кажется, очищение ока Эндера создаёт сущность, привлекаемую присутствием узлов. Эта сущность излучает тепло и сияет золотистым оттенком.",
   "block.sculkhorde.soul_harvester": "Жнец душ",
   "tooltip.sculkhorde.soul_harvester.functionality": "§7Блок, используемый для преобразования дремлющего сердца орды в активный вариант. Для функционирования требуются души. Приносите в жертву мобов рядом с этим блоком, чтобы собрать души.",
@@ -193,7 +194,7 @@
 
   "item.sculkhorde.sculk_spore_spewer_spawn_egg": "Яйцо призыва скалкового извергателя спор",
   "item.sculkhorde.sculk_zombie_spawn_egg": "Яйцо призыва скалкового зомби",
-  "item.sculkhorde.sculk_spitter_spawn_egg": "Яйцо призыва скалкового плевателя",
+  "item.sculkhorde.sculk_spitter_spawn_egg": "Яйцо призыва скалкового плевальщика",
   "item.sculkhorde.sculk_mite_spawn_egg": "Яйцо призыва скалкового клеща",
   "item.sculkhorde.sculk_mite_aggressor_spawn_egg": "Яйцо призыва клеща-агрессора",
   "item.sculkhorde.sculk_hatcher_spawn_egg": "Яйцо призыва скалкового инкубатора",
@@ -206,7 +207,7 @@
   "tooltip.sculkhorde.dev_mass_infectinator_3000": "Используйте на свой страх и риск. Блок разработчика, который непрерывно заражает чрезвычайно большую область. Создан для неугасимого завоевания Карата Фенга, чтобы заражать всё, на что он смотрит.",
 
   "item.sculkhorde.infestation_purifier": "Очиститель инфекции",
-  "tooltip.sculkhorde.infestation_purifier.functionality": "§7Щёлкните ПКМ, чтобы вернуться к предмету.\nСущность при появлении удаляет скалковое заражение из области. Скалковая орда будет нападать на него.",
+  "tooltip.sculkhorde.infestation_purifier.functionality": "§7Кликните ПКМ, чтобы вернуться к предмету.\nСущность при появлении удаляет скалковое заражение из области. Скалковая орда будет нападать на него.",
   "tooltip.sculkhorde.infestation_purifier.lore": "§7Души, которые вы спасли от проклятия, теперь служат вам в вашем завоевании орды.",
   "item.sculkhorde.purification_flask": "Колба для очистки",
   "tooltip.sculkhorde.purification_flask.functionality": "§7Бросьте на заражение, чтобы избавиться от него. Лечит эффекты: зарытый, приманка и поражение кисты. Создано окружением §eэссенции чистоты§r§7 стеклянными бутылками.",
@@ -269,7 +270,7 @@
   "entity.sculkhorde.sculk_spine_spike_attack": "Атака позвоночными скалковыми шипами",
 
   "entity.sculkhorde.sculk_zombie": "Скалковый зомби",
-  "entity.sculkhorde.sculk_spitter": "Скалковый плеватель",
+  "entity.sculkhorde.sculk_spitter": "Скалковый плевальщик",
   "entity.sculkhorde.sculk_mite": "Скалковый клещ",
   "entity.sculkhorde.sculk_mite_aggressor": "Скалковый клещ-агрессор",
   "entity.sculkhorde.sculk_hatcher": "Скалковый инкубатор",
@@ -289,7 +290,7 @@
   "item.sculkhorde.coin_of_contribution": "Монета вклада",
   "tooltip.sculkhorde.coin_of_contribution": "Монета, символизирующая огромную ценность, которую вы внесли в этот мод. «Скалковая Орда» не может существовать без таких людей, как вы. Это личная благодарность от меня. Пожалуйста, наслаждайтесь «Скалковой Ордой» :)",
 
-  "block.sculkhorde.fleshy_compost_block": "Мясистая компостная масса",
+  "block.sculkhorde.fleshy_compost_block": "Мясистый компост",
   "sounds.sculkhorde.blind_and_alone_music_disc": "Пластинка",
   "sounds.sculkhorde.blind_and_alone_music_disc.desc": "Файрел — Blind and Alone",
   "item.sculkhorde.blind_and_alone_music_disc": "Пластинка",
@@ -390,6 +391,7 @@
   "entity.sculkhorde.sculk_broodling": "Скалковый выводок",
   "entity.sculkhorde.sculk_stinger": "Скалковый жалоносец",
   "entity.sculkhorde.sculk_leech": "Скалковая пиявка",
+  "entity.sculkhorde.sculk_sheep": "Скалковая овца",
   "block.sculkhorde.soulite_core_block": "Блок душелитового ядра",
   "block.sculkhorde.soulite_block": "Душелитовый блок",
   "block.sculkhorde.depleted_soulite_block": "Истощённый душелитовый блок",
@@ -414,9 +416,11 @@
   "block.sculkhorde.fungal_sculk_stem_block": "Блок стебля грибкового скалка",
   "block.sculkhorde.brood_nest_block": "Блок выводкового гнезда",
   "block.sculkhorde.brood_nest_core_block": "Блок сердцевины выводкового гнезда",
+  "block.sculkhorde.tendril_core_block": "Блок сердцевины усиков",
   "item.sculkhorde.soul_disrupter": "Разрушитель душ",
   "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oОружие, ослабляющее жнеца душ на 1 минуту при направлении на него. Пока слабость активна, сложность снижается на один уровень.",
   "tooltip.sculkhorde.soul_disrupter.lore": "§7§oИмпровизированное оружие, предназначенное для временного подавления способностей жнеца душ.",
+
   "item.sculkhorde.ferriscite": "Феррисцит",
   "tooltip.sculkhorde.ferriscite.functionality": "§7§oРесурс, получаемый поместив железо в жнец душ. Инструменты, изготовленные из этого материала, будут добывать тем быстрее, чем больше одного и того же блока вы добудете; при добыче блока, отличающегося от предыдущего, вы получите небольшое снижение скорости. Кроме того, инструменты можно будет починить, убивая нескалковых мобов.",
   "tooltip.sculkhorde.ferriscite.lore": "§7§o Нечестивый сплав скалка и железа, выкованный из измученных душ живых. Этот жуткий металл излучает неестественный холод и вселяет чувство глубокого беспокойства в тех, кто осмеливается взять его в руки.",
@@ -453,6 +457,7 @@
   "item.sculkhorde.soul_animator": "Аниматор души",
   "tooltip.sculkhorde.soul_animator.functionality": "§7§oИнгредиент для создания, выпадающий из жнеца душ.",
   "tooltip.sculkhorde.soul_animator.lore": "§7§oАртефакт, способный оживлять как живые, так и неживые предметы. Он может содержать силу как измученных, так и чистых душ для создания конструкций и големов.",
+  "sounds.sculkhorde.soul_spear_emerge": "Появляется копьё душ",
 
   "effect.sculkhorde.diseased_atmosphere": "Заражённая атмосфера",
   "effect.sculkhorde.diseased_atmosphere.description": "Заставляет существ получать урон и истощаться.",
@@ -468,11 +473,10 @@
   "item.minecraft.lingering_potion.effect.corroded_potion": "Туманное зелье корродирования",
   "item.minecraft.tipped_arrow.effect.corroded_potion": "Стрела корродирования",
 
-  "block.sculkhorde.tendril_core_block": "Сердцевина усиков",
-  "sounds.sculkhorde.soul_spear_emerge": "Появление копья души",
   "sounds.sculkhorde.infestation_ambience": "Атмосфера заражения",
   "sounds.sculkhorde.soulite_ambience": "Перезвон душелита",
+
   "block.sculkhorde.living_web_block": "Блок живой паутины",
-  "block.sculkhorde.infested_crafting_table_block": "Инфицированный верстак",
+  "block.sculkhorde.infested_crafting_table_block": "Заражённый верстак",
   "block.sculkhorde.ancient_bookshelf_block": "Древняя книжная полка"
 }
