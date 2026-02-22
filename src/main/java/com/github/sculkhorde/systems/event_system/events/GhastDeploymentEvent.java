@@ -142,6 +142,10 @@ public class GhastDeploymentEvent extends Event {
         {
             MobProfileUtil.updateGhastDeploymentTime(mob);
         }
+        else if(entity instanceof Player player)
+        {
+            PlayerProfileHandler.updateGhastDeploymentTime(player);
+        }
         return ghastDeploymentEvent;
     }
 

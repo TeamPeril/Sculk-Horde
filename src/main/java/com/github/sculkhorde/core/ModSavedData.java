@@ -1765,6 +1765,7 @@ public class ModSavedData extends SavedData {
                     ", nodesDestroyed=" + nodesDestroyed +
                     ", timeOfLastHit=" + timeOfLastHit +
                     ", difficultyOfNextHit=" + difficultyOfNextHit +
+                    ", timeofLastGhastDeployment=" + timeofLastGhastDeployment +
                     ", timeOfLastAmbientSound=" + timeOfLastAmbientSound +
                     ", timeUntilNextAmbientSound=" + timeUntilNextAmbientSound +
                     '}';
