@@ -19,6 +19,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -344,9 +345,10 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
                 return;
             }
 
+
             entityData.set(DATA_TICKS_ALIVE, entityData.get(DATA_TICKS_ALIVE) + 1);
             int ticksAlive = entityData.get(DATA_TICKS_ALIVE);
-            if (ticksAlive > TickUnits.convertMinutesToTicks(15)) {
+            if (ticksAlive > TickUnits.convertMinutesToTicks(15) || DifficultyUtil.getCurrentDifficulty() == Difficulty.PEACEFUL){
                 entity.remove(RemovalReason.DISCARDED);
             }
         }

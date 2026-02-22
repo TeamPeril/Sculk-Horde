@@ -855,13 +855,8 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         @Override
         public boolean canUse()
         {
-            boolean mobHasBeenNameTagged = ((Mob) mob).hasCustomName();
             boolean hasNoStoredMobs = getStoredMobMass() <= 0;
-            if(hasNoStoredMobs && level.getGameTime() - creationTime > calculateTicksThreshold() && !mob.isParticipatingInRaid() && !mobHasBeenNameTagged)
-            {
-                return true;
-            }
-            return false;
+            return hasNoStoredMobs && super.canUse();
         }
     }
 
