@@ -26,7 +26,6 @@ import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
-import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
@@ -373,17 +372,27 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         return p_33137_.height * 0.35F;
     }
 
+    @Override
+    public void push(Entity p_21294_) {
+        super.push(p_21294_);
+    }
+
+    public boolean isPushable() {
+        return false;
+    }
+
     // #### Functions ####
 
     public void releaseMob()
     {
         if(level() == null) { return; }
 
+        int spawnX = (int) (getX() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
+        int spawnZ = (int) (getZ() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
+
         if(!storedMobs.isEmpty())
         {
             Mob storedEntity = storedMobs.get(0);
-            int spawnX = (int) (getX() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
-            int spawnZ = (int) (getZ() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
             Mob spawnedEntity = (Mob) storedEntity.getType().spawn((ServerLevel) level(), new BlockPos(spawnX, (int) getY(), spawnZ), MobSpawnType.MOB_SUMMONED);
             if(spawnedEntity == null) { return; }
 
@@ -396,7 +405,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         }
 
         Mob storedEntity = new SculkMetamorphosisPodEntity(level(), TickUnits.convertSecondsToTicks(10));
-        storedEntity.setPos(position());
+        storedEntity.setPos(new Vec3(spawnX, (int) getY(), spawnZ));
         level().addFreshEntity(storedEntity);
         storedEntity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(10), 0));
         storedEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(10), 1));

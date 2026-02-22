@@ -13,7 +13,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 
 import java.util.Optional;
-import java.util.Random;
 
 public class SpawnPhantomsAtRandomNodeEvent extends Event {
 
@@ -63,6 +62,11 @@ public class SpawnPhantomsAtRandomNodeEvent extends Event {
     @Override
     public boolean canStart() {
 
+        if(!super.canStart())
+        {
+            return false;
+        }
+
         if(SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax())
         {
             return false;
@@ -78,7 +82,7 @@ public class SpawnPhantomsAtRandomNodeEvent extends Event {
             return false;
         }
 
-        return super.canStart();
+        return true;
     }
 
     @Override
