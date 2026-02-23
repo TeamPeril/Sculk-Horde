@@ -3,21 +3,21 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.block.PerimeterInfestationWardRelayBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
+import com.github.sculkhorde.util.ColorUtil;
 import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3f;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
 
@@ -25,10 +25,10 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
 
     protected int tickInterval = TickUnits.convertSecondsToTicks(3);
 
-    Optional<BlockPos> parentRelayPos = Optional.empty();
-    Optional<BlockPos> previousRelayPos = Optional.empty();
-    Optional<BlockPos> nextRelayPos = Optional.empty();
-
+    public Optional<BlockPos> parentRelayPos = Optional.empty();
+    public Optional<BlockPos> previousRelayPos = Optional.empty();
+    public Optional<BlockPos> nextRelayPos = Optional.empty();
+    public UUID perimeterInfestationWardZoneUUID;
     public boolean isRelayingWard = false;
 
 
@@ -36,25 +36,32 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
      * The Constructor that takes in properties
      */
     public PerimeterInfestationWardRelayBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.GOLEM_OF_WRATH_ANIMATOR_BLOCK_ENTITY.get(), pos, state);
+        super(ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterInfestationWardRelayBlockEntity blockEntity)
     {
         // If world is not a server world, return
-        if(level.isClientSide)
+        if(level.isClientSide && blockEntity == null || blockEntity.level == null)
         {
             return;
         }
-        if(level.getGameTime() - blockEntity.lastTickTime < blockEntity.tickInterval)
+        if(!TickUnits.hasTicksPassed(blockEntity.lastTickTime, blockEntity.level, blockEntity.tickInterval))
         {
             return;
         }
         blockEntity.lastTickTime = level.getGameTime();
 
-        blockEntity.verifyConnection();
-        blockEntity.checkAndSetRelay();
+        blockEntity.verifyAndUpdateConnection();
         blockEntity.drawParticlesFromPreviousRelay();
+        blockEntity.relaySignalToNextRelay();
+
+        blockEntity.spawnPurityParticlesIfRelayingWard();
+        blockEntity.spawnPurityParticlesIfRelayingWard();
+        blockEntity.spawnPurityParticlesIfRelayingWard();
+        blockEntity.spawnPurityParticlesIfRelayingWard();
+        blockEntity.spawnPurityParticlesIfRelayingWard();
+        blockEntity.spawnPurityParticlesIfRelayingWard();
 
     }
 
@@ -73,68 +80,114 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
             BlockPos checkPos = worldPosition.relative(facingDirection, i);
             if(level.getBlockState(checkPos).getBlock() instanceof PerimeterInfestationWardRelayBlock)
             {
+                DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + getBlockPos().toShortString() + " found next relay at " + checkPos.toShortString());
                 return Optional.of(checkPos);
             }
         }
         return Optional.empty();
     }
 
-    public void checkAndSetRelay()
+    public void relaySignalToNextRelay()
     {
-        if(nextRelayPos.isEmpty())
+        if(getNextRelayBlockEntity().isEmpty())
         {
-            nextRelayPos = findNextRelay();
             return;
         }
 
-        BlockState nextRelayState = level.getBlockState(nextRelayPos.get());
-        if(nextRelayState.getBlock() instanceof PerimeterInfestationWardRelayBlock &&
-                level.getBlockEntity(nextRelayPos.get()) instanceof PerimeterInfestationWardRelayBlockEntity nextRelayBlockEntity &&
-        nextRelayBlockEntity.previousRelayPos.isEmpty())
-        {
-            nextRelayBlockEntity.previousRelayPos = Optional.of(getBlockPos());
-            nextRelayBlockEntity.parentRelayPos = this.parentRelayPos;
-            DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + getBlockPos().toShortString() + " found next relay at " + nextRelayPos.get().toShortString());
-        }
+        PerimeterInfestationWardRelayBlockEntity nextRelay = getNextRelayBlockEntity().get();
+
+        nextRelay.previousRelayPos = Optional.of(getBlockPos());
+        nextRelay.parentRelayPos = this.parentRelayPos;
+        nextRelay.isRelayingWard = isRelayingWard;
+        DebuggerSystem.cursorDebuggerModule.logDebug("Relay " + getBlockPos().toShortString() + " is relaying it's power.");
     }
 
-    public boolean verifyConnection()
+    public static boolean isRelayValid(Level level, BlockPos pos)
+    {
+        if(pos == null || level == null || level.isClientSide)
+        {
+            return false;
+        }
+
+        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).isPresent();
+    }
+
+    public boolean isNextRelayValid()
+    {
+        if(nextRelayPos.isEmpty())
+        {
+            return false;
+        }
+
+        return isRelayValid(getLevel(), nextRelayPos.get());
+    }
+
+    public boolean isPreviousRelayValid()
     {
         if(previousRelayPos.isEmpty())
         {
             return false;
         }
 
-        BlockState previousRelayState = level.getBlockState(previousRelayPos.get());
+        return isRelayValid(getLevel(), previousRelayPos.get());
+    }
 
-        if(!(previousRelayState.getBlock() instanceof PerimeterInfestationWardRelayBlock))
+    public Optional<PerimeterInfestationWardRelayBlockEntity> getNextRelayBlockEntity()
+    {
+        if(isNextRelayValid())
         {
-            return false;
+            return Optional.of((PerimeterInfestationWardRelayBlockEntity) level.getBlockEntity(nextRelayPos.get()));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<PerimeterInfestationWardRelayBlockEntity> getPreviousRelayBlockEntity()
+    {
+        if(isPreviousRelayValid())
+        {
+            return Optional.of((PerimeterInfestationWardRelayBlockEntity) level.getBlockEntity(previousRelayPos.get()));
+        }
+        return Optional.empty();
+    }
+
+    public void checkAndSetNextRelay()
+    {
+        if(!isNextRelayValid())
+        {
+            nextRelayPos = findNextRelay();
+            return;
+        }
+    }
+
+    public void verifyAndUpdateConnection()
+    {
+        if(!isPreviousRelayValid())
+        {
+            previousRelayPos = Optional.empty();
+            isRelayingWard = isPoweredByRedstone();
+            //DebuggerSystem.cursorDebuggerModule.logDebug("Relay " + getBlockPos().toShortString() + "'s Previous Relay is no longer valid.");
         }
 
-        PerimeterInfestationWardRelayBlockEntity previousRelayBlockEntity = (PerimeterInfestationWardRelayBlockEntity) level.getBlockEntity(previousRelayPos.get());
+        if(!isNextRelayValid())
+        {
+            nextRelayPos = Optional.empty();
+        }
+
+        checkAndSetNextRelay();
 
 
-        isRelayingWard = previousRelayBlockEntity.isRelayingWard;
-        return true;
     }
 
     public void drawParticlesFromPreviousRelay() {
-        if (previousRelayPos.isEmpty()) {
+        if (!isNextRelayValid()) {
             return;
         }
 
-        BlockState previousRelayState = level.getBlockState(previousRelayPos.get());
-
-        if (!(previousRelayState.getBlock() instanceof PerimeterInfestationWardRelayBlock)) {
-            return;
-        }
-
-        PerimeterInfestationWardRelayBlockEntity previousRelayBlockEntity = (PerimeterInfestationWardRelayBlockEntity) level.getBlockEntity(previousRelayPos.get());
+        PerimeterInfestationWardRelayBlockEntity nextRelayBlockEntity = getNextRelayBlockEntity().get();
 
         // Draw particles from previous relay to this relay
-        if (previousRelayBlockEntity.isRelayingWard) {
-            ParticleUtil.spawnParticleBeam((ServerLevel) level, ParticleTypes.END_ROD, getBlockPos().getCenter(), previousRelayPos.get().getCenter(), 0.5F, 5);
+        if (isRelayingWard) {
+            ParticleUtil.spawnParticleBeam((ServerLevel) level, ParticleTypes.END_ROD, getBlockPos().getCenter(), nextRelayBlockEntity.worldPosition.getCenter(), 0.5F, 5);
         }
     }
 
@@ -154,6 +207,23 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
 
         return powered;
     }
+
+    public void spawnPurityParticlesIfRelayingWard()
+    {
+        if(level == null || !isRelayingWard)
+        {
+            return;
+        }
+        //Get random spawnX, y, and z, around block position
+        Vector3f spawnPos = new Vector3f(
+                (float) worldPosition.getX() + (level.getRandom().nextFloat() * 2),
+                (float) worldPosition.getY() + (level.getRandom().nextFloat() * 2),
+                (float) worldPosition.getZ() + (level.getRandom().nextFloat() * 2)
+        );
+
+        ParticleUtil.spawnColoredDustParticleOnServer((ServerLevel) level, ColorUtil.getRandomPurityColor(level.getRandom()), 1.0F, spawnPos);
+    }
+
 
 
     @Override

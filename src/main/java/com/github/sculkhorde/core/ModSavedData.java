@@ -1,6 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.blockentity.PerimeterInfestationWardRelayBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.systems.AutoPerformanceSystem;
@@ -64,6 +65,7 @@ public class ModSavedData extends SavedData {
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
     private final ArrayList<PlayerProfileEntry> playerProfileEntries = new ArrayList<>();
     private final ArrayList<MobProfileEntry> mobProfileEntries = new ArrayList<>();
+    private final HashMap<UUID, PerimeterInfestationWardZoneEntry> perimeterInfestationWardZoneEntries = new HashMap<>();
 
     private int sculkAccumulatedMass = 0;
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -1966,6 +1968,85 @@ public class ModSavedData extends SavedData {
                     ", timeofLastGhastDeployment=" + timeofLastGhastDeployment +
                     ", sculkHordeKills=" + sculkHordeKills +
                     '}';
+        }
+    }
+
+    public HashMap<UUID, PerimeterInfestationWardZoneEntry> getPerimeterInfestationWardZoneEntries() {
+        return perimeterInfestationWardZoneEntries;
+    }
+
+    public void addOrUpdatePerimeterInfestationWardZoneEntry(PerimeterInfestationWardZoneEntry entry)
+    {
+        getPerimeterInfestationWardZoneEntries().put(entry.uuid, entry);
+    }
+
+    //#### Perimeter Infestation Ward Entry ####
+    public class PerimeterInfestationWardZoneEntry
+    {
+        public UUID uuid;
+        public BlockPos parentRelaypos;
+        public ArrayList<BlockPos> relayPositions = new ArrayList<>();
+        public ResourceKey<Level> dimension;
+
+
+        public PerimeterInfestationWardZoneEntry()
+        {
+            uuid = UUID.randomUUID();
+        }
+
+        public PerimeterInfestationWardZoneEntry(UUID uuidIn)
+        {
+            uuid = uuidIn;
+        }
+
+        public ServerLevel getDimension()
+        {
+            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+        }
+
+        public boolean isParentRelayValid()
+        {
+            if(getDimension() == null)
+            {
+                return false;
+            }
+
+            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).isEmpty())
+            {
+                return false;
+            }
+
+            PerimeterInfestationWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).get();
+
+            if(!parentRelay.perimeterInfestationWardZoneUUID.equals(uuid))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void updateRelayPositions() {
+            relayPositions.clear();
+            if (getDimension() == null) {
+                return;
+            }
+
+            if (!isParentRelayValid()) {
+                return;
+            }
+
+            int maxIteration = 100;
+            BlockPos currentRelayPos = parentRelaypos;
+            for (int index = 0; index < maxIteration || currentRelayPos != null; index++) {
+                if (!PerimeterInfestationWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) {
+                    break;
+                }
+
+                PerimeterInfestationWardRelayBlockEntity currentRelay = getDimension().getBlockEntity(currentRelayPos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).get();
+                relayPositions.add(currentRelayPos);
+                currentRelayPos = currentRelay.nextRelayPos.orElse(null);
+            }
         }
     }
 }

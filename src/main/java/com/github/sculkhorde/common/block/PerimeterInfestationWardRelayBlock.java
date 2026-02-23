@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.blockentity.GolemOfWrathAnimatorBlockEntity;
+import com.github.sculkhorde.common.blockentity.PerimeterInfestationWardRelayBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
@@ -140,13 +140,13 @@ public class PerimeterInfestationWardRelayBlock extends BaseEntityBlock implemen
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.GOLEM_OF_WRATH_ANIMATOR_BLOCK_ENTITY.get(), GolemOfWrathAnimatorBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get(), PerimeterInfestationWardRelayBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
-        return new GolemOfWrathAnimatorBlockEntity(blockPos, state);
+        return new PerimeterInfestationWardRelayBlockEntity(blockPos, state);
     }
 
     @Override
