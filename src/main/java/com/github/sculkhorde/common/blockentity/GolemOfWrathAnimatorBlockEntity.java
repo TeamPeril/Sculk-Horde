@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.entity.GolemOfWrathEntity;
 import com.github.sculkhorde.common.entity.IPurityGolemEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -96,7 +95,7 @@ public class GolemOfWrathAnimatorBlockEntity extends BlockEntity {
         {
             return;
         }
-        if(TickUnits.hasTicksPassed(blockEntity.lastTickTime, level, blockEntity.tickInterval))
+        if(!TickUnits.hasTicksPassed(blockEntity.lastTickTime, level, blockEntity.tickInterval))
         {
             return;
         }

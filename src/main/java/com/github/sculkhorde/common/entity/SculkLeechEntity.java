@@ -6,7 +6,6 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -231,6 +230,12 @@ public class SculkLeechEntity extends Salmon implements GeoEntity, ISculkSmartEn
 
         @Override
         public void onTargetHurt(LivingEntity target) {
+
+            if(target == null)
+            {
+                return;
+            }
+
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
             if(targetMobRemainingHealth <= 0.5 && !target.hasEffect(SculkMiteEntity.INFECT_EFFECT))
             {

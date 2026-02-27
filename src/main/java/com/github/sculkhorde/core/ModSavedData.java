@@ -1971,6 +1971,7 @@ public class ModSavedData extends SavedData {
         }
     }
 
+    //#### Perimeter Infestation Ward Entry ####
     public HashMap<UUID, PerimeterInfestationWardZoneEntry> getPerimeterInfestationWardZoneEntries() {
         return perimeterInfestationWardZoneEntries;
     }
@@ -1980,8 +1981,15 @@ public class ModSavedData extends SavedData {
         getPerimeterInfestationWardZoneEntries().put(entry.uuid, entry);
     }
 
-    //#### Perimeter Infestation Ward Entry ####
-    public class PerimeterInfestationWardZoneEntry
+
+
+    /**
+     * Represents an entry for a perimeter infestation ward zone in a Minecraft mod.
+     * This class handles the identification, validation, and management of relay positions
+     * and interactions with the dimension and relays associated with the perimeter ward zone.
+     * This zone is an ortho polygon.
+     */
+    public static class PerimeterInfestationWardZoneEntry
     {
         public UUID uuid;
         public BlockPos parentRelaypos;
@@ -2047,6 +2055,46 @@ public class ModSavedData extends SavedData {
                 relayPositions.add(currentRelayPos);
                 currentRelayPos = currentRelay.nextRelayPos.orElse(null);
             }
+        }
+
+        /**
+         * Every zone is a series of points that make up an ortho polygon.
+         * @param pos
+         * @return
+         */
+        public boolean isPosInsideOfZone(BlockPos pos)
+        {
+            if (relayPositions == null || relayPositions.size() < 4)
+            {
+                return false;
+            }
+
+            // Ray casting algorithm: cast a ray from the point to the right (+X direction)
+            // and count how many edges it crosses. Odd = inside, Even = outside.
+            int crossings = 0;
+            int n = relayPositions.size();
+
+            for (int i = 0; i < n; i++)
+            {
+                BlockPos p1 = relayPositions.get(i);
+                BlockPos p2 = relayPositions.get((i + 1) % n);
+
+                // Check if this edge is vertical and could be crossed by our horizontal ray
+                if (p1.getX() == p2.getX())
+                {
+                    // Vertical edge at x = p1.getX()
+                    int minZ = Math.min(p1.getZ(), p2.getZ());
+                    int maxZ = Math.max(p1.getZ(), p2.getZ());
+
+                    // Check if ray intersects this vertical edge
+                    if (p1.getX() > pos.getX() && pos.getZ() >= minZ && pos.getZ() < maxZ)
+                    {
+                        crossings++;
+                    }
+                }
+            }
+
+            return (crossings % 2) == 1;
         }
     }
 }

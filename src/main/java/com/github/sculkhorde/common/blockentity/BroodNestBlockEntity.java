@@ -242,7 +242,7 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
                 broodNest.lastTickTime = level.getGameTime();
             }
 
-            if(TickUnits.hasTicksPassed(broodNest.lastTickTime, level, broodNest.minTickInterval))
+            if(!TickUnits.hasTicksPassed(broodNest.lastTickTime, level, broodNest.minTickInterval))
             {
                 return false;
             }

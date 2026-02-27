@@ -349,6 +349,11 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         public void onTargetHurt(LivingEntity target) {
             super.onTargetHurt(target);
 
+            if(target == null)
+            {
+                return;
+            }
+
             if(DifficultyUtil.isCurrentDifficultyEasy())
             {
                 EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(3), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
