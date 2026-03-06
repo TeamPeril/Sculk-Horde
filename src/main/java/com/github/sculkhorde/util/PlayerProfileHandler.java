@@ -4,12 +4,18 @@ import com.github.sculkhorde.core.ModSavedData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerProfileHandler {
+
+    public boolean arePlayersOnline()
+    {
+        return ServerLifecycleHooks.getCurrentServer().getPlayerCount() > 0;
+    }
 
     private static Optional<ModSavedData.PlayerProfileEntry> getPlayerProfile(Player player)
     {
