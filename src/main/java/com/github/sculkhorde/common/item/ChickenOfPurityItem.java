@@ -35,7 +35,8 @@ public class ChickenOfPurityItem extends Item implements IForgeItem {
     @Override
     public @Nullable FoodProperties getFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
         FoodProperties foodProperties = new FoodProperties.Builder()
-                .saturationMod(0.6f)
+                .saturationMod(7.2f)
+                .nutrition(6)
                 .effect(new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertMinutesToTicks(15), 0), 1.0F)
                 .build();
         return foodProperties;

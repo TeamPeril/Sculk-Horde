@@ -47,6 +47,11 @@ public class ModCreativeModeTab {
                 // Tools & Utilities
                 event.accept(ModItems.EYE_OF_PURITY.get());
                 event.accept(ModItems.PURIFICATION_FLASK.get());
+                event.accept(ModItems.BREAD_OF_PURITY.get());
+                event.accept(ModItems.PORK_OF_PURITY.get());
+                event.accept(ModItems.CHICKEN_OF_PURITY.get());
+                event.accept(ModItems.BEEF_OF_PURITY.get());
+                event.accept(ModItems.BAKED_POTATO_OF_PURITY.get());
                 event.accept(ModBlocks.INFESTATION_WARD_BLOCK.get());
                 event.accept(ModItems.DORMANT_HEART_OF_THE_HORDE.get());
                 event.accept(ModItems.HEART_OF_THE_HORDE.get());
@@ -254,11 +259,6 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SOUL_ANIMATOR.get());
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.DEPLETED_GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
-                event.accept(ModItems.BREAD_OF_PURITY.get());
-                event.accept(ModItems.PORK_OF_PURITY.get());
-                event.accept(ModItems.CHICKEN_OF_PURITY.get());
-                event.accept(ModItems.BEEF_OF_PURITY.get());
-                event.accept(ModItems.BAKED_POTATO_OF_PURITY.get());
                 event.accept(ModBlocks.PERIMETER_INFESTATION_WARD_RELAY_BLOCK.get());
             }).build());
 }
