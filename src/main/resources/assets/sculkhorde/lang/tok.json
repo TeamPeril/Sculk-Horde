@@ -469,5 +469,12 @@
   "sounds.sculkhorde.soulite_ambience": "kalama anpa pi kiwen kon",
   "block.sculkhorde.living_web_block": "leko palisa olin",
   "block.sculkhorde.infested_crafting_table_block": "ilo pali jaki Sculk",
-  "block.sculkhorde.ancient_bookshelf_block": "poki lipu Sculk pi tenpo pini suli"
+  "block.sculkhorde.ancient_bookshelf_block": "poki lipu Sculk pi tenpo pini suli",
+  "item.sculkhorde.bread_of_purity": "pan pona",
+  "item.sculkhorde.beef_of_purity": "soweli pona",
+  "item.sculkhorde.pork_of_purity": "soweli pona tu",
+  "item.sculkhorde.baked_potato_of_purity": "kili seli pona",
+  "item.sculkhorde.chicken_of_purity": "waso pona",
+  "tooltip.sculkhorde.food_of_purity.functionality": "§7§omoku ni li ken pona e moku sina li pana e pona tawa sina li awen e sina tan ike pi kulupu jaki. sina ken pana e ni tawa jan poka anu jan utala.",
+  "tooltip.sculkhorde.food_of_purity.lore": "§7§omoku ni li pana e seli pona en moku pona. ni li moku pona mute tawa jan pi wile pona."
 }

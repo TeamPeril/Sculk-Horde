@@ -475,5 +475,12 @@
   "sounds.sculkhorde.soulite_ambience": "Campanadas de almita",
   "block.sculkhorde.living_web_block": "Bloque de telaraña viviente",
   "block.sculkhorde.infested_crafting_table_block": "Mesa de trabajo infestada",
-  "block.sculkhorde.ancient_bookshelf_block": "Librería ancestral"
+  "block.sculkhorde.ancient_bookshelf_block": "Librería ancestral",
+  "item.sculkhorde.bread_of_purity": "Pan de Pureza",
+  "item.sculkhorde.beef_of_purity": "Carne de Pureza",
+  "item.sculkhorde.pork_of_purity": "Cerdo de Pureza",
+  "item.sculkhorde.baked_potato_of_purity": "Patata Horneada de Pureza",
+  "item.sculkhorde.chicken_of_purity": "Pollo de Pureza",
+  "tooltip.sculkhorde.food_of_purity.functionality": "§7§oUna comida que puede ser consumida para nutrir tu hambre, otorgarte pureza y protegerte de los efectos de estado de la horda. Útil para dársela a entidades como colonos, soldados u otros aliados.",
+  "tooltip.sculkhorde.food_of_purity.lore": "§7§oEsta comida irradia calidez y nutrición. Es un delicioso manjar y una gran utilidad para aquellos que desean pureza."
 }

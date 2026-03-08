@@ -479,7 +479,15 @@
 
   "block.sculkhorde.living_web_block": "Living Web Block",
   "block.sculkhorde.infested_crafting_table_block": "Infested Crafting Table",
-  "block.sculkhorde.ancient_bookshelf_block": "Ancient Bookshelf Block"
+  "block.sculkhorde.ancient_bookshelf_block": "Ancient Bookshelf Block",
+
+  "item.sculkhorde.bread_of_purity": "Bread of Purity",
+  "item.sculkhorde.beef_of_purity": "Beef of Purity",
+  "item.sculkhorde.pork_of_purity": "Pork of Purity",
+  "item.sculkhorde.baked_potato_of_purity": "Baked Potato of Purity",
+  "item.sculkhorde.chicken_of_purity": "Chicken of Purity",
+  "tooltip.sculkhorde.food_of_purity.functionality": "§7§oA food that can be eaten to nourish your hunger, grant you purity, and protect you from the horde's status effects. Useful to give to feed to entities like colonists, soldiers, or other such allies.",
+  "tooltip.sculkhorde.food_of_purity.lore": "§7§oThis food radiates with warmth and nourishment. It is a delicious treat and a great utility for those who desire purity."
 }
 
 

@@ -478,5 +478,12 @@
 
   "block.sculkhorde.living_web_block": "Блок живой паутины",
   "block.sculkhorde.infested_crafting_table_block": "Заражённый верстак",
-  "block.sculkhorde.ancient_bookshelf_block": "Древняя книжная полка"
+  "block.sculkhorde.ancient_bookshelf_block": "Древняя книжная полка",
+  "item.sculkhorde.bread_of_purity": "Хлеб чистоты",
+  "item.sculkhorde.beef_of_purity": "Говядина чистоты",
+  "item.sculkhorde.pork_of_purity": "Свинина чистоты",
+  "item.sculkhorde.baked_potato_of_purity": "Печёный картофель чистоты",
+  "item.sculkhorde.chicken_of_purity": "Курица чистоты",
+  "tooltip.sculkhorde.food_of_purity.functionality": "§7§oПища, которую можно съесть, чтобы утолить голод, обрести чистоту и защитить себя от негативных эффектов орды. Полезно для кормления таких существ, как колонисты, солдаты или другие союзники.",
+  "tooltip.sculkhorde.food_of_purity.lore": "§7§oЭта еда излучает тепло и питание. Это вкусное лакомство и отличная полезность для тех, кто жаждет чистоты."
 }
