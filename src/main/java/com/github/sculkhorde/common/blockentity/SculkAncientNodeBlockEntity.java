@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
-import com.github.sculkhorde.common.entity.infection.AncientNodePurificationHandler;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsAtRandomNodeEvent;
 import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsEvent;
@@ -52,7 +51,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     protected long lastHeartBeat = System.currentTimeMillis();
 
     protected NodeBranchingInfestationSystem infectionHandler;
-    protected AncientNodePurificationHandler purificationHandler;
 
     protected long timeOfLastChunkLoadAttempt = 0;
     protected long CHUNK_LOAD_ATTEMPT_COOLDOWN = TickUnits.convertMinutesToTicks(5);
@@ -179,13 +177,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             infectionHandler = new NodeBranchingInfestationSystem(this, getBlockPos(), true);
         }
     }
-    private void initializePurificationHandler()
-    {
-        if(purificationHandler == null)
-        {
-            purificationHandler = new AncientNodePurificationHandler(this, getBlockPos());
-        }
-    }
 
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
@@ -279,18 +270,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     {
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
-
-        // Initialize the infection handler
-        if(blockEntity.purificationHandler == null)
-        {
-            blockEntity.initializePurificationHandler();
-        }
-        if(blockEntity.purificationHandler.canBeActivated())
-        {
-            blockEntity.purificationHandler.activate();
-        }
-
-        blockEntity.purificationHandler.tick();
 
         // If the time elapsed is less than the tick interval, return
         if(timeElapsed < tickIntervalSeconds) { return; }
