@@ -5,12 +5,9 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.AcidBlobProjectileEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
@@ -39,6 +36,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -113,15 +111,15 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.SALMON_AMBIENT;
+        return SoundEvents.GUARDIAN_AMBIENT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.SALMON_DEATH;
+        return SoundEvents.GUARDIAN_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource p_29795_) {
-        return SoundEvents.SALMON_HURT;
+        return SoundEvents.GUARDIAN_HURT;
     }
 
     /**
@@ -237,31 +235,13 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
         }
     }
 
-    private void spawnInk() {
-        this.playSound(SoundEvents.SQUID_SQUIRT, this.getSoundVolume(), this.getVoicePitch());
-
-        if (getTarget() != null) {
-            Vec3 squidPosition = this.position();
-            Vec3 targetPosition = getTarget().position();
-            Vec3 directionVector = targetPosition.subtract(squidPosition).normalize();
-
-            for (int i = 0; i < 30; ++i) {
-                ((ServerLevel)this.level()).sendParticles(ParticleTypes.SQUID_INK,
-                        squidPosition.x, squidPosition.y, squidPosition.z,
-                        1, // count of particles
-                        directionVector.x, directionVector.y, directionVector.z,
-                        0.1); // speed of particles
-            }
-        }
-    }
-
 
     //Animation Stuff below
-    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("idle");
-    private static final RawAnimation SWIM_ANIMATION = RawAnimation.begin().thenLoop("swim");
+    private static final RawAnimation IDLE_ANIMATION = RawAnimation.begin().thenLoop("misc.idle");
+    private static final RawAnimation SWIM_ANIMATION = RawAnimation.begin().thenLoop("move.swim");
     private static final RawAnimation STUCK_ANIMATION = RawAnimation.begin().thenLoop("stuck");
 
-    private static  final String ATTACK_ANIMATION_ID = "attack";
+    private static  final String ATTACK_ANIMATION_ID = "shoot";
     private static  final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay(ATTACK_ANIMATION_ID);
 
@@ -275,7 +255,8 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "walk_cycle", 5, this::poseSwimCycle),
-                ATTACK_ANIMATION_CONTROLLER
+                ATTACK_ANIMATION_CONTROLLER,
+                DefaultAnimations.genericLivingController(this)
         );
     }
 
@@ -284,7 +265,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
 
         if(state.getAnimatable().level().getFluidState(state.getAnimatable().blockPosition()).isEmpty())
         {
-            //state.setAnimation(STUCK_ANIMATION);
+            state.setAnimation(SWIM_ANIMATION);
         }
         else if(state.getAnimatable().getX() != state.getAnimatable().xOld || state.getAnimatable().getZ() != state.getAnimatable().zOld)
         {

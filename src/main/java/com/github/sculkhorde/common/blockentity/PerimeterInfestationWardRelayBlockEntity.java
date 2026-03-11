@@ -67,7 +67,7 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
         {
             if(blockEntity.perimeterInfestationWardZoneUUID == null)
             {
-                blockEntity.perimeterInfestationWardZoneUUID = ;
+                blockEntity.perimeterInfestationWardZoneUUID = null;
             }
         }
 
