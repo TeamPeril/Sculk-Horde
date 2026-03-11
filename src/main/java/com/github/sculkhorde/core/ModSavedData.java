@@ -1981,6 +1981,19 @@ public class ModSavedData extends SavedData {
         getPerimeterInfestationWardZoneEntries().put(entry.uuid, entry);
     }
 
+    public boolean isBlockPosInAnyPerimeterInfestationWardZone(BlockPos pos)
+    {
+        for(PerimeterInfestationWardZoneEntry entry : getPerimeterInfestationWardZoneEntries().values())
+        {
+            if(entry.isPosInsideOfZone(pos))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
 
     /**

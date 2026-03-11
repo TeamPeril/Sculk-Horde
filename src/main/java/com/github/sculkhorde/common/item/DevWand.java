@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
@@ -104,12 +103,17 @@ public class DevWand extends Item implements IForgeItem {
 		PathBuilderRequest request = new PathBuilderRequest(serverLevel, closestNode.get().getPosition(), BlockPos.containing(playerIn.getEyePosition()), 10, null, null);
 		SculkHorde.pathBuilderSystem.addPathBuilderRequest(request);
 
-         */
+
 
         GhastDeploymentEvent event = new GhastDeploymentEvent(playerIn.level().dimension(), playerIn.blockPosition().above(20));
 
         SculkHorde.eventSystem.addEvent(event);
+        */
 
+        if(ModSavedData.getSaveData().isBlockPosInAnyPerimeterInfestationWardZone(playerIn.blockPosition()))
+        {
+            playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
+        }
 
 		return InteractionResultHolder.pass(itemstack);
 	}

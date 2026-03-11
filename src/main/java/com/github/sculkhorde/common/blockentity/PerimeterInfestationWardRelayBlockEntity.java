@@ -39,6 +39,17 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
         super(ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
     }
 
+    public boolean areWeTheParent()
+    {
+        if(parentRelayPos.isEmpty())
+        {
+            return false;
+        }
+
+
+        return parentRelayPos.get().equals(getBlockPos());
+    }
+
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterInfestationWardRelayBlockEntity blockEntity)
     {
         // If world is not a server world, return
@@ -51,6 +62,14 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
             return;
         }
         blockEntity.lastTickTime = level.getGameTime();
+
+        if(blockEntity.areWeTheParent())
+        {
+            if(blockEntity.perimeterInfestationWardZoneUUID == null)
+            {
+                blockEntity.perimeterInfestationWardZoneUUID = ;
+            }
+        }
 
         blockEntity.verifyAndUpdateConnection();
         blockEntity.drawParticlesFromPreviousRelay();
