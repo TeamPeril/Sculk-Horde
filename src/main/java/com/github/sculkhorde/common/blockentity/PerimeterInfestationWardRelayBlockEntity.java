@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.ColorUtil;
 import com.github.sculkhorde.util.ParticleUtil;
+import com.github.sculkhorde.util.PerimeterInfestationWardZoneUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3f;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
 
@@ -28,7 +28,6 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
     public Optional<BlockPos> parentRelayPos = Optional.empty();
     public Optional<BlockPos> previousRelayPos = Optional.empty();
     public Optional<BlockPos> nextRelayPos = Optional.empty();
-    public UUID perimeterInfestationWardZoneUUID;
     public boolean isRelayingWard = false;
 
 
@@ -65,9 +64,9 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
 
         if(blockEntity.areWeTheParent())
         {
-            if(blockEntity.perimeterInfestationWardZoneUUID == null)
+            if(!PerimeterInfestationWardZoneUtil.doesZoneExist(blockEntity.getBlockPos()))
             {
-                blockEntity.perimeterInfestationWardZoneUUID = null;
+                PerimeterInfestationWardZoneUtil.getOrCreatePerimeterInfestationWardZone(blockEntity.getBlockPos());
             }
         }
 

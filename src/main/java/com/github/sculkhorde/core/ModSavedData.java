@@ -1976,26 +1976,6 @@ public class ModSavedData extends SavedData {
         return perimeterInfestationWardZoneEntries;
     }
 
-    public void addOrUpdatePerimeterInfestationWardZoneEntry(PerimeterInfestationWardZoneEntry entry)
-    {
-        getPerimeterInfestationWardZoneEntries().put(entry.uuid, entry);
-    }
-
-    public boolean isBlockPosInAnyPerimeterInfestationWardZone(BlockPos pos)
-    {
-        for(PerimeterInfestationWardZoneEntry entry : getPerimeterInfestationWardZoneEntries().values())
-        {
-            if(entry.isPosInsideOfZone(pos))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-
     /**
      * Represents an entry for a perimeter infestation ward zone in a Minecraft mod.
      * This class handles the identification, validation, and management of relay positions
@@ -2004,20 +1984,14 @@ public class ModSavedData extends SavedData {
      */
     public static class PerimeterInfestationWardZoneEntry
     {
-        public UUID uuid;
         public BlockPos parentRelaypos;
         public ArrayList<BlockPos> relayPositions = new ArrayList<>();
         public ResourceKey<Level> dimension;
 
 
-        public PerimeterInfestationWardZoneEntry()
+        public PerimeterInfestationWardZoneEntry(BlockPos parentRelayposIn)
         {
-            uuid = UUID.randomUUID();
-        }
-
-        public PerimeterInfestationWardZoneEntry(UUID uuidIn)
-        {
-            uuid = uuidIn;
+            parentRelaypos = parentRelayposIn;
         }
 
         public ServerLevel getDimension()
@@ -2039,7 +2013,7 @@ public class ModSavedData extends SavedData {
 
             PerimeterInfestationWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).get();
 
-            if(!parentRelay.perimeterInfestationWardZoneUUID.equals(uuid))
+            if(!parentRelay.getBlockPos().equals(parentRelaypos))
             {
                 return false;
             }

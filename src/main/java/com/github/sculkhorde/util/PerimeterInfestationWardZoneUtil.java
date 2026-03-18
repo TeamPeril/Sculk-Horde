@@ -1,16 +1,28 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.blockentity.PerimeterInfestationWardRelayBlockEntity;
 import com.github.sculkhorde.core.ModSavedData;
 import net.minecraft.core.BlockPos;
 
 public class PerimeterInfestationWardZoneUtil {
 
-    public static ModSavedData.PerimeterInfestationWardZoneEntry createZoneEntry(PerimeterInfestationWardRelayBlockEntity blockEntity)
+    public static ModSavedData.PerimeterInfestationWardZoneEntry getOrCreatePerimeterInfestationWardZone(BlockPos parentRelay)
     {
-        ModSavedData.PerimeterInfestationWardZoneEntry zone = new ModSavedData.PerimeterInfestationWardZoneEntry();
-        zone.parentRelaypos = blockEntity.getBlockPos();
-        blockEntity.perimeterInfestationWardZoneUUID = zone.uuid;
+        if(ModSavedData.getSaveData().getPerimeterInfestationWardZoneEntries().containsKey(parentRelay))
+        {
+            return ModSavedData.getSaveData().getPerimeterInfestationWardZoneEntries().get(parentRelay);
+        }
+
+        return createZoneEntry(parentRelay);
+    }
+
+    public static boolean doesZoneExist(BlockPos parentRelay)
+    {
+        return ModSavedData.getSaveData().getPerimeterInfestationWardZoneEntries().containsKey(parentRelay);
+    }
+
+    public static ModSavedData.PerimeterInfestationWardZoneEntry createZoneEntry(BlockPos parentRelay)
+    {
+        ModSavedData.PerimeterInfestationWardZoneEntry zone = new ModSavedData.PerimeterInfestationWardZoneEntry(parentRelay);
         return zone;
     }
 
@@ -25,5 +37,13 @@ public class PerimeterInfestationWardZoneUtil {
         }
 
         return false;
+    }
+
+    public static void updateAllZones()
+    {
+        for(ModSavedData.PerimeterInfestationWardZoneEntry zone : ModSavedData.getSaveData().getPerimeterInfestationWardZoneEntries().values())
+        {
+            zone.updateRelayPositions();
+        }
     }
 }

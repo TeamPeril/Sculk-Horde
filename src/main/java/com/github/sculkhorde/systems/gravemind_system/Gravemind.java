@@ -9,6 +9,7 @@ import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFacto
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.MobProfileUtil;
+import com.github.sculkhorde.util.PerimeterInfestationWardZoneUtil;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -324,5 +325,6 @@ public class Gravemind
         ModSavedData.getSaveData().validateNoRaidZoneEntries();
         ModSavedData.getSaveData().validateAreasOfInterest();
         MobProfileUtil.cleanUpInvalidMobProfiles();
+        PerimeterInfestationWardZoneUtil.updateAllZones();
     }
 }
