@@ -1,6 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.core.BlockPos;
 
 public class PerimeterInfestationWardZoneUtil {
@@ -12,6 +13,7 @@ public class PerimeterInfestationWardZoneUtil {
             return ModSavedData.getSaveData().getPerimeterInfestationWardZoneEntries().get(parentRelay);
         }
 
+        DebuggerSystem.cursorDebuggerModule.logDebug("Creating infestation ward zone for relay " + parentRelay.toShortString());
         return createZoneEntry(parentRelay);
     }
 
@@ -26,7 +28,7 @@ public class PerimeterInfestationWardZoneUtil {
         return zone;
     }
 
-    public boolean isPosInAnyWardZone(BlockPos pos)
+    public static boolean isPosInAnyWardZone(BlockPos pos)
     {
         for(ModSavedData.PerimeterInfestationWardZoneEntry zone : ModSavedData.getSaveData().getPerimeterInfestationWardZoneEntries().values())
         {

@@ -42,7 +42,7 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
     {
         if(parentRelayPos.isEmpty())
         {
-            return false;
+            return true;
         }
 
 
@@ -62,6 +62,8 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
         }
         blockEntity.lastTickTime = level.getGameTime();
 
+        blockEntity.verifyAndUpdateConnection();
+
         if(blockEntity.areWeTheParent())
         {
             if(!PerimeterInfestationWardZoneUtil.doesZoneExist(blockEntity.getBlockPos()))
@@ -70,7 +72,6 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
             }
         }
 
-        blockEntity.verifyAndUpdateConnection();
         blockEntity.drawParticlesFromPreviousRelay();
         blockEntity.relaySignalToNextRelay();
 
