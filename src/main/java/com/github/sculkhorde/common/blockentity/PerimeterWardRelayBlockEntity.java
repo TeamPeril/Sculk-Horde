@@ -113,7 +113,7 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
             return false;
         }
 
-        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isPresent();
+        return WardZoneUtil.canRelayWard(level.getBlockState(pos));
     }
 
     public boolean isNextRelayValid()

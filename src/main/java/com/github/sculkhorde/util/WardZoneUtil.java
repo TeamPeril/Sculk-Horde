@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class WardZoneUtil {
 
-    public static final String isRelayingWardID = "isRelayingWard";
+    public static final String isRelayingWardID = "is_relaying_ward";
     public static final BooleanProperty IS_RELAYING_WARD = BooleanProperty.create(WardZoneUtil.isRelayingWardID);
 
     public static final String parentWardBlockPosID = "parentWardBlockPos";

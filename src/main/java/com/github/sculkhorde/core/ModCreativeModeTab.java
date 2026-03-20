@@ -260,5 +260,6 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.DEPLETED_GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.PERIMETER_WARD_RELAY_BLOCK.get());
+                event.accept(ModBlocks.PERIMETER_WARD_EMITTER_BLOCK.get());
             }).build());
 }
