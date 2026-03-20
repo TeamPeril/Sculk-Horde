@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.blockentity;
 
+import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.PerimeterWardRelayBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
@@ -19,6 +20,9 @@ import org.joml.Vector3f;
 
 import java.util.Optional;
 
+import static com.github.sculkhorde.util.WardZoneUtil.findNextRelay;
+import static com.github.sculkhorde.util.WardZoneUtil.findPreviousRelay;
+
 public class PerimeterWardEmitterBlockEntity extends BlockEntity {
 
     public static final String parentWardBlockPosID = "parentWardBlockPos";
@@ -30,25 +34,14 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
     public Optional<BlockPos> parentRelayPos = Optional.empty();
     public Optional<BlockPos> previousRelayPos = Optional.empty();
     public Optional<BlockPos> nextRelayPos = Optional.empty();
-    public boolean isRelayingWard = false;
 
 
     /**
      * The Constructor that takes in properties
      */
     public PerimeterWardEmitterBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
-    }
-
-    public boolean areWeTheParent()
-    {
-        if(parentRelayPos.isEmpty())
-        {
-            return true;
-        }
-
-
-        return parentRelayPos.get().equals(getBlockPos());
+        super(ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get(), pos, state);
+        parentRelayPos = Optional.of(pos);
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterWardEmitterBlockEntity blockEntity)
@@ -64,18 +57,10 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
         }
         blockEntity.lastTickTime = level.getGameTime();
 
-        blockEntity.verifyAndUpdateConnection();
-
-        if(blockEntity.areWeTheParent())
-        {
-            if(!WardZoneUtil.doesZoneExist(blockEntity.getBlockPos()))
-            {
-                WardZoneUtil.getOrCreatePerimeterWardZone(blockEntity.getBlockPos());
-            }
-        }
+        blockEntity.updateConnections();
 
         blockEntity.drawParticlesFromPreviousRelay();
-        blockEntity.relaySignalToNextRelay();
+        blockEntity.getSignalFromPreviousRelay();
 
         blockEntity.spawnPurityParticlesIfRelayingWard();
         blockEntity.spawnPurityParticlesIfRelayingWard();
@@ -86,41 +71,27 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
 
     }
 
-
-    /**
-     * Will check the facing direction for a max of 32 blocks for another relay block.
-     * If it finds one, it will return the position of that block.
-     * If it doesn't find one, it will return null.
-     * @return The position of the previous relay block, or null if it doesn't find one.
-     */
-    public Optional<BlockPos> findNextRelay()
+    public void setRelayingWard(boolean value)
     {
-        Direction facingDirection = this.getBlockState().getValue(PerimeterWardRelayBlock.FACING);
-        for(int i = 1; i <= 32; i++)
-        {
-            BlockPos checkPos = worldPosition.relative(facingDirection, i);
-            if(level.getBlockState(checkPos).getBlock() instanceof PerimeterWardRelayBlock)
-            {
-                DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + getBlockPos().toShortString() + " found next relay at " + checkPos.toShortString());
-                return Optional.of(checkPos);
-            }
+        if (level == null) {
+            return;
         }
-        return Optional.empty();
+
+        BlockState blockState = getBlockState();
+        if (!WardZoneUtil.canRelayWard(blockState)) {
+            return;
+        }
     }
 
-    public void relaySignalToNextRelay()
+    public void getSignalFromPreviousRelay()
     {
-        if(getNextRelayBlockEntity().isEmpty())
+        if(!isPreviousRelayValid() || previousRelayPos.isEmpty() || level == null)
         {
             return;
         }
 
-        PerimeterWardEmitterBlockEntity nextRelay = getNextRelayBlockEntity().get();
-
-        nextRelay.previousRelayPos = Optional.of(getBlockPos());
-        nextRelay.parentRelayPos = this.parentRelayPos;
-        nextRelay.isRelayingWard = isRelayingWard;
-        DebuggerSystem.cursorDebuggerModule.logDebug("Relay " + getBlockPos().toShortString() + " is relaying it's power.");
+        setRelayingWard(WardZoneUtil.isBlockRelayingWard(level, previousRelayPos.get()));
+        parentRelayPos = WardZoneUtil.getParent(level, previousRelayPos.get());
     }
 
     public static boolean isRelayValid(Level level, BlockPos pos)
@@ -153,50 +124,21 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
         return isRelayValid(getLevel(), previousRelayPos.get());
     }
 
-    public Optional<PerimeterWardEmitterBlockEntity> getNextRelayBlockEntity()
-    {
-        if(isNextRelayValid())
-        {
-            return Optional.of((PerimeterWardEmitterBlockEntity) level.getBlockEntity(nextRelayPos.get()));
-        }
-        return Optional.empty();
-    }
-
-    public Optional<PerimeterWardEmitterBlockEntity> getPreviousRelayBlockEntity()
-    {
-        if(isPreviousRelayValid())
-        {
-            return Optional.of((PerimeterWardEmitterBlockEntity) level.getBlockEntity(previousRelayPos.get()));
-        }
-        return Optional.empty();
-    }
-
-    public void checkAndSetNextRelay()
-    {
-        if(!isNextRelayValid())
-        {
-            nextRelayPos = findNextRelay();
-            return;
-        }
-    }
-
-    public void verifyAndUpdateConnection()
+    public void updateConnections()
     {
         if(!isPreviousRelayValid())
         {
             previousRelayPos = Optional.empty();
-            isRelayingWard = isPoweredByRedstone();
-            //DebuggerSystem.cursorDebuggerModule.logDebug("Relay " + getBlockPos().toShortString() + "'s Previous Relay is no longer valid.");
+            previousRelayPos = findPreviousRelay(level, getBlockPos());
+            return;
         }
 
         if(!isNextRelayValid())
         {
             nextRelayPos = Optional.empty();
+            nextRelayPos = findNextRelay(level, getBlockPos());
+            return;
         }
-
-        checkAndSetNextRelay();
-
-
     }
 
     public void drawParticlesFromPreviousRelay() {
@@ -204,34 +146,12 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
             return;
         }
 
-        PerimeterWardEmitterBlockEntity nextRelayBlockEntity = getNextRelayBlockEntity().get();
-
-        // Draw particles from previous relay to this relay
-        if (isRelayingWard) {
-            ParticleUtil.spawnParticleBeam((ServerLevel) level, ParticleTypes.END_ROD, getBlockPos().getCenter(), nextRelayBlockEntity.worldPosition.getCenter(), 0.5F, 5);
-        }
-    }
-
-
-    public boolean isPoweredByRedstone()
-    {
-        if(level == null)
-        {
-            return false;
-        }
-        boolean powered = level.hasNeighborSignal(worldPosition);
-        if(powered)
-        {
-            // If the block is powered by redstone, do something
-            DebuggerSystem.cursorDebuggerModule.logDebug("Perimeter Infestation Ward Relay Block at " + worldPosition + " is powered by redstone.");
-        }
-
-        return powered;
+        ParticleUtil.spawnParticleBeam((ServerLevel) level, ParticleTypes.END_ROD, getBlockPos().getCenter(), nextRelayPos.get().getCenter(), 0.5F, 5);
     }
 
     public void spawnPurityParticlesIfRelayingWard()
     {
-        if(level == null || !isRelayingWard)
+        if(level == null)
         {
             return;
         }

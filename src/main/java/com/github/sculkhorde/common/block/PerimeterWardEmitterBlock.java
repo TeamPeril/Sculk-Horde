@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.block;
 
+import com.github.sculkhorde.common.blockentity.PerimeterWardEmitterBlockEntity;
 import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -32,6 +33,8 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.github.sculkhorde.util.WardZoneUtil.IS_RELAYING_WARD;
+
 
 public class PerimeterWardEmitterBlock extends BaseEntityBlock implements IForgeBlock {
 
@@ -63,12 +66,10 @@ public class PerimeterWardEmitterBlock extends BaseEntityBlock implements IForge
     public PerimeterWardEmitterBlock(Properties prop) {
         super(prop);
 
-        this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(getStateDefinition().any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(IS_RELAYING_WARD, true));
     }
-
-
-
-
 
     /**
      * A simpler constructor that does not take in properties.<br>
@@ -77,7 +78,6 @@ public class PerimeterWardEmitterBlock extends BaseEntityBlock implements IForge
     public PerimeterWardEmitterBlock() {
         this(getProperties());
     }
-
 
     /**
      * Determines if this block will randomly tick or not.
@@ -140,13 +140,13 @@ public class PerimeterWardEmitterBlock extends BaseEntityBlock implements IForge
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get(), PerimeterWardRelayBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get(), PerimeterWardEmitterBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
-        return new PerimeterWardRelayBlockEntity(blockPos, state);
+        return new PerimeterWardEmitterBlockEntity(blockPos, state);
     }
 
     @Override
@@ -164,13 +164,13 @@ public class PerimeterWardEmitterBlock extends BaseEntityBlock implements IForge
     }
 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState().
+                setValue(FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(IS_RELAYING_WARD, true);
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> state) {
         state.add(FACING);
+        state.add(IS_RELAYING_WARD);
     }
-
-
-
 }

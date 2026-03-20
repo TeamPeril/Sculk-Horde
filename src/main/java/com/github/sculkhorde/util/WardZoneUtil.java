@@ -40,7 +40,7 @@ public class WardZoneUtil {
     }
 
     /**
-     * Will check the facing direction for a max of 32 blocks for another relay block.
+     * Will check all directions except the facing direction for a max of 32 blocks for another relay block.
      * If it finds one, it will return the position of that block.
      * If it doesn't find one, it will return null.
      * @return The position of the previous relay block, or null if it doesn't find one.
@@ -48,15 +48,24 @@ public class WardZoneUtil {
     public static Optional<BlockPos> findPreviousRelay(LevelReader level, BlockPos worldPosition)
     {
         BlockState currentBlock = level.getBlockState(worldPosition);
+        Direction facingDirection = currentBlock.getValue(PerimeterWardRelayBlock.FACING);
 
-        Direction oppositeFacingDirection = currentBlock.getValue(PerimeterWardRelayBlock.FACING).getOpposite();
-        for(int i = 1; i <= 32; i++)
+        // Check all directions except the facing direction
+        for(Direction dir : Direction.values())
         {
-            BlockPos checkPos = worldPosition.relative(oppositeFacingDirection, i);
-            if(canRelayWard(level.getBlockState(checkPos)))
+            if(dir == facingDirection)
             {
-                DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + worldPosition.toShortString() + " found prev relay at " + checkPos.toShortString());
-                return Optional.of(checkPos);
+                continue;
+            }
+
+            for(int i = 1; i <= 32; i++)
+            {
+                BlockPos checkPos = worldPosition.relative(dir, i);
+                if(canRelayWard(level.getBlockState(checkPos)))
+                {
+                    DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + worldPosition.toShortString() + " found prev relay at " + checkPos.toShortString());
+                    return Optional.of(checkPos);
+                }
             }
         }
         return Optional.empty();
