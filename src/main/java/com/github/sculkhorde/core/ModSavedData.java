@@ -1,7 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
-import com.github.sculkhorde.common.blockentity.PerimeterInfestationWardRelayBlockEntity;
+import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.systems.AutoPerformanceSystem;
@@ -65,7 +65,7 @@ public class ModSavedData extends SavedData {
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
     private final ArrayList<PlayerProfileEntry> playerProfileEntries = new ArrayList<>();
     private final ArrayList<MobProfileEntry> mobProfileEntries = new ArrayList<>();
-    private final HashMap<UUID, PerimeterInfestationWardZoneEntry> perimeterInfestationWardZoneEntries = new HashMap<>();
+    private final HashMap<UUID, PerimeterWardZoneEntry> perimeterInfestationWardZoneEntries = new HashMap<>();
 
     private int sculkAccumulatedMass = 0;
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -1973,7 +1973,7 @@ public class ModSavedData extends SavedData {
     }
 
     //#### Perimeter Infestation Ward Entry ####
-    public HashMap<UUID, PerimeterInfestationWardZoneEntry> getPerimeterInfestationWardZoneEntries() {
+    public HashMap<UUID, PerimeterWardZoneEntry> getPerimeterWardZoneEntries() {
         return perimeterInfestationWardZoneEntries;
     }
 
@@ -1983,14 +1983,14 @@ public class ModSavedData extends SavedData {
      * and interactions with the dimension and relays associated with the perimeter ward zone.
      * This zone is an ortho polygon.
      */
-    public static class PerimeterInfestationWardZoneEntry
+    public static class PerimeterWardZoneEntry
     {
         public BlockPos parentRelaypos;
         public ArrayList<BlockPos> relayPositions = new ArrayList<>();
         public ResourceKey<Level> dimension;
 
 
-        public PerimeterInfestationWardZoneEntry(BlockPos parentRelayposIn)
+        public PerimeterWardZoneEntry(BlockPos parentRelayposIn)
         {
             parentRelaypos = parentRelayposIn;
         }
@@ -2007,12 +2007,12 @@ public class ModSavedData extends SavedData {
                 return false;
             }
 
-            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).isEmpty())
+            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isEmpty())
             {
                 return false;
             }
 
-            PerimeterInfestationWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).get();
+            PerimeterWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
 
             if(!parentRelay.getBlockPos().equals(parentRelaypos))
             {
@@ -2035,11 +2035,11 @@ public class ModSavedData extends SavedData {
             int maxIteration = 100;
             BlockPos currentRelayPos = parentRelaypos;
             for (int index = 0; index < maxIteration || currentRelayPos != null; index++) {
-                if (!PerimeterInfestationWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) {
+                if (!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) {
                     break;
                 }
 
-                PerimeterInfestationWardRelayBlockEntity currentRelay = getDimension().getBlockEntity(currentRelayPos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).get();
+                PerimeterWardRelayBlockEntity currentRelay = getDimension().getBlockEntity(currentRelayPos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
                 relayPositions.add(currentRelayPos);
                 currentRelayPos = currentRelay.nextRelayPos.orElse(null);
             }

@@ -1,12 +1,12 @@
 package com.github.sculkhorde.common.blockentity;
 
-import com.github.sculkhorde.common.block.PerimeterInfestationWardRelayBlock;
+import com.github.sculkhorde.common.block.PerimeterWardRelayBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.ColorUtil;
 import com.github.sculkhorde.util.ParticleUtil;
-import com.github.sculkhorde.util.PerimeterInfestationWardZoneUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.WardZoneUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,7 +19,9 @@ import org.joml.Vector3f;
 
 import java.util.Optional;
 
-public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
+public class PerimeterWardEmitterBlockEntity extends BlockEntity {
+
+    public static final String parentWardBlockPosID = "parentWardBlockPos";
 
     protected long lastTickTime = 0;
 
@@ -34,8 +36,8 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
     /**
      * The Constructor that takes in properties
      */
-    public PerimeterInfestationWardRelayBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
+    public PerimeterWardEmitterBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
     }
 
     public boolean areWeTheParent()
@@ -49,7 +51,7 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
         return parentRelayPos.get().equals(getBlockPos());
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterInfestationWardRelayBlockEntity blockEntity)
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterWardEmitterBlockEntity blockEntity)
     {
         // If world is not a server world, return
         if(level.isClientSide && blockEntity == null || blockEntity.level == null)
@@ -66,9 +68,9 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
 
         if(blockEntity.areWeTheParent())
         {
-            if(!PerimeterInfestationWardZoneUtil.doesZoneExist(blockEntity.getBlockPos()))
+            if(!WardZoneUtil.doesZoneExist(blockEntity.getBlockPos()))
             {
-                PerimeterInfestationWardZoneUtil.getOrCreatePerimeterInfestationWardZone(blockEntity.getBlockPos());
+                WardZoneUtil.getOrCreatePerimeterWardZone(blockEntity.getBlockPos());
             }
         }
 
@@ -93,11 +95,11 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
      */
     public Optional<BlockPos> findNextRelay()
     {
-        Direction facingDirection = this.getBlockState().getValue(PerimeterInfestationWardRelayBlock.FACING);
+        Direction facingDirection = this.getBlockState().getValue(PerimeterWardRelayBlock.FACING);
         for(int i = 1; i <= 32; i++)
         {
             BlockPos checkPos = worldPosition.relative(facingDirection, i);
-            if(level.getBlockState(checkPos).getBlock() instanceof PerimeterInfestationWardRelayBlock)
+            if(level.getBlockState(checkPos).getBlock() instanceof PerimeterWardRelayBlock)
             {
                 DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + getBlockPos().toShortString() + " found next relay at " + checkPos.toShortString());
                 return Optional.of(checkPos);
@@ -113,7 +115,7 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
             return;
         }
 
-        PerimeterInfestationWardRelayBlockEntity nextRelay = getNextRelayBlockEntity().get();
+        PerimeterWardEmitterBlockEntity nextRelay = getNextRelayBlockEntity().get();
 
         nextRelay.previousRelayPos = Optional.of(getBlockPos());
         nextRelay.parentRelayPos = this.parentRelayPos;
@@ -128,7 +130,7 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
             return false;
         }
 
-        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get()).isPresent();
+        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isPresent();
     }
 
     public boolean isNextRelayValid()
@@ -151,20 +153,20 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
         return isRelayValid(getLevel(), previousRelayPos.get());
     }
 
-    public Optional<PerimeterInfestationWardRelayBlockEntity> getNextRelayBlockEntity()
+    public Optional<PerimeterWardEmitterBlockEntity> getNextRelayBlockEntity()
     {
         if(isNextRelayValid())
         {
-            return Optional.of((PerimeterInfestationWardRelayBlockEntity) level.getBlockEntity(nextRelayPos.get()));
+            return Optional.of((PerimeterWardEmitterBlockEntity) level.getBlockEntity(nextRelayPos.get()));
         }
         return Optional.empty();
     }
 
-    public Optional<PerimeterInfestationWardRelayBlockEntity> getPreviousRelayBlockEntity()
+    public Optional<PerimeterWardEmitterBlockEntity> getPreviousRelayBlockEntity()
     {
         if(isPreviousRelayValid())
         {
-            return Optional.of((PerimeterInfestationWardRelayBlockEntity) level.getBlockEntity(previousRelayPos.get()));
+            return Optional.of((PerimeterWardEmitterBlockEntity) level.getBlockEntity(previousRelayPos.get()));
         }
         return Optional.empty();
     }
@@ -202,7 +204,7 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
             return;
         }
 
-        PerimeterInfestationWardRelayBlockEntity nextRelayBlockEntity = getNextRelayBlockEntity().get();
+        PerimeterWardEmitterBlockEntity nextRelayBlockEntity = getNextRelayBlockEntity().get();
 
         // Draw particles from previous relay to this relay
         if (isRelayingWard) {
@@ -248,11 +250,20 @@ public class PerimeterInfestationWardRelayBlockEntity extends BlockEntity {
     @Override
     public void load(CompoundTag compoundNBT) {
         super.load(compoundNBT);
+
+        if(compoundNBT.contains(parentWardBlockPosID))
+        {
+            parentRelayPos = Optional.of(BlockPos.of(compoundNBT.getLong(parentWardBlockPosID)));
+        }
     }
 
     @Override
     public void saveAdditional(CompoundTag compoundNBT) {
-
         super.saveAdditional(compoundNBT);
+
+        if(parentRelayPos.isPresent())
+        {
+            compoundNBT.putLong(parentWardBlockPosID, parentRelayPos.get().asLong());
+        }
     }
 }

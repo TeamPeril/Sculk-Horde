@@ -1030,8 +1030,8 @@ public class ModBlocks {
                     .sound(SoundType.ANCIENT_DEBRIS)
             ));
 
-	public static final RegistryObject<PerimeterInfestationWardRelayBlock> PERIMETER_INFESTATION_WARD_RELAY_BLOCK =
-			registerBlock("perimeter_infestation_ward_relay_block", PerimeterInfestationWardRelayBlock::new);
+	public static final RegistryObject<PerimeterWardRelayBlock> PERIMETER_WARD_RELAY_BLOCK =
+			registerBlock("perimeter_ward_relay_block", PerimeterWardRelayBlock::new);
 
 	static {
 		datagen(INFESTED_STONE_BRICKS);

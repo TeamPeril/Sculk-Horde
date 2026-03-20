@@ -1,8 +1,7 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.PerimeterInfestationWardZoneUtil;
+import com.github.sculkhorde.util.WardZoneUtil;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -111,7 +110,7 @@ public class DevWand extends Item implements IForgeItem {
         SculkHorde.eventSystem.addEvent(event);
         */
 
-        if(PerimeterInfestationWardZoneUtil.isPosInAnyWardZone(playerIn.blockPosition()))
+        if(WardZoneUtil.isPosInAnyWardZone(playerIn.blockPosition()))
         {
             playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
         }

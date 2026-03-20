@@ -1,7 +1,8 @@
 package com.github.sculkhorde.common.block;
 
-import com.github.sculkhorde.common.blockentity.PerimeterInfestationWardRelayBlockEntity;
+import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.util.WardZoneUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -32,8 +34,12 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.github.sculkhorde.util.WardZoneUtil.IS_RELAYING_WARD;
 
-public class PerimeterInfestationWardRelayBlock extends BaseEntityBlock implements IForgeBlock {
+
+public class PerimeterWardRelayBlock extends BaseEntityBlock implements IForgeBlock {
+
+
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -60,21 +66,18 @@ public class PerimeterInfestationWardRelayBlock extends BaseEntityBlock implemen
      * The Constructor that takes in properties
      * @param prop The Properties
      */
-    public PerimeterInfestationWardRelayBlock(Properties prop) {
+    public PerimeterWardRelayBlock(Properties prop) {
         super(prop);
-
-        this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(getStateDefinition().any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(IS_RELAYING_WARD, false));
     }
-
-
-
-
 
     /**
      * A simpler constructor that does not take in properties.<br>
      * I made this so that registering blocks in BlockRegistry.java can look cleaner
      */
-    public PerimeterInfestationWardRelayBlock() {
+    public PerimeterWardRelayBlock() {
         this(getProperties());
     }
 
@@ -118,11 +121,11 @@ public class PerimeterInfestationWardRelayBlock extends BaseEntityBlock implemen
         super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
-            tooltip.add(Component.translatable("tooltip.sculkhorde.perimeter_infestation_ward_block.functionality"));
+            tooltip.add(Component.translatable("tooltip.sculkhorde.perimeter_ward_block.functionality"));
         }
         else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
         {
-            tooltip.add(Component.translatable("tooltip.sculkhorde.perimeter_infestation_ward_block.lore"));
+            tooltip.add(Component.translatable("tooltip.sculkhorde.perimeter_ward_block.lore"));
         }
         else
         {
@@ -140,13 +143,13 @@ public class PerimeterInfestationWardRelayBlock extends BaseEntityBlock implemen
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.PERIMETER_INFESTATION_WARD_RELAY_BLOCK_ENTITY.get(), PerimeterInfestationWardRelayBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get(), PerimeterWardRelayBlockEntity::tick);
     }
 
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState state) {
-        return new PerimeterInfestationWardRelayBlockEntity(blockPos, state);
+        return new PerimeterWardRelayBlockEntity(blockPos, state);
     }
 
     @Override
@@ -164,11 +167,13 @@ public class PerimeterInfestationWardRelayBlock extends BaseEntityBlock implemen
     }
 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(IS_RELAYING_WARD, false);
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> state) {
-        state.add(FACING);
+        state.add(FACING, IS_RELAYING_WARD);
     }
 
 
