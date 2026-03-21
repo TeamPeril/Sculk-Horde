@@ -103,7 +103,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
 
             if(DifficultyUtil.isCurrentDifficultyEasy())
             {
-                EntityAlgorithms.doSculkTypeDamageToEntity(owner, target, 6F, 5F);
+                EntityAlgorithms.doSculkPiercingDamageToEntity(owner, target, 6F, 5F);
             }
             else if(DifficultyUtil.isCurrentDifficultyNormal())
             {
@@ -113,7 +113,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
                 }
                 else
                 {
-                    EntityAlgorithms.doSculkTypeDamageToEntity(owner, target, 6F, 2F);
+                    EntityAlgorithms.doSculkPiercingDamageToEntity(owner, target, 6F, 2F);
                 }
             }
             else if(DifficultyUtil.isCurrentDifficultyHard())
@@ -124,7 +124,7 @@ public class SculkAcidicProjectileEntity extends CustomItemProjectileEntity {
                 }
                 else
                 {
-                    EntityAlgorithms.doSculkTypeDamageToEntity(owner, target, 6F, 5F);
+                    EntityAlgorithms.doCorrodedDamageToEntity(owner, target, 5F);
                 }
             }
 
