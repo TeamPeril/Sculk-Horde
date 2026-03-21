@@ -91,11 +91,11 @@ public class CorrodingEffect extends MobEffect {
 
         if(attacker.isPresent())
         {
-            EntityAlgorithms.doSculkPiercingDamageToEntity(attacker.get(), victimEntity, 2 + (amp * 2), 1.0F);
+            EntityAlgorithms.doCorrodedDamageToEntity(attacker.get(), victimEntity, 2 + (amp * 2));
         }
         else
         {
-            EntityAlgorithms.doSculkPiercingDamageToEntity(victimEntity, victimEntity, 2 + (amp * 2), 1.0F);
+            EntityAlgorithms.doCorrodedDamageToEntity(victimEntity, victimEntity, 2 + (amp * 2));
         }
     }
 

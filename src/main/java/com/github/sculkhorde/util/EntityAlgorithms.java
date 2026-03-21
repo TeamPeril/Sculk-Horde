@@ -152,7 +152,18 @@ public class EntityAlgorithms {
         lookAt(entity, target.position());
     }
     public static void doSculkPiercingDamageToEntity(LivingEntity aggressor, LivingEntity target, float amount, float armorPenetration) {
-        if (target.isInvulnerable() || aggressor == null) return;
+        if(target.isInvulnerable() || aggressor == null)
+        {
+            return;
+        }
+
+        if(target instanceof Player player)
+        {
+            if(player.isSpectator() || player.isCreative())
+            {
+                return;
+            }
+        }
 
         // Get current armor and toughness
         float armor = target.getArmorValue();
@@ -168,8 +179,7 @@ public class EntityAlgorithms {
         target.hurt(ModDamageSources.sculkPiercing(target, aggressor), damageToDeal);
     }
 
-    public static void doSculkTypeDamageToEntity(LivingEntity aggressor, LivingEntity target, float totalDamage, float armorPenetration)
-    {
+    public static void doCorrodedDamageToEntity(LivingEntity aggressor, LivingEntity target, float amount) {
         if(target.isInvulnerable() || aggressor == null)
         {
             return;
@@ -183,8 +193,11 @@ public class EntityAlgorithms {
             }
         }
 
-        doSculkPiercingDamageToEntity(aggressor, target, totalDamage, armorPenetration);
+        // Apply the damage using our piercing source (which bypasses the game's default armor check)
+        target.hurt(ModDamageSources.corroded(target, aggressor), amount);
     }
+
+
 
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
     {
