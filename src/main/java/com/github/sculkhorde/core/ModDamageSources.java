@@ -10,8 +10,13 @@ import javax.annotation.Nullable;
 
 public class ModDamageSources {
     public static final ResourceKey<DamageType> CORRODED_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(SculkHorde.MOD_ID, "corroded"));
+    public static final ResourceKey<DamageType> SCULK_PIERCING_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(SculkHorde.MOD_ID, "sculk_piercing"));
 
     public static DamageSource corroded(Entity target, @Nullable Entity attacker) {
         return new DamageSource(target.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(CORRODED_DAMAGE_TYPE), attacker);
+    }
+
+    public static DamageSource sculkPiercing(Entity target, @Nullable Entity attacker) {
+        return new DamageSource(target.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(SCULK_PIERCING_DAMAGE_TYPE), attacker);
     }
 }
