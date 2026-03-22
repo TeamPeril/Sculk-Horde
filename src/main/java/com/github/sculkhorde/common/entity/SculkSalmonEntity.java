@@ -80,6 +80,12 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
     }
 
     @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {

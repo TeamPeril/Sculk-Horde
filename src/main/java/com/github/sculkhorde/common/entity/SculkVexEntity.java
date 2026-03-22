@@ -130,6 +130,12 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
     /**
      * Determines & registers the attributes of the mob.
      * @return The Attributes

@@ -241,6 +241,11 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
         return goals;
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
 
     //Animation Stuff below
 

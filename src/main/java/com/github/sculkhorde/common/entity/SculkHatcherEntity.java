@@ -86,6 +86,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
+
     /**
      * An Easier Constructor where you do not have to specify the Mob Type
      * @param worldIn  The world to initialize this mob in
@@ -105,6 +106,12 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
     }
 
     @Override

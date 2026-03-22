@@ -109,6 +109,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+
     public boolean isIdle() {
         return getTarget() == null;
     }
@@ -234,6 +235,8 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+
+        TARGET_PARAMETERS.updateTargets();
 
         Vec3 movementVector = this.getDeltaMovement();
         if (!this.onGround() && movementVector.y < 0.0D) {

@@ -107,6 +107,12 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
     @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {
@@ -114,8 +120,6 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
     private boolean isParticipatingInRaid = false;
-
-    
 
     @Override
     public boolean isParticipatingInRaid() {

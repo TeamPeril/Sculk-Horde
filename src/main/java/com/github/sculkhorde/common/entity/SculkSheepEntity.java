@@ -86,6 +86,12 @@ public class SculkSheepEntity extends Monster implements GeoEntity, ISculkSmartE
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
     public boolean isIdle() {
         return getTarget() == null;
     }

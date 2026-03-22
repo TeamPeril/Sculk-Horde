@@ -523,6 +523,7 @@ public class TargetParameters
             {
                 if (!rule.shouldRetain(target, mob))
                 {
+                    
                     return true;
                 }
             }

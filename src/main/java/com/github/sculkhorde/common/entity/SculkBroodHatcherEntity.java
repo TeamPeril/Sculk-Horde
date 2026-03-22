@@ -223,6 +223,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
     protected void customServerAiStep() {
         super.customServerAiStep();
 
+        TARGET_PARAMETERS.updateTargets();
 
         // I know this code is simple and kinda dumb, but idc. It works just fine
         if(child1 == null || child1.isDeadOrDying())

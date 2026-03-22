@@ -88,6 +88,12 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
     public boolean isIdle() {
         return getTarget() == null;
     }

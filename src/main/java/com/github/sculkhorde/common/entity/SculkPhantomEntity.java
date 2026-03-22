@@ -102,6 +102,12 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
     public static void spawnPhantom(Level worldIn, BlockPos spawnPos, boolean isScouter)
     {
         SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);

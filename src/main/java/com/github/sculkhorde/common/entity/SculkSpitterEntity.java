@@ -111,6 +111,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
+
     @Override
     public void checkDespawn() {}
 
@@ -212,11 +213,8 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
 
     @Override
     protected void customServerAiStep() {
-        if (getTarget() != null) {
-            // The mob's LookControl handles the rotation.
-            // It will face the target's eyes with a high priority (30.0F is common)
-            //lookAt(getTarget(), 15F, 15F);
-        }
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
     }
 
     public void performRangedAttack(LivingEntity attackTarget) {

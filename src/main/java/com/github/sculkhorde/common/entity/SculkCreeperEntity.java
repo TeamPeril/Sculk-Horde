@@ -64,10 +64,15 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     }
 
     @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
+    @Override
     protected boolean shouldDespawnInPeaceful() {
         return true;
     }
-
 
     @Override
     public void checkDespawn() {}

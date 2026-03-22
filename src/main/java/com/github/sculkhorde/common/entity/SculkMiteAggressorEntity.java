@@ -91,6 +91,12 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     }
 
     @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {

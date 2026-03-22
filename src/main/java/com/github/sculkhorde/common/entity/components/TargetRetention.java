@@ -31,7 +31,17 @@ public interface TargetRetention
         return (target, mob) -> {
             if (mob instanceof ISculkSmartEntity smartMob)
             {
-                return smartMob.getTargetParameters().getTicksSinceTargetLastSeen(target) < maxUnseeableTicksAllowed;
+                boolean hasNotReachedTimeout = smartMob.getTargetParameters().getTicksSinceTargetLastSeen(target) < maxUnseeableTicksAllowed;
+
+                if(hasNotReachedTimeout)
+                {
+                    
+                }
+                else
+                {
+
+                }
+                return hasNotReachedTimeout;
             }
             return true;
         };

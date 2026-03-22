@@ -157,7 +157,6 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         }
     }
 
-
     /**
      * Prepares an array of goals to give to registerGoals() for the targetSelector.<br>
      * The purpose was to make registering goals simpler by automatically determining priority
@@ -207,6 +206,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
     }
 
     public void travel(Vec3 movementVector) {

@@ -283,6 +283,9 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         {
             addEffect(effect);
         }
+
+        TARGET_PARAMETERS.updateTargets();
+
         super.customServerAiStep();
     }
 

@@ -89,7 +89,11 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
     }
 
-
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
 
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.

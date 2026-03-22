@@ -112,8 +112,6 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     private boolean isParticipatingInRaid = false;
 
-    
-
     @Override
     public boolean isParticipatingInRaid() {
         return isParticipatingInRaid;
@@ -205,6 +203,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
     }
 
     /* DO NOT USE THIS FOR ANYTHING, CAUSES DESYNC

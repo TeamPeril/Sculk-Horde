@@ -83,6 +83,12 @@ public class SculkLeechEntity extends Salmon implements GeoEntity, ISculkSmartEn
     }
 
     @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
+    }
+
+    @Override
     public void checkDespawn() {}
 
     public boolean isIdle() {

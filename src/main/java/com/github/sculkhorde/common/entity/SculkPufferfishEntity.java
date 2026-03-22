@@ -211,6 +211,8 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     protected void customServerAiStep() {
         super.customServerAiStep();
 
+        TARGET_PARAMETERS.updateTargets();
+
         if(!hasEffect(MobEffects.REGENERATION))
         {
             MobEffectInstance regen = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
