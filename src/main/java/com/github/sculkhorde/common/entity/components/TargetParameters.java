@@ -46,7 +46,7 @@ public class TargetParameters
     private int priorityCheckCounter = 0;
 
     // Line-of-sight timeout tracking
-    private long lastTargetSeenTime = System.currentTimeMillis();
+    private final Map<UUID, Integer> targetTicksSinceSeen = new HashMap<>();
     private long maxTargetUnseenTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
 
@@ -269,10 +269,6 @@ public class TargetParameters
     public void setPrimaryTarget(LivingEntity target)
     {
         targetStack.setPrimaryTarget(target);
-        if (target != null)
-        {
-            lastTargetSeenTime = System.currentTimeMillis();
-        }
     }
 
     /**
@@ -428,22 +424,23 @@ public class TargetParameters
     {
         // Check swimmer/walker filters
         boolean isSwimmer = isLivingEntitySwimmer(e);
+        boolean isFlier = isLivingEntityFlying(e);
+        boolean isWalker = !isLivingEntityFlying(e);
         if (isSwimmer && !isFilterEnabled(TargetFilter.SWIMMERS))
         {
             debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
             return false;
         }
 
-        if (!isSwimmer && !isFilterEnabled(TargetFilter.WALKERS))
+        if (isWalker && !isFilterEnabled(TargetFilter.WALKERS))
         {
             debugPrint(validatingExistingTarget, e, "is walker. Denied.");
             return false;
         }
 
-        // Check water status
-        if (e.isInWater() && !isFilterEnabled(TargetFilter.ENTITIES_IN_WATER))
+        if(isFlier && !isFilterEnabled(TargetFilter.FLIERS))
         {
-            debugPrint(validatingExistingTarget, e, "is in water. Denied.");
+            debugPrint(validatingExistingTarget, e, "is flier. Denied.");
             return false;
         }
 
@@ -483,6 +480,19 @@ public class TargetParameters
         if (mob == null)
         {
             return;
+        }
+
+        // Update line-of-sight tracking for all targets
+        for (LivingEntity target : targetStack.getAllTargets())
+        {
+            if (mob.getSensing().hasLineOfSight(target))
+            {
+                targetTicksSinceSeen.put(target.getUUID(), 0);
+            }
+            else
+            {
+                targetTicksSinceSeen.put(target.getUUID(), targetTicksSinceSeen.getOrDefault(target.getUUID(), 0) + 1);
+            }
         }
 
         // Check if primary target should be retained
@@ -652,5 +662,16 @@ public class TargetParameters
     public int getBlacklistSize()
     {
         return blacklist.size();
+    }
+
+    /**
+     * Gets the number of ticks since a target was last seen.
+     *
+     * @param target The target to check
+     * @return Ticks since last seen, or 0 if never tracked or currently seen
+     */
+    public int getTicksSinceTargetLastSeen(LivingEntity target)
+    {
+        return targetTicksSinceSeen.getOrDefault(target.getUUID(), 0);
     }
 }

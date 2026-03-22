@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
+import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -37,7 +38,9 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     // Controls what types of entities this mob can target
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS);
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS)
+            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertMinutesToTicks(1)))
+            .addRetentionRule(TargetRetention.maxDistance(32));
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -45,6 +48,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         super(entityType, level);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)));

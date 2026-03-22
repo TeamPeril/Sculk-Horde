@@ -155,7 +155,7 @@ Control when targets should be forgotten:
 ```java
 // Line-of-sight timeout
 params.addRetentionRule(
-    TargetRetention.lineOfSightTimeout(30, lastTicksSinceSeen)
+    TargetRetention.lineOfSightTimeout(30)
 );
 
 // Distance-based

@@ -2,11 +2,11 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
@@ -74,9 +74,11 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
             .filterBy(TargetFilter.HOSTILES,
                     TargetFilter.INFECTED,
-                    TargetFilter.ENTITIES_IN_WATER,
+                    TargetFilter.SWIMMERS,
                     TargetFilter.PASSIVES
-            );
+            )
+            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

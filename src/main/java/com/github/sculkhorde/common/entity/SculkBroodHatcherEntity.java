@@ -2,6 +2,8 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
+import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
@@ -73,7 +75,10 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                 int dx = node.x - net.minecraft.util.Mth.floor(target.getX());
                 int dz = node.z - net.minecraft.util.Mth.floor(target.getZ());
                 return (dx * dx + dz * dz) <= 50;
-            });
+            })
+            .enableTargetPrioritization(TargetPrioritizer.byDistance(), TickUnits.convertSecondsToTicks(3))
+            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     protected SculkBroodlingEntity child1;

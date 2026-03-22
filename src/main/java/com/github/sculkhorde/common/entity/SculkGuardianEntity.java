@@ -2,11 +2,12 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
+import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.AcidBlobProjectileEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -71,10 +72,11 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.PASSIVES, TargetFilter.SWIMMERS)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.SWIMMERS, TargetFilter.INFECTED)
             .excludeFilter(TargetFilter.WALKERS)
-            .disableBlackListMobs()
-            .addCondition((target, isCurrentTarget, mob) -> mob.getSensing().hasLineOfSight(target));
+            .enableTargetPrioritization(TargetPrioritizer.byHealth(), TickUnits.convertSecondsToTicks(3))
+            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 

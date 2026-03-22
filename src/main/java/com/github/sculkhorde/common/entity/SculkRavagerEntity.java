@@ -4,10 +4,10 @@ import com.github.sculkhorde.client.model.enitity.SculkRavagerModel;
 import com.github.sculkhorde.client.renderer.entity.SculkRavagerRenderer;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -76,7 +76,9 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS, TargetFilter.INFECTED)
+            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10))
             .addCondition((target, isCurrentTarget, mob) -> {
                 // Can only target if reachable via pathfinding
                 net.minecraft.world.level.pathfinder.Path path = mob.getNavigation().createPath(target, 0);

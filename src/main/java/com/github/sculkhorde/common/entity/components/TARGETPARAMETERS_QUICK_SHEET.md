@@ -287,7 +287,7 @@ isOnBlackList(mob) / addToBlackList(mob)        // Blacklist management
 - Custom via lambda
 
 **TargetRetention**
-- `lineOfSightTimeout(ticks, elapsed)`
+- `lineOfSightTimeout(ticks)`
 - `maxDistance(blocks)`
 - `always()`
 - Custom via lambda

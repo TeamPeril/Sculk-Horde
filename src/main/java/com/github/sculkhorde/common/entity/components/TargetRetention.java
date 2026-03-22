@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.components;
 
+import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
@@ -23,17 +24,16 @@ public interface TargetRetention
      * Creates a retention rule based on line of sight timeout.
      *
      * @param maxUnseeableTicksAllowed The maximum number of ticks allowed without seeing the target
-     * @param currentTicksSinceLastSeen The current ticks since last seen the target
      * @return A TargetRetention that drops targets after timeout
      */
-    static TargetRetention lineOfSightTimeout(int maxUnseeableTicksAllowed, long currentTicksSinceLastSeen)
+    static TargetRetention lineOfSightTimeout(int maxUnseeableTicksAllowed)
     {
         return (target, mob) -> {
-            if (mob != null && mob.getSensing().hasLineOfSight(target))
+            if (mob instanceof ISculkSmartEntity smartMob)
             {
-                return true; // Can see target, keep it
+                return smartMob.getTargetParameters().getTicksSinceTargetLastSeen(target) < maxUnseeableTicksAllowed;
             }
-            return currentTicksSinceLastSeen < maxUnseeableTicksAllowed; // Drop if timeout exceeded
+            return true;
         };
     }
 

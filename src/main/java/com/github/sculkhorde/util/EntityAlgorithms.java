@@ -21,7 +21,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -350,9 +349,36 @@ public class EntityAlgorithms {
 
     public static boolean isLivingEntitySwimmer(LivingEntity entity)
     {
-        // The gramemind does not store swimmers, we need to figure if a mob is swimming
-        // by using the entity's ability to swim
-        return entity instanceof WaterAnimal;
+        return entity.isInWater();
+    }
+
+    /**
+     * Determines if an Entity is flying by doing a simple for loop, checking to
+     * see if we find a solid block below the entity within 3 blocks downwards.
+     * @param entity
+     * @return
+     */
+    public static boolean isLivingEntityFlying(LivingEntity entity) {
+        // 1. Check built-in flying flags first (Optimization)
+        if (entity.isFallFlying() || entity.isNoGravity()) return true;
+
+        BlockPos startPos = entity.blockPosition();
+        Level level = entity.level();
+
+        // 2. Scan 3 blocks down
+        for (int i = 1; i <= 3; i++) {
+            BlockPos checkPos = startPos.below(i);
+
+            // Safety: ensure we don't check below the world map
+            if (checkPos.getY() < level.getMinBuildHeight()) break;
+
+            // Use the level's built-in check to avoid ServerLevel casting issues
+            if (!level.getBlockState(checkPos).isAir()) {
+                return false; // Found ground/block within 3 spaces
+            }
+        }
+
+        return !entity.onGround(); // If no blocks found and not on ground, it's flying
     }
 
     public static boolean isLivingEntityInvulnerable(LivingEntity entity)

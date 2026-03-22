@@ -21,7 +21,7 @@ public enum TargetFilter
     /** Target entities that walk (non-water bound) */
     WALKERS,
 
-    /** Target entities currently in water */
-    ENTITIES_IN_WATER
+
+    FLIERS
 }
 
