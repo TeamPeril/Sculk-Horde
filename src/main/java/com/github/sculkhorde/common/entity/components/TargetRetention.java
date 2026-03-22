@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
@@ -33,13 +34,9 @@ public interface TargetRetention
             {
                 boolean hasNotReachedTimeout = smartMob.getTargetParameters().getTicksSinceTargetLastSeen(target) < maxUnseeableTicksAllowed;
 
-                if(hasNotReachedTimeout)
+                if(!hasNotReachedTimeout)
                 {
-                    
-                }
-                else
-                {
-
+                    DebuggerSystem.entityDebuggerModule.logDebug("TargetRetention | " + mob.getClass().getSimpleName() + " | Removing Target. Unable to see for " + maxUnseeableTicksAllowed + " ticks.");
                 }
                 return hasNotReachedTimeout;
             }
@@ -55,6 +52,7 @@ public interface TargetRetention
      */
     static TargetRetention maxDistance(double maxDistance)
     {
+
         return (target, mob) -> mob != null && mob.distanceTo(target) <= maxDistance;
     }
 
