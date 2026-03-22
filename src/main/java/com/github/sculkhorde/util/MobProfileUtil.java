@@ -41,4 +41,9 @@ public class MobProfileUtil {
     {
         getOrCreateMobProfile(mob).setTimeofLastGhastDeployment(mob.level().getGameTime());
     }
+
+    public static void cleanUpInvalidMobProfiles()
+    {
+        ModSavedData.getSaveData().getMobProfileEntries().removeIf(entry -> !entry.isValid());
+    }
 }

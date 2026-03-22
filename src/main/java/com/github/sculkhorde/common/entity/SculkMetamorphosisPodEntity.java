@@ -81,6 +81,10 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
     @Override
     public void checkDespawn() {}
 
+    public boolean isPushable() {
+        return false;
+    }
+
     public boolean isIdle() {
         return false;
     }

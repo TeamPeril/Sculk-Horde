@@ -100,7 +100,7 @@ public class DiseasedAtmosphereEffect extends MobEffect {
         }
         timeOfLastDamageTick = victimEntity.level().getGameTime();
 
-        EntityAlgorithms.doSculkTypeDamageToEntity(victimEntity, victimEntity, 1 + amp, 1);
+        EntityAlgorithms.doSculkPiercingDamageToEntity(victimEntity, victimEntity, 1 + amp, 1);
         if(victimEntity instanceof ServerPlayer player)
         {
             player.causeFoodExhaustion(4F);

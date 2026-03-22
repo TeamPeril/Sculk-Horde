@@ -1,8 +1,7 @@
 package com.github.sculkhorde.common.item;
 
-import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.WardZoneUtil;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -93,7 +92,7 @@ public class DevWand extends Item implements IForgeItem {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		Optional<ModSavedData.NodeEntry> closestNode = ModSavedData.getSaveData().getClosestNodeEntry(serverLevel, playerIn.blockPosition());
+		Optional<ModSavedData.NodeEntry> closestNode = NodeUtil.getClosestNode(serverLevel, playerIn.blockPosition());
 
 		if(closestNode.isEmpty())
 		{
@@ -104,12 +103,21 @@ public class DevWand extends Item implements IForgeItem {
 		PathBuilderRequest request = new PathBuilderRequest(serverLevel, closestNode.get().getPosition(), BlockPos.containing(playerIn.getEyePosition()), 10, null, null);
 		SculkHorde.pathBuilderSystem.addPathBuilderRequest(request);
 
-         */
+
 
         GhastDeploymentEvent event = new GhastDeploymentEvent(playerIn.level().dimension(), playerIn.blockPosition().above(20));
 
         SculkHorde.eventSystem.addEvent(event);
+        */
 
+        if(WardZoneUtil.isPosInAnyWardZone(playerIn.blockPosition()))
+        {
+            playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
+        }
+		else
+		{
+			playerIn.sendSystemMessage(Component.literal("Not In Infestation Ward Zone."));
+		}
 
 		return InteractionResultHolder.pass(itemstack);
 	}

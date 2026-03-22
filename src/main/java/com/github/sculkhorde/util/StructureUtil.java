@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.block.ISpecialStructurePlacementConditionsBl
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.mixin.structures.StructureTemplateAccessor;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
@@ -53,7 +54,7 @@ public class StructureUtil {
             return !level.isLoaded(chunk.getWorldPosition());
         })) {
 
-            SculkHorde.LOGGER.error("StructureUtil | placeStructureTemplate | Failed to place structure, Area Not Loaded.");
+            DebuggerSystem.structureDebuggerModule.logError("StructureUtil | placeStructureTemplate | Failed to place structure, Area Not Loaded.");
             return;
         }
     }
@@ -65,7 +66,7 @@ public class StructureUtil {
 
 
         if (optional.isEmpty()) {
-            SculkHorde.LOGGER.error("StructureUtil | placeStructureTemplate | Failed to get structure: " + structure.toString());
+            DebuggerSystem.structureDebuggerModule.logError("StructureUtil | placeStructureTemplate | Failed to get structure: " + structure.toString());
             return false;
         }
 
@@ -77,7 +78,7 @@ public class StructureUtil {
 
         if(!wasAbleToPlaceStructure)
         {
-            SculkHorde.LOGGER.error("StructureUtil | placeStructureTemplate | Failed to place structure: " + structure.toString());
+            DebuggerSystem.structureDebuggerModule.logError("StructureUtil | placeStructureTemplate | Failed to place structure: " + structure.toString());
             return false;
         }
         return true;
@@ -330,7 +331,7 @@ public class StructureUtil {
         }
 
         public void setState(State state) {
-            //SculkHorde.LOGGER.debug("StructurePlacer | State is now: " + state);
+            DebuggerSystem.structureDebuggerModule.logDebug("StructurePlacer | State is now: " + state);
             this.state = state;
         }
 
@@ -361,7 +362,7 @@ public class StructureUtil {
 
             // Check if there are any palettes to use
             if (palettes.isEmpty()) {
-                SculkHorde.LOGGER.debug("StructurePlacer | Failure, Pallet is Empty");
+                DebuggerSystem.structureDebuggerModule.logDebug("StructurePlacer | Failure, Pallet is Empty");
                 setState(State.FINISHED);
                 return;
             }
@@ -372,19 +373,19 @@ public class StructureUtil {
 
 
                 if (rawBlockInfoList.isEmpty()) {
-                    SculkHorde.LOGGER.error("StructurePlacer | Failure, blockInfoList is Empty");
+                    DebuggerSystem.structureDebuggerModule.logError("StructurePlacer | Failure, blockInfoList is Empty");
                     setState(State.FINISHED);
                     return;
                 }
 
                 if (settings.isIgnoreEntities() && structureTemplateAccessor.getEntityInfoList().isEmpty()) {
-                    SculkHorde.LOGGER.error("StructurePlacer | Failure, entityInfoList is Empty");
+                    DebuggerSystem.structureDebuggerModule.logError("StructurePlacer | Failure, entityInfoList is Empty");
                     setState(State.FINISHED);
                     return;
                 }
 
                 if (structureTemplateAccessor.getSize().getX() < 1 || structureTemplateAccessor.getSize().getY() < 1 || structureTemplateAccessor.getSize().getZ() < 1) {
-                    SculkHorde.LOGGER.error("StructurePlacer | Failure, a dimension of structure size is 0.");
+                    DebuggerSystem.structureDebuggerModule.logError("StructurePlacer | Failure, a dimension of structure size is 0.");
                     setState(State.FINISHED);
                     return;
                 }
@@ -433,21 +434,13 @@ public class StructureUtil {
         {
             if(currentIndex >= processedBlockInfoList.size())
             {
-                //SculkHorde.LOGGER.debug("StructurePlacer | Successfully Placed Structure.");
+                DebuggerSystem.structureDebuggerModule.logInfo("StructurePlacer | Successfully Placed Structure.");
                 setState(State.FINISHED);
                 return;
             }
 
             StructureTemplate.StructureBlockInfo blockInfo = processedBlockInfoList.get(currentIndex);
-
-
-
-
             BlockPos placePosition = blockInfo.pos().offset(originOffset.getX(), originOffset.getY(), originOffset.getZ());
-
-            //SculkHorde.LOGGER.debug("StructureUtil | Old Pos: " + blockInfo.pos().toShortString());
-            //SculkHorde.LOGGER.debug("StructureUtil | Offset: " + originOffset.toShortString());
-            //SculkHorde.LOGGER.debug("StructureUtil | New Pos: " + placePosition.toShortString());
 
             if(doNotPlaceBlocksHereList.contains(placePosition) || BlockAlgorithms.cantBeDestroyedByStructures(world.getLevel(), placePosition))
             {

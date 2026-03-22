@@ -3,8 +3,8 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.advancement.SculkHordeStartTrigger;
 import com.github.sculkhorde.common.block.SculkAncientNodeBlock;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
-import com.github.sculkhorde.common.entity.infection.AncientNodePurificationHandler;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsAtRandomNodeEvent;
 import com.github.sculkhorde.systems.event_system.events.SpawnPhantomsEvent;
 import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeBranchingInfestationSystem;
 import com.github.sculkhorde.util.*;
@@ -51,7 +51,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     protected long lastHeartBeat = System.currentTimeMillis();
 
     protected NodeBranchingInfestationSystem infectionHandler;
-    protected AncientNodePurificationHandler purificationHandler;
 
     protected long timeOfLastChunkLoadAttempt = 0;
     protected long CHUNK_LOAD_ATTEMPT_COOLDOWN = TickUnits.convertMinutesToTicks(5);
@@ -59,6 +58,10 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     // Phantom Event Code
     public UUID phantomEventUUID;
     public static final String phantomEventUUIDIdentifier = "phantom_event_uuid";
+
+    // Phantom Event Code
+    public UUID randomPhantomEventUUID;
+    public static final String randomPhantomEventUUIDIdentifier = "random_phantom_event_uuid";
 
 
     // Vibration Code
@@ -174,13 +177,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             infectionHandler = new NodeBranchingInfestationSystem(this, getBlockPos(), true);
         }
     }
-    private void initializePurificationHandler()
-    {
-        if(purificationHandler == null)
-        {
-            purificationHandler = new AncientNodePurificationHandler(this, getBlockPos());
-        }
-    }
 
     private static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
@@ -275,18 +271,6 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
 
-        // Initialize the infection handler
-        if(blockEntity.purificationHandler == null)
-        {
-            blockEntity.initializePurificationHandler();
-        }
-        if(blockEntity.purificationHandler.canBeActivated())
-        {
-            blockEntity.purificationHandler.activate();
-        }
-
-        blockEntity.purificationHandler.tick();
-
         // If the time elapsed is less than the tick interval, return
         if(timeElapsed < tickIntervalSeconds) { return; }
 
@@ -313,6 +297,16 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             phantomEvent.setEventReocurring(true);
             phantomEvent.setEXECUTION_COOLDOWN(TickUnits.convertHoursToTicks(1));
             blockEntity.phantomEventUUID = phantomEvent.getEventUUID();
+            SculkHorde.eventSystem.addEvent(phantomEvent);
+        }
+
+        if(blockEntity.randomPhantomEventUUID == null || !SculkHorde.eventSystem.doesEventExist(blockEntity.randomPhantomEventUUID))
+        {
+            SpawnPhantomsAtRandomNodeEvent phantomEvent = new SpawnPhantomsAtRandomNodeEvent(blockEntity.getLevel().dimension());
+            phantomEvent.setEventLocation(blockPos);
+            phantomEvent.setEventReocurring(true);
+            phantomEvent.setEXECUTION_COOLDOWN(TickUnits.convertHoursToTicks(1));
+            blockEntity.randomPhantomEventUUID = phantomEvent.getEventUUID();
             SculkHorde.eventSystem.addEvent(phantomEvent);
         }
 
@@ -435,6 +429,11 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             phantomEventUUID = nbt.getUUID(phantomEventUUIDIdentifier);
         }
 
+        if(nbt.contains(randomPhantomEventUUIDIdentifier))
+        {
+            randomPhantomEventUUID = nbt.getUUID(randomPhantomEventUUIDIdentifier);
+        }
+
     }
 
     protected void saveAdditional(CompoundTag nbt)
@@ -447,6 +446,11 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         if(phantomEventUUID != null)
         {
             nbt.putUUID(phantomEventUUIDIdentifier, phantomEventUUID);
+        }
+
+        if(randomPhantomEventUUID != null)
+        {
+            nbt.putUUID(randomPhantomEventUUIDIdentifier, randomPhantomEventUUID);
         }
     }
 

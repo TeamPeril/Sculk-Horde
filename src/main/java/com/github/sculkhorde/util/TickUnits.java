@@ -1,5 +1,7 @@
 package com.github.sculkhorde.util;
 
+import net.minecraft.world.level.Level;
+
 public class TickUnits {
 
 
@@ -51,5 +53,16 @@ public class TickUnits {
 
     public static int convertYearsToTicks(int years) {
         return years * TICKS_PER_YEAR;
+    }
+
+    public static boolean hasTicksPassed(long lastTickTime, long currentTickTime, long ticks) {
+        if(lastTickTime == 0) return true;
+
+        return Math.abs(currentTickTime - lastTickTime) >= ticks;
+    }
+
+    public static boolean hasTicksPassed(long lastTickTime, Level level, long ticks) {
+
+        return hasTicksPassed(lastTickTime, level.getGameTime(), ticks);
     }
 }

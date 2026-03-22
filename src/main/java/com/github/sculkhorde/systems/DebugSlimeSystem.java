@@ -27,7 +27,7 @@ public class DebugSlimeSystem {
     protected PlayerTeam blueDebugTeam;
     public static String blueDebugTeamID = "debug_blue";
 
-    protected ArrayList<Slime> debugSlimes = new ArrayList<>();
+    public ArrayList<Slime> debugSlimes = new ArrayList<>();
     protected long timeOfLastSlimeDeletion = 0;
     protected final long SLIME_DELETION_INTERVAL = TickUnits.convertSecondsToTicks(30);
 

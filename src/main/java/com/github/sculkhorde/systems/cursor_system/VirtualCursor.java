@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.DebugSlimeSystem;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
@@ -510,8 +511,12 @@ public class VirtualCursor implements ICursor{
 
     protected void debugTick()
     {
-        if(!SculkHorde.isDebugMode())
+        if(!DebuggerSystem.cursorDebuggerModule.isDebuggingEnabled())
         {
+            if(debugSlime != null && debugSlime.isAlive())
+            {
+                debugSlime.discard();
+            }
             return;
         }
 

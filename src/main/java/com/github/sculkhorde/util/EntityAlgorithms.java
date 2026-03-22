@@ -15,12 +15,15 @@ import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -148,8 +151,7 @@ public class EntityAlgorithms {
     public static void lookAt(Entity entity, Entity target) {
         lookAt(entity, target.position());
     }
-    public static void doSculkTypeDamageToEntity(LivingEntity aggressor, LivingEntity target, float totalDamage, float guaranteedDamage)
-    {
+    public static void doSculkPiercingDamageToEntity(LivingEntity aggressor, LivingEntity target, float amount, float armorPenetration) {
         if(target.isInvulnerable() || aggressor == null)
         {
             return;
@@ -163,31 +165,39 @@ public class EntityAlgorithms {
             }
         }
 
+        // Get current armor and toughness
+        float armor = target.getArmorValue();
+        float toughness = (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
 
-        float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
-        target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
+        // Calculate the "Effective Armor" (e.g., if 50% penetration, we use only 50% of their armor)
+        float effectiveArmor = armor * (1.0f - armorPenetration);
 
-        float newHealth = Math.max(target.getHealth() - guaranteedDamage, 1);
-        if(newHealth <= 1)
-        {
-            target.hurt(aggressor.damageSources().indirectMagic(aggressor, aggressor), guaranteedDamage);
-        }
-        else
-        {
-            target.setHealth(newHealth);
-            target.hurt(aggressor.damageSources().indirectMagic(aggressor, aggressor), 1F);
-        }
+        // Use Minecraft's internal logic to calculate final damage after armor
+        float damageToDeal = CombatRules.getDamageAfterAbsorb(amount, effectiveArmor, toughness);
 
-
-        /*
-        float newHealth = Math.max(target.getHealth() - guaranteedDamage, 1);
-        target.setHealth(newHealth);
-
-        float nonGuaranteedDamage = Math.max(totalDamage - guaranteedDamage, 0.1F);
-        target.hurt(aggressor.damageSources().mobAttack(aggressor), nonGuaranteedDamage);
-
-         */
+        // Apply the damage using our piercing source (which bypasses the game's default armor check)
+        target.hurt(ModDamageSources.sculkPiercing(target, aggressor), damageToDeal);
     }
+
+    public static void doCorrodedDamageToEntity(LivingEntity aggressor, LivingEntity target, float amount) {
+        if(target.isInvulnerable() || aggressor == null)
+        {
+            return;
+        }
+
+        if(target instanceof Player player)
+        {
+            if(player.isSpectator() || player.isCreative())
+            {
+                return;
+            }
+        }
+
+        // Apply the damage using our piercing source (which bypasses the game's default armor check)
+        target.hurt(ModDamageSources.corroded(target, aggressor), amount);
+    }
+
+
 
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
     {

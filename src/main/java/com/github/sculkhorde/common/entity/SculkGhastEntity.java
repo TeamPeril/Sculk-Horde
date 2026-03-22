@@ -379,17 +379,27 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         return p_33137_.height * 0.35F;
     }
 
+    @Override
+    public void push(Entity p_21294_) {
+        super.push(p_21294_);
+    }
+
+    public boolean isPushable() {
+        return false;
+    }
+
     // #### Functions ####
 
     public void releaseMob()
     {
         if(level() == null) { return; }
 
+        int spawnX = (int) (getX() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
+        int spawnZ = (int) (getZ() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
+
         if(!storedMobs.isEmpty())
         {
             Mob storedEntity = storedMobs.get(0);
-            int spawnX = (int) (getX() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
-            int spawnZ = (int) (getZ() + getRandom().nextIntBetweenInclusive((int) (getBbWidth() * -1), (int) getBbWidth()));
             Mob spawnedEntity = (Mob) storedEntity.getType().spawn((ServerLevel) level(), new BlockPos(spawnX, (int) getY(), spawnZ), MobSpawnType.MOB_SUMMONED);
             if(spawnedEntity == null) { return; }
 
@@ -402,7 +412,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         }
 
         Mob storedEntity = new SculkMetamorphosisPodEntity(level(), TickUnits.convertSecondsToTicks(10));
-        storedEntity.setPos(position());
+        storedEntity.setPos(new Vec3(spawnX, (int) getY(), spawnZ));
         level().addFreshEntity(storedEntity);
         storedEntity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(10), 0));
         storedEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(10), 1));
@@ -490,27 +500,6 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         {
             return;
         }
-
-        /*
-        String customDebugName = "";
-        for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
-        {
-            Goal goal = wrappedGoal.getGoal();
-            if(goal instanceof IDebuggableGoal debugGoal)
-            {
-                customDebugName += debugGoal.getGoalName().get();
-
-            }
-            else
-            {
-                customDebugName += goal.getClass().getSimpleName();
-            }
-            customDebugName += " | ";
-        }
-
-        setCustomName(Component.literal(customDebugName));
-
-         */
     }
 
     protected @NotNull BodyRotationControl createBodyControl() {
@@ -873,13 +862,8 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         @Override
         public boolean canUse()
         {
-            boolean mobHasBeenNameTagged = ((Mob) mob).hasCustomName();
             boolean hasNoStoredMobs = getStoredMobMass() <= 0;
-            if(hasNoStoredMobs && level.getGameTime() - creationTime > calculateTicksThreshold() && !mob.isParticipatingInRaid() && !mobHasBeenNameTagged)
-            {
-                return true;
-            }
-            return false;
+            return hasNoStoredMobs && super.canUse();
         }
     }
 

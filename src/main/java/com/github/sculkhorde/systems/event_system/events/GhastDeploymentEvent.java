@@ -3,6 +3,7 @@ package com.github.sculkhorde.systems.event_system.events;
 import com.github.sculkhorde.common.entity.SculkGhastEntity;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderRequest;
 import com.github.sculkhorde.util.*;
@@ -95,7 +96,7 @@ public class GhastDeploymentEvent extends Event {
             }
         }
 
-        Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) entity.level(), entity.blockPosition());
+        Optional<ModSavedData.NodeEntry> node = NodeUtil.getClosestNode((ServerLevel) entity.level(), entity.blockPosition());
         if(node.isEmpty())
         {
             return false;
@@ -120,7 +121,7 @@ public class GhastDeploymentEvent extends Event {
     {
         if(entity == null)
         {
-            SculkHorde.LOGGER.error("sendGhastDepolymentEvent | Null Target");
+            DebuggerSystem.eventDebuggerModule.logError("sendGhastDepolymentEvent | Null Target");
             return Optional.empty();
         }
 
@@ -140,6 +141,10 @@ public class GhastDeploymentEvent extends Event {
         if(entity instanceof Mob mob)
         {
             MobProfileUtil.updateGhastDeploymentTime(mob);
+        }
+        else if(entity instanceof Player player)
+        {
+            PlayerProfileHandler.updateGhastDeploymentTime(player);
         }
         return ghastDeploymentEvent;
     }
@@ -167,10 +172,6 @@ public class GhastDeploymentEvent extends Event {
 
     @Override
     public void serverTick() {
-
-        // Debug: report tick and current state
-        //SculkHorde.LOGGER.debug("GhastDeploymentEvent | serverTick state: " + (state == null ? "NULL" : state.toString()));
-
         if(state == State.INITIALIZATION)
         {
             initializationTick();
@@ -193,7 +194,7 @@ public class GhastDeploymentEvent extends Event {
     protected void setState(State state)
     {
         this.state = state;
-        SculkHorde.LOGGER.info("GhastDeploymentEvent | " + "State: " + state.toString());
+        DebuggerSystem.eventDebuggerModule.logError("GhastDeploymentEvent | " + "State: " + state.toString());
     }
 
 
@@ -254,22 +255,21 @@ public class GhastDeploymentEvent extends Event {
 
     protected void initializationTick()
     {
-        //SculkHorde.LOGGER.debug("GhastDeploymentEvent | initializationTick start");
-
+        
         if(potentialSpawnPoint.isEmpty())
         {
             if(cloestNode.isEmpty())
             {
-                cloestNode = ModSavedData.getSaveData().getClosestNodeEntry(getDimension(), getEventLocation());
+                cloestNode = NodeUtil.getClosestNode(getDimension(), getEventLocation());
                 if(cloestNode.isEmpty())
                 {
                     setState(State.FAILURE);
-                    SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: Could not find closest node.");
+                    DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Failure: Could not find closest node.");
                     return;
                 }
                 else
                 {
-                    SculkHorde.LOGGER.debug("GhastDeploymentEvent | Closest node found at: " + cloestNode.get().getPosition().toShortString());
+                    DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Closest node found at: " + cloestNode.get().getPosition().toShortString());
                 }
             }
 
@@ -279,15 +279,15 @@ public class GhastDeploymentEvent extends Event {
             if(potentialSpawnPoint.isEmpty())
             {
                 setState(State.FAILURE);
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: Could not find place to spawn above closest node.");
+                DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Failure: Could not find place to spawn above closest node.");
                 return;
             }
             else
             {
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Found Spawn Point at: " + potentialSpawnPoint.get().toShortString());
+                DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Found Spawn Point at: " + potentialSpawnPoint.get().toShortString());
             }
 
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Found Spawn Point.");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Found Spawn Point.");
         }
 
 
@@ -298,7 +298,7 @@ public class GhastDeploymentEvent extends Event {
 
             pathRequest = new PathBuilderRequest(getDimension(), eventLocation, potentialSpawnPoint.get(), 32, obstructionPredicate, null);
             SculkHorde.pathBuilderSystem.addPathBuilderRequest(pathRequest);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Created path request.");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Created path request.");
          }
 
         if(pathRequest.isPathBuildingInProgress() || !pathRequest.hasPathBuildStarted())
@@ -309,7 +309,7 @@ public class GhastDeploymentEvent extends Event {
         if(!pathRequest.isPathBuildSuccessful())
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: Could not find path to target.");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Failure: Could not find path to target.");
             return;
         }
 
@@ -321,7 +321,7 @@ public class GhastDeploymentEvent extends Event {
             if(created == null)
             {
                 setState(State.FAILURE);
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: Could not create ghast entity.");
+                DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Failure: Could not create ghast entity.");
                 return;
             }
             created.setPos(spawnAt.getX() + 0.5, spawnAt.getY() + 0.5, spawnAt.getZ() + 0.5);
@@ -331,14 +331,14 @@ public class GhastDeploymentEvent extends Event {
             ghast = created;
             ghastUUID = created.getUUID();
 
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Spawned ghast UUID: " + ghastUUID + " at " + spawnAt.toShortString());
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Spawned ghast UUID: " + ghastUUID + " at " + spawnAt.toShortString());
         }
 
         // Assign the built path to the ghast (let the ghast's own goal follow it)
         if(ghast != null && pathRequest != null && pathRequest.hasPath())
         {
             ghast.setBuiltPath(pathRequest.getBuiltPath());
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Assigned built path to ghast UUID: " + ghastUUID);
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Assigned built path to ghast UUID: " + ghastUUID);
         }
 
         setState(State.TRAVEl);
@@ -352,29 +352,29 @@ public class GhastDeploymentEvent extends Event {
         // Reattach ghast if needed
         if(ghast == null && ghastUUID != null)
         {
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | travelTick start");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | travelTick start");
             ghast = (SculkGhastEntity) getDimension().getEntity(ghastUUID);
             if(ghast != null)
             {
-                SculkHorde.LOGGER.debug("GhastDeploymentEvent | Reattached ghast UUID: " + ghastUUID);
+                DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Reattached ghast UUID: " + ghastUUID);
             }
         }
 
         if(ghast == null || ghast.isDeadOrDying() || ghast.isRemoved())
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: Ghast is dead.");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Failure: Ghast is dead.");
             return;
         }
 
         // Make sure we keep chunks loaded around the ghast while moving
         EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(ghast,3, 3, TickUnits.convertMinutesToTicks(1));
-        //SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ensured chunk loading around ghast.");
+        //DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Ensured chunk loading around ghast.");
 
         if(pathRequest == null || !pathRequest.hasPath())
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Failure: pathRequest missing or has no path.");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Failure: pathRequest missing or has no path.");
             return;
         }
 
@@ -383,7 +383,7 @@ public class GhastDeploymentEvent extends Event {
             // clear the assigned flag and advance state to engaging (or success)
             ghast.clearCompletedAssignedBuiltPath();
             setState(State.SUCCESS);
-            SculkHorde.LOGGER.debug("GhastDeploymentEvent | Ghast completed built path; switching to ENGAGING.");
+            DebuggerSystem.eventDebuggerModule.logDebug("GhastDeploymentEvent | Ghast completed built path; switching to ENGAGING.");
             return;
         }
 

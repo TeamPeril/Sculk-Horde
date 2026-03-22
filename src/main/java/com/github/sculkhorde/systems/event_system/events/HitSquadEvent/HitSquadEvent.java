@@ -4,9 +4,11 @@ import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReape
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -104,7 +106,7 @@ public class HitSquadEvent extends Event {
     protected void setState(State state)
     {
         this.state = state;
-        SculkHorde.LOGGER.info("HitSquadEvent | " + "State: " + state.toString());
+        DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | " + "State: " + state.toString());
     }
 
 
@@ -182,7 +184,7 @@ public class HitSquadEvent extends Event {
         }
 
         Player player = getPlayerIfOnline().get();
-        Optional<ModSavedData.NodeEntry> entry = ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) player.level(), player.blockPosition());
+        Optional<ModSavedData.NodeEntry> entry = NodeUtil.getClosestNode((ServerLevel) player.level(), player.blockPosition());
 
         if(entry.isEmpty() || !entry.get().isEntryValid()) {
             SculkHorde.LOGGER.error("HitSquadEvent | Error: Could not initialize, no valid nodes nearby.");
@@ -196,7 +198,7 @@ public class HitSquadEvent extends Event {
 
         for(int checkLength = 10; checkLength <= 50 && potentialSpawnPoint.isEmpty(); checkLength += 10)
         {
-            SculkHorde.LOGGER.info("HitSquadEvent | Checking for Spawn Pos in cube of length " + checkLength);
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | Checking for Spawn Pos in cube of length " + checkLength);
             potentialSpawnPoint = findValidSpawnPosition(checkLength);
         }
 
@@ -212,7 +214,7 @@ public class HitSquadEvent extends Event {
 
 
         if(SculkHorde.isDebugMode()) {
-            SculkHorde.LOGGER.info("HitSquadEvent | FAILURE, Could not find good spawn pos.");
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | FAILURE, Could not find good spawn pos.");
         }
         setState(State.FAILURE);
 
@@ -235,14 +237,14 @@ public class HitSquadEvent extends Event {
         if(player.isDeadOrDying())
         {
             setState(State.SUCCESS);
-            SculkHorde.LOGGER.info("HitSquadEvent | EVENT SUCCESS: Player " + player.getScoreboardName() + " died.");
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | EVENT SUCCESS: Player " + player.getScoreboardName() + " died.");
             return;
         }
 
         if(reaper.isDeadOrDying())
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.info("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " killed the Soul Reaper.");
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " killed the Soul Reaper.");
             return;
         }
 
@@ -250,7 +252,7 @@ public class HitSquadEvent extends Event {
         {
             setState(State.FAILURE);
             PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
-            SculkHorde.LOGGER.info("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " moved too far away from Soul Reaper.");
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " moved too far away from Soul Reaper.");
             return;
         }
 
@@ -281,7 +283,7 @@ public class HitSquadEvent extends Event {
         if(reaper.isDeadOrDying())
         {
             setState(State.FAILURE);
-            SculkHorde.LOGGER.info("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " killed the Soul Reaper.");
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " killed the Soul Reaper.");
             return;
         }
 
@@ -289,7 +291,7 @@ public class HitSquadEvent extends Event {
         {
             setState(State.FAILURE);
             PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
-            SculkHorde.LOGGER.info("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " moved too far away from Soul Reaper.");
+            DebuggerSystem.eventDebuggerModule.logInfo("HitSquadEvent | EVENT FAILURE: Player " + player.getScoreboardName() + " moved too far away from Soul Reaper.");
             reaper.discard();
             return;
         }

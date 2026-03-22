@@ -109,6 +109,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 100)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 

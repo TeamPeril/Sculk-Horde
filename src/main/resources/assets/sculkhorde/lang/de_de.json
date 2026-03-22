@@ -474,5 +474,12 @@
   "sounds.sculkhorde.soulite_ambience": "Soulite-Klangspiel",
   "block.sculkhorde.living_web_block": "Lebender Netzblock",
   "block.sculkhorde.infested_crafting_table_block": "Infizierter Werkbankblock",
-  "block.sculkhorde.ancient_bookshelf_block": "Antiker Bücherregalblock"
+  "block.sculkhorde.ancient_bookshelf_block": "Antiker Bücherregalblock",
+  "item.sculkhorde.bread_of_purity": "Brot der Reinheit",
+  "item.sculkhorde.beef_of_purity": "Rindfleisch der Reinheit",
+  "item.sculkhorde.pork_of_purity": "Schweinefleisch der Reinheit",
+  "item.sculkhorde.baked_potato_of_purity": "Ofenkartoffel der Reinheit",
+  "item.sculkhorde.chicken_of_purity": "Hühnchen der Reinheit",
+  "tooltip.sculkhorde.food_of_purity.functionality": "§7§oEin Lebensmittel, das gegessen werden kann, um deinen Hunger zu stillen, dir Reinheit zu gewähren und dich vor den Statuseffekten der Horde zu schützen. Nützlich, um Wesen wie Kolonisten, Soldaten oder andere Verbündete zu füttern.",
+  "tooltip.sculkhorde.food_of_purity.lore": "§7§oDieses Essen strahlt Wärme und Nahrung aus. Es ist ein köstlicher Leckerbissen und ein großartiges Hilfsmittel für diejenigen, die Reinheit wünschen."
 }

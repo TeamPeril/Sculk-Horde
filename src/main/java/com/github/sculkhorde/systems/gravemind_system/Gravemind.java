@@ -4,9 +4,13 @@ package com.github.sculkhorde.systems.gravemind_system;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
+import com.github.sculkhorde.util.MobProfileUtil;
+import com.github.sculkhorde.util.WardZoneUtil;
+import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -63,6 +67,11 @@ public class Gravemind
     public static boolean isGravemindActive()
     {
         if(SculkHorde.gravemind == null)
+        {
+            return false;
+        }
+
+        if(PlayerProfileHandler.arePlayersOfflineAndSpreadingOfflineDisabled())
         {
             return false;
         }
@@ -277,11 +286,11 @@ public class Gravemind
         SculkHorde.entityChunkLoaderHelper.processEntityChunkLoadRequests();
         SculkHorde.beeNestActivitySystem.serverTick();
         SculkHorde.chunkInfestationSystem.serverTick();
-        SculkHorde.debugSlimeSystem.serverTick();
         SculkHorde.pathBuilderSystem.serverTick();
         SculkHorde.autoPerformanceSystem.onServerTick();
         SculkHorde.ambientSFXSystem.serverTick();
         SculkHorde.squadSystem.serverTick();
+        SculkHorde.debuggerSystem.serverTick();
 
 
         if(ModConfig.isExperimentalFeaturesEnabled())
@@ -294,9 +303,9 @@ public class Gravemind
         {
             if(!ServerLifecycleHooks.getCurrentServer().overworld().getChunkSource().hasChunk(0,0))
             {
-                SculkHorde.LOGGER.info("Gravemind | Loading Chunk Area at Sculk Tomb.");
+                DebuggerSystem.chunkLoaderDebuggerModule.logInfo("Gravemind | Loading Chunk Area at Sculk Tomb.");
                 BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLifecycleHooks.getCurrentServer().overworld()), BlockPos.ZERO, 5, 0, TickUnits.convertMinutesToTicks(10));
-                SculkHorde.LOGGER.info("Gravemind | Loaded Chunk Area at Sculk Tomb.");
+                DebuggerSystem.chunkLoaderDebuggerModule.logInfo("Gravemind | Loaded Chunk Area at Sculk Tomb.");
             }
             timeOfLastChunkLoadAttempt = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
         }
@@ -315,5 +324,7 @@ public class Gravemind
         ModSavedData.getSaveData().validateBeeNestEntries();
         ModSavedData.getSaveData().validateNoRaidZoneEntries();
         ModSavedData.getSaveData().validateAreasOfInterest();
+        MobProfileUtil.cleanUpInvalidMobProfiles();
+        WardZoneUtil.updateAllZones();
     }
 }

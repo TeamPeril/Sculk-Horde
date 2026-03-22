@@ -117,7 +117,7 @@ public class RangedSonicBoomAttackGoal extends Goal
         }
 
         mob.playSound(SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-        EntityAlgorithms.doSculkTypeDamageToEntity(this.getSculkEnderman(), targetEntity, 6, 4);
+        EntityAlgorithms.doSculkPiercingDamageToEntity(this.getSculkEnderman(), targetEntity, 6, 4);
         double d1 = 0.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         double d0 = 2.5D * (1.0D - targetEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         targetEntity.push(vec32.x() * d0, vec32.y() * d1, vec32.z() * d0);

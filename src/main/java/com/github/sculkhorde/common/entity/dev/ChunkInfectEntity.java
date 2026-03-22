@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.dev;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.chunk_cursor_system.ChunkCursorInfector;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -63,7 +64,7 @@ public class ChunkInfectEntity extends Entity {
     public void onAddedToWorld() {
         super.onAddedToWorld();
 
-        SculkHorde.LOGGER.info(this + ": Tracked Entity: " + trackedEntity);
+        DebuggerSystem.entityDebuggerModule.logInfo(this + ": Tracked Entity: " + trackedEntity);
 
         currentLevel = level().dimension();
         currentBlock = this.blockPosition();

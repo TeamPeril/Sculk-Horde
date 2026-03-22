@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.SculkPhantomCorpseEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -115,10 +116,10 @@ public class SculkPopulationSystem {
             }
         });
 
-
-        if(SculkHorde.isDebugMode() && isPopulationAtMax()) { SculkHorde.LOGGER.info("Sculk Horde has reached maximum population. Killing Idle Mobs"); }
-
-        if(isPopulationAtMax()) { despawnIdleMobs(); }
+        if(isPopulationAtMax()) {
+            DebuggerSystem.entityDebuggerModule.logInfo("Sculk Horde has reached maximum population. Killing Idle Mobs");
+            despawnIdleMobs();
+        }
     }
 
     public void despawnIdleMobs()

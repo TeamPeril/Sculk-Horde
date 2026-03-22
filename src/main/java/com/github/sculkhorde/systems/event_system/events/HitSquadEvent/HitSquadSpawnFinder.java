@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.event_system.events.HitSquadEvent;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -54,11 +55,11 @@ public class HitSquadSpawnFinder {
 
             if(pathFound && debugMode)
             {
-                SculkHorde.LOGGER.info("HitSquadSpawnFinder | Found Target Block at" + foundBlock.toShortString());
+                DebuggerSystem.eventDebuggerModule.logInfo("HitSquadSpawnFinder | Found Target Block at" + foundBlock.toShortString());
             }
             else if(debugMode)
             {
-                SculkHorde.LOGGER.info("HitSquadSpawnFinder | Did Not Target Block");
+                DebuggerSystem.eventDebuggerModule.logInfo("HitSquadSpawnFinder | Did Not Target Block");
             }
 
             isFinished = true;

@@ -241,6 +241,12 @@ public class SculkLeechEntity extends Salmon implements GeoEntity, ISculkSmartEn
 
         @Override
         public void onTargetHurt(LivingEntity target) {
+
+            if(target == null)
+            {
+                return;
+            }
+
             float targetMobRemainingHealth = target.getHealth() / target.getMaxHealth();
             if(targetMobRemainingHealth <= 0.5 && !target.hasEffect(SculkMiteEntity.INFECT_EFFECT))
             {

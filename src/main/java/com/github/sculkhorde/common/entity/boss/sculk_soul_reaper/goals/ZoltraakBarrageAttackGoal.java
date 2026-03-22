@@ -68,7 +68,6 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
             targets.clear();
             targetHitBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(mob.position(), 20);
             targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
-            //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 20");
         }
 
         if(targets.size() < maxTargets)
@@ -76,7 +75,6 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
             targets.clear();
             targetHitBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(mob.position(), 30);
             targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
-            //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 30");
         }
 
         if(targets.size() < maxTargets)
@@ -84,7 +82,6 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
             targets.clear();
             targetHitBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(mob.position(), 40);
             targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
-            //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 40");
         }
 
         if(targets.size() < maxTargets)
@@ -92,7 +89,6 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
             targets.clear();
             targetHitBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(mob.position(), 50);
             targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
-            //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 50");
         }
 
         if(targets.size() < maxTargets)
@@ -100,7 +96,6 @@ public class ZoltraakBarrageAttackGoal extends ReaperCastSpellGoal
             targets.clear();
             targetHitBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(mob.position(), 60);
             targets.addAll(EntityAlgorithms.getHostileEntitiesInBoundingBox((ServerLevel) mob.level(), targetHitBox));
-            //SculkHorde.LOGGER.debug("ZoltraakBarrageAttackGoal | Expanding hitbox to length of 60");
         }
 
         if(targets.size() < maxTargets && targets.isEmpty())

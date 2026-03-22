@@ -7,6 +7,7 @@ import com.github.sculkhorde.misc.contributions.ContributionHandler;
 import com.github.sculkhorde.systems.*;
 import com.github.sculkhorde.systems.chunk_cursor_system.ChunkInfestationSystem;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadDispatcherSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
@@ -57,6 +58,7 @@ public class SculkHorde {
     public static AutoPerformanceSystem autoPerformanceSystem;
     public static ChunkInfestationSystem chunkInfestationSystem;
     public static PathBuilderSystem pathBuilderSystem;
+    public static DebuggerSystem debuggerSystem = new DebuggerSystem();
 
     public static AmbientSFXSystem ambientSFXSystem = new AmbientSFXSystem();
 

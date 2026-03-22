@@ -3,6 +3,7 @@ package com.github.sculkhorde.systems.infestation_systems.node_infestation;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.Direction;
@@ -86,7 +87,6 @@ public class NodeBranchingInfestationSystem {
         if(lastKnownSolidBlock != null)
         {
             origin = lastKnownSolidBlock;
-            //SculkHorde.LOGGER.debug("Sculk Node found InfestationHandler spawn position at " + lastKnownSolidBlock + " of blockstate " + world.getBlockState(lastKnownSolidBlock));
         }
 
         return lastKnownSolidBlock;
@@ -117,7 +117,7 @@ public class NodeBranchingInfestationSystem {
             return true;
         }
 
-        SculkHorde.LOGGER.info("Sculk Node at " + parent.getBlockPos() + " cannot be activated because it has no spawn position.");
+        DebuggerSystem.eventDebuggerModule.logError("Sculk Node at " + parent.getBlockPos() + " cannot be activated because it has no spawn position.");
         timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
         return false;
     }

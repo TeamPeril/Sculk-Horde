@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.event_system.EventSystem;
+import com.github.sculkhorde.util.NodeUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 
@@ -15,7 +16,7 @@ public interface ISculkSmartEntity {
     }
 
     default Optional<ModSavedData.NodeEntry> getClosestNode() {
-        return ModSavedData.getSaveData().getClosestNodeEntry((ServerLevel) ((Mob) this).level(), ((Mob) this).blockPosition());
+        return NodeUtil.getClosestNode((ServerLevel) ((Mob) this).level(), ((Mob) this).blockPosition());
     }
 
     boolean isParticipatingInRaid();

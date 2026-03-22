@@ -99,6 +99,7 @@ public class    ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_hit_squad_event_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_brood_hatcher_enabled;
         public final ForgeConfigSpec.ConfigValue<String> difficulty_mode;
+        public final ForgeConfigSpec.ConfigValue<Boolean> isHordeActiveWithNoPlayers;
 
         public void loadItemsInfectionCursorsCanEat()
         {
@@ -221,6 +222,7 @@ public class    ModConfig {
             disable_defeating_sculk_horde = builder.comment("Should players be able to defeat the Sculk Horde?").define("disable_defeating_sculk_horde",false);
             sculk_horde_target_blacklist = builder.comment("Add entities to this list to stop the sculk horde from attacking them. I.E. minecraft:creeper. Be careful what you put in here, this can potentially lead to issues.").defineList("sculk_horde_target_blacklist", Arrays.asList(""), entry -> true);
             enable_gpu_compatibility_mode = builder.comment("Should GPU compatibility mode be enabled? This Fixes Sculk mobs appearing black by removes glow layers from Sculk mobs. May be necessary for some GPU's like AMD or MAC's. Game Restart Required. (Default false)").define("enable_gpu_compatibility_mode",false);
+            isHordeActiveWithNoPlayers = builder.comment("Should the Sculk Horde be active while there are no players online. (Default false)").define("isHordeActiveWithNoPlayers",true);
             builder.pop();
 
             builder.push("Trigger Automatically Variables");

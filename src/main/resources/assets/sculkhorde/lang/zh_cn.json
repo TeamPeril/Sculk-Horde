@@ -469,5 +469,12 @@
     "item.minecraft.tipped_arrow.effect.corroded_potion": "腐蚀之箭",
     "sounds.sculkhorde.infestation_ambience": "感染环境音",
     "block.sculkhorde.infested_crafting_table_block": "幽匿化的工作台",
-    "block.sculkhorde.ancient_bookshelf_block": "古代书架"
+    "block.sculkhorde.ancient_bookshelf_block": "古代书架",
+    "item.sculkhorde.bread_of_purity": "纯洁面包",
+    "item.sculkhorde.beef_of_purity": "纯洁牛肉",
+    "item.sculkhorde.pork_of_purity": "纯洁猪肉",
+    "item.sculkhorde.baked_potato_of_purity": "纯洁烤马铃薯",
+    "item.sculkhorde.chicken_of_purity": "纯洁鸡肉",
+    "tooltip.sculkhorde.food_of_purity.functionality": "§7§o一种可以食用的食物，可以滋养你的饥饿，赐予你纯洁，并保护你免受部落的状态效果。可用于喂养殖民者、士兵或其他盟友等实体。",
+    "tooltip.sculkhorde.food_of_purity.lore": "§7§o这种食物散发着温暖和营养。它是一种美味的食物，对于那些渴望纯洁的人来说是一个很好的工具。"
 }

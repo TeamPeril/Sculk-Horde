@@ -1,6 +1,7 @@
 package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.systems.AutoPerformanceSystem;
@@ -9,15 +10,13 @@ import com.github.sculkhorde.systems.DebugSlimeSystem;
 import com.github.sculkhorde.systems.SculkNodesSystem;
 import com.github.sculkhorde.systems.chunk_cursor_system.ChunkInfestationSystem;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
-import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
-import com.github.sculkhorde.util.DeathAreaInvestigator;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -32,6 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,6 +65,7 @@ public class ModSavedData extends SavedData {
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
     private final ArrayList<PlayerProfileEntry> playerProfileEntries = new ArrayList<>();
     private final ArrayList<MobProfileEntry> mobProfileEntries = new ArrayList<>();
+    private final HashMap<UUID, PerimeterWardZoneEntry> perimeterInfestationWardZoneEntries = new HashMap<>();
 
     private int sculkAccumulatedMass = 0;
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -115,6 +116,7 @@ public class ModSavedData extends SavedData {
     }
 
 
+
     /**
      * Note: We initialize systems in {@link ModSavedData#load(CompoundTag)}
      * instead of {@link com.github.sculkhorde.util.ForgeEventSubscriber#onWorldLoad(LevelEvent.Load)} because
@@ -130,100 +132,100 @@ public class ModSavedData extends SavedData {
      */
     protected static void initializeSystems()
     {
-        SculkHorde.LOGGER.info("ModSavedData | Initializing All Systems.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing All Systems.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing Gravemind.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing Gravemind.");
         SculkHorde.gravemind = new Gravemind();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized Gravemind Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized Gravemind Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing debugSlimeSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing debugSlimeSystem.");
         SculkHorde.debugSlimeSystem = new DebugSlimeSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized debugSlimeSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized debugSlimeSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing deathAreaInvestigator.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing deathAreaInvestigator.");
         SculkHorde.deathAreaInvestigator = new DeathAreaInvestigator();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized deathAreaInvestigator.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized deathAreaInvestigator.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing sculkNodesSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing sculkNodesSystem.");
         SculkHorde.sculkNodesSystem = new SculkNodesSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized sculkNodesSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized sculkNodesSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing entityChunkLoaderHelper.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing entityChunkLoaderHelper.");
         SculkHorde.entityChunkLoaderHelper = new EntityChunkLoaderHelper();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized entityChunkLoaderHelper Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized entityChunkLoaderHelper Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing blockEntityChunkLoaderHelper.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing blockEntityChunkLoaderHelper.");
         SculkHorde.blockEntityChunkLoaderHelper = new BlockEntityChunkLoaderHelper();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized blockEntityChunkLoaderHelper Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized blockEntityChunkLoaderHelper Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing eventSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing eventSystem.");
         SculkHorde.eventSystem = new EventSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized eventSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized eventSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing beeNestActivitySystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing beeNestActivitySystem.");
         SculkHorde.beeNestActivitySystem = new BeeNestActivitySystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized beeNestActivitySystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized beeNestActivitySystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing autoPerformanceSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing autoPerformanceSystem.");
         SculkHorde.autoPerformanceSystem = new AutoPerformanceSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized autoPerformanceSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized autoPerformanceSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing chunkInfestationSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing chunkInfestationSystem.");
         SculkHorde.chunkInfestationSystem = new ChunkInfestationSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized chunkInfestationSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized chunkInfestationSystem Successfully.");
 
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Initializing CursorSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initializing CursorSystem.");
         SculkHorde.cursorSystem = new CursorSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Initialized CursorSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialized CursorSystem Successfully.");
 
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading statisticsData.");
         SculkHorde.statisticsData = new StatisticsData();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded statisticsData Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded statisticsData Successfully.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading pathBuilderSystem.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading pathBuilderSystem.");
         SculkHorde.pathBuilderSystem = new PathBuilderSystem();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded pathBuilderSystem Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded pathBuilderSystem Successfully.");
 
-        SculkHorde.LOGGER.info("ModSavedData | Loading list of items cursors can eat.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading list of items cursors can eat.");
         ModConfig.SERVER.loadItemsInfectionCursorsCanEat();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded list of items cursors can eat Successfully.");
-        SculkHorde.LOGGER.info("ModSavedData | Loading list of configured infestable blocks.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded list of items cursors can eat Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading list of configured infestable blocks.");
         ModConfig.SERVER.loadConfiguredInfestableBlocks();
-        SculkHorde.LOGGER.info("ModSavedData | Loaded list of configured infestable blocks Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded list of configured infestable blocks Successfully.");
 
         if(ModConfig.SERVER.purification_speed_multiplier.get() <= 0)
         {
             ModConfig.SERVER.purification_speed_multiplier.set(1.0);
-            SculkHorde.LOGGER.info("ModSavedData | Detected configured purification speed below 0. Resetting to 1.0");
+            DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Detected configured purification speed below 0. Resetting to 1.0");
         }
 
         if(ModConfig.SERVER.infection_speed_multiplier.get() <= 0)
         {
             ModConfig.SERVER.infection_speed_multiplier.set(1.0);
-            SculkHorde.LOGGER.info("ModSavedData | Detected configured infestation speed below 0. Resetting to 1.0");
+            DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Detected configured infestation speed below 0. Resetting to 1.0");
         }
-        SculkHorde.LOGGER.info("ModSavedData | Initialed All Systems Successfully.");
+        DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Initialed All Systems Successfully.");
     }
 
     /**
@@ -261,46 +263,52 @@ public class ModSavedData extends SavedData {
 
         SculkHorde.LOGGER.info("ModSavedData | Loading Node Entries.");
         for (int i = 0; nbt.contains("node_entry" + i); i++) {
-            savedData.getNodeEntries().add(NodeEntry.serialize(nbt.getCompound("node_entry" + i)));
+            savedData.getNodeEntries().add(NodeEntry.load(nbt.getCompound("node_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded Node Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading BeeNest Entries.");
         for (int i = 0; nbt.contains("bee_nest_entry" + i); i++) {
-            savedData.getBeeNestEntries().add(BeeNestEntry.serialize(nbt.getCompound("bee_nest_entry" + i)));
+            savedData.getBeeNestEntries().add(BeeNestEntry.load(nbt.getCompound("bee_nest_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded BeeNest Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading Hostile Entries.");
         for (int i = 0; nbt.contains("hostile_entry" + i); i++) {
-            HostileEntry hostileEntry = HostileEntry.serialize(nbt.getCompound("hostile_entry" + i));
+            HostileEntry hostileEntry = HostileEntry.load(nbt.getCompound("hostile_entry" + i));
             savedData.getHostileEntries().putIfAbsent(hostileEntry.identifier, hostileEntry);
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded Hostile Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading Death Area Entries.");
         for (int i = 0; nbt.contains("death_area_entry" + i); i++) {
-            savedData.getDeathAreaEntries().add(DeathAreaEntry.serialize(nbt.getCompound("death_area_entry" + i)));
+            savedData.getDeathAreaEntries().add(DeathAreaEntry.load(nbt.getCompound("death_area_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded Death Area Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading AreaOfInterest Entries.");
         for (int i = 0; nbt.contains("area_of_interest_entry" + i); i++) {
-            savedData.getAreasOfInterestEntries().add(AreaOfInterestEntry.serialize(nbt.getCompound("area_of_interest_entry" + i)));
+            savedData.getAreasOfInterestEntries().add(AreaOfInterestEntry.load(nbt.getCompound("area_of_interest_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded AreaOfInterest Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading NoRaidZone Entries.");
         for(int i = 0; nbt.contains("no_raid_zone_entry" + i); i++) {
-            savedData.getNoRaidZoneEntries().add(NoRaidZoneEntry.serialize(nbt.getCompound("no_raid_zone_entry" + i)));
+            savedData.getNoRaidZoneEntries().add(NoRaidZoneEntry.load(nbt.getCompound("no_raid_zone_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded NoRaidZone Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading PlayerProfile Entries.");
         for(int i = 0; nbt.contains("player_profile_entry" + i); i++) {
-            savedData.getPlayerProfileEntries().add(PlayerProfileEntry.serialize(nbt.getCompound("player_profile_entry" + i)));
+            savedData.getPlayerProfileEntries().add(PlayerProfileEntry.load(nbt.getCompound("player_profile_entry" + i)));
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded PlayerProfile Entries Successfully.");
+
+        SculkHorde.LOGGER.info("ModSavedData | Loading MobProfile Entries.");
+        for(int i = 0; nbt.contains("mob_profile_entry" + i); i++) {
+            savedData.getMobProfileEntries().add(MobProfileEntry.load(nbt.getCompound("mob_profile_entry" + i)));
+        }
+        SculkHorde.LOGGER.info("ModSavedData | Loaded MobProfile Entries Successfully.");
 
         SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
         if(SculkHorde.statisticsData == null)
@@ -344,33 +352,37 @@ public class ModSavedData extends SavedData {
         nbt.putBoolean(debugModeIdentifier, SculkHorde.isDebugMode());
 
         for (ListIterator<NodeEntry> iterator = getNodeEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("node_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("node_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<BeeNestEntry> iterator = getBeeNestEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("bee_nest_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("bee_nest_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         int hostileIndex = 0;
         for (Map.Entry<String, HostileEntry> entry : getHostileEntries().entrySet()) {
-            nbt.put("hostile_entry" + hostileIndex, entry.getValue().deserialize());
+            nbt.put("hostile_entry" + hostileIndex, entry.getValue().save());
             hostileIndex++;
         }
 
         for (ListIterator<DeathAreaEntry> iterator = getDeathAreaEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("death_area_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("death_area_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<AreaOfInterestEntry> iterator = getAreasOfInterestEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("area_of_interest_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("area_of_interest_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<NoRaidZoneEntry> iterator = getNoRaidZoneEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("no_raid_zone_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("no_raid_zone_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         for (ListIterator<PlayerProfileEntry> iterator = getPlayerProfileEntries().listIterator(); iterator.hasNext(); ) {
-            nbt.put("player_profile_entry" + iterator.nextIndex(), iterator.next().deserialize());
+            nbt.put("player_profile_entry" + iterator.nextIndex(), iterator.next().save());
+        }
+
+        for (ListIterator<MobProfileEntry> iterator = getMobProfileEntries().listIterator(); iterator.hasNext(); ) {
+            nbt.put("mob_profile_entry" + iterator.nextIndex(), iterator.next().save());
         }
 
         //nbt.put("gravemindData", gravemindData);
@@ -563,7 +575,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to add a death area to memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to add a death area to memory but the list was null");
             return;
         }
 
@@ -576,7 +588,7 @@ public class ModSavedData extends SavedData {
             }
         }
 
-        SculkHorde.LOGGER.info("Adding Death Area in " + dimension.dimension() + " at " + positionIn + " to memory");
+        DebuggerSystem.eventDebuggerModule.logInfo("Adding Death Area in " + dimension.dimension() + " at " + positionIn + " to memory");
         getDeathAreaEntries().add(new DeathAreaEntry(dimension, positionIn));
         setDirty();
     }
@@ -584,7 +596,7 @@ public class ModSavedData extends SavedData {
     public Optional<AreaOfInterestEntry> addAreaOfInterestToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getAreasOfInterestEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to add an area of interest to memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to add an area of interest to memory but the list was null");
             return Optional.empty();
         }
 
@@ -597,7 +609,7 @@ public class ModSavedData extends SavedData {
             }
         }
 
-        SculkHorde.LOGGER.info("Adding Area of Interest at " + dimension.dimension() + " at " + positionIn + " to memory");
+        DebuggerSystem.eventDebuggerModule.logDebug("Adding Area of Interest at " + dimension.dimension() + " at " + positionIn + " to memory");
         AreaOfInterestEntry entry = new AreaOfInterestEntry(dimension, positionIn);
         getAreasOfInterestEntries().add(entry);
         setDirty();
@@ -607,19 +619,19 @@ public class ModSavedData extends SavedData {
     public void addNoRaidZoneToMemory(ServerLevel dimension, BlockPos positionIn) {
         if(getNoRaidZoneEntries() == null)
         {
-            SculkHorde.LOGGER.error("addNoRaidZoneToMemory | Cannot add, getNoRaidZoneEntries() is null.");
+            DebuggerSystem.eventDebuggerModule.logError("addNoRaidZoneToMemory | Cannot add, getNoRaidZoneEntries() is null.");
             return;
         }
 
         if(dimension == null)
         {
-            SculkHorde.LOGGER.error("addNoRaidZoneToMemory | Cannot add, ServerLevel is null.");
+            DebuggerSystem.eventDebuggerModule.logError("addNoRaidZoneToMemory | Cannot add, ServerLevel is null.");
             return;
         }
 
         if(positionIn == null)
         {
-            SculkHorde.LOGGER.error("addNoRaidZoneToMemory | Cannot add, BlockPos is null.");
+            DebuggerSystem.eventDebuggerModule.logError("addNoRaidZoneToMemory | Cannot add, BlockPos is null.");
             return;
         }
 
@@ -632,14 +644,14 @@ public class ModSavedData extends SavedData {
 
             if((areInSameDimension && arePositionsEqual) || (areInSameDimension && isCloserThan100BlocksFromPosition))
             {
-                if(isCloserThan100BlocksFromPosition) { SculkHorde.LOGGER.debug("Attempted to add a no raid zone to memory but it was too close to another no raid zone"); }
-                else if(arePositionsEqual) { SculkHorde.LOGGER.debug("Attempted to add a no raid zone to memory but it already existed"); }
+                if(isCloserThan100BlocksFromPosition) { DebuggerSystem.eventDebuggerModule.logInfo("Attempted to add a no raid zone to memory but it was too close to another no raid zone"); }
+                else if(arePositionsEqual) { DebuggerSystem.eventDebuggerModule.logInfo("Attempted to add a no raid zone to memory but it already existed"); }
 
                 return;
             }
         }
 
-        SculkHorde.LOGGER.info("Adding No Raid Zone at " + positionIn + " in " + dimension.dimension() + " to memory");
+        DebuggerSystem.eventDebuggerModule.logInfo("Adding No Raid Zone at " + positionIn + " in " + dimension.dimension() + " to memory");
         getNoRaidZoneEntries().add(new NoRaidZoneEntry(dimension, positionIn, 1000, ServerLifecycleHooks.getCurrentServer().overworld().getGameTime(), TickUnits.convertMinutesToTicks(ModConfig.SERVER.sculk_raid_no_raid_zone_duration_minutes.get())));
         setDirty();
     }
@@ -648,7 +660,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to get a death area from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get a death area from memory but the list was null");
             return Optional.empty();
         }
 
@@ -666,7 +678,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to get a death area from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get a death area from memory but the list was null");
             return Optional.empty();
         }
 
@@ -698,7 +710,7 @@ public class ModSavedData extends SavedData {
     {
         if(getAreasOfInterestEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to get an area of interest from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get an area of interest from memory but the list was null");
             return null;
         }
 
@@ -769,14 +781,14 @@ public class ModSavedData extends SavedData {
         while (iterator.hasNext()) {
             AreaOfInterestEntry entry = iterator.next();
             if (!entry.isInNoRaidZone()) {
-                SculkHorde.LOGGER.info("Area of Interest at " + entry.position + " is on no raid zone. Removing from memory.");
+                DebuggerSystem.eventDebuggerModule.logInfo("Area of Interest at " + entry.position + " is on no raid zone. Removing from memory.");
                 iterator.remove();
                 setDirty();
             }
         }
         long endTime = System.currentTimeMillis();
         if (SculkHorde.isDebugMode()) {
-            SculkHorde.LOGGER.info("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
+            DebuggerSystem.eventDebuggerModule.logInfo("Area Of Interest Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
 
@@ -786,14 +798,14 @@ public class ModSavedData extends SavedData {
         while (iterator.hasNext()) {
             NoRaidZoneEntry entry = iterator.next();
             if (entry.isExpired(ServerLifecycleHooks.getCurrentServer().overworld().getGameTime())) {
-                SculkHorde.LOGGER.info("No Raid Zone Entry at " + entry.position + " has expired. Removing from memory.");
+                DebuggerSystem.eventDebuggerModule.logInfo("No Raid Zone Entry at " + entry.position + " has expired. Removing from memory.");
                 iterator.remove();
                 setDirty();
             }
         }
         long endTime = System.currentTimeMillis();
         if (SculkHorde.isDebugMode()) {
-            SculkHorde.LOGGER.info("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
+            DebuggerSystem.eventDebuggerModule.logInfo("No Raid Zone Validation Took " + (endTime - startTime) + " milliseconds");
         }
     }
 
@@ -831,34 +843,11 @@ public class ModSavedData extends SavedData {
         return false;
     }
 
-    /**
-     * Returns a list of known node positions
-     *
-     * @return The Closest TreeNode
-     */
-    public Optional<NodeEntry> getClosestNodeEntry(ServerLevel dimension, BlockPos pos) {
-        Optional<NodeEntry> closestNode = Optional.empty();
-        double closestDistance = Double.MAX_VALUE;
-
-        for (NodeEntry node : getNodeEntries()) {
-            if(!node.isEntryValid())
-            {
-                continue;
-            }
-
-            if (pos.distSqr(node.position) < closestDistance && node.getDimension().equals(dimension)) {
-                closestNode = Optional.of(node);
-                closestDistance = pos.distSqr(node.position);
-            }
-        }
-        return closestNode;
-    }
-
     public void removeNodeFromMemory(BlockPos positionIn)
     {
         if(getNodeEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to remove an area of interest from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove an area of interest from memory but the list was null");
             return;
         }
 
@@ -879,7 +868,7 @@ public class ModSavedData extends SavedData {
     {
         if(getDeathAreaEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to remove a death area from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove a death area from memory but the list was null");
             return;
         }
 
@@ -899,7 +888,7 @@ public class ModSavedData extends SavedData {
     {
         if(getAreasOfInterestEntries() == null)
         {
-            SculkHorde.LOGGER.warn("Attempted to remove an area of interest from memory but the list was null");
+            DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove an area of interest from memory but the list was null");
             return;
         }
 
@@ -990,17 +979,17 @@ public class ModSavedData extends SavedData {
         {
             if(getDimension() == null)
             {
-                SculkHorde.LOGGER.error("Failed To Set Node Active. Dimension was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Set Node Active. Dimension was null.");
                 return;
             }
             else if(getDimension().getBlockEntity(position) == null)
             {
-                SculkHorde.LOGGER.error("Failed To Set Node Active. Block Entity was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Set Node Active. Block Entity was null.");
                 return;
             }
             else if(!(getDimension().getBlockEntity(position) instanceof SculkNodeBlockEntity))
             {
-                SculkHorde.LOGGER.error("Failed To Set Node Active. Block Entity was not instance of Sculk Node Block Entity.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Set Node Active. Block Entity was not instance of Sculk Node Block Entity.");
                 return;
             }
 
@@ -1043,7 +1032,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1059,7 +1048,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static NodeEntry serialize(CompoundTag nbt)
+        public static NodeEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
@@ -1126,12 +1115,12 @@ public class ModSavedData extends SavedData {
 
             if(dimension == null)
             {
-                SculkHorde.LOGGER.error("Failed To Validate Bee Nest Entry. Dimension was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Validate Bee Nest Entry. Dimension was null.");
                 return false;
             }
             else if(dimension.getBlockEntity(position) == null)
             {
-                SculkHorde.LOGGER.error("Failed To Validate Bee Nest Entry. Block Entity was null.");
+                DebuggerSystem.eventDebuggerModule.logError("Failed To Validate Bee Nest Entry. Block Entity was null.");
                 return false;
             }
 
@@ -1214,7 +1203,7 @@ public class ModSavedData extends SavedData {
 
                     if(Optional.of(entry).isEmpty())
                     {
-                        SculkHorde.LOGGER.error("Failed To Set Parent Node To Closest. Node Entry was null.");
+                        DebuggerSystem.eventDebuggerModule.logError("Failed To Set Parent Node To Closest. Node Entry was null.");
                         continue;
                     }
 
@@ -1239,7 +1228,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1253,7 +1242,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static BeeNestEntry serialize(CompoundTag nbt)
+        public static BeeNestEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
 
@@ -1285,7 +1274,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putString("identifier", identifier);
@@ -1296,7 +1285,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static HostileEntry serialize(CompoundTag nbt)
+        public static HostileEntry load(CompoundTag nbt)
         {
             return new HostileEntry(nbt.getString("identifier"));
         }
@@ -1361,7 +1350,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1374,7 +1363,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static DeathAreaEntry serialize(CompoundTag nbt) {
+        public static DeathAreaEntry load(CompoundTag nbt) {
 
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
@@ -1434,7 +1423,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1447,7 +1436,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static AreaOfInterestEntry serialize(CompoundTag nbt) {
+        public static AreaOfInterestEntry load(CompoundTag nbt) {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
@@ -1528,7 +1517,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putLong("position", position.asLong());
@@ -1543,7 +1532,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static NoRaidZoneEntry serialize(CompoundTag nbt)
+        public static NoRaidZoneEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
@@ -1727,7 +1716,7 @@ public class ModSavedData extends SavedData {
          * Making nbt to be stored in memory
          * @return The nbt with our data
          */
-        public CompoundTag deserialize()
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
             nbt.putUUID("playerUUID", playerUUID);
@@ -1746,7 +1735,7 @@ public class ModSavedData extends SavedData {
          * Extracting our data from the nbt.
          * @return The nbt with our data
          */
-        public static PlayerProfileEntry serialize(CompoundTag nbt)
+        public static PlayerProfileEntry load(CompoundTag nbt)
         {
             PlayerProfileEntry profile = new PlayerProfileEntry(
                     nbt.getUUID("playerUUID"),
@@ -1779,6 +1768,7 @@ public class ModSavedData extends SavedData {
                     ", nodesDestroyed=" + nodesDestroyed +
                     ", timeOfLastHit=" + timeOfLastHit +
                     ", difficultyOfNextHit=" + difficultyOfNextHit +
+                    ", timeofLastGhastDeployment=" + timeofLastGhastDeployment +
                     ", timeOfLastAmbientSound=" + timeOfLastAmbientSound +
                     ", timeUntilNextAmbientSound=" + timeUntilNextAmbientSound +
                     '}';
@@ -1793,38 +1783,33 @@ public class ModSavedData extends SavedData {
 
     public static class MobProfileEntry
     {
-        private final EntityType entityType;
-        private int relationshipToTheHorde;
-        private int sculkHordeKills = 0;
-
-        private long timeOfLastHit = 0;
-
-        private int difficultyOfNextHit = 1;
-
-        protected long timeUntilNextAmbientSound = 0;
-        protected long timeOfLastAmbientSound = 0;
-
-        protected long timeofLastGhastDeployment = 0;
-
-        private static final int MAX_RELATIONSHIP_VALUE = 1000;
-        private static final int MIN_RELATIONSHIP_VALUE = -1000;
+        public final EntityType entityType;
+        public int relationshipToTheHorde;
+        public int sculkHordeKills = 0;
+        public long timeOfLastHit = 0;
+        public int difficultyOfNextHit = 1;
+        public long timeofLastGhastDeployment = 0;
+        public static final int MAX_RELATIONSHIP_VALUE = 1000;
+        public static final int MIN_RELATIONSHIP_VALUE = -1000;
 
         public MobProfileEntry(Mob mob)
         {
             this.entityType = mob.getType();
         }
 
-        public MobProfileEntry(EntityType entityTypeIn, int sculkHordeKillsIn, int relationshipToTheHordeIn, long timeOfLastHit, int difficultyOfNextHit,long timeOfLastAmbientSound, long timeUntilNextAmbientSound)
+        public MobProfileEntry(EntityType entityTypeIn)
         {
             this.entityType = entityTypeIn;
-            this.sculkHordeKills = sculkHordeKillsIn;
-            this.relationshipToTheHorde = relationshipToTheHordeIn;
-            this.timeOfLastHit = timeOfLastHit;
-            this.difficultyOfNextHit = difficultyOfNextHit;
-            this.timeOfLastAmbientSound = timeOfLastAmbientSound;
-            this.timeUntilNextAmbientSound = timeUntilNextAmbientSound;
         }
 
+        public boolean isValid()
+        {
+            if(entityType.equals(EntityType.PIG))
+            {
+                return false;
+            }
+            return ForgeRegistries.ENTITY_TYPES.containsKey(ForgeRegistries.ENTITY_TYPES.getKey(entityType));
+        }
 
         public EntityType getEntityType()
         {
@@ -1926,38 +1911,53 @@ public class ModSavedData extends SavedData {
         }
 
 
-        /*
-        public CompoundTag deserialize()
+
+        public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
-            //TODO Figure out how to serialize
-            //nbt.putUUID("entityType", entityType);
+
+            nbt.putString("entityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
             nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
-            nbt.putBoolean("isVessel", isVessel);
-            nbt.putBoolean("isActiveVessel", isActiveVessel);
-            nbt.putInt("nodesDestroyed", nodesDestroyed);
+            nbt.putInt("sculkHordeKills", sculkHordeKills);
+            nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
             nbt.putLong("timeOfLastHit", timeOfLastHit);
             nbt.putInt("difficultyOfNextHit", difficultyOfNextHit);
-            nbt.putLong("timeUntilNextAmbientSound", timeUntilNextAmbientSound);
             return nbt;
         }
 
-        public static MobProfileEntry serialize(CompoundTag nbt)
+        public static MobProfileEntry load(CompoundTag nbt)
         {
-            return new MobProfileEntry(
-                    //TODO Figure out how to serialize
-                    nbt.getUUID("entityType"),
-                    nbt.getInt("relationshipToTheHorde"),
-                    nbt.getBoolean("isVessel"),
-                    nbt.getBoolean("isActiveVessel"),
-                    nbt.getInt("nodesDestroyed"),
-                    nbt.getLong("timeOfLastHit"),
-                    nbt.getInt("difficultyOfNextHit"),
-                    nbt.getLong("timeOfLastAmbientSound"),
-                    nbt.getLong("timeUntilNextAmbientSound")
-            );
+            ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
+            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
+            if(type == null) {
+                DebuggerSystem.eventDebuggerModule.logError("Failed to load MobProfileEntry. EntityType was null for id: " + id);
+                type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.
+            }
+
+            MobProfileEntry entry = new MobProfileEntry(type);
+            if(nbt.contains("relationshipToTheHorde"))
+            {
+                entry.setRelationshipToTheHorde(nbt.getInt("relationshipToTheHorde"));
+            }
+            if(nbt.contains("sculkHordeKills"))
+            {
+                entry.setSculkHordeKills(nbt.getInt("sculkHordeKills"));
+            }
+            if(nbt.contains("timeofLastGhastDeployment"))
+            {
+                entry.setTimeofLastGhastDeployment(nbt.getLong("timeofLastGhastDeployment"));
+            }
+            if(nbt.contains("timeOfLastHit"))
+            {
+                entry.setTimeofLastGhastDeployment(nbt.getLong("timeOfLastHit"));
+            }
+            if(nbt.contains("difficultyOfNextHit"))
+            {
+                entry.difficultyOfNextHit = nbt.getInt("difficultyOfNextHit");
+            }
+            return entry;
         }
-        */
+
 
         @Override
         public String toString() {
@@ -1969,6 +1969,120 @@ public class ModSavedData extends SavedData {
                     ", timeofLastGhastDeployment=" + timeofLastGhastDeployment +
                     ", sculkHordeKills=" + sculkHordeKills +
                     '}';
+        }
+    }
+
+    //#### Perimeter Infestation Ward Entry ####
+    public HashMap<UUID, PerimeterWardZoneEntry> getPerimeterWardZoneEntries() {
+        return perimeterInfestationWardZoneEntries;
+    }
+
+    /**
+     * Represents an entry for a perimeter infestation ward zone in a Minecraft mod.
+     * This class handles the identification, validation, and management of relay positions
+     * and interactions with the dimension and relays associated with the perimeter ward zone.
+     * This zone is an ortho polygon.
+     */
+    public static class PerimeterWardZoneEntry
+    {
+        public BlockPos parentRelaypos;
+        public ArrayList<BlockPos> relayPositions = new ArrayList<>();
+        public ResourceKey<Level> dimension;
+
+
+        public PerimeterWardZoneEntry(BlockPos parentRelayposIn)
+        {
+            parentRelaypos = parentRelayposIn;
+        }
+
+        public ServerLevel getDimension()
+        {
+            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+        }
+
+        public boolean isParentRelayValid()
+        {
+            if(getDimension() == null)
+            {
+                return false;
+            }
+
+            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isEmpty())
+            {
+                return false;
+            }
+
+            PerimeterWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
+
+            if(!parentRelay.getBlockPos().equals(parentRelaypos))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void updateRelayPositions() {
+            relayPositions.clear();
+            if (getDimension() == null) {
+                return;
+            }
+
+            if (!isParentRelayValid()) {
+                return;
+            }
+
+            int maxIteration = 100;
+            BlockPos currentRelayPos = parentRelaypos;
+            for (int index = 0; index < maxIteration || currentRelayPos != null; index++) {
+                if (!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) {
+                    break;
+                }
+
+                PerimeterWardRelayBlockEntity currentRelay = getDimension().getBlockEntity(currentRelayPos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
+                relayPositions.add(currentRelayPos);
+                currentRelayPos = currentRelay.nextRelayPos.orElse(null);
+            }
+        }
+
+        /**
+         * Every zone is a series of points that make up an ortho polygon.
+         * @param pos
+         * @return
+         */
+        public boolean isPosInsideOfZone(BlockPos pos)
+        {
+            if (relayPositions == null || relayPositions.size() < 4)
+            {
+                return false;
+            }
+
+            // Ray casting algorithm: cast a ray from the point to the right (+X direction)
+            // and count how many edges it crosses. Odd = inside, Even = outside.
+            int crossings = 0;
+            int n = relayPositions.size();
+
+            for (int i = 0; i < n; i++)
+            {
+                BlockPos p1 = relayPositions.get(i);
+                BlockPos p2 = relayPositions.get((i + 1) % n);
+
+                // Check if this edge is vertical and could be crossed by our horizontal ray
+                if (p1.getX() == p2.getX())
+                {
+                    // Vertical edge at x = p1.getX()
+                    int minZ = Math.min(p1.getZ(), p2.getZ());
+                    int maxZ = Math.max(p1.getZ(), p2.getZ());
+
+                    // Check if ray intersects this vertical edge
+                    if (p1.getX() > pos.getX() && pos.getZ() >= minZ && pos.getZ() < maxZ)
+                    {
+                        crossings++;
+                    }
+                }
+            }
+
+            return (crossings % 2) == 1;
         }
     }
 }

@@ -2,6 +2,7 @@ package com.github.sculkhorde.systems;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -21,12 +22,12 @@ public class BeeNestActivitySystem {
 
     public void activate()
     {
-        SculkHorde.LOGGER.debug("BeeNestActivitySystem | Activating");
+        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Activating");
         isActive = true;
     }
     public void deactivate()
     {
-        SculkHorde.LOGGER.debug("BeeNestActivitySystem | Deactivating");
+        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Deactivating");
         isActive = false;
         enabledHives = 0;
         startEnablingHives = false;
@@ -83,14 +84,14 @@ public class BeeNestActivitySystem {
         if (!entry.isOccupantsExistingDisabled()) {
             startEnablingHives = true;
             entry.disableOccupantsExiting();
-            SculkHorde.LOGGER.debug("BeeNestActivitySystem | Disabling Hive at " + entry.getPosition().toShortString());
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Disabling Hive at " + entry.getPosition().toShortString());
         }
         // If we are enabling nests, and we have found an inactive nest, enable it
         else if(startEnablingHives && entry.isOccupantsExistingDisabled() && enabledHives < MAX_ENABLED_HIVES)
         {
             entry.enableOccupantsExiting();
             enabledHives += 1;
-            SculkHorde.LOGGER.debug("BeeNestActivitySystem | Enabling Hive at " + entry.getPosition().toShortString());
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling Hive at " + entry.getPosition().toShortString());
         }
 
         // If we've enabled all the ones we need to, then deactivate.
@@ -102,7 +103,7 @@ public class BeeNestActivitySystem {
         // If we've reached the end and have no enabled hives, then enable first hive in list.
         if(enabledHives <= 0 && index == beeNestsList.size() - 1)
         {
-            SculkHorde.LOGGER.debug("BeeNestActivitySystem | Reached End and found no enabled hives.");
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Reached End and found no enabled hives.");
             beeNestsList.get(0).enableOccupantsExiting();
             index = 1;
             enabledHives = 1;
@@ -112,7 +113,7 @@ public class BeeNestActivitySystem {
 
     protected void enableAllHives()
     {
-        SculkHorde.LOGGER.debug("BeeNestActivitySystem | Enabling All Hives");
+        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling All Hives");
 
         for(ModSavedData.BeeNestEntry entry : ModSavedData.getSaveData().getBeeNestEntries())
         {

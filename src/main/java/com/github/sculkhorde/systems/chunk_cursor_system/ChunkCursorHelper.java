@@ -1,5 +1,6 @@
 package com.github.sculkhorde.systems.chunk_cursor_system;
 
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.BlockInfestationTable;
 import com.github.sculkhorde.common.blockentity.SculkBeeNestBlockEntity;
 import com.github.sculkhorde.core.ModBlocks;
@@ -138,7 +139,7 @@ public class ChunkCursorHelper {
     public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos) {
         //Given random chance and the target location can see the sky, create a sculk hive
         if(r.nextInt(50000) <= 1 && canSpawnBeehive(world, targetPos)) {
-            SculkHorde.LOGGER.info("Spawning Beehive at: " + targetPos);
+            DebuggerSystem.eventDebuggerModule.logInfo("Spawning Beehive at: " + targetPos);
             BlockAlgorithms.setBlockCursor(world, targetPos, ModBlocks.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
             SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
 

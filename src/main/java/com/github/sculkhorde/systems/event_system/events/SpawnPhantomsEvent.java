@@ -50,12 +50,17 @@ public class SpawnPhantomsEvent extends Event {
     @Override
     public boolean canStart() {
 
+        if(!super.canStart())
+        {
+            return false;
+        }
+
         if(SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax())
         {
             return false;
         }
 
-        return super.canStart();
+        return true;
     }
 
     @Override

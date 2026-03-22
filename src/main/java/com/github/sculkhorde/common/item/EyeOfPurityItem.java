@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
@@ -49,7 +50,7 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
                 ServerLevel serverlevel = blockSource.getLevel();
 
 
-                Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry(serverlevel, blockpos);
+                Optional<ModSavedData.NodeEntry> node = NodeUtil.getClosestNode(serverlevel, blockpos);
                 if(node.isEmpty())
                 {
                     SoundUtil.playSoundInLevel(serverlevel, blockpos, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS);
@@ -118,7 +119,7 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
         }
 
         ServerLevel serverlevel = (ServerLevel)levelIn;
-        Optional<ModSavedData.NodeEntry> node = ModSavedData.getSaveData().getClosestNodeEntry(serverlevel, playerIn.blockPosition());
+        Optional<ModSavedData.NodeEntry> node = NodeUtil.getClosestNode(serverlevel, playerIn.blockPosition());
         if(node.isEmpty())
         {
             SoundUtil.playSoundInLevel(levelIn, playerIn.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS);

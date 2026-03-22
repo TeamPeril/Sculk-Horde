@@ -27,6 +27,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -108,7 +109,12 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     }
 
     @Override
-    public void checkDespawn() {}
+    public void checkDespawn() {
+        if(ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get())
+        {
+            super.checkDespawn();
+        }
+    }
 
     public boolean isIdle() {
         return getTarget() == null;
@@ -135,37 +141,27 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
      */
     @Override
     public boolean isPersistenceRequired() {
-        return true;
+        return !ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get();
     }
 
     /**
      * The function that determines if a position is a good spawn location<br>
-     * @param config ???
+     * @param mob ???
      * @param world The world that the mob is trying to spawn in
-     * @param reason An object that indicates why a mob is being spawned
+     * @param mobSpawnType An object that indicates why a mob is being spawned
      * @param pos The Block Position of the potential spawn location
      * @param random ???
      * @return Returns a boolean determining if it is a suitable spawn location
      */
-    public static boolean additionalSpawnCheck(EntityType<? extends PathfinderMob> config, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random)
+    public static boolean additionalSpawnCheck(EntityType<? extends Monster> mob, ServerLevelAccessor world, MobSpawnType mobSpawnType, BlockPos pos, RandomSource random)
     {
-        // If peaceful, return false
-        if (world.getDifficulty() == Difficulty.PEACEFUL) return false;
-
-        // If the light level is greater than 8, return false
-        if (world.getBrightness(LightLayer.BLOCK, pos) > 8) return false;
-
-        if (world.getBrightness(LightLayer.SKY, pos) > 8) return false;
-
-        if(pos.getY() > 50) return false;
-
-        if(world.getBiome(pos).is(Biomes.DEEP_DARK) && !ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get())
+        if(!ModConfig.SERVER.should_sculk_mites_spawn_in_deep_dark.get())
         {
             return false;
         }
-
-        return true;
+        else return Monster.checkMonsterSpawnRules(mob, world, mobSpawnType, pos, random);
     }
+
 
     /**
      * Registers Goals with the entity. The goals determine how an AI behaves ingame.

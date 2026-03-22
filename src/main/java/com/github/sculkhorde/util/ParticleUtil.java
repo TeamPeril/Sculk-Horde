@@ -40,6 +40,11 @@ public class ParticleUtil {
         spawnParticleOnClient(new DustParticleOptions(ColorUtil.hexToVector3F(hexColor), alpha), level, position, deltaMovement);
     }
 
+    public static void spawnColoredDustParticleOnServer(ServerLevel level, String hexColor, float alpha, Vector3f position)
+    {
+        spawnParticleOnServer(new DustParticleOptions(ColorUtil.hexToVector3F(hexColor), alpha), level, position, 0);
+    }
+
     public static void spawnSolidColoredDustParticleOnClient(ClientLevel level, String hexColor, Vector3f position, Vector3f deltaMovement)
     {
         spawnColoredDustParticleOnClient(level, hexColor, 1.0F, position, deltaMovement);

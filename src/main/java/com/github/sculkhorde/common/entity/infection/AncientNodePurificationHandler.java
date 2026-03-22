@@ -83,7 +83,6 @@ public class AncientNodePurificationHandler {
         if(lastKnownSolidBlock != null)
         {
             origin = lastKnownSolidBlock;
-            //SculkHorde.LOGGER.debug("Sculk Node found InfestationHandler spawn position at " + lastKnownSolidBlock + " of blockstate " + world.getBlockState(lastKnownSolidBlock));
         }
 
         return lastKnownSolidBlock;

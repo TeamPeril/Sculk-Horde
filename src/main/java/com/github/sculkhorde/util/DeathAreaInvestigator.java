@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import net.minecraft.server.level.ServerLevel;
@@ -41,7 +42,7 @@ public class DeathAreaInvestigator {
 
     public void setState(State state)
     {
-        SculkHorde.LOGGER.info("DeathAreaInvestigator | Old State: " + this.state + ". New State: " + state);
+        DebuggerSystem.eventDebuggerModule.logDebug("DeathAreaInvestigator | Old State: " + this.state + ". New State: " + state);
         this.state = state;
 
     }
@@ -56,16 +57,16 @@ public class DeathAreaInvestigator {
         if(ticksSinceLastSuccessfulFind >= tickIntervalsBetweenSuccessfulFinds && ticksSinceLastSearch >= tickIntervalsBetweenSearches && EventSystem.howManyActiveRaids() < 0)
         {
             ticksSinceLastSearch = 0;
-            //SculkHorde.LOGGER.info("It has been enough time since last death area check. Will see if there is a valid death area.");
+            DebuggerSystem.eventDebuggerModule.logDebug("It has been enough time since last death area check. Will see if there is a valid death area.");
             if(ModSavedData.getSaveData() != null) {searchEntry = ModSavedData.getSaveData().getDeathAreaWithHighestDeaths();}
 
             if(searchEntry.isPresent())
             {
                 setState(State.INITIALIZING);
-                //SculkHorde.LOGGER.info("Got area with highest deaths.");
+                DebuggerSystem.eventDebuggerModule.logDebug("Got area with highest deaths.");
                 return;
             }
-            //SculkHorde.LOGGER.info("No death area found.");
+            DebuggerSystem.eventDebuggerModule.logDebug("No death area found.");
         }
     }
 
@@ -75,11 +76,11 @@ public class DeathAreaInvestigator {
 
         if(level == null)
         {
-            SculkHorde.LOGGER.debug("DeathAreaInvestigator | Unable to Locate Dimension " + searchEntry.get().getDimension());
+            DebuggerSystem.eventDebuggerModule.logDebug("DeathAreaInvestigator | Unable to Locate Dimension " + searchEntry.get().getDimension());
             setState(State.FINISHED);
             return;
         }
-        SculkHorde.LOGGER.debug("DeathAreaInvestigator | Starting block search " + searchEntry.get().getDimension());
+        DebuggerSystem.eventDebuggerModule.logDebug("DeathAreaInvestigator | Starting block search " + searchEntry.get().getDimension());
         blockSearcher = new BlockSearcher(level, searchEntry.get().getPosition());
         blockSearcher.setMaxDistance(25);
         blockSearcher.setObstructionPredicate((pos) -> {
@@ -102,7 +103,7 @@ public class DeathAreaInvestigator {
             ticksSinceLastSuccessfulFind = 0;
             setState(State.FINISHED);
             //Send message to all players
-            SculkHorde.LOGGER.info("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
+            DebuggerSystem.eventDebuggerModule.logDebug("DeathAreaInvestigator | Located Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
             // Add to Area of Interest Memory
             if(ModSavedData.getSaveData() != null) {ModSavedData.getSaveData().addAreaOfInterestToMemory(searchEntry.get().getDimension(), searchEntry.get().getPosition());}
         }
@@ -110,13 +111,13 @@ public class DeathAreaInvestigator {
         {
             setState(State.FINISHED);
             blockSearcher = null;
-            SculkHorde.LOGGER.info("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
+            DebuggerSystem.eventDebuggerModule.logDebug("DeathAreaInvestigator | Unable to Locate Important Blocks at " + searchEntry.get().getPosition() + " in dimension " + searchEntry.get().getDimension());
         }
     }
 
     public void finishedTick()
     {
-        SculkHorde.LOGGER.info("DeathAreaInvestigator | Finished");
+        DebuggerSystem.eventDebuggerModule.logDebug("DeathAreaInvestigator | Finished");
         if(ModSavedData.getSaveData() != null) { ModSavedData.getSaveData().removeDeathAreaFromMemory(searchEntry.get().getPosition()); }
         ticksSinceLastSearch = 0;
         setState(State.IDLE);
