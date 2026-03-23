@@ -147,12 +147,19 @@ public class TargetStack
         secondaryTargets.clear();
     }
 
-    /**
-     * Clears only secondary targets (keeps primary).
-     */
-    public void clearSecondaryTargets()
+    public int getMaxSecondaryTargets()
     {
-        secondaryTargets.clear();
+        return maxSecondaryTargets;
+    }
+
+    /**
+     * Checks if there's room for more secondary targets.
+     *
+     * @return true if we can add another secondary target
+     */
+    public boolean hasSecondarySlotsAvailable()
+    {
+        return secondaryTargets.size() < maxSecondaryTargets;
     }
 
     /**

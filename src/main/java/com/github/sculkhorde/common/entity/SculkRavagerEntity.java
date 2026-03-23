@@ -196,7 +196,7 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
                 new InvalidateTargetGoal(this),
                 new TargetAttacker(this),
                 new FocusSquadTarget(this),
-                new SculkHordeTargetGoal<>(this, true, true)
+                new SculkHordeTargetGoal<>(this)
         };
     }
 

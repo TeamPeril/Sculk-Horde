@@ -201,7 +201,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new SculkHordeTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this)
 
                 };
         return goals;

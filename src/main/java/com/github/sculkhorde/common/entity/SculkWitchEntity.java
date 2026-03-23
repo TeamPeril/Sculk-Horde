@@ -258,7 +258,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
                         new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this),
-                        new SculkHordeTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this)
 
                 };
         return goals;

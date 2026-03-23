@@ -214,7 +214,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                         new RaiseShield(),
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new SculkHordeTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this)
 
                 };
         return goals;

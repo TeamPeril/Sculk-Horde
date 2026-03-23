@@ -209,7 +209,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
                         new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new SculkHordeTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this)
                 };
         return goals;
     }
