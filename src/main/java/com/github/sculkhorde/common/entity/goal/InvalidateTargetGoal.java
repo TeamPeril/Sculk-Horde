@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
+import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
@@ -10,6 +12,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.core.BlockPos;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.UUID;
 
 public class InvalidateTargetGoal extends Goal {
@@ -76,6 +79,16 @@ public class InvalidateTargetGoal extends Goal {
         {
             return false;
         }
+
+        Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(getMob());
+        if(squad.isPresent()) {
+
+            boolean isLeaderOfSquad = squad.get().isLeader(getMob().getUUID());
+            if (!isLeaderOfSquad) {
+                return false;
+            }
+        }
+
         TargetParameters targetParameters = mob.getTargetParameters();
         if(TickUnits.hasTicksPassed(lastTimeSincePositionCheck, getMob().level(), POSITION_CHECK_INTERVAL))
         {

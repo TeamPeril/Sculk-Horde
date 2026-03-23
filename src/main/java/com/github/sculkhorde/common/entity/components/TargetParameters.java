@@ -2,6 +2,8 @@ package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
+import com.github.sculkhorde.systems.squad_system.Squad;
+import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -481,6 +483,16 @@ public class TargetParameters
         if (mob == null)
         {
             return;
+        }
+
+        // Only run if mob is a leader of a squad or were not in a squad at all
+        Optional<Squad> squad = SquadSystem.getSquadOfLivingEntity(mob);
+        if(squad.isPresent()) {
+
+            boolean isLeaderOfSquad = squad.get().isLeader(mob.getUUID());
+            if (!isLeaderOfSquad) {
+                return;
+            }
         }
 
         // Update line-of-sight tracking for all targets
