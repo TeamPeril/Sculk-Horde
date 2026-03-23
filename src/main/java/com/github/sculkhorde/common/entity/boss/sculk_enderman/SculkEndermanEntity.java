@@ -78,11 +78,20 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
 
+    // Composite prioritizer (weighted scoring)
+    TargetPrioritizer composite = TargetPrioritizer.composite(
+            new TargetPrioritizer[] {
+                    TargetPrioritizer.byDistance(),
+                    TargetPrioritizer.byHealth()
+            },
+            new double[] { 0.6, 0.4 } // 60% distance, 40% health
+    );
+
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, 5)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS)
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, 10)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS, TargetFilter.FLIERS)
             .disableBlackListMobs()
-            .enableTargetPrioritization(TargetPrioritizer.byHealth(), TickUnits.convertSecondsToTicks(10));
+            .enableTargetPrioritization(composite, TickUnits.convertSecondsToTicks(1));
 
     // Timing Variables
     public boolean canTeleport = true;
