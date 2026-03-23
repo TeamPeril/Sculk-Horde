@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -505,6 +506,7 @@ public class TargetParameters
             {
                 if (!rule.shouldRetain(primary, mob))
                 {
+                    DebuggerSystem.entityDebuggerModule.logDebug("TargetRetention | " + mob.getClass().getSimpleName() + " | Removing Target for rule " + rule.getClass().getSimpleName());
                     shouldKeep = false;
                     break;
                 }
@@ -619,7 +621,8 @@ public class TargetParameters
     {
         if (canBlackListMobs && entity != null)
         {
-            blacklist.put(entity.getUUID(), System.currentTimeMillis());
+            blacklist.put(entity.getUUID(), entity.level().getGameTime());
+            DebuggerSystem.entityDebuggerModule.logDebug("Blacklist | " + mob.getClass().getSimpleName() + " | " + entity.getClass().getSimpleName() + " was added to Blacklist");
         }
     }
 

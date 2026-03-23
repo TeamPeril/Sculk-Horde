@@ -64,17 +64,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
             .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
-            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10))
-            .addCondition((target, isCurrentTarget, mob) -> {
-                // Can only target if reachable via pathfinding
-                net.minecraft.world.level.pathfinder.Path path = mob.getNavigation().createPath(target, 0);
-                if (path == null) return false;
-                net.minecraft.world.level.pathfinder.Node node = path.getEndNode();
-                if (node == null) return false;
-                int dx = node.x - net.minecraft.util.Mth.floor(target.getX());
-                int dz = node.z - net.minecraft.util.Mth.floor(target.getZ());
-                return (dx * dx + dz * dz) <= 50;
-            });
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

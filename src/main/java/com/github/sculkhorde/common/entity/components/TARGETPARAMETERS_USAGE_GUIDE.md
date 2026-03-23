@@ -70,6 +70,9 @@ Add specialized validation logic for any requirement:
 params.addCondition(TargetCondition.healthBelow(50));   // Only targets below 50% health
 params.addCondition(TargetCondition.healthAbove(30));   // Only targets above 30% health
 
+// Visibility-based conditions
+params.addCondition(TargetCondition.mustSee());         // Only targets in line-of-sight
+
 // Distance-based conditions
 params.addCondition(TargetCondition.withinDistance(16)); // Only targets within 16 blocks
 

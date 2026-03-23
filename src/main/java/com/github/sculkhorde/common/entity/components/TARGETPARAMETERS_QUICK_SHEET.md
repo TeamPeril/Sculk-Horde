@@ -52,6 +52,7 @@ List<LivingEntity> secondary = params.getSecondaryTargets();
 .addCondition(TargetCondition.healthBelow(50))
 .addCondition(TargetCondition.healthAbove(30))
 .addCondition(TargetCondition.withinDistance(16))
+.addCondition(TargetCondition.mustSee())
 
 // Custom lambda
 .addCondition((target, isExisting, mob) -> target.isNoAi() == false)

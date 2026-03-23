@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -10,17 +11,16 @@ import net.minecraft.core.BlockPos;
 
 import java.util.EnumSet;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class InvalidateTargetGoal extends Goal {
 
     private final ISculkSmartEntity mob; // We use this to retrieve the mob that is using this goal.
     private UUID lastTargetUUID;
-    private long timeSinceLastTargetChange;
+    private long timeOfLastTargetChange;
     private BlockPos ourLastPositionSinceCheck;
-    private long UNREACHABLE_TARGET_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
-    private long lastTimeSincePositionCheck = System.currentTimeMillis();
-    private long POSITION_CHECK_INTERVAL = TimeUnit.SECONDS.toMillis(5);
+    private long UNREACHABLE_TARGET_TIMEOUT = TickUnits.convertMinutesToTicks(1);
+    private long lastTimeSincePositionCheck = 0;
+    private long POSITION_CHECK_INTERVAL = TickUnits.convertSecondsToTicks(1);
 
     public InvalidateTargetGoal(ISculkSmartEntity mob)
     {
@@ -54,7 +54,7 @@ public class InvalidateTargetGoal extends Goal {
         {
             // If it has changed, update the lastTargetUUID
             lastTargetUUID = getTarget().getUUID();
-            timeSinceLastTargetChange = System.currentTimeMillis();
+            timeOfLastTargetChange = getMob().level().getGameTime();
             return true;
         }
         return false;
@@ -77,16 +77,15 @@ public class InvalidateTargetGoal extends Goal {
             return false;
         }
         TargetParameters targetParameters = mob.getTargetParameters();
-
-        if(System.currentTimeMillis() - lastTimeSincePositionCheck > POSITION_CHECK_INTERVAL)
+        if(TickUnits.hasTicksPassed(lastTimeSincePositionCheck, getMob().level(), POSITION_CHECK_INTERVAL))
         {
             ourLastPositionSinceCheck = getMob().blockPosition();
-            lastTimeSincePositionCheck = System.currentTimeMillis();
+            lastTimeSincePositionCheck = getMob().level().getGameTime();
         }
 
         // If target has not changed, and we reached threshold, and we are still within 15 blocks of last position, invalidate target.
         //BUG FIX: Forgot to check if the target was a MobEntity before casting it.
-        if(targetParameters.canBlackListMobs() && getTarget() instanceof Mob && !hasTargetChanged() && System.currentTimeMillis() - timeSinceLastTargetChange > UNREACHABLE_TARGET_TIMEOUT && tooCloseToLastPosition())
+        if(targetParameters.canBlackListMobs() && getTarget() instanceof Mob && !hasTargetChanged() && TickUnits.hasTicksPassed(timeOfLastTargetChange, getMob().level(), UNREACHABLE_TARGET_TIMEOUT) && tooCloseToLastPosition())
         {
             targetParameters.addToBlackList((Mob) getTarget());
         }

@@ -52,6 +52,16 @@ public interface TargetCondition
     {
         return (target, isCurrentTarget, mob) -> mob != null && mob.distanceTo(target) <= maxDistance;
     }
+
+    /**
+     * Creates a condition that checks if the target is visible.
+     *
+     * @return A TargetCondition for visibility checks
+     */
+    static TargetCondition mustSee()
+    {
+        return (target, isCurrentTarget, mob) -> mob != null && mob.getSensing().hasLineOfSight(target);
+    }
 }
 
 
