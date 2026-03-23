@@ -148,7 +148,7 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
                 {
                         new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
                 };
         return goals;
     }

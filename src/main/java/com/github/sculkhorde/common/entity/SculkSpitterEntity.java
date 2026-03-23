@@ -206,7 +206,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
                 };
         return goals;
     }

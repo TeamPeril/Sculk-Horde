@@ -173,7 +173,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         return new Goal[]{
                 new InvalidateTargetGoal(this),
                 new TargetAttacker(this),
-                new NearestLivingEntityTargetGoal<>(this, true, false)
+                new SculkHordeTargetGoal<>(this, true, false)
         };
     }
 

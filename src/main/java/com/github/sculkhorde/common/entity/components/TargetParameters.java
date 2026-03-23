@@ -25,32 +25,32 @@ import static com.github.sculkhorde.util.EntityAlgorithms.*;
  */
 public class TargetParameters
 {
-    private Mob mob;
+    public Mob mob;
 
     // Modular filter system (replaces individual booleans)
-    private final Set<TargetFilter> enabledFilters = new HashSet<>();
+    protected final Set<TargetFilter> enabledFilters = new HashSet<>();
 
     // Custom composable conditions
-    private final List<TargetCondition> customConditions = new ArrayList<>();
+    protected final List<TargetCondition> customConditions = new ArrayList<>();
 
     // Target retention rules
-    private final List<TargetRetention> retentionRules = new ArrayList<>();
+    protected final List<TargetRetention> retentionRules = new ArrayList<>();
 
     // Blacklist management
-    private final HashMap<UUID, Long> blacklist = new HashMap<>();
-    private boolean canBlackListMobs = true;
+    protected final HashMap<UUID, Long> blacklist = new HashMap<>();
+    protected boolean canBlackListMobs = true;
 
     // Multi-target tracking
-    private final TargetStack targetStack;
+    protected final TargetStack targetStack;
 
     // Priority-based revaluation
-    private TargetPrioritizer prioritizer = null;
-    private int priorityCheckInterval = 0; // 0 = disabled
-    private int priorityCheckCounter = 0;
+    protected TargetPrioritizer prioritizer = null;
+    protected int priorityCheckInterval = 0; // 0 = disabled
+    protected int priorityCheckCounter = 0;
 
     // Line-of-sight timeout tracking
-    private final Map<UUID, Integer> targetTicksSinceSeen = new HashMap<>();
-    private long maxTargetUnseenTimeMillis = TimeUnit.SECONDS.toMillis(30);
+    protected final Map<UUID, Integer> targetTicksSinceSeen = new HashMap<>();
+    protected long maxTargetUnseenTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
 
     /**
@@ -82,7 +82,7 @@ public class TargetParameters
     public TargetParameters(Mob mob, int maxSecondaryTargets)
     {
         this.mob = mob;
-        this.targetStack = new TargetStack(maxSecondaryTargets);
+        this.targetStack = new TargetStack(this, maxSecondaryTargets);
     }
 
 
@@ -537,7 +537,7 @@ public class TargetParameters
             {
                 if (!rule.shouldRetain(target, mob))
                 {
-                    
+
                     return true;
                 }
             }
@@ -690,4 +690,5 @@ public class TargetParameters
     {
         return targetTicksSinceSeen.getOrDefault(target.getUUID(), 0);
     }
+
 }

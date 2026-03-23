@@ -15,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.*;
@@ -25,10 +24,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
@@ -232,7 +228,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
                         new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
                 };
         return goals;
     }

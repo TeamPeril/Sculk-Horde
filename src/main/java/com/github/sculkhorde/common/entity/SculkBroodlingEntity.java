@@ -209,7 +209,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
 
                 };
         return goals;

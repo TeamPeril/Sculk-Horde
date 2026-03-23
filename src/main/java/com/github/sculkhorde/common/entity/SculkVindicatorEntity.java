@@ -191,11 +191,11 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
+                        //new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
 
                 };
         return goals;

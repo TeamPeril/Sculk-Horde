@@ -5,7 +5,6 @@ import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
@@ -215,7 +214,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                         new RaiseShield(),
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
 
                 };
         return goals;

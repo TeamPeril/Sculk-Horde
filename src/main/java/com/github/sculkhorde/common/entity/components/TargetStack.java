@@ -10,20 +10,20 @@ import java.util.*;
  */
 public class TargetStack
 {
-    private LivingEntity primaryTarget;
-    private final LinkedList<LivingEntity> secondaryTargets;
-    private final int maxSecondaryTargets;
+    protected final LinkedList<LivingEntity> secondaryTargets;
+    protected final int maxSecondaryTargets;
+    protected final TargetParameters targetParameters;
 
     /**
      * Creates a new TargetStack.
      *
      * @param maxSecondaryTargets Maximum number of secondary targets to track (0 = only primary)
      */
-    public TargetStack(int maxSecondaryTargets)
+    public TargetStack(TargetParameters targetParameters, int maxSecondaryTargets)
     {
         this.maxSecondaryTargets = Math.max(0, maxSecondaryTargets);
         this.secondaryTargets = new LinkedList<>();
-        this.primaryTarget = null;
+        this.targetParameters = targetParameters;
     }
 
     /**
@@ -33,7 +33,11 @@ public class TargetStack
      */
     public LivingEntity getPrimaryTarget()
     {
-        return primaryTarget;
+        if(targetParameters.mob != null && targetParameters.mob.isAlive())
+        {
+            return targetParameters.mob.getTarget();
+        }
+        return null;
     }
 
     /**
@@ -43,7 +47,10 @@ public class TargetStack
      */
     public void setPrimaryTarget(LivingEntity target)
     {
-        this.primaryTarget = target;
+        if(targetParameters.mob != null && targetParameters.mob.isAlive())
+        {
+            targetParameters.mob.setTarget(target);
+        }
     }
 
     /**
@@ -55,7 +62,7 @@ public class TargetStack
      */
     public void addSecondaryTarget(LivingEntity target)
     {
-        if (target == null || target == primaryTarget || secondaryTargets.contains(target))
+        if (target == null || target == getPrimaryTarget() || secondaryTargets.contains(target))
         {
             return;
         }
@@ -113,9 +120,9 @@ public class TargetStack
     public List<LivingEntity> getAllTargets()
     {
         List<LivingEntity> all = new ArrayList<>();
-        if (primaryTarget != null)
+        if (getPrimaryTarget() != null)
         {
-            all.add(primaryTarget);
+            all.add(getPrimaryTarget());
         }
         all.addAll(secondaryTargets);
         return all;
@@ -128,7 +135,7 @@ public class TargetStack
      */
     public boolean hasTargets()
     {
-        return primaryTarget != null || !secondaryTargets.isEmpty();
+        return getPrimaryTarget() != null || !secondaryTargets.isEmpty();
     }
 
     /**
@@ -136,7 +143,7 @@ public class TargetStack
      */
     public void clear()
     {
-        primaryTarget = null;
+        setPrimaryTarget(null);
         secondaryTargets.clear();
     }
 
@@ -168,8 +175,8 @@ public class TargetStack
     {
         if (secondaryTargets.remove(target))
         {
-            LivingEntity oldPrimary = primaryTarget;
-            primaryTarget = target;
+            LivingEntity oldPrimary = getPrimaryTarget();
+            setPrimaryTarget(target);
             if (oldPrimary != null)
             {
                 secondaryTargets.addLast(oldPrimary);

@@ -59,7 +59,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(4, new PathFindToRaidLocation<>(this));
         this.goalSelector.addGoal(5, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
-        this.targetSelector.addGoal(1, new NearestLivingEntityTargetGoal<>(this, true, true));
+        this.targetSelector.addGoal(1, new SculkHordeTargetGoal<>(this, true, true));
         this.targetSelector.addGoal(2, new TargetAttacker(this).setAlertAllies());
     }
 

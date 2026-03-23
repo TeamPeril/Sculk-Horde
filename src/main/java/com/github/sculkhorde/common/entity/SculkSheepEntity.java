@@ -188,7 +188,7 @@ public class SculkSheepEntity extends Monster implements GeoEntity, ISculkSmartE
                         //HurtByTargetGoal(mob)
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
 
                 };
         return goals;

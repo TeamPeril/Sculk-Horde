@@ -193,7 +193,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
                         //HurtByTargetGoal(mob)
                         new HurtByTargetGoal(this),
                         new FocusSquadTarget(this),
-                        new NearestLivingEntityTargetGoal<>(this, true, true)
+                        new SculkHordeTargetGoal<>(this, true, true)
                 };
         return goals;
     }

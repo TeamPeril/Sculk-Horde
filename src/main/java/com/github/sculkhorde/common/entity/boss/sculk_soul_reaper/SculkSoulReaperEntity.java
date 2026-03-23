@@ -7,11 +7,9 @@ import com.github.sculkhorde.common.entity.SculkWitchEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.*;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.common.entity.entity_debugging.GoalDebuggerUtility;
-import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
 import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
-import com.github.sculkhorde.common.entity.goal.NearestLivingEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.SculkHordeTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
@@ -36,8 +34,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.BossEvent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -47,10 +43,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -431,7 +424,7 @@ public class SculkSoulReaperEntity extends Monster implements GeoEntity, ISculkS
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
         this.targetSelector.addGoal(0, new InvalidateTargetGoal(this));
         this.targetSelector.addGoal(1, new TargetAttacker(this));
-        this.targetSelector.addGoal(2, new NearestLivingEntityTargetGoal<>(this, false, false));
+        this.targetSelector.addGoal(2, new SculkHordeTargetGoal<>(this, false, false));
     }
 
     @Override
