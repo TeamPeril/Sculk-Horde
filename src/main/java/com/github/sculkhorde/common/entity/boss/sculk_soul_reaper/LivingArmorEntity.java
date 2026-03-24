@@ -209,7 +209,6 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
                         new RaiseShield(),
                         new TargetAttacker(this),

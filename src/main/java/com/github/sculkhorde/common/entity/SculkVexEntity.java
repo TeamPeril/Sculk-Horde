@@ -279,8 +279,6 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
-                        //HurtByTargetGoal(mob)
                         new TargetAttacker(this),
                         new FocusSquadTarget(this),
                         new SculkHordeTargetGoal<>(this)

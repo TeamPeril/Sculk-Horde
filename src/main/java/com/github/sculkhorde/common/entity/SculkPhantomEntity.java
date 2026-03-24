@@ -189,7 +189,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public Goal[] targetSelectorPayload()
     {
         return new Goal[]{
-                new InvalidateTargetGoal(this),
                 new TargetAttacker(this),
                 new SculkHordeTargetGoal<>(this)
         };

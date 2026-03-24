@@ -146,7 +146,6 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
                         new SculkHordeTargetGoal<>(this)
                 };

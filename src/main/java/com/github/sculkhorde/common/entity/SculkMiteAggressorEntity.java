@@ -189,7 +189,6 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
                         //HurtByTargetGoal(mob)
                         new HurtByTargetGoal(this),
                         new FocusSquadTarget(this),

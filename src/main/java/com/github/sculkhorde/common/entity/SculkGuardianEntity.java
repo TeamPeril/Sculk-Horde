@@ -171,7 +171,6 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
                         new SculkHordeTargetGoal<>(this)
                 };

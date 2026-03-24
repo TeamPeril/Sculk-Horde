@@ -173,7 +173,6 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     {
         Goal[] goals =
                 {
-                        new InvalidateTargetGoal(this),
                         new TargetAttacker(this),
                         new SculkHordeTargetGoal<>(this)
                 };
