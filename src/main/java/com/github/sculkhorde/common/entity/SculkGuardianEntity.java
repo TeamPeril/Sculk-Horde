@@ -1,9 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.components.TargetFilter;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
-import com.github.sculkhorde.common.entity.components.TargetRetention;
+import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.AcidBlobProjectileEntity;
 import com.github.sculkhorde.core.SculkHorde;
@@ -70,11 +67,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.SWIMMERS, TargetFilter.INFECTED)
-            .excludeFilter(TargetFilter.WALKERS)
-            .enableTargetPrioritization(TargetPrioritizer.byHealth(), TickUnits.convertSecondsToTicks(3))
-            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
+    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultSwimmerRangedCombat.copy()
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

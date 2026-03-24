@@ -691,4 +691,50 @@ public class TargetParameters
         return targetTicksSinceSeen.getOrDefault(target.getUUID(), 0);
     }
 
+    /**
+     * Creates a deep copy of this TargetParameters instance.
+     * All settings, filters, conditions, and current targets are copied.
+     *
+     * @return A new TargetParameters instance with the same configuration
+     */
+    public TargetParameters copy()
+    {
+        TargetParameters copy = new TargetParameters(this.mob, this.targetStack.getMaxSecondaryTargets());
+
+        // Copy enabled filters
+        copy.enabledFilters.addAll(this.enabledFilters);
+
+        // Copy custom conditions
+        copy.customConditions.addAll(this.customConditions);
+
+        // Copy retention rules
+        copy.retentionRules.addAll(this.retentionRules);
+
+        // Copy blacklist
+        copy.blacklist.putAll(this.blacklist);
+
+        // Copy boolean flags
+        copy.canBlackListMobs = this.canBlackListMobs;
+
+        // Copy secondary targets
+        for (LivingEntity sec : this.targetStack.getSecondaryTargets())
+        {
+            copy.targetStack.addSecondaryTarget(sec);
+        }
+
+        // Copy primary target
+        copy.setPrimaryTarget(this.getPrimaryTarget());
+
+        // Copy prioritizer settings
+        copy.prioritizer = this.prioritizer;
+        copy.priorityCheckInterval = this.priorityCheckInterval;
+        copy.priorityCheckCounter = this.priorityCheckCounter;
+
+        // Copy target tracking data
+        copy.targetTicksSinceSeen.putAll(this.targetTicksSinceSeen);
+        copy.maxTargetUnseenTimeMillis = this.maxTargetUnseenTimeMillis;
+
+        return copy;
+    }
+
 }

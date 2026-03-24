@@ -1,9 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.components.TargetCondition;
-import com.github.sculkhorde.common.entity.components.TargetFilter;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.common.entity.components.TargetRetention;
+import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.TickUnits;
@@ -68,12 +65,10 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS)
-            .addCondition(TargetCondition.healthAbove(50))
-            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
-            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
-    //factory The animation factory used for animations
+    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeInfector.copy()
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 30));
+
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

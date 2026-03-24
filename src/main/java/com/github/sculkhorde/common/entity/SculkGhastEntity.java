@@ -66,10 +66,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES)
-            .enableTargetPrioritization(TargetPrioritizer.byHealth(), TickUnits.convertSecondsToTicks(10))
-            .excludeFilter(TargetFilter.SWIMMERS)
+    protected final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultFlyerRangedCombat.copy()
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE * 2));
     protected final double MAX_MOB_MASS_STORED = 1000D;
     protected final ArrayList<Mob> storedMobs = new ArrayList<>();

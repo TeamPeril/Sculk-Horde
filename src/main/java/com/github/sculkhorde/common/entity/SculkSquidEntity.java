@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.TargetCondition;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
@@ -74,6 +75,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
                     TargetFilter.SWIMMERS,
                     TargetFilter.PASSIVES
             )
+            .addCondition(TargetCondition.mustSee())
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
