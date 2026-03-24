@@ -51,7 +51,7 @@ public class SculkLeechEntity extends Salmon implements GeoEntity, ISculkSmartEn
     public static final float MOVEMENT_SPEED = 2.0F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultSwimmerMeleeCombat.copy()
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultSwimmerMeleeCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

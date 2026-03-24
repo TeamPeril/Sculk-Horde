@@ -65,7 +65,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeInfector.copy()
+    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeInfector.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 30));
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;

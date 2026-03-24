@@ -60,7 +60,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.30F;
 
-    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy()
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

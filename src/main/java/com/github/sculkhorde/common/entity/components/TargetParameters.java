@@ -1,7 +1,9 @@
 package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
+import com.github.sculkhorde.systems.debugger_system.EntityDebuggerModule;
 import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -346,10 +348,13 @@ public class TargetParameters
     public void debugPrint(boolean validatingExistingTarget, LivingEntity e, String message)
     {
         String Header = "isEntityValid | ";
-        String mob = this.mob == null ? "null " : this.mob.getScoreboardName();
+        String mobName = this.mob == null ? "null " : this.mob.getClass().getSimpleName();
         String checkType = validatingExistingTarget ? " is Checking Current Target: " : " is Checking Potential Target: ";
 
-        //if(SculkHorde.isDebugMode()) { SculkHorde.LOGGER.debug(Header + mob + checkType + e.getScoreboardName() + " " + message); }
+        if(this.mob != null && DebuggerSystem.entityDebuggerModule.isMobBeingDebugged(this.mob))
+        {
+            DebuggerSystem.entityDebuggerModule.logDebug(Header + mobName + checkType + e.getClass().getSimpleName() + " " + message);
+        }
     }
 
 
@@ -364,7 +369,7 @@ public class TargetParameters
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
 
-        if(mob == null || e == null)
+        if(e == null)
         {
             return false;
         }
@@ -409,16 +414,18 @@ public class TargetParameters
             return false;
         }
 
-        // Check custom conditions
-        for (TargetCondition condition : customConditions)
+        if(mob != null)
         {
-            if (!condition.isMet(e, validatingExistingTarget, mob))
+            // Check custom conditions
+            for (TargetCondition condition : customConditions)
             {
-                debugPrint(validatingExistingTarget, e, "failed custom condition. Denied.");
-                return false;
+                if (!condition.isMet(e, validatingExistingTarget, mob))
+                {
+                    debugPrint(validatingExistingTarget, e, "failed custom condition. Denied.");
+                    return false;
+                }
             }
         }
-
         return true;
     }
 
@@ -431,12 +438,6 @@ public class TargetParameters
      */
     private boolean checkBuiltInFilters(LivingEntity e, boolean validatingExistingTarget)
     {
-        if(mob == null)
-        {
-            return false;
-        }
-
-
         // Check swimmer/walker filters
         boolean isSwimmer = isLivingEntitySwimmer(e);
         boolean isFlier = isLivingEntityFlying(e);
@@ -751,6 +752,13 @@ public class TargetParameters
         copy.targetTicksSinceSeen.putAll(this.targetTicksSinceSeen);
         copy.maxTargetUnseenTimeMillis = this.maxTargetUnseenTimeMillis;
 
+        return copy;
+    }
+
+    public TargetParameters copy(Mob mobIn)
+    {
+        TargetParameters copy = this.copy();
+        copy.mob = mobIn;
         return copy;
     }
 

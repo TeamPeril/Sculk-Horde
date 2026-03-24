@@ -58,7 +58,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy()
+    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

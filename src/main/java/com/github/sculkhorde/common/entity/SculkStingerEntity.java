@@ -52,7 +52,7 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.2F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultFlyerMeleeInfector.copy();
+    protected final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultFlyerMeleeInfector.copy(this);
 
     /**
      * The Constructor

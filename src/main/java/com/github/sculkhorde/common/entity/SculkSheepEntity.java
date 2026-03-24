@@ -56,7 +56,7 @@ public class SculkSheepEntity extends Monster implements GeoEntity, ISculkSmartE
     public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy()
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

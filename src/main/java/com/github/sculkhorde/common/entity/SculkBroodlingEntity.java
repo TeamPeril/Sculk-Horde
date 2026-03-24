@@ -64,7 +64,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundRangedCombat.copy()
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundRangedCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

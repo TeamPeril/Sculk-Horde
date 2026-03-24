@@ -65,7 +65,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
     public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeInfector.copy()
+    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeInfector.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 30));
 
 

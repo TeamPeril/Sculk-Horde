@@ -87,7 +87,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     public static MobEffectInstance effect = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy();
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy(this);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**

@@ -67,7 +67,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultSwimmerRangedCombat.copy()
+    private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultSwimmerRangedCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
