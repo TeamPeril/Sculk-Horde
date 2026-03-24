@@ -64,9 +64,9 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
     private final int MAX_SPAWNED_ENTITIES = 4;
     ReinforcementRequest request;
     private final TargetParameters hostileTargetParameters = new TargetParameters()
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.SWIMMERS);
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS, TargetFilter.SWIMMERS, TargetFilter.FLIERS);
     private final TargetParameters infectableTargetParameters = new TargetParameters()
-            .filterBy(TargetFilter.PASSIVES, TargetFilter.SWIMMERS);
+            .filterBy(TargetFilter.PASSIVES, TargetFilter.WALKERS, TargetFilter.SWIMMERS, TargetFilter.FLIERS);
 
     // Vibration Code
     private final VibrationSystem.User vibrationUser = new VibrationUser(this);

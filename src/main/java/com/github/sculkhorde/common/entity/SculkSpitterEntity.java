@@ -71,7 +71,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
     public static final float MOVEMENT_SPEED = 0.3F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultFlyerMeleeInfector.copy(this)
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundRangedCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
 
     private static final EntityDataAccessor<Boolean> IS_STRAFING = SynchedEntityData.defineId(SculkSpitterEntity.class, EntityDataSerializers.BOOLEAN);
