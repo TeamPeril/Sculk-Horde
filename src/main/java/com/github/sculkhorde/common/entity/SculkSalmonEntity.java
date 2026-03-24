@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.util.TickUnits;
@@ -48,9 +48,7 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
     public static final float MOVEMENT_SPEED = 2.0F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.SWIMMERS, TargetFilter.INFECTED)
-            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultSwimmerMeleeCombat.copy()
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

@@ -1,11 +1,13 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.common.entity.components.TargetFilter;
-import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.util.*;
+import com.github.sculkhorde.util.DifficultyUtil;
+import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SoundUtil;
+import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -85,10 +87,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     public static MobEffectInstance effect = new MobEffectInstance(MobEffects.REGENERATION, TickUnits.convertMinutesToTicks(5), 1);
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS)
-            .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
-            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
+    private final TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeCombat.copy();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
