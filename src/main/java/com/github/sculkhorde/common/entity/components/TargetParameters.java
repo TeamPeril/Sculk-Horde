@@ -363,6 +363,12 @@ public class TargetParameters
      */
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
+
+        if(mob == null || e == null)
+        {
+            return false;
+        }
+
         // Check blacklist first (fast path)
         if (e instanceof Mob && isOnBlackList((Mob) e))
         {
@@ -425,6 +431,12 @@ public class TargetParameters
      */
     private boolean checkBuiltInFilters(LivingEntity e, boolean validatingExistingTarget)
     {
+        if(mob == null)
+        {
+            return false;
+        }
+
+
         // Check swimmer/walker filters
         boolean isSwimmer = isLivingEntitySwimmer(e);
         boolean isFlier = isLivingEntityFlying(e);
@@ -605,6 +617,11 @@ public class TargetParameters
      */
     private boolean canReach(LivingEntity pTarget)
     {
+        if(mob == null)
+        {
+            return false;
+        }
+
         Path path = this.mob.getNavigation().createPath(pTarget, 0);
         if (path == null)
         {
@@ -631,7 +648,7 @@ public class TargetParameters
      */
     public void addToBlackList(Mob entity)
     {
-        if (canBlackListMobs && entity != null)
+        if (canBlackListMobs && entity != null && mob != null)
         {
             blacklist.put(entity.getUUID(), entity.level().getGameTime());
             DebuggerSystem.entityDebuggerModule.logDebug("Blacklist | " + mob.getClass().getSimpleName() + " | " + entity.getClass().getSimpleName() + " was added to Blacklist");
@@ -645,7 +662,7 @@ public class TargetParameters
      */
     public void removeFromBlackList(Mob entity)
     {
-        if (entity != null)
+        if (entity != null && mob != null)
         {
             blacklist.remove(entity.getUUID());
         }
