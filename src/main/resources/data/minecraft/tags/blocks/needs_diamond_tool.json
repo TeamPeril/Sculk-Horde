@@ -127,6 +127,7 @@
     "sculkhorde:fungal_sculk_block",
     "sculkhorde:fungal_sculk_stem_block",
     "sculkhorde:infested_crafting_table_block",
-    "sculkhorde:ancient_bookshelf_block"
+    "sculkhorde:ancient_bookshelf_block",
+    "sculkhorde:spike"
   ]
 }
