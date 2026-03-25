@@ -124,6 +124,12 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
         }
     }
 
+    @Override
+    public void reflect() {
+        super.reflect();
+        this.target = null;
+    }
+
     /** ACCESSORS **/
 
     @Override

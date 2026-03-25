@@ -109,7 +109,7 @@ public class ModEntities {
     public static String ACID_BLOB_PROJECTILE_ENTITY_ID = "acid_blob_projectile";
     public static final RegistryObject<EntityType<AcidBlobProjectileEntity>> ACID_BLOB_PROJECTILE_ENTITY = ENTITY_TYPES.register(ACID_BLOB_PROJECTILE_ENTITY_ID, () -> EntityType.Builder.<AcidBlobProjectileEntity>of(AcidBlobProjectileEntity::new, MobCategory.MISC).sized(0.9f, 0.9f).clientTrackingRange(4).updateInterval(10).build(ACID_BLOB_PROJECTILE_ENTITY_ID));
     public static final String FIRE_BALL_PROJECTILE_ENTITY_ID = "fire_ball_projectile";
-    public static final RegistryObject<EntityType<FireBallProjectileEntity>> FIRE_BALL_PROJECTILE_ENTITY = ENTITY_TYPES.register(FIRE_BALL_PROJECTILE_ENTITY_ID, () -> EntityType.Builder.<FireBallProjectileEntity>of(FireBallProjectileEntity::new, MobCategory.MISC).sized(0.9f, 0.9f).clientTrackingRange(4).updateInterval(10).build(FIRE_BALL_PROJECTILE_ENTITY_ID));
+    public static final RegistryObject<EntityType<FireBallProjectileEntity>> FIRE_BALL_PROJECTILE_ENTITY = ENTITY_TYPES.register(FIRE_BALL_PROJECTILE_ENTITY_ID, () -> EntityType.Builder.<FireBallProjectileEntity>of(FireBallProjectileEntity::new, MobCategory.MISC).sized(1.5f, 1.5f).clientTrackingRange(4).updateInterval(10).build(FIRE_BALL_PROJECTILE_ENTITY_ID));
 
     public static class EntityTags
     {
