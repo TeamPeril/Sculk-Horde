@@ -19,7 +19,7 @@ public class SculkSoulReaperModel extends DefaultedEntityGeoModel<AngelOfReaping
      *
      */
     public SculkSoulReaperModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_soul_reaper"));
+        super(new ResourceLocation(SculkHorde.MOD_ID, "angel_of_reaping"));
     }
 
     // We want our model to render using the translucent render type

@@ -481,7 +481,7 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
 
         // Update Boss Title
         if (!updatedEventTitle) {
-            Component title = Component.translatable("entity.sculkhorde.sculk_soul_reaper")
+            Component title = Component.translatable("entity.sculkhorde.angel_of_reaping")
                     .append(Component.literal(" 💀" + getMobDifficultyLevel()));
 
             if (getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty())
@@ -534,7 +534,7 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
     }
 
     protected ServerBossEvent createBossEvent() {
-        Component title = Component.translatable("entity.sculkhorde.sculk_soul_reaper")
+        Component title = Component.translatable("entity.sculkhorde.angel_of_reaping")
                 .append(Component.literal(" 💀" + getMobDifficultyLevel()));
 
         if(getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty())

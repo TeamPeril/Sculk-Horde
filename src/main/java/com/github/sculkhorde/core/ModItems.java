@@ -353,6 +353,25 @@ public class ModItems {
 		}
 	});
 
+	public static final RegistryObject<Item> ANGEL_OF_REAPING_SOUL = ITEMS.register("angel_of_reaping_soul", () -> new Item(new Item.Properties()){
+		@Override
+		@OnlyIn(Dist.CLIENT)
+		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.angel_of_reaping_soul.functionality"));
+			}
+			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.angel_of_reaping_soul.lore"));
+			}
+			else
+			{
+				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
+			}
+		}
+	});
+
 	public static final RegistryObject<FerriscitePickaxeItem> FERRISCITE_PICKAXE = ITEMS.register("ferriscite_pickaxe",
 			FerriscitePickaxeItem::new);
 	public static final RegistryObject<FerrisciteShovelItem> FERRISCITE_SHOVEL = ITEMS.register("ferriscite_shovel",

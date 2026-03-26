@@ -1670,7 +1670,7 @@
 				}
 			}
 		},
-		"animation.sculk_soul_reaper.floor_spears": {
+		"animation.angel_of_reaping.floor_spears": {
 			"animation_length": 1.2,
 			"bones": {
 				"upper_body": {
@@ -1912,7 +1912,7 @@
 				}
 			}
 		},
-		"animation.sculk_soul_reaper.elemental_projectile.shoot": {
+		"animation.angel_of_reaping.elemental_projectile.shoot": {
 			"animation_length": 0.56,
 			"bones": {
 				"upper_body": {
@@ -2213,7 +2213,7 @@
 				}
 			}
 		},
-		"animation.sculk_soul_reaper.elemental_projectiles.charge": {
+		"animation.angel_of_reaping.elemental_projectiles.charge": {
 			"animation_length": 1.44,
 			"bones": {
 				"upper_body": {
@@ -2443,7 +2443,7 @@
 				}
 			}
 		},
-		"animation.sculk_soul_reaper.spell_use": {
+		"animation.angel_of_reaping.spell_use": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.88,
 			"bones": {
@@ -2625,7 +2625,7 @@
 				}
 			}
 		},
-		"animation.sculk_soul_reaper.soul_spear": {
+		"animation.angel_of_reaping.soul_spear": {
 			"animation_length": 1.2,
 			"bones": {
 				"upper_body": {
@@ -2859,7 +2859,7 @@
 				}
 			}
 		},
-		"animation.sculk_soul_reaper.zoltrak": {
+		"animation.angel_of_reaping.zoltrak": {
 			"animation_length": 1.12,
 			"bones": {
 				"upper_body": {
