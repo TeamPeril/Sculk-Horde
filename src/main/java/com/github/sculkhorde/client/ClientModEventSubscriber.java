@@ -81,7 +81,7 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(ModEntities.SCULK_SPINE_SPIKE_ATTACK.get(), SculkSpineSpikeAttackRenderer::new);
         event.registerEntityRenderer(ModEntities.AREA_EFFECT_SPHERICAL_CLOUD.get(), AreaEffectSphericalCloudRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_WITCH.get(), SculkWitchRenderer::new);
-        event.registerEntityRenderer(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperRenderer::new);
+        event.registerEntityRenderer(ModEntities.ANGEL_OF_REAPING.get(), SculkSoulReaperRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_VEX.get(), SculkVexRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_WITCH.get(), SculkWitchRenderer::new);
         event.registerEntityRenderer(ModEntities.LIVING_ARMOR.get(), LivingArmorRenderer::new);

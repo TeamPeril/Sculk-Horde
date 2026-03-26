@@ -1,12 +1,11 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.LookAtTargetOrRandom;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.goals.LookAtTargetOrRandom;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SculkAcidicProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.DifficultyUtil;
-import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;

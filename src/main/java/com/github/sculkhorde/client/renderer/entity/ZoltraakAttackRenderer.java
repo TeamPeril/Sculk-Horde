@@ -1,7 +1,7 @@
 package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.client.model.enitity.ZoltraakAttackModel;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.ZoltraakAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ZoltraakAttackEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

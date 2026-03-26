@@ -391,7 +391,7 @@
   "item.sculkhorde.sculk_stinger_spawn_egg": "Sculk Stinger Spawn Egg",
   "entity.sculkhorde.sculk_guardian": "Sculk Guardian",
   "entity.sculkhorde.sculk_vex": "Sculk Vex",
-  "entity.sculkhorde.sculk_soul_reaper": "Sculk Soul Reaper",
+  "entity.sculkhorde.angel_of_reaping": "Angel of Reaping",
   "entity.sculkhorde.sculk_brood_hatcher": "Sculk Brood Hatcher",
   "entity.sculkhorde.sculk_broodling": "Sculk Broodling",
   "entity.sculkhorde.sculk_stinger": "Sculk Stinger",
@@ -423,8 +423,8 @@
   "block.sculkhorde.brood_nest_core_block": "Brood Nest Core Block",
   "block.sculkhorde.tendril_core_block": "Tendril Core Block",
   "item.sculkhorde.soul_disrupter": "Soul Disrupter",
-  "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oA weapon that when pointed at a Soul Reaper, will weaken it for 1 minute. While the weakness is active, it brings down it's difficulty by one level.",
-  "tooltip.sculkhorde.soul_disrupter.lore": "§7§oAn improvised weapon designed to disrupt the powers of the Soul Reaper temporarily.",
+  "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oA weapon that when pointed at an Angel of Reaping, will weaken it for 1 minute. While the weakness is active, it brings down it's difficulty by one level.",
+  "tooltip.sculkhorde.soul_disrupter.lore": "§7§oAn improvised weapon designed to disrupt the powers of the Angel of Reaping temporarily.",
 
   "item.sculkhorde.ferriscite": "Ferriscite",
   "tooltip.sculkhorde.ferriscite.functionality": "§7§oA resource that made from putting Iron in a Soul Harvester. Tools made with this material will mine faster the more of the same block you mine; mining a block different than the last block you mined will incur a small speed penalty. Additionally, the tools will be repairable from killing non-sculk mobs.",
@@ -460,7 +460,7 @@
   "tooltip.sculkhorde.blade_of_purity.functionality": "§7§oA sword that upon striking a Sculk Horde mob, will give it the purity effect and purify the surrounding land. This blade has a large sweeping edge to it, making it ideal for hordes of mobs.",
   "tooltip.sculkhorde.blade_of_purity.lore": "§7§oA sword imbued with the warm and embracing aura of purity. Holding it fills your body with the resolve to restore balance to a corrupted world. All anguished souls will know peace once they meet this blade.",
   "item.sculkhorde.soul_animator": "Soul Animator",
-  "tooltip.sculkhorde.soul_animator.functionality": "§7§oA crafting ingredient dropped from the Soul Reaper.",
+  "tooltip.sculkhorde.soul_animator.functionality": "§7§oA crafting ingredient dropped from the Angel of Reaping.",
   "tooltip.sculkhorde.soul_animator.lore": "§7§oAn artifact with the ability to animate both living and unliving things. It can both hold the power of tortured and pure souls to create constructs and golems.",
   "sounds.sculkhorde.soul_spear_emerge": "Soul Spear Emerges",
 

@@ -3,7 +3,7 @@ package com.github.sculkhorde.client.model.enitity;// Made with Blockbench 4.10.
 // Paste this class into your mod and generate all required imports
 
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulBreezeProjectileAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulBreezeProjectileAttackEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;

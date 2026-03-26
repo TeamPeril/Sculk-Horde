@@ -3,8 +3,8 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.advancement.*;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.LivingArmorEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.AngelOfReapingEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModPotions;
 import com.github.sculkhorde.core.SculkHorde;
@@ -12,7 +12,6 @@ import com.github.sculkhorde.systems.infestation_systems.block_infestation_syste
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -76,7 +75,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_SQUID.get(), SculkSquidEntity.createAttributes().build());
         event.put(ModEntities.SCULK_PUFFERFISH.get(), SculkPufferfishEntity.createAttributes().build());
         event.put(ModEntities.SCULK_WITCH.get(), SculkWitchEntity.createAttributes().build());
-        event.put(ModEntities.SCULK_SOUL_REAPER.get(), SculkSoulReaperEntity.createAttributes().build());
+        event.put(ModEntities.ANGEL_OF_REAPING.get(), AngelOfReapingEntity.createAttributes().build());
         event.put(ModEntities.SCULK_VEX.get(), SculkVexEntity.createAttributes().build());
         event.put(ModEntities.LIVING_ARMOR.get(), LivingArmorEntity.createAttributes().build());
         event.put(ModEntities.GOLEM_OF_WRATH.get(), GolemOfWrathEntity.createAttributes().build());

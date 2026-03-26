@@ -1,6 +1,6 @@
 package com.github.sculkhorde.systems.event_system.events.HitSquadEvent;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.AngelOfReapingEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
@@ -31,7 +31,7 @@ public class HitSquadEvent extends Event {
     protected final int MAX_DISTANCE_FROM_PLAYER = 150;
 
     protected UUID target;
-    protected SculkSoulReaperEntity reaper;
+    protected AngelOfReapingEntity reaper;
 
     protected static final String targetUUIDIdentifier = "targetUUID";
 
@@ -62,7 +62,7 @@ public class HitSquadEvent extends Event {
         setMinimumDifficulty(Difficulty.NORMAL);
     }
 
-    public Optional<SculkSoulReaperEntity> getReaper()
+    public Optional<AngelOfReapingEntity> getReaper()
     {
         return Optional.ofNullable(reaper);
     }
@@ -204,7 +204,7 @@ public class HitSquadEvent extends Event {
 
         if(potentialSpawnPoint.isPresent())
         {
-            reaper = SculkSoulReaperEntity.spawnWithDifficulty(player.level(), potentialSpawnPoint.get().getCenter(), getTargetProfile().getDifficultyOfNextHit(), true);
+            reaper = AngelOfReapingEntity.spawnWithDifficulty(player.level(), potentialSpawnPoint.get().getCenter(), getTargetProfile().getDifficultyOfNextHit(), true);
             reaper.setHitTarget(player);
             reaper.setParentEventUUID(getEventUUID());
             reaper.addEffect(new MobEffectInstance(MobEffects.GLOWING, Integer.MAX_VALUE));

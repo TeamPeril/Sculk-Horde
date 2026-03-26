@@ -1,6 +1,6 @@
 package com.github.sculkhorde.client.model.enitity;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.ZoltraakAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ZoltraakAttackEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;

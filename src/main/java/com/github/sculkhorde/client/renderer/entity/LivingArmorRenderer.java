@@ -1,7 +1,7 @@
 package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.client.model.enitity.LivingArmorModel;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.LivingArmorEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.LivingArmorEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;

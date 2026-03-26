@@ -5,11 +5,11 @@ import com.github.sculkhorde.common.entity.boss.sculk_enderman.ChaosTeleporation
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.EnderBubbleAttackEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.*;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.ElementalBreezeMagicCircleAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.ElementalFireMagicCircleAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.ElementalIceMagicCircleAttackEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.ElementalPoisonMagicCircleAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.*;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ElementalBreezeMagicCircleAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ElementalFireMagicCircleAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ElementalIceMagicCircleAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ElementalPoisonMagicCircleAttackEntity;
 import com.github.sculkhorde.common.entity.dev.ChunkInfectEntity;
 import com.github.sculkhorde.common.entity.infection.*;
 import com.github.sculkhorde.common.entity.projectile.*;
@@ -62,7 +62,7 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<LivingArmorEntity>> LIVING_ARMOR = registerMob("living_armor", LivingArmorEntity::new, 0.6f, 1.95f, 0x000000, 0x000000);
 
-    public static final RegistryObject<EntityType<SculkSoulReaperEntity>> SCULK_SOUL_REAPER = registerMob("sculk_soul_reaper", SculkSoulReaperEntity::new, 0.9f, 1.9f, 0x000000, 0x000000);
+    public static final RegistryObject<EntityType<AngelOfReapingEntity>> ANGEL_OF_REAPING = registerMob("angel_of_reaping", AngelOfReapingEntity::new, 0.9f, 1.9f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkVexEntity>> SCULK_VEX = registerMob("sculk_vex", SculkVexEntity::new, 0.8f, 0.8f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<GolemOfWrathEntity>> GOLEM_OF_WRATH = registerMob("golem_of_wrath", GolemOfWrathEntity::new, 3f, 3f, 0x000000, 0x000000);
     public static final RegistryObject<EntityType<SculkGuardianEntity>> SCULK_GUARDIAN = registerMob("sculk_guardian", SculkGuardianEntity::new, 1f, 1f, 0x000000, 0x000000);
