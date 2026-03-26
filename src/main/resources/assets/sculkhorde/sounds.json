@@ -250,5 +250,40 @@
       "sculkhorde:soul_spear_emerge_2",
       "sculkhorde:soul_spear_emerge_3"
     ]
+  },
+
+  "sculk_ghast_charge": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_charge",
+    "sounds": [
+      "sculkhorde:sculk_ghast_charge"
+    ]
+  },
+
+  "sculk_ghast_death": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_death",
+    "sounds": [
+      "sculkhorde:sculk_ghast_death"
+    ]
+  },
+  "sculk_ghast_moan": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_moan",
+    "sounds": [
+      "sculkhorde:sculk_ghast_moan1",
+      "sculkhorde:sculk_ghast_moan2",
+      "sculkhorde:sculk_ghast_moan3",
+      "sculkhorde:sculk_ghast_moan4",
+      "sculkhorde:sculk_ghast_moan5",
+      "sculkhorde:sculk_ghast_moan6"
+    ]
+  },
+  "sculk_ghast_scream": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_scream",
+    "sounds": [
+      "sculkhorde:sculk_ghast_scream1",
+      "sculkhorde:sculk_ghast_scream2",
+      "sculkhorde:sculk_ghast_scream3",
+      "sculkhorde:sculk_ghast_scream4",
+      "sculkhorde:sculk_ghast_scream5"
+    ]
   }
 }
