@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -113,6 +114,24 @@ public abstract class AbstractProjectileEntity extends Projectile {
     public void reflect() {
         this.setDeltaMovement(this.getDeltaMovement().scale(-1));
         this.setOwner(null);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
+        if (level().isClientSide()) { return false; }
+        Entity attacker = source.getEntity();
+        if (attacker instanceof Player player && !player.isCreative() && !player.isSpectator()) {
+            reflect();
+            setOwner(player);
+            reflectedProjectiles.add(player.getUUID());
+            return true;
+        }
+        return false;
     }
 
     protected void handleProjectileReflection()
