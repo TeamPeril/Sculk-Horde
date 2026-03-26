@@ -11,8 +11,10 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -163,6 +165,18 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
             return;
         }
 
+        ServerLevel serverLevel = (ServerLevel) level();
+        double x = getX(), y = getY(), z = getZ();
+        double spread = EXPLODE_RADIUS * 0.4;
+
+        // Explosion particles
+        serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, x, y, z, 1, 0, 0, 0, 0);
+        serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, x, y, z, 30, spread, spread, spread, 0.05);
+        serverLevel.sendParticles(ParticleTypes.FLAME, x, y, z, 50, spread, spread, spread, 0.2);
+        serverLevel.sendParticles(ParticleTypes.SMOKE, x, y, z, 20, spread * 0.6, spread * 0.6, spread * 0.6, 0.02);
+
+        getImpactSound().ifPresent(this::doImpactSound);
+
         AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(position(), EXPLODE_RADIUS * 2);
         List<LivingEntity> entitiesInHitBox = EntityAlgorithms.getEntitiesExceptOwnerInBoundingBox((LivingEntity) getOwner(), (ServerLevel) level(), hitbox);
 
@@ -180,6 +194,13 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
                 }
 
                 entity.setSecondsOnFire(5 + (5 * DifficultyUtil.getCurrentDifficulty().getId()));
+
+                // Push non-player entities away from the explosion
+                if (!(entity instanceof Player))
+                {
+                    Vec3 pushDir = entity.position().subtract(position()).normalize();
+                    entity.push(pushDir.x * 1.5, 0.4 + pushDir.y * 1.5, pushDir.z * 1.5);
+                }
             }
         }
 
