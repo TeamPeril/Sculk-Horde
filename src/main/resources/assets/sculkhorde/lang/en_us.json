@@ -491,7 +491,11 @@
   "item.sculkhorde.baked_potato_of_purity": "Baked Potato of Purity",
   "item.sculkhorde.chicken_of_purity": "Chicken of Purity",
   "tooltip.sculkhorde.food_of_purity.functionality": "§7§oA food that can be eaten to nourish your hunger, grant you purity, and protect you from the horde's status effects. Useful to give to feed to entities like colonists, soldiers, or other such allies.",
-  "tooltip.sculkhorde.food_of_purity.lore": "§7§oThis food radiates with warmth and nourishment. It is a delicious treat and a great utility for those who desire purity."
+  "tooltip.sculkhorde.food_of_purity.lore": "§7§oThis food radiates with warmth and nourishment. It is a delicious treat and a great utility for those who desire purity.",
+
+  "item.sculkhorde.angel_of_reaping_soul": "Angel of Reaping Soul",
+  "tooltip.sculkhorde.angel_of_reaping_soul.functionality": "§7§o Dropped from the Angel of Reaping. It is a crafting ingredient that can be used to make the Soul Animator and Soul Disrupter. This trophy represents your achievement in conquering one of the Gravemind's Angels: The Angel of Reaping.",
+  "tooltip.sculkhorde.angel_of_reaping_soul.lore": "§7§o Vanquishing the Great Angel of Reaping has granted you his corrupted soul. Holding it makes your hand feel numb and fills you with dread. You've never felt such power and such evil. Your soul feels like its being drained and you feel unusually tired. This soul was forged by the Gravemind itself and is one of several souls that belong to the Gravemind's Angels."
 }
 
 

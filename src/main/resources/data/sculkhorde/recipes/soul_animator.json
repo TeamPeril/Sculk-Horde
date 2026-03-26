@@ -3,9 +3,9 @@
 
   "pattern":
   [
-    "SCS",
-    "STS",
-    "SSS"
+    " C ",
+    "CTC",
+    " S "
   ],
 
   "key":
@@ -16,7 +16,7 @@
     },
     "C":
     {
-      "item": "sculkhorde:crying_souls"
+      "item": "sculkhorde:pure_souls"
     },
     "S":
     {
@@ -26,7 +26,7 @@
 
   "result":
   {
-    "item": "sculkhorde:soul_disrupter",
-    "count": 1
+    "item": "sculkhorde:soul_animator",
+    "count": 3
   }
 }

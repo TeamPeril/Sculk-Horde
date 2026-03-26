@@ -206,6 +206,22 @@ public class ForgeEventSubscriber {
         }
     }
 
+    public static void checkAndApplyIllamentsToPlayer(Player player)
+    {
+        if(player == null || EntityAlgorithms.isLivingEntityExplicitDenyTarget(player) || player.isDeadOrDying())
+        {
+            return;
+        }
+
+        ItemStack mainHandItem = player.getMainHandItem();
+        ItemStack offHandItem = player.getOffhandItem();
+        if(mainHandItem.is(ModItems.ANGEL_OF_REAPING_SOUL.get()) || offHandItem.is(ModItems.ANGEL_OF_REAPING_SOUL.get()))
+        {
+            player.setTicksFrozen(player.getTicksFrozen() + 2);
+            player.causeFoodExhaustion(0.2F);
+        }
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
@@ -213,6 +229,8 @@ public class ForgeEventSubscriber {
         {
             return;
         }
+
+        checkAndApplyIllamentsToPlayer(event.player);
 
         if(event.player.tickCount % 20 == 0)
         {
