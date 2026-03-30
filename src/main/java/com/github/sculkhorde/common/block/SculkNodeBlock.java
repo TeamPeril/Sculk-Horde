@@ -7,6 +7,7 @@ import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -324,33 +325,38 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         {
             return;
         }
+
+        boolean isNodeRelocating = false;
+        if(NodeUtil.getNodeBlockEntity((ServerLevel) worldIn, pos).isPresent())
+        {
+            isNodeRelocating = NodeUtil.getNodeBlockEntity((ServerLevel) worldIn, pos).get().isBeingMoved;
+        }
+
         ModSavedData.getSaveData().removeNodeFromMemory(pos);
-
-        // Subtract 10% of total mass
-        int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);
-        ModSavedData.getSaveData().subtractSculkAccumulatedMass(subtractAmount);
-        SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
-
-        worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
-        worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
-
         decayRemainingNodeBlocks((ServerLevel) worldIn, pos, 12);
 
-        SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+        if(!isNodeRelocating)
+        {
+            // Subtract 10% of total mass
+            int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);
+            ModSavedData.getSaveData().subtractSculkAccumulatedMass(subtractAmount);
+            SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
 
-        // Get Nearby Players and update the number of nodes they destroyed
-        worldIn.players().forEach((player) ->
-                {
-                    if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+            worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
+            worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
+            SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+            // Get Nearby Players and update the number of nodes they destroyed
+            worldIn.players().forEach((player) ->
                     {
-                        PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
-                        PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
-                        PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
+                        if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+                        {
+                            PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
+                            PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
+                            PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
+                        }
                     }
-                }
-        );
-
-
+            );
+        }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

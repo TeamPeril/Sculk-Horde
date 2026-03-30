@@ -31,6 +31,7 @@ public class ModCommands {
                 .then(ConfigCommand.register(dispatcher, buildContext))
                 .then(NodesStatusCommand.register(dispatcher, buildContext));
 
+
         LiteralArgumentBuilder<CommandSourceStack> sculkHordeDevCommands = Commands.literal("shd")
                 .then(DebugCommand.register(dispatcher, buildContext))
                 .then(InfestChunkCommand.register(dispatcher, buildContext))
@@ -41,7 +42,8 @@ public class ModCommands {
                 .then(SummonReinforcementsCommand.register(dispatcher, buildContext))
                 .then(RaidCommand.register(dispatcher, buildContext))
                 .then(SoulReaperCommand.register(dispatcher, buildContext))
-                .then(HitSquadCommand.register(dispatcher, buildContext));
+                .then(HitSquadCommand.register(dispatcher, buildContext))
+                .then(NodeCommand.register(dispatcher, buildContext));
 
         dispatcher.register(sculkHordeCommands);
         dispatcher.register(sculkHordeDevCommands);

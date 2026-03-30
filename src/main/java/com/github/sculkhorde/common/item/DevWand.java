@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.item;
 
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.WardZoneUtil;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
@@ -82,6 +84,7 @@ public class DevWand extends Item implements IForgeItem {
 
 		ClipContext rayTrace = new ClipContext(playerIn.getEyePosition(1.0F), playerIn.getEyePosition(1.0F).add(playerIn.getLookAngle().scale(5)), ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, playerIn);
 		Vec3 hitPos = rayTrace.getTo();
+		BlockPos hitPosBlock = BlockPos.containing(hitPos);
 
         BlockAlgorithms.getLargestAreaAboveBlock(serverLevel, BlockPos.containing(playerIn.getEyePosition()));
 
@@ -110,6 +113,7 @@ public class DevWand extends Item implements IForgeItem {
         SculkHorde.eventSystem.addEvent(event);
         */
 
+		/*
         if(WardZoneUtil.isPosInAnyWardZone(playerIn.blockPosition()))
         {
             playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
@@ -118,6 +122,11 @@ public class DevWand extends Item implements IForgeItem {
 		{
 			playerIn.sendSystemMessage(Component.literal("Not In Infestation Ward Zone."));
 		}
+
+		 */
+		SculkHorde.sculkNodesSystem.DeactivateAllNodes();
+		SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
+		NodeUtil.moveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

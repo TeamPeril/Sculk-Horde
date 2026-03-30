@@ -1,5 +1,6 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModSavedData;
@@ -117,7 +118,7 @@ public class NodeUtil {
         return true;
     }
 
-    public static Optional<ModSavedData.NodeEntry> getOldestInactiveNode(long currentGameTime)
+    public static Optional<ModSavedData.NodeEntry> getNextNodeToMove(long currentGameTime, boolean ignoreRequirements)
     {
         if(getInactiveNodes().isEmpty())
         {
@@ -126,9 +127,10 @@ public class NodeUtil {
 
         ModSavedData.NodeEntry oldest = null;
 
+        // Get oldest notest
         for(ModSavedData.NodeEntry node : getInactiveNodes())
         {
-            if(oldest == null || (getNodeAgeTicks(node) > getNodeAgeTicks(oldest) && canMoveNode(node)))
+            if(oldest == null || (getNodeAgeTicks(node) > getNodeAgeTicks(oldest) && (canMoveNode(node)) || ignoreRequirements))
             {
                 oldest = node;
             }
@@ -141,4 +143,20 @@ public class NodeUtil {
 
         return Optional.of(oldest);
     }
+
+    public static void moveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
+    {
+        Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(level.getGameTime(), ignoreRequirements);
+
+        if(nodeToMove.isEmpty() || getNodeBlockEntity(nodeToMove.get()).isEmpty())
+        {
+            return;
+        }
+
+        getNodeBlockEntity(nodeToMove.get()).get().isBeingMoved = true;
+        level.destroyBlock(nodeToMove.get().getPosition(), true);
+
+        SculkNodeBlock.PlaceNode(level, pos);
+    }
+
 }

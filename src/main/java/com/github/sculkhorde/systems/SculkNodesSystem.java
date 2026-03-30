@@ -110,7 +110,7 @@ public class SculkNodesSystem {
     }
 
 
-    protected void ActivateNodeWithLongestDurationOfInactivity()
+    public void ActivateNodeWithLongestDurationOfInactivity()
     {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
         if(!nodeWithLongestTimeOfInactivity.isEntryValid()) { return; }
@@ -123,7 +123,7 @@ public class SculkNodesSystem {
         SculkHorde.eventSystem.addEvent(phantomEvent);
     }
 
-    protected void DeactivateAllNodes()
+    public void DeactivateAllNodes()
     {
         for(ModSavedData.NodeEntry node : getNodes())
         {
@@ -140,6 +140,28 @@ public class SculkNodesSystem {
 
             if(!node.isActive()) { continue; }
             node.setActive(false);
+            node.setLastTimeWasActive(node.getDimension().getGameTime());
+            DebuggerSystem.eventDebuggerModule.logInfo("Deactivating Node at: " + node.getPosition().toString());
+        }
+    }
+
+    public void ActivateAllNodes()
+    {
+        for(ModSavedData.NodeEntry node : getNodes())
+        {
+            ServerLevel dimension = node.getDimension();
+            // This is likely due to an old world that was created before multi-dimensional support was added.
+            if(dimension == null)
+            {
+                ModSavedData.NodeEntry nodeToRemove = node;
+                SculkHorde.LOGGER.warn("Removing Node at: " + nodeToRemove.getPosition().toString() + " due to it being in a null dimension.");
+                getNodes().remove(nodeToRemove);
+                continue;
+
+            }
+
+            if(!node.isActive()) { continue; }
+            node.setActive(true);
             node.setLastTimeWasActive(node.getDimension().getGameTime());
             DebuggerSystem.eventDebuggerModule.logInfo("Deactivating Node at: " + node.getPosition().toString());
         }
@@ -168,9 +190,9 @@ public class SculkNodesSystem {
 
         if((hasAnyNodeBeenActiveForTooLong && isThereMoreNodesThanMaxActiveNodes) || areAllNodesInactive)
         {
+            DeactivateAllNodes();
             for(int i = 0; i < SculkHorde.autoPerformanceSystem.getMaxNodesActive(); i++)
             {
-                DeactivateAllNodes();
                 ActivateNodeWithLongestDurationOfInactivity();
             }
         }
