@@ -91,6 +91,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
         return Commands.literal("mod_compatibility")
                 .then(booleanConfigOption("target_spore_entities"))
                 .then(booleanConfigOption("target_faw_entities"))
+                .then(booleanConfigOption("target_dulling_entities"))
                 .then(booleanConfigOption("target_deeper_and_darker_entities"))
                 .then(booleanConfigOption("target_mi_alliance_entities"))
                 .then(booleanConfigOption("target_scape_and_run_parasites_entities"))
@@ -277,6 +278,11 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         success = true;
                     }
                     break;
+                case "target_dulling_entities":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.target_dulling_entities.set((Boolean) rawValue);
+                        success = true;
+                    }
                 case "target_deeper_and_darker_entities":
                     if (valueType.equals(Boolean.class)) {
                         ModConfig.SERVER.target_deeper_and_darker_entities.set((Boolean) rawValue);

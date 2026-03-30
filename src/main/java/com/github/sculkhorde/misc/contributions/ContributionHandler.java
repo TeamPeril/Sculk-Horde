@@ -15,7 +15,6 @@ public class ContributionHandler {
      public static final String[] CONTRIBUTOR_UUIDS = new String[]{
             "548a65f1-5372-4e0b-8ebd-e337cd4895c8", // Assassin_Mike
             "380df991-f603-344c-a090-369bad2a924a", // Dev
-            "cb671707-65e2-43d1-9369-7c31cbb65331", // Sly3501
             "1bb03aee-8460-497d-b3a6-b4707147c27d", // SwagPotato345
 
             "fb0b51c0-bfa3-45a1-b914-afb8ab4380fd", // KaratFeng

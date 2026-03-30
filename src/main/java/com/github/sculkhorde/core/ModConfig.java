@@ -45,6 +45,7 @@ public class    ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> target_mi_alliance_entities;
         public final ForgeConfigSpec.ConfigValue<Boolean> target_deeper_and_darker_entities;
         public final ForgeConfigSpec.ConfigValue<Boolean> target_scape_and_run_parasites_entities;
+        public final ForgeConfigSpec.ConfigValue<Boolean> target_dulling_entities;
 
 
 
@@ -198,6 +199,7 @@ public class    ModConfig {
             target_faw_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'From Another World'? (Default false)").define("target_faw_entities",false);
             target_spore_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Fungal Infection:Spore'? (Default false)").define("target_spore_entities",false);
             target_deeper_and_darker_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Deeper and Darker'? (Default true)").define("target_deeper_and_darker_entities",true);
+            target_dulling_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'The Dulling'? (Default true)").define("target_dulling_entities",true);
             target_mi_alliance_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Mi Alliance'? (Default true)").define("target_mi_alliance_entities",true);
             target_scape_and_run_parasites_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'Scape and Run Parsites'? (Default true)").define("target_scape_and_run_parasites_entities",true);
             target_the_flesh_that_hates_entities = builder.comment("Should the Sculk Horde attack mobs from the mod 'The Flesh That Hates'? (Default true)").define("target_the_flesh_that_hates_entities",true);

@@ -436,17 +436,22 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(ModColaborationHelper.doesEntityBelongToScapeAndRunParasitesMod(entity) && !ModConfig.SERVER.target_phayriosis_entities.get())
+        if(ModColaborationHelper.doesEntityBelongToScapeAndRunParasitesMod(entity) && !ModConfig.SERVER.target_scape_and_run_parasites_entities.get())
         {
             return true;
         }
 
-        if(ModColaborationHelper.doesEntityBelongToDeeperAndDarkerMod(entity) && !ModConfig.SERVER.target_phayriosis_entities.get())
+        if(ModColaborationHelper.doesEntityBelongToDeeperAndDarkerMod(entity) && !ModConfig.SERVER.target_deeper_and_darker_entities.get())
         {
             return true;
         }
 
-        if(ModColaborationHelper.doesEntityBelongToMIAllianceMod(entity) && !ModConfig.SERVER.target_phayriosis_entities.get())
+        if(ModColaborationHelper.doesEntityBelongToMIAllianceMod(entity) && !ModConfig.SERVER.target_mi_alliance_entities.get())
+        {
+            return true;
+        }
+
+        if(ModColaborationHelper.doesEntityBelongToDullingMod(entity) && !ModConfig.SERVER.target_dulling_entities.get())
         {
             return true;
         }
@@ -566,7 +571,8 @@ public class EntityAlgorithms {
                     || ModColaborationHelper.doesEntityBelongToFromAnotherWorldMod(livingEntity)
                     || ModColaborationHelper.doesEntityBelongToTheFleshThatHatesMod(livingEntity)
                     || ModColaborationHelper.doesEntityBelongToWitheringAwayRebornMod(livingEntity)
-                    || ModColaborationHelper.doesEntityBelongToPrionInfectionMod(livingEntity);
+                    || ModColaborationHelper.doesEntityBelongToPrionInfectionMod(livingEntity)
+                    || ModColaborationHelper.doesEntityBelongToDullingMod(livingEntity);
         }
     };
 
