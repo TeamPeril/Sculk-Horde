@@ -23,6 +23,23 @@ public class ContributionHandler {
         /// # YouTubers
         CONTRIBUTOR_UUIDS.add("fb0b51c0-bfa3-45a1-b914-afb8ab4380fd"); // KaratFeng
 
+        //Keelios https://www.youtube.com/watch?v=4qqBZx3QTtc
+        CONTRIBUTOR_UUIDS.add("015ada91-b10a-4afa-9846-8435c40706e6"); //Snowcon
+        CONTRIBUTOR_UUIDS.add("19e779ac-d60a-47b9-bd96-a22ecfccdb7d"); //ItsArrzee
+        CONTRIBUTOR_UUIDS.add("811c3d95-5a14-4b0b-ac62-650f9f041532"); //Keelios
+
+        //FracturedWolf https://www.youtube.com/watch?v=dHTZ18-zxu4
+        CONTRIBUTOR_UUIDS.add("53cbdba9-487b-4758-b81f-6b3f5ed411b6"); //FallenMurder2468
+
+        //WilliamHelbent https://youtube.com/shorts/6ltcN--tk0Q?si=9P77sLjAXRqEqKul
+        //video deleted, no username
+
+        //Rotch Games - https://www.youtube.com/watch?v=rcd4DSjdZQ0
+        CONTRIBUTOR_UUIDS.add("f0f346f5-ff1f-4bbc-b6f9-0fedb01d55d0"); //Rotch_Gwylt
+
+        //Ghostlyy - https://www.youtube.com/watch?v=N3wXCr4cGl0
+        CONTRIBUTOR_UUIDS.add("40ff4968-f491-4c2f-a75d-6f1ab35d662b"); // _Ghostlyy_
+
         //Quinity - https://www.youtube.com/watch?v=KYaRVx2US8E
         CONTRIBUTOR_UUIDS.add("386e1d98-11ad-44bd-b19c-0c067deaf276"); //Quinity101
 
@@ -30,7 +47,7 @@ public class ContributionHandler {
         // Cannot find username
 
         //NutsAndBolts - https://www.youtube.com/watch?v=bdqNh8VOX3Y
-        // I cannot find this guy's username
+        CONTRIBUTOR_UUIDS.add("ebe70f87-dd60-436b-a2ae-583ff4a56f02"); //NutsAndBoltsBro
 
         //MRTurtle - https://youtu.be/j9k8mzfYI_Y?si=o5SHmhx7l7-LzRA1
         CONTRIBUTOR_UUIDS.add("ef4452b9-5b3f-4401-ad96-46d39de1764a"); //TTurtl3e
