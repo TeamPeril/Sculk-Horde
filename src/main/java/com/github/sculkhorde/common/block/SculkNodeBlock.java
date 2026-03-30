@@ -143,7 +143,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean forcePlace)
     {
         if(forcePlace) {
-            SculkNodeBlock.PlaceNode(worldIn, targetPos);
+            SculkNodeBlock.PlaceNode(worldIn, targetPos, false);
             return;
         }
 
@@ -158,7 +158,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return;
         }
 
-        SculkNodeBlock.PlaceNode(worldIn, targetPos);
+        SculkNodeBlock.PlaceNode(worldIn, targetPos, false);
         ModSavedData.getSaveData().subtractSculkAccumulatedMass(SPAWN_NODE_COST);
 
     }
@@ -209,17 +209,22 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         return true;
     }
 
-    public static void PlaceNode(ServerLevel level, BlockPos blockPos)
+    public static void PlaceNode(ServerLevel level, BlockPos blockPos, boolean movingNode)
     {
         BlockPos newOrigin = new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         BlockAlgorithms.setBlockStructure(level, newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         ModSavedData.getSaveData().addNodeToMemory(level, newOrigin);
-        ModSavedData.getSaveData().resetNoNodeSpawningTicksElapsed();
-        EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
-        //Send message to all players that node has spawned
-        level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
-        // Play sound for each player
-        level.players().forEach(player -> level.playSound(null, player.blockPosition(), ModSounds.NODE_SPAWN_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
+
+        if(!movingNode)
+        {
+            ModSavedData.getSaveData().resetNoNodeSpawningTicksElapsed();
+            EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
+            //Send message to all players that node has spawned
+            level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
+            // Play sound for each player
+            level.players().forEach(player -> level.playSound(null, player.blockPosition(), ModSounds.NODE_SPAWN_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
+        }
+
         if (ModConfig.SERVER.should_sculk_nodes_and_raids_spawn_phantoms.get()) {
             spawnScoutPhantoms(level, newOrigin, 10);
         }

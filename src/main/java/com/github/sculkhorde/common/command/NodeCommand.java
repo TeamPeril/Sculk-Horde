@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.command;
 
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.util.NodeUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -9,6 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -22,14 +24,13 @@ public class NodeCommand implements Command<CommandSourceStack> {
                 .then(Commands.literal("list")
                         .executes(NodeCommand::listNodes))
                 .then(Commands.literal("deactivate_all")
-                        .requires(command -> command.hasPermission(2))
                         .executes(NodeCommand::deactivateAll))
                 .then(Commands.literal("activate_most_idle_node")
-                        .requires(command -> command.hasPermission(2))
                         .executes(NodeCommand::activateMostIdle))
                 .then(Commands.literal("activate_all")
-                        .requires(command -> command.hasPermission(2))
-                        .executes(NodeCommand::activateAll));
+                        .executes(NodeCommand::activateAll))
+                .then(Commands.literal("move_most_inactive_node_to_me")
+                        .executes(NodeCommand::moveMostInactiveNodeMe));
 
     }
 
@@ -57,7 +58,7 @@ public class NodeCommand implements Command<CommandSourceStack> {
             String dimension = node.getDimension().dimension().location().toString();
             String command = "/execute in " + dimension + " run tp @s " + x + " " + y + " " + z;
 
-            MutableComponent nodeText = Component.literal("Node at: " + node.getPosition().toShortString() + " (" + dimension + ")");
+            MutableComponent nodeText = Component.literal("Node [" + node.getPosition().toShortString() + " | " + dimension + "]");
             nodeText.withStyle(style -> style
                     .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to teleport to this node")))
@@ -84,6 +85,12 @@ public class NodeCommand implements Command<CommandSourceStack> {
     private static int activateAll(CommandContext<CommandSourceStack> context) {
         SculkHorde.sculkNodesSystem.ActivateAllNodes();
         context.getSource().sendSuccess(() -> Component.literal("Activated all nodes."), true);
+        return 0;
+    }
+
+    private static int moveMostInactiveNodeMe(CommandContext<CommandSourceStack> context) {
+        NodeUtil.moveOldestNodeTo(context.getSource().getLevel(), BlockPos.containing(context.getSource().getPosition()), true);
+        context.getSource().sendSuccess(() -> Component.literal("Moved oldest node."), true);
         return 0;
     }
 }

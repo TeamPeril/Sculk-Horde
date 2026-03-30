@@ -33,6 +33,7 @@ public class ModCommands {
 
 
         LiteralArgumentBuilder<CommandSourceStack> sculkHordeDevCommands = Commands.literal("shd")
+                .requires(command -> command.hasPermission(2))
                 .then(DebugCommand.register(dispatcher, buildContext))
                 .then(InfestChunkCommand.register(dispatcher, buildContext))
                 .then(InfestChunksCommand.register(dispatcher, buildContext))

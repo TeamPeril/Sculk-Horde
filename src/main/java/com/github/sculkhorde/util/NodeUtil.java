@@ -118,7 +118,7 @@ public class NodeUtil {
         return true;
     }
 
-    public static Optional<ModSavedData.NodeEntry> getNextNodeToMove(long currentGameTime, boolean ignoreRequirements)
+    public static Optional<ModSavedData.NodeEntry> getNextNodeToMove(boolean ignoreRequirements)
     {
         if(getInactiveNodes().isEmpty())
         {
@@ -146,7 +146,7 @@ public class NodeUtil {
 
     public static void moveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
     {
-        Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(level.getGameTime(), ignoreRequirements);
+        Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(ignoreRequirements);
 
         if(nodeToMove.isEmpty() || getNodeBlockEntity(nodeToMove.get()).isEmpty())
         {
@@ -156,7 +156,7 @@ public class NodeUtil {
         getNodeBlockEntity(nodeToMove.get()).get().isBeingMoved = true;
         level.destroyBlock(nodeToMove.get().getPosition(), true);
 
-        SculkNodeBlock.PlaceNode(level, pos);
+        SculkNodeBlock.PlaceNode(level, pos, true);
     }
 
 }
