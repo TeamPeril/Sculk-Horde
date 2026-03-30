@@ -935,9 +935,9 @@ public class ModSavedData extends SavedData {
     public static class NodeEntry
     {
         private final BlockPos position; //The Location in the world where the node is
-        private long lastTimeWasActive;
-        private long activationTimeStamp;
-        private boolean IsActive;
+        private long lastTimeWasActive = 0;
+        private long activationTimeStamp = 0;
+        private boolean IsActive = false;
         private ResourceKey<Level> dimension;
 
 

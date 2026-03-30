@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.modding_api.SculkHordeEventPosters;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -165,6 +166,14 @@ public class BlockInfestationTable{
             return false;
         }
 
+        SculkHordeEventPosters.BlockInfestationEventHook event = new SculkHordeEventPosters.BlockInfestationEventHook(world, targetPos, oldBlock, newBlock);
+        event.postEvent();
+
+        if(event.isCanceled())
+        {
+            return false;
+        }
+
         BlockAlgorithms.setBlockCursor(world, targetPos, newBlock);
         world.playSound(null, targetPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + world.getRandom().nextFloat() * 0.4F);
 
@@ -180,7 +189,6 @@ public class BlockInfestationTable{
         }
 
         SculkHorde.statisticsData.incrementTotalBlocksInfested();
-
         return true;
     }
 }

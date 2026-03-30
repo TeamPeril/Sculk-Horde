@@ -1,5 +1,7 @@
 package com.github.sculkhorde.util;
 
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
@@ -41,6 +43,18 @@ public class NodeUtil {
         return activeNodes;
     }
 
+    public static List<ModSavedData.NodeEntry> getInactiveNodes()
+    {
+        List<ModSavedData.NodeEntry> nodes = new ArrayList<>();
+        for (ModSavedData.NodeEntry node : ModSavedData.getSaveData().getNodeEntries()) {
+            if(node.isEntryValid() && !node.isActive())
+            {
+                nodes.add(node);
+            }
+        }
+        return nodes;
+    }
+
     public static Optional<ModSavedData.NodeEntry> getRandomActiveNode(ServerLevel level)
     {
         List<ModSavedData.NodeEntry> activeNodes = getActiveNodes();
@@ -53,5 +67,78 @@ public class NodeUtil {
             int randomIndex = level.getRandom().nextInt(activeNodes.size());
             return Optional.of(activeNodes.get(randomIndex));
         }
+    }
+
+    public static Optional<SculkNodeBlockEntity> getNodeBlockEntity(ModSavedData.NodeEntry nodeEntry)
+    {
+        return getNodeBlockEntity(nodeEntry.getDimension(), nodeEntry.getPosition());
+    }
+
+    public static Optional<SculkNodeBlockEntity> getNodeBlockEntity(ServerLevel level, BlockPos pos)
+    {
+        return level.getBlockEntity(pos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+    }
+
+    public static long getNodeAgeTicks(ModSavedData.NodeEntry nodeEntry)
+    {
+        long currentTime = nodeEntry.getDimension().getGameTime();
+        Optional<SculkNodeBlockEntity> blockEntity = getNodeBlockEntity(nodeEntry);
+
+        if(blockEntity.isEmpty())
+        {
+            SculkHorde.LOGGER.error("getNodeAgeTicks | Node block entity was null at " + nodeEntry.getDimension().toString() + " | " + nodeEntry.getPosition().toShortString());
+            return 0;
+        }
+
+        long nodeCreationTime = blockEntity.get().getCreationTime();
+        long ageTicks = currentTime - nodeCreationTime;
+        return ageTicks;
+    }
+
+    public static boolean canMoveNode(ModSavedData.NodeEntry node)
+    {
+        if(!node.isEntryValid())
+        {
+            return false;
+        }
+        else if(getNodeBlockEntity(node).isEmpty())
+        {
+            return false;
+        }
+        else if(getNodeBlockEntity(node).get().isActive())
+        {
+            return false;
+        }
+        else if(node.getLastTimeWasActive() == 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static Optional<ModSavedData.NodeEntry> getOldestInactiveNode(long currentGameTime)
+    {
+        if(getInactiveNodes().isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        ModSavedData.NodeEntry oldest = null;
+
+        for(ModSavedData.NodeEntry node : getInactiveNodes())
+        {
+            if(oldest == null || (getNodeAgeTicks(node) > getNodeAgeTicks(oldest) && canMoveNode(node)))
+            {
+                oldest = node;
+            }
+        }
+
+        if(oldest == null)
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(oldest);
     }
 }

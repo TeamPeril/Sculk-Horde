@@ -41,6 +41,8 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected String currentInfestationRadiusIdentifier = "currentInfestationRadius";
     protected int timeOfLastAtmosphereInfestation = 0;
     protected String timeOfLastAtmosphereInfestationIdentifier = "timeOfLastAtmosphereInfestation";
+    protected long creationTime = 0;
+    protected String creationTimeID = "creationTime";
 
     protected NodeAtmosphereInfestationSystem matureInfestationSystem;
 
@@ -62,6 +64,11 @@ public class SculkNodeBlockEntity extends BlockEntity
     public void setActive(boolean active)
     {
         this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(SculkNodeBlock.ACTIVE, active), 3);
+    }
+
+    public long getCreationTime()
+    {
+        return creationTime;
     }
 
 
@@ -90,6 +97,11 @@ public class SculkNodeBlockEntity extends BlockEntity
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
+        if(blockEntity.creationTime == 0)
+        {
+            blockEntity.creationTime = level.getGameTime();
+        }
+
         if(level.isClientSide)
         {
             if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
@@ -200,6 +212,7 @@ public class SculkNodeBlockEntity extends BlockEntity
         super.load(compoundNBT);
         this.currentInfestationRadius = compoundNBT.getInt(currentInfestationRadiusIdentifier);
         this.timeOfLastAtmosphereInfestation = compoundNBT.getInt(timeOfLastAtmosphereInfestationIdentifier);
+        this.creationTime = compoundNBT.getLong(creationTimeID);
     }
 
     @Override
@@ -207,6 +220,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         compoundNBT.putInt(currentInfestationRadiusIdentifier, this.currentInfestationRadius);
         compoundNBT.putInt(timeOfLastAtmosphereInfestationIdentifier, this.timeOfLastAtmosphereInfestation);
+        compoundNBT.putLong(creationTimeID, this.creationTime);
         super.saveAdditional(compoundNBT);
     }
 

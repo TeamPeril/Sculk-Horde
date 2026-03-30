@@ -372,9 +372,6 @@ public class BlockInfestationSystem {
 
         BlockInfestationSystem.placeSculkFlora(world, targetPos);
 
-        // Chance to place a sculk node above the block
-        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, false);
-
         BlockInfestationSystem.tryPlaceDiseasedKelp(world, targetPos.above());
     }
 
@@ -518,44 +515,6 @@ public class BlockInfestationSystem {
     public static boolean blockIsAirOrSnow(BlockState state)
     {
         return state.isAir() || state.getBlock() == Blocks.SNOW;
-    }
-
-    /**
-     * Will only place Sculk Bee Hives
-     * @param world The World to place it in
-     * @param targetPos The position to place it in
-     */
-    public static void tryPlaceSculkBeeHive(ServerLevel world, BlockPos targetPos)
-    {
-
-        //Given random chance and the target location can see the sky, create a sculk hive
-        if(new Random().nextInt(4000) > 1)
-        {
-            return;
-        }
-
-        if(!blockIsAirOrSnow(world.getBlockState(targetPos))
-                || !blockIsAirOrSnow(world.getBlockState(targetPos.above()))
-                || !blockIsAirOrSnow(world.getBlockState(targetPos.above().above()))
-        )
-        {
-            return;
-        }
-
-        BlockAlgorithms.setBlockCursor(world, targetPos, ModBlocks.SCULK_BEE_NEST_BLOCK.get().defaultBlockState());
-        SculkBeeNestBlockEntity nest = (SculkBeeNestBlockEntity) world.getBlockEntity(targetPos);
-
-        if(nest == null)
-        {
-            return;
-        }
-
-        //Add bees
-        nest.addFreshInfectorOccupant();
-        nest.addFreshInfectorOccupant();
-        nest.addFreshHarvesterOccupant();
-        nest.addFreshHarvesterOccupant();
-
     }
 
     /**

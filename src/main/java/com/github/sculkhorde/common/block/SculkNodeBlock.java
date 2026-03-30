@@ -106,6 +106,34 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         pBuilder.add(ACTIVE);
     }
 
+    public static boolean canSpawnSculkNode(ServerLevel worldIn, BlockPos targetPos)
+    {
+        boolean isSavedDataNull = ModSavedData.getSaveData() == null;
+        if(isSavedDataNull)
+        {
+            DebuggerSystem.eventDebuggerModule.logError("Tried to place Node. ModSavedData.getSaveData() is null");
+            return false;
+        }
+        else if(ModSavedData.getSaveData().isHordeDefeated())
+        {
+            return false;
+        }
+        else if(!ModSavedData.getSaveData().isNodeSpawnCooldownOver())
+        {
+            return false;
+        }
+        else if(!isValidPositionForSculkNode(worldIn, targetPos))
+        {
+            return false;
+        }
+        else if(ModSavedData.getSaveData().getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Will only place sculk nodes if sky is visible
      * @param worldIn The World to place it in
@@ -113,27 +141,21 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean forcePlace)
     {
-        boolean failRandomChance = new Random().nextInt(1000) > 1;
-        boolean isSavedDataNull = ModSavedData.getSaveData() == null;
-        if(isSavedDataNull) {
-            DebuggerSystem.eventDebuggerModule.logError("Tried to place Node. ModSavedData.getSaveData() is null");
-            return;
-        }
-
         if(forcePlace) {
             SculkNodeBlock.PlaceNode(worldIn, targetPos);
             return;
         }
 
-        if(failRandomChance) { return; }
+        boolean failRandomChance = new Random().nextInt(1000) > 1;
+        if(failRandomChance)
+        {
+            return;
+        }
 
-        boolean isTheHordeDefeated = ModSavedData.getSaveData().isHordeDefeated();
-        boolean isNodeSpawnOnCooldown = !ModSavedData.getSaveData().isNodeSpawnCooldownOver();
-        boolean isNotValidPositionForSculkNode = !isValidPositionForSculkNode(worldIn, targetPos);
-        boolean isNotEnoughMass = ModSavedData.getSaveData().getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER;
-        boolean doNotSpawnNode = isTheHordeDefeated || isNodeSpawnOnCooldown || isNotValidPositionForSculkNode || isNotEnoughMass;
-
-        if(doNotSpawnNode) { return; }
+        if(!canSpawnSculkNode(worldIn, targetPos))
+        {
+            return;
+        }
 
         SculkNodeBlock.PlaceNode(worldIn, targetPos);
         ModSavedData.getSaveData().subtractSculkAccumulatedMass(SPAWN_NODE_COST);
