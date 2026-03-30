@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Cancelable;
 
-public class SculkHordeEventPosters {
+public class SculkHordeEventHooks {
 
     @Cancelable
     public static class BlockInfestationEventHook extends net.minecraftforge.eventbus.api.Event

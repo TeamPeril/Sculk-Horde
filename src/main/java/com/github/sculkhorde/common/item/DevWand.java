@@ -3,7 +3,6 @@ package com.github.sculkhorde.common.item;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.NodeUtil;
-import com.github.sculkhorde.util.WardZoneUtil;
 import com.github.sculkhorde.util.StructureUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -126,7 +125,7 @@ public class DevWand extends Item implements IForgeItem {
 		 */
 		SculkHorde.sculkNodesSystem.DeactivateAllNodes();
 		SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
-		NodeUtil.moveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
+		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

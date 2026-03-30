@@ -144,7 +144,7 @@ public class NodeUtil {
         return Optional.of(oldest);
     }
 
-    public static void moveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
+    public static void tryMoveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
     {
         Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(ignoreRequirements);
 

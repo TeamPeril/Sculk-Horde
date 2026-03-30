@@ -1,7 +1,7 @@
 package com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.modding_api.SculkHordeEventPosters;
+import com.github.sculkhorde.modding_api.SculkHordeEventHooks;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -166,7 +166,7 @@ public class BlockInfestationTable{
             return false;
         }
 
-        SculkHordeEventPosters.BlockInfestationEventHook event = new SculkHordeEventPosters.BlockInfestationEventHook(world, targetPos, oldBlock, newBlock);
+        SculkHordeEventHooks.BlockInfestationEventHook event = new SculkHordeEventHooks.BlockInfestationEventHook(world, targetPos, oldBlock, newBlock);
         event.postEvent();
 
         if(event.isCanceled())

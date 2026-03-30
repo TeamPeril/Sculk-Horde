@@ -89,7 +89,7 @@ public class NodeCommand implements Command<CommandSourceStack> {
     }
 
     private static int moveMostInactiveNodeMe(CommandContext<CommandSourceStack> context) {
-        NodeUtil.moveOldestNodeTo(context.getSource().getLevel(), BlockPos.containing(context.getSource().getPosition()), true);
+        NodeUtil.tryMoveOldestNodeTo(context.getSource().getLevel(), BlockPos.containing(context.getSource().getPosition()), true);
         context.getSource().sendSuccess(() -> Component.literal("Moved oldest node."), true);
         return 0;
     }
