@@ -98,8 +98,13 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
-    public static void spawnPhantom(Level worldIn, BlockPos spawnPos, boolean isScouter)
+    public static void trySpawnPhantoms(Level worldIn, BlockPos spawnPos, boolean isScouter)
     {
+        if(isScouter && SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax())
+        {
+            return;
+        }
+
         SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);
         assert phantom != null;
         phantom.setScouter(isScouter);

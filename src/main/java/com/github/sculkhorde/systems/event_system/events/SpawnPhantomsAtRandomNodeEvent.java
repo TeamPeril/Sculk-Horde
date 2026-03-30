@@ -47,14 +47,14 @@ public class SpawnPhantomsAtRandomNodeEvent extends Event {
                 int y = getDimension().getMaxBuildHeight();
                 BlockPos spawnPosition = new BlockPos(getEventLocation().getX() + x, y, getEventLocation().getZ() + z);
 
-                SculkPhantomEntity.spawnPhantom(getDimension(), spawnPosition, true);
+                SculkPhantomEntity.trySpawnPhantoms(getDimension(), spawnPosition, true);
             }
             return;
         }
 
         for(int i = 0; i < amount; i++)
         {
-            SculkPhantomEntity.spawnPhantom(getDimension(), largestSpaceOrigin.get(), true);
+            SculkPhantomEntity.trySpawnPhantoms(getDimension(), largestSpaceOrigin.get(), true);
         }
 
     }
