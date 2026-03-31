@@ -4,11 +4,11 @@ import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.common.entity.SculkVindicatorEntity;
 import com.github.sculkhorde.common.entity.SculkWitchEntity;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.*;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.goals.*;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
 import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
-import com.github.sculkhorde.common.entity.goal.InvalidateTargetGoal;
 import com.github.sculkhorde.common.entity.goal.SculkHordeTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.ModEntities;
@@ -86,8 +86,22 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.4F;
     protected int mobDifficultyLevel = 1;
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED).disableBlackListMobs();
+
+    // Composite prioritizer (weighted scoring)
+    TargetPrioritizer composite = TargetPrioritizer.composite(
+            new TargetPrioritizer[] {
+                    TargetPrioritizer.byDistance(),
+                    TargetPrioritizer.byHealth()
+            },
+            new double[] { 0.6, 0.4 } // 60% distance, 40% health
+    );
+
+
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, 10)
+            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS, TargetFilter.FLIERS)
+            .disableBlackListMobs()
+            .enableTargetPrioritization(composite, TickUnits.convertSecondsToTicks(1));
+
     protected ServerBossEvent bossEvent;
 
     // Animation
@@ -387,38 +401,34 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
                 new FloorSoulSpearsFollowingAttackGoal(this)
         ));
 
-        this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(20), 3,-1,
+        this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(10), 3,-1,
                 new ZoltraakAttackGoal(this),
-                new FloorSoulSpearLineAttackGoal(this),
-                new FloorSoulSpearsFollowingAttackGoal(this),
+                new ZoltraakBarrageAttackGoal(this),
                 new ZoltraakAttackGoal(this),
-                new FloorSoulSpearLineAttackGoal(this),
-                new FloorSoulSpearsFollowingAttackGoal(this)
+                new ZoltraakBarrageAttackGoal(this)
         ));
 
-        this.goalSelector.addGoal(3, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(15), 3,-1,
+        this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(10), 3,-1,
+                new FloorSoulSpearLineAttackGoal(this),
+                new FloorSoulSpearsFollowingAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
+                new FloorSoulSpearsFollowingAttackGoal(this),
+                new SummonSoulSpearSummonerGoal(this)
+        ));
+
+        this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(10), 3,-1,
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this),
                 new ShootElementalSoulProjectilesGoal(this),
                 new ElementalMagicCircleAttackGoal(this)
         ));
 
-        this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(2), 3,-1,
-                new ShootSoulSpearAttackGoal(this),
-                new SummonSoulSpearSummonerGoal(this),
-                new ShootSoulSpearAttackGoal(this),
-                new SummonSoulSpearSummonerGoal(this),
-                new ShootSoulSpearAttackGoal(this),
-                new FloorSoulSpearsFollowingAttackGoal(this)
+        this.goalSelector.addGoal(3, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 3,-1,
+                new FloorSoulSpearLineAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this),
+                new FloorSoulSpearLineAttackGoal(this)
         ));
 
-        this.goalSelector.addGoal(4, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 3,-1,
-                new ZoltraakAttackGoal(this),
-                new ShootElementalSoulProjectilesGoal(this),
-                new ZoltraakAttackGoal(this),
-                new ShootElementalSoulProjectilesGoal(this),
-                new ZoltraakBarrageAttackGoal(this)
-        ));
 
         this.goalSelector.addGoal(5, new SoulReapterNavigator(this, 20F, 10F));
         this.goalSelector.addGoal(6, new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true));
