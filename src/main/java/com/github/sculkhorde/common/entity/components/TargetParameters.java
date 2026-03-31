@@ -64,6 +64,11 @@ public class TargetParameters
         this(null, 0);
     }
 
+    public TargetParameters(int maxSecondaryTargets)
+    {
+        this(null, maxSecondaryTargets);
+    }
+
     /**
      * Creates a TargetParameters for a specific mob.
      * Default: 0 secondary targets allowed.
