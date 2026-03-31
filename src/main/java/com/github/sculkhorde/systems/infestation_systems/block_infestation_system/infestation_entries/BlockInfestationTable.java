@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries;
 
 import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.NodeUtil;
@@ -171,7 +172,7 @@ public class BlockInfestationTable{
         // I SAT HERE FOR HOURS TRYING TO FIGURE OUT WHY NODES WERE BEING DESTROYED. FUCK
         BlockAlgorithms.setBlockCursor(world, targetPos, newBlock);
         SculkNodeBlock.tryPlaceSculkNode(world, targetPos, false);
-        NodeUtil.tryMoveOldestNodeTo(world, targetPos, false);
+        if(ModConfig.isExperimentalFeaturesEnabled()) {NodeUtil.tryMoveOldestNodeTo(world, targetPos, false); }
 
         world.playSound(null, targetPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + world.getRandom().nextFloat() * 0.4F);
 

@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.SculkPopulationSystem;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
@@ -246,14 +247,14 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
                 int y = level.getMaxBuildHeight();
                 BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-                SculkPhantomEntity.trySpawnPhantoms(level, spawnPosition, true);
+                SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition);
             }
             return;
         }
 
         for(int i = 0; i < amount; i++)
         {
-            SculkPhantomEntity.trySpawnPhantoms(level, largestSpaceOrigin.get(), true);
+            SculkPopulationSystem.trySpawnScoutingPhantom(level, largestSpaceOrigin.get());
         }
 
     }

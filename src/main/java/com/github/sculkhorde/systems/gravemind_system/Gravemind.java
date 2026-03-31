@@ -320,7 +320,6 @@ public class Gravemind
         SculkHorde.beeNestActivitySystem.activate();
 
         //Verification Processes to ensure our data is accurate
-        ModSavedData.getSaveData().validateNodeEntries();
         ModSavedData.getSaveData().validateBeeNestEntries();
         ModSavedData.getSaveData().validateNoRaidZoneEntries();
         ModSavedData.getSaveData().validateAreasOfInterest();

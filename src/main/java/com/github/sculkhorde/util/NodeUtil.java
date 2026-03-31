@@ -85,9 +85,9 @@ public class NodeUtil {
         long currentTime = nodeEntry.getDimension().getGameTime();
         Optional<SculkNodeBlockEntity> blockEntity = getNodeBlockEntity(nodeEntry);
 
-        if(blockEntity.isEmpty())
+        if(!nodeEntry.isEntryValid() || blockEntity.isEmpty())
         {
-            SculkHorde.LOGGER.error("getNodeAgeTicks | Node block entity was null at " + nodeEntry.getDimension().toString() + " | " + nodeEntry.getPosition().toShortString());
+            SculkHorde.LOGGER.error("getNodeAgeTicks | Node was invalid at " + nodeEntry.getDimension().toString() + " | " + nodeEntry.getPosition().toShortString());
             return 0;
         }
 
@@ -134,7 +134,7 @@ public class NodeUtil {
         // Get oldest notest
         for(ModSavedData.NodeEntry node : getInactiveNodes())
         {
-            if(oldest == null || (getNodeAgeTicks(node) > getNodeAgeTicks(oldest) && (canMoveNode(node)) || ignoreRequirements))
+            if((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)) && (canMoveNode(node) || ignoreRequirements))
             {
                 oldest = node;
             }
