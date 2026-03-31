@@ -116,6 +116,7 @@ public class ContributionHandler {
         CONTRIBUTOR_UUIDS.add("5419a1c9-0aa8-45f5-8217-9be47140492c"); // sneve
 
          /// # Contributors & Community
+        CONTRIBUTOR_UUIDS.add("f0b9f831-5540-47c8-b50b-64fe4ee40341"); // AnukWarrior
         CONTRIBUTOR_UUIDS.add("838dd85f-95b9-4a9d-a785-7694e8c7c8b1"); // Abandoned_Cat87
         CONTRIBUTOR_UUIDS.add("046ae4a5-ec4e-4bf3-a054-f72a67147ec6"); // AbsoluteKun
         CONTRIBUTOR_UUIDS.add("719f4b13-4fe1-409e-9109-5eab941ed453"); // AME_Player_5555
