@@ -114,6 +114,10 @@ public class NodeUtil {
         {
             return false;
         }
+        else if(getNodeAgeTicks(node) <= TickUnits.convertHoursToTicks(2))
+        {
+            return false;
+        }
 
         return true;
     }
