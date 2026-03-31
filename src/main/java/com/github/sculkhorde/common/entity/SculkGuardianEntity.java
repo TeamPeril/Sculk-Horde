@@ -212,6 +212,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        TARGET_PARAMETERS.updateTargets();
     }
 
     public void travel(Vec3 movementVector) {
