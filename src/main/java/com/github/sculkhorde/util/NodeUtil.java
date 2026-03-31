@@ -152,7 +152,7 @@ public class NodeUtil {
     {
         Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(ignoreRequirements);
 
-        if(nodeToMove.isEmpty() || getNodeBlockEntity(nodeToMove.get()).isEmpty())
+        if(nodeToMove.isEmpty() || getNodeBlockEntity(nodeToMove.get()).isEmpty() || (!SculkNodeBlock.isValidPositionForSculkNode(level, pos) && !ignoreRequirements))
         {
             return;
         }
