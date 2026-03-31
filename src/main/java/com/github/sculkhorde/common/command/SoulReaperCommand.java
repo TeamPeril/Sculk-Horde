@@ -1,6 +1,6 @@
 package com.github.sculkhorde.common.command;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.AngelOfReapingEntity;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -42,7 +42,7 @@ public class SoulReaperCommand implements Command<CommandSourceStack> {
 
     private static int spawnSoulReaper(CommandSourceStack context, int difficulty, boolean withSquad) throws CommandSyntaxException {
 
-        SculkSoulReaperEntity.spawnWithDifficulty(context.getLevel(), context.getPosition(), difficulty, withSquad);
+        AngelOfReapingEntity.spawnWithDifficulty(context.getLevel(), context.getPosition(), difficulty, withSquad);
 
         return 1;
     }

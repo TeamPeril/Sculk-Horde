@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    " C ",
+    "CTC",
+    " S "
+  ],
+
+  "key":
+  {
+    "T":
+    {
+      "item": "sculkhorde:angel_of_reaping_soul"
+    },
+    "C":
+    {
+      "item": "sculkhorde:pure_souls"
+    },
+    "S":
+    {
+      "item": "sculkhorde:soulite_shard"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:soul_animator",
+    "count": 3
+  }
+}

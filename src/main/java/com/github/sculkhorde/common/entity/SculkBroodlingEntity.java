@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulPoisonProjectileAttackEntity;
-import com.github.sculkhorde.common.entity.components.*;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulPoisonProjectileAttackEntity;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
@@ -102,7 +102,6 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
-
 
     public boolean isIdle() {
         return getTarget() == null;
@@ -782,7 +781,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         @Override
         protected void playPreAttackAnimation()
         {
-            //getReaper().triggerAnim(SculkSoulReaperEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SculkSoulReaperEntity.FLOOR_SPEARS_SPELL_USE_ID);
+            //getReaper().triggerAnim(AngelOfReapingEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, AngelOfReapingEntity.FLOOR_SPEARS_SPELL_USE_ID);
         }
 
         @Override

@@ -1,7 +1,10 @@
 package com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries;
 
+import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
+import com.github.sculkhorde.util.NodeUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -165,7 +168,12 @@ public class BlockInfestationTable{
             return false;
         }
 
+        // INFECT BLOCK FIRST, THEN TRY TO PLACE NODE.
+        // I SAT HERE FOR HOURS TRYING TO FIGURE OUT WHY NODES WERE BEING DESTROYED. FUCK
         BlockAlgorithms.setBlockCursor(world, targetPos, newBlock);
+        SculkNodeBlock.tryPlaceSculkNode(world, targetPos, false);
+        if(ModConfig.isExperimentalFeaturesEnabled()) {NodeUtil.tryMoveOldestNodeTo(world, targetPos, false); }
+
         world.playSound(null, targetPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + world.getRandom().nextFloat() * 0.4F);
 
         if(newBlock.getBlock() instanceof ITagInfestedBlock tagInfestedBlock)
@@ -180,7 +188,6 @@ public class BlockInfestationTable{
         }
 
         SculkHorde.statisticsData.incrementTotalBlocksInfested();
-
         return true;
     }
 }

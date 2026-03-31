@@ -84,7 +84,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     Vec3 moveTargetPoint = new Vec3(anchorPoint.getX(), anchorPoint.getY(), anchorPoint.getZ());
 
     ArrayList<BlockPos> searchPositions = new ArrayList<>();
-    Vec3 spawnPoint = null;
+    public Vec3 spawnPoint = null;
 
     protected boolean isScouter = false;
 
@@ -104,16 +104,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     protected void customServerAiStep() {
         super.customServerAiStep();
         TARGET_PARAMETERS.updateTargets();
-    }
-
-    public static void spawnPhantom(Level worldIn, BlockPos spawnPos, boolean isScouter)
-    {
-        SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);
-        assert phantom != null;
-        phantom.setScouter(isScouter);
-        phantom.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-        phantom.spawnPoint = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
-        worldIn.addFreshEntity(phantom);
     }
 
     /**

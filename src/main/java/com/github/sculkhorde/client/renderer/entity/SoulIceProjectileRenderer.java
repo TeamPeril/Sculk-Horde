@@ -1,7 +1,7 @@
 package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.client.model.enitity.SoulIceProjectileModel;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulIceProjectileAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulIceProjectileAttackEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

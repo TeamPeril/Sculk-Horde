@@ -64,6 +64,8 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "\n"
                         + "Sculk Unit Population: " + SculkHorde.populationHandler.getPopulationSize() + " / " + SculkHorde.populationHandler.getMaxPopulation()
                         + "\n"
+                        + "Scouting Phantom Population: " + SculkHorde.populationHandler.getScoutingPhantomsPopulation() + " / " + SculkHorde.populationHandler.getMaxScoutingPhantomsPopulation()
+                        + "\n"
                         + "Player Profiles: " + ModSavedData.getSaveData().getPlayerProfileEntries().size()
                         + "\n"
                         + "Mob Profiles: " + ModSavedData.getSaveData().getMobProfileEntries().size()

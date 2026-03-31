@@ -4,9 +4,11 @@ import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.FireBallProjectileEntity;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.systems.path_builder_system.BuiltPath;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
@@ -452,6 +454,9 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             level().levelEvent(null, 1016, blockPosition(), 0);
         }
 
+        SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SCULK_GHAST_CHARGE.get());
+        SoundUtil.playHostileSoundInLevel(level(), blockPosition(), SoundEvents.GHAST_SHOOT);
+
         Vec3 shooterPos = new Vec3(getX(), getY(0.5D) + 0.5D, getZ());
         Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5D, 0); // Aim for center of mass
 
@@ -522,12 +527,20 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
     /** Sounds **/
 
+    @Override
     protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
-        return SoundEvents.GHAST_HURT;
+        return ModSounds.SCULK_GHAST_SCREAM.get();
     }
 
+    @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.GHAST_DEATH;
+        return ModSounds.SCULK_GHAST_DEATH.get();
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound()
+    {
+        return ModSounds.SCULK_GHAST_MOAN.get();
     }
 
 

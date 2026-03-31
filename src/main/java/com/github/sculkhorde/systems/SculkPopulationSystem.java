@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomCorpseEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
@@ -12,9 +13,12 @@ import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
@@ -73,6 +77,8 @@ public class SculkPopulationSystem {
     {
         return 30;
     }
+
+    public void incrementScoutingPhantomCount() { scoutingPhantomsPopulation++; }
 
     public boolean isScoutingPhantomPopulationAtMax()
     {
@@ -143,5 +149,24 @@ public class SculkPopulationSystem {
                 SculkHorde.statisticsData.addTotalMassFromDespawns((int) livingEntity.getHealth());
             }
         }
+    }
+
+    public static void trySpawnScoutingPhantom(Level worldIn, BlockPos spawnPos)
+    {
+        if(SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax())
+        {
+            return;
+        }
+
+        SculkPhantomEntity phantom = ModEntities.SCULK_PHANTOM.get().create(worldIn);
+
+        if(phantom == null) { return; }
+
+        phantom.setScouter(true);
+        phantom.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        phantom.spawnPoint = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        worldIn.addFreshEntity(phantom);
+        SculkHorde.populationHandler.incrementScoutingPhantomCount();
+        DebuggerSystem.entityDebuggerModule.logInfo("trySpawnScoutingPhantom | Spawned Scouting Phantom at " + spawnPos.toShortString());
     }
 }

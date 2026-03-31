@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -20,8 +21,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class AbstractProjectileEntity extends Projectile {
 
@@ -29,6 +32,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
 
     protected float damage;
     protected float explosionRadius;
+    protected HashSet<UUID> reflectedProjectiles = new HashSet<>();
 
     /**
      * Client Side, called every tick
@@ -107,12 +111,67 @@ public abstract class AbstractProjectileEntity extends Projectile {
     abstract protected void applyEffectToEntity(LivingEntity entity);
 
 
+    public void reflect() {
+        this.setDeltaMovement(this.getDeltaMovement().scale(-1));
+        this.setOwner(null);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
+        if (level().isClientSide()) { return false; }
+        Entity attacker = source.getEntity();
+        if (attacker instanceof Player player && !player.isCreative() && !player.isSpectator()) {
+            reflect();
+            setOwner(player);
+            reflectedProjectiles.add(player.getUUID());
+            return true;
+        }
+        return false;
+    }
+
+    protected void handleProjectileReflection()
+    {
+        if(level().isClientSide())
+        {
+            return;
+        }
+
+        for(Projectile projectile : level().getEntitiesOfClass(Projectile.class, getBoundingBox()))
+        {
+            if(projectile != this && projectile.getClass() != this.getClass() && !reflectedProjectiles.contains(projectile.getUUID()))
+            {
+                reflect();
+                reflectedProjectiles.add(projectile.getUUID());
+                if(projectile instanceof AbstractProjectileEntity abstractProjectile)
+                {
+                    abstractProjectile.reflect();
+                    abstractProjectile.reflectedProjectiles.add(this.getUUID());
+                }
+                else
+                {
+                    projectile.setDeltaMovement(projectile.getDeltaMovement().scale(-1));
+                    projectile.setOwner(null);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onHit(HitResult result) {
+        super.onHit(result);
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         if (!this.level().isClientSide()) {
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity livingEntity){
-                if(!EntityAlgorithms.isSculkLivingEntity.test(livingEntity))
+                if(!EntityAlgorithms.isSculkLivingEntity.test(livingEntity) || !reflectedProjectiles.isEmpty())
                 {
                     entity.hurt(damageSources().generic(),this.getDamage());
                     applyEffectToEntity(livingEntity);
@@ -146,6 +205,7 @@ public abstract class AbstractProjectileEntity extends Projectile {
         if (level().isClientSide) {
             trailParticles();
         }
+        handleProjectileReflection();
         handleHitDetection();
         faceDirectionOfTravel();
         travel();

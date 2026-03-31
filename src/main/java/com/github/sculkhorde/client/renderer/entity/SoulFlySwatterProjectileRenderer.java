@@ -1,7 +1,7 @@
 package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.client.model.enitity.SoulFlySwatterProjectileModel;
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SoulFlySwatterProjectileAttackEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulFlySwatterProjectileAttackEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;

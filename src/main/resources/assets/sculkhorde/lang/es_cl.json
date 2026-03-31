@@ -378,7 +378,7 @@
   "sounds.sculkhorde.sculk_ravager_bite": "Devastador de sculk muerde",
 
   "entity.sculkhorde.sculk_vex": "Vex de sculk",
-  "entity.sculkhorde.sculk_soul_reaper": "Segadora de almas sculk",
+  "entity.sculkhorde.angel_of_reaping": "Ángel de la cosecha sculk",
   "block.sculkhorde.soulite_core_block": "Bloque núcleo de almita",
   "block.sculkhorde.soulite_block": "Bloque de almita",
   "block.sculkhorde.depleted_soulite_block": "Bloque de almita agotado",
@@ -391,8 +391,8 @@
   "tooltip.sculkhorde.structure_origin_block": "Usado para determinar dónde está el origen de una estructura. Cuando un a estructura se genera, la estructura va a compensar para que el bloque de construcción de la estructura esté en la misma posición de este bloque.",
   "block.sculkhorde.structure_core_block": "Bloque de núcleo de estructura",
   "item.sculkhorde.soul_disrupter": "Disruptor de almas",
-  "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oUn arma que al apuntarse a una segadora de almas, va a debilitarla por 1 minuto. Mientras la debilidad está activa, desciende la dificultad un nivel.",
-  "tooltip.sculkhorde.soul_disrupter.lore": "§7§oUn arma improvisada diseñada para disruptir el poder de la segadora de almas temporamente.",
+  "tooltip.sculkhorde.soul_disrupter.functionality": "§7§oUn arma que al apuntarse a una Ángel de la cosecha, va a debilitarla por 1 minuto. Mientras la debilidad está activa, desciende la dificultad un nivel.",
+  "tooltip.sculkhorde.soul_disrupter.lore": "§7§oUn arma improvisada diseñada para disruptir el poder de la Ángel de la cosecha temporamente.",
 
   "item.sculkhorde.ferriscite": "Ferriscite",
   "tooltip.sculkhorde.ferriscite.functionality": "§7§oUn recurso que se crea al poner Hierro en un Cosechador de Almas. Las herramientas hechas con este material minarán más rápido cuanto más bloques del mismo tipo mines; minar un bloque diferente al último minado incurrirá en una pequeña penalización de velocidad. Además, las herramientas serán reparables matando mobs que no son sculk.",
@@ -456,7 +456,7 @@
   "tooltip.sculkhorde.blade_of_purity.functionality": "§7§oUna espada que al golpear un mob de la Horda de Sculk, le dará el efecto de pureza y purificará el terreno circundante. Esta hoja tiene un amplio barrido, lo que la hace ideal para hordas de mobs.",
   "tooltip.sculkhorde.blade_of_purity.lore": "§7§oUna espada imbuida con el aura cálida y reconfortante de la pureza. Sostenerla llena tu cuerpo con la determinación de restaurar el equilibrio en un mundo corrupto. Todas las almas angustiadas conocerán la paz una vez que se encuentren con esta hoja.",
   "item.sculkhorde.soul_animator": "Animador de Almas",
-  "tooltip.sculkhorde.soul_animator.functionality": "§7§oUn ingrediente de fabricación soltado por la Segadora de Almas.",
+  "tooltip.sculkhorde.soul_animator.functionality": "§7§oUn ingrediente de fabricación soltado por la Ángel de la cosecha.",
   "tooltip.sculkhorde.soul_animator.lore": "§7§oUn artefacto con la capacidad de animar cosas vivas y no vivas. Puede contener el poder de almas torturadas y puras para crear constructos y gólems.",
   "sounds.sculkhorde.soul_spear_emerge": "Lanza de Alma Emerge",
   "effect.sculkhorde.diseased_atmosphere": "Atmósfera Enferma",

@@ -29,7 +29,12 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -253,7 +258,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         // Update the tickedAt time
         blockEntity.tickedAt = System.nanoTime();
 
-        if(areAnyPlayersInRange((ServerLevel) level, blockPos, 15))
+        if(areAnyPlayersInRange((ServerLevel) level, blockPos))
         {
             tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
         }
@@ -354,12 +359,31 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
     }
 
-    private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos, int range)
+    private static boolean areAnyPlayersInRange(ServerLevel level, BlockPos blockPos)
     {
-        return level.players().stream().anyMatch((player) ->
-                player.blockPosition().closerThan(blockPos, range)
-                        && !player.isCreative() && !player.isSpectator() && !player.isInvulnerable()
-                );
+        final int RANGE = 20;
+        return level.players().stream().anyMatch((player) -> {
+            if (player.isCreative() || player.isSpectator() || player.isInvulnerable()) { return false; }
+            if (!player.blockPosition().closerThan(blockPos, RANGE)) { return false; }
+
+            // Within x blocks: no sight check needed
+            if (player.blockPosition().closerThan(blockPos, 14) && blockPos.getY() >= player.getY() - 2)
+            {
+                return true;
+            }
+
+            // Beyond 7 blocks: check line of sight from each face of the block
+            Vec3 blockCenter = Vec3.atCenterOf(blockPos);
+            Vec3 playerEyes = player.getEyePosition();
+            for (Direction face : Direction.values())
+            {
+                Vec3 faceCenter = blockCenter.add(face.getStepX() * 0.5, face.getStepY() * 0.5, face.getStepZ() * 0.5);
+                ClipContext clipContext = new ClipContext(faceCenter, playerEyes, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player);
+                BlockHitResult result = level.clip(clipContext);
+                if (result.getType() == HitResult.Type.MISS) { return true; }
+            }
+            return false;
+        });
     }
 
     public static void announceToAllPlayers(ServerLevel level, Component message)
@@ -499,7 +523,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
-            if(areAnyPlayersInRange(level, blockEntity.getBlockPos(), 20))
+            if(areAnyPlayersInRange(level, blockEntity.getBlockPos()))
             {
                 tryInitializeHorde(level, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
             }

@@ -730,7 +730,7 @@ public class ModSavedData extends SavedData {
      * If not, they will be removed. <br>
      * Gets called in {@link com.github.sculkhorde.util.ForgeEventSubscriber#WorldTickEvent}
      */
-    public void validateNodeEntries() {
+    public void cleanUpNodeEntries() {
         long startTime = System.nanoTime();
         Iterator<NodeEntry> iterator = getNodeEntries().iterator();
         while (iterator.hasNext()) {
@@ -935,9 +935,9 @@ public class ModSavedData extends SavedData {
     public static class NodeEntry
     {
         private final BlockPos position; //The Location in the world where the node is
-        private long lastTimeWasActive;
-        private long activationTimeStamp;
-        private boolean IsActive;
+        private long lastTimeWasActive = 0;
+        private long activationTimeStamp = 0;
+        private boolean IsActive = false;
         private ResourceKey<Level> dimension;
 
 
@@ -1024,8 +1024,26 @@ public class ModSavedData extends SavedData {
          */
         public boolean isEntryValid()
         {
-            if(getDimension() == null || getPosition() == null) { return false; }
-            return getDimension().getBlockState(position).getBlock().equals(ModBlocks.SCULK_NODE_BLOCK.get());
+
+            if(getDimension() == null || getPosition() == null)
+            {
+                SculkHorde.sculkNodesSystem.flagCleanUpRequired();
+                return false;
+            }
+
+            else if(!getDimension().getBlockState(position).getBlock().equals(ModBlocks.SCULK_NODE_BLOCK.get()))
+            {
+                SculkHorde.sculkNodesSystem.flagCleanUpRequired();
+                return false;
+            }
+
+            else if(NodeUtil.getNodeBlockEntity(this).isEmpty())
+            {
+                SculkHorde.sculkNodesSystem.flagCleanUpRequired();
+                return false;
+            }
+
+            return true;
         }
 
         /**

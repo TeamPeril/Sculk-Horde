@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.common.entity.SculkSporeSpewerEntity;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.SculkPopulationSystem;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
@@ -1186,7 +1187,7 @@ public class RaidEvent extends Event {
             int y = level.getMaxBuildHeight();
             BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-            SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
+            SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition);
 
         }
     }

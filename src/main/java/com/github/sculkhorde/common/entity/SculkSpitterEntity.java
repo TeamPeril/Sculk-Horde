@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.goals.LookAtTargetOrRandom;
 import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.goals.LookAtTargetOrRandom;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;

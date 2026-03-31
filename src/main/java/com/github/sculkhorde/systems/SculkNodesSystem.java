@@ -16,10 +16,18 @@ public class SculkNodesSystem {
     protected boolean isActive = false;
     protected long TICK_COOLDOWN = TickUnits.convertMinutesToTicks(5);
     protected long lastTimeSinceTick = 0;
+    protected boolean cleanUpRequired = false;
+    protected long timeOfLastValidation = 0;
+    protected final long VALIDATION_INTERVAL = TickUnits.convertMinutesToTicks(1);
 
 
     public SculkNodesSystem() {
         isActive = true;
+    }
+
+    public void flagCleanUpRequired()
+    {
+        cleanUpRequired = true;
     }
 
     public void setActive(boolean active) {
@@ -110,7 +118,7 @@ public class SculkNodesSystem {
     }
 
 
-    protected void ActivateNodeWithLongestDurationOfInactivity()
+    public void ActivateNodeWithLongestDurationOfInactivity()
     {
         ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
         if(!nodeWithLongestTimeOfInactivity.isEntryValid()) { return; }
@@ -123,7 +131,7 @@ public class SculkNodesSystem {
         SculkHorde.eventSystem.addEvent(phantomEvent);
     }
 
-    protected void DeactivateAllNodes()
+    public void DeactivateAllNodes()
     {
         for(ModSavedData.NodeEntry node : getNodes())
         {
@@ -145,12 +153,34 @@ public class SculkNodesSystem {
         }
     }
 
+    public void ActivateAllNodes()
+    {
+        for(ModSavedData.NodeEntry node : getNodes())
+        {
+            ServerLevel dimension = node.getDimension();
+            // This is likely due to an old world that was created before multi-dimensional support was added.
+            if(dimension == null)
+            {
+                ModSavedData.NodeEntry nodeToRemove = node;
+                SculkHorde.LOGGER.warn("Removing Node at: " + nodeToRemove.getPosition().toString() + " due to it being in a null dimension.");
+                getNodes().remove(nodeToRemove);
+                continue;
+
+            }
+
+            if(!node.isActive()) { continue; }
+            node.setActive(true);
+            node.setLastTimeWasActive(node.getDimension().getGameTime());
+            DebuggerSystem.eventDebuggerModule.logInfo("Deactivating Node at: " + node.getPosition().toString());
+        }
+    }
+
     public void tick()
     {
         boolean isSculkNodeHandlerNotActive = !isActive();
         boolean isSaveDataNull = ModSavedData.getSaveData() == null;
         long timeElapsedSinceLastTick = getLevel().getGameTime() - lastTimeSinceTick;
-        boolean isCooldownStillActive = timeElapsedSinceLastTick < TICK_COOLDOWN;
+        boolean isCooldownStillActive = timeElapsedSinceLastTick < TICK_COOLDOWN && !cleanUpRequired;
         boolean areThereNoNodes = getNodes().isEmpty();
         boolean isHordeDeactivated = !ModSavedData.getSaveData().isHordeActive();
 
@@ -158,7 +188,15 @@ public class SculkNodesSystem {
         {
             return;
         }
+
         lastTimeSinceTick = getLevel().getGameTime();
+
+        // If it is time to clean up, clean.
+        if(TickUnits.hasTicksPassed(timeOfLastValidation, getLevel(), VALIDATION_INTERVAL) || cleanUpRequired)
+        {
+            ModSavedData.getSaveData().cleanUpNodeEntries();
+            timeOfLastValidation = getLevel().getGameTime();
+        }
 
         boolean isThereMoreNodesThanMaxActiveNodes = getNodes().size() > ModConfig.SERVER.max_nodes_active.get();
 
@@ -168,9 +206,9 @@ public class SculkNodesSystem {
 
         if((hasAnyNodeBeenActiveForTooLong && isThereMoreNodesThanMaxActiveNodes) || areAllNodesInactive)
         {
+            DeactivateAllNodes();
             for(int i = 0; i < SculkHorde.autoPerformanceSystem.getMaxNodesActive(); i++)
             {
-                DeactivateAllNodes();
                 ActivateNodeWithLongestDurationOfInactivity();
             }
         }

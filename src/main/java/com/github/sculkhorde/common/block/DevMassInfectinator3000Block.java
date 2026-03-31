@@ -1,11 +1,13 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.DevMassInfectinator3000BlockEntity;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -92,6 +94,34 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
         return prop;
     }
 
+    protected void announceToPlayersInRange(ServerLevel level, BlockPos pos, Component message, double radius) {
+        // Check if the entity is in a valid world/level
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        // Define the squared radius for faster calculation (avoiding Math.sqrt in the loop)
+        double radiusSqr = radius * radius;
+
+        // Iterate through all players in the level
+        for (Player player : level.players()) {
+
+            // 1. Check if the player is in the same dimension
+            if (player.level().dimension() != level.dimension()) {
+                continue;
+            }
+
+            // 2. Check the distance
+            // The distanceSq() method returns the squared distance, matching radiusSqr
+            if (BlockAlgorithms.getBlockDistanceXZ(player.blockPosition(), pos) <= radiusSqr) {
+
+                // 3. Send the message
+                // Use ChatType.SYSTEM for a non-chat message that cannot be disabled easily
+                player.sendSystemMessage(message);
+            }
+        }
+    }
+
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving){
 
@@ -100,6 +130,11 @@ public class DevMassInfectinator3000Block extends BaseEntityBlock implements IFo
             return;
         }
         BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) worldIn, pos, 16, 1, TickUnits.convertMinutesToTicks(15));
+
+        if(!isMoving)
+        {
+            announceToPlayersInRange((ServerLevel) worldIn, pos, Component.literal("WARNING: THIS IS A DEV BLOCK AND IT WILL LAG YOUR GAME."), 5);
+        }
     }
 
     @Override

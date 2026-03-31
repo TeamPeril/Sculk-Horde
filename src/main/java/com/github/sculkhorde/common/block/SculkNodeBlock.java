@@ -3,10 +3,12 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
+import com.github.sculkhorde.systems.SculkPopulationSystem;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -106,6 +108,34 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         pBuilder.add(ACTIVE);
     }
 
+    public static boolean canSpawnSculkNode(ServerLevel worldIn, BlockPos targetPos)
+    {
+        boolean isSavedDataNull = ModSavedData.getSaveData() == null;
+        if(isSavedDataNull)
+        {
+            DebuggerSystem.eventDebuggerModule.logError("Tried to place Node. ModSavedData.getSaveData() is null");
+            return false;
+        }
+        else if(ModSavedData.getSaveData().isHordeDefeated())
+        {
+            return false;
+        }
+        else if(!ModSavedData.getSaveData().isNodeSpawnCooldownOver())
+        {
+            return false;
+        }
+        else if(!isValidPositionForSculkNode(worldIn, targetPos))
+        {
+            return false;
+        }
+        else if(ModSavedData.getSaveData().getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Will only place sculk nodes if sky is visible
      * @param worldIn The World to place it in
@@ -113,29 +143,23 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
      */
     public static void tryPlaceSculkNode(ServerLevel worldIn, BlockPos targetPos, boolean forcePlace)
     {
-        boolean failRandomChance = new Random().nextInt(1000) > 1;
-        boolean isSavedDataNull = ModSavedData.getSaveData() == null;
-        if(isSavedDataNull) {
-            DebuggerSystem.eventDebuggerModule.logError("Tried to place Node. ModSavedData.getSaveData() is null");
-            return;
-        }
-
         if(forcePlace) {
-            SculkNodeBlock.PlaceNode(worldIn, targetPos);
+            SculkNodeBlock.PlaceNode(worldIn, targetPos, false);
             return;
         }
 
-        if(failRandomChance) { return; }
+        boolean failRandomChance = new Random().nextInt(1000) > 1;
+        if(failRandomChance)
+        {
+            return;
+        }
 
-        boolean isTheHordeDefeated = ModSavedData.getSaveData().isHordeDefeated();
-        boolean isNodeSpawnOnCooldown = !ModSavedData.getSaveData().isNodeSpawnCooldownOver();
-        boolean isNotValidPositionForSculkNode = !isValidPositionForSculkNode(worldIn, targetPos);
-        boolean isNotEnoughMass = ModSavedData.getSaveData().getSculkAccumulatedMass() < SPAWN_NODE_COST + SPAWN_NODE_BUFFER;
-        boolean doNotSpawnNode = isTheHordeDefeated || isNodeSpawnOnCooldown || isNotValidPositionForSculkNode || isNotEnoughMass;
+        if(!canSpawnSculkNode(worldIn, targetPos))
+        {
+            return;
+        }
 
-        if(doNotSpawnNode) { return; }
-
-        SculkNodeBlock.PlaceNode(worldIn, targetPos);
+        SculkNodeBlock.PlaceNode(worldIn, targetPos, false);
         ModSavedData.getSaveData().subtractSculkAccumulatedMass(SPAWN_NODE_COST);
 
     }
@@ -186,17 +210,22 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         return true;
     }
 
-    public static void PlaceNode(ServerLevel level, BlockPos blockPos)
+    public static void PlaceNode(ServerLevel level, BlockPos blockPos, boolean movingNode)
     {
         BlockPos newOrigin = new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         BlockAlgorithms.setBlockStructure(level, newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
         ModSavedData.getSaveData().addNodeToMemory(level, newOrigin);
-        ModSavedData.getSaveData().resetNoNodeSpawningTicksElapsed();
-        EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
-        //Send message to all players that node has spawned
-        level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
-        // Play sound for each player
-        level.players().forEach(player -> level.playSound(null, player.blockPosition(), ModSounds.NODE_SPAWN_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
+
+        if(!movingNode)
+        {
+            ModSavedData.getSaveData().resetNoNodeSpawningTicksElapsed();
+            EntityType.LIGHTNING_BOLT.spawn(level, newOrigin, MobSpawnType.SPAWNER);
+            //Send message to all players that node has spawned
+            level.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has spawned!"), true));
+            // Play sound for each player
+            level.players().forEach(player -> level.playSound(null, player.blockPosition(), ModSounds.NODE_SPAWN_SOUND.get(), SoundSource.HOSTILE, 1.0F, 1.0F));
+        }
+
         if (ModConfig.SERVER.should_sculk_nodes_and_raids_spawn_phantoms.get()) {
             spawnScoutPhantoms(level, newOrigin, 10);
         }
@@ -218,14 +247,14 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
                 int y = level.getMaxBuildHeight();
                 BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-                SculkPhantomEntity.spawnPhantom(level, spawnPosition, true);
+                SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition);
             }
             return;
         }
 
         for(int i = 0; i < amount; i++)
         {
-            SculkPhantomEntity.spawnPhantom(level, largestSpaceOrigin.get(), true);
+            SculkPopulationSystem.trySpawnScoutingPhantom(level, largestSpaceOrigin.get());
         }
 
     }
@@ -302,33 +331,38 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
         {
             return;
         }
+
+        boolean isNodeRelocating = false;
+        if(NodeUtil.getNodeBlockEntity((ServerLevel) worldIn, pos).isPresent())
+        {
+            isNodeRelocating = NodeUtil.getNodeBlockEntity((ServerLevel) worldIn, pos).get().isBeingMoved;
+        }
+
         ModSavedData.getSaveData().removeNodeFromMemory(pos);
-
-        // Subtract 10% of total mass
-        int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);
-        ModSavedData.getSaveData().subtractSculkAccumulatedMass(subtractAmount);
-        SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
-
-        worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
-        worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
-
         decayRemainingNodeBlocks((ServerLevel) worldIn, pos, 12);
 
-        SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+        if(!isNodeRelocating)
+        {
+            // Subtract 10% of total mass
+            int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);
+            ModSavedData.getSaveData().subtractSculkAccumulatedMass(subtractAmount);
+            SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
 
-        // Get Nearby Players and update the number of nodes they destroyed
-        worldIn.players().forEach((player) ->
-                {
-                    if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+            worldIn.players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
+            worldIn.players().forEach(player -> worldIn.playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
+            SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+            // Get Nearby Players and update the number of nodes they destroyed
+            worldIn.players().forEach((player) ->
                     {
-                        PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
-                        PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
-                        PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
+                        if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+                        {
+                            PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
+                            PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
+                            PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
+                        }
                     }
-                }
-        );
-
-
+            );
+        }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 

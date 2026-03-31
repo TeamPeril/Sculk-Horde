@@ -4,6 +4,7 @@ package com.github.sculkhorde.systems.event_system.events;
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.SculkPopulationSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
@@ -35,14 +36,14 @@ public class SpawnPhantomsEvent extends Event {
                 int y = getDimension().getMaxBuildHeight();
                 BlockPos spawnPosition = new BlockPos(getEventLocation().getX() + x, y, getEventLocation().getZ() + z);
 
-                SculkPhantomEntity.spawnPhantom(getDimension(), spawnPosition, true);
+                SculkPopulationSystem.trySpawnScoutingPhantom(getDimension(), spawnPosition);
             }
             return;
         }
 
         for(int i = 0; i < amount; i++)
         {
-            SculkPhantomEntity.spawnPhantom(getDimension(), largestSpaceOrigin.get(), true);
+            SculkPopulationSystem.trySpawnScoutingPhantom(getDimension(), largestSpaceOrigin.get());
         }
 
     }

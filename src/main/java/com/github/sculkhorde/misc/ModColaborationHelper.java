@@ -68,7 +68,7 @@ public class ModColaborationHelper {
     }
 
 
-    /// #### Dawn of the Flood ####
+    /// #### Depper and Darker ####
     public static String DEEPER_AND_DARKER = "deeper_and_darker";
     public static boolean isDeeperAndDarkerLoaded()
     {
@@ -88,11 +88,11 @@ public class ModColaborationHelper {
 
 
 
-    /// #### Dawn of the Flood ####
+    /// # Dawn of the Flood
     public static String DAWN_OF_THE_FLOOD_ID = "dotf";
     public static boolean isDawnOfTheFloodLoaded()
     {
-        return ModList.get().isLoaded(DEEPER_AND_DARKER);
+        return ModList.get().isLoaded(DAWN_OF_THE_FLOOD_ID);
     }
 
     public static boolean doesEntityBelongToDawnOfTheFloodMod(LivingEntity entity)
@@ -103,7 +103,7 @@ public class ModColaborationHelper {
         }
 
         String entityModID = extractModId(entity);
-        return entityModID.equals(DEEPER_AND_DARKER);
+        return entityModID.equals(DAWN_OF_THE_FLOOD_ID);
     }
 
 
@@ -372,6 +372,26 @@ public class ModColaborationHelper {
 
         return false;
     }
+
+    /// # The Dulling
+    public static String DULLING_ID = "thedulling";
+    public static boolean isDullingLoaded()
+    {
+        return ModList.get().isLoaded(DULLING_ID);
+    }
+
+    private static TagKey<EntityType<?>> DULL_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("minecraft" + ":dull"));
+
+    public static boolean doesEntityBelongToDullingMod(LivingEntity entity)
+    {
+        if(!isDullingLoaded())
+        {
+            return false;
+        }
+
+        return entity.getType().is(DULL_TAG_KEY);
+    }
+
 
 
 }

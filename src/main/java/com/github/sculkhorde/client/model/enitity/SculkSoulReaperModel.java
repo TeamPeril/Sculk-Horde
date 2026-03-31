@@ -1,12 +1,12 @@
 package com.github.sculkhorde.client.model.enitity;
 
-import com.github.sculkhorde.common.entity.boss.sculk_soul_reaper.SculkSoulReaperEntity;
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.AngelOfReapingEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
-public class SculkSoulReaperModel extends DefaultedEntityGeoModel<SculkSoulReaperEntity> {
+public class SculkSoulReaperModel extends DefaultedEntityGeoModel<AngelOfReapingEntity> {
 
 
     /**
@@ -19,12 +19,12 @@ public class SculkSoulReaperModel extends DefaultedEntityGeoModel<SculkSoulReape
      *
      */
     public SculkSoulReaperModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_soul_reaper"));
+        super(new ResourceLocation(SculkHorde.MOD_ID, "angel_of_reaping"));
     }
 
     // We want our model to render using the translucent render type
     @Override
-    public RenderType getRenderType(SculkSoulReaperEntity animatable, ResourceLocation texture) {
+    public RenderType getRenderType(AngelOfReapingEntity animatable, ResourceLocation texture) {
         return RenderType.entityTranslucent(getTextureResource(animatable));
     }
 

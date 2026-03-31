@@ -77,7 +77,7 @@ public class AmbientSFXSystem {
             if(temp.isPresent() && !PlayerProfileHandler.isPlayerActiveVessel(player))
             {
                 SoundUtil.playAmbientSoundInLevel(player.level(), temp.get(), ModSounds.INFESTATION_AMBIENCE.get());
-                PlayerProfileHandler.setTimeUntilNextAmbientSound(player, TickUnits.convertSecondsToTicks(120));
+                PlayerProfileHandler.setTimeUntilNextAmbientSound(player, TickUnits.convertMinutesToTicks(15));
                 PlayerProfileHandler.setTimeOfLastAmbientSound(player, player.level().getGameTime());
                 return;
             }
