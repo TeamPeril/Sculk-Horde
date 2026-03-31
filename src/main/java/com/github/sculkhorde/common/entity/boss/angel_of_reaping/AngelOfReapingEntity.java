@@ -469,6 +469,7 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
 
         }
 
+        TARGET_PARAMETERS.updateTargets();
         this.jumping = false;
         super.aiStep();
     }
