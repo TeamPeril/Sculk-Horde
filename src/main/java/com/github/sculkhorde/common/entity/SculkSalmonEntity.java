@@ -171,7 +171,7 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
         @Override
         public boolean canUse()
         {
-            boolean isTargetValid = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean isTargetValid = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
             boolean isInWater = isInWater();
             // If the mob is already targeting something valid, don't bother
             return isTargetValid && isInWater;

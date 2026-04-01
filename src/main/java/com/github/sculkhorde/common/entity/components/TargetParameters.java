@@ -1,9 +1,7 @@
 package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
-import com.github.sculkhorde.systems.debugger_system.EntityDebuggerModule;
 import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -346,19 +344,16 @@ public class TargetParameters
     // ==================== Core Targeting Logic ====================
 
     // Predicate to test if valid target
-    public final Predicate<LivingEntity> isPossibleNewTargetValid = (e) -> {
-        return isEntityValidTarget(e, false);
-    };
+    public final Predicate<LivingEntity> isPossibleNewTargetValid = this::isEntityValidSculkHordeTarget;
 
-    public void debugPrint(boolean validatingExistingTarget, LivingEntity e, String message)
+    public void debugPrint(LivingEntity e, String message)
     {
         String Header = "isEntityValid | ";
         String mobName = this.mob == null ? "null " : this.mob.getClass().getSimpleName();
-        String checkType = validatingExistingTarget ? " is Checking Current Target: " : " is Checking Potential Target: ";
 
         if(this.mob != null && DebuggerSystem.entityDebuggerModule.isMobBeingDebugged(this.mob))
         {
-            DebuggerSystem.entityDebuggerModule.logDebug(Header + mobName + checkType + e.getClass().getSimpleName() + " " + message);
+            DebuggerSystem.entityDebuggerModule.logDebug(Header + mobName + e.getClass().getSimpleName() + " " + message);
         }
     }
 
@@ -368,9 +363,59 @@ public class TargetParameters
      * Uses modular filters, custom conditions, and legacy settings.
      *
      * @param e The entity to validate
-     * @param validatingExistingTarget Whether this is validating an existing target (optimization hint)
      * @return true if the entity is a valid target
      */
+    public boolean isEntityValidSculkHordeTarget(LivingEntity e)
+    {
+
+        // Check explicit deny list
+        if (EntityAlgorithms.isInvalidTargetForSculkHorde(e))
+        {
+            debugPrint(e, "is explicitly denied.");
+            return false;
+        }
+
+        // Check blacklist first (fast path)
+        if (e instanceof Mob && isOnBlackList((Mob) e))
+        {
+            debugPrint(e, "is on Blacklist. Denied.");
+            return false;
+        }
+
+        // Special entity types are always valid
+        if (e instanceof InfestationPurifierEntity)
+        {
+            debugPrint(e, "is Infestation Purifier. Approved.");
+            return true;
+        }
+
+        if (e instanceof Player)
+        {
+            debugPrint(e, "is Player. Approved.");
+            return true;
+        }
+
+        // Check built-in filters
+        if (!checkBuiltInFilters(e))
+        {
+            return false;
+        }
+
+        if(mob != null)
+        {
+            // Check custom conditions
+            for (TargetCondition condition : customConditions)
+            {
+                if (!condition.isMet(e, mob))
+                {
+                    debugPrint(e, "failed custom condition. Denied.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
 
@@ -382,39 +427,39 @@ public class TargetParameters
         // Check blacklist first (fast path)
         if (e instanceof Mob && isOnBlackList((Mob) e))
         {
-            debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
+            debugPrint(e, "is on Blacklist. Denied.");
             return false;
         }
 
         // Check explicit deny list
-        if (EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
+        if (EntityAlgorithms.isInvalidTargetForSculkHorde(e))
         {
-            debugPrint(validatingExistingTarget, e, "is explicitly denied.");
+            debugPrint(e, "is explicitly denied.");
             return false;
         }
 
         // Players in creative/spectator are always invalid
         if (e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
         {
-            debugPrint(validatingExistingTarget, e, "is player in creative or spectator. Denied.");
+            debugPrint(e, "is player in creative or spectator. Denied.");
             return false;
         }
 
         // Special entity types are always valid
         if (e instanceof InfestationPurifierEntity)
         {
-            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
+            debugPrint(e, "is Infestation Purifier. Approved.");
             return true;
         }
 
         if (e instanceof Player)
         {
-            debugPrint(validatingExistingTarget, e, "is Player. Approved.");
+            debugPrint(e, "is Player. Approved.");
             return true;
         }
 
         // Check built-in filters
-        if (!checkBuiltInFilters(e, validatingExistingTarget))
+        if (!checkBuiltInFilters(e))
         {
             return false;
         }
@@ -424,9 +469,9 @@ public class TargetParameters
             // Check custom conditions
             for (TargetCondition condition : customConditions)
             {
-                if (!condition.isMet(e, validatingExistingTarget, mob))
+                if (!condition.isMet(e, mob))
                 {
-                    debugPrint(validatingExistingTarget, e, "failed custom condition. Denied.");
+                    debugPrint(e, "failed custom condition. Denied.");
                     return false;
                 }
             }
@@ -438,53 +483,65 @@ public class TargetParameters
      * Checks built-in filter configuration against entity properties.
      *
      * @param e The entity to check
-     * @param validatingExistingTarget Optimization hint
      * @return true if entity passes all enabled filters
      */
-    private boolean checkBuiltInFilters(LivingEntity e, boolean validatingExistingTarget)
+    private boolean checkBuiltInFilters(LivingEntity e)
     {
         // Check swimmer/walker filters
         boolean isSwimmer = isLivingEntitySwimmer(e);
         boolean isFlier = isLivingEntityFlying(e);
         boolean isWalker = !isLivingEntityFlying(e);
+
+        if(isSculkLivingEntity.test(e) && !isFilterEnabled(TargetFilter.SCULK_HORDE_ENTITY))
+        {
+            debugPrint(e, "is sculk horde entity. Denied.");
+            return false;
+        }
+
+        if(EntityAlgorithms.isLivingEntityAllyToSculkHorde(e) && !isFilterEnabled(TargetFilter.ALLIED_TO_SCULK_HORDE))
+        {
+            debugPrint(e, "is allied sculk horde. Denied.");
+            return false;
+        }
+
         if (isSwimmer && !isFilterEnabled(TargetFilter.SWIMMERS))
         {
-            debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
+            debugPrint(e, "is swimmer. Denied.");
             return false;
         }
 
         if (isWalker && !isFilterEnabled(TargetFilter.WALKERS))
         {
-            debugPrint(validatingExistingTarget, e, "is walker. Denied.");
+            debugPrint(e, "is walker. Denied.");
             return false;
         }
 
         if(isFlier && !isFilterEnabled(TargetFilter.FLIERS))
         {
-            debugPrint(validatingExistingTarget, e, "is flier. Denied.");
+            debugPrint(e, "is flier. Denied.");
             return false;
         }
 
         // Check infection status
         boolean isInfected = isLivingEntityInfected(e);
-        if (isInfected && !isFilterEnabled(TargetFilter.INFECTED))
+        if (isInfected && !isFilterEnabled(TargetFilter.INFECTED_BY_SCULK))
         {
-            debugPrint(validatingExistingTarget, e, "is infected but we don't target infected. Denied.");
+            debugPrint(e, "is infected but we don't target infected. Denied.");
             return false;
         }
 
         // Check hostility status
         boolean isHostile = isLivingEntityHostile(e);
 
-        if (isHostile && !isFilterEnabled(TargetFilter.HOSTILES))
+        if (isHostile && !isFilterEnabled(TargetFilter.HOSTILE_TO_SCULK))
         {
-            debugPrint(validatingExistingTarget, e, "is hostile but we don't target hostiles. Denied.");
+            debugPrint(e, "is hostile but we don't target hostiles. Denied.");
             return false;
         }
 
-        if (!isHostile && !isFilterEnabled(TargetFilter.PASSIVES))
+        if (!isHostile && !isFilterEnabled(TargetFilter.PASSIVE_TO_SCULK))
         {
-            debugPrint(validatingExistingTarget, e, "is passive but we don't target passives. Denied.");
+            debugPrint(e, "is passive but we don't target passives. Denied.");
             return false;
         }
 

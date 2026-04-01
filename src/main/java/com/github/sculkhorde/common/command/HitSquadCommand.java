@@ -62,7 +62,7 @@ public class HitSquadCommand implements Command<CommandSourceStack> {
 
             ModSavedData.PlayerProfileEntry playerProfile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
 
-            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(playerProfile.getPlayer().get()))
+            if(EntityAlgorithms.isInvalidTargetForSculkHorde(playerProfile.getPlayer().get()))
             {
                 stringBuilder.append("FAILURE, " + player.getScoreboardName() + " is an explicitly denied target.");
                 context.sendFailure(Component.literal(stringBuilder.toString()));

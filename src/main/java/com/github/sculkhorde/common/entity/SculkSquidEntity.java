@@ -71,9 +71,9 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
     // Controls what types of entities this mob can target
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES,
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK,
                     TargetFilter.SWIMMERS,
-                    TargetFilter.PASSIVES
+                    TargetFilter.PASSIVE_TO_SCULK
             )
             .addCondition(TargetCondition.mustSee())
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
@@ -456,7 +456,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         @Override
         public boolean canUse()
         {
-            boolean isTargetValid = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean isTargetValid = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
             boolean isInWater = isInWater();
             // If the mob is already targeting something valid, don't bother
             return isTargetValid && isInWater;

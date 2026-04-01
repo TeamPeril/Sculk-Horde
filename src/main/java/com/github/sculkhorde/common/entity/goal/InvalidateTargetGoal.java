@@ -103,7 +103,7 @@ public class InvalidateTargetGoal extends Goal {
             targetParameters.addToBlackList((Mob) getTarget());
         }
 
-        boolean result = !targetParameters.isEntityValidTarget(getTarget(), true);
+        boolean result = !targetParameters.isEntityValidSculkHordeTarget(getTarget());
         return result;
     }
 

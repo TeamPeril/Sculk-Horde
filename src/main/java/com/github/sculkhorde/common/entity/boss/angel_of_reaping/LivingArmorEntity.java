@@ -73,9 +73,9 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES,
-                    TargetFilter.INFECTED,
-                    TargetFilter.HOSTILES,
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK,
+                    TargetFilter.INFECTED_BY_SCULK,
+                    TargetFilter.HOSTILE_TO_SCULK,
                     TargetFilter.WALKERS
             );
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -358,7 +358,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         @Override
         public boolean canUse()
         {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
             // If the mob is already targeting something valid, don't bother
             return canWeUse;
         }

@@ -72,10 +72,10 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES,
-                    TargetFilter.INFECTED,
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK,
+                    TargetFilter.INFECTED_BY_SCULK,
                     TargetFilter.SWIMMERS,
-                    TargetFilter.PASSIVES
+                    TargetFilter.PASSIVE_TO_SCULK
             )
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
@@ -370,7 +370,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
          */
         public boolean canUse()
         {
-            boolean isTargetValid = thisEntity.getTargetParameters().isEntityValidTarget(getMob().getTarget(), true);
+            boolean isTargetValid = thisEntity.getTargetParameters().isEntityValidSculkHordeTarget(getMob().getTarget());
             return isTargetValid;
         }
 

@@ -38,7 +38,7 @@ public class HitSquadDispatcherSystem {
                 continue;
             }
 
-            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(profile.getPlayer().get()))
+            if(EntityAlgorithms.isInvalidTargetForSculkHorde(profile.getPlayer().get()))
             {
                 continue;
             }

@@ -18,7 +18,7 @@ public interface TargetCondition
      * @param mob The mob doing the targeting (for context, may be null)
      * @return true if the condition is met, false otherwise
      */
-    boolean isMet(LivingEntity target, boolean isCurrentTarget, Mob mob);
+    boolean isMet(LivingEntity target, Mob mob);
 
     /**
      * Creates a condition that checks if health is below a threshold percentage.
@@ -28,7 +28,7 @@ public interface TargetCondition
      */
     static TargetCondition healthBelow(float healthPercentage)
     {
-        return (target, isCurrentTarget, mob) -> target.getHealth() < (target.getMaxHealth() * healthPercentage / 100f);
+        return (target, mob) -> target.getHealth() < (target.getMaxHealth() * healthPercentage / 100f);
     }
 
     /**
@@ -39,7 +39,7 @@ public interface TargetCondition
      */
     static TargetCondition healthAbove(float healthPercentage)
     {
-        return (target, isCurrentTarget, mob) -> target.getHealth() >= (target.getMaxHealth() * healthPercentage / 100f);
+        return (target, mob) -> target.getHealth() >= (target.getMaxHealth() * healthPercentage / 100f);
     }
 
     /**
@@ -50,7 +50,7 @@ public interface TargetCondition
      */
     static TargetCondition withinDistance(double maxDistance)
     {
-        return (target, isCurrentTarget, mob) -> mob != null && mob.distanceTo(target) <= maxDistance;
+        return (target, mob) -> mob != null && mob.distanceTo(target) <= maxDistance;
     }
 
     /**
@@ -60,7 +60,7 @@ public interface TargetCondition
      */
     static TargetCondition mustSee()
     {
-        return (target, isCurrentTarget, mob) -> mob != null && mob.getSensing().hasLineOfSight(target);
+        return (target, mob) -> mob != null && mob.getSensing().hasLineOfSight(target);
     }
 }
 

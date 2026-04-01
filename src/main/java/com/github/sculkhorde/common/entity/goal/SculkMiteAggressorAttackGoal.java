@@ -6,8 +6,6 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 import java.util.EnumSet;
 
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
-
 public class SculkMiteAggressorAttackGoal extends MeleeAttackGoal {
 
     private final SculkMiteAggressorEntity thisMob;
@@ -27,7 +25,7 @@ public class SculkMiteAggressorAttackGoal extends MeleeAttackGoal {
     @Override
     public boolean canUse()
     {
-        boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+        boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
         // If the mob is already targeting something valid, don't bother
         return canWeUse;
     }
