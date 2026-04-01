@@ -2,8 +2,11 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.block.GolemOfWrathAnimatorBlock;
 import com.github.sculkhorde.common.blockentity.GolemOfWrathAnimatorBlockEntity;
+import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
+import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.CustomAttackGoal;
-import com.github.sculkhorde.common.entity.goal.NearestInfectionModEntityTargetGoal;
+import com.github.sculkhorde.common.entity.goal.PurityTargetGoal;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModEntities;
@@ -75,6 +78,9 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.45F;
     public static final float KNOCKBACK_RESISTANCE = 100.0F;
+
+    public TargetParameters targetParameters = DefaultTargetParameters.DefaultPurityGroundMeleeCombat.copy(this)
+            .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));;
 
     // Controls what types of entities this mob can target
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -175,9 +181,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         Goal[] goals =
                 {
                         //HurtByTargetGoal(mob)
-                        new NearestInfectionModEntityTargetGoal<>(this, true, true)
-                                .setIgnoreFlyingTargets(true)
-                                .setIgnoreSwimmingTargets(true),
+                        new PurityTargetGoal<>(this),
                         new HurtByTargetGoal(this)
                 };
         return goals;

@@ -71,7 +71,7 @@ public class SculkPufferfishEntity extends WaterAnimal implements GeoEntity, ISc
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.HOSTILE_TO_SCULK,
                     TargetFilter.INFECTED_BY_SCULK,
                     TargetFilter.SWIMMERS,

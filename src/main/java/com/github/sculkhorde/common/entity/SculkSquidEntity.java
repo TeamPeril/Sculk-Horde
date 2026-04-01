@@ -70,7 +70,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.20F;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.HOSTILE_TO_SCULK,
                     TargetFilter.SWIMMERS,
                     TargetFilter.PASSIVE_TO_SCULK

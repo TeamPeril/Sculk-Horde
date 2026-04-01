@@ -27,9 +27,9 @@ import java.util.Random;
 
 public class SummonReinforcementsCommand implements Command<CommandSourceStack> {
 
-    private final TargetParameters hostileTargetParameters = new TargetParameters()
+    private final TargetParameters hostileTargetParameters = new TargetParameters(true)
             .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK);
-    private final TargetParameters infectableTargetParameters = new TargetParameters()
+    private final TargetParameters infectableTargetParameters = new TargetParameters(true)
             .filterBy(TargetFilter.PASSIVE_TO_SCULK);
 
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {

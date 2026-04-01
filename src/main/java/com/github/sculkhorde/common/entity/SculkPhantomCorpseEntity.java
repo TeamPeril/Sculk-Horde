@@ -74,7 +74,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
     public static final float MOVEMENT_SPEED = 0F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.PASSIVE_TO_SCULK, TargetFilter.HOSTILE_TO_SCULK);
 
     private VirtualSurfaceInfestorCursor cursor;

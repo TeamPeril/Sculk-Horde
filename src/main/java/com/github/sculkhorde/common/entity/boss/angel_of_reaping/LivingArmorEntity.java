@@ -72,7 +72,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     protected float lastHurtDistanceFromSourceEntity = 0;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.HOSTILE_TO_SCULK,
                     TargetFilter.INFECTED_BY_SCULK,
                     TargetFilter.HOSTILE_TO_SCULK,

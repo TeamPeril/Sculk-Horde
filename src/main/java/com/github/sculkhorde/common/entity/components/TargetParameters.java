@@ -52,19 +52,19 @@ public class TargetParameters
     protected final Map<UUID, Integer> targetTicksSinceSeen = new HashMap<>();
     protected long maxTargetUnseenTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
-
+    protected boolean isSculkHordeAllied;
     /**
      * Creates a TargetParameters with no mob (useful for validation-only usage).
      * Default: 0 secondary targets allowed.
      */
-    public TargetParameters()
+    public TargetParameters(boolean isSculkHordeAllied)
     {
-        this(null, 0);
+        this(null, isSculkHordeAllied, 0);
     }
 
-    public TargetParameters(int maxSecondaryTargets)
+    public TargetParameters(boolean isSculkHordeAllied, int maxSecondaryTargets)
     {
-        this(null, maxSecondaryTargets);
+        this(null, isSculkHordeAllied, maxSecondaryTargets);
     }
 
     /**
@@ -73,9 +73,9 @@ public class TargetParameters
      *
      * @param mob The mob using these parameters
      */
-    public TargetParameters(Mob mob)
+    public TargetParameters(Mob mob, boolean isSculkHordeAllied)
     {
-        this(mob, 0);
+        this(mob, isSculkHordeAllied, 0);
     }
 
     /**
@@ -84,10 +84,11 @@ public class TargetParameters
      * @param mob The mob using these parameters
      * @param maxSecondaryTargets Maximum number of secondary targets to track
      */
-    public TargetParameters(Mob mob, int maxSecondaryTargets)
+    public TargetParameters(Mob mob, boolean isSculkHordeAllied, int maxSecondaryTargets)
     {
         this.mob = mob;
         this.targetStack = new TargetStack(this, maxSecondaryTargets);
+        this.isSculkHordeAllied = isSculkHordeAllied;
     }
 
 
@@ -344,7 +345,19 @@ public class TargetParameters
     // ==================== Core Targeting Logic ====================
 
     // Predicate to test if valid target
-    public final Predicate<LivingEntity> isPossibleNewTargetValid = this::isEntityValidSculkHordeTarget;
+    public final Predicate<LivingEntity> isPossibleNewTargetValid = new Predicate<LivingEntity>() {
+        @Override
+        public boolean test(LivingEntity livingEntity) {
+
+            if(isSculkHordeAllied)
+            {
+                return isEntityValidSculkHordeTarget(livingEntity);
+            }
+
+            return isEntityValidTarget(livingEntity);
+        }
+    };
+
 
     public void debugPrint(LivingEntity e, String message)
     {
@@ -416,10 +429,10 @@ public class TargetParameters
         return true;
     }
 
-    public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
+    public boolean isEntityValidTarget(LivingEntity e)
     {
 
-        if(e == null)
+        if(isEntityUntargetable(e))
         {
             return false;
         }
@@ -431,35 +444,8 @@ public class TargetParameters
             return false;
         }
 
-        // Check explicit deny list
-        if (EntityAlgorithms.isInvalidTargetForSculkHorde(e))
-        {
-            debugPrint(e, "is explicitly denied.");
-            return false;
-        }
-
-        // Players in creative/spectator are always invalid
-        if (e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
-        {
-            debugPrint(e, "is player in creative or spectator. Denied.");
-            return false;
-        }
-
-        // Special entity types are always valid
-        if (e instanceof InfestationPurifierEntity)
-        {
-            debugPrint(e, "is Infestation Purifier. Approved.");
-            return true;
-        }
-
-        if (e instanceof Player)
-        {
-            debugPrint(e, "is Player. Approved.");
-            return true;
-        }
-
         // Check built-in filters
-        if (!checkBuiltInFilters(e))
+        if(!checkBuiltInFilters(e))
         {
             return false;
         }
@@ -539,7 +525,7 @@ public class TargetParameters
             return false;
         }
 
-        if (!isHostile && !isFilterEnabled(TargetFilter.PASSIVE_TO_SCULK))
+        if (!isHostile && !isSculkLivingEntity.test(e) && !EntityAlgorithms.isLivingEntityAllyToSculkHorde(e) && !isFilterEnabled(TargetFilter.PASSIVE_TO_SCULK))
         {
             debugPrint(e, "is passive but we don't target passives. Denied.");
             return false;
@@ -779,7 +765,7 @@ public class TargetParameters
      */
     public TargetParameters copy()
     {
-        TargetParameters copy = new TargetParameters(this.mob, this.targetStack.getMaxSecondaryTargets());
+        TargetParameters copy = new TargetParameters(this.mob, this.isSculkHordeAllied, this.targetStack.getMaxSecondaryTargets());
 
         // Copy enabled filters
         copy.enabledFilters.addAll(this.enabledFilters);

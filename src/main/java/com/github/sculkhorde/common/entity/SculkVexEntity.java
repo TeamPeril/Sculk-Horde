@@ -72,7 +72,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
     public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
-    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    private TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK)
             .disableBlackListMobs();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

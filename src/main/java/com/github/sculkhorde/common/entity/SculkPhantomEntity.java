@@ -74,7 +74,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public static final float MOVEMENT_SPEED = 0.35F;
 
     // Controls what types of entities this mob can target
-    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.PASSIVE_TO_SCULK, TargetFilter.HOSTILE_TO_SCULK, TargetFilter.WALKERS, TargetFilter.FLIERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));

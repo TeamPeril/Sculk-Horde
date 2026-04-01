@@ -37,7 +37,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
     private boolean isParticipatingInRaid = false;
 
     // Controls what types of entities this mob can target
-    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
+    private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
             .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.WALKERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertMinutesToTicks(1)))
             .addRetentionRule(TargetRetention.maxDistance(32));
