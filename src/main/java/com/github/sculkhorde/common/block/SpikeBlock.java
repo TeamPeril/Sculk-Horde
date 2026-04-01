@@ -110,7 +110,7 @@ public class SpikeBlock extends SculkFloraBlock implements IForgeBlock {
         }
 
         // If the entity is a sculk, don't do anything
-        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget((LivingEntity) entity))
+        if(EntityAlgorithms.isInvalidTargetForSculkHorde((LivingEntity) entity))
         {
             return;
         }

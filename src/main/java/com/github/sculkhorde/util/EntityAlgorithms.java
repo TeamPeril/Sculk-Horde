@@ -23,7 +23,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -492,12 +491,7 @@ public class EntityAlgorithms {
         return false;
     }
 
-    /**
-     * Determines if we should avoid targeting an entity at all costs.
-     * @param entity The Given Entity
-     * @return True if we should avoid, False otherwise
-     */
-    public static boolean isLivingEntityExplicitDenyTarget(LivingEntity entity)
+    public static boolean isEntityUntargetable(LivingEntity entity)
     {
         if(entity == null)
         {
@@ -509,7 +503,6 @@ public class EntityAlgorithms {
         {
             return true;
         }
-
         //If not attackable or invulnerable or is dead/dying
         if(!entity.isAttackable() || entity.isInvulnerable() || !entity.isAlive())
         {
@@ -522,14 +515,44 @@ public class EntityAlgorithms {
             {
                 return true;
             }
-
-            if(player.hasEffect(ModMobEffects.SCULK_VESSEL.get()))
-            {
-                return true;
-            }
         }
 
         if(entity instanceof Creeper)
+        {
+            return true;
+        }
+
+        if(ModColaborationHelper.isThisAnArsNouveauBlackListEntity(entity))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isInvalidTargetForPurity(LivingEntity entity)
+    {
+        if(isEntityUntargetable(entity))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determines if we should avoid targeting an entity at all costs.
+     * @param entity The Given Entity
+     * @return True if we should avoid, False otherwise
+     */
+    public static boolean isInvalidTargetForSculkHorde(LivingEntity entity)
+    {
+        if(isEntityUntargetable(entity))
+        {
+            return true;
+        }
+
+        if(entity instanceof Player player && player.hasEffect(ModMobEffects.SCULK_VESSEL.get()))
         {
             return true;
         }
@@ -555,11 +578,6 @@ public class EntityAlgorithms {
         }
 
         if(isLivingEntityAllyToSculkHorde(entity))
-        {
-            return true;
-        }
-
-        if(ModColaborationHelper.isThisAnArsNouveauBlackListEntity(entity))
         {
             return true;
         }
@@ -642,7 +660,7 @@ public class EntityAlgorithms {
     {
         @Override
         public boolean test(LivingEntity livingEntity) {
-            return EntityAlgorithms.isLivingEntityHostile(livingEntity) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(livingEntity);
+            return EntityAlgorithms.isLivingEntityHostile(livingEntity) && !EntityAlgorithms.isInvalidTargetForSculkHorde(livingEntity);
         }
     };
 
@@ -734,7 +752,7 @@ public class EntityAlgorithms {
         List<LivingEntity> livingEntitiesInRange = level.getEntitiesOfClass(LivingEntity.class, boundingBox, new Predicate<LivingEntity>() {
             @Override
             public boolean test(LivingEntity livingEntity) {
-                return !EntityAlgorithms.isLivingEntityExplicitDenyTarget(livingEntity);
+                return !EntityAlgorithms.isInvalidTargetForSculkHorde(livingEntity);
             }
         });
         return livingEntitiesInRange;

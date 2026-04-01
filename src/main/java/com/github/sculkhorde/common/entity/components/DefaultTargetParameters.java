@@ -21,40 +21,40 @@ public class DefaultTargetParameters {
 
     public final static TargetParameters DefaultGroundMeleeCombat = create(5)
             .addCondition(TargetCondition.mustSee())
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK, TargetFilter.WALKERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
             .enableTargetPrioritization(DefaultCombatComposite, TickUnits.convertSecondsToTicks(1));
 
     public final static TargetParameters DefaultGroundRangedCombat = create(10)
             .addCondition(TargetCondition.mustSee())
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS, TargetFilter.FLIERS)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK, TargetFilter.WALKERS, TargetFilter.FLIERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
             .enableTargetPrioritization(DefaultCombatComposite, TickUnits.convertSecondsToTicks(1));
 
     public final static TargetParameters DefaultGroundMeleeInfector = create()
-            .filterBy(TargetFilter.WALKERS, TargetFilter.PASSIVES)
+            .filterBy(TargetFilter.WALKERS, TargetFilter.PASSIVE_TO_SCULK)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)));
 
     public final static TargetParameters DefaultSwimmerMeleeCombat = create(5)
             .addCondition(TargetCondition.mustSee())
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.SWIMMERS)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK, TargetFilter.SWIMMERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)));
 
     public final static TargetParameters DefaultSwimmerRangedCombat = DefaultSwimmerMeleeCombat.copy();
 
     public final static TargetParameters DefaultSwimmerMeleeInfector = create()
-            .filterBy(TargetFilter.SWIMMERS, TargetFilter.PASSIVES)
+            .filterBy(TargetFilter.SWIMMERS, TargetFilter.PASSIVE_TO_SCULK)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)));
 
     public final static TargetParameters DefaultFlyerMeleeCombat = create(10)
             .addCondition(TargetCondition.mustSee())
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS, TargetFilter.FLIERS)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK, TargetFilter.WALKERS, TargetFilter.FLIERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
             .enableTargetPrioritization(DefaultCombatComposite, TickUnits.convertSecondsToTicks(1));
 
     public final static TargetParameters DefaultFlyerRangedCombat = DefaultFlyerMeleeCombat.copy();
 
     public final static TargetParameters DefaultFlyerMeleeInfector = create()
-            .filterBy(TargetFilter.WALKERS, TargetFilter.FLIERS, TargetFilter.PASSIVES)
+            .filterBy(TargetFilter.WALKERS, TargetFilter.FLIERS, TargetFilter.PASSIVE_TO_SCULK)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)));
 }

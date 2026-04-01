@@ -6,14 +6,18 @@ package com.github.sculkhorde.common.entity.components;
  */
 public enum TargetFilter
 {
+    SCULK_HORDE_ENTITY,
+
+    ALLIED_TO_SCULK_HORDE,
+
     /** Target hostile mobs */
-    HOSTILES,
+    HOSTILE_TO_SCULK,
 
     /** Target passive mobs */
-    PASSIVES,
+    PASSIVE_TO_SCULK,
 
     /** Target infected entities */
-    INFECTED,
+    INFECTED_BY_SCULK,
 
     /** Target swimming entities */
     SWIMMERS,

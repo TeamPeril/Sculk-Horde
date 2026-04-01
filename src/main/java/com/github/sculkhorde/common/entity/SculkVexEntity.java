@@ -73,7 +73,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK)
             .disableBlackListMobs();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

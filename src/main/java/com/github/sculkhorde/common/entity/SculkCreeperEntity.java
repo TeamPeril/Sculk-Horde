@@ -38,7 +38,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     // Controls what types of entities this mob can target
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.WALKERS)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.WALKERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertMinutesToTicks(1)))
             .addRetentionRule(TargetRetention.maxDistance(32));
 
@@ -140,7 +140,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
         //If the entity is a sculk creeper, don't infect it
         AABB aabb = this.getBoundingBox().inflate(5);
         this.level().getEntitiesOfClass(LivingEntity.class, aabb).forEach(victim -> {
-            if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
+            if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidSculkHordeTarget(victim, false))
             {
                 return;
             }

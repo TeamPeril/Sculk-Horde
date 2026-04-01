@@ -48,7 +48,7 @@ public class NodeAtmosphereInfestationSystem {
 
         for(Player player: ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers())
         {
-            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+            if(EntityAlgorithms.isInvalidTargetForSculkHorde(player))
             {
                 return;
             }

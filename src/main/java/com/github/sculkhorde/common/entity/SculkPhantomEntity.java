@@ -75,7 +75,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
     // Controls what types of entities this mob can target
     protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES, TargetFilter.WALKERS, TargetFilter.FLIERS)
+            .filterBy(TargetFilter.PASSIVE_TO_SCULK, TargetFilter.HOSTILE_TO_SCULK, TargetFilter.WALKERS, TargetFilter.FLIERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(30)))
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
 
@@ -457,7 +457,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
             for(LivingEntity mob : nearbyMobs)
             {
-                boolean isValidTarget = ((ISculkSmartEntity) SculkPhantomEntity.this).getTargetParameters().isEntityValidTarget(mob, false);
+                boolean isValidTarget = ((ISculkSmartEntity) SculkPhantomEntity.this).getTargetParameters().isEntityValidSculkHordeTarget(mob, false);
                 if(isValidTarget)
                 {
                     return true;

@@ -44,7 +44,7 @@ public class GhastDeploymentEvent extends Event {
             return false;
         }
 
-        if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(entity))
+        if(EntityAlgorithms.isInvalidTargetForSculkHorde(entity))
         {
             return false;
         }

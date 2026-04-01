@@ -1,13 +1,10 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
-import com.github.sculkhorde.common.entity.SculkRavagerEntity;
 import com.github.sculkhorde.common.entity.SculkZombieEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 import java.util.EnumSet;
-
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class SculkZombieAttackGoal extends MeleeAttackGoal
 {
@@ -33,7 +30,7 @@ public class SculkZombieAttackGoal extends MeleeAttackGoal
     @Override
     public boolean canUse()
     {
-        boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+        boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget(), true);
         // If the mob is already targeting something valid, don't bother
         return canWeUse;
     }

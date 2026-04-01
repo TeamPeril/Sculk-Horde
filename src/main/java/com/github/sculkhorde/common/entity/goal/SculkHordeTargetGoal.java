@@ -10,11 +10,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.AABB;
 
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class SculkHordeTargetGoal<T extends LivingEntity> extends net.minecraft.world.entity.ai.goal.target.TargetGoal {
 
@@ -49,7 +47,7 @@ public class SculkHordeTargetGoal<T extends LivingEntity> extends net.minecraft.
         }
 
         // If our current target is invalid, we can use this goal to find a new one.
-        if (!params.isEntityValidTarget(this.mob.getTarget(), true))
+        if (!params.isEntityValidSculkHordeTarget(this.mob.getTarget(), true))
         {
             return true;
         }
@@ -97,7 +95,7 @@ public class SculkHordeTargetGoal<T extends LivingEntity> extends net.minecraft.
         for (LivingEntity target : possibleTargets)
         {
             // If the primary target is null or invalid, set this as the primary target
-            if (this.mob.getTarget() == null || !params.isEntityValidTarget(this.mob.getTarget(), true))
+            if (this.mob.getTarget() == null || !params.isEntityValidSculkHordeTarget(this.mob.getTarget(), true))
             {
                 this.mob.setTarget(target);
             }

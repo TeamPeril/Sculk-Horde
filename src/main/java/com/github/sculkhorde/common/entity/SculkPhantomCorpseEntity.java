@@ -75,7 +75,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES);
+            .filterBy(TargetFilter.PASSIVE_TO_SCULK, TargetFilter.HOSTILE_TO_SCULK);
 
     private VirtualSurfaceInfestorCursor cursor;
 
@@ -259,7 +259,7 @@ public class SculkPhantomCorpseEntity extends Monster implements GeoEntity, IScu
             ArrayList<LivingEntity> entities = (ArrayList<LivingEntity>) EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), this.blockPosition(), 10);
             for (LivingEntity victim : entities)
             {
-                if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidTarget(victim, false))
+                if(!((ISculkSmartEntity) this).getTargetParameters().isEntityValidSculkHordeTarget(victim, false))
                 {
                     return;
                 }

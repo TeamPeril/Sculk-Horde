@@ -42,7 +42,7 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
     public static final float MAX_HEALTH = 15F;
     public static final float ARMOR = 20F;
     protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this)
-            .filterBy(TargetFilter.PASSIVES, TargetFilter.HOSTILES);
+            .filterBy(TargetFilter.PASSIVE_TO_SCULK, TargetFilter.HOSTILE_TO_SCULK);
     protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     protected long timeUntilSpawn = TickUnits.convertSecondsToTicks(5);
     protected ArrayList<Entity> entitiesToSpawn = new ArrayList<>();

@@ -79,7 +79,7 @@ public class TargetAttacker extends TargetGoal {
         }
 
         //Do not allow this behavior to execute if target is not valid
-        if(!sculkSmartEntity.getTargetParameters().isEntityValidTarget(attacker, false)) {return false;}
+        if(!sculkSmartEntity.getTargetParameters().isEntityValidSculkHordeTarget(attacker, false)) {return false;}
 
         return this.canAttack(attacker, HURT_BY_TARGETING);
 

@@ -98,7 +98,7 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
 
 
     private final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, 10)
-            .filterBy(TargetFilter.HOSTILES, TargetFilter.INFECTED, TargetFilter.WALKERS, TargetFilter.FLIERS)
+            .filterBy(TargetFilter.HOSTILE_TO_SCULK, TargetFilter.INFECTED_BY_SCULK, TargetFilter.WALKERS, TargetFilter.FLIERS)
             .disableBlackListMobs()
             .enableTargetPrioritization(composite, TickUnits.convertSecondsToTicks(1));
 

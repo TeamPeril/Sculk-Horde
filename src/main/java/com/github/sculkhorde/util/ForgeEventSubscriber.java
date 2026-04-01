@@ -208,7 +208,7 @@ public class ForgeEventSubscriber {
 
     public static void checkAndApplyIllamentsToPlayer(Player player)
     {
-        if(player == null || EntityAlgorithms.isLivingEntityExplicitDenyTarget(player) || player.isDeadOrDying())
+        if(player == null || EntityAlgorithms.isInvalidTargetForSculkHorde(player) || player.isDeadOrDying())
         {
             return;
         }
@@ -273,7 +273,7 @@ public class ForgeEventSubscriber {
 
         if(event.getEntity() instanceof Mob mob)
         {
-            if(!EntityAlgorithms.isLivingEntityExplicitDenyTarget(mob) && mob.getAttributes().hasAttribute(Attributes.ATTACK_DAMAGE))
+            if(!EntityAlgorithms.isInvalidTargetForSculkHorde(mob) && mob.getAttributes().hasAttribute(Attributes.ATTACK_DAMAGE))
             {
                 mob.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(mob, LivingEntity.class, true, shouldEntitiesAttackTheSculkHorde));
             }

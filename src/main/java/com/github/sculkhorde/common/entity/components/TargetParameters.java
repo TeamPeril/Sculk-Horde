@@ -1,9 +1,7 @@
 package com.github.sculkhorde.common.entity.components;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
-import com.github.sculkhorde.systems.debugger_system.EntityDebuggerModule;
 import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -347,7 +345,7 @@ public class TargetParameters
 
     // Predicate to test if valid target
     public final Predicate<LivingEntity> isPossibleNewTargetValid = (e) -> {
-        return isEntityValidTarget(e, false);
+        return isEntityValidSculkHordeTarget(e, false);
     };
 
     public void debugPrint(boolean validatingExistingTarget, LivingEntity e, String message)
@@ -371,6 +369,69 @@ public class TargetParameters
      * @param validatingExistingTarget Whether this is validating an existing target (optimization hint)
      * @return true if the entity is a valid target
      */
+    public boolean isEntityValidSculkHordeTarget(LivingEntity e, boolean validatingExistingTarget)
+    {
+
+        if(e == null)
+        {
+            return false;
+        }
+
+        // Check blacklist first (fast path)
+        if (e instanceof Mob && isOnBlackList((Mob) e))
+        {
+            debugPrint(validatingExistingTarget, e, "is on Blacklist. Denied.");
+            return false;
+        }
+
+        // Check explicit deny list
+        if (EntityAlgorithms.isInvalidTargetForSculkHorde(e))
+        {
+            debugPrint(validatingExistingTarget, e, "is explicitly denied.");
+            return false;
+        }
+
+        // Players in creative/spectator are always invalid
+        if (e instanceof Player && (((Player) e).isCreative() || ((Player) e).isSpectator()))
+        {
+            debugPrint(validatingExistingTarget, e, "is player in creative or spectator. Denied.");
+            return false;
+        }
+
+        // Special entity types are always valid
+        if (e instanceof InfestationPurifierEntity)
+        {
+            debugPrint(validatingExistingTarget, e, "is Infestation Purifier. Approved.");
+            return true;
+        }
+
+        if (e instanceof Player)
+        {
+            debugPrint(validatingExistingTarget, e, "is Player. Approved.");
+            return true;
+        }
+
+        // Check built-in filters
+        if (!checkBuiltInFilters(e, validatingExistingTarget))
+        {
+            return false;
+        }
+
+        if(mob != null)
+        {
+            // Check custom conditions
+            for (TargetCondition condition : customConditions)
+            {
+                if (!condition.isMet(e, validatingExistingTarget, mob))
+                {
+                    debugPrint(validatingExistingTarget, e, "failed custom condition. Denied.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean isEntityValidTarget(LivingEntity e, boolean validatingExistingTarget)
     {
 
@@ -387,7 +448,7 @@ public class TargetParameters
         }
 
         // Check explicit deny list
-        if (EntityAlgorithms.isLivingEntityExplicitDenyTarget(e))
+        if (EntityAlgorithms.isInvalidTargetForSculkHorde(e))
         {
             debugPrint(validatingExistingTarget, e, "is explicitly denied.");
             return false;
@@ -447,6 +508,19 @@ public class TargetParameters
         boolean isSwimmer = isLivingEntitySwimmer(e);
         boolean isFlier = isLivingEntityFlying(e);
         boolean isWalker = !isLivingEntityFlying(e);
+
+        if(isSculkLivingEntity.test(e) && !isFilterEnabled(TargetFilter.SCULK_HORDE_ENTITY))
+        {
+            debugPrint(validatingExistingTarget, e, "is sculk horde entity. Denied.");
+            return false;
+        }
+
+        if(EntityAlgorithms.isLivingEntityAllyToSculkHorde(e) && !isFilterEnabled(TargetFilter.ALLIED_TO_SCULK_HORDE))
+        {
+            debugPrint(validatingExistingTarget, e, "is allied sculk horde. Denied.");
+            return false;
+        }
+
         if (isSwimmer && !isFilterEnabled(TargetFilter.SWIMMERS))
         {
             debugPrint(validatingExistingTarget, e, "is swimmer. Denied.");
@@ -467,7 +541,7 @@ public class TargetParameters
 
         // Check infection status
         boolean isInfected = isLivingEntityInfected(e);
-        if (isInfected && !isFilterEnabled(TargetFilter.INFECTED))
+        if (isInfected && !isFilterEnabled(TargetFilter.INFECTED_BY_SCULK))
         {
             debugPrint(validatingExistingTarget, e, "is infected but we don't target infected. Denied.");
             return false;
@@ -476,13 +550,13 @@ public class TargetParameters
         // Check hostility status
         boolean isHostile = isLivingEntityHostile(e);
 
-        if (isHostile && !isFilterEnabled(TargetFilter.HOSTILES))
+        if (isHostile && !isFilterEnabled(TargetFilter.HOSTILE_TO_SCULK))
         {
             debugPrint(validatingExistingTarget, e, "is hostile but we don't target hostiles. Denied.");
             return false;
         }
 
-        if (!isHostile && !isFilterEnabled(TargetFilter.PASSIVES))
+        if (!isHostile && !isFilterEnabled(TargetFilter.PASSIVE_TO_SCULK))
         {
             debugPrint(validatingExistingTarget, e, "is passive but we don't target passives. Denied.");
             return false;

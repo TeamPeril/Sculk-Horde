@@ -229,7 +229,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
         if(entity instanceof LivingEntity livingEntity)
         {
             // If the entity is a sculk, don't do anything
-            if(EntityAlgorithms.isLivingEntityExplicitDenyTarget(livingEntity))
+            if(EntityAlgorithms.isInvalidTargetForSculkHorde(livingEntity))
             {
                 return;
             }

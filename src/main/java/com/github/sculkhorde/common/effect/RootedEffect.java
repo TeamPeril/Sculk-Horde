@@ -78,7 +78,7 @@ public class RootedEffect extends MobEffect implements IPotionExpireEffect{
         }
 
         BlockAlgorithms.setBlockStructure(entity.level(), entity.blockPosition(), ModBlocks.BROOD_NEST_CORE_BLOCK.get().defaultBlockState());
-        if(!EntityAlgorithms.isLivingEntityExplicitDenyTarget(entity))
+        if(!EntityAlgorithms.isInvalidTargetForSculkHorde(entity))
         {
             entity.hurt(entity.damageSources().magic(), Integer.MAX_VALUE);
         }

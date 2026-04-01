@@ -301,7 +301,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         @Override
         public boolean canUse()
         {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget(), true);
             return canWeUse;
         }
 
@@ -390,7 +390,7 @@ public class SculkHatcherEntity extends Monster implements GeoEntity, ISculkSmar
         @Override
         public boolean canUse()
         {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidTarget(this.mob.getTarget(), true);
+            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget(), true);
             // If the mob is already targeting something valid, don't bother
             return canWeUse;
         }

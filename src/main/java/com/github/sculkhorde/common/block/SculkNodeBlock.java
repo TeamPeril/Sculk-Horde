@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
-import com.github.sculkhorde.common.entity.SculkPhantomEntity;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.SculkPopulationSystem;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
@@ -354,7 +353,7 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             // Get Nearby Players and update the number of nodes they destroyed
             worldIn.players().forEach((player) ->
                     {
-                        if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isLivingEntityExplicitDenyTarget(player))
+                        if(player.blockPosition().closerThan(pos, 50) && !EntityAlgorithms.isInvalidTargetForSculkHorde(player))
                         {
                             PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
                             PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
