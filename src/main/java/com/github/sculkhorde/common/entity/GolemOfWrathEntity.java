@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.CustomAttackGoal;
+import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal2;
 import com.github.sculkhorde.common.entity.goal.PurityTargetGoal;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.core.ModBlocks;
@@ -26,6 +27,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -161,8 +163,9 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new NavigateToHomeIfTooFar(),
-                        new GroundSlamAttackGoal(),
-                        new MeleeAttackGoal(),
+                        //new GroundSlamAttackGoal(),
+                        //new MeleeAttackGoal(),
+                        new SlamAttack(this, 3, TickUnits.convertSecondsToTicks(0.8F), 1),
                         new WaterAvoidingRandomStrollGoal(this, 0.3D),
                 };
         return goals;
@@ -182,7 +185,6 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
                 {
                         //HurtByTargetGoal(mob)
                         new PurityTargetGoal<>(this),
-                        new HurtByTargetGoal(this)
                 };
         return goals;
     }
@@ -362,7 +364,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
 
     public static final String COMBAT_ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private final AnimationController COMBAT_ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
-            .transitionLength(5)
+            .transitionLength(0)
             .triggerableAnim(ATTACK_MELEE_ID, ATTACK_MELEE_ANIMATION)
             .triggerableAnim(SPIN_ATTACK_MELEE_ID, SPIN_ATTACK_MELEE_ANIMATION);
 
@@ -395,6 +397,24 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
 
     protected void playStepSound(BlockPos pPos, BlockState pBlock) {
         this.playSound(SoundEvents.IRON_GOLEM_STEP, 0.15F, 1.0F);
+    }
+
+    public class SlamAttack extends CustomMeleeAttackGoal2
+    {
+
+        public SlamAttack(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
+        }
+
+        @Override
+        protected long getExecutionCooldown() {
+            return TickUnits.convertSecondsToTicks(3);
+        }
+
+        @Override
+        protected void playPreAttackAnimation() {
+            triggerAnim(COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_MELEE_ID);
+        }
     }
 
     protected class MeleeAttackGoal extends CustomAttackGoal {
