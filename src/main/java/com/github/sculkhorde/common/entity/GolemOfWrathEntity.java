@@ -165,7 +165,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
                         new NavigateToHomeIfTooFar(),
                         //new GroundSlamAttackGoal(),
                         //new MeleeAttackGoal(),
-                        new SlamAttack(this, 3, TickUnits.convertSecondsToTicks(0.8F), 1),
+                        new SlamAttack(this, 5, TickUnits.convertSecondsToTicks(0.8F), 1),
                         new WaterAvoidingRandomStrollGoal(this, 0.3D),
                 };
         return goals;
@@ -415,79 +415,20 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         protected void playPreAttackAnimation() {
             triggerAnim(COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_MELEE_ID);
         }
-    }
-
-    protected class MeleeAttackGoal extends CustomAttackGoal {
-
-        protected double wantedX;
-        protected double wantedY;
-        protected double wantedZ;
-
-        // Add cooldown-related fields
-        protected int pathRecalculationCooldown = 0;
-        protected static final int PATH_RECALCULATION_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(1); // Ticks (1 second at 20 ticks/sec)
-
-
-        public MeleeAttackGoal() {
-            super(GolemOfWrathEntity.this, GolemOfWrathEntity.this.getBbWidth() * 2, TickUnits.convertSecondsToTicks(0.96F));
-            this.setFlags(EnumSet.of(Flag.MOVE));
-
-        }
-
-        public IPurityGolemEntity getGolem() {
-            return (IPurityGolemEntity) mob;
-        }
 
         @Override
-        protected long getExecutionCooldown() {
-            return TickUnits.convertSecondsToTicks(2);
-        }
+        public void hurtTarget(Mob damageDealer, LivingEntity damageReceiver) {
 
-        @Override
-        protected void triggerAnimation() {
-            triggerAnim(COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_MELEE_ID);
-        }
-
-
-        @Override
-        public boolean canUse() {
-
-            if (pathRecalculationCooldown > 0) {
-                pathRecalculationCooldown--;
-            } else {
-                boolean doesGolemBelongToABoundBlockThatIsPresent = getGolem().belongsToBoundBlock() && getGolem().isBoundBlockPresent();
-                boolean isGolemTooFarFromBoundBlock = doesGolemBelongToABoundBlockThatIsPresent && BlockAlgorithms.getBlockDistanceXZ(mob.blockPosition(), getGolem().getBoundBlockPos().get()) >= getGolem().getMaxTravelDistanceFromBoundBlock();
-                boolean shouldChaseTarget = mob.getTarget() != null;
-
-                Vec3 potentialPosition = null;
-                if (shouldChaseTarget && !isGolemTooFarFromBoundBlock) {
-                    potentialPosition = DefaultRandomPos.getPosTowards((PathfinderMob) mob, 16, 7, getTarget().position(), Math.PI / 2F);
-
-                    if (potentialPosition != null) {
-                        this.wantedX = potentialPosition.x;
-                        this.wantedY = potentialPosition.y;
-                        this.wantedZ = potentialPosition.z;
-                        // Reset cooldown when new path is calculated
-                        pathRecalculationCooldown = PATH_RECALCULATION_INTERVAL_TICKS;
-                        getNavigation().moveTo(getNavigation().createPath(getTarget(), 0), 1);
-                    }
-                }
-            }
-            return super.canUse();
-        }
-
-        @Override
-        public void onTargetHurt(LivingEntity target) {
-            AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(target.position(), 10);
+            AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(damageReceiver.position(), 10);
             List<LivingEntity> enemies = EntityAlgorithms.getAllInfectionModEntitiesInBoundingBox((ServerLevel) mob.level(), hitbox);
             for (LivingEntity entity : enemies) {
                 if (entity.getUUID().equals(GolemOfWrathEntity.this.getUUID())) {
                     continue;
                 }
-                entity.hurt(mob.damageSources().mobAttack(mob), GolemOfWrathEntity.ATTACK_DAMAGE);
+                damageDealer.doHurtTarget(entity);
 
                 CursorSurfacePurifierEntity cursor = new CursorSurfacePurifierEntity(mob.level());
-                cursor.setPos(target.position());
+                cursor.setPos(entity.position());
                 cursor.setTickIntervalMilliseconds(10);
                 cursor.setMaxLifeTimeMillis(TimeUnit.SECONDS.toMillis(60));
                 cursor.setMaxTransformations(20);

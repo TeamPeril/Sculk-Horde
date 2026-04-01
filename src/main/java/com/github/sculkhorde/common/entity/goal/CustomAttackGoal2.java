@@ -110,10 +110,17 @@ public class CustomAttackGoal2 extends Goal {
 
     }
 
+    public void customAiTick()
+    {
+
+    }
+
     public void tick() {
         if (isTargetInvalid() || !isAttackInProgress) {
             return;
         }
+
+        customAiTick();
 
         // State Executions
         if(attackState == PRE_ATTACK_STATE)
