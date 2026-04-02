@@ -5,7 +5,7 @@ import com.github.sculkhorde.common.blockentity.GolemOfWrathAnimatorBlockEntity;
 import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
-import com.github.sculkhorde.common.entity.goal.CustomAttackGoal;
+import com.github.sculkhorde.common.entity.goal.CustomAttackGoal2;
 import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal2;
 import com.github.sculkhorde.common.entity.goal.PurityTargetGoal;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
@@ -34,7 +34,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,9 +49,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPurityGolemEntity {
@@ -80,6 +77,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.45F;
     public static final float KNOCKBACK_RESISTANCE = 100.0F;
+    protected UUID currentAttack = null;
 
     public TargetParameters targetParameters = DefaultTargetParameters.DefaultPurityGroundMeleeCombat.copy(this)
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));;
@@ -163,8 +161,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new NavigateToHomeIfTooFar(),
-                        //new GroundSlamAttackGoal(),
-                        //new MeleeAttackGoal(),
+                        new SpinAttack(this, 5, TickUnits.convertSecondsToTicks(0.5F), TickUnits.convertSecondsToTicks(1)),
                         new SlamAttack(this, 5, TickUnits.convertSecondsToTicks(0.8F), 1),
                         new WaterAvoidingRandomStrollGoal(this, 0.3D),
                 };
@@ -192,6 +189,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        targetParameters.updateTargets();
 
         if(!hasEffect(ModMobEffects.PURITY.get()))
         {
@@ -310,6 +308,25 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         belongsToBoundBlock = true;
     }
 
+    public boolean assignCurrentAttack(CustomAttackGoal2 goal)
+    {
+        if(currentAttack == null)
+        {
+            currentAttack = goal.goalUUID;
+            return true;
+        }
+
+        return currentAttack == goal.goalUUID;
+    }
+
+    public void unassignCurrentAttack(CustomAttackGoal2 goal)
+    {
+        if(currentAttack == goal.goalUUID)
+        {
+            currentAttack = null;
+        }
+    }
+
     @Override
     public int getMaxDistanceFromBoundBlockBeforeDeath() {
         return 100;
@@ -354,7 +371,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
     }
 
 
-    // #### Animation Code ####
+    /// # Animation Code
 
     public static final String ATTACK_MELEE_ID = "attack.melee";
     private static final RawAnimation ATTACK_MELEE_ANIMATION = RawAnimation.begin().thenPlay(ATTACK_MELEE_ID);
@@ -381,7 +398,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         return this.cache;
     }
 
-    // #### Sound Code ####
+    /// # Sound Code
 
     protected SoundEvent getAmbientSound() {
         return SoundEvents.IRON_GOLEM_REPAIR;
@@ -399,12 +416,35 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         this.playSound(SoundEvents.IRON_GOLEM_STEP, 0.15F, 1.0F);
     }
 
+    /// # Child Classes
+
     public class SlamAttack extends CustomMeleeAttackGoal2
     {
 
         public SlamAttack(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
             super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
+
+        @Override
+        public boolean additionalCanUseCondition() {
+            return assignCurrentAttack(this);
+        }
+
+        @Override
+        public boolean additionalCanContinueToUseCondition() {
+            return currentAttack == goalUUID;
+        }
+
+        @Override
+        public void additionalStartCode() {
+            currentAttack = goalUUID;
+        }
+
+        @Override
+        public void additionalStopCode() {
+            unassignCurrentAttack(this);
+        }
+
 
         @Override
         protected long getExecutionCooldown() {
@@ -437,46 +477,57 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         }
     }
 
-    protected class GroundSlamAttackGoal extends CustomAttackGoal {
+    public class SpinAttack extends CustomAttackGoal2
+    {
 
-        public GroundSlamAttackGoal() {
-            super(GolemOfWrathEntity.this, 1.0F,  10);
+        public SpinAttack(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
-        public long getCanUseCheckInterval() {
-            return TickUnits.convertSecondsToTicks(2);
+        protected long getExecutionCooldown() {
+            return TickUnits.convertSecondsToTicks(3);
         }
 
         @Override
-        public boolean canUse() {
+        protected void playPreAttackAnimation() {
+            triggerAnim(COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SPIN_ATTACK_MELEE_ID);
+        }
 
-            long gameTime = this.mob.level().getGameTime();
-            if (gameTime - this.lastCanUseCheck < getCanUseCheckInterval()) {
-                return false;
-            }
+        @Override
+        public boolean additionalCanUseCondition() {
 
-            this.lastCanUseCheck = gameTime;
-
-            if(!isExecutionCooldownOver())
+            if(targetParameters.getAllTargets().size() < 3)
             {
                 return false;
             }
 
-            List<LivingEntity> hostiles = EntityAlgorithms.getAllInfectionModEntitiesInBoundingBox((ServerLevel) level(), getBoundingBox().inflate(7));
-            return hostiles.size() > 4;
+            if (targetParameters.getTargetsWithin(blockPosition(), 7).size() < 3)
+            {
+                return false;
+            }
+
+            return assignCurrentAttack(this);
         }
 
         @Override
-        public boolean canContinueToUse() {
-            return isAttackInProgress;
+        public boolean additionalCanContinueToUseCondition() {
+            return currentAttack == goalUUID;
         }
 
+        @Override
+        public void additionalStartCode() {
+            currentAttack = goalUUID;
+        }
 
         @Override
-        public void onTargetHurt(LivingEntity target) {
-            super.onTargetHurt(target);
-            List<LivingEntity> entities = EntityAlgorithms.getAllInfectionModEntitiesInBoundingBox((ServerLevel) level(), getBoundingBox().inflate(7));
+        public void additionalStopCode() {
+            unassignCurrentAttack(this);
+        }
+
+        @Override
+        protected void doAttack() {
+            List<LivingEntity> entities = targetParameters.getNewTargetsWithin(position(), 7);
             float pushAwayStrength = 5f; // Increased push strength for better outwards effect
             float pushUpStrength = 3f;   // Separate push up strength for vertical component.
 
@@ -493,12 +544,12 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
                 cursor.setMaxTransformations(20);
                 entity.level().addFreshEntity(cursor);
             }
-            SoundUtil.playHostileSoundInLevel(level(), blockPosition(), SoundEvents.RAVAGER_ATTACK);
+            moveToNextState();
         }
 
         @Override
-        protected void triggerAnimation() {
-            triggerAnim(COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, SPIN_ATTACK_MELEE_ID);
+        protected void playAttackSound() {
+            SoundUtil.playHostileSoundInLevel(level(), blockPosition(), SoundEvents.RAVAGER_ATTACK);
         }
     }
 

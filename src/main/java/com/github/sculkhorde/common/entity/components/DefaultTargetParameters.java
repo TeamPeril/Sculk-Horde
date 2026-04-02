@@ -62,5 +62,5 @@ public class DefaultTargetParameters {
             .addCondition(TargetCondition.mustSee())
             .filterBy(TargetFilter.SCULK_HORDE_ENTITY, TargetFilter.ALLIED_TO_SCULK_HORDE, TargetFilter.WALKERS)
             .addRetentionRule(TargetRetention.lineOfSightTimeout(TickUnits.convertSecondsToTicks(10)))
-            .enableTargetPrioritization(DefaultCombatComposite, TickUnits.convertSecondsToTicks(1));
+            .enableTargetPrioritization(DefaultCombatComposite, TickUnits.convertSecondsToTicks(0.5F));
 }

@@ -5,6 +5,8 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
+import java.util.EnumSet;
+
 public class CustomMeleeAttackGoal2 extends CustomAttackGoal2 {
 
     protected int ticksUntilNextPathRecalculation = 0;
@@ -12,6 +14,7 @@ public class CustomMeleeAttackGoal2 extends CustomAttackGoal2 {
 
     public CustomMeleeAttackGoal2(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
         super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
 

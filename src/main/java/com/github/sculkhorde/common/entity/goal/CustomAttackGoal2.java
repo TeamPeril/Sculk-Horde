@@ -5,8 +5,12 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
+import java.util.EnumSet;
+import java.util.UUID;
+
 public class CustomAttackGoal2 extends Goal {
     protected final Mob mob;
+    public final UUID goalUUID = UUID.randomUUID();
 
     protected long timeOfLastExecution;
     protected long lastCanUseCheck;
@@ -60,7 +64,7 @@ public class CustomAttackGoal2 extends Goal {
             return false;
         }
 
-        return true;
+        return additionalCanUseCondition();
     }
 
     public boolean canContinueToUse() {
@@ -68,12 +72,37 @@ public class CustomAttackGoal2 extends Goal {
         {
             return false;
         }
-        return !EntityAlgorithms.isEntityUntargetable(mob.getTarget());
+        else if(EntityAlgorithms.isEntityUntargetable(mob.getTarget()))
+        {
+            return false;
+        }
+
+        return additionalCanContinueToUseCondition();
+    }
+
+    public boolean additionalCanUseCondition()
+    {
+        return true;
+    }
+
+    public boolean additionalCanContinueToUseCondition()
+    {
+        return true;
+    }
+
+    public void additionalStartCode()
+    {
+
+    }
+
+    public void additionalStopCode()
+    {
+
     }
 
     public void start() {
         isAttackInProgress = true;
-        timeOfLastExecution = mob.level().getGameTime();
+        additionalStartCode();
     }
 
     public void stop() {
@@ -82,6 +111,8 @@ public class CustomAttackGoal2 extends Goal {
         preAttackStartTime = 0;
         attackState = WAIT_ATTACK_STATE;
         isAttackInProgress = false;
+        timeOfLastExecution = mob.level().getGameTime();
+        additionalStopCode();
     }
 
     public boolean requiresUpdateEveryTick() {

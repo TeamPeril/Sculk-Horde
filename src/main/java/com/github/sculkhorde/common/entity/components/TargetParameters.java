@@ -4,13 +4,17 @@ import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
+import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -341,6 +345,26 @@ public class TargetParameters
         return targetStack;
     }
 
+    /**
+     * Gets all targets in the target stack that are within the given distance from the origin.
+     *
+     * @param origin   The block position to measure distance from
+     * @param distance The maximum distance
+     * @return List of targets within range
+     */
+    public ArrayList<LivingEntity> getTargetsWithin(BlockPos origin, float distance)
+    {
+        ArrayList<LivingEntity> result = new ArrayList<>();
+        for (LivingEntity target : targetStack.getAllTargets())
+        {
+            if (BlockAlgorithms.getBlockDistance(origin, target.blockPosition()) <= distance)
+            {
+                result.add(target);
+            }
+        }
+        return result;
+    }
+
 
     // ==================== Core Targeting Logic ====================
 
@@ -357,6 +381,17 @@ public class TargetParameters
             return isEntityValidTarget(livingEntity);
         }
     };
+
+    public List<LivingEntity> getNewTargetsWithin(Vec3 origin, int range)
+    {
+        List<LivingEntity> possibleTargets =
+                this.mob.level().getEntitiesOfClass(
+                        LivingEntity.class,
+                        HitboxUtil.createBoundingBoxCubeAtBlockPos(origin, range * 2),
+                        isPossibleNewTargetValid);
+
+        return possibleTargets;
+    }
 
 
     public void debugPrint(LivingEntity e, String message)
