@@ -2,7 +2,6 @@ package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -19,12 +18,14 @@ public class CustomAttackGoal2 extends Goal {
     protected long attackStartTime = 0;
     protected long postAttackStartTime = 0;
     protected float maxDistanceForAttack = 0;
+    public boolean moveDuringAttack = true;
 
     /// 0 = pre attack, 1 = attack, 2 = post attack
+    public final int WAIT_ATTACK_STATE = -1;
     public final int PRE_ATTACK_STATE = 0;
     public final int ATTACK_STATE = 1;
     public final int POST_ATTACK_STATE = 2;
-    public int attackState = PRE_ATTACK_STATE;
+    public int attackState = WAIT_ATTACK_STATE;
 
     public CustomAttackGoal2(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
         this.mob = mob;
@@ -54,7 +55,7 @@ public class CustomAttackGoal2 extends Goal {
             return false;
         }
 
-        if(isTargetInvalid() && attackState != POST_ATTACK_STATE)
+        if(EntityAlgorithms.isEntityUntargetable(mob.getTarget()) && attackState != POST_ATTACK_STATE)
         {
             return false;
         }
@@ -67,23 +68,19 @@ public class CustomAttackGoal2 extends Goal {
         {
             return false;
         }
-        return !isTargetInvalid();
+        return !EntityAlgorithms.isEntityUntargetable(mob.getTarget());
     }
 
     public void start() {
         isAttackInProgress = true;
-        preAttackStartTime = mob.level().getGameTime();
-        timeOfLastExecution = preAttackStartTime;
-
-        playPreAttackSound();
-        playPreAttackAnimation();
+        timeOfLastExecution = mob.level().getGameTime();
     }
 
     public void stop() {
         postAttackStartTime = 0;
         attackStartTime = 0;
         preAttackStartTime = 0;
-        attackState = 0;
+        attackState = WAIT_ATTACK_STATE;
         isAttackInProgress = false;
     }
 
@@ -98,7 +95,7 @@ public class CustomAttackGoal2 extends Goal {
 
     public void attackTick()
     {
-        if (isTargetInvalid()) {
+        if (isTargetNotReadyToBeAttacked()) {
             return;
         }
 
@@ -116,14 +113,27 @@ public class CustomAttackGoal2 extends Goal {
     }
 
     public void tick() {
-        if (isTargetInvalid() || !isAttackInProgress) {
-            return;
+
+        if(moveDuringAttack)
+        {
+            customAiTick();
         }
 
-        customAiTick();
 
         // State Executions
-        if(attackState == PRE_ATTACK_STATE)
+        if (attackState == WAIT_ATTACK_STATE)
+        {
+
+            if(!moveDuringAttack)
+            {
+                customAiTick();
+            }
+
+            if(!isTargetNotReadyToBeAttacked()) {
+                moveToNextState();
+            }
+        }
+        else if(attackState == PRE_ATTACK_STATE)
         {
             preAttackTick();
             if(TickUnits.hasTicksPassed(preAttackStartTime, mob.level(), preAttackDelay))
@@ -153,7 +163,13 @@ public class CustomAttackGoal2 extends Goal {
     {
         attackState++;
 
-        if(attackState == ATTACK_STATE)
+        if(attackState == PRE_ATTACK_STATE)
+        {
+            playPreAttackSound();
+            playPreAttackAnimation();
+            preAttackStartTime = mob.level().getGameTime();
+        }
+        else if(attackState == ATTACK_STATE)
         {
             attackStartTime = mob.level().getGameTime();
             playAttackAnimation();
@@ -186,7 +202,7 @@ public class CustomAttackGoal2 extends Goal {
         return !this.mob.getSensing().hasLineOfSight(mob.getTarget());
     }
 
-    protected boolean isTargetInvalid()
+    protected boolean isTargetNotReadyToBeAttacked()
     {
         if(EntityAlgorithms.isEntityUntargetable(mob.getTarget()))
         {
@@ -244,6 +260,12 @@ public class CustomAttackGoal2 extends Goal {
 
     protected boolean isExecutionCooldownOver() {
         return TickUnits.hasTicksPassed(timeOfLastExecution, mob.level(), getExecutionCooldown());
+    }
+
+    public CustomAttackGoal2 flagMoveDuringAttack(boolean value)
+    {
+        moveDuringAttack = value;
+        return this;
     }
 
 }

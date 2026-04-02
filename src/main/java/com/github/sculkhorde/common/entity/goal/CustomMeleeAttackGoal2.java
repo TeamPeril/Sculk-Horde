@@ -18,7 +18,7 @@ public class CustomMeleeAttackGoal2 extends CustomAttackGoal2 {
     protected void doAttack() {
 
         hurtTarget(mob, mob.getTarget());
-
+        moveToNextState();
     }
 
     public void hurtTarget(Mob damageDealer, LivingEntity damageReceiver)

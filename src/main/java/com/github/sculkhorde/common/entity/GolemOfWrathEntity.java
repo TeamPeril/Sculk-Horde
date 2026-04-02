@@ -119,7 +119,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
                 .add(Attributes.ATTACK_KNOCKBACK, ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
-                .add(Attributes.KNOCKBACK_RESISTANCE, MOVEMENT_SPEED);
+                .add(Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_RESISTANCE);
     }
 
 
