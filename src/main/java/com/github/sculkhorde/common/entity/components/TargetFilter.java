@@ -10,6 +10,8 @@ public enum TargetFilter
 
     ALLIED_TO_SCULK_HORDE,
 
+    FROM_INFECTION_MOD,
+
     /** Target hostile mobs */
     HOSTILE_TO_SCULK,
 

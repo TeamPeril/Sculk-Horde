@@ -34,6 +34,8 @@ public class TargetParameters
     // Modular filter system (replaces individual booleans)
     protected final Set<TargetFilter> enabledFilters = new HashSet<>();
 
+    protected final Set<TargetFilter> excludedFilters = new HashSet<>();
+
     // Custom composable conditions
     protected final List<TargetCondition> customConditions = new ArrayList<>();
 
@@ -107,10 +109,7 @@ public class TargetParameters
      */
     public TargetParameters filterBy(TargetFilter... filters)
     {
-        for (TargetFilter filter : filters)
-        {
-            enabledFilters.add(filter);
-        }
+        enabledFilters.addAll(Arrays.asList(filters));
         return this;
     }
 
@@ -122,10 +121,7 @@ public class TargetParameters
      */
     public TargetParameters excludeFilter(TargetFilter... filters)
     {
-        for (TargetFilter filter : filters)
-        {
-            enabledFilters.remove(filter);
-        }
+        excludedFilters.addAll(Arrays.asList(filters));
         return this;
     }
 
@@ -138,6 +134,17 @@ public class TargetParameters
     public boolean isFilterEnabled(TargetFilter filter)
     {
         return enabledFilters.contains(filter);
+    }
+
+    /**
+     * Checks if a filter is excluded.
+     *
+     * @param filter The filter to check
+     * @return true if the filter is excluded
+     */
+    public boolean isFilterExcluded(TargetFilter filter)
+    {
+        return excludedFilters.contains(filter);
     }
 
     /**
