@@ -4,7 +4,9 @@ import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.FireBallProjectileEntity;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.path_builder_system.BuiltPath;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -149,7 +151,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     public Goal[] goalSelectorPayload()
     {
         return new Goal[]{
-                new Despawn(this, TickUnits.convertMinutesToTicks(15)),
+                new GhastDespawnAfterTime(this, TickUnits.convertMinutesToTicks(20)),
                 new ShootGhastProjectile(this,  48, 0),
                 // Follow a built path when provided by PathBuilderSystem
                 new FollowBuiltPathGoal(this, 2.0D),
@@ -857,22 +859,28 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         }
     }
 
-    protected class Despawn extends DespawnAfterTime
+    protected class GhastDespawnAfterTime extends DespawnAfterTime
     {
-        public Despawn(ISculkSmartEntity mob, int ticksThreshold) {
+        public GhastDespawnAfterTime(ISculkSmartEntity mob, int ticksThreshold) {
             super(mob, ticksThreshold);
         }
 
-        public long calculateTicksThreshold()
-        {
-            return ticksThreshold/3;
+        @Override
+        public boolean canUse() {
+
+            if(isIdle())
+            {
+                return false;
+            }
+            return super.canUse();
         }
 
         @Override
-        public boolean canUse()
+        public void start()
         {
-            boolean hasNoStoredMobs = getStoredMobMass() <= 0;
-            return hasNoStoredMobs && super.canUse();
+            super.start();
+            ModSavedData.getSaveData().addSculkAccumulatedMass((int) getStoredMobMass());
+            SculkHorde.statisticsData.addTotalMassFromDespawns((int) getStoredMobMass());
         }
     }
 
