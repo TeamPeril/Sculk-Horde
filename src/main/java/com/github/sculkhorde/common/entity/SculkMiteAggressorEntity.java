@@ -14,6 +14,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -158,18 +159,12 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkMiteAggressorAttackGoal(this, 1.0D, true),
+                        new Attack(this, 1.5F, 0, 0),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
-                        new MiteLeapAtTargetGoal(this, 0.5F, TickUnits.convertSecondsToTicks(1)), // Only works on hard
-                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
+                        new MiteLeapAtTargetGoal(this, 0.5F, TickUnits.convertSecondsToTicks(3)), // Only works on hard
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        //LookAtGoal(mob, targetType, lookDistance)
-                        new LookAtPlayerGoal(this, Pig.class, 8.0F),
-                        //LookRandomlyGoal(mob)
-                        new RandomLookAroundGoal(this)
                 };
         return goals;
     }
@@ -240,7 +235,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
         public MiteLeapAtTargetGoal(Mob mob, float leapDistance, long cooldown) {
             this.mob = mob;
             this.yd = leapDistance;
-            this.setFlags(EnumSet.of(Flag.JUMP));
+            this.setFlags(EnumSet.of(Flag.JUMP, Flag.LOOK));
             this.cooldown = cooldown;
         }
 
@@ -305,7 +300,19 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
             // Use the calculated X and Z from the finalDeltaMovement vector,
             // and explicitly use the 'yd' parameter for the vertical jump strength.
             this.mob.setDeltaMovement(finalDeltaMovement.x, (double)this.yd, finalDeltaMovement.z);
+            this.mob.lookAt(getTarget(), 30F, 30F);
         }
     }
 
+    protected class Attack extends CustomMeleeAttackGoal2
+    {
+        public Attack(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
+        }
+
+        @Override
+        protected long getExecutionCooldown() {
+            return TickUnits.convertSecondsToTicks(1);
+        }
+    }
 }
