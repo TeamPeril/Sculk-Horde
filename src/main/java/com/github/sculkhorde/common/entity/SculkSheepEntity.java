@@ -14,6 +14,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -155,18 +156,11 @@ public class SculkSheepEntity extends Monster implements GeoEntity, ISculkSmartE
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(2)),
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
-                        new AttackGoal(),
+                        new AttackGoal(this, 3, 5, 10),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
-                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        //LookAtGoal(mob, targetType, lookDistance)
-                        new LookAtPlayerGoal(this, Pig.class, 8.0F),
-                        //LookRandomlyGoal(mob)
-                        new RandomLookAroundGoal(this),
-                        new OpenDoorGoal(this, true)
                 };
         return goals;
     }
@@ -254,40 +248,20 @@ public class SculkSheepEntity extends Monster implements GeoEntity, ISculkSmartE
     }
     */
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    protected class AttackGoal extends CustomMeleeAttackGoal2
     {
 
-        public AttackGoal()
-        {
-            super(SculkSheepEntity.this, 1.0D, true, 10);
+        public AttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
-        public boolean canUse()
-        {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
-            // If the mob is already targeting something valid, don't bother
-            return canWeUse;
-        }
-
-        @Override
-        public boolean canContinueToUse()
-        {
-            return canUse();
-        }
-
-        protected double getAttackReachBlocks()
-        {
-            return 3F;
-        }
-
-        @Override
-        protected int getAttackInterval() {
+        protected long getExecutionCooldown() {
             return TickUnits.convertSecondsToTicks(1F);
         }
 
         @Override
-        protected void triggerAnimation() {
+        protected void playPreAttackAnimation() {
             ((SculkSheepEntity)mob).triggerAnim("attack_controller", "attack");
         }
     }
