@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -13,6 +14,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -165,7 +167,7 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new SculkVindicatorAttackGoal(),
+                        new SculkVindicatorAttackGoal(this, 2.5F, 10, 10),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
@@ -267,39 +269,36 @@ public class SculkVindicatorEntity extends Monster implements GeoEntity, ISculkS
     }
 
 
-    public class SculkVindicatorAttackGoal extends CustomMeleeAttackGoal
+    public class SculkVindicatorAttackGoal extends CustomMeleeAttackGoal2
     {
 
-        public SculkVindicatorAttackGoal()
-        {
-            super(SculkVindicatorEntity.this, 1.0D, false, 10);
-        }
-
-
-        @Override
-        protected int getAttackInterval() {
-            return TickUnits.convertSecondsToTicks(2);
+        public SculkVindicatorAttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
-        protected void triggerAnimation() {
+        protected void playAttackSound() {
+            SoundUtil.playHostileSoundInLevel(level(), blockPosition(), SoundEvents.WARDEN_ATTACK_IMPACT);
+        }
+
+        @Override
+        protected void playPreAttackAnimation() {
             ((SculkVindicatorEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
 
         @Override
-        public void start()
-        {
-            super.start();
+        public void additionalStartCode() {
             setSprinting(true);
         }
 
         @Override
-        public void stop()
-        {
-            super.start();
+        public void additionalStopCode() {
             setSprinting(false);
         }
 
-
+        @Override
+        protected long getExecutionCooldown() {
+            return TickUnits.convertSecondsToTicks(0.5F);
+        }
     }
 }
