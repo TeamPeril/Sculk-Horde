@@ -228,7 +228,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
                         new SquadLogicGoal(this),
                         new RunFromHostilesGoal<>(this, 4, 1.0F, 1.0F),
                         new BuffNearbyAllies(this),
-                        new ThrowPotionAttackGoal(this, 20, 10),
+                        new ThrowPotionAttackGoal(this, 15, 15, 10),
                         // RangedAttackGoal(thisMob, speedModifier, Min Attack Interval, Max Attack Interval, Attack Radius)
                         //new RangedAttackGoal(this, 1.0D, 30, 30, 10.0F),
                         new FollowSquadLeader(this),
@@ -286,55 +286,6 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
     }
 
     public void performRangedAttack(LivingEntity target, float power) {
-        /*
-        triggerAnim("attack_controller", "throwpotion");
-
-        Vec3 vec3 = target.getDeltaMovement();
-        double d0 = target.getX() + vec3.x - this.getX();
-        double d1 = target.getEyeY() - (double)1.1F - this.getY();
-        double d2 = target.getZ() + vec3.z - this.getZ();
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        Potion potion = Potions.HARMING;
-        int duration = 0;
-        float rng = random.nextFloat();
-
-        if(rng > 0.9)
-        {
-            potion = Potions.HARMING;
-        }
-        else if(rng > 0.6)
-        {
-            potion = Potions.POISON;
-            duration = TickUnits.convertSecondsToTicks(10);
-        }
-        else {
-            potion = Potions.WEAKNESS;
-            duration = TickUnits.convertSecondsToTicks(30);
-        }
-
-        ItemStack potionStack = new ItemStack(Items.SPLASH_POTION);
-        if(duration > 0)
-        {
-            // For effects with duration, create a custom potion with the specified duration
-            PotionUtils.setCustomEffects(potionStack, java.util.List.of(
-                    new MobEffectInstance(potion.getEffects().get(0).getEffect(), duration)
-            ));
-        } else
-        {
-            // For instant effects like harming
-            PotionUtils.setPotion(potionStack, potion);
-        }
-
-        ThrownPotion thrownpotion = new ThrownPotion(this.level(), this);
-        thrownpotion.setItem(potionStack);
-        thrownpotion.setXRot(thrownpotion.getXRot() - -20.0F);
-        thrownpotion.shoot(d0, d1 + d3 * 0.2D, d2, 0.75F, 8.0F);
-        if (!this.isSilent()) {
-            this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
-        }
-
-        this.level().addFreshEntity(thrownpotion);
-        */
 
         Potion potion = Potions.HARMING;
         int duration = 0;
@@ -480,11 +431,12 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         return true;
     }
 
-    protected class ThrowPotionAttackGoal extends CustomAttackGoal
+    protected class ThrowPotionAttackGoal extends CustomAttackGoal2
     {
 
-        public ThrowPotionAttackGoal(Mob mob, float maxDistanceForAttackIn, int attackDelay) {
-            super(mob, maxDistanceForAttackIn, attackDelay);
+
+        public ThrowPotionAttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
@@ -492,22 +444,15 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
             return TickUnits.convertSecondsToTicks(3);
         }
 
-        protected void checkAndAttack(LivingEntity targetMob) {
-
-            if (isTargetInvalid()) {
-                return;
-            }
-
-            if (!isExecutionCooldownOver()) {
-                return;
-            }
-
-            performRangedAttack(targetMob, 0);
+        @Override
+        protected void playPreAttackAnimation() {
+            triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, POTION_ATTACK_ANIMATION_ID);
         }
 
         @Override
-        protected void triggerAnimation() {
-            triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, POTION_ATTACK_ANIMATION_ID);
+        protected void doAttack() {
+            performRangedAttack(mob.getTarget(), 0);
+            moveToNextState();
         }
     }
 
