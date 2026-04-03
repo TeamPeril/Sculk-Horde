@@ -177,7 +177,7 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
                         new SquadLogicGoal(this),
                         new MountNearestRavager(this),
                         //new RangedAcidAttackGoal(this, 1.0D, TickUnits.convertSecondsToTicks(3), 40),
-                        new SpitAttackGoal(this,  40, 10),
+                        new SpitAttackGoal(this,  FOLLOW_RANGE, 10, 10),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
@@ -358,11 +358,18 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
         return true;
     }
 
-    protected class SpitAttackGoal extends CustomAttackGoal
+    protected class SpitAttackGoal extends CustomAttackGoal2
     {
 
-        public SpitAttackGoal(Mob mob, float maxDistanceForAttackIn, int attackDelay) {
-            super(mob, maxDistanceForAttackIn, attackDelay);
+
+        public SpitAttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
+        }
+
+        @Override
+        protected void doAttack() {
+            performRangedAttack(getTarget());
+            moveToNextState();
         }
 
         @Override
@@ -370,21 +377,8 @@ public class SculkSpitterEntity extends Monster implements GeoEntity,ISculkSmart
             return TickUnits.convertSecondsToTicks(3);
         }
 
-        protected void checkAndAttack(LivingEntity targetMob) {
-
-            if (isTargetInvalid()) {
-                return;
-            }
-
-            if (!isExecutionCooldownOver()) {
-                return;
-            }
-
-            performRangedAttack(targetMob);
-        }
-
         @Override
-        protected void triggerAnimation() {
+        protected void playPreAttackAnimation() {
             triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_ANIMATION_ID);
         }
     }
