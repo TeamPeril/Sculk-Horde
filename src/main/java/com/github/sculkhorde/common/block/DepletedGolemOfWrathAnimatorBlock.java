@@ -4,11 +4,14 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
+import com.github.sculkhorde.util.SoundUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -110,6 +113,7 @@ public class DepletedGolemOfWrathAnimatorBlock extends Block implements IForgeBl
 
             // Convert Back into normal version
             BlockAlgorithms.setBlockMisc(level, pos, ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get().defaultBlockState());
+            SoundUtil.playSoundInLevel(level, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
 
             return InteractionResult.CONSUME;
         }
