@@ -42,7 +42,7 @@ public class CustomAttackGoal2 extends Goal {
 
     protected long getExecutionCooldown()
     {
-        return TickUnits.convertSecondsToTicks(2);
+        return TickUnits.convertSecondsToTicks(1);
     }
 
     public boolean canUse() {

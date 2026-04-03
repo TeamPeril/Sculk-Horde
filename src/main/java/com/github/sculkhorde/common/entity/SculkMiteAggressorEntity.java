@@ -159,7 +159,7 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
                         //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new Attack(this, 1.5F, 0, 0),
+                        new CustomMeleeAttackGoal2(this, 1.5F, 0, 0),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         new MiteLeapAtTargetGoal(this, 0.5F, TickUnits.convertSecondsToTicks(3)), // Only works on hard
@@ -301,18 +301,6 @@ public class SculkMiteAggressorEntity extends Monster implements GeoEntity, IScu
             // and explicitly use the 'yd' parameter for the vertical jump strength.
             this.mob.setDeltaMovement(finalDeltaMovement.x, (double)this.yd, finalDeltaMovement.z);
             this.mob.lookAt(getTarget(), 30F, 30F);
-        }
-    }
-
-    protected class Attack extends CustomMeleeAttackGoal2
-    {
-        public Attack(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
-            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
-        }
-
-        @Override
-        protected long getExecutionCooldown() {
-            return TickUnits.convertSecondsToTicks(1);
         }
     }
 }
