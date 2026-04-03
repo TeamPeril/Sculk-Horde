@@ -16,10 +16,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -138,9 +135,9 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
         //this.goalSelector.addGoal(1, new ChargeAttackGoal(this));
-        this.goalSelector.addGoal(2, new SpitAcidBlobAttackGoal());
+        this.goalSelector.addGoal(2, new SpitAcidBlobAttackGoal(this, FOLLOW_RANGE, 10, 10));
         this.goalSelector.addGoal(3, new SculkGuardianCombatNavigator(this, 32, 0));
-        this.goalSelector.addGoal(4, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
+        this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
 
 
@@ -341,11 +338,12 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     }
 
 
-    protected class SpitAcidBlobAttackGoal extends CustomAttackGoal
+    protected class SpitAcidBlobAttackGoal extends CustomAttackGoal2
     {
-        public SpitAcidBlobAttackGoal()
-        {
-            super(SculkGuardianEntity.this, 32,  10);
+
+
+        public SpitAcidBlobAttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
@@ -354,22 +352,19 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
         }
 
         @Override
-        protected void triggerAnimation() {
+        protected void playPreAttackAnimation() {
             triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_ANIMATION_ID);
         }
 
         @Override
-        protected void checkAndAttack(LivingEntity targetMob)
-        {
-            if (isTargetInvalid()) {
-                return;
-            }
-            performRangedAttack(targetMob);
+        protected void doAttack() {
+            performRangedAttack(getTarget());
+            moveToNextState();
         }
     }
 
-    public class SculkSquidRandomSwimmingGoal extends RandomStrollGoal {
-        public SculkSquidRandomSwimmingGoal(PathfinderMob mob, double speedModifier, int interval) {
+    public class RandomSwimmingGoal extends RandomStrollGoal {
+        public RandomSwimmingGoal(PathfinderMob mob, double speedModifier, int interval) {
             super(mob, speedModifier, interval, false);
         }
 

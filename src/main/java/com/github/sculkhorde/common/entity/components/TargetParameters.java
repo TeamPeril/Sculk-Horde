@@ -518,7 +518,7 @@ public class TargetParameters
         // Check swimmer/walker filters
         boolean isSwimmer = isLivingEntitySwimmer(e);
         boolean isFlier = isLivingEntityFlying(e);
-        boolean isWalker = !isLivingEntityFlying(e);
+        boolean isWalker = !isLivingEntityFlying(e) && !isSwimmer;
 
         if(isSculkLivingEntity.test(e) && !isFilterEnabled(TargetFilter.SCULK_HORDE_ENTITY))
         {
