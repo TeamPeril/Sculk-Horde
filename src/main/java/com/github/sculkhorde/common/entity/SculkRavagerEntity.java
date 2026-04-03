@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -155,19 +156,13 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
                 new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(15)),
                 new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)),
-                //SwimGoal(mob)
                 new FloatGoal(this),
                 new SquadLogicGoal(this),
-                //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                new AttackGoal(),
+                new AttackGoal(this, 2, 10, 10),
                 new FollowSquadLeader(this),
                 new PathFindToRaidLocation<>(this),
-                //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                 new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                // new LookAtGoal(this, LivingEntity.class, 6.0F),
-                // new LookAtGoal(this, MobEntity.class, 8.0F)
         };
-
     }
 
     /**
@@ -241,40 +236,19 @@ public class SculkRavagerEntity extends Ravager implements GeoEntity, ISculkSmar
 
     /** ~~~~~~~~ CLASSES ~~~~~~~~ **/
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    protected class AttackGoal extends CustomMeleeAttackGoal2
     {
-
-        public AttackGoal()
-        {
-            super(SculkRavagerEntity.this, 1.0D, false, 10);
+        public AttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
-        public boolean canUse()
-        {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
-            // If the mob is already targeting something valid, don't bother
-            return canWeUse;
-        }
-
-        @Override
-        public boolean canContinueToUse()
-        {
-            return canUse();
-        }
-
-        protected double getAttackReachBlocks()
-        {
-            return 1.5D;
-        }
-
-        @Override
-        protected int getAttackInterval() {
+        protected long getExecutionCooldown() {
             return TickUnits.convertSecondsToTicks(2);
         }
 
         @Override
-        protected void triggerAnimation() {
+        protected void playPreAttackAnimation() {
             ((SculkRavagerEntity)mob).triggerAnim("attack_controller", "attack_animation");
         }
     }
