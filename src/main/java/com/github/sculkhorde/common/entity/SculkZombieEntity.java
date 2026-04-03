@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -10,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
@@ -155,16 +157,11 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
-                        //MeleeAttackGoal(mob, speedModifier, followingTargetEvenIfNotSeen)
-                        new AttackGoal(),
+                        new AttackGoal(this, 2.5F, 5, 5),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
-                        //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
-                        new MoveTowardsTargetGoal(this, 0.8F, 20F),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
-                        //LookAtGoal(mob, targetType, lookDistance)
-                        new LookAtPlayerGoal(this, Pig.class, 8.0F),
                         //LookRandomlyGoal(mob)
                         new RandomLookAroundGoal(this),
                         new OpenDoorGoal(this, true)
@@ -240,36 +237,27 @@ public class SculkZombieEntity extends Monster implements GeoEntity, ISculkSmart
     }
     */
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    protected class AttackGoal extends CustomMeleeAttackGoal2
     {
 
-        public AttackGoal()
-        {
-            super(SculkZombieEntity.this, 1.0D, true, 10);
+
+        public AttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
-        public boolean canUse()
-        {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
-            // If the mob is already targeting something valid, don't bother
-            return canWeUse;
-        }
-
-        @Override
-        public boolean canContinueToUse()
-        {
-            return canUse();
-        }
-
-        @Override
-        protected int getAttackInterval() {
+        protected long getExecutionCooldown() {
             return TickUnits.convertSecondsToTicks(0.5F);
         }
 
         @Override
-        protected void triggerAnimation() {
-            ((SculkZombieEntity)mob).triggerAnim("attack_controller", "attack");
+        protected void playPreAttackAnimation() {
+            triggerAnim("attack_controller", "attack");
+        }
+
+        @Override
+        protected void playAttackSound() {
+            SoundUtil.playHostileSoundInLevel(level(), blockPosition(), SoundEvents.WARDEN_ATTACK_IMPACT);
         }
     }
 }
