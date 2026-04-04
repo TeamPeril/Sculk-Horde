@@ -316,10 +316,10 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         return getBbHeight();
     }
 
-    public class AttackGoal extends CustomMeleeAttackGoal
+    public class AttackGoalLegacy extends LegacyCustomMeleeAttackGoal
     {
 
-        public AttackGoal()
+        public AttackGoalLegacy()
         {
             super(SculkBroodlingEntity.this, 1.0D, true, 10);
         }

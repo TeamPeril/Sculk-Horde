@@ -65,7 +65,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 32F;
+    public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.20F;
 
@@ -152,7 +152,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     {
         return new Goal[]{
                 new GhastDespawnAfterTime(this, TickUnits.convertMinutesToTicks(20)),
-                new ShootGhastProjectile(this,  48, 0),
+                new ShootGhastProjectile(this,  FOLLOW_RANGE, 0, 0),
                 // Follow a built path when provided by PathBuilderSystem
                 new FollowBuiltPathGoal(this, 2.0D),
                 new DropOffMobsNearHostiles(),
@@ -545,26 +545,10 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         return ModSounds.SCULK_GHAST_MOAN.get();
     }
 
-
-    public boolean isAnchorPosValid(BlockPos pos)
+    protected class ShootGhastProjectile extends CustomAttackGoal2
     {
-        boolean isThereIsNoFluid = level().getFluidState(pos).isEmpty() && level().getFluidState(pos.below()).isEmpty();
-        boolean isItFarEnoughAway = distanceToSqr(Vec3.atCenterOf(pos)) > 30;
-        // As long as its not a fluid, its valid
-        return isThereIsNoFluid && isItFarEnoughAway;
-    }
-
-    protected class ShootGhastProjectile extends CustomAttackGoal
-    {
-
-        public ShootGhastProjectile(Mob mob, float maxDistanceForAttackIn, int attackDelay) {
-            super(mob, maxDistanceForAttackIn, attackDelay);
-            //setFlags(EnumSet.of(Goal.Flag.MOVE));
-        }
-
-        @Override
-        public void start() {
-            super.start();
+        public ShootGhastProjectile(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
         }
 
         @Override
@@ -573,12 +557,9 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
         }
 
         @Override
-        protected void checkAndAttack(LivingEntity targetMob)
-        {
-            if (isTargetInvalid()) {
-                return;
-            }
-            performRangedAttack(targetMob, 1F);
+        protected void doAttack() {
+            performRangedAttack(getTarget(), 1F);
+            moveToNextState();
         }
     }
 

@@ -122,7 +122,7 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
 
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(2)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(1)));
-        this.goalSelector.addGoal(1, new AttackGoal());
+        this.goalSelector.addGoal(1, new AttackGoalLegacy());
 
         Goal[] targetSelectorPayload = targetSelectorPayload();
         for(int priority = 0; priority < targetSelectorPayload.length; priority++)
@@ -160,10 +160,10 @@ public class SculkSalmonEntity extends Salmon implements GeoEntity, ISculkSmartE
         return true;
     }
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    class AttackGoalLegacy extends LegacyCustomMeleeAttackGoal
     {
 
-        public AttackGoal()
+        public AttackGoalLegacy()
         {
             super(SculkSalmonEntity.this, 1.0D, false, 10);
         }

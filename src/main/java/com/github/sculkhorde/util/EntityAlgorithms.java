@@ -5,7 +5,7 @@ import com.github.sculkhorde.common.effect.SculkBurrowedEffect;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.common.entity.SculkBeeHarvesterEntity;
-import com.github.sculkhorde.common.entity.goal.CustomMeleeAttackGoal;
+import com.github.sculkhorde.common.entity.goal.LegacyCustomMeleeAttackGoal;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.misc.ModColaborationHelper;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
@@ -831,14 +831,14 @@ public class EntityAlgorithms {
 
         private double attackReach = 0.0;
 
-        CustomMeleeAttackGoal parentAttackGoal;
+        LegacyCustomMeleeAttackGoal parentAttackGoal;
 
-        public DelayedHurtScheduler(CustomMeleeAttackGoal customMeleeAttackGoal, Mob damageDealer, int delayInTicks)
+        public DelayedHurtScheduler(LegacyCustomMeleeAttackGoal legacyCustomMeleeAttackGoal, Mob damageDealer, int delayInTicks)
         {
             this.damageDealer = damageDealer;
             this.delayInTicks = delayInTicks;
             this.ticksRemaining = delayInTicks;
-            this.parentAttackGoal = customMeleeAttackGoal;
+            this.parentAttackGoal = legacyCustomMeleeAttackGoal;
         }
 
         private ISculkSmartEntity getDamageDealerAsISculkSmartEntity()

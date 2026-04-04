@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -159,7 +160,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
                         new LeapAtTargetGoal(this, 0.7F),
-                        new AttackGoal(),
+                        new AttackGoal(this, 3, 0, 0),
                         new FollowSquadLeader(this),
                         new PathFindToRaidLocation<>(this),
                         //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
@@ -288,52 +289,17 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
     }
     */
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    protected class AttackGoal extends CustomMeleeAttackGoal2
     {
+        public AttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
+            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
+        }
 
-        public AttackGoal()
+        @Override
+        public void hurtTarget(Mob damageDealer, LivingEntity damageReceiver)
         {
-            super(SculkBroodHatcherEntity.this, 1.0D, true, 10);
-        }
-
-        @Override
-        public boolean canUse()
-        {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
-            // If the mob is already targeting something valid, don't bother
-            return canWeUse;
-        }
-
-        @Override
-        public boolean canContinueToUse()
-        {
-            return canUse();
-        }
-
-        protected double getAttackReachBlocks()
-        {
-            return 3.5F;
-        }
-
-        @Override
-        protected int getAttackInterval() {
-            return TickUnits.convertSecondsToTicks(0.5F);
-        }
-
-        @Override
-        protected void triggerAnimation() {
-            //((SculkBroodHatcherEntity)mob).triggerAnim("attack_controller", "attack");
-        }
-
-        @Override
-        public void onTargetHurt(LivingEntity target) {
-            super.onTargetHurt(target);
-            if(target == null)
-            {
-                return;
-            }
-
-            target.addEffect(new MobEffectInstance(ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), 0), this.mob);
+            damageDealer.doHurtTarget(damageReceiver);
+            damageDealer.addEffect(new MobEffectInstance(ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), 0), this.mob);
         }
     }
 }

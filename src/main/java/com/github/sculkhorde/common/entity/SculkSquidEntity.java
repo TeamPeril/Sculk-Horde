@@ -147,7 +147,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
         this.goalSelector.addGoal(1, new ChargeAttackGoal(this));
-        this.goalSelector.addGoal(2, new AttackInfectAndBlindGoal());
+        this.goalSelector.addGoal(2, new AttackInfectAndBlindGoalLegacy());
         this.goalSelector.addGoal(3, new SculkSquidRandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
 
@@ -415,13 +415,13 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
         }
     }
 
-    class AttackInfectAndBlindGoal extends CustomMeleeAttackGoal
+    class AttackInfectAndBlindGoalLegacy extends LegacyCustomMeleeAttackGoal
     {
 
         public final int ATTACK_MOB_STATE = 0;
         public int attackState = ATTACK_MOB_STATE;
 
-        public AttackInfectAndBlindGoal()
+        public AttackInfectAndBlindGoalLegacy()
         {
             super(SculkSquidEntity.this, 1.0D, false, 10);
         }

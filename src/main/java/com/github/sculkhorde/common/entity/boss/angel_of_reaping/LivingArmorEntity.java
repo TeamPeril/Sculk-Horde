@@ -182,7 +182,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                         new FloatGoal(this),
                         new MirrorArmorGoal(),
                         new SquadLogicGoal(this),
-                        new AttackGoal(),
+                        new AttackGoalLegacy(),
                         new FollowSquadLeader(this),
                         //MoveTowardsTargetGoal(mob, speedModifier, within) THIS IS FOR NON-ATTACKING GOALS
                         new MoveTowardsTargetGoal(this, 0.8F, 20F),
@@ -347,10 +347,10 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
         return true;
     }
 
-    class AttackGoal extends CustomMeleeAttackGoal
+    class AttackGoalLegacy extends LegacyCustomMeleeAttackGoal
     {
 
-        public AttackGoal()
+        public AttackGoalLegacy()
         {
             super(LivingArmorEntity.this, 1.0D, true, 10);
         }
