@@ -3,11 +3,13 @@ package com.github.sculkhorde.common.entity;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.core.ModEntities;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -137,6 +139,7 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
 
         SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level(), blockPosition(), false, request);
         spawnCursor();
+        SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SCULK_POD_OPEN.get());
         discard();
     }
 

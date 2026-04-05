@@ -196,6 +196,7 @@ public class SculkNodesSystem {
         {
             ModSavedData.getSaveData().cleanUpNodeEntries();
             timeOfLastValidation = getLevel().getGameTime();
+            cleanUpRequired = false;
         }
 
         boolean isThereMoreNodesThanMaxActiveNodes = getNodes().size() > ModConfig.SERVER.max_nodes_active.get();

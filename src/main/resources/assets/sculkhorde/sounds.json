@@ -285,5 +285,11 @@
       "sculkhorde:sculk_ghast_scream4",
       "sculkhorde:sculk_ghast_scream5"
     ]
+  },
+  "sculk_pod_open": {
+    "subtitle": "sounds.sculkhorde.sculk_pod_open",
+    "sounds": [
+      "sculkhorde:sculk_pod_open"
+    ]
   }
 }

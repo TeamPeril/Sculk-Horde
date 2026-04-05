@@ -59,6 +59,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SCULK_GHAST_MOAN = registerSoundEvent("sculk_ghast_moan");
     public static final RegistryObject<SoundEvent> SCULK_GHAST_SCREAM = registerSoundEvent("sculk_ghast_scream");
 
+    public static final RegistryObject<SoundEvent> SCULK_POD_OPEN = registerSoundEvent("sculk_pod_open");
+
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = new ResourceLocation(SculkHorde.MOD_ID, name);
