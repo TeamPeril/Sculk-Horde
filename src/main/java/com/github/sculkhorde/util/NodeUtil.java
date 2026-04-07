@@ -158,7 +158,7 @@ public class NodeUtil {
         }
 
         getNodeBlockEntity(nodeToMove.get()).get().isBeingMoved = true;
-        level.destroyBlock(nodeToMove.get().getPosition(), true);
+        level.destroyBlock(nodeToMove.get().getPosition(), false);
 
         SculkNodeBlock.PlaceNode(level, pos, true);
     }
