@@ -172,7 +172,7 @@ public class BlockInfestationTable{
         // I SAT HERE FOR HOURS TRYING TO FIGURE OUT WHY NODES WERE BEING DESTROYED. FUCK
         BlockAlgorithms.setBlockCursor(world, targetPos, newBlock);
         SculkNodeBlock.tryPlaceSculkNode(world, targetPos, false);
-        if(ModConfig.isExperimentalFeaturesEnabled()) {NodeUtil.tryMoveOldestNodeTo(world, targetPos, false); }
+        NodeUtil.tryMoveOldestNodeTo(world, targetPos, false);
 
         world.playSound(null, targetPos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + world.getRandom().nextFloat() * 0.4F);
 
