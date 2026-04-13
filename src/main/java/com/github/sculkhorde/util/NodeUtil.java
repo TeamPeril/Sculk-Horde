@@ -150,6 +150,12 @@ public class NodeUtil {
 
     public static void tryMoveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
     {
+        if(!ignoreRequirements && !TickUnits.hasTicksPassed(SculkHorde.sculkNodesSystem.timeOfLastNodeMove, level, SculkHorde.sculkNodesSystem.NODE_RELOCATION_COOLDOWN))
+        {
+            return;
+        }
+        SculkHorde.sculkNodesSystem.timeOfLastNodeMove = level.getGameTime();
+
         Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(ignoreRequirements);
 
         if(nodeToMove.isEmpty() || getNodeBlockEntity(nodeToMove.get()).isEmpty() || (!SculkNodeBlock.isValidPositionForSculkNode(level, pos) && !ignoreRequirements))

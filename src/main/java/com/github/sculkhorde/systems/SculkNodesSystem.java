@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class SculkNodesSystem {
 
@@ -19,6 +20,8 @@ public class SculkNodesSystem {
     protected boolean cleanUpRequired = false;
     protected long timeOfLastValidation = 0;
     protected final long VALIDATION_INTERVAL = TickUnits.convertMinutesToTicks(1);
+    public long timeOfLastNodeMove = 0;
+    public final long NODE_RELOCATION_COOLDOWN = TickUnits.convertMinutesToTicks(30);
 
 
     public SculkNodesSystem() {
@@ -46,9 +49,9 @@ public class SculkNodesSystem {
         return ModSavedData.getSaveData().getNodeEntries();
     }
 
-    protected ModSavedData.NodeEntry getNodeWithLongestTimeOfInactivity()
+    protected Optional<ModSavedData.NodeEntry> getNodeWithLongestTimeOfInactivity()
     {
-        ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = null;
+        Optional<ModSavedData.NodeEntry> nodeWithLongestTimeOfInactivity = Optional.empty();
         for(ModSavedData.NodeEntry node : getNodes())
         {
             ServerLevel dimension = node.getDimension();
@@ -64,18 +67,18 @@ public class SculkNodesSystem {
 
             long currentTime = node.getDimension().getGameTime();
             long currentNodeDurationOfInactivity =  currentTime - node.getLastTimeWasActive();
-            long nodeWithLongestTimeOfInactivityDuration = nodeWithLongestTimeOfInactivity == null ? 0 : currentTime - nodeWithLongestTimeOfInactivity.getLastTimeWasActive();
+            long nodeWithLongestTimeOfInactivityDuration = nodeWithLongestTimeOfInactivity.isEmpty() ? 0 : currentTime - nodeWithLongestTimeOfInactivity.get().getLastTimeWasActive();
 
             boolean hasCurrentNodeBeenInactiveForLonger = currentNodeDurationOfInactivity > nodeWithLongestTimeOfInactivityDuration;
             boolean hasCurrentNodeNeverBeenActive = node.getLastTimeWasActive() == 0;
 
-            if(nodeWithLongestTimeOfInactivity == null)
+            if(nodeWithLongestTimeOfInactivity.isEmpty())
             {
-                nodeWithLongestTimeOfInactivity = node;
+                nodeWithLongestTimeOfInactivity = Optional.of(node);
             }
             else if((hasCurrentNodeBeenInactiveForLonger || hasCurrentNodeNeverBeenActive) && !node.isActive())
             {
-                nodeWithLongestTimeOfInactivity = node;
+                nodeWithLongestTimeOfInactivity = Optional.of(node);
             }
         }
         return nodeWithLongestTimeOfInactivity;
@@ -120,14 +123,21 @@ public class SculkNodesSystem {
 
     public void ActivateNodeWithLongestDurationOfInactivity()
     {
-        ModSavedData.NodeEntry nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
-        if(!nodeWithLongestTimeOfInactivity.isEntryValid()) { return; }
-        nodeWithLongestTimeOfInactivity.setActive(true);
-        nodeWithLongestTimeOfInactivity.setActivationTimeStamp(nodeWithLongestTimeOfInactivity.getDimension().getGameTime());
-        DebuggerSystem.eventDebuggerModule.logInfo("Activating Node at: " + nodeWithLongestTimeOfInactivity.getPosition().toString());
+        Optional<ModSavedData.NodeEntry> nodeWithLongestTimeOfInactivity = getNodeWithLongestTimeOfInactivity();
 
-        SpawnPhantomsEvent phantomEvent = new SpawnPhantomsEvent(nodeWithLongestTimeOfInactivity.getDimension().dimension());
-        phantomEvent.setEventLocation(nodeWithLongestTimeOfInactivity.getPosition());
+        if(nodeWithLongestTimeOfInactivity.isEmpty())
+        {
+            return;
+        }
+
+
+        if(!nodeWithLongestTimeOfInactivity.get().isEntryValid()) { return; }
+        nodeWithLongestTimeOfInactivity.get().setActive(true);
+        nodeWithLongestTimeOfInactivity.get().setActivationTimeStamp(nodeWithLongestTimeOfInactivity.get().getDimension().getGameTime());
+        DebuggerSystem.eventDebuggerModule.logInfo("Activating Node at: " + nodeWithLongestTimeOfInactivity.get().getPosition().toString());
+
+        SpawnPhantomsEvent phantomEvent = new SpawnPhantomsEvent(nodeWithLongestTimeOfInactivity.get().getDimension().dimension());
+        phantomEvent.setEventLocation(nodeWithLongestTimeOfInactivity.get().getPosition());
         SculkHorde.eventSystem.addEvent(phantomEvent);
     }
 
