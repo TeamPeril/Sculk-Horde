@@ -35,8 +35,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -515,11 +519,19 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     /** Animation **/
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    public static final String PICK_ID = "pick";
+    private static final RawAnimation PICK_ANIMATION = RawAnimation.begin().thenPlay(PICK_ID);
+
+    public static final String PICK_ANIMATION_CONTROLLER_ID = "attack_controller";
+    private final AnimationController PICK_ANIMATION_CONTROLLER = new AnimationController<>(this, PICK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
+            .transitionLength(0)
+            .triggerableAnim(PICK_ID, PICK_ANIMATION);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        //controllers.add(DefaultAnimations.genericWalkIdleController(this).transitionLength(5));
-        //controllers.add(new AnimationController<>(this, "blob_idle", 5, this::poseTumorCycle));
+        controllers.add(DefaultAnimations.genericFlyIdleController(this).transitionLength(5));
+        controllers.add(DefaultAnimations.genericLivingController(this).transitionLength(5));
+        controllers.add(PICK_ANIMATION_CONTROLLER);
     }
 
     @Override

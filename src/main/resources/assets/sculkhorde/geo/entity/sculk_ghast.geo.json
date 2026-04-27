@@ -6,7 +6,7 @@
 				"identifier": "geometry.sculk_ghast",
 				"texture_width": 512,
 				"texture_height": 512,
-				"visible_bounds_width": 9,
+				"visible_bounds_width": 12,
 				"visible_bounds_height": 14,
 				"visible_bounds_offset": [0, 1, 0]
 			},
@@ -277,6 +277,22 @@
 					]
 				},
 				{
+					"name": "Seg2Tendril6",
+					"parent": "tendril6",
+					"pivot": [29, -24, 17],
+					"cubes": [
+						{"origin": [25, -48, 13], "size": [8, 24, 8], "pivot": [29, -30, 17], "rotation": [0, -45, 0], "uv": [0, 48]}
+					]
+				},
+				{
+					"name": "Seg3Tendril6",
+					"parent": "Seg2Tendril6",
+					"pivot": [29, -48, 17],
+					"cubes": [
+						{"origin": [25, -72, 13], "size": [8, 24, 8], "pivot": [29, -54, 17], "rotation": [0, -45, 0], "uv": [0, 48]}
+					]
+				},
+				{
 					"name": "tendril7",
 					"parent": "tendrils",
 					"pivot": [17, 0, 30],
@@ -291,22 +307,6 @@
 					"cubes": [
 						{"origin": [11, -48, 30], "size": [12, 24, 0], "pivot": [17, -30, 30], "rotation": [0, -45, 0], "uv": [0, 24]},
 						{"origin": [17, -48, 24], "size": [0, 24, 12], "pivot": [17, -30, 30], "rotation": [0, -45, 0], "uv": [24, -12]}
-					]
-				},
-				{
-					"name": "Seg2Tendril6",
-					"parent": "tendrils",
-					"pivot": [29, -24, 17],
-					"cubes": [
-						{"origin": [25, -48, 13], "size": [8, 24, 8], "pivot": [29, -30, 17], "rotation": [0, -45, 0], "uv": [0, 48]}
-					]
-				},
-				{
-					"name": "Seg3Tendril6",
-					"parent": "Seg2Tendril6",
-					"pivot": [29, -48, 17],
-					"cubes": [
-						{"origin": [25, -72, 13], "size": [8, 24, 8], "pivot": [29, -54, 17], "rotation": [0, -45, 0], "uv": [0, 48]}
 					]
 				},
 				{
