@@ -826,6 +826,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
             if(distanceFromTarget < getBbWidth() + 3)
             {
                 storeMob(target);
+                triggerAnim(PICK_ANIMATION_CONTROLLER_ID, PICK_ID);
                 targets.remove(0);
             }
         }
