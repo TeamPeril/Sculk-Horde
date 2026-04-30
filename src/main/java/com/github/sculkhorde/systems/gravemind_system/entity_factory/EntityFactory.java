@@ -192,6 +192,17 @@ public class EntityFactory {
                                 EntityFactoryEntry.StrategicValues.Aquatic)
                         .setMinimumDifficulty(Difficulty.NORMAL),
 
+                new EntityFactoryEntry(ModEntities.SCULK_GUARDIAN.get())
+                        .setMinEvolutionRequired(Gravemind.evolution_states.Mature)
+                        .setCost((int) SculkGuardianEntity.MAX_HEALTH)
+                        .setLimit(1)
+                        .setExplicitlyDeniedSenders(ReinforcementRequest.senderType.Raid)
+                        .addStrategicValues(
+                                EntityFactoryEntry.StrategicValues.Combat,
+                                EntityFactoryEntry.StrategicValues.Ranged,
+                                EntityFactoryEntry.StrategicValues.Aquatic)
+                        .setMinimumDifficulty(Difficulty.NORMAL),
+
                 new EntityFactoryEntry(ModEntities.SCULK_PUFFERFISH.get())
                         .setMinEvolutionRequired(Gravemind.evolution_states.Immature)
                         .setCost((int) SculkPufferfishEntity.MAX_HEALTH)
