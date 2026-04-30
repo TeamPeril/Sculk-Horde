@@ -36,6 +36,7 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_SALMON_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_SQUID_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_PUFFERFISH_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_GUARDIAN_SPAWN_EGG.get());
 
                 // Flying Mobs
                 event.accept(ModItems.SCULK_PHANTOM_SPAWN_EGG.get());
@@ -249,7 +250,6 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.BROOD_NEST_CORE_BLOCK.get());
                 event.accept(ModBlocks.LIVING_WEB_BLOCK.get());
 
-                event.accept(ModItems.SCULK_GUARDIAN_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_BROOD_HATCHER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_BROODLING_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_GHAST_SPAWN_EGG.get());
