@@ -135,7 +135,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
         this.goalSelector.addGoal(0, new DespawnAfterTime(this, TickUnits.convertMinutesToTicks(10)));
         this.goalSelector.addGoal(0, new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(5)));
         //this.goalSelector.addGoal(1, new ChargeAttackGoal(this));
-        this.goalSelector.addGoal(2, new SpitAcidBlobAttackGoal(this, FOLLOW_RANGE, 10, 10));
+        this.goalSelector.addGoal(2, new SpitAcidBlobAttackGoal(this, FOLLOW_RANGE, TickUnits.convertSecondsToTicks(1.3F), 10));
         this.goalSelector.addGoal(3, new SculkGuardianCombatNavigator(this, 32, 0));
         this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0D, 10));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
