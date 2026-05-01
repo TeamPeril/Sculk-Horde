@@ -524,12 +524,12 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
 
     public static final String PICK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private final AnimationController PICK_ANIMATION_CONTROLLER = new AnimationController<>(this, PICK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
-            .transitionLength(0)
+            .transitionLength(5)
             .triggerableAnim(PICK_ID, PICK_ANIMATION);
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(DefaultAnimations.genericFlyIdleController(this).transitionLength(5));
+        controllers.add(DefaultAnimations.genericFlyIdleController(this).transitionLength(10));
         controllers.add(DefaultAnimations.genericLivingController(this).transitionLength(5));
         controllers.add(PICK_ANIMATION_CONTROLLER);
     }

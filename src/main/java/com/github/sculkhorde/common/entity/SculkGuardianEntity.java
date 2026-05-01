@@ -237,7 +237,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     private static  final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay(ATTACK_ANIMATION_ID);
 
-    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP).transitionLength(10)
             .triggerableAnim(ATTACK_ANIMATION_ID, ATTACK_ANIMATION);
 
 
@@ -246,9 +246,9 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                new AnimationController<>(this, "walk_cycle", 5, this::poseSwimCycle),
+                new AnimationController<>(this, "walk_cycle", 5, this::poseSwimCycle).transitionLength(10),
                 ATTACK_ANIMATION_CONTROLLER,
-                DefaultAnimations.genericLivingController(this)
+                DefaultAnimations.genericLivingController(this).transitionLength(5)
         );
     }
 
