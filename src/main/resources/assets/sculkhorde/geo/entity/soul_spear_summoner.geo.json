@@ -7,21 +7,21 @@
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 3,
-				"visible_bounds_height": 2.5,
-				"visible_bounds_offset": [0, 0.75, 0]
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
 			},
 			"bones": [
 				{
 					"name": "root",
-					"pivot": [0, 0, 0]
+					"pivot": [0, 8, 0]
 				},
 				{
 					"name": "core",
 					"parent": "root",
-					"pivot": [0, 8, 0],
+					"pivot": [0, 16, 0],
 					"cubes": [
 						{
-							"origin": [-8, 0, -8],
+							"origin": [-8, 8, -8],
 							"size": [16, 16, 16],
 							"uv": {
 								"north": {"uv": [32, 32], "uv_size": [16, 16]},
@@ -37,12 +37,12 @@
 				{
 					"name": "plane_2",
 					"parent": "root",
-					"pivot": [0, 8, 0],
+					"pivot": [0, 16, 0],
 					"cubes": [
 						{
-							"origin": [-16, -8, 0],
+							"origin": [-16, 0, 0],
 							"size": [32, 32, 0],
-							"pivot": [0, 8, 0],
+							"pivot": [0, 16, 0],
 							"rotation": [0, 90, 0],
 							"uv": {
 								"north": {"uv": [0, 0], "uv_size": [32, 32]},
@@ -57,10 +57,10 @@
 				{
 					"name": "plane_1",
 					"parent": "root",
-					"pivot": [0, 8, 0],
+					"pivot": [0, 16, 0],
 					"cubes": [
 						{
-							"origin": [-16, -8, 0],
+							"origin": [-16, 0, 0],
 							"size": [32, 32, 0],
 							"uv": {
 								"north": {"uv": [0, 0], "uv_size": [32, 32]},

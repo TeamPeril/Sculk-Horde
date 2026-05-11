@@ -75,7 +75,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
         }
 
         AbstractProjectileEntity projectile =  new SoulSpearProjectileAttackEntity(level(), getOwner(), 20F);
-        projectile.setPos(position().add(0, getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
+        projectile.setPos(getBoundingBox().getCenter());
 
         double spawnPosX = getX();
         double spawnPosY = getY() + getEyeHeight();
@@ -131,7 +131,7 @@ public class SoulSpearSummonerAttackEntity extends SpecialEffectEntity implement
         {
             for(int i = 0; i < targets.size() && i < getMaxAttackTargets(); i++)
             {
-                ParticleUtil.spawnParticleBeam((ServerLevel) level(), ParticleTypes.END_ROD, position(), targets.get(i).getEyePosition(), 0.1F, 1);
+                ParticleUtil.spawnParticleBeam((ServerLevel) level(), ParticleTypes.END_ROD, getBoundingBox().getCenter(), targets.get(i).getBoundingBox().getCenter(), 0.1F, 1);
             }
             return;
         }
