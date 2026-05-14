@@ -16,7 +16,6 @@ public class ModMobEffects {
     public static final RegistryObject<SculkVesselEffect> SCULK_VESSEL = EFFECTS.register("sculk_vessel", SculkVesselEffect::new);
     public static final RegistryObject<CorrodingEffect> CORRODED = EFFECTS.register("corroded", CorrodingEffect::new);
     public static final RegistryObject<DenseEffect> DENSE = EFFECTS.register("dense", DenseEffect::new);
-    public static final RegistryObject<SoulDisruptionEffect> SOUL_DISRUPTION = EFFECTS.register("soul_disruption", SoulDisruptionEffect::new);
     public static final RegistryObject<DiseasedAtmosphereEffect> DISEASED_ATMOSPHERE = EFFECTS.register("diseased_atmosphere", DiseasedAtmosphereEffect::new);
     public static final RegistryObject<SculkFogEffect> SCULK_FOG = EFFECTS.register("sculk_fog", SculkFogEffect::new);
     public static final RegistryObject<RootedEffect> ROOTED_EFFECT = EFFECTS.register("rooted", RootedEffect::new);

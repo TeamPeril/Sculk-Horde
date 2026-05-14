@@ -161,7 +161,7 @@ public class SoulDisrupterItem extends Item implements IForgeItem {
 			{
 				if(entity instanceof LivingEntity livingEntity)
 				{
-					livingEntity.addEffect(new MobEffectInstance(ModMobEffects.SOUL_DISRUPTION.get(), TickUnits.convertMinutesToTicks(1), 0), player);
+					//livingEntity.addEffect(new MobEffectInstance(ModMobEffects.SOUL_DISRUPTION.get(), TickUnits.convertMinutesToTicks(1), 0), player);
 				}
 			}
 		}

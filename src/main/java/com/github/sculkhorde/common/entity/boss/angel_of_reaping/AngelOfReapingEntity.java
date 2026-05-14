@@ -257,9 +257,17 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
 
     public int getMobDifficultyLevel()
     {
-        if(hasEffect(ModMobEffects.SOUL_DISRUPTION.get()))
+        if(hasEffect(MobEffects.WEAKNESS))
         {
-            return Math.max(1, mobDifficultyLevel - 1);
+            MobEffectInstance weakness = getEffect(MobEffects.WEAKNESS);
+
+            if(weakness == null)
+            {
+                return mobDifficultyLevel;
+            }
+
+
+            return Math.max(1, mobDifficultyLevel - (weakness.getAmplifier() + 1));
         }
 
         return mobDifficultyLevel;
