@@ -5,9 +5,7 @@ import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModSounds;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.event_system.events.RaidEvent.RaidEvent;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
@@ -33,8 +31,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -298,6 +299,24 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
 
         this.jumping = false;
         super.aiStep();
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource damageSource, int lootLevel, boolean isNotPlayer) {
+        super.dropCustomDeathLoot(damageSource, lootLevel, isNotPlayer);
+
+        for(int i = 1; i <= 4; i++)
+        {
+            ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(Items.DIAMOND));
+            level().addFreshEntity(loot);
+        }
+
+        for(int i = 1; i <= 5; i++)
+        {
+            ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(Items.ENDER_PEARL));
+            level().addFreshEntity(loot);
+        }
+
     }
 
     private boolean isWithinRaidLocation()
