@@ -533,20 +533,19 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
 
 
         // Update Boss Title
-        if (!updatedEventTitle) {
-            Component title = Component.translatable("entity.sculkhorde.angel_of_reaping")
-                    .append(Component.literal(" 💀" + getMobDifficultyLevel()));
 
-            if (getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty())
-            {
-                title = title.copy()
-                        .append(Component.literal(" ("))
-                        .append(getHitTarget().get().getDisplayName()) // append the Component directly
-                        .append(Component.literal(")"));
-            }
-            bossEvent.setName(title);
-            updatedEventTitle = true;
+        Component title = Component.translatable("entity.sculkhorde.angel_of_reaping")
+                .append(Component.literal(" 💀" + getMobDifficultyLevel()));
+
+        if (getHitTarget().isPresent() && !getHitTarget().get().getScoreboardName().isEmpty())
+        {
+            title = title.copy()
+                    .append(Component.literal(" ("))
+                    .append(getHitTarget().get().getDisplayName()) // append the Component directly
+                    .append(Component.literal(")"));
         }
+        bossEvent.setName(title);
+
 
         // This is to make sure there arent any duplicate soul reapers in the world.
         // I know this is nested if statement hell, but I was tired and it works.
