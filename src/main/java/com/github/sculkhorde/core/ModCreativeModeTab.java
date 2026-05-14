@@ -254,9 +254,6 @@ public class ModCreativeModeTab {
                 event.accept(ModItems.SCULK_BROODLING_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_GHAST_SPAWN_EGG.get());
 
-
-                event.accept(ModItems.SOUL_DISRUPTER.get());
-                event.accept(ModItems.SOUL_ANIMATOR.get());
                 event.accept(ModItems.ANGEL_OF_REAPING_SOUL.get());
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());
                 event.accept(ModBlocks.DEPLETED_GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());

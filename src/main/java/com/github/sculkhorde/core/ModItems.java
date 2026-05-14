@@ -293,9 +293,6 @@ public class ModItems {
 		}
 	});
 
-	public static final RegistryObject<SoulDisrupterItem> SOUL_DISRUPTER = ITEMS.register("soul_disrupter",
-			SoulDisrupterItem::new);
-
 	public static final RegistryObject<Item> FERRISCITE = ITEMS.register("ferriscite", () -> new Item(new Item.Properties()){
 		@Override
 		@OnlyIn(Dist.CLIENT)
@@ -326,25 +323,6 @@ public class ModItems {
 			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
 			{
 				tooltip.add(Component.translatable("tooltip.sculkhorde.diascite.lore"));
-			}
-			else
-			{
-				tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
-			}
-		}
-	});
-
-	public static final RegistryObject<Item> SOUL_ANIMATOR = ITEMS.register("soul_animator", () -> new Item(new Item.Properties()){
-		@Override
-		@OnlyIn(Dist.CLIENT)
-		public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-			if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
-			{
-				tooltip.add(Component.translatable("tooltip.sculkhorde.soul_animator.functionality"));
-			}
-			else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
-			{
-				tooltip.add(Component.translatable("tooltip.sculkhorde.soul_animator.lore"));
 			}
 			else
 			{
