@@ -11,10 +11,7 @@ import com.github.sculkhorde.common.entity.components.TargetPrioritizer;
 import com.github.sculkhorde.common.entity.goal.ImprovedRandomStrollGoal;
 import com.github.sculkhorde.common.entity.goal.SculkHordeTargetGoal;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
-import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.core.ModParticles;
-import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.Event;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadEvent;
@@ -43,7 +40,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -286,6 +286,39 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
     public void setHitTarget(LivingEntity e)
     {
         hitTarget = Optional.of(e);
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource damageSource, int lootLevel, boolean isNotPlayer) {
+        super.dropCustomDeathLoot(damageSource, lootLevel, isNotPlayer);
+
+        if(ModConfig.isExperimentalFeaturesEnabled())
+        {
+            ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(ModItems.ANGEL_OF_REAPING_SOUL.get()));
+            level().addFreshEntity(loot);
+        }
+
+        for(int i = 1; i <= 3 * getMobDifficultyLevel(); i++)
+        {
+            ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(Items.DIAMOND));
+            level().addFreshEntity(loot);
+        }
+
+        for(int i = 1; i <= 2 * getMobDifficultyLevel(); i++)
+        {
+            ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(ModItems.SOULITE_SHARD.get()));
+            level().addFreshEntity(loot);
+        }
+
+        for(int i = 1; i <= 4 * getMobDifficultyLevel(); i++)
+        {
+            ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(ModItems.CRYING_SOULS.get()));
+            level().addFreshEntity(loot);
+        }
+
+        ItemEntity loot = new ItemEntity(level(), getX(), getY(), getZ(), new ItemStack(Items.TOTEM_OF_UNDYING));
+        level().addFreshEntity(loot);
+
     }
 
     public boolean getIsUsingSpell()

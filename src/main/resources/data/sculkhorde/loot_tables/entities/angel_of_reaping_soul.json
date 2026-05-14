@@ -6,17 +6,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "sculkhorde:soul_animator"
-        }
-      ],
-      "name": "main",
-      "rolls": 1.0
-    },
-    {
-      "bonus_rolls": 0.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
           "name": "sculkhorde:deep_green_music_disc",
           "weight": 1
         },
