@@ -139,7 +139,7 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
 
         SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level(), blockPosition(), false, request);
         spawnCursor();
-        //SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SCULK_POD_OPEN.get());
+        SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.BURROWED_BURST.get());
         discard();
     }
 

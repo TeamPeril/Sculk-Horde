@@ -69,11 +69,6 @@ public class HitSquadEvent extends Event {
 
     public boolean canContinue()
     {
-        if(!ModConfig.SERVER.experimental_features_enabled.get() || !ModConfig.SERVER.experimental_hit_squad_event_enabled.get())
-        {
-            return false;
-        }
-
         return !isEventOver;
     }
 

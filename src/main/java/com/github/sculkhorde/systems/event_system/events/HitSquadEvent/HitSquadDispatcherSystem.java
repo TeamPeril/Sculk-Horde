@@ -90,11 +90,6 @@ public class HitSquadDispatcherSystem {
             return;
         }
 
-        if(!ModConfig.SERVER.experimental_features_enabled.get() || !ModConfig.SERVER.experimental_hit_squad_event_enabled.get())
-        {
-            return;
-        }
-
         if(SculkHorde.isDebugMode()) {
             DebuggerSystem.eventDebuggerModule.logInfo("HitSquadDispatcherSystem | Checking To See if its time for hit event.");
         }
