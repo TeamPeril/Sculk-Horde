@@ -30,13 +30,15 @@ public class ModEntities {
 
     public static DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, SculkHorde.MOD_ID);
 
+    public static final MobCategory SCULK_HORDE_CATEGORY = MobCategory.create("SCULKHORDE", "sculkhorde", 70, false, false, 128);
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }
 
     public static <T extends Mob> RegistryObject<EntityType<T>> registerMob(String name, EntityType.EntityFactory<T> entity, float width, float height, int primaryEggColor, int secondaryEggColor) {
         RegistryObject<EntityType<T>> entityType = ENTITY_TYPES.register(name,
-                () -> EntityType.Builder.of(entity, MobCategory.MONSTER).sized(width, height).build(name));
+                () -> EntityType.Builder.of(entity, SCULK_HORDE_CATEGORY).sized(width, height).build(name));
 
         return entityType;
     }
