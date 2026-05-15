@@ -9,6 +9,7 @@ import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualSurfaceInfestorCursor;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
+import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
@@ -147,6 +148,7 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
 
         SculkHorde.entityFactory.createReinforcementRequestFromSummoner(level(), blockPosition(), false, request);
         spawnCursor();
+        ParticleUtil.spawnSculkExplosion((ServerLevel) level(), position().toVector3f(), 100, 1.0F);
         SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.BURROWED_BURST.get());
         discard();
     }

@@ -41,6 +41,7 @@ public class ModCreativeModeTab {
                 // Flying Mobs
                 event.accept(ModItems.SCULK_PHANTOM_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_STINGER_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_GHAST_SPAWN_EGG.get());
 
                 // Special Mobs
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
@@ -253,7 +254,6 @@ public class ModCreativeModeTab {
 
                 event.accept(ModItems.SCULK_BROOD_HATCHER_SPAWN_EGG.get());
                 event.accept(ModItems.SCULK_BROODLING_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_GHAST_SPAWN_EGG.get());
 
                 event.accept(ModItems.ANGEL_OF_REAPING_SOUL.get());
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());

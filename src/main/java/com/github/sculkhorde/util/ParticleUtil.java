@@ -182,4 +182,17 @@ public class ParticleUtil {
         float range = max - min;
         return random.nextFloat() * range + min;
     }
+
+    public static void spawnSculkExplosion(ServerLevel level, Vector3f position, int amount, float speed)
+    {
+        for (int i = 0; i < amount; i++) {
+            float rx = getRandomFloat(level.random, -1.0F, 1.0F);
+            float ry = getRandomFloat(level.random, -1.0F, 1.0F);
+            float rz = getRandomFloat(level.random, -1.0F, 1.0F);
+            Vector3f velocity = new Vector3f(rx, ry, rz).normalize().mul(speed);
+
+            // Use the mod's custom burst particle for better visibility
+            level.sendParticles(ModParticles.BURROWED_BURST_PARTICLE.get(), position.x, position.y, position.z, 0, velocity.x, velocity.y, velocity.z, 1.0D);
+        }
+    }
 }
