@@ -477,4 +477,7 @@
   "item.sculkhorde.chicken_of_purity": "waso pona",
   "tooltip.sculkhorde.food_of_purity.functionality": "§7§omoku ni li ken pona e moku sina li pana e pona tawa sina li awen e sina tan ike pi kulupu jaki. sina ken pana e ni tawa jan poka anu jan utala.",
   "tooltip.sculkhorde.food_of_purity.lore": "§7§omoku ni li pana e seli pona en moku pona. ni li moku pona mute tawa jan pi wile pona."
+  ,"item.sculkhorde.sculk_ghast_spawn_egg": "Sculk Ghast Spawn Egg"
+  ,"entity.sculkhorde.sculk_metamorphosis_pod": "Sculk Metamorphosis Pod"
+  ,"entity.sculkhorde.sculk_ghast": "Sculk Ghast"
 }

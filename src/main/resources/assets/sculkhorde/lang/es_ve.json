@@ -482,4 +482,7 @@
   "item.sculkhorde.chicken_of_purity": "Pollo de Pureza",
   "tooltip.sculkhorde.food_of_purity.functionality": "§7§oUna comida que puede ser consumida para nutrir tu hambre, otorgarte pureza y protegerte de los efectos de estado de la horda. Útil para dársela a entidades como colonos, soldados u otros aliados.",
   "tooltip.sculkhorde.food_of_purity.lore": "§7§oEsta comida irradia calidez y nutrición. Es un delicioso manjar y una gran utilidad para aquellos que desean pureza."
+  ,"item.sculkhorde.sculk_ghast_spawn_egg": "Sculk Ghast Spawn Egg"
+  ,"entity.sculkhorde.sculk_metamorphosis_pod": "Sculk Metamorphosis Pod"
+  ,"entity.sculkhorde.sculk_ghast": "Sculk Ghast"
 }

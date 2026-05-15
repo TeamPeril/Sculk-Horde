@@ -486,4 +486,7 @@
   "item.sculkhorde.chicken_of_purity": "Курица чистоты",
   "tooltip.sculkhorde.food_of_purity.functionality": "§7§oПища, которую можно съесть, чтобы утолить голод, обрести чистоту и защитить себя от негативных эффектов орды. Полезно для кормления таких существ, как колонисты, солдаты или другие союзники.",
   "tooltip.sculkhorde.food_of_purity.lore": "§7§oЭта еда излучает тепло и питание. Это вкусное лакомство и отличная полезность для тех, кто жаждет чистоты."
+  ,"item.sculkhorde.sculk_ghast_spawn_egg": "Sculk Ghast Spawn Egg"
+  ,"entity.sculkhorde.sculk_metamorphosis_pod": "Sculk Metamorphosis Pod"
+  ,"entity.sculkhorde.sculk_ghast": "Sculk Ghast"
 }

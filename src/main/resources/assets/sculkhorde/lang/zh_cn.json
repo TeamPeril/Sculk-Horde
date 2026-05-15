@@ -477,4 +477,7 @@
     "item.sculkhorde.chicken_of_purity": "纯洁鸡肉",
     "tooltip.sculkhorde.food_of_purity.functionality": "§7§o一种可以食用的食物，可以滋养你的饥饿，赐予你纯洁，并保护你免受部落的状态效果。可用于喂养殖民者、士兵或其他盟友等实体。",
     "tooltip.sculkhorde.food_of_purity.lore": "§7§o这种食物散发着温暖和营养。它是一种美味的食物，对于那些渴望纯洁的人来说是一个很好的工具。"
+  ,"item.sculkhorde.sculk_ghast_spawn_egg": "Sculk Ghast Spawn Egg"
+  ,"entity.sculkhorde.sculk_metamorphosis_pod": "Sculk Metamorphosis Pod"
+  ,"entity.sculkhorde.sculk_ghast": "Sculk Ghast"
 }

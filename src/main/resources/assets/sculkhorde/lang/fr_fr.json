@@ -472,4 +472,7 @@
   "item.sculkhorde.chicken_of_purity": "Poulet de Pureté",
   "tooltip.sculkhorde.food_of_purity.functionality": "§7§oUn aliment qui peut être mangé pour nourrir votre faim, vous accorder la pureté et vous protéger des effets de statut de la horde. Utile pour nourrir des entités comme les colons, les soldats ou d'autres alliés.",
   "tooltip.sculkhorde.food_of_purity.lore": "§7§oCette nourriture rayonne de chaleur et de nutrition. C'est une délicieuse gâterie et un excellent utilitaire pour ceux qui désirent la pureté."
+  ,"item.sculkhorde.sculk_ghast_spawn_egg": "Sculk Ghast Spawn Egg"
+  ,"entity.sculkhorde.sculk_metamorphosis_pod": "Sculk Metamorphosis Pod"
+  ,"entity.sculkhorde.sculk_ghast": "Sculk Ghast"
 }
