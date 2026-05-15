@@ -26,6 +26,9 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -124,6 +127,11 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
             return;
         }
 
+        if(timeUntilSpawn == TickUnits.convertSecondsToTicks(1.30F))
+        {
+            triggerAnim(ATTACK_ANIMATION_CONTROLLER_ID, ATTACK_ID);
+        }
+
         if(timeUntilSpawn > 0)
         {
             timeUntilSpawn--;
@@ -176,10 +184,19 @@ public class SculkMetamorphosisPodEntity extends Monster implements GeoEntity, I
 
     //Animation Related Functions
 
+    public static final String ATTACK_ID = "attack";
+    private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay(ATTACK_ID);
+
+    public static final String ATTACK_ANIMATION_CONTROLLER_ID = "attack_controller";
+    private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, ATTACK_ANIMATION_CONTROLLER_ID, state -> PlayState.STOP)
+            .transitionLength(0)
+            .triggerableAnim(ATTACK_ID, ATTACK_ANIMATION);
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                DefaultAnimations.genericLivingController(this)
+                DefaultAnimations.genericLivingController(this),
+                ATTACK_ANIMATION_CONTROLLER
         );
     }
 
