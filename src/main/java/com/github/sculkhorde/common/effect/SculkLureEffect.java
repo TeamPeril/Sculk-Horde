@@ -76,10 +76,9 @@ public class SculkLureEffect extends MobEffect {
 
         if(ModSavedData.getSaveData() != null) { ModSavedData.getSaveData().reportDeath((ServerLevel) entity.level(), entity.blockPosition()); }
 
-        if(ModConfig.isExperimentalFeaturesEnabled())
-        {
-            GhastDeploymentEvent.trySendGhastDepolymentEvent(entity);
-        }
+
+        GhastDeploymentEvent.trySendGhastDepolymentEvent(entity);
+
 
     }
 

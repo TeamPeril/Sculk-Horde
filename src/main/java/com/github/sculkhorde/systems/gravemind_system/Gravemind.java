@@ -291,12 +291,8 @@ public class Gravemind
         SculkHorde.ambientSFXSystem.serverTick();
         SculkHorde.squadSystem.serverTick();
         SculkHorde.debuggerSystem.serverTick();
+        SculkHorde.hitSquadDispatcherSystem.serverTick();
 
-
-        if(ModConfig.isExperimentalFeaturesEnabled())
-        {
-            SculkHorde.hitSquadDispatcherSystem.serverTick();
-        }
 
         // Make sure the area above the tomb is loaded. Only attempt every CHUNK_LOAD_ATTEMPT_COOLDOWN
         if(ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - timeOfLastChunkLoadAttempt >= CHUNK_LOAD_ATTEMPT_COOLDOWN)
