@@ -403,6 +403,7 @@ public class ModItems {
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_GHAST_SPAWN_EGG = ITEMS.register("sculk_ghast_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_GHAST, 0xFFFFFF, hexToInt(ColorUtil.sculkAcidColor1), new Item.Properties()));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_LEECH_SPAWN_EGG = ITEMS.register("sculk_leech_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_LEECH, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkLightColor6), new Item.Properties()));
 	public static final RegistryObject<ForgeSpawnEggItem> SCULK_STINGER_SPAWN_EGG = ITEMS.register("sculk_stinger_spawn_egg",() ->  new ForgeSpawnEggItem(ModEntities.SCULK_STINGER, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkLightColor6), new Item.Properties()));
+	public static final RegistryObject<AngelOfReapingSpawnEggItem> ANGEL_OF_REAPING_SPAWN_EGG = ITEMS.register("angel_of_reaping_spawn_egg",() ->  new AngelOfReapingSpawnEggItem(ModEntities.ANGEL_OF_REAPING, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkAcidColor1), new Item.Properties()));
 
 	public static final RegistryObject<Item> DEEP_GREEN_MUSIC_DISC = ITEMS.register("deep_green_music_disc", () -> new RecordItem(6, ModSounds.DEEP_GREEN, new Item.Properties().stacksTo(1), 5120));
 	public static final RegistryObject<Item> BLIND_AND_ALONE_MUSIC_DISC = ITEMS.register("blind_and_alone_music_disc", () -> new RecordItem(6, ModSounds.BLIND_AND_ALONE, new Item.Properties().stacksTo(1), 4920));

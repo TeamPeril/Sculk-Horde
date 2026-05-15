@@ -44,6 +44,7 @@ public class ModCreativeModeTab {
 
                 // Special Mobs
                 event.accept(ModItems.SCULK_ENDERMAN_SPAWN_EGG.get());
+                event.accept(ModItems.ANGEL_OF_REAPING_SPAWN_EGG.get());
 
                 // Tools & Utilities
                 event.accept(ModItems.EYE_OF_PURITY.get());
