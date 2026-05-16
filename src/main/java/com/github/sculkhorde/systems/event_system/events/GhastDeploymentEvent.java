@@ -44,7 +44,7 @@ public class GhastDeploymentEvent extends Event {
             return false;
         }
 
-        if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy() || !SculkHorde.gravemind.isEvolutionInMatureState())
+        if(!DifficultyUtil.isCurrentDifficultyNormal() || !SculkHorde.gravemind.isEvolutionInMatureState())
         {
             return false;
         }
@@ -57,10 +57,10 @@ public class GhastDeploymentEvent extends Event {
         if(entity instanceof Mob mob)
         {
             // Cooldown of ghast deployment depends on difficulty
-            long timeRequired = TickUnits.convertMinutesToTicks(10);
+            long timeRequired = TickUnits.convertMinutesToTicks(30);
             if(DifficultyUtil.isCurrentDifficultyHard())
             {
-                timeRequired = TickUnits.convertMinutesToTicks(5);
+                timeRequired = TickUnits.convertMinutesToTicks(20);
             }
 
 
@@ -82,10 +82,10 @@ public class GhastDeploymentEvent extends Event {
         else if(entity instanceof Player player)
         {
             // Cooldown of ghast deployment depends on difficulty
-            long timeRequired = TickUnits.convertMinutesToTicks(15);
+            long timeRequired = TickUnits.convertMinutesToTicks(30);
             if(DifficultyUtil.isCurrentDifficultyHard())
             {
-                timeRequired = TickUnits.convertMinutesToTicks(10);
+                timeRequired = TickUnits.convertMinutesToTicks(20);
             }
 
 

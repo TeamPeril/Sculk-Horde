@@ -52,6 +52,11 @@ public class HitSquadDispatcherSystem {
             {
                 continue;
             }
+            if(!DifficultyUtil.isCurrentDifficultyHard())
+            {
+                continue;
+            }
+
 
             boolean hasNotDestroyedEnoughNodes = profile.getNodesDestroyed() < MIN_NODES_DESTROYED;
             boolean hasGoodRelationshipWithHorde = profile.getRelationshipToTheHorde() > MAX_RELATIONSHIP;

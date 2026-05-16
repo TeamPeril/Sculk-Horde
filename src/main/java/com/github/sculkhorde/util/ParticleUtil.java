@@ -9,6 +9,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -195,4 +196,25 @@ public class ParticleUtil {
             level.sendParticles(ModParticles.BURROWED_BURST_PARTICLE.get(), position.x, position.y, position.z, 0, velocity.x, velocity.y, velocity.z, 1.0D);
         }
     }
+
+    public static void spawnDespawnParticles(Entity entity)
+    {
+        if(entity.level().isClientSide())
+        {
+            return;
+        }
+
+        ServerLevel level = (ServerLevel) entity.level();
+        int amount = (int) (entity.getBbWidth() + entity.getBbHeight() + entity.getBbWidth());
+
+        for (int i = 0; i < amount; i++) {
+            float rx = getRandomFloat(level.random, (float) entity.getBoundingBox().minX, (float) entity.getBoundingBox().maxX);
+            float ry = getRandomFloat(level.random, (float) entity.getBoundingBox().minY, (float) entity.getBoundingBox().maxY);
+            float rz = getRandomFloat(level.random, (float) entity.getBoundingBox().minZ, (float) entity.getBoundingBox().maxZ);
+
+            level.sendParticles(ModParticles.BURROWED_BURST_PARTICLE.get(), rx, ry, rz, 1, 0, -0.1, 0, 0.1);
+        }
+    }
+
+
 }

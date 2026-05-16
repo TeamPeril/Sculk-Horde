@@ -3,6 +3,9 @@ package com.github.sculkhorde.common.entity.goal;
 import com.github.sculkhorde.common.entity.ISculkSmartEntity;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
+import com.github.sculkhorde.util.ParticleUtil;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -41,10 +44,14 @@ public class DespawnWhenIdle extends Goal {
     @Override
     public void start()
     {
-        ((Mob)mob).remove(Entity.RemovalReason.DISCARDED);
+        Mob mobEntity = ((Mob)mob);
+        BlockInfestationSystem.tryToInfestBlock((ServerLevel) mobEntity.level(), mobEntity.blockPosition().below());
+        ParticleUtil.spawnDespawnParticles(mobEntity);
+
+        mobEntity.remove(Entity.RemovalReason.DISCARDED);
         if(ModSavedData.getSaveData() != null) {
-        	ModSavedData.getSaveData().addSculkAccumulatedMass((int) ((Mob) mob).getHealth());
-            SculkHorde.statisticsData.addTotalMassFromDespawns((int) ((Mob) mob).getHealth());
+        	ModSavedData.getSaveData().addSculkAccumulatedMass((int) mobEntity.getHealth());
+            SculkHorde.statisticsData.addTotalMassFromDespawns((int) mobEntity.getHealth());
         }
     }
 }
