@@ -117,7 +117,9 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 .then(booleanConfigOption("block_infestation_enabled"))
                 .then(booleanConfigOption("disable_defeating_sculk_horde"))
                 .then(booleanConfigOption("enable_gpu_compatibility_mode"))
-                .then(booleanConfigOption("isHordeActiveWithNoPlayers"));
+                .then(booleanConfigOption("isHordeActiveWithNoPlayers"))
+                .then(booleanConfigOption("hit_squad_event_enabled"))
+                .then(booleanConfigOption("ghast_deployment_event_enabled"));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> triggerAutomaticallyConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -161,8 +163,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
     private static ArgumentBuilder<CommandSourceStack, ?> experimentalFeaturesConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("experimental_features")
                 .then(booleanConfigOption("experimental_features_enabled"))
-                .then(booleanConfigOption("experimental_brood_hatcher_enabled"))
-                .then(booleanConfigOption("experimental_hit_squad_event_enabled"));
+                .then(booleanConfigOption("experimental_brood_hatcher_enabled"));
 
     }
 
@@ -400,6 +401,21 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         context.getSource().sendSystemMessage(Component.literal("Game restart required to take effect."));
                         success = true;
                     }
+                case "isHordeActiveWithNoPlayers":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.isHordeActiveWithNoPlayers.set((Boolean) rawValue);
+                        success = true;
+                    }
+                case "hit_squad_event_enabled":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.hit_squad_event_enabled.set((Boolean) rawValue);
+                        success = true;
+                    }
+                case "ghast_deployment_event_enabled":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.hit_squad_event_enabled.set((Boolean) rawValue);
+                        success = true;
+                    }
 
 
 
@@ -422,13 +438,6 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         success = true;
                     }
                     break;
-                case "isHordeActiveWithNoPlayers":
-                    if (valueType.equals(Boolean.class)) {
-                        ModConfig.SERVER.isHordeActiveWithNoPlayers.set((Boolean) rawValue);
-                        success = true;
-                    }
-                    break;
-
 
 
                 //#### Infestation / Purification Variables ####
@@ -526,12 +535,6 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                 case "experimental_brood_hatcher_enabled":
                     if (valueType.equals(Boolean.class)) {
                         ModConfig.SERVER.experimental_brood_hatcher_enabled.set((Boolean) rawValue);
-                        success = true;
-                    }
-                    break;
-                case "experimental_hit_squad_event_enabled":
-                    if (valueType.equals(Boolean.class)) {
-                        ModConfig.SERVER.experimental_hit_squad_event_enabled.set((Boolean) rawValue);
                         success = true;
                     }
                     break;

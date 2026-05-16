@@ -84,6 +84,11 @@ public class HitSquadDispatcherSystem {
 
     public void serverTick()
     {
+        if(!ModConfig.SERVER.hit_squad_event_enabled.get())
+        {
+            return;
+        }
+
         ServerLevel level = ServerLifecycleHooks.getCurrentServer().overworld();
         if(Math.abs(level.getGameTime() - timeOfLastCheckForDispatch) < CHECK_INTERVAL)
         {

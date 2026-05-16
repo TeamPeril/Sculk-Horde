@@ -67,6 +67,17 @@ public class HitSquadEvent extends Event {
         return Optional.ofNullable(reaper);
     }
 
+    @Override
+    public boolean canStart() {
+
+        if(!ModConfig.SERVER.hit_squad_event_enabled.get())
+        {
+            return false;
+        }
+
+        return super.canStart();
+    }
+
     public boolean canContinue()
     {
         return !isEventOver;

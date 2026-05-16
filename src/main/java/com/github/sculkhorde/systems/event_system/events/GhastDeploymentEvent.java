@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.event_system.events;
 
 import com.github.sculkhorde.common.entity.SculkGhastEntity;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
@@ -38,6 +39,10 @@ public class GhastDeploymentEvent extends Event {
 
     public static boolean canSendGhastDeployment(LivingEntity entity){
 
+        if(!ModConfig.SERVER.ghast_deployment_event_enabled.get())
+        {
+            return false;
+        }
 
         if(!DifficultyUtil.isCurrentDifficultyGreaterThanEasy() || !SculkHorde.gravemind.isEvolutionInMatureState())
         {

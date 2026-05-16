@@ -97,10 +97,11 @@ public class    ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> enable_gpu_compatibility_mode;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_features_enabled;
-        public final ForgeConfigSpec.ConfigValue<Boolean> experimental_hit_squad_event_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> experimental_brood_hatcher_enabled;
         public final ForgeConfigSpec.ConfigValue<String> difficulty_mode;
         public final ForgeConfigSpec.ConfigValue<Boolean> isHordeActiveWithNoPlayers;
+        public final ForgeConfigSpec.ConfigValue<Boolean> hit_squad_event_enabled;
+        public final ForgeConfigSpec.ConfigValue<Boolean> ghast_deployment_event_enabled;
 
         public void loadItemsInfectionCursorsCanEat()
         {
@@ -225,6 +226,8 @@ public class    ModConfig {
             sculk_horde_target_blacklist = builder.comment("Add entities to this list to stop the sculk horde from attacking them. I.E. minecraft:creeper. Be careful what you put in here, this can potentially lead to issues.").defineList("sculk_horde_target_blacklist", Arrays.asList(""), entry -> true);
             enable_gpu_compatibility_mode = builder.comment("Should GPU compatibility mode be enabled? This Fixes Sculk mobs appearing black by removes glow layers from Sculk mobs. May be necessary for some GPU's like AMD or MAC's. Game Restart Required. (Default false)").define("enable_gpu_compatibility_mode",false);
             isHordeActiveWithNoPlayers = builder.comment("Should the Sculk Horde be active while there are no players online. (Default false)").define("isHordeActiveWithNoPlayers",true);
+            hit_squad_event_enabled = builder.comment("Should hit squad event feature be enabled? (Default false)").define("hit_squad_event_enabled",false);
+            ghast_deployment_event_enabled = builder.comment("Should ghast deployment event feature be enabled? (Default false)").define("ghast_deployment_event_enabled",false);
             builder.pop();
 
             builder.push("Trigger Automatically Variables");
@@ -265,7 +268,6 @@ public class    ModConfig {
             builder.push("Experimental Features");
             experimental_features_enabled = builder.comment("Should experimental features be enabled? (Default false)").define("experimental_features_enabled",false);
             experimental_brood_hatcher_enabled = builder.comment("Should the experimental brood hatcher be enabled? (Default false)").define("experimental_brood_hatcher_enabled",false);
-            experimental_hit_squad_event_enabled = builder.comment("Should experimental hit squad event feature be enabled? (Default false)").define("experimental_hit_squad_event_enabled",false);
             builder.pop();
 
             builder.push("Sculk Raid Variables");
