@@ -413,7 +413,7 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                     }
                 case "ghast_deployment_event_enabled":
                     if (valueType.equals(Boolean.class)) {
-                        ModConfig.SERVER.hit_squad_event_enabled.set((Boolean) rawValue);
+                        ModConfig.SERVER.ghast_deployment_event_enabled.set((Boolean) rawValue);
                         success = true;
                     }
 

@@ -226,8 +226,8 @@ public class    ModConfig {
             sculk_horde_target_blacklist = builder.comment("Add entities to this list to stop the sculk horde from attacking them. I.E. minecraft:creeper. Be careful what you put in here, this can potentially lead to issues.").defineList("sculk_horde_target_blacklist", Arrays.asList(""), entry -> true);
             enable_gpu_compatibility_mode = builder.comment("Should GPU compatibility mode be enabled? This Fixes Sculk mobs appearing black by removes glow layers from Sculk mobs. May be necessary for some GPU's like AMD or MAC's. Game Restart Required. (Default false)").define("enable_gpu_compatibility_mode",false);
             isHordeActiveWithNoPlayers = builder.comment("Should the Sculk Horde be active while there are no players online. (Default false)").define("isHordeActiveWithNoPlayers",true);
-            hit_squad_event_enabled = builder.comment("Should hit squad event feature be enabled? (Default false)").define("hit_squad_event_enabled",false);
-            ghast_deployment_event_enabled = builder.comment("Should ghast deployment event feature be enabled? (Default false)").define("ghast_deployment_event_enabled",false);
+            hit_squad_event_enabled = builder.comment("Should hit squad event feature be enabled? (Default true)").define("hit_squad_event_enabled",true);
+            ghast_deployment_event_enabled = builder.comment("Should ghast deployment event feature be enabled? (Default true)").define("ghast_deployment_event_enabled",true);
             builder.pop();
 
             builder.push("Trigger Automatically Variables");

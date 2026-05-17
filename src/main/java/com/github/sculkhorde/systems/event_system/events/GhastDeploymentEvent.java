@@ -38,13 +38,11 @@ public class GhastDeploymentEvent extends Event {
     PathBuilderRequest pathRequest;
 
     public static boolean canSendGhastDeployment(LivingEntity entity){
-
-        if(!ModConfig.SERVER.ghast_deployment_event_enabled.get())
-        {
+        if(!ModConfig.SERVER.ghast_deployment_event_enabled.get()) {
             return false;
         }
 
-        if(!DifficultyUtil.isCurrentDifficultyNormal() || !SculkHorde.gravemind.isEvolutionInMatureState())
+        if(!DifficultyUtil.isCurrentDifficultyGreaterThanNormal() || !SculkHorde.gravemind.isEvolutionInMatureState())
         {
             return false;
         }
