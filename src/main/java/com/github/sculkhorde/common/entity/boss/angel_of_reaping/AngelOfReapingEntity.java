@@ -19,6 +19,7 @@ import com.github.sculkhorde.systems.squad_system.Squad;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -383,12 +384,16 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
 
+        this.goalSelector.addGoal(1, new ReaperCloseRangeAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 1,-1,
+                new ShootSoulSpearAttackGoal(this)
+        ));
+
         this.goalSelector.addGoal(1, new SummonVexAttackGoal(this,1 , -1));
 
 
         // #### LEVEL 1 ####
 
-        this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 1,1,
+        this.goalSelector.addGoal(2, new ReaperAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 2,1,
                 new FloorSoulSpearLineAttackGoal(this),
                 new FangsAttackGoal(this),
                 new FloorSoulSpearLineAttackGoal(this),
@@ -503,6 +508,14 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
                         this.getRandomX(3D),
                         this.getRandomY() - 0.25D,
                         this.getRandomZ(3D),
+                        0,
+                        0,
+                        0);
+
+                this.level().addParticle(ParticleTypes.SCULK_SOUL,
+                        this.getRandomX(1D),
+                        this.getRandomY() - 0.25D,
+                        this.getRandomZ(1D),
                         0,
                         0,
                         0);
