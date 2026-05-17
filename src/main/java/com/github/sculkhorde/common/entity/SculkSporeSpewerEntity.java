@@ -69,7 +69,9 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
     // Controls what types of entities this mob can target
     protected final TargetParameters TARGET_PARAMETERS = new TargetParameters(this, true)
-            .filterBy(TargetFilter.PASSIVE_TO_SCULK, TargetFilter.HOSTILE_TO_SCULK);
+            .filterBy(TargetFilter.PASSIVE_TO_SCULK,
+                    TargetFilter.HOSTILE_TO_SCULK,
+                    TargetFilter.WALKERS, TargetFilter.FLIERS, TargetFilter.SWIMMERS);
 
     protected final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
