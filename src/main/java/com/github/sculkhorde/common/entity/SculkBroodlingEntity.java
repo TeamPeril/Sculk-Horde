@@ -180,6 +180,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
                                 new GetInRangeAttackStep(this),
                                 new ShootWebAttackStep(this),
+                                new LeapAwayAttackStep(this),
                                 new LeapAwayAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
@@ -418,6 +419,16 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
             super(mob);
         }
 
+        @Override
+        public boolean canUse() {
+            if(!super.canUse()) return false;
+            LivingEntity target = getTarget();
+            if(target == null) return false;
+
+            // Only leap away if we are actually close to the target
+            return mob.distanceTo(target) < 10.0;
+        }
+
         /**
          * The amount of delay (in ticks) before the attack step begins.
          * This is a short pre-attack windup to allow the leap destination to be computed.
@@ -540,8 +551,9 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
             // Slightly raise start to the eye height to avoid clipping into ground immediately
             start = new Vec3(start.x, start.y + 0.01, start.z);
             int[] candidateDurations = new int[]{10, 12, 14, 16, 18, 20};
-            double maxHorizontalSpeed = 1.6; // reasonable cap for broodling leap
-            double maxVerticalSpeed = 1.2;
+            double maxHorizontalSpeed = 2.2; // Increased from 1.6
+            double maxVerticalSpeed = 1.4; // Increased from 1.2
+
             for(int T : candidateDurations)
             {
                 Vec3 v0 = computeBallisticVelocity(start, destination, T);
@@ -554,6 +566,13 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                 {
                     continue; // too fast for our mob
                 }
+
+                // If trajectory is NOT clear, we try a slightly lower arc if possible,
+                // but the current T-loop already tries different arcs.
+                // Improvement 3: Intelligent Trajectory Adjustments (Ceiling handling)
+                // We can try to detect if it hit a ceiling and adjust.
+                // For now, let's just make sure we pick the BEST clear one.
+
                 if(isTrajectoryClear(start, v0, T))
                 {
                     this.initialLeapVelocity = v0;
@@ -561,6 +580,25 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                     return true;
                 }
             }
+
+            // If no clear arc found, try a "low" arc regardless of T if it's clear
+            // This is a simple way to implement "try lower arc"
+            for (int T = 8; T <= 25; T += 2)
+            {
+                Vec3 v0 = computeBallisticVelocity(start, destination, T);
+                if (v0 == null) continue;
+                double horizSpeed = Math.sqrt(v0.x * v0.x + v0.z * v0.z);
+                if (horizSpeed <= maxHorizontalSpeed + 0.5 && Math.abs(v0.y) <= maxVerticalSpeed + 0.5)
+                {
+                    if (isTrajectoryClear(start, v0, T))
+                    {
+                        this.initialLeapVelocity = v0;
+                        this.plannedFlightTicks = T;
+                        return true;
+                    }
+                }
+            }
+
             return false;
         }
 
@@ -590,8 +628,22 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
             }
             awayDir = new Vec3(awayDir.x, 0, awayDir.z).normalize();
 
-            double[] radii = new double[]{MIN_LEAP_DISTANCE, (MIN_LEAP_DISTANCE + MAX_LEAP_DISTANCE) * 0.5, MAX_LEAP_DISTANCE};
-            double[] angleOffsets = new double[]{0, Math.toRadians(30), Math.toRadians(-30), Math.toRadians(60), Math.toRadians(-60), Math.toRadians(90), Math.toRadians(-90)};
+            // Increase sampling density: 5 radii and more angles
+            double[] radii = new double[]{
+                    MIN_LEAP_DISTANCE,
+                    (MIN_LEAP_DISTANCE * 0.75 + MAX_LEAP_DISTANCE * 0.25),
+                    (MIN_LEAP_DISTANCE + MAX_LEAP_DISTANCE) * 0.5,
+                    (MIN_LEAP_DISTANCE * 0.25 + MAX_LEAP_DISTANCE * 0.75),
+                    MAX_LEAP_DISTANCE
+            };
+            double[] angleOffsets = new double[]{
+                    0,
+                    Math.toRadians(20), Math.toRadians(-20),
+                    Math.toRadians(40), Math.toRadians(-40),
+                    Math.toRadians(60), Math.toRadians(-60),
+                    Math.toRadians(80), Math.toRadians(-80),
+                    Math.toRadians(100), Math.toRadians(-100)
+            };
 
             for(double r : radii)
             {
@@ -622,8 +674,9 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         continue;
                     }
 
-                    // Check reachability on foot (path exists)
-                    if(mob.getNavigation().createPath(BlockPos.containing(candidate), 1) == null)
+                    // Loosen reachability: Replace full path check with a simple solid block check
+                    BlockPos landingPos = BlockPos.containing(candidate);
+                    if(mob.level().getBlockState(landingPos.below()).isAir() || !mob.level().getBlockState(landingPos).isAir() || !mob.level().getBlockState(landingPos.above()).isAir())
                     {
                         continue;
                     }
@@ -647,7 +700,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
             double fallbackR = Math.max(MIN_LEAP_DISTANCE, Math.min(MAX_LEAP_DISTANCE, 4.0));
             Vec3 fallback = mobPos.add(perp.scale(fallbackR));
             Vec3 fallbackFlat = new Vec3(fallback.x, mobPos.y, fallback.z);
-            if(mob.getNavigation().createPath(BlockPos.containing(fallbackFlat), 1) != null
+            if(!mob.level().getBlockState(BlockPos.containing(fallbackFlat).below()).isAir()
                     && canSeeTargetFromPosition(fallbackFlat)
                     && tryComputeClearBallisticTo(fallbackFlat))
             {
@@ -716,8 +769,9 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         backDir = backDir.normalize();
                     }
 
-                    double horizontalSpeed = Math.min(1.8, Math.max(1.1, (MAX_LEAP_DISTANCE - MIN_LEAP_DISTANCE) * 0.25 + 1.0));
-                    double upward = 0.6;
+                    // Enhance emergency jump: Use dynamic distance and better velocity
+                    double horizontalSpeed = 2.0; // Increased
+                    double upward = 0.7; // Increased
                     Vec3 delta = backDir.scale(horizontalSpeed).add(0, upward, 0);
                     mob.setDeltaMovement(delta);
                     hasLeaped = true;
