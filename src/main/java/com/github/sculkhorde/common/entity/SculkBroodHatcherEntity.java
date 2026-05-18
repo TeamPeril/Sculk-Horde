@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity;
 
+import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulPoisonProjectileAttackEntity;
 import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.ReturnToNestGoal;
@@ -159,15 +160,13 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         new DespawnWhenIdle(this, TickUnits.convertMinutesToTicks(10)),
                         //SwimGoal(mob)
                         new FloatGoal(this),
-                        new SquadLogicGoal(this),
                         new ReturnToNestGoal(this, 1.0D),
-                        new LeapAtTargetGoal(this, 0.7F),
-                        new AttackGoal(this, 3, 0, 0),
-                        new FollowSquadLeader(this),
-                        new PathFindToRaidLocation<>(this),
-                        //WaterAvoidingRandomWalkingGoal(mob, speedModifier)
+                        new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(5),
+                                new LeapAttackStep(this),
+                                new MeleeAttackStep(this),
+                                new RainProjectilesAttackStep(this)
+                        ),
                         new ImprovedRandomStrollGoal(this, 0.5D).setToAvoidWater(true),
-                        new OpenDoorGoal(this, true)
                 };
         return goals;
     }
@@ -302,6 +301,163 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         {
             damageDealer.doHurtTarget(damageReceiver);
             damageDealer.addEffect(new MobEffectInstance(ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), 0), this.mob);
+        }
+    }
+
+    protected class LeapAttackStep extends AttackStepGoal
+    {
+        protected boolean hasLeaped = false;
+        protected int ticksSinceLeap = 0;
+        protected final float leapStrength = 1.0F;
+
+        public LeapAttackStep(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        public boolean canUse() {
+            return super.canUse() && mob.getTarget() != null;
+        }
+
+        @Override
+        protected int getPreAttackDelay() {
+            return TickUnits.convertSecondsToTicks(0.5F);
+        }
+
+        @Override
+        protected void doAttackTick() {
+            LivingEntity target = mob.getTarget();
+            if (target == null) {
+                setAttackTickComplete();
+                return;
+            }
+
+            if (!hasLeaped) {
+                Vec3 directionHorizontal = new Vec3(target.getX() - mob.getX(), 0.0, target.getZ() - mob.getZ());
+                if (directionHorizontal.lengthSqr() > 1.0E-7) {
+                    directionHorizontal = directionHorizontal.normalize().scale(leapStrength).add(mob.getDeltaMovement().scale(0.2));
+                } else {
+                    directionHorizontal = mob.getDeltaMovement().scale(0.2);
+                }
+
+                mob.setDeltaMovement(directionHorizontal.x, (double) leapStrength, directionHorizontal.z);
+                mob.lookAt(target, 30.0F, 30.0F);
+                hasLeaped = true;
+                ticksSinceLeap = 0;
+            } else {
+                ticksSinceLeap++;
+
+                if (mob.getBoundingBox().inflate(0.2).intersects(target.getBoundingBox())) {
+                    mob.doHurtTarget(target);
+                    setAttackTickComplete();
+                    return;
+                }
+
+                if (ticksSinceLeap > 5 && mob.onGround() || ticksSinceLeap > TickUnits.convertSecondsToTicks(2)) {
+                    setAttackTickComplete();
+                }
+            }
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            hasLeaped = false;
+            ticksSinceLeap = 0;
+        }
+    }
+
+    protected class MeleeAttackStep extends AttackStepGoal
+    {
+        protected int ticksUntilNextPathRecalculation = 0;
+
+        public MeleeAttackStep(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        protected int getPreAttackDelay() {
+            return TickUnits.convertSecondsToTicks(20);
+        }
+
+        @Override
+        protected void doPreAttackTick() {
+            LivingEntity target = mob.getTarget();
+            if (target == null) {
+                setAttackTickComplete();
+                return;
+            }
+
+            mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            double distanceFromTarget = mob.distanceTo(target);
+
+            if (distanceFromTarget <= 3.0D) {
+                setPreAttack(false);
+                return;
+            }
+
+            ticksUntilNextPathRecalculation--;
+            if (ticksUntilNextPathRecalculation <= 0) {
+                navigation.moveTo(target, 1.2D);
+                ticksUntilNextPathRecalculation = TickUnits.convertSecondsToTicks(0.5F);
+            }
+        }
+
+        @Override
+        protected void doAttackTick() {
+            LivingEntity target = mob.getTarget();
+            if (target == null) {
+                setAttackTickComplete();
+                return;
+            }
+
+            mob.doHurtTarget(target);
+            setAttackTickComplete();
+            navigation.stop();
+        }
+    }
+
+    protected class RainProjectilesAttackStep extends AttackStepGoal
+    {
+        protected final int duration = TickUnits.convertSecondsToTicks(3);
+        protected int ticksElapsed = 0;
+        protected final int projectilesPerTick = 10;
+        protected final float range = 10F;
+
+        public RainProjectilesAttackStep(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        protected void doAttackTick() {
+            ticksElapsed++;
+
+            if (ticksElapsed > duration) {
+                setAttackTickComplete();
+                return;
+            }
+
+            for (int i = 0; i < projectilesPerTick; i++) {
+                SoulPoisonProjectileAttackEntity projectile = new SoulPoisonProjectileAttackEntity(level(), (LivingEntity) mob, 2);
+                projectile.setNoGravity(false);
+
+                double offsetX = (mob.getRandom().nextDouble() - 0.5) * 2 * range;
+                double offsetZ = (mob.getRandom().nextDouble() - 0.5) * 2 * range;
+
+                Vec3 targetPos = mob.position().add(offsetX, 15, offsetZ);
+                Vec3 spawnPos = mob.position().add(0, mob.getEyeHeight(), 0);
+                Vec3 direction = targetPos.subtract(spawnPos).normalize();
+
+                projectile.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+                projectile.shoot(direction.x, direction.y, direction.z, 1.5F, 0F);
+                level().addFreshEntity(projectile);
+            }
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            ticksElapsed = 0;
         }
     }
 }
