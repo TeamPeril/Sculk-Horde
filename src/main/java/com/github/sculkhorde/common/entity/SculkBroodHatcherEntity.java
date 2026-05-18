@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.goal.ReturnToNestGoal;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.TickUnits;
@@ -159,6 +160,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new SquadLogicGoal(this),
+                        new ReturnToNestGoal(this, 1.0D),
                         new LeapAtTargetGoal(this, 0.7F),
                         new AttackGoal(this, 3, 0, 0),
                         new FollowSquadLeader(this),

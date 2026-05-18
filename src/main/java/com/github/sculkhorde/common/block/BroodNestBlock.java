@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.block;
 import com.github.sculkhorde.common.blockentity.BroodNestBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -99,8 +100,18 @@ public class BroodNestBlock extends BaseEntityBlock implements IForgeBlock {
         }
 
         return BaseEntityBlock.createTickerHelper(blockEntityType, ModBlockEntities.BROOD_NEST_BLOCK_ENTITY.get(), (level1, pos, state, entity) -> {
+            entity.tick();
             VibrationSystem.Ticker.tick(level1, entity.getVibrationData(), entity.getVibrationUser());
         });
+    }
+
+    @Override
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof BroodNestBlockEntity) {
+            ((BroodNestBlockEntity)blockentity).summonBroodHatcher();
+        }
+        super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

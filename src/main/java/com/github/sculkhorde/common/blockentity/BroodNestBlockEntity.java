@@ -1,8 +1,12 @@
 package com.github.sculkhorde.common.blockentity;
 
+import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.common.entity.SculkBroodlingEntity;
+import com.github.sculkhorde.common.entity.SculkBroodHatcherEntity;
+import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.cursor_system.VirtualWebSpreadCursor;
@@ -20,6 +24,7 @@ import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
@@ -27,10 +32,12 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 public class BroodNestBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem{
     protected long lastTickTime = 0;
@@ -38,6 +45,11 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
 
     public ArrayList<LivingEntity> spawnedEntities = new ArrayList<>();
     public final int MAX_ENTITIES = 6;
+
+    private boolean isBroodHatcherInside = true;
+    private UUID nestUUID = UUID.randomUUID();
+    private UUID hatcherUUID = null;
+    
 
     // Vibration Code
     private final VibrationSystem.User vibrationUser = new BroodNestBlockEntity.VibrationUser(this);
@@ -68,6 +80,65 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
             SculkBroodlingEntity broodling = new SculkBroodlingEntity(level, pos);
             level.addFreshEntity(broodling);
             spawnedEntities.add(broodling);
+        }
+    }
+
+    public void summonBroodHatcher()
+    {
+        if(!isBroodHatcherInside || level.isClientSide)
+        {
+            return;
+        }
+
+        BlockPos spawnPos = getBlockPos().above();
+        SculkBroodHatcherEntity hatcher = ModEntities.SCULK_BROOD_HATCHER.get().create(level);
+        if(hatcher != null)
+        {
+            hatcher.setPos(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D);
+            CompoundTag entityData = hatcher.getPersistentData();
+            entityData.putUUID("nestID", nestUUID);
+            entityData.putInt("nestX", getBlockPos().getX());
+            entityData.putInt("nestY", getBlockPos().getY());
+            entityData.putInt("nestZ", getBlockPos().getZ());
+
+            level.addFreshEntity(hatcher);
+            isBroodHatcherInside = false;
+            hatcherUUID = hatcher.getUUID();
+            setChanged();
+        }
+    }
+
+    public void occupyNest(SculkBroodHatcherEntity hatcher)
+    {
+        if(isBroodHatcherInside || level.isClientSide)
+        {
+            return;
+        }
+
+        isBroodHatcherInside = true;
+        hatcherUUID = null;
+        hatcher.discard();
+        setChanged();
+    }
+
+    public void tick()
+    {
+        if(level.isClientSide || !isBroodHatcherInside)
+        {
+            return;
+        }
+
+        if(level.getGameTime() % 20 == 0)
+        {
+            AABB searchArea = new AABB(getBlockPos()).inflate(10);
+            boolean tntDetected = !level.getEntitiesOfClass(PrimedTnt.class, searchArea).isEmpty();
+            boolean purificationCursorDetected = !level.getEntitiesOfClass(CursorSurfacePurifierEntity.class, searchArea).isEmpty();
+            boolean infestationPurifierDetected = !level.getEntitiesOfClass(InfestationPurifierEntity.class, searchArea).isEmpty();
+
+            if(tntDetected || purificationCursorDetected || infestationPurifierDetected)
+            {
+                summonBroodHatcher();
+            }
         }
     }
 
@@ -160,6 +231,17 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
             });
         }
 
+        isBroodHatcherInside = nbt.getBoolean("isBroodHatcherInside");
+        if(nbt.hasUUID("nestUUID"))
+        {
+            nestUUID = nbt.getUUID("nestUUID");
+        }
+
+        if(nbt.hasUUID("hatcherUUID"))
+        {
+            hatcherUUID = nbt.getUUID("hatcherUUID");
+        }
+
     }
 
     protected void saveAdditional(CompoundTag nbt)
@@ -168,6 +250,13 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
         VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
+
+        nbt.putBoolean("isBroodHatcherInside", isBroodHatcherInside);
+        nbt.putUUID("nestUUID", nestUUID);
+        if(hatcherUUID != null)
+        {
+            nbt.putUUID("hatcherUUID", hatcherUUID);
+        }
     }
 
     /* ~~~~~~~~ Vibration Events ~~~~~~~~  */

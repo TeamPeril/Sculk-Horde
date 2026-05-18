@@ -61,7 +61,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     //ATTACK_KNOCKBACK determines the knockback a mob will take
     public static final float ATTACK_KNOCKBACK = 1F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 32F;
+    public static final float FOLLOW_RANGE = 40F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
     public static final float MOVEMENT_SPEED = 0.35F;
 
@@ -180,7 +180,6 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
                                 new GetInRangeAttackStep(this),
                                 new ShootWebAttackStep(this),
-                                new LeapAwayAttackStep(this),
                                 new LeapAwayAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
@@ -220,7 +219,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         if (this.isLeaping)
         { // Set this flag in your Goal
             this.move(MoverType.SELF, this.getDeltaMovement());
-            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.08, 0)); // Apply gravity manually
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.15, 0)); // Apply gravity manually
         } else {
             super.travel(m);
         }
@@ -379,11 +378,6 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     public class LeapAwayAttackStep extends AttackStepGoal
     {
         /**
-         * The destination the mob will attempt to leap to. Null when not yet calculated or when reset.
-         */
-        protected Vec3 leapDestination = null;
-
-        /**
          * Whether the mob has already performed the leap during the current attack step.
          */
         protected boolean hasLeaped = false;
@@ -392,23 +386,6 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
          * Ticks elapsed since the leap was performed. Used to time out the leap if it takes too long.
          */
         protected int ticksSinceLeap = 0;
-
-        /**
-         * The initial velocity computed to land exactly at the destination and time budget.
-         */
-        protected Vec3 initialLeapVelocity = null;
-
-        /**
-         * Planned number of ticks the leap should take.
-         */
-        protected int plannedFlightTicks = 0;
-
-        // Distance constraints for candidate leap destinations (horizontal distance in blocks)
-        protected static final double MIN_LEAP_DISTANCE = 3.0;
-        protected static final double MAX_LEAP_DISTANCE = 8.0;
-
-        // Emergency fallback flag: if we cannot find a valid precise leap, just jump far backwards
-        protected boolean emergencyBackJump = false;
 
         /**
          * Constructs a new LeapAwayAttackStep for the provided mob.
@@ -431,7 +408,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
 
         /**
          * The amount of delay (in ticks) before the attack step begins.
-         * This is a short pre-attack windup to allow the leap destination to be computed.
+         * This is a short pre-attack windup.
          *
          * @return pre-attack delay in ticks
          */
@@ -451,344 +428,54 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         }
 
         /**
-         * Helper to determine whether a candidate direction points away from the current target.
-         *
-         * This computes the dot product between the vector to the candidate position and the
-         * vector to the target; if the dot product is <= 0 the candidate is at least 90° away
-         * (i.e. not toward the target). A null target is treated as 'not toward'.
-         */
-        protected boolean isDirectionNotTowardTarget(Vec3 from, Vec3 to, LivingEntity target)
-        {
-            if(target == null)
-            {
-                return true;
-            }
-            Vec3 mobToTarget = target.position().subtract(from).normalize();
-            Vec3 mobToCandidate = to.subtract(from).normalize();
-            double dot = mobToCandidate.dot(mobToTarget);
-            return dot <= 0.0;
-        }
-
-        /**
-         * Generic line-of-sight check between two positions using block collision.
-         */
-        protected boolean canSeeFromTo(Vec3 from, Vec3 to)
-        {
-            net.minecraft.world.phys.HitResult hit = mob.level().clip(new net.minecraft.world.level.ClipContext(from, to, net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, mob));
-            return hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
-        }
-
-        /**
-         * Ensures that from a hypothetical landing position, the broodling can still see its current target.
-         * Uses eye heights for realism.
-         */
-        protected boolean canSeeTargetFromPosition(Vec3 fromPosition)
-        {
-            LivingEntity target = getTarget();
-            if(target == null)
-            {
-                return false;
-            }
-            Vec3 eyeFrom = new Vec3(fromPosition.x, fromPosition.y + mob.getEyeHeight(), fromPosition.z);
-            Vec3 eyeTo = target.getEyePosition();
-            return canSeeFromTo(eyeFrom, eyeTo);
-        }
-
-        /**
-         * Compute initial per-tick velocity to land at end after exactly T ticks, under constant gravity.
-         * Ignores drag for simplicity.
-         */
-        protected Vec3 computeBallisticVelocity(Vec3 start, Vec3 end, int ticks)
-        {
-            if(ticks <= 0)
-            {
-                return null;
-            }
-            double g = 0.08; // Minecraft gravity per tick
-            Vec3 d = end.subtract(start);
-            double vx = d.x / ticks;
-            double vz = d.z / ticks;
-            double vy = (d.y + 0.5 * g * ticks * ticks) / ticks;
-            return new Vec3(vx, vy, vz);
-        }
-
-        /**
-         * Simulates the trajectory and checks for collisions with blocks along the path.
-         * Uses simple kinematics without drag for prediction and raycasts between successive points.
-         */
-        protected boolean isTrajectoryClear(Vec3 start, Vec3 initialVelocity, int ticks)
-        {
-            if(initialVelocity == null || ticks <= 0)
-            {
-                return false;
-            }
-            double g = 0.08;
-            Vec3 prev = start;
-            for(int t = 1; t <= ticks; t++)
-            {
-                // position after t ticks: p = start + v0 * t + 0.5 * a * t^2, with a = (0, -g, 0)
-                Vec3 pos = new Vec3(
-                        start.x + initialVelocity.x * t,
-                        start.y + initialVelocity.y * t - 0.5 * g * t * t,
-                        start.z + initialVelocity.z * t
-                );
-                net.minecraft.world.phys.HitResult hit = mob.level().clip(new net.minecraft.world.level.ClipContext(prev, pos, net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, mob));
-                if(hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS)
-                {
-                    return false;
-                }
-                prev = pos;
-            }
-            return true;
-        }
-
-        /**
-         * Try various flight durations and choose one that yields a clear arc. Stores results if successful.
-         */
-        protected boolean tryComputeClearBallisticTo(Vec3 destination)
-        {
-            Vec3 start = mob.position();
-            // Slightly raise start to the eye height to avoid clipping into ground immediately
-            start = new Vec3(start.x, start.y + 0.01, start.z);
-            int[] candidateDurations = new int[]{10, 12, 14, 16, 18, 20};
-            double maxHorizontalSpeed = 2.2; // Increased from 1.6
-            double maxVerticalSpeed = 1.4; // Increased from 1.2
-
-            for(int T : candidateDurations)
-            {
-                Vec3 v0 = computeBallisticVelocity(start, destination, T);
-                if(v0 == null)
-                {
-                    continue;
-                }
-                double horizSpeed = Math.sqrt(v0.x * v0.x + v0.z * v0.z);
-                if(horizSpeed > maxHorizontalSpeed || Math.abs(v0.y) > maxVerticalSpeed)
-                {
-                    continue; // too fast for our mob
-                }
-
-                // If trajectory is NOT clear, we try a slightly lower arc if possible,
-                // but the current T-loop already tries different arcs.
-                // Improvement 3: Intelligent Trajectory Adjustments (Ceiling handling)
-                // We can try to detect if it hit a ceiling and adjust.
-                // For now, let's just make sure we pick the BEST clear one.
-
-                if(isTrajectoryClear(start, v0, T))
-                {
-                    this.initialLeapVelocity = v0;
-                    this.plannedFlightTicks = T;
-                    return true;
-                }
-            }
-
-            // If no clear arc found, try a "low" arc regardless of T if it's clear
-            // This is a simple way to implement "try lower arc"
-            for (int T = 8; T <= 25; T += 2)
-            {
-                Vec3 v0 = computeBallisticVelocity(start, destination, T);
-                if (v0 == null) continue;
-                double horizSpeed = Math.sqrt(v0.x * v0.x + v0.z * v0.z);
-                if (horizSpeed <= maxHorizontalSpeed + 0.5 && Math.abs(v0.y) <= maxVerticalSpeed + 0.5)
-                {
-                    if (isTrajectoryClear(start, v0, T))
-                    {
-                        this.initialLeapVelocity = v0;
-                        this.plannedFlightTicks = T;
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /**
-         * Attempts to find a reachable destination that is away from the current target.
-         *
-         * The method picks several radii and angular offsets to sample candidate positions
-         * around the mob in the horizontal plane. It prefers positions that are not toward the
-         * target and that are reachable by the mob's navigation system. If none of the sampled
-         * candidates are reachable, it falls back to a lateral perpendicular direction.
-         *
-         * @return a reachable Vec3 destination (same Y as the mob) or null if none found
-         */
-        protected Vec3 findReachableDestinationAwayFromTarget()
-        {
-            LivingEntity target = getTarget();
-            if(target == null)
-            {
-                return null;
-            }
-
-            Vec3 mobPos = mob.position();
-            Vec3 awayDir = mobPos.subtract(target.position());
-            if(awayDir.lengthSqr() < 1.0E-6)
-            {
-                awayDir = new Vec3(1,0,0);
-            }
-            awayDir = new Vec3(awayDir.x, 0, awayDir.z).normalize();
-
-            // Increase sampling density: 5 radii and more angles
-            double[] radii = new double[]{
-                    MIN_LEAP_DISTANCE,
-                    (MIN_LEAP_DISTANCE * 0.75 + MAX_LEAP_DISTANCE * 0.25),
-                    (MIN_LEAP_DISTANCE + MAX_LEAP_DISTANCE) * 0.5,
-                    (MIN_LEAP_DISTANCE * 0.25 + MAX_LEAP_DISTANCE * 0.75),
-                    MAX_LEAP_DISTANCE
-            };
-            double[] angleOffsets = new double[]{
-                    0,
-                    Math.toRadians(20), Math.toRadians(-20),
-                    Math.toRadians(40), Math.toRadians(-40),
-                    Math.toRadians(60), Math.toRadians(-60),
-                    Math.toRadians(80), Math.toRadians(-80),
-                    Math.toRadians(100), Math.toRadians(-100)
-            };
-
-            for(double r : radii)
-            {
-                for(double off : angleOffsets)
-                {
-                    double cos = Math.cos(off);
-                    double sin = Math.sin(off);
-                    Vec3 dir = new Vec3(
-                            awayDir.x * cos - awayDir.z * sin,
-                            0,
-                            awayDir.x * sin + awayDir.z * cos
-                    ).normalize();
-
-                    Vec3 candidate = mobPos.add(dir.scale(r));
-
-                    // Keep Y roughly the same as mob; navigation will handle small differences
-                    candidate = new Vec3(candidate.x, mobPos.y, candidate.z);
-
-                    // Enforce horizontal distance within [MIN, MAX]
-                    double horizDist = candidate.subtract(new Vec3(mobPos.x, candidate.y, mobPos.z)).horizontalDistance();
-                    if(horizDist < MIN_LEAP_DISTANCE - 1e-3 || horizDist > MAX_LEAP_DISTANCE + 1e-3)
-                    {
-                        continue;
-                    }
-
-                    if(!isDirectionNotTowardTarget(mobPos, candidate, target))
-                    {
-                        continue;
-                    }
-
-                    // Loosen reachability: Replace full path check with a simple solid block check
-                    BlockPos landingPos = BlockPos.containing(candidate);
-                    if(mob.level().getBlockState(landingPos.below()).isAir() || !mob.level().getBlockState(landingPos).isAir() || !mob.level().getBlockState(landingPos.above()).isAir())
-                    {
-                        continue;
-                    }
-
-                    // Ensure from candidate the target remains visible (line of sight)
-                    if(!canSeeTargetFromPosition(candidate))
-                    {
-                        continue;
-                    }
-
-                    // Try to compute a ballistic arc and ensure it is unobstructed
-                    if(tryComputeClearBallisticTo(candidate))
-                    {
-                        return candidate;
-                    }
-                }
-            }
-
-            // Fallback: pick a lateral perpendicular direction if available
-            Vec3 perp = new Vec3(-awayDir.z, 0, awayDir.x).normalize();
-            double fallbackR = Math.max(MIN_LEAP_DISTANCE, Math.min(MAX_LEAP_DISTANCE, 4.0));
-            Vec3 fallback = mobPos.add(perp.scale(fallbackR));
-            Vec3 fallbackFlat = new Vec3(fallback.x, mobPos.y, fallback.z);
-            if(!mob.level().getBlockState(BlockPos.containing(fallbackFlat).below()).isAir()
-                    && canSeeTargetFromPosition(fallbackFlat)
-                    && tryComputeClearBallisticTo(fallbackFlat))
-            {
-                return fallbackFlat;
-            }
-
-            return null;
-        }
-
-        /**
-         * Called each AI tick before the attack begins. Ensures a leap destination has been computed.
+         * Called each AI tick before the attack begins.
          */
         @Override
         public void doPreAttackTick()
         {
             super.doPreAttackTick();
-            isLeaping = true;
-            leapStartTime = level().getGameTime();
-            if(leapDestination == null)
-            {
-                leapDestination = findReachableDestinationAwayFromTarget();
-                if(leapDestination == null)
-                {
-                    // Could not find a valid precise leap position, enable emergency back jump
-                    emergencyBackJump = true;
-                }
-            }
         }
 
         /**
-         * Executes the leap behaviour. If the mob hasn't leaped yet it will set the mob's motion
-         * towards the precomputed destination. After leaping it waits for the mob to land or a
-         * timeout to elapse before marking the attack tick as complete.
+         * Executes the leap behaviour based on VoltLeapGoal.
          */
         @Override
         protected void doAttackTick() {
-            // Initiate leap if we have a destination and computed velocity
             if(!hasLeaped)
             {
-                if(leapDestination == null || initialLeapVelocity == null || plannedFlightTicks <= 0)
-                {
-                    // Could not satisfy precise leap checks; perform an emergency backward jump
-                    emergencyBackJump = true;
+                LivingEntity target = getTarget();
+                if (target != null) {
+                    isLeaping = true;
+                    leapStartTime = level().getGameTime();
 
-                    Vec3 mobPos = mob.position();
-                    LivingEntity target = getTarget();
-                    Vec3 backDir;
-                    if(target != null)
-                    {
-                        Vec3 away = mobPos.subtract(target.position());
-                        if(away.lengthSqr() < 1.0E-6)
-                        {
-                            away = new Vec3(1, 0, 0);
-                        }
-                        backDir = new Vec3(away.x, 0, away.z).normalize();
-                    }
-                    else
-                    {
-                        // Fallback to opposite of look direction if no target
-                        Vec3 look = mob.getLookAngle();
-                        backDir = new Vec3(-look.x, 0, -look.z);
-                        if(backDir.lengthSqr() < 1.0E-6)
-                        {
-                            backDir = new Vec3(1, 0, 0);
-                        }
-                        backDir = backDir.normalize();
-                    }
+                    // Logic adapted from VoltLeapGoal
+                    // We calculate the angle to the target to leap away from it
+                    double dx = mob.getX() - target.getX();
+                    double dz = mob.getZ() - target.getZ();
+                    float targetAngle = (float) (Math.atan2(dz, dx) * (180 / Math.PI));
 
-                    // Enhance emergency jump: Use dynamic distance and better velocity
-                    double horizontalSpeed = 2.0; // Increased
-                    double upward = 0.7; // Increased
-                    Vec3 delta = backDir.scale(horizontalSpeed).add(0, upward, 0);
-                    mob.setDeltaMovement(delta);
+                    float leapYaw = (float) Math.toRadians(targetAngle + 90 + mob.getRandom().nextFloat() * 150 - 75);
+                    float speed = 1F;
+
+                    mob.playSound(SoundEvents.SPIDER_STEP, 0.2F, 1.0F);
+                    Vec3 movement = mob.getDeltaMovement().add(speed * Math.cos(leapYaw), 0, speed * Math.sin(leapYaw));
+                    //mob.setPose(Pose.LONG_JUMPING);
+                    mob.setDeltaMovement(movement.x, 0.9, movement.z);
+                    navigation.stop();
+
                     hasLeaped = true;
                     ticksSinceLeap = 0;
-                    return;
                 }
-                // Apply the computed initial velocity to exactly land on the destination (ignoring drag)
-                mob.setDeltaMovement(initialLeapVelocity);
-                hasLeaped = true;
-                ticksSinceLeap = 0;
+                else
+                {
+                    setAttackTickComplete();
+                }
             }
             else
             {
                 ticksSinceLeap++;
-                // Finish if we've landed, exceeded planned flight time (if any), or safety timeout
-                int planned = plannedFlightTicks > 0 ? plannedFlightTicks : TickUnits.convertSecondsToTicks(3);
-                if(mob.onGround() || ticksSinceLeap >= planned || ticksSinceLeap > TickUnits.convertSecondsToTicks(3))
+                // Finish if we've landed or safety timeout
+                if(mob.onGround() || ticksSinceLeap > TickUnits.convertSecondsToTicks(3))
                 {
                     setAttackTickComplete();
                 }
@@ -802,11 +489,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         public void stop() {
             super.stop();
             hasLeaped = false;
-            leapDestination = null;
-            initialLeapVelocity = null;
-            plannedFlightTicks = 0;
             ticksSinceLeap = 0;
-            emergencyBackJump = false;
         }
     }
 
