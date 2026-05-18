@@ -64,11 +64,10 @@ public class GhastDeploymentEvent extends Event {
 
             ModSavedData.MobProfileEntry profile = MobProfileUtil.getOrCreateMobProfile(mob);
 
-            long currentTime = entity.level().getGameTime();
             long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
-            long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
+            boolean hasEnoughTimePassed = TickUnits.hasTicksPassed(timeOfLastGhastDeployment, entity.level(), timeRequired);
 
-            if(timeSinceLastDeployment < timeRequired)
+            if(!hasEnoughTimePassed)
             {
                 return false;
             }
@@ -89,11 +88,10 @@ public class GhastDeploymentEvent extends Event {
 
             ModSavedData.PlayerProfileEntry profile = PlayerProfileHandler.getOrCreatePlayerProfile(player);
 
-            long currentTime = entity.level().getGameTime();
             long timeOfLastGhastDeployment = profile.getTimeofLastGhastDeployment();
-            long timeSinceLastDeployment = currentTime - timeOfLastGhastDeployment;
+            boolean hasEnoughTimePassed = TickUnits.hasTicksPassed(timeOfLastGhastDeployment, entity.level(), timeRequired);
 
-            if(timeSinceLastDeployment < timeRequired)
+            if(!hasEnoughTimePassed)
             {
                 return false;
             }
