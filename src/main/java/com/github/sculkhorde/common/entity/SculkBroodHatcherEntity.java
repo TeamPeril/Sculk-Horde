@@ -6,7 +6,9 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.ReturnToNestGoal;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -208,6 +210,11 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
 
         TARGET_PARAMETERS.updateTargets();
 
+
+        EntityAlgorithms.getNonSculkUnitsInBoundingBox(level(), getBoundingBox().inflate(0.5)).forEach(entity -> {
+            entity.hurt(damageSources().mobAttack(this), (float) getAttributeValue(Attributes.ATTACK_DAMAGE));
+        });
+        /*
         // I know this code is simple and kinda dumb, but idc. It works just fine
         if(child1 == null || child1.isDeadOrDying())
         {
@@ -241,6 +248,8 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                 SquadSystem.getSquadOfLivingEntity(this).get().forceAcceptMemberIntoSquad(child3);
             }
         }
+
+         */
     }
 
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
@@ -309,6 +318,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         protected boolean hasLeaped = false;
         protected int ticksSinceLeap = 0;
         protected final float leapStrength = 1.0F;
+        protected float shortestDistanceToTarget = 300;
 
         public LeapAttackStep(Mob mob) {
             super(mob);
@@ -325,36 +335,77 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         }
 
         @Override
+        protected int getPostAttackDelay() {
+            return 0;
+        }
+
+        @Override
         protected void doAttackTick() {
             LivingEntity target = mob.getTarget();
             if (target == null) {
-                setAttackTickComplete();
+                setPostAttack(true);
                 return;
             }
 
+
             if (!hasLeaped) {
                 Vec3 directionHorizontal = new Vec3(target.getX() - mob.getX(), 0.0, target.getZ() - mob.getZ());
-                if (directionHorizontal.lengthSqr() > 1.0E-7) {
-                    directionHorizontal = directionHorizontal.normalize().scale(leapStrength).add(mob.getDeltaMovement().scale(0.2));
+                double distanceHorizontal = directionHorizontal.length();
+
+                // If the target is too close, just do a small hop
+                if (distanceHorizontal < 0.1) {
+                    mob.setDeltaMovement(mob.getDeltaMovement().add(0, 0.5, 0));
                 } else {
-                    directionHorizontal = mob.getDeltaMovement().scale(0.2);
+                    // We want to land at the target's position.
+                    // Let's assume a fixed time for the leap, say 1 second (20 ticks).
+                    // Or better, we can use a formula for projectile motion.
+                    // v_y = (d_y + 0.5 * g * t^2) / t
+                    // v_x = d_x / t
+
+                    float ticksInAir = 15; // Adjusted for a snappy leap
+                    float gravity = 0.08f; // Default Minecraft gravity for most mobs
+
+                    double velocityY = (target.getY() - mob.getY() + 0.5 * gravity * ticksInAir * ticksInAir) / ticksInAir;
+                    double velocityX = (target.getX() - mob.getX()) / ticksInAir;
+                    double velocityZ = (target.getZ() - mob.getZ()) / ticksInAir;
+
+                    // Cap the velocities to avoid insane leaps
+                    double maxVelocity = 5;
+                    Vec3 velocity = new Vec3(velocityX, velocityY, velocityZ);
+                    if (velocity.length() > maxVelocity) {
+                        velocity = velocity.normalize().scale(maxVelocity);
+                    }
+
+                    mob.setDeltaMovement(velocity);
+                    mob.setNoGravity(true);
                 }
 
-                mob.setDeltaMovement(directionHorizontal.x, (double) leapStrength, directionHorizontal.z);
                 mob.lookAt(target, 30.0F, 30.0F);
                 hasLeaped = true;
                 ticksSinceLeap = 0;
             } else {
-                ticksSinceLeap++;
 
-                if (mob.getBoundingBox().inflate(0.2).intersects(target.getBoundingBox())) {
-                    mob.doHurtTarget(target);
-                    setAttackTickComplete();
-                    return;
+                // Keep track of our distance to the target
+                float distanceToTarget = EntityAlgorithms.getDistanceBetweenEntities(mob, target);
+                if(distanceToTarget < shortestDistanceToTarget)
+                {
+                    shortestDistanceToTarget = distanceToTarget;
                 }
 
-                if (ticksSinceLeap > 5 && mob.onGround() || ticksSinceLeap > TickUnits.convertSecondsToTicks(2)) {
-                    setAttackTickComplete();
+                if(distanceToTarget >= shortestDistanceToTarget)
+                {
+                    mob.setNoGravity(false);
+                }
+
+                ticksSinceLeap++;
+
+                if (ticksSinceLeap > TickUnits.convertSecondsToTicks(0.5F)
+                        && (EntityAlgorithms.isOnGround(mob)
+                        || distanceToTarget >= shortestDistanceToTarget)
+                        || ticksSinceLeap > TickUnits.convertSecondsToTicks(2)
+                        ||  distanceToTarget <= (getBbWidth()/2.0) + 1) {
+                    setPostAttack(true);
+                    mob.setNoGravity(false);
                 }
             }
         }
@@ -378,6 +429,21 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         @Override
         protected int getPreAttackDelay() {
             return TickUnits.convertSecondsToTicks(20);
+        }
+
+        @Override
+        protected int getPostAttackDelay() {
+            return 0;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+
+            if(getTarget() != null)
+            {
+                navigation.moveTo(getTarget(), 1.2D);
+            }
         }
 
         @Override
@@ -407,19 +473,19 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         protected void doAttackTick() {
             LivingEntity target = mob.getTarget();
             if (target == null) {
-                setAttackTickComplete();
+                setPostAttack(true);
                 return;
             }
 
             mob.doHurtTarget(target);
-            setAttackTickComplete();
+            setPostAttack(true);
             navigation.stop();
         }
     }
 
     protected class RainProjectilesAttackStep extends AttackStepGoal
     {
-        protected final int duration = TickUnits.convertSecondsToTicks(3);
+        protected final int duration = TickUnits.convertSecondsToTicks(10);
         protected int ticksElapsed = 0;
         protected final int projectilesPerTick = 10;
         protected final float range = 10F;
@@ -429,11 +495,21 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         }
 
         @Override
+        protected int getPreAttackDelay() {
+            return 0;
+        }
+
+        @Override
+        protected int getPostAttackDelay() {
+            return 0;
+        }
+
+        @Override
         protected void doAttackTick() {
             ticksElapsed++;
 
             if (ticksElapsed > duration) {
-                setAttackTickComplete();
+                setPostAttack(true);
                 return;
             }
 
@@ -443,9 +519,10 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
 
                 double offsetX = (mob.getRandom().nextDouble() - 0.5) * 2 * range;
                 double offsetZ = (mob.getRandom().nextDouble() - 0.5) * 2 * range;
+                double offsetY = (mob.getRandom().nextDouble() - 0.5) * 2 * range;
 
-                Vec3 targetPos = mob.position().add(offsetX, 15, offsetZ);
-                Vec3 spawnPos = mob.position().add(0, mob.getEyeHeight(), 0);
+                Vec3 targetPos = mob.position().add(offsetX, offsetY, offsetZ);
+                Vec3 spawnPos = mob.getBoundingBox().getCenter();
                 Vec3 direction = targetPos.subtract(spawnPos).normalize();
 
                 projectile.setPos(spawnPos.x, spawnPos.y, spawnPos.z);

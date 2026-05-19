@@ -166,7 +166,7 @@ public class ImprovedRandomStrollGoal extends Goal{
     }
 
     public boolean canContinueToUse() {
-        return !this.mob.getNavigation().isDone() && !this.mob.isVehicle();
+        return !this.mob.getNavigation().isDone() && !this.mob.isVehicle() && mob.getTarget() == null;
     }
 
     public void start() {

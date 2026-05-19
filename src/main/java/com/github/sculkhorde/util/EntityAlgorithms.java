@@ -62,6 +62,8 @@ public class EntityAlgorithms {
         return entity.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier() + 1;
     }
 
+
+
     public static float getDistanceBetweenEntities(Entity one, Entity two)
     {
         return (float) Math.sqrt(Math.pow(one.getX() - two.getX(), 2.0F) + Math.pow(one.getY() - two.getY(), 2.0F) + Math.pow(one.getZ() - two.getZ(), 2.0F));
@@ -795,6 +797,49 @@ public class EntityAlgorithms {
     public static void announceToAllPlayers(ServerLevel level, Component message)
     {
         level.players().forEach((player) -> player.displayClientMessage(message, false));
+    }
+
+    public static boolean isOnGround(Entity entity)
+    {
+        return getEntityDistanceFromGround(entity) <= 0.25D;
+    }
+
+    /**
+     * Calculates how far a mob's feet are from the nearest collidable block below it.
+     * Returns {@link Double#MAX_VALUE} if no block is found before the bottom of the world.
+     * @param entity The mob to check
+     * @return The distance from the mob's feet to the ground
+     */
+    public static double getEntityDistanceFromGround(Entity entity) {
+        Level level = entity.level();
+        double maxDistance = entity.getY() - level.getMinBuildHeight();
+        return getMobDistanceFromGround(entity, maxDistance);
+    }
+
+    /**
+     * Calculates how far a mob's feet are from the nearest collidable block below it.
+     * Returns {@link Double#MAX_VALUE} if no block is found within maxDistance.
+     * @param entity The mob to check
+     * @param maxDistance The maximum distance to raycast downward
+     * @return The distance from the mob's feet to the ground
+     */
+    public static double getMobDistanceFromGround(Entity entity, double maxDistance) {
+        Vec3 startPos = new Vec3(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
+        Vec3 endPos = startPos.subtract(0, Math.max(maxDistance, 0), 0);
+
+        HitResult hitResult = entity.level().clip(new ClipContext(
+                startPos,
+                endPos,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                entity
+        ));
+
+        if (hitResult.getType() == HitResult.Type.BLOCK) {
+            return startPos.y - hitResult.getLocation().y;
+        }
+
+        return Double.MAX_VALUE;
     }
 
     public static double getHeightOffGround(Entity entity) {
