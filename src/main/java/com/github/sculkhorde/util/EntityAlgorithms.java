@@ -181,7 +181,7 @@ public class EntityAlgorithms {
     }
 
     public static void doCorrodedDamageToEntity(LivingEntity aggressor, LivingEntity target, float amount) {
-        if(target.isInvulnerable() || aggressor == null)
+        if(target.isInvulnerable() || aggressor == null || target.getType().is(ModEntities.EntityTags.IMMUNE_TO_CORRODED))
         {
             return;
         }

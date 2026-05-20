@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulPoisonProje
 import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.ReturnToNestGoal;
+import com.github.sculkhorde.common.entity.projectile.SmallBroodAcidProjectileEntity;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -514,7 +515,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
             }
 
             for (int i = 0; i < projectilesPerTick; i++) {
-                SoulPoisonProjectileAttackEntity projectile = new SoulPoisonProjectileAttackEntity(level(), (LivingEntity) mob, 2);
+                SmallBroodAcidProjectileEntity projectile = new SmallBroodAcidProjectileEntity(level(), (LivingEntity) mob, 2);
                 projectile.setNoGravity(false);
 
                 double offsetX = (mob.getRandom().nextDouble() - 0.5) * 2 * range;

@@ -111,6 +111,7 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(ModEntities.SOUL_BLAST_ATTACK_ENTITY.get(), SoulBlastAttackEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.ACID_BLOB_PROJECTILE_ENTITY.get(), AcidBlobProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.FIRE_BALL_PROJECTILE_ENTITY.get(), FireBallProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.SMALL_BROOD_ACID_PROJECTILE_ENTITY.get(), SmallBroodAcidProjectileRenderer::new);
     }
 
 

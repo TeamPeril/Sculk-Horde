@@ -112,10 +112,14 @@ public class ModEntities {
     public static final RegistryObject<EntityType<AcidBlobProjectileEntity>> ACID_BLOB_PROJECTILE_ENTITY = ENTITY_TYPES.register(ACID_BLOB_PROJECTILE_ENTITY_ID, () -> EntityType.Builder.<AcidBlobProjectileEntity>of(AcidBlobProjectileEntity::new, MobCategory.MISC).sized(0.9f, 0.9f).clientTrackingRange(4).updateInterval(10).build(ACID_BLOB_PROJECTILE_ENTITY_ID));
     public static final String FIRE_BALL_PROJECTILE_ENTITY_ID = "fire_ball_projectile";
     public static final RegistryObject<EntityType<FireBallProjectileEntity>> FIRE_BALL_PROJECTILE_ENTITY = ENTITY_TYPES.register(FIRE_BALL_PROJECTILE_ENTITY_ID, () -> EntityType.Builder.<FireBallProjectileEntity>of(FireBallProjectileEntity::new, MobCategory.MISC).sized(1.5f, 1.5f).clientTrackingRange(4).updateInterval(10).build(FIRE_BALL_PROJECTILE_ENTITY_ID));
+    public static final String SMALL_BROOD_ACID_PROJECTILE_ENTITY_ID = "small_brood_acid_projectile";
+    public static final RegistryObject<EntityType<SmallBroodAcidProjectileEntity>> SMALL_BROOD_ACID_PROJECTILE_ENTITY = ENTITY_TYPES.register(SMALL_BROOD_ACID_PROJECTILE_ENTITY_ID, () -> EntityType.Builder.<SmallBroodAcidProjectileEntity>of(SmallBroodAcidProjectileEntity::new, MobCategory.MISC).sized(1.5f, 1.5f).clientTrackingRange(4).updateInterval(10).build(SMALL_BROOD_ACID_PROJECTILE_ENTITY_ID));
+
 
     public static class EntityTags
     {
         public static TagKey<EntityType<?>> SCULK_ENTITY = create("sculk_entity");
+        public static TagKey<EntityType<?>> IMMUNE_TO_CORRODED = create("immune_to_corroded");
         public static TagKey<EntityType<?>> SCULK_HORDE_DO_NOT_ATTACK = create("sculk_horde_do_not_attack");
 
         private static TagKey<EntityType<?>> create(String string) {
