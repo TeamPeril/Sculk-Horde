@@ -11,6 +11,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -54,17 +56,17 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
      */
 
     //The Health
-    public static final float MAX_HEALTH = 20F;
+    public static final float MAX_HEALTH = 100F;
     //The armor of the mob
     public static final float ARMOR = 6F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
-    public static final float ATTACK_DAMAGE = 4F;
+    public static final float ATTACK_DAMAGE = 18F;
     //ATTACK_KNOCKBACK determines the knockback a mob will take
-    public static final float ATTACK_KNOCKBACK = 1F;
+    public static final float ATTACK_KNOCKBACK = 3F;
     //FOLLOW_RANGE determines how far away this mob can see and chase enemies
-    public static final float FOLLOW_RANGE = 32F;
+    public static final float FOLLOW_RANGE = 64F;
     //MOVEMENT_SPEED determines how far away this mob can see other mobs
-    public static final float MOVEMENT_SPEED = 0.35F;
+    public static final float MOVEMENT_SPEED = 0.25F;
 
     // Controls what types of entities this mob can target
     private TargetParameters TARGET_PARAMETERS = DefaultTargetParameters.DefaultGroundMeleeInfector.copy(this)
@@ -165,7 +167,9 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         new FloatGoal(this),
                         new ReturnToNestGoal(this, 1.0D),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(5),
-                                new LeapAttackStep(this),
+                                //new LeapAttackStep(this),
+                                new MeleeAttackStep(this),
+                                new MeleeAttackStep(this),
                                 new MeleeAttackStep(this),
                                 new RainProjectilesAttackStep(this)
                         ),
@@ -213,7 +217,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
 
 
         EntityAlgorithms.getNonSculkUnitsInBoundingBox(level(), getBoundingBox().inflate(0.5)).forEach(entity -> {
-            entity.hurt(damageSources().mobAttack(this), (float) getAttributeValue(Attributes.ATTACK_DAMAGE));
+            //entity.hurt(damageSources().mobAttack(this), (float) getAttributeValue(Attributes.ATTACK_DAMAGE));
         });
         /*
         // I know this code is simple and kinda dumb, but idc. It works just fine
@@ -299,20 +303,6 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         super.onRemovedFromWorld();
     }
     */
-
-    protected class AttackGoal extends CustomMeleeAttackGoal2
-    {
-        public AttackGoal(Mob mob, float maxDistanceForAttackIn, long preAttackDelay, long postAttackDelay) {
-            super(mob, maxDistanceForAttackIn, preAttackDelay, postAttackDelay);
-        }
-
-        @Override
-        public void hurtTarget(Mob damageDealer, LivingEntity damageReceiver)
-        {
-            damageDealer.doHurtTarget(damageReceiver);
-            damageDealer.addEffect(new MobEffectInstance(ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), 0), this.mob);
-        }
-    }
 
     protected class LeapAttackStep extends AttackStepGoal
     {
@@ -478,7 +468,17 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                 return;
             }
 
-            mob.doHurtTarget(target);
+            AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(target.position(), 3);
+            for(LivingEntity e : EntityAlgorithms.getNonSculkUnitsInBoundingBox(mob.level(), hitbox))
+            {
+                if(EntityAlgorithms.isInvalidTargetForSculkHorde(e))
+                {
+                    continue;
+                }
+
+                EntityAlgorithms.doCorrodedDamageToEntity(mob, e, 18);
+            }
+
             setPostAttack(true);
             navigation.stop();
         }
