@@ -7,17 +7,16 @@ import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.core.ModEntities;
-import com.github.sculkhorde.core.ModMobEffects;
+import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -226,6 +225,17 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if(!level().isClientSide)
+        {
+            return;
+        }
+
+        SoundUtil.requestBroodFlightSound(this, EntityAlgorithms.getEntityDistanceFromGround(this) > 0.5);
+    }
+
+    @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
 
@@ -271,6 +281,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         return;
     }
 
+
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
@@ -292,11 +303,11 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
 
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.SPIDER_AMBIENT;
+        return ModSounds.SCULK_BROOD_IDLE.get();
     }
 
     protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-        return SoundEvents.SPIDER_HURT;
+        return ModSounds.SCULK_BROOD_HURT.get();
     }
 
     protected SoundEvent getDeathSound() {
@@ -316,64 +327,6 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         return getBbHeight();
     }
 
-    public class AttackGoalLegacy extends LegacyCustomMeleeAttackGoal
-    {
-
-        public AttackGoalLegacy()
-        {
-            super(SculkBroodlingEntity.this, 1.0D, true, 10);
-        }
-
-        @Override
-        public boolean canUse()
-        {
-            boolean canWeUse = ((ISculkSmartEntity)this.mob).getTargetParameters().isEntityValidSculkHordeTarget(this.mob.getTarget());
-            // If the mob is already targeting something valid, don't bother
-            return canWeUse;
-        }
-
-        @Override
-        public boolean canContinueToUse()
-        {
-            return canUse();
-        }
-
-        @Override
-        protected int getAttackInterval() {
-            return TickUnits.convertSecondsToTicks(0.5F);
-        }
-
-        @Override
-        protected void triggerAnimation() {
-            //((SculkBroodHatcherEntity)mob).triggerAnim("attack_controller", "attack");
-        }
-
-        @Override
-        public void onTargetHurt(LivingEntity target) {
-            super.onTargetHurt(target);
-
-            if(target == null)
-            {
-                return;
-            }
-
-            if(DifficultyUtil.isCurrentDifficultyEasy())
-            {
-                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(3), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
-                EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(5), 0);
-            }
-            else if(DifficultyUtil.isCurrentDifficultyNormal())
-            {
-                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(2), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
-                EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(10), 0);
-            }
-            else if(DifficultyUtil.isCurrentDifficultyHard())
-            {
-                EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.ROOTED_EFFECT.get(), TickUnits.convertMinutesToTicks(1), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
-                EntityAlgorithms.applyEffectToTarget(target, MobEffects.POISON, TickUnits.convertSecondsToTicks(15), 0);
-            }
-        }
-    }
 
     public class LeapAwayAttackStep extends AttackStepGoal
     {
@@ -457,7 +410,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
                     float leapYaw = (float) Math.toRadians(targetAngle + 90 + mob.getRandom().nextFloat() * 150 - 75);
                     float speed = 1F;
 
-                    mob.playSound(SoundEvents.SPIDER_STEP, 0.2F, 1.0F);
+                    SoundUtil.playHostileSoundInLevel(level(), blockPosition(), ModSounds.SCULK_BROOD_FLY_START.get());
                     Vec3 movement = mob.getDeltaMovement().add(speed * Math.cos(leapYaw), 0, speed * Math.sin(leapYaw));
                     //mob.setPose(Pose.LONG_JUMPING);
                     mob.setDeltaMovement(movement.x, 0.9, movement.z);

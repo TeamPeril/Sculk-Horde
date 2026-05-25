@@ -291,5 +291,45 @@
     "sounds": [
       "sculkhorde:sculk_pod_open"
     ]
+  },
+  "sculk_brood_fly_loop": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_fly_loop",
+    "sounds": [
+      "sculkhorde:sculk_brood_fly_loop"
+    ],
+    "stream": true
+  },
+
+  "sculk_brood_fly_start": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_fly_start",
+    "sounds": [
+      "sculkhorde:sculk_brood_fly_start1",
+      "sculkhorde:sculk_brood_fly_start2",
+      "sculkhorde:sculk_brood_fly_start3",
+      "sculkhorde:sculk_brood_fly_start4",
+      "sculkhorde:sculk_brood_fly_start5",
+      "sculkhorde:sculk_brood_fly_start6",
+      "sculkhorde:sculk_brood_fly_start7",
+      "sculkhorde:sculk_brood_fly_start8"
+    ]
+  },
+  "sculk_brood_hurt": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_hurt",
+    "sounds": [
+      "sculkhorde:sculk_brood_hurt1",
+      "sculkhorde:sculk_brood_hurt2",
+      "sculkhorde:sculk_brood_hurt3"
+    ]
+  },
+  "sculk_brood_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_idle",
+    "sounds": [
+      "sculkhorde:sculk_brood_idle1",
+      "sculkhorde:sculk_brood_idle2",
+      "sculkhorde:sculk_brood_idle3",
+      "sculkhorde:sculk_brood_idle4",
+      "sculkhorde:sculk_brood_idle5",
+      "sculkhorde:sculk_brood_idle6"
+    ]
   }
 }

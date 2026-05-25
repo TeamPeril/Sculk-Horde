@@ -60,6 +60,10 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SCULK_GHAST_SCREAM = registerSoundEvent("sculk_ghast_scream");
 
     public static final RegistryObject<SoundEvent> SCULK_POD_OPEN = registerSoundEvent("sculk_pod_open");
+    public static final RegistryObject<SoundEvent> SCULK_BROOD_FLY = registerSoundEvent("sculk_brood_fly_loop");
+    public static final RegistryObject<SoundEvent> SCULK_BROOD_FLY_START = registerSoundEvent("sculk_brood_fly_start");
+    public static final RegistryObject<SoundEvent> SCULK_BROOD_IDLE = registerSoundEvent("sculk_brood_idle");
+    public static final RegistryObject<SoundEvent> SCULK_BROOD_HURT = registerSoundEvent("sculk_brood_hurt");
 
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {

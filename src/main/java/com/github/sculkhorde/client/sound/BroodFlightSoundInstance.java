@@ -30,7 +30,7 @@ public class BroodFlightSoundInstance extends AbstractTickableSoundInstance {
         // Dynamically shift pitch slightly based on the mob's forward velocity
         // This gives the bug wings a more realistic engine/acceleration buzz feel
         double speed = this.mob.getDeltaMovement().horizontalDistance();
-        this.pitch = 0.85F + (float) (speed * 0.4D);
+        //this.pitch = 0.85F + (float) (speed * 0.4D);
 
         // Pin the audio position to the mob's exact 3D coordinates
         this.x = (float) this.mob.getX();
