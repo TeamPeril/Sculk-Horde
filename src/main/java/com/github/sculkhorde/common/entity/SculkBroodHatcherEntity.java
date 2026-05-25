@@ -1,21 +1,16 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulPoisonProjectileAttackEntity;
 import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.goal.ReturnToNestGoal;
 import com.github.sculkhorde.common.entity.projectile.SmallBroodAcidProjectileEntity;
-import com.github.sculkhorde.core.ModMobEffects;
-import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -23,8 +18,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
-import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
@@ -73,9 +66,9 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
             .addRetentionRule(TargetRetention.maxDistance(FOLLOW_RANGE + 10));
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    protected SculkBroodlingEntity child1;
-    protected SculkBroodlingEntity child2;
-    protected SculkBroodlingEntity child3;
+    protected SculkBroodSpitterEntity child1;
+    protected SculkBroodSpitterEntity child2;
+    protected SculkBroodSpitterEntity child3;
 
     /**
      * The Constructor
@@ -515,7 +508,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
             }
 
             for (int i = 0; i < projectilesPerTick; i++) {
-                SmallBroodAcidProjectileEntity projectile = new SmallBroodAcidProjectileEntity(level(), (LivingEntity) mob, 2);
+                SmallBroodAcidProjectileEntity projectile = new SmallBroodAcidProjectileEntity(level(), (LivingEntity) mob, 4);
                 projectile.setNoGravity(false);
 
                 double offsetX = (mob.getRandom().nextDouble() - 0.5) * 2 * range;

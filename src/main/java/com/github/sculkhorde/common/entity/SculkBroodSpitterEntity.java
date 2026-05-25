@@ -1,11 +1,13 @@
 package com.github.sculkhorde.common.entity;
 
-import com.github.sculkhorde.common.entity.boss.angel_of_reaping.SoulPoisonProjectileAttackEntity;
+import com.github.sculkhorde.client.model.enitity.SculkBroodSpitterModel;
+import com.github.sculkhorde.client.renderer.entity.SculkBroodSpitterRenderer;
 import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.common.entity.projectile.SmallBroodAcidProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
@@ -33,26 +35,28 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSmartEntity {
+public class SculkBroodSpitterEntity extends Monster implements GeoEntity, ISculkSmartEntity {
 
     /**
      * In order to create a mob, the following java files were created/edited.<br>
      * Edited {@link com.github.sculkhorde.core.ModEntities}<br>
      * Edited {@link com.github.sculkhorde.util.ModEventSubscriber}<br>
      * Edited {@link com.github.sculkhorde.client.ClientModEventSubscriber}<br>
-     * Added {@link com.github.sculkhorde.client.model.enitity.SculkBroodlingModel}<br>
-     * Added {@link com.github.sculkhorde.client.renderer.entity.SculkBroodlingRenderer}
+     * Added {@link SculkBroodSpitterModel}<br>
+     * Added {@link SculkBroodSpitterRenderer}
      */
 
     //The Health
-    public static final float MAX_HEALTH = 10F;
+    public static final float MAX_HEALTH = 15F;
     //The armor of the mob
     public static final float ARMOR = 0F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
@@ -72,20 +76,21 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
     protected boolean isLeaping = false;
     protected long leapStartTime = 0;
     protected long MIN_LEAP_TIME = TickUnits.convertSecondsToTicks(1);
+    protected boolean isFlying = false;
 
     /**
      * The Constructor
      * @param type The Mob Type
      * @param worldIn The world to initialize this mob in
      */
-    public SculkBroodlingEntity(EntityType<? extends SculkBroodlingEntity> type, Level worldIn) {
+    public SculkBroodSpitterEntity(EntityType<? extends SculkBroodSpitterEntity> type, Level worldIn) {
         super(type, worldIn);
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
     }
 
-    public SculkBroodlingEntity(Level level, BlockPos pos)
+    public SculkBroodSpitterEntity(Level level, BlockPos pos)
     {
-        this(ModEntities.SCULK_BROODLING.get(), level);
+        this(ModEntities.SCULK_BROOD_SPITTER.get(), level);
         moveTo(pos.getCenter());
     }
 
@@ -232,7 +237,9 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
             return;
         }
 
-        SoundUtil.requestBroodFlightSound(this, EntityAlgorithms.getEntityDistanceFromGround(this) > 0.5);
+        isFlying = EntityAlgorithms.getEntityDistanceFromGround(this) > 0.5;
+
+        SoundUtil.requestBroodFlightSound(this, isFlying);
     }
 
     @Override
@@ -281,26 +288,45 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         return;
     }
 
+    @Override
+    public float getStepHeight() {
+        return 1.1F;
+    }
 
     private static final RawAnimation ATTACK_ANIMATION = RawAnimation.begin().thenPlay("attack");
 
     private final AnimationController ATTACK_ANIMATION_CONTROLLER = new AnimationController<>(this, "attack_controller", state -> PlayState.STOP)
             .triggerableAnim("attack", ATTACK_ANIMATION).transitionLength(5);
 
+    protected static final String FLIGHT_ANIMATION_ID = "move.fly";
+    private static final RawAnimation FLIGHT_ANIMATION = RawAnimation.begin().thenLoop(FLIGHT_ANIMATION_ID);
+
+    protected PlayState poseWings(AnimationState<SculkBroodSpitterEntity> state) {
+        if (isFlying)
+        {
+            state.setAnimation(FLIGHT_ANIMATION);
+            return PlayState.CONTINUE;
+        }
+
+        return PlayState.STOP;
+    }
+
+    private final AnimationController FLIGHT_ANIMATION_CONTROLLER = new AnimationController<>(this, "flight_animation_controller", 0, this::poseWings);
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                //DefaultAnimations.genericWalkIdleController(this),
-                //ATTACK_ANIMATION_CONTROLLER,
-                //DefaultAnimations.genericLivingController(this)
+                DefaultAnimations.genericWalkRunIdleController(this),
+                FLIGHT_ANIMATION_CONTROLLER,
+                ATTACK_ANIMATION_CONTROLLER,
+                DefaultAnimations.genericLivingController(this)
         );
     }
+
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-
 
     protected SoundEvent getAmbientSound() {
         return ModSounds.SCULK_BROOD_IDLE.get();
@@ -499,7 +525,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
 
             while(projectilesFired < getProjectileAmount())
             {
-                SoulPoisonProjectileAttackEntity projectile = new SoulPoisonProjectileAttackEntity(level(), SculkBroodlingEntity.this, 1);
+                SmallBroodAcidProjectileEntity projectile = new SmallBroodAcidProjectileEntity(level(), SculkBroodSpitterEntity.this, 4);
 
                 projectile.setPos(mob.position().add(0, mob.getEyeHeight() - projectile.getBoundingBox().getYsize() * .5f, 0));
 
@@ -547,7 +573,7 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
         protected void doAttackTick() {
             super.doAttackTick();
 
-            float MIN_DISTANCE = 15;
+            float MIN_DISTANCE = 10;
 
             if(getTarget() == null || (EntityAlgorithms.getDistanceBetweenEntities(mob, getTarget()) < MIN_DISTANCE && getSensing().hasLineOfSight(getTarget())))
             {
@@ -557,6 +583,12 @@ public class SculkBroodlingEntity extends Monster implements GeoEntity, ISculkSm
             }
 
             navigation.moveTo(getTarget(), 1.0F);
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            navigation.stop();
         }
     }
 }

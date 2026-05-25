@@ -21,13 +21,47 @@
 							"vector": [0, 0, 0]
 						},
 						"0.25": {
-							"vector": [1, 1, 1],
-							"easing": "easeInElastic"
+							"vector": [1, 1, 1]
+						}
+					}
+				}
+			}
+		},
+		"misc.living": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"shaft": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 50, 0]
+						},
+						"1.0": {
+							"vector": [0, "-360+50 ", 0]
+						}
+					}
+				},
+				"shaft2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 25, 0]
+						},
+						"1.0": {
+							"vector": [0, "-360+25", 0]
+						}
+					}
+				},
+				"shaft3": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, -360, 0]
 						}
 					}
 				}
 			}
 		}
-	},
-	"geckolib_format_version": 2
+	}
 }

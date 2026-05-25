@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -143,6 +144,7 @@ public class ElementalFireMagicCircleAttackEntity extends SpecialEffectEntity im
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(ATTACK_ANIMATION_CONTROLLER);
+        controllers.add(DefaultAnimations.genericLivingController(this));
     }
 
     @Override

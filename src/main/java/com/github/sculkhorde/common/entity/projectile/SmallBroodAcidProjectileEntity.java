@@ -1,6 +1,5 @@
 package com.github.sculkhorde.common.entity.projectile;
 
-import com.github.sculkhorde.common.entity.AreaEffectSphericalCloudEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.util.ColorUtil;
@@ -20,12 +19,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Collection;
 import java.util.Optional;
 
 
@@ -71,7 +68,7 @@ public class SmallBroodAcidProjectileEntity extends AbstractProjectileEntity imp
                 return;
             }
 
-            livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(5))));
+            livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(30))));
         }
     }
 
@@ -101,11 +98,11 @@ public class SmallBroodAcidProjectileEntity extends AbstractProjectileEntity imp
         areaeffectcloud.setRadius(1F);
         areaeffectcloud.setRadiusOnUse(-0.5F);
         areaeffectcloud.setWaitTime(10);
-        areaeffectcloud.setDuration(areaeffectcloud.getDuration() / 2);
+        areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(15));
         areaeffectcloud.setRadiusPerTick(-areaeffectcloud.getRadius() / (float)areaeffectcloud.getDuration());
 
         if(getOwner() instanceof LivingEntity livingOwner) { areaeffectcloud.setOwner(livingOwner); }
-        areaeffectcloud.addEffect(new MobEffectInstance(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(5), 0)));
+        areaeffectcloud.addEffect(new MobEffectInstance(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(30), 1)));
 
 
         this.level().addFreshEntity(areaeffectcloud);

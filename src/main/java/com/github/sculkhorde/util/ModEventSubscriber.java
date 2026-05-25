@@ -81,7 +81,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.GOLEM_OF_WRATH.get(), GolemOfWrathEntity.createAttributes().build());
         event.put(ModEntities.SCULK_GUARDIAN.get(), SculkGuardianEntity.createAttributes().build());
         event.put(ModEntities.SCULK_BROOD_HATCHER.get(), SculkBroodHatcherEntity.createAttributes().build());
-        event.put(ModEntities.SCULK_BROODLING.get(), SculkBroodlingEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_BROOD_SPITTER.get(), SculkBroodSpitterEntity.createAttributes().build());
         event.put(ModEntities.SCULK_SHEEP.get(), SculkSheepEntity.createAttributes().build());
         event.put(ModEntities.SCULK_METAMORPHOSIS_POD.get(), SculkMetamorphosisPodEntity.createAttributes().build());
         event.put(ModEntities.SCULK_GHAST.get(), SculkGhastEntity.createAttributes().build());

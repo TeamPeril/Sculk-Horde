@@ -253,7 +253,7 @@ public class ModCreativeModeTab {
                 event.accept(ModBlocks.LIVING_WEB_BLOCK.get());
 
                 event.accept(ModItems.SCULK_BROOD_HATCHER_SPAWN_EGG.get());
-                event.accept(ModItems.SCULK_BROODLING_SPAWN_EGG.get());
+                event.accept(ModItems.SCULK_BROOD_SPITTER_SPAWN_EGG.get());
 
                 event.accept(ModItems.ANGEL_OF_REAPING_SOUL.get());
                 event.accept(ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get());

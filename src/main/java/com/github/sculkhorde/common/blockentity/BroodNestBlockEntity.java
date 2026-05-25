@@ -1,7 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
-import com.github.sculkhorde.common.entity.SculkBroodlingEntity;
+import com.github.sculkhorde.common.entity.SculkBroodSpitterEntity;
 import com.github.sculkhorde.common.entity.SculkBroodHatcherEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -77,7 +77,7 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
                 break;
             }
 
-            SculkBroodlingEntity broodling = new SculkBroodlingEntity(level, pos);
+            SculkBroodSpitterEntity broodling = new SculkBroodSpitterEntity(level, pos);
             level.addFreshEntity(broodling);
             spawnedEntities.add(broodling);
         }
