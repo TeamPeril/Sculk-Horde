@@ -5,17 +5,14 @@ import com.github.sculkhorde.client.renderer.entity.SculkBroodSpitterRenderer;
 import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
-import com.github.sculkhorde.common.entity.entity_debugging.IDebuggableGoal;
 import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SmallBroodAcidProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -25,7 +22,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
@@ -220,67 +216,55 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
     // Inside your Mob class
     @Override
     public void travel(Vec3 m) {
+        /*
         if (this.isLeaping)
         { // Set this flag in your Goal
             this.move(MoverType.SELF, this.getDeltaMovement());
-            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.15, 0)); // Apply gravity manually
+            //this.setDeltaMovement(this.getDeltaMovement().add(0, -0.15, 0)); // Apply gravity manually
         } else {
             super.travel(m);
         }
+
+         */
+        super.travel(m);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if(!level().isClientSide)
-        {
-            return;
-        }
 
         isFlying = EntityAlgorithms.getEntityDistanceFromGround(this) > 0.5;
+        Vec3 movementVector = this.getDeltaMovement();
 
-        SoundUtil.requestBroodFlightSound(this, isFlying);
+        if(level().isClientSide)
+        {
+            SoundUtil.requestBroodFlightSound(this, isFlying);
+        }
+        else
+        {
+            if(isFlying || isLeaping)
+            {
+                this.setDeltaMovement(movementVector.multiply(1.09D, 1D, 1.09D));
+            }
+
+        }
+        /*
+        if (!this.onGround() && movementVector.y < 0.0D)
+        {
+            this.setDeltaMovement(movementVector.multiply(1.0D, 0.6D, 1.0D));
+        }
+        */
+
+        if(isLeaping && level().getGameTime() - leapStartTime > MIN_LEAP_TIME && !isFlying)
+        {
+            isLeaping = false;
+        }
     }
 
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-
         TARGET_PARAMETERS.updateTargets();
-
-        Vec3 movementVector = this.getDeltaMovement();
-        if (!this.onGround() && movementVector.y < 0.0D) {
-            this.setDeltaMovement(movementVector.multiply(1.0D, 0.6D, 1.0D));
-        }
-
-
-        if(isLeaping && level().getGameTime() - leapStartTime > MIN_LEAP_TIME && onGround())
-        {
-            isLeaping = false;
-        }
-
-
-        if(SculkHorde.isDebugMode())
-        {
-            String customDebugName = "";
-            for(WrappedGoal wrappedGoal : goalSelector.getRunningGoals().toList())
-            {
-                Goal goal = wrappedGoal.getGoal();
-                if(goal instanceof IDebuggableGoal debugGoal)
-                {
-                    customDebugName += debugGoal.getGoalName().get();
-
-                }
-                else
-                {
-                    customDebugName += goal.getClass().getSimpleName();
-                }
-                customDebugName += " | ";
-            }
-
-            setCustomName(Component.literal(customDebugName));
-        }
-
     }
 
     @Override
@@ -393,7 +377,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
          */
         @Override
         protected int getPreAttackDelay() {
-            return TickUnits.convertSecondsToTicks(0.25F);
+            return TickUnits.convertSecondsToTicks(0);
         }
 
         /**
@@ -456,7 +440,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
                 // Finish if we've landed or safety timeout
                 if(mob.onGround() || ticksSinceLeap > TickUnits.convertSecondsToTicks(3))
                 {
-                    setAttackTickComplete();
+                    setPostAttack(true);
                 }
             }
         }
@@ -511,6 +495,10 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
         @Override
         protected void doPreAttackTick() {
             super.doPreAttackTick();
+            navigation.stop();
+            mob.getNavigation().moveTo((double)0, 0, 0, 0);
+            navigation.stop();
+            mob.setDeltaMovement(new Vec3(0, mob.getDeltaMovement().y, 0));
         }
 
         @Override
@@ -548,7 +536,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
                 projectilesFired++;
             }
 
-            setAttackTickComplete();
+            setPostAttack(true);
         }
     }
 
@@ -577,7 +565,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
 
             if(getTarget() == null || (EntityAlgorithms.getDistanceBetweenEntities(mob, getTarget()) < MIN_DISTANCE && getSensing().hasLineOfSight(getTarget())))
             {
-                setAttackTickComplete();
+                setPostAttack(true);
                 navigation.stop();
                 return;
             }
