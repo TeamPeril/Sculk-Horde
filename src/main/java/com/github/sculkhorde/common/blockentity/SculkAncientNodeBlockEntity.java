@@ -367,7 +367,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             if (!player.blockPosition().closerThan(blockPos, RANGE)) { return false; }
 
             // Within x blocks: no sight check needed
-            if (player.blockPosition().closerThan(blockPos, 14) && blockPos.getY() >= player.getY() - 2)
+            if (player.blockPosition().closerThan(blockPos, 7) && blockPos.getY() >= player.getY() - 2)
             {
                 return true;
             }
