@@ -314,8 +314,14 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             for (Player player : worldIn.players()) {
                 player.displayClientMessage(Component.translatable("message.sculk_horde.node_placed"), true);
             }
+
+            return;
         }
 
+        if(!ModSavedData.getSaveData().isNodePositionInMemory(pos))
+        {
+            ModSavedData.getSaveData().addNodeToMemory((ServerLevel) worldIn, pos);
+        }
     }
 
     @Override
