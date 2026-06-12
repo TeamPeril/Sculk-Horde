@@ -3,6 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.common.block.SculkNodeBlock;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
@@ -150,11 +151,16 @@ public class NodeUtil {
 
     public static void tryMoveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
     {
+
         if(!ignoreRequirements && !TickUnits.hasTicksPassed(SculkHorde.sculkNodesSystem.timeOfLastNodeMove, level, SculkHorde.sculkNodesSystem.NODE_RELOCATION_COOLDOWN))
         {
             return;
         }
-        SculkHorde.sculkNodesSystem.timeOfLastNodeMove = level.getGameTime();
+
+        if(!ModConfig.SERVER.enable_node_relocation.get())
+        {
+            return;
+        }
 
         Optional<ModSavedData.NodeEntry> nodeToMove = getNextNodeToMove(ignoreRequirements);
 
@@ -163,6 +169,7 @@ public class NodeUtil {
             return;
         }
 
+        SculkHorde.sculkNodesSystem.timeOfLastNodeMove = level.getGameTime();
         getNodeBlockEntity(nodeToMove.get()).get().isBeingMoved = true;
         level.destroyBlock(nodeToMove.get().getPosition(), false);
 

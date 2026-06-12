@@ -64,6 +64,7 @@ public class    ModConfig {
 
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_chunkload_radius;
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_node_spawn_cooldown_minutes;
+        public final ForgeConfigSpec.ConfigValue<Boolean> enable_node_relocation;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> should_sculk_mites_spawn_in_deep_dark;
 
@@ -253,6 +254,7 @@ public class    ModConfig {
             builder.push("Sculk Node Variables");
             sculk_node_chunkload_radius = builder.comment("How many chunks should be loaded around a sculk node? (Default 15)").defineInRange("sculk_node_chunkload_radius",15, 0, 15);
             sculk_node_spawn_cooldown_minutes = builder.comment("How many minutes should pass before another Sculk node can spawn? (Default 120)").defineInRange("sculk_node_spawn_cooldown_minutes",120, 0, Integer.MAX_VALUE);
+            enable_node_relocation = builder.comment("Can nodes relocate themselves to new areas? (Default true)").define("enable_node_relocation",true);
             builder.pop();
 
             builder.push("Sculk Mite Variables");

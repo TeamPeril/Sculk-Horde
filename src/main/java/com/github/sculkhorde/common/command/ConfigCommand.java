@@ -145,7 +145,8 @@ public class ConfigCommand implements Command<CommandSourceStack> {
     private static ArgumentBuilder<CommandSourceStack, ?> sculkNodeConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands.literal("sculk_node")
                 .then(integerConfigOption("sculk_node_spawn_cooldown_minutes", 0, Integer.MAX_VALUE))
-                .then(integerConfigOption("sculk_node_chunkload_radius", 0, 15));
+                .then(integerConfigOption("sculk_node_chunkload_radius", 0, 15))
+                .then(booleanConfigOption("enable_node_relocation"));
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> sculkMiteConfig(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -490,8 +491,12 @@ public class ConfigCommand implements Command<CommandSourceStack> {
                         success = true;
                     }
                     break;
-
-
+                case "enable_node_relocation":
+                    if (valueType.equals(Boolean.class)) {
+                        ModConfig.SERVER.enable_node_relocation.set((Boolean) rawValue);
+                        success = true;
+                    }
+                    break;
 
                 //#### Sculk Mite Config ####
                 case "should_sculk_mites_spawn_in_deep_dark":
