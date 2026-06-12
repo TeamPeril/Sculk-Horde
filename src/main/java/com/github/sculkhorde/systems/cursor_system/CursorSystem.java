@@ -6,6 +6,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -61,6 +62,23 @@ public class CursorSystem {
         return cursors.list.size();
     }
 
+    public void clearCursors()
+    {
+        for(ICursor c : performanceExemptCursors.list)
+        {
+            c.setToBeDeleted();
+        }
+
+        for(ICursor c : virtualCursors.list)
+        {
+            c.setToBeDeleted();
+        }
+
+        for(Entity e : cursors.list)
+        {
+            e.discard();
+        }
+    }
 
     /**
      * Go through the list of cursors and tick them

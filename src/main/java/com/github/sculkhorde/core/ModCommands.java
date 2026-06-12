@@ -44,7 +44,8 @@ public class ModCommands {
                 .then(RaidCommand.register(dispatcher, buildContext))
                 .then(SoulReaperCommand.register(dispatcher, buildContext))
                 .then(HitSquadCommand.register(dispatcher, buildContext))
-                .then(NodeCommand.register(dispatcher, buildContext));
+                .then(NodeCommand.register(dispatcher, buildContext))
+                .then(ClearCursorsCommand.register(dispatcher, buildContext));
 
         dispatcher.register(sculkHordeCommands);
         dispatcher.register(sculkHordeDevCommands);
