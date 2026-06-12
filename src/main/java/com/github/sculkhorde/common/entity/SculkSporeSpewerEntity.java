@@ -1,8 +1,8 @@
 package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
-import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
+import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.goal.TargetAttacker;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
@@ -192,7 +192,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         }
 
         // If too many failed cursors, just despawn and return health back to horde
-        if(failedCursors >= MAX_FAILED_CURSORS)
+        if(failedCursors >= MAX_FAILED_CURSORS && !hasCustomName())
         {
             ModSavedData.getSaveData().addSculkAccumulatedMass((int) getHealth());
             discard();
@@ -305,7 +305,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
 
         @Override
         public boolean canUse() {
-            return true;
+            return !hasCustomName();
         }
 
         @Override
