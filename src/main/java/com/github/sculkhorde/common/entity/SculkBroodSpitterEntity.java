@@ -9,6 +9,7 @@ import com.github.sculkhorde.common.entity.goal.*;
 import com.github.sculkhorde.common.entity.projectile.SmallBroodAcidProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
+import com.github.sculkhorde.util.ClientSoundUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
@@ -238,7 +239,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
 
         if(level().isClientSide)
         {
-            SoundUtil.requestBroodFlightSound(this, isFlying);
+            ClientSoundUtil.requestBroodFlightSound(this, isFlying);
         }
         else
         {
