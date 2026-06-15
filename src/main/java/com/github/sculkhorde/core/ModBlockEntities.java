@@ -110,6 +110,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("perimeter_ward_emitter_block_entity", () -> BlockEntityType.Builder.of(
                     PerimeterWardEmitterBlockEntity::new, ModBlocks.PERIMETER_WARD_EMITTER_BLOCK.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<CreativeInfestationSpreaderBlockEntity>> CREATIVE_INFESTATION_SPREADER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("creative_infestation_spreader_block_entity", () -> BlockEntityType.Builder.of(
+                    CreativeInfestationSpreaderBlockEntity::new, ModBlocks.CREATIVE_INFESTATION_SPREADER_BLOCK.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

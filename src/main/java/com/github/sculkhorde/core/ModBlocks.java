@@ -1036,6 +1036,9 @@ public class ModBlocks {
 	public static final RegistryObject<PerimeterWardEmitterBlock> PERIMETER_WARD_EMITTER_BLOCK =
 			registerBlock("perimeter_ward_emitter_block", PerimeterWardEmitterBlock::new);
 
+    public static final RegistryObject<CreativeInfestationSpreaderBlock> CREATIVE_INFESTATION_SPREADER_BLOCK =
+            registerBlock("creative_infestation_spreader_block", CreativeInfestationSpreaderBlock::new);
+
 	static {
 		datagen(INFESTED_STONE_BRICKS);
 		datagen(INFESTED_MOSSY_STONE_BRICKS, "infested_stone_bricks");

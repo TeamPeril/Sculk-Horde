@@ -2,12 +2,11 @@ package com.github.sculkhorde.systems.infestation_systems.node_infestation;
 
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -21,7 +20,7 @@ public class NodeBranchingInfestationSystem {
     public boolean spawnOnSurface = true;
 
     protected final int CHECK_FOR_ACTIVATION_INTERVAL = TickUnits.convertMinutesToTicks(1);
-    protected int timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
+    protected long lastActivationCheckTime = 0;
     
     protected boolean isPerformanceExempt = false;
 
@@ -35,7 +34,7 @@ public class NodeBranchingInfestationSystem {
     protected InfectionTree upInfectionTree;
     protected InfectionTree downInfectionTree;
 
-    protected int lastTimeSinceTick = 0;
+    protected long lastTickTime = 0;
     protected int TICK_COOLDOWN = TickUnits.convertSecondsToTicks(1);
 
 
@@ -94,31 +93,27 @@ public class NodeBranchingInfestationSystem {
 
     public boolean canBeActivated()
     {
-        if(timeRemainingUntilNextActivationCheck > 0)
+        if(!TickUnits.hasTicksPassed(lastActivationCheckTime, world, CHECK_FOR_ACTIVATION_INTERVAL))
         {
-            timeRemainingUntilNextActivationCheck--;
             return false;
         }
+        lastActivationCheckTime = world.getGameTime();
 
         if(!ModSavedData.getSaveData().isHordeActive()) {
-            timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
             return false;
         }
 
         if(parent == null || world == null || origin == null)
         {
-            timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
             return false;
         }
 
         if(calculateSpawnPosition() != null)
         {
-            timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
             return true;
         }
 
         DebuggerSystem.eventDebuggerModule.logError("Sculk Node at " + parent.getBlockPos() + " cannot be activated because it has no spawn position.");
-        timeRemainingUntilNextActivationCheck = CHECK_FOR_ACTIVATION_INTERVAL;
         return false;
     }
 
@@ -142,12 +137,11 @@ public class NodeBranchingInfestationSystem {
             return;
         }
 
-        if(lastTimeSinceTick < TICK_COOLDOWN)
+        if(!TickUnits.hasTicksPassed(lastTickTime, world, TICK_COOLDOWN))
         {
-            lastTimeSinceTick++;
             return;
         }
-        lastTimeSinceTick = 0;
+        lastTickTime = world.getGameTime();
 
         northInfectionTree.tick();
         southInfectionTree.tick();

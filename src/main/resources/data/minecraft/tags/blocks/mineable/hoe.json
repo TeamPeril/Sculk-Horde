@@ -7,6 +7,8 @@
     "sculkhorde:infested_crumbling_slab",
     "sculkhorde:fungal_shroom_core_block",
     "sculkhorde:fungal_sculk_block",
-    "sculkhorde:fungal_sculk_stem_block"
+    "sculkhorde:fungal_sculk_stem_block",
+    "sculkhorde:creative_infestation_spreader_block"
+
   ]
 }

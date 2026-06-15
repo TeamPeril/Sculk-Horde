@@ -240,6 +240,7 @@ public class ModCreativeModeTab {
             .title(Component.translatable("itemGroup.sculk_horde_tab_experimental"))
             .icon(() -> new ItemStack(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get()))
             .displayItems((enabledFeatures, event) -> {
+                event.accept(ModBlocks.CREATIVE_INFESTATION_SPREADER_BLOCK.get());
                 event.accept(ModItems.WARDEN_BEEF.get());
                 event.accept(ModItems.DEV_WAND.get());
                 event.accept(ModItems.DEV_NODE_SPAWNER.get());
