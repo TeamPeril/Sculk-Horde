@@ -95,7 +95,7 @@
   "tooltip.sculkhorde.sculk_node": "A highly sophisticated neural hub found within the Sculk Horde. It acts as a secondary brain for the Sculk Node, facilitating the intricate control of the local Sculk network.",
   "block.sculkhorde.sculk_dura_matter": "Sculk Dura Matter",
   "block.sculkhorde.sculk_arachnoid": "Sculk Arachnoid",
-  "block.sculkhorde.sculk_ancient_node": "Ancient Svculk Brain Node",
+  "block.sculkhorde.sculk_ancient_node": "Ancient Sculk Brain Node",
 
   "block.sculkhorde.spike": "Sculk Spike",
   "tooltip.sculkhorde.spike": "A sharp and dangerous spike.\nInfects all living things that touch it. Immediately breaks upon contact with a non-sculk entity.",
