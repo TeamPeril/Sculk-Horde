@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.screen;
 
 import com.github.sculkhorde.common.block.SoulHarvesterBlock;
 import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
+import com.github.sculkhorde.common.recipe.SoulHarvestingRecipe;
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,6 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class SoulHarvesterMenu extends AbstractContainerMenu {
     public final SoulHarvesterBlockEntity blockEntity;
@@ -54,9 +57,13 @@ public class SoulHarvesterMenu extends AbstractContainerMenu {
         return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }
 
+    private Optional<SoulHarvestingRecipe> getCurrentRecipe() {
+        return blockEntity.getCurrentRecipe();
+    }
+
     public int getScaledSoulProgress() {
         int progress = blockEntity.getHealthHarvested();
-        int maxProgress = SoulHarvesterBlock.MAX_HEALTH;  // Max Progress
+        int maxProgress = getCurrentRecipe().map(SoulHarvestingRecipe::getHealthRequired).orElse(SoulHarvesterBlock.MAX_HEALTH);
         int progressArrowSize = 32; // This is the height in pixels of your arrow
 
         return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;

@@ -656,11 +656,6 @@ public class BlockAlgorithms {
         BlockPos blockBelow = targetPos.below();
         BlockState belowBlockState = world.getBlockState(blockBelow);
 
-        if(belowBlockState.is(ModBlocks.BlockTags.NOT_INFESTABLE))
-        {
-            return;
-        }
-
         boolean canBlockBeWaterLogged = blockState.hasProperty(BlockStateProperties.WATERLOGGED);
         FluidState fluidStateAtTargetPos = world.getFluidState(targetPos);
 

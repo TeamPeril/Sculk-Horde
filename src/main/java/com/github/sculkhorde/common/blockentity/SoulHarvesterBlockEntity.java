@@ -172,17 +172,18 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     private boolean canStartCrafting() {
-        boolean isExperienceMaxed = this.getHealthHarvested() >= MAX_HEALTH;
         Optional<SoulHarvestingRecipe> recipe = getCurrentRecipe();
 
         if(recipe.isEmpty()) { return false; }
 
+        boolean isExperienceMaxed = this.getHealthHarvested() >= recipe.get().getHealthRequired();
+
         ItemStack result = recipe.get().getResultItem(null);
 
-        return recipe.isPresent() && canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem()) && isExperienceMaxed;
+        return canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem()) && isExperienceMaxed;
     }
 
-    private Optional<SoulHarvestingRecipe> getCurrentRecipe() {
+    public Optional<SoulHarvestingRecipe> getCurrentRecipe() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for(int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
@@ -268,7 +269,7 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
                 this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
 
-        this.setHealthHarvested(0);
+        this.setHealthHarvested(this.getHealthHarvested() - recipe.get().getHealthRequired());
 
         triggerAnim("finish_controller", "finished_animation");
         //FINISH_ANIMATION_CONTROLLER.tryTriggerAnimation("finished");

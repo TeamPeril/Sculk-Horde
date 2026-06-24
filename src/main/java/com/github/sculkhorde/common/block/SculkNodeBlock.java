@@ -173,11 +173,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     {
         if(ModSavedData.getSaveData() == null) { return false;}
 
-        if(worldIn.getBlockState(positionIn).is(ModBlocks.BlockTags.NOT_INFESTABLE))
-        {
-            return false;
-        }
-
         if(ModSavedData.getSaveData().getNodeEntries().size() >= SculkHorde.gravemind.sculk_node_limit)
         {
             return false;

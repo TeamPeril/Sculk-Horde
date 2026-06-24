@@ -579,37 +579,37 @@ public class BlockInfestationSystem {
 
         BlockState newBlockState = vein.defaultBlockState();
         // If the block is valid, place it
-        if(northBlock.isFaceSturdy(level, pos, Direction.SOUTH) && !northBlock.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        if(northBlock.isFaceSturdy(level, pos, Direction.SOUTH))
         {
             thereIsAValidPlacement = true;
             BooleanProperty property = MultifaceBlock.getFaceProperty(Direction.NORTH);
             newBlockState = newBlockState.setValue(property, true);
         }
-        if(eastBlock.isFaceSturdy(level, pos, Direction.WEST) && !eastBlock.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        if(eastBlock.isFaceSturdy(level, pos, Direction.WEST))
         {
             thereIsAValidPlacement = true;
             BooleanProperty property = MultifaceBlock.getFaceProperty(Direction.EAST);
             newBlockState = newBlockState.setValue(property, true);
         }
-        if(southBlock.isFaceSturdy(level, pos, Direction.NORTH) && !southBlock.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        if(southBlock.isFaceSturdy(level, pos, Direction.NORTH))
         {
             thereIsAValidPlacement = true;
             BooleanProperty property = MultifaceBlock.getFaceProperty(Direction.SOUTH);
             newBlockState = newBlockState.setValue(property, true);
         }
-        if(westBlock.isFaceSturdy(level, pos, Direction.EAST) && !westBlock.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        if(westBlock.isFaceSturdy(level, pos, Direction.EAST))
         {
             thereIsAValidPlacement = true;
             BooleanProperty property = MultifaceBlock.getFaceProperty(Direction.WEST);
             newBlockState = newBlockState.setValue(property, true);
         }
-        if(upBlock.isFaceSturdy(level, pos, Direction.DOWN) && !upBlock.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        if(upBlock.isFaceSturdy(level, pos, Direction.DOWN))
         {
             thereIsAValidPlacement = true;
             BooleanProperty property = MultifaceBlock.getFaceProperty(Direction.UP);
             newBlockState = newBlockState.setValue(property, true);
         }
-        if(downBlock.isFaceSturdy(level, pos, Direction.UP) && !downBlock.is(ModBlocks.BlockTags.NOT_INFESTABLE))
+        if(downBlock.isFaceSturdy(level, pos, Direction.UP))
         {
             thereIsAValidPlacement = true;
             BooleanProperty property = MultifaceBlock.getFaceProperty(Direction.DOWN);

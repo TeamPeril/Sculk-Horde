@@ -19,11 +19,13 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
     private final ResourceLocation id;
+    private final int healthRequired;
 
-    public SoulHarvestingRecipe(NonNullList<Ingredient> inputItems, ItemStack outout, ResourceLocation id) {
+    public SoulHarvestingRecipe(NonNullList<Ingredient> inputItems, ItemStack outout, ResourceLocation id, int healthRequired) {
         this.inputItems = inputItems;
         this.output = outout;
         this.id = id;
+        this.healthRequired = healthRequired;
     }
 
     @Override
@@ -54,9 +56,12 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
         return output.copy();
     }
 
-    @Override
     public ResourceLocation getId() {
         return id;
+    }
+
+    public int getHealthRequired() {
+        return healthRequired;
     }
 
     @Override
@@ -92,7 +97,9 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
                 inputItems.set(i, Ingredient.fromJson(ingredients.get(i)));
             }
 
-            return new SoulHarvestingRecipe(inputItems, output, recipeIDIn);
+            int healthRequired = GsonHelper.getAsInt(serializedRecipeIn, "healthRequired", 0);
+
+            return new SoulHarvestingRecipe(inputItems, output, recipeIDIn, healthRequired);
         }
 
         @Override
@@ -105,10 +112,12 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
 
             ItemStack output = bufferIn.readItem();
 
+            int healthRequired = bufferIn.readInt();
+
             // Log the size of the data being read
             System.out.println("SoulHarvesterRecipe | Data size being read: " + bufferIn.readableBytes());
 
-            return new SoulHarvestingRecipe(inputItems, output, recipeIDIn);
+            return new SoulHarvestingRecipe(inputItems, output, recipeIDIn, healthRequired);
         }
 
         @Override
@@ -134,6 +143,8 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
 
             // 3. Write the (now smaller) ItemStack to the network.
             bufferIn.writeItemStack(clientOutput, false);
+
+            bufferIn.writeInt(recipeIn.getHealthRequired());
 
             // Log the size of the data being written
             System.out.printf("SoulHarvestingRecipe | Wrote recipe '%s'. Total bytes: %d, Starting index: %d%n",
