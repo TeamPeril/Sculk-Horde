@@ -3,8 +3,10 @@
   "values": [
     "sculkhorde:infested_moss",
     "sculkhorde:infested_compost_mass",
+    "sculkhorde:infested_crumpled_mass",
     "sculkhorde:infested_crumbling_stairs",
     "sculkhorde:infested_crumbling_slab",
+    "sculkhorde:infested_crumbling_wall",
     "sculkhorde:fungal_shroom_core_block",
     "sculkhorde:fungal_sculk_block",
     "sculkhorde:fungal_sculk_stem_block",
