@@ -1,0 +1,28 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:flowers",
+    "#minecraft:tall_flowers",
+    "minecraft:bamboo",
+    {
+      "required": false,
+      "id": "#forge:seeds"
+    },
+    {
+      "required": false,
+      "id": "#forge:fruits"
+    },
+    {
+      "required": false,
+      "id": "#forge:crops"
+    },
+    {
+      "required": false,
+      "id": "#forge:vegetables"
+    },
+    {
+      "required": false,
+      "id": "#forge:raw_meat"
+    }
+  ]
+}

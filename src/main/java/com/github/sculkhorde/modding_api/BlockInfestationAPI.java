@@ -293,9 +293,10 @@ public class BlockInfestationAPI {
      *
      * @param itemID the item's registry ID in the format "namespace:name" to register
      */
+    @Deprecated(forRemoval = true)
     public static void addToListOfItemsCursorsCanEat(String itemID)
     {
-        ModConfig.Server.infection_cursor_item_eat_list.put(itemID, true);
+        //not deleting this method yet so it doesn't crash any addons, but it won't do anything - Atobá
     }
 
 }
