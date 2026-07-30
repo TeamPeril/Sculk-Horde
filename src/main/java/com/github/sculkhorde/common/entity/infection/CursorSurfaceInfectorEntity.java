@@ -80,6 +80,10 @@ public class CursorSurfaceInfectorEntity extends CursorEntity{
         {
             return true;
         }
+        // Check if the position is within world border
+        if (!this.level().getWorldBorder().isWithinBounds(pos)) {
+            return true;
+        }
         // This is to prevent the entity from getting stuck in a loop
         else if(visitedPositons.containsKey(pos.asLong()))
         {

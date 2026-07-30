@@ -271,7 +271,7 @@ public class ChunkCursorBase<T extends ChunkCursorBase<T>> extends VirtualCursor
                 boundingBox.contains(pos.getCenter()) &&
                 !isObstructed(serverLevel, pos) &&
                 canChange(serverLevel, pos) &&
-                !checkedBlocks.contains(pos)
+                !checkedBlocks.contains(pos) && serverLevel.getWorldBorder().isWithinBounds(pos)
         );
     }
 
