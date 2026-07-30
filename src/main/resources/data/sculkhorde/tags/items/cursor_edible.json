@@ -4,6 +4,7 @@
     "#minecraft:flowers",
     "#minecraft:tall_flowers",
     "minecraft:bamboo",
+    "#minecraft:saplings",
     {
       "required": false,
       "id": "#forge:seeds"
