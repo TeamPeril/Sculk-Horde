@@ -290,7 +290,9 @@ public class BlockInfestationSystem {
         boolean isNotInfestable = blockState.is(ModBlocks.BlockTags.NOT_INFESTABLE);
         boolean isAlreadyInfested = blockState.is(ModBlocks.BlockTags.INFESTED_BLOCK);
         boolean isAir = blockState.isAir();
+        boolean insideWorld = level.getWorldBorder().isWithinBounds(pos);
 
+        if(!insideWorld) { return true; }
         if(isNotInfestable) { return true; }
         if(isAlreadyInfested) { return true; }
         if(isAir) { return true; }

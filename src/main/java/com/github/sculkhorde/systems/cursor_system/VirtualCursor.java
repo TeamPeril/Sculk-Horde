@@ -176,6 +176,10 @@ public class VirtualCursor implements ICursor{
      */
     protected boolean isObstructed(BlockState state, BlockPos pos)
     {
+        if (!this.level.getWorldBorder().isWithinBounds(pos))
+        {
+            return true;
+        }
         if(BlockAlgorithms.getBlockDistance(origin, pos) > MAX_RANGE)
         {
             return true;
