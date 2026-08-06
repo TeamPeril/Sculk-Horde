@@ -160,11 +160,10 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         new FloatGoal(this),
                         new ReturnToNestGoal(this, 1.0D),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(5),
-                                //new LeapAttackStep(this),
                                 new MeleeAttackStep(this),
+                                new ShootBigAcidProjectilesAttackStep(this),
                                 new MeleeAttackStep(this),
-                                new MeleeAttackStep(this),
-                                new RainProjectilesAttackStep(this)
+                                new ShootBigAcidProjectilesAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 0.5D).setToAvoidWater(true),
                 };
@@ -529,6 +528,70 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
         public void stop() {
             super.stop();
             ticksElapsed = 0;
+        }
+    }
+
+    protected class ShootBigAcidProjectilesAttackStep extends AttackStepGoal
+    {
+        protected Vec3 averageTargetPos = Vec3.ZERO;
+        protected int totalTicks = 0;
+
+        public ShootBigAcidProjectilesAttackStep(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        protected int getPreAttackDelay() {
+            return TickUnits.convertSecondsToTicks(2);
+        }
+
+        @Override
+        protected int getPostAttackDelay() {
+            return 0;
+        }
+
+        @Override
+        protected void doPreAttackTick() {
+            LivingEntity target = mob.getTarget();
+            if (target != null) {
+                averageTargetPos = averageTargetPos.add(target.position());
+                totalTicks++;
+            }
+        }
+
+        @Override
+        protected void doAttackTick() {
+            if (totalTicks == 0) {
+                setPostAttack(true);
+                return;
+            }
+
+            Vec3 targetAvgPos = averageTargetPos.scale(1.0 / totalTicks);
+            Vec3 spawnPos = mob.getBoundingBox().getCenter();
+            int ticksToHit = 60;
+            double gravity = 0.05;
+
+            double vx = (targetAvgPos.x - spawnPos.x) / ticksToHit;
+            double vz = (targetAvgPos.z - spawnPos.z) / ticksToHit;
+            double vy = (targetAvgPos.y - spawnPos.y) / ticksToHit + (gravity * (ticksToHit - 1) / 2);
+
+            SmallBroodAcidProjectileEntity projectile = new SmallBroodAcidProjectileEntity(level(), (LivingEntity) mob, 15);
+            projectile.setNoGravity(false);
+            projectile.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+            projectile.setDeltaMovement(vx, vy, vz);
+            level().addFreshEntity(projectile);
+
+            mob.playSound(SoundEvents.FIREWORK_ROCKET_LAUNCH, 3.0F, 1.0F);
+            //ATTACK_ANIMATION_CONTROLLER.triggerAnim("attack", "attack");
+
+            setPostAttack(true);
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            averageTargetPos = Vec3.ZERO;
+            totalTicks = 0;
         }
     }
 }
