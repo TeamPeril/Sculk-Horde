@@ -208,7 +208,6 @@ public class ModSavedData extends SavedData {
         DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded pathBuilderSystem Successfully.");
 
         DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading list of items cursors can eat.");
-        ModConfig.SERVER.loadItemsInfectionCursorsCanEat();
         DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loaded list of items cursors can eat Successfully.");
         DebuggerSystem.eventDebuggerModule.logInfo("ModSavedData | Loading list of configured infestable blocks.");
         ModConfig.SERVER.loadConfiguredInfestableBlocks();

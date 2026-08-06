@@ -66,6 +66,8 @@
     "sculkhorde:infested_andesite_stairs",
     "sculkhorde:infested_sturdy_slab",
     "sculkhorde:infested_sturdy_stairs",
+    "sculkhorde:infested_sturdy_fence",
+    "sculkhorde:infested_sturdy_fence_gate",
     "sculkhorde:infested_cobbled_deepslate_slab",
     "sculkhorde:infested_cobbled_deepslate_stairs",
     "sculkhorde:infested_cobblestone_slab",
@@ -83,5 +85,8 @@
     "sculkhorde:depleted_soulite_block",
     "sculkhorde:budding_soulite_block",
     "sculkhorde:spike"
+  ],
+  "remove": [
+    "sculkhorde:infested_crumbling_wall"
   ]
 }

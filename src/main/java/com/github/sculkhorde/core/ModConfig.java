@@ -4,7 +4,9 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -18,6 +20,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.github.sculkhorde.core.SculkHorde.MOD_ID;
 
 public class    ModConfig {
 
@@ -78,8 +82,6 @@ public class    ModConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> sculk_raid_no_raid_zone_duration_minutes;
         public final ForgeConfigSpec.ConfigValue<Double> purification_speed_multiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> infestation_purifier_range;
-        private final ForgeConfigSpec.ConfigValue<List<? extends String>> items_infection_cursors_can_eat;
-        public static final HashMap<String, Boolean> infection_cursor_item_eat_list = new HashMap<>();
 
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> make_block_infestable;
         public static final HashMap<String, Boolean> manually_configured_infestable_blocks = new HashMap<>();
@@ -104,43 +106,11 @@ public class    ModConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> hit_squad_event_enabled;
         public final ForgeConfigSpec.ConfigValue<Boolean> ghast_deployment_event_enabled;
 
-        public void loadItemsInfectionCursorsCanEat()
-        {
-            infection_cursor_item_eat_list.clear();
-            for(String item : ModConfig.SERVER.items_infection_cursors_can_eat.get())
-            {
-                infection_cursor_item_eat_list.put(item, true);
-            }
-        }
-
         public boolean isItemEdibleToCursors(ItemEntity itemEntity)
         {
             ItemStack itemStack = itemEntity.getItem();
-            Item item = itemStack.getItem();
-            ResourceLocation itemResourceLocation = BuiltInRegistries.ITEM.getKey(item);
 
-
-            if(itemResourceLocation == null)
-            {
-                return false;
-            }
-
-            String itemName = itemResourceLocation.toString();
-            if(infection_cursor_item_eat_list.containsKey(itemName))
-            {
-                return true;
-            }
-
-            if(item.isEdible())
-            {
-                return true;
-            }
-
-            if (itemName.contains("sapling")) {
-                return true;
-            }
-
-            return false;
+            return itemStack.getItem().isEdible() || itemStack.is(TagKey.create(Registries.ITEM, new ResourceLocation(MOD_ID, "cursor_edible")));
         }
 
         public void loadConfiguredInfestableBlocks()
@@ -242,7 +212,6 @@ public class    ModConfig {
             infection_speed_multiplier = builder.comment("How much faster or slower should infection spread? (Default 1)").defineInRange("infection_speed_multiplier",1.0, 0.001, 10);
             max_infestation_cursor_population = builder.comment("How many infestation cursors are allowed to exist at one time. WARNING: This only applies if performance mode is at HIGH. To keep performance at HIGH, set disable_auto_performance_system to true (Default 200)").defineInRange("max_infestation_cursor_population", 200, 1, Integer.MAX_VALUE);
             infestation_purifier_range = builder.comment("How far should the infestation purifier reach? (Default 5)").defineInRange("purifier_range",48, 0, 100);
-            items_infection_cursors_can_eat = builder.comment("What dropped items should cursors eat? This prevents lag and boosts their lifespan.").defineList("items_infection_cursors_can_eat", Arrays.asList("minecraft:wheat_seeds", "minecraft:bamboo", "minecraft:stick", "minecraft:poppy", "minecraft:dandelion", "minecraft:blue_orchid", "minecraft:allium", "minecraft:azure_bluet", "minecraft:red_tulip", "minecraft:orange_tulip", "minecraft:white_tulip", "minecraft:pink_tulip", "minecraft:oxeye_daisy", "minecraft:cornflower", "minecraft:lily_of_the_valley", "minecraft:sunflower", "minecraft:lilac", "minecraft:rose_bush", "minecraft:peony", "minecraft:pink_petals"), entry -> true);
             make_block_infestable = builder.comment("Add blocks to this list to make them infestable. I.E. minecraft:dirt. Be careful what you put in here, this can potentially lead to issues. This will not work with blocks that are air, have a block entity, are already considered an infested block, or have the not infestable tag.").defineList("make_block_infestable", Arrays.asList(""), entry -> true);
             builder.pop();
 
