@@ -159,10 +159,12 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
                         //SwimGoal(mob)
                         new FloatGoal(this),
                         new ReturnToNestGoal(this, 1.0D),
+                        new CloseRangeAttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1), 10F,
+                                new MeleeAttackStep(this),
+                                new RainProjectilesAttackStep(this)
+                                ),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(5),
-                                new MeleeAttackStep(this),
                                 new ShootBigAcidProjectilesAttackStep(this),
-                                new MeleeAttackStep(this),
                                 new ShootBigAcidProjectilesAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 0.5D).setToAvoidWater(true),
@@ -579,6 +581,7 @@ public class SculkBroodHatcherEntity extends Monster implements GeoEntity, IScul
             projectile.setNoGravity(false);
             projectile.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             projectile.setDeltaMovement(vx, vy, vz);
+            projectile.
             level().addFreshEntity(projectile);
 
             mob.playSound(SoundEvents.FIREWORK_ROCKET_LAUNCH, 3.0F, 1.0F);

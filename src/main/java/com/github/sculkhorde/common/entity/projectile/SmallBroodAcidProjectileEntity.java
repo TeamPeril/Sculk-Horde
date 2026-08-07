@@ -95,7 +95,7 @@ public class SmallBroodAcidProjectileEntity extends AbstractProjectileEntity imp
 
 
         AreaEffectCloud areaeffectcloud = new AreaEffectCloud(this.level(), this.getX(), spawnHeight, this.getZ());
-        areaeffectcloud.setRadius(1F);
+        areaeffectcloud.setRadius(3F);
         areaeffectcloud.setRadiusOnUse(-0.5F);
         areaeffectcloud.setWaitTime(10);
         areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(15));
