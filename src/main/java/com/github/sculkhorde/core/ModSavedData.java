@@ -1805,7 +1805,7 @@ public class ModSavedData extends SavedData {
         public int sculkHordeKills = 0;
         public long timeOfLastHit = 0;
         public int difficultyOfNextHit = 1;
-        public long timeofLastGhastDeployment = 0;
+        protected long timeofLastGhastDeployment = 0;
         public static final int MAX_RELATIONSHIP_VALUE = 1000;
         public static final int MIN_RELATIONSHIP_VALUE = -1000;
 
