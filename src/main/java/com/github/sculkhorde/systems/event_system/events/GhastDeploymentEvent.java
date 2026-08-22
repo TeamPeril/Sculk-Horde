@@ -96,6 +96,10 @@ public class GhastDeploymentEvent extends Event {
                 return false;
             }
         }
+        else
+        {
+            return false;
+        }
 
         Optional<ModSavedData.NodeEntry> node = NodeUtil.getClosestNode((ServerLevel) entity.level(), entity.blockPosition());
         if(node.isEmpty())

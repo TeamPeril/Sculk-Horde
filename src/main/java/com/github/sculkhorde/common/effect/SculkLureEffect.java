@@ -23,7 +23,6 @@ public class SculkLureEffect extends MobEffect {
 
     public static int liquidColor = 338997;
     public static MobEffectCategory effectType = MobEffectCategory.HARMFUL;
-    public long cooldownTicksRemaining = 0;
 
 
     /**
@@ -42,7 +41,7 @@ public class SculkLureEffect extends MobEffect {
         this(effectType, liquidColor);
     }
 
-    public long getCooldownBasedOnDifficulty()
+    public int getCooldownBasedOnDifficulty()
     {
         if(ServerLifecycleHooks.getCurrentServer() == null)
         {
@@ -93,15 +92,12 @@ public class SculkLureEffect extends MobEffect {
      */
     @Override
     public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
-
-        if(cooldownTicksRemaining > 0)
+        int cooldown = getCooldownBasedOnDifficulty();
+        if(cooldown > 0)
         {
-            cooldownTicksRemaining--;
-            return false;
+            return ticksLeft % cooldown == 0;
         }
-        cooldownTicksRemaining = getCooldownBasedOnDifficulty();
         return true;
-
     }
 
     @Override

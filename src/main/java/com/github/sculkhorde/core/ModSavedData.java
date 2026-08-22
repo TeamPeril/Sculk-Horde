@@ -1966,7 +1966,7 @@ public class ModSavedData extends SavedData {
             }
             if(nbt.contains("timeOfLastHit"))
             {
-                entry.setTimeofLastGhastDeployment(nbt.getLong("timeOfLastHit"));
+                entry.setTimeOfLastHit(nbt.getLong("timeOfLastHit"));
             }
             if(nbt.contains("difficultyOfNextHit"))
             {
