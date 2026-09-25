@@ -34,7 +34,8 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected SculkNodeProceduralStructure nodeProceduralStructure;
     protected final long REPAIR_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
     protected long timeOfLastRepair = -1;
-    public static final int tickIntervalSeconds = 1;
+    public static final int chunkLoadIntervalTicks = TickUnits.convertMinutesToTicks(5);
+    public long timeOfLastChunkLoadTick = 0;
     protected NodeBranchingInfestationSystem branchingInfestationHandler;
 
     protected int currentInfestationRadius = 0;
@@ -119,20 +120,14 @@ public class SculkNodeBlockEntity extends BlockEntity
         }
 
         InfestationHandlerTick(blockEntity);
-
-        long timeElapsed = TimeUnit.SECONDS.convert(System.nanoTime() - blockEntity.tickedAt, TimeUnit.NANOSECONDS);
-
-        // If the time elapsed is less than the tick interval, return
-        if(timeElapsed < tickIntervalSeconds) { return; }
-
-        // Update the tickedAt time
-        blockEntity.tickedAt = System.nanoTime();
-
         addDarknessEffectToNearbyPlayers(level, blockPos, 50);
-
-        chunkloadTick(blockEntity);
-
         repairNodeTick(blockEntity);
+
+        if(TickUnits.hasTicksPassed(blockEntity.timeOfLastChunkLoadTick, level, chunkLoadIntervalTicks)) {
+            // Update the tickedAt time
+            blockEntity.tickedAt = System.nanoTime();
+            chunkloadTick(blockEntity);
+        }
 
     }
 
