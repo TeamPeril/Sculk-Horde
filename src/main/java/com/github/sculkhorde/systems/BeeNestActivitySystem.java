@@ -1,124 +1,123 @@
 package com.github.sculkhorde.systems;
 
 import com.github.sculkhorde.core.ModSavedData;
+import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 public class BeeNestActivitySystem {
 
     protected int index = 0;
 
-    protected final long DELAY_BETWEEN_NEST_TOGGLING = TickUnits.convertMinutesToTicks(15);
-    protected long timeOfLastToggle = 0;
+    protected final long DELAY_BETWEEN_TICKS = TickUnits.convertSecondsToTicks(0.25F);
+    protected long timeOfLastTick = 0;
+    protected boolean isActive = false;
+    protected boolean startEnablingHives = false;
+    protected int enabledHives = 0;
     protected final int MAX_ENABLED_HIVES = 20;
 
-    final int STATE_IDLE = 0;
-    final int STATE_DEACTIVATION = 1;
-    final int STATE_ACTIVATION = 2;
-    protected int state = STATE_IDLE;
-    protected int preprocessIndex = 0;
 
-
-    public void setStateIdle()
+    public void activate()
     {
-        state = STATE_IDLE;
-        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | State: IDLE");
+        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Activating");
+        isActive = true;
     }
-    public void setStateActivation()
+    public void deactivate()
     {
-        state = STATE_ACTIVATION;
-        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | State: ACTIVATION");
-    }
-    public void setStateDeactivation()
-    {
-        state = STATE_DEACTIVATION;
-        timeOfLastToggle = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
-        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | State: DEACTIVATION");
+        DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Deactivating");
+        isActive = false;
+        enabledHives = 0;
+        startEnablingHives = false;
     }
 
-    public void idleTick()
+    public boolean isActive()
     {
-        if(TickUnits.hasTicksPassed(timeOfLastToggle, ServerLifecycleHooks.getCurrentServer().overworld(), DELAY_BETWEEN_NEST_TOGGLING))
-        {
-            setStateDeactivation();
-        }
-    }
-
-    public void deactivateTick()
-    {
-        List<ModSavedData.BeeNestEntry> beeNests = ModSavedData.getSaveData().getBeeNestEntriesAsList();
-
-        if(preprocessIndex >= beeNests.size())
-        {
-            setStateActivation();
-            preprocessIndex = 0;
-            return;
-        }
-
-        ModSavedData.BeeNestEntry currentNest = beeNests.get(preprocessIndex);
-
-        if(currentNest != null && currentNest.isEntryValid() && !currentNest.isDisabled())
-        {
-            currentNest.disable();
-            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Disabling Hive at " + currentNest.getPosition().toShortString());
-        }
-        preprocessIndex++;
-    }
-
-    public void activationTick()
-    {
-        Collection<UUID> nestsToActivate = ModSavedData.getSaveData().getBeeNestsWithLongestInactivity(MAX_ENABLED_HIVES);
-
-        // If We have <= MAX_ENABLED_HIVES amount of hives, then just enable them all.
-        if(ModSavedData.getSaveData().getBeeNestEntriesMap().size() <= MAX_ENABLED_HIVES)
-        {
-            enableAllHives();
-            setStateIdle();
-            return;
-        }
-
-        for(UUID uuid : nestsToActivate)
-        {
-            ModSavedData.BeeNestEntry entry = ModSavedData.getSaveData().getBeeNestEntry(uuid);
-            if(entry != null && entry.isEntryValid() && entry.isDisabled())
-            {
-                entry.enable();
-                DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling Hive at " + entry.getPosition().toShortString());
-            }
-        }
+        return isActive;
     }
 
     public void serverTick()
     {
-        if(ModSavedData.getSaveData() == null) { return; }
+        if(!isActive() || ModSavedData.getSaveData() == null) { return; }
 
-        if(state == STATE_IDLE)
+        // Cooldown Check
+        if(Math.abs(ServerLifecycleHooks.getCurrentServer().overworld().getGameTime() - timeOfLastTick) < DELAY_BETWEEN_TICKS)
         {
-            idleTick();
-        }
-        else if(state == STATE_ACTIVATION)
-        {
-            activationTick();
-        }
-        else if(state == STATE_DEACTIVATION)
-        {
-            deactivateTick();
+            return;
         }
 
+
+        List<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntries();
+        if (beeNestsList.isEmpty()) {
+            return;
+        }
+
+        // If We have <= MAX_ENABLED_HIVES amount of hives, then just enable them all.
+        if(beeNestsList.size() <= MAX_ENABLED_HIVES)
+        {
+            enableAllHives();
+            deactivate();
+            return;
+        }
+
+        // If we have more hives than MAX_ENABLED_HIVES
+        // 1. Iterate through list until we find enabled nest.
+        // 2. Once we do, disable any hives that are enabled.
+        // 3. Enable any disabled hives until we reach MAX_ENABLED_HIVES limit.
+
+        index += 1;
+
+        if(index >= beeNestsList.size())
+        {
+            index = 0;
+        }
+
+        ModSavedData.BeeNestEntry currentEntry = beeNestsList.get(index);
+
+        if (!currentEntry.isEntryValid()) {
+            return;
+        }
+
+        // If we find an enabled nest, disable it and start enabling MAX_ENABLED_HIVES amount of hives.
+        if (!currentEntry.isOccupantsExistingDisabled()) {
+            startEnablingHives = true;
+            currentEntry.disableOccupantsExiting();
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Disabling Hive at " + currentEntry.getPosition().toShortString());
+        }
+        // If we are enabling nests, and we have found an inactive nest, enable it
+        else if(startEnablingHives && currentEntry.isOccupantsExistingDisabled() && enabledHives < MAX_ENABLED_HIVES)
+        {
+            currentEntry.enableOccupantsExiting();
+            enabledHives += 1;
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling Hive at " + currentEntry.getPosition().toShortString());
+        }
+
+        // If we've enabled all the ones we need to, then deactivate.
+        if(enabledHives >= MAX_ENABLED_HIVES && index == 0)
+        {
+            deactivate();
+        }
+
+        // If we've reached the end and have no enabled hives, then enable first hive in list.
+        if(enabledHives <= 0 && index == beeNestsList.size() - 1)
+        {
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Reached End and found no enabled hives.");
+            beeNestsList.get(0).enableOccupantsExiting();
+            index = 1;
+            enabledHives = 1;
+            startEnablingHives = true;
+        }
     }
 
     protected void enableAllHives()
     {
         DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling All Hives");
 
-        for(ModSavedData.BeeNestEntry entry : ModSavedData.getSaveData().getBeeNestEntriesAsList())
+        for(ModSavedData.BeeNestEntry entry : ModSavedData.getSaveData().getBeeNestEntries())
         {
-            entry.enable();
+            entry.enableOccupantsExiting();
         }
     }
 }
