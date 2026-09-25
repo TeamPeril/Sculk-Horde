@@ -74,24 +74,24 @@ public class BeeNestActivitySystem {
             index = 0;
         }
 
-        ModSavedData.BeeNestEntry entry = beeNestsList.get(index);
+        ModSavedData.BeeNestEntry currentEntry = beeNestsList.get(index);
 
-        if (!entry.isEntryValid()) {
+        if (!currentEntry.isEntryValid()) {
             return;
         }
 
         // If we find an enabled nest, disable it and start enabling MAX_ENABLED_HIVES amount of hives.
-        if (!entry.isOccupantsExistingDisabled()) {
+        if (!currentEntry.isOccupantsExistingDisabled()) {
             startEnablingHives = true;
-            entry.disableOccupantsExiting();
-            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Disabling Hive at " + entry.getPosition().toShortString());
+            currentEntry.disableOccupantsExiting();
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Disabling Hive at " + currentEntry.getPosition().toShortString());
         }
         // If we are enabling nests, and we have found an inactive nest, enable it
-        else if(startEnablingHives && entry.isOccupantsExistingDisabled() && enabledHives < MAX_ENABLED_HIVES)
+        else if(startEnablingHives && currentEntry.isOccupantsExistingDisabled() && enabledHives < MAX_ENABLED_HIVES)
         {
-            entry.enableOccupantsExiting();
+            currentEntry.enableOccupantsExiting();
             enabledHives += 1;
-            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling Hive at " + entry.getPosition().toShortString());
+            DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling Hive at " + currentEntry.getPosition().toShortString());
         }
 
         // If we've enabled all the ones we need to, then deactivate.
