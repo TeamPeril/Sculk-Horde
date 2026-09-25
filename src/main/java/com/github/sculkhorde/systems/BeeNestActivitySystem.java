@@ -1,12 +1,13 @@
 package com.github.sculkhorde.systems;
 
 import com.github.sculkhorde.core.ModSavedData;
-import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BeeNestActivitySystem {
 
@@ -14,10 +15,18 @@ public class BeeNestActivitySystem {
 
     protected final long DELAY_BETWEEN_TICKS = TickUnits.convertSecondsToTicks(0.25F);
     protected long timeOfLastTick = 0;
+    protected final long DELAY_BETWEEN_NEST_TOGGLING = TickUnits.convertMinutesToTicks(5);
+    protected long timeOfLastToggle = 0;
     protected boolean isActive = false;
     protected boolean startEnablingHives = false;
     protected int enabledHives = 0;
     protected final int MAX_ENABLED_HIVES = 20;
+
+    int STATE_DEACTIVATION = 0;
+    int STATE_ACTIVATION = 1;
+    protected int state = STATE_DEACTIVATION;
+    protected int preprocessIndex = 0;
+    Random rng = new Random();
 
 
     public void activate()
@@ -38,6 +47,36 @@ public class BeeNestActivitySystem {
         return isActive;
     }
 
+    public void deactivationTick()
+    {
+        List<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntries();
+
+        if(preprocessIndex > beeNestsList.size())
+        {
+            state = STATE_DEACTIVATION;
+            enabledHives = 0;
+        }
+
+        ModSavedData.BeeNestEntry currentNest = beeNestsList.get(preprocessIndex);
+
+        if(currentNest.isEntryValid() && !currentNest.isOccupantsExistingDisabled())
+        {
+            currentNest.disableOccupantsExiting();
+        }
+        preprocessIndex++;
+    }
+
+    public void activationTick()
+    {
+        if(enabledHives >= MAX_ENABLED_HIVES)
+        {
+            deactivate();
+        }
+
+        rng.nextInt(ModSavedData.getSaveData().getBeeNestEntries().size());
+
+    }
+
     public void serverTick()
     {
         if(!isActive() || ModSavedData.getSaveData() == null) { return; }
@@ -47,6 +86,7 @@ public class BeeNestActivitySystem {
         {
             return;
         }
+
 
 
         List<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntries();
