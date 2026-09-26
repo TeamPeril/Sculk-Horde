@@ -5,7 +5,6 @@ import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -29,6 +28,7 @@ public class BeeNestActivitySystem {
     Random rng = new Random();
 
 
+
     public void activate()
     {
         DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Activating");
@@ -49,7 +49,7 @@ public class BeeNestActivitySystem {
 
     public void deactivationTick()
     {
-        List<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntries();
+        Collection<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntriesAsList();
 
         if(preprocessIndex > beeNestsList.size())
         {
@@ -73,7 +73,7 @@ public class BeeNestActivitySystem {
             deactivate();
         }
 
-        rng.nextInt(ModSavedData.getSaveData().getBeeNestEntries().size());
+        rng.nextInt(ModSavedData.getSaveData().getBeeNestEntriesAsList().size());
 
     }
 
@@ -89,7 +89,7 @@ public class BeeNestActivitySystem {
 
 
 
-        List<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntries();
+        Collection<ModSavedData.BeeNestEntry> beeNestsList = ModSavedData.getSaveData().getBeeNestEntriesAsList();
         if (beeNestsList.isEmpty()) {
             return;
         }
@@ -155,7 +155,7 @@ public class BeeNestActivitySystem {
     {
         DebuggerSystem.eventDebuggerModule.logInfo("BeeNestActivitySystem | Enabling All Hives");
 
-        for(ModSavedData.BeeNestEntry entry : ModSavedData.getSaveData().getBeeNestEntries())
+        for(ModSavedData.BeeNestEntry entry : ModSavedData.getSaveData().getBeeNestEntriesAsList())
         {
             entry.enableOccupantsExiting();
         }
