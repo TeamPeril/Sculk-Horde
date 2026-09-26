@@ -1,5 +1,4 @@
 package com.github.sculkhorde.core;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
@@ -19,7 +18,6 @@ import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,8 +32,9 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -88,9 +87,7 @@ public class ModSavedData extends SavedData {
 
     public static ModSavedData getSaveData()
     {
-        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(
-                new SavedData.Factory<>(ModSavedData::new, (nbt, provider) -> ModSavedData.load(nbt)),
-                SculkHorde.SAVE_DATA_ID);
+        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID);
         data.setDirty();
         return data;
     }
@@ -282,13 +279,11 @@ public class ModSavedData extends SavedData {
         if (nbt.contains("bee_nest_entries", Tag.TAG_LIST)) {
             ListTag beeNestEntriesTag = nbt.getList("bee_nest_entries", Tag.TAG_COMPOUND);
             for (int i = 0; i < beeNestEntriesTag.size(); i++) {
-                BeeNestEntry entry = BeeNestEntry.load(beeNestEntriesTag.getCompound(i));
-                savedData.getBeeNestEntriesMap().put(entry.uuid, entry);
+                savedData.getBeeNestEntriesAsList().add(BeeNestEntry.load(beeNestEntriesTag.getCompound(i)));
             }
         } else {
             for (int i = 0; nbt.contains("bee_nest_entry" + i); i++) {
-                BeeNestEntry entry = BeeNestEntry.load(nbt.getCompound("bee_nest_entry" + i));
-                savedData.getBeeNestEntriesMap().put(entry.uuid, entry);
+                savedData.getBeeNestEntriesAsList().add(BeeNestEntry.load(nbt.getCompound("bee_nest_entry" + i)));
             }
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded BeeNest Entries Successfully.");
@@ -405,7 +400,7 @@ public class ModSavedData extends SavedData {
      * @param nbt The memory where data is stored
      */
     @Override
-    public @NotNull CompoundTag save(CompoundTag nbt, HolderLookup.Provider provider) {
+    public @NotNull CompoundTag save(CompoundTag nbt) {
         //CompoundTag gravemindData = new CompoundTag();
 
         nbt.putInt("hordeState", hordeState.ordinal());
@@ -588,16 +583,8 @@ public class ModSavedData extends SavedData {
         return nodeEntries;
     }
 
-    public BeeNestEntry getBeeNestEntry(UUID uuid) {
-        return beeNestEntries.get(uuid);
-    }
-
-    public HashMap<UUID, BeeNestEntry> getBeeNestEntriesMap() {
-        return beeNestEntries;
-    }
-
-    public List<BeeNestEntry> getBeeNestEntriesAsList() {
-        return new ArrayList<>(beeNestEntries.values());
+    public Collection<BeeNestEntry> getBeeNestEntriesAsList() {
+        return beeNestEntries.values();
     }
 
     public Map<String, HostileEntry> getHostileEntries() {
@@ -635,47 +622,10 @@ public class ModSavedData extends SavedData {
     {
         if (!isBeeNestPositionInMemory(positionIn) && getBeeNestEntriesAsList() != null)
         {
-            BeeNestEntry entry = new BeeNestEntry(level, positionIn);
-            getBeeNestEntriesMap().put(entry.uuid, entry);
+            getBeeNestEntriesAsList().add(new BeeNestEntry(level, positionIn));
             setDirty();
         }
         //else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
-    }
-
-    /**
-     * Retrieves a collection of UUIDs of bee nests that have experienced the longest period of inactivity.
-     * The method returns up to the specified number of bee nests, sorted in ascending order
-     * by their last activity time (least recently active first).
-     *
-     * @param amount the maximum number of bee nests to retrieve.
-     * @return a collection of UUIDs of the bee nests with the longest inactivity period,
-     *         sorted by their last activity time.
-     */
-    public Collection<UUID> getBeeNestsWithLongestInactivity(int amount)
-    {
-        if (beeNestEntries.isEmpty() || amount <= 0) {
-            return Collections.emptyList();
-        }
-
-        // PriorityQueue to find the top 'amount' entries with the smallest timeOfLastActivity.
-        // This is O(N log K) where N is the total number of nests and K is the 'amount'.
-        PriorityQueue<BeeNestEntry> maxHeap = new PriorityQueue<>(amount, (a, b) -> Long.compare(b.timeOfLastActivity, a.timeOfLastActivity));
-
-        for (BeeNestEntry entry : beeNestEntries.values()) {
-            if (maxHeap.size() < amount) {
-                maxHeap.offer(entry);
-            } else if (entry.timeOfLastActivity < maxHeap.peek().timeOfLastActivity) {
-                maxHeap.poll();
-                maxHeap.offer(entry);
-            }
-        }
-
-        ArrayList<UUID> result = new ArrayList<>(maxHeap.size());
-        while (!maxHeap.isEmpty()) {
-            result.add(maxHeap.poll().uuid);
-        }
-        Collections.reverse(result);
-        return result;
     }
 
     public void addHostileToMemory(LivingEntity entityIn)
@@ -880,10 +830,16 @@ public class ModSavedData extends SavedData {
      */
     public void validateBeeNestEntries() {
         long startTime = System.nanoTime();
-        beeNestEntries.values().removeIf(entry -> {
+        List<BeeNestEntry> toRemove = new ArrayList<>();
+        Iterator<BeeNestEntry> iterator = getBeeNestEntriesAsList().iterator();
+        while (iterator.hasNext()) {
+            BeeNestEntry entry = iterator.next();
             entry.setParentNodeToClosest();
-            return !entry.isEntryValid();
-        });
+            if (!entry.isEntryValid()) {
+                toRemove.add(entry);
+            }
+        }
+        getBeeNestEntriesAsList().removeAll(toRemove);
         setDirty();
         long endTime = System.nanoTime();
         if (SculkHorde.isDebugMode()) {
@@ -935,7 +891,7 @@ public class ModSavedData extends SavedData {
      */
     public boolean isBeeNestPositionInMemory(BlockPos position) {
         for (BeeNestEntry entry : getBeeNestEntriesAsList()) {
-            if (entry.position.equals(position)) {
+            if (entry.position == position) {
                 return true;
             }
         }
@@ -1184,7 +1140,7 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
@@ -1203,13 +1159,11 @@ public class ModSavedData extends SavedData {
      */
     public static class BeeNestEntry
     {
-        public UUID uuid = UUID.randomUUID();
-        protected long timeOfLastActivity = 0;
-        protected long startTimeOfActivity = 0;
-        protected final int MAX_TIME_ENABLED = TickUnits.convertMinutesToTicks(15);
-        protected final BlockPos position; //The location in the world where the node is
-        protected BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
-        protected ResourceKey<Level> dimension;
+        public final UUID uuid = UUID.randomUUID();
+        private final BlockPos position; //The location in the world where the node is
+        private BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
+
+        private ResourceKey<Level> dimension;
 
         /**
          * Default Constructor
@@ -1264,26 +1218,12 @@ public class ModSavedData extends SavedData {
             return dimension.getBlockState(position).getBlock().equals(ModBlocks.SCULK_BEE_NEST_BLOCK.get());
         }
 
-        public boolean hasBeenActiveForTooLong()
-        {
-            if(isDisabled())
-            {
-                return false;
-            }
-
-            return TickUnits.hasTicksPassed(startTimeOfActivity, getDimension(), MAX_TIME_ENABLED);
-        }
-
-        public long ticksSinceLastActive()
-        {
-            return getDimension().getGameTime() - timeOfLastActivity;
-        }
 
         /**
          * is Hive enabled?
          * @return True if enabled, false otherwise
          */
-        public boolean isDisabled()
+        public boolean isOccupantsExistingDisabled()
         {
             if(getDimension() == null) { return true; }
             return SculkBeeNestBlock.isNestClosed(getDimension().getBlockState(position));
@@ -1292,22 +1232,20 @@ public class ModSavedData extends SavedData {
         /**
          * Sets Hive to deny bees leaving
          */
-        public void disable()
+        public void disableOccupantsExiting()
         {
             if(getDimension() == null) { return; }
             SculkBeeNestBlock.setNestClosed(getDimension(), getDimension().getBlockState(position), position);
-            timeOfLastActivity = getDimension().getGameTime();
         }
 
 
         /**
          * Sets Hive to allow bees leaving
          */
-        public void enable()
+        public void enableOccupantsExiting()
         {
             if(getDimension() == null) { return; }
             SculkBeeNestBlock.setNestOpen(getDimension(), getDimension().getBlockState(position), position);
-            startTimeOfActivity = getDimension().getGameTime();
         }
 
 
@@ -1384,12 +1322,9 @@ public class ModSavedData extends SavedData {
         public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
-            nbt.putUUID("uuid", uuid);
             nbt.putLong("position", position.asLong());
             if(dimension != null) nbt.putString("dimension", dimension.location().toString());
             if(parentNodePosition != null) nbt.putLong("parentNodePosition", parentNodePosition.asLong());
-            nbt.putLong("timeOfLastActivity", timeOfLastActivity);
-            nbt.putLong("startTimeOfActivity", startTimeOfActivity);
             return nbt;
         }
 
@@ -1400,15 +1335,9 @@ public class ModSavedData extends SavedData {
          */
         public static BeeNestEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
-            BlockPos pos = BlockPos.of(nbt.getLong("position"));
-            BlockPos parentPos = nbt.contains("parentNodePosition") ? BlockPos.of(nbt.getLong("parentNodePosition")) : null;
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
 
-            BeeNestEntry entry = new BeeNestEntry(dimensionResourceKey, pos, parentPos);
-            if(nbt.hasUUID("uuid")) entry.uuid = nbt.getUUID("uuid");
-            if(nbt.contains("timeOfLastActivity")) entry.timeOfLastActivity = nbt.getLong("timeOfLastActivity");
-            if(nbt.contains("startTimeOfActivity")) entry.startTimeOfActivity = nbt.getLong("startTimeOfActivity");
-            return entry;
+            return new BeeNestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
         }
     }
 
@@ -1527,7 +1456,7 @@ public class ModSavedData extends SavedData {
          */
         public static DeathAreaEntry load(CompoundTag nbt) {
 
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
         }
     }
@@ -1599,7 +1528,7 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static AreaOfInterestEntry load(CompoundTag nbt) {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
@@ -1696,7 +1625,7 @@ public class ModSavedData extends SavedData {
          */
         public static NoRaidZoneEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }
@@ -1970,7 +1899,7 @@ public class ModSavedData extends SavedData {
             {
                 return false;
             }
-            return BuiltInRegistries.ENTITY_TYPE.containsKey(BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
+            return ForgeRegistries.ENTITY_TYPES.containsKey(ForgeRegistries.ENTITY_TYPES.getKey(entityType));
         }
 
         public EntityType getEntityType()
@@ -2078,7 +2007,7 @@ public class ModSavedData extends SavedData {
         {
             CompoundTag nbt = new CompoundTag();
 
-            nbt.putString("entityType", BuiltInRegistries.ENTITY_TYPE.getKey(entityType).toString());
+            nbt.putString("entityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
             nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
             nbt.putInt("sculkHordeKills", sculkHordeKills);
             nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
@@ -2089,8 +2018,8 @@ public class ModSavedData extends SavedData {
 
         public static MobProfileEntry load(CompoundTag nbt)
         {
-            ResourceLocation id = ResourceLocation.parse(nbt.getString("entityType"));
-            EntityType type = BuiltInRegistries.ENTITY_TYPE.get(id);
+            ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
+            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
             if(type == null) {
                 DebuggerSystem.eventDebuggerModule.logError("Failed to load MobProfileEntry. EntityType was null for id: " + id);
                 type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.
