@@ -32,7 +32,7 @@ public class StatusAllCommand implements Command<CommandSourceStack> {
                         + "\n"
                         + "Sculk Nodes Present: " + ModSavedData.getSaveData().getNodeEntries().size()
                         + "\n"
-                        + "Nests Count: " + ModSavedData.getSaveData().getBeeNestEntries().size()
+                        + "Nests Count: " + ModSavedData.getSaveData().getBeeNestEntriesAsList().size()
                         + "\n"
                         + "Mob Types Considered Hostile Count: " + ModSavedData.getSaveData().getHostileEntries().size()
                         + "\n"

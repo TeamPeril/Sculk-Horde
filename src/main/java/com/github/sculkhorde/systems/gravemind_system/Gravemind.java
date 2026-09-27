@@ -292,6 +292,7 @@ public class Gravemind
         SculkHorde.squadSystem.serverTick();
         SculkHorde.debuggerSystem.serverTick();
         SculkHorde.hitSquadDispatcherSystem.serverTick();
+        SculkHorde.beeNestActivitySystem.serverTick();
 
 
         // Make sure the area above the tomb is loaded. Only attempt every CHUNK_LOAD_ATTEMPT_COOLDOWN
@@ -313,7 +314,6 @@ public class Gravemind
         }
 
         time_save_point = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();//Set to current time so we can recalculate time passage
-        SculkHorde.beeNestActivitySystem.activate();
 
         //Verification Processes to ensure our data is accurate
         ModSavedData.getSaveData().validateBeeNestEntries();
