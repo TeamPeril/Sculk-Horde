@@ -279,11 +279,13 @@ public class ModSavedData extends SavedData {
         if (nbt.contains("bee_nest_entries", Tag.TAG_LIST)) {
             ListTag beeNestEntriesTag = nbt.getList("bee_nest_entries", Tag.TAG_COMPOUND);
             for (int i = 0; i < beeNestEntriesTag.size(); i++) {
-                savedData.getBeeNestEntriesAsList().add(BeeNestEntry.load(beeNestEntriesTag.getCompound(i)));
+                BeeNestEntry entry = BeeNestEntry.load(beeNestEntriesTag.getCompound(i));
+                savedData.getBeeNestEntriesMap().put(entry.uuid, entry);
             }
         } else {
             for (int i = 0; nbt.contains("bee_nest_entry" + i); i++) {
-                savedData.getBeeNestEntriesAsList().add(BeeNestEntry.load(nbt.getCompound("bee_nest_entry" + i)));
+                BeeNestEntry entry = BeeNestEntry.load(nbt.getCompound("bee_nest_entry" + i));
+                savedData.getBeeNestEntriesMap().put(entry.uuid, entry);
             }
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded BeeNest Entries Successfully.");
@@ -583,8 +585,16 @@ public class ModSavedData extends SavedData {
         return nodeEntries;
     }
 
-    public Collection<BeeNestEntry> getBeeNestEntriesAsList() {
-        return beeNestEntries.values();
+    public BeeNestEntry getBeeNestEntry(UUID uuid) {
+        return beeNestEntries.get(uuid);
+    }
+
+    public HashMap<UUID, BeeNestEntry> getBeeNestEntriesMap() {
+        return beeNestEntries;
+    }
+
+    public List<BeeNestEntry> getBeeNestEntriesAsList() {
+        return new ArrayList<>(beeNestEntries.values());
     }
 
     public Map<String, HostileEntry> getHostileEntries() {
@@ -622,10 +632,47 @@ public class ModSavedData extends SavedData {
     {
         if (!isBeeNestPositionInMemory(positionIn) && getBeeNestEntriesAsList() != null)
         {
-            getBeeNestEntriesAsList().add(new BeeNestEntry(level, positionIn));
+            BeeNestEntry entry = new BeeNestEntry(level, positionIn);
+            getBeeNestEntriesMap().put(entry.uuid, entry);
             setDirty();
         }
         //else if(DEBUG_MODE) System.out.println("Attempted to Add Nest To Memory but failed.");
+    }
+
+    /**
+     * Retrieves a collection of UUIDs of bee nests that have experienced the longest period of inactivity.
+     * The method returns up to the specified number of bee nests, sorted in ascending order
+     * by their last activity time (least recently active first).
+     *
+     * @param amount the maximum number of bee nests to retrieve.
+     * @return a collection of UUIDs of the bee nests with the longest inactivity period,
+     *         sorted by their last activity time.
+     */
+    public Collection<UUID> getBeeNestsWithLongestInactivity(int amount)
+    {
+        if (beeNestEntries.isEmpty() || amount <= 0) {
+            return Collections.emptyList();
+        }
+
+        // PriorityQueue to find the top 'amount' entries with the smallest timeOfLastActivity.
+        // This is O(N log K) where N is the total number of nests and K is the 'amount'.
+        PriorityQueue<BeeNestEntry> maxHeap = new PriorityQueue<>(amount, (a, b) -> Long.compare(b.timeOfLastActivity, a.timeOfLastActivity));
+
+        for (BeeNestEntry entry : beeNestEntries.values()) {
+            if (maxHeap.size() < amount) {
+                maxHeap.offer(entry);
+            } else if (entry.timeOfLastActivity < maxHeap.peek().timeOfLastActivity) {
+                maxHeap.poll();
+                maxHeap.offer(entry);
+            }
+        }
+
+        ArrayList<UUID> result = new ArrayList<>(maxHeap.size());
+        while (!maxHeap.isEmpty()) {
+            result.add(maxHeap.poll().uuid);
+        }
+        Collections.reverse(result);
+        return result;
     }
 
     public void addHostileToMemory(LivingEntity entityIn)
@@ -830,16 +877,10 @@ public class ModSavedData extends SavedData {
      */
     public void validateBeeNestEntries() {
         long startTime = System.nanoTime();
-        List<BeeNestEntry> toRemove = new ArrayList<>();
-        Iterator<BeeNestEntry> iterator = getBeeNestEntriesAsList().iterator();
-        while (iterator.hasNext()) {
-            BeeNestEntry entry = iterator.next();
+        beeNestEntries.values().removeIf(entry -> {
             entry.setParentNodeToClosest();
-            if (!entry.isEntryValid()) {
-                toRemove.add(entry);
-            }
-        }
-        getBeeNestEntriesAsList().removeAll(toRemove);
+            return !entry.isEntryValid();
+        });
         setDirty();
         long endTime = System.nanoTime();
         if (SculkHorde.isDebugMode()) {
@@ -891,7 +932,7 @@ public class ModSavedData extends SavedData {
      */
     public boolean isBeeNestPositionInMemory(BlockPos position) {
         for (BeeNestEntry entry : getBeeNestEntriesAsList()) {
-            if (entry.position == position) {
+            if (entry.position.equals(position)) {
                 return true;
             }
         }
@@ -1159,11 +1200,13 @@ public class ModSavedData extends SavedData {
      */
     public static class BeeNestEntry
     {
-        public final UUID uuid = UUID.randomUUID();
-        private final BlockPos position; //The location in the world where the node is
-        private BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
-
-        private ResourceKey<Level> dimension;
+        public UUID uuid = UUID.randomUUID();
+        protected long timeOfLastActivity = 0;
+        protected long startTimeOfActivity = 0;
+        protected final int MAX_TIME_ENABLED = TickUnits.convertMinutesToTicks(15);
+        protected final BlockPos position; //The location in the world where the node is
+        protected BlockPos parentNodePosition; //The location of the Sculk TreeNode that this Nest belongs to
+        protected ResourceKey<Level> dimension;
 
         /**
          * Default Constructor
@@ -1218,12 +1261,26 @@ public class ModSavedData extends SavedData {
             return dimension.getBlockState(position).getBlock().equals(ModBlocks.SCULK_BEE_NEST_BLOCK.get());
         }
 
+        public boolean hasBeenActiveForTooLong()
+        {
+            if(isDisabled())
+            {
+                return false;
+            }
+
+            return TickUnits.hasTicksPassed(startTimeOfActivity, getDimension(), MAX_TIME_ENABLED);
+        }
+
+        public long ticksSinceLastActive()
+        {
+            return getDimension().getGameTime() - timeOfLastActivity;
+        }
 
         /**
          * is Hive enabled?
          * @return True if enabled, false otherwise
          */
-        public boolean isOccupantsExistingDisabled()
+        public boolean isDisabled()
         {
             if(getDimension() == null) { return true; }
             return SculkBeeNestBlock.isNestClosed(getDimension().getBlockState(position));
@@ -1232,20 +1289,22 @@ public class ModSavedData extends SavedData {
         /**
          * Sets Hive to deny bees leaving
          */
-        public void disableOccupantsExiting()
+        public void disable()
         {
             if(getDimension() == null) { return; }
             SculkBeeNestBlock.setNestClosed(getDimension(), getDimension().getBlockState(position), position);
+            timeOfLastActivity = getDimension().getGameTime();
         }
 
 
         /**
          * Sets Hive to allow bees leaving
          */
-        public void enableOccupantsExiting()
+        public void enable()
         {
             if(getDimension() == null) { return; }
             SculkBeeNestBlock.setNestOpen(getDimension(), getDimension().getBlockState(position), position);
+            startTimeOfActivity = getDimension().getGameTime();
         }
 
 
@@ -1322,9 +1381,12 @@ public class ModSavedData extends SavedData {
         public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
+            nbt.putUUID("uuid", uuid);
             nbt.putLong("position", position.asLong());
             if(dimension != null) nbt.putString("dimension", dimension.location().toString());
             if(parentNodePosition != null) nbt.putLong("parentNodePosition", parentNodePosition.asLong());
+            nbt.putLong("timeOfLastActivity", timeOfLastActivity);
+            nbt.putLong("startTimeOfActivity", startTimeOfActivity);
             return nbt;
         }
 
@@ -1336,8 +1398,14 @@ public class ModSavedData extends SavedData {
         public static BeeNestEntry load(CompoundTag nbt)
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            BlockPos pos = BlockPos.of(nbt.getLong("position"));
+            BlockPos parentPos = nbt.contains("parentNodePosition") ? BlockPos.of(nbt.getLong("parentNodePosition")) : null;
 
-            return new BeeNestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), BlockPos.of(nbt.getLong("parentNodePosition")));
+            BeeNestEntry entry = new BeeNestEntry(dimensionResourceKey, pos, parentPos);
+            if(nbt.hasUUID("uuid")) entry.uuid = nbt.getUUID("uuid");
+            if(nbt.contains("timeOfLastActivity")) entry.timeOfLastActivity = nbt.getLong("timeOfLastActivity");
+            if(nbt.contains("startTimeOfActivity")) entry.startTimeOfActivity = nbt.getLong("startTimeOfActivity");
+            return entry;
         }
     }
 
