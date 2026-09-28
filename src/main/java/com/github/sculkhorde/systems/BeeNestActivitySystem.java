@@ -13,7 +13,7 @@ public class BeeNestActivitySystem {
 
     protected int index = 0;
 
-    protected final long DELAY_BETWEEN_NEST_TOGGLING = TickUnits.convertMinutesToTicks(5);
+    protected final long DELAY_BETWEEN_NEST_TOGGLING = TickUnits.convertMinutesToTicks(15);
     protected long timeOfLastToggle = 0;
     protected final int MAX_ENABLED_HIVES = 20;
 
@@ -43,7 +43,7 @@ public class BeeNestActivitySystem {
 
     public void idleTick()
     {
-        if(TickUnits.hasTicksPassed(timeOfLastToggle, ServerLifecycleHooks.getCurrentServer().overworld(), TickUnits.convertMinutesToTicks(15)))
+        if(TickUnits.hasTicksPassed(timeOfLastToggle, ServerLifecycleHooks.getCurrentServer().overworld(), DELAY_BETWEEN_NEST_TOGGLING))
         {
             setStateDeactivation();
         }
