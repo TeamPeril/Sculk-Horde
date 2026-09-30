@@ -7,7 +7,7 @@ modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
 iconFile="sculkhorde.png"
-credits="Wolfieboy09"
+credits="Wolfieboy09, DaPlumer"
 authors="Team Peril"
 description='''
 Sculk Horde implements a new end-game era to your game that once activated, will force you to fight against the newly awoken ancient sculk horde in order to survive. This ancient enemy seeks to infect and consume the world in its entirety.
@@ -33,7 +33,7 @@ side="BOTH"
 [[dependencies.${mod_id}]]
 modId="geckolib"
 type="required"
-versionRange="[4.7.1.2,)"
+versionRange="[${geckolib_version},)"
 ordering="NONE"
 side="BOTH"
 
