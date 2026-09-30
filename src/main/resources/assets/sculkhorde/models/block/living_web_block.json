@@ -1,0 +1,17 @@
+{
+  "ambientocclusion": false,
+  "render_type": "minecraft:cutout",
+  "textures": {
+      "particle": "sculkhorde:block/living_web_block",
+      "web": "sculkhorde:block/living_web_block"
+  },
+  "elements": [
+      {   "from": [ 0, 0, 0.1 ],
+          "to": [ 16, 16, 0.1 ],
+          "faces": {
+              "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#web" },
+              "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#web" }
+          }
+      }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "sculkhorde:block/infested_basalt_top",
+    "side": "sculkhorde:block/infested_basalt_side"
+  }
+}

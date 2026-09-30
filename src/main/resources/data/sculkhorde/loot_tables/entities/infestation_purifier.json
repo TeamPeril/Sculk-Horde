@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "sculkhorde:infestation_purifier"
+        }
+      ],
+      "name": "main",
+      "rolls": 1.0
+    }
+  ]
+}

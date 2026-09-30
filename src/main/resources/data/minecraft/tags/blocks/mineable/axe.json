@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "sculkhorde:infested_log",
+    "sculkhorde:infested_wood_mass",
+    "sculkhorde:infested_wood_stairs",
+    "sculkhorde:infested_wood_slab",
+    "sculkhorde:infested_wood_fence",
+    "sculkhorde:infested_wood_fence_gate",
+    "sculkhorde:sculk_bee_nest",
+    "sculkhorde:sculk_bee_nest_cell",
+
+    "sculkhorde:fungal_shroom_core_block",
+    "sculkhorde:fungal_sculk_block",
+    "sculkhorde:fungal_sculk_stem_block",
+    "sculkhorde:infested_crafting_table_block",
+    "sculkhorde:ancient_bookshelf_block"
+  ],
+  "remove": [
+    "sculkhorde:infested_sturdy_fence_gate"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_mirrored",
+  "textures": {
+    "end": "sculkhorde:block/infested_deepslate_top",
+    "side": "sculkhorde:block/infested_deepslate"
+  }
+}

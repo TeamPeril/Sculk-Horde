@@ -1,0 +1,90 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 4.5,
+				"visible_bounds_offset": [0, 1.75, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "base",
+					"parent": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-24, 0, -24],
+							"size": [48, 0, 48],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [48, 0]},
+								"east": {"uv": [0, 0], "uv_size": [48, 0]},
+								"south": {"uv": [0, 0], "uv_size": [48, 0]},
+								"west": {"uv": [0, 0], "uv_size": [48, 0]},
+								"up": {"uv": [0, 0], "uv_size": [48, 48]}
+							}
+						}
+					]
+				},
+				{
+					"name": "shaft3",
+					"parent": "root",
+					"pivot": [0, 7, 0],
+					"cubes": [
+						{
+							"origin": [-32, 30, -32],
+							"size": [64, 16, 64],
+							"uv": {
+								"north": {"uv": [48, 0], "uv_size": [48, 16]},
+								"east": {"uv": [48, 16], "uv_size": [48, 16]},
+								"south": {"uv": [48, 32], "uv_size": [48, 16]},
+								"west": {"uv": [48, 48], "uv_size": [48, 16]}
+							}
+						}
+					]
+				},
+				{
+					"name": "shaft2",
+					"parent": "root",
+					"pivot": [0, -8, 0],
+					"cubes": [
+						{
+							"origin": [-28, 15, -28],
+							"size": [56, 16, 56],
+							"uv": {
+								"north": {"uv": [48, 0], "uv_size": [48, 16]},
+								"east": {"uv": [48, 16], "uv_size": [48, 16]},
+								"south": {"uv": [48, 32], "uv_size": [48, 16]},
+								"west": {"uv": [48, 48], "uv_size": [48, 16]}
+							}
+						}
+					]
+				},
+				{
+					"name": "shaft",
+					"parent": "root",
+					"pivot": [0, -24, 0],
+					"cubes": [
+						{
+							"origin": [-24, 0, -24],
+							"size": [48, 16, 48],
+							"uv": {
+								"north": {"uv": [48, 0], "uv_size": [48, 16]},
+								"east": {"uv": [48, 16], "uv_size": [48, 16]},
+								"south": {"uv": [48, 32], "uv_size": [48, 16]},
+								"west": {"uv": [48, 48], "uv_size": [48, 16]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

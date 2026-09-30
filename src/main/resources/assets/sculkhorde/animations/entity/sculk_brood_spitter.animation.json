@@ -1,0 +1,56 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"misc.living": {
+			"loop": true,
+			"bones": {
+				"sensor": {
+					"rotation": {
+						"vector": [-3.01374, "Math.cos(query.anim_time * -200 -20) * -20.4728", "Math.cos(query.anim_time * 20 -20) * -10"]
+					}
+				}
+			}
+		},
+		"move.walk": {
+			"loop": true
+		},
+		"move.run": {
+			"loop": true
+		},
+		"attack": {
+			"loop": true
+		},
+		"move.fly": {
+			"loop": true,
+			"animation_length": 0.0833,
+			"bones": {
+				"wing_flap_west": {
+					"rotation": {
+						"0.0": {
+							"vector": [15, 15, 0]
+						},
+						"0.0417": {
+							"vector": [45, 45, 0]
+						},
+						"0.0833": {
+							"vector": [15, 15, 0]
+						}
+					}
+				},
+				"wing_flap_east": {
+					"rotation": {
+						"0.0": {
+							"vector": [15, -15, 0]
+						},
+						"0.0417": {
+							"vector": [45, -45, 0]
+						},
+						"0.0833": {
+							"vector": [15, -15, 0]
+						}
+					}
+				}
+			}
+		}
+	}
+}

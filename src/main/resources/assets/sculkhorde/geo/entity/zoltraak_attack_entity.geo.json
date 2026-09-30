@@ -1,0 +1,60 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 6,
+				"visible_bounds_height": 4,
+				"visible_bounds_offset": [0, 1, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 6],
+					"rotation": [90, 0, 0]
+				},
+				{
+					"name": "upper_plane",
+					"parent": "root",
+					"pivot": [0, 13, 12],
+					"cubes": [
+						{
+							"origin": [-20, 13, -8],
+							"size": [40, 0, 40],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [40, 0]},
+								"east": {"uv": [0, 0], "uv_size": [40, 0]},
+								"south": {"uv": [0, 0], "uv_size": [40, 0]},
+								"west": {"uv": [0, 0], "uv_size": [40, 0]},
+								"up": {"uv": [48, 0], "uv_size": [40, 40]},
+								"down": {"uv": [48, 40], "uv_size": [40, -40]}
+							}
+						}
+					]
+				},
+				{
+					"name": "base_plane",
+					"parent": "root",
+					"pivot": [0, 0, 12],
+					"cubes": [
+						{
+							"origin": [-24, 0, -12],
+							"size": [48, 0, 48],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [48, 0]},
+								"east": {"uv": [0, 0], "uv_size": [48, 0]},
+								"south": {"uv": [0, 0], "uv_size": [48, 0]},
+								"west": {"uv": [0, 0], "uv_size": [48, 0]},
+								"up": {"uv": [0, 0], "uv_size": [48, 48]},
+								"down": {"uv": [0, 48], "uv_size": [48, -48]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

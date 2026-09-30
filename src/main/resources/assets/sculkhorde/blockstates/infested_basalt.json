@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "sculkhorde:block/infested_basalt",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "sculkhorde:block/infested_basalt"
+    },
+    "axis=z": {
+      "model": "sculkhorde:block/infested_basalt",
+      "x": 90
+    }
+  }
+}

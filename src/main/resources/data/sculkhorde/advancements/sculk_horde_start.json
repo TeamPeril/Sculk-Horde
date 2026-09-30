@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:sculk_ancient_node"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_horde_start.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_horde_start.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:sculk_tomb_visit",
+  "criteria": {
+    "sculk_horde_start": {
+      "trigger": "sculkhorde:sculk_horde_start"
+    }
+  }
+}

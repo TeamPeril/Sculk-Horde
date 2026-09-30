@@ -1,0 +1,62 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "sculkhorde:block/infested_deepslate",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate_mirrored",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate_mirrored",
+        "x": 90,
+        "y": 90
+      }
+    ],
+    "axis=y": [
+      {
+        "model": "sculkhorde:block/infested_deepslate"
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate_mirrored"
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate",
+        "y": 180
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate_mirrored",
+        "y": 180
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "sculkhorde:block/infested_deepslate",
+        "x": 90
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate_mirrored",
+        "x": 90
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate",
+        "x": 90,
+        "y": 180
+      },
+      {
+        "model": "sculkhorde:block/infested_deepslate_mirrored",
+        "x": 90,
+        "y": 180
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "sculkhorde:block/sculk_nest_bottom",
+    "front": "sculkhorde:block/sculk_nest_front_open",
+    "particle": "sculkhorde:block/sculk_nest_side",
+    "side": "sculkhorde:block/sculk_nest_side",
+    "top": "sculkhorde:block/sculk_nest_top"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "sculkhorde:infested_cobbled_deepslate"
+  },
+  "result": "sculkhorde:infested_cobbled_deepslate_wall"
+}

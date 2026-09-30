@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:piston",
+    "minecraft:sticky_piston",
+    "minecraft:sculk",
+    "sculkhorde:sculk_arachnoid",
+    "sculkhorde:sculk_dura_matter",
+    "sculkhorde:soulite_core_block",
+    "sculkhorde:soulite_block",
+    "sculkhorde:soulite_cluster",
+    "sculkhorde:soulite_bud_block",
+    "sculkhorde:depleted_soulite_block",
+    "sculkhorde:budding_soulite_block",
+    "sculkhorde:structure_origin_block",
+    "sculkhorde:structure_core_block",
+    "sculkhorde:fungal_shroom_core_block",
+    "sculkhorde:fungal_sculk_stem_block",
+    "sculkhorde:fungal_sculk_block"
+  ]
+}

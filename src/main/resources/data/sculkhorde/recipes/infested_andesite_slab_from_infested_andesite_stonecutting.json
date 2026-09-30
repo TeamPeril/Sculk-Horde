@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "sculkhorde:infested_andesite"
+  },
+  "result": "sculkhorde:infested_andesite_slab"
+}

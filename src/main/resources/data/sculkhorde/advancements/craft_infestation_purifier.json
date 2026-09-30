@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:infestation_purifier"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.craft_infestation_purifier.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.craft_infestation_purifier.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:craft_pure_souls",
+  "criteria": {
+    "crafted_the_item": {
+      "trigger": "minecraft:recipe_crafted",
+      "conditions": {
+        "player": [],
+        "recipe_id": "sculkhorde:infestation_purifier"
+      }
+    }
+  }
+}

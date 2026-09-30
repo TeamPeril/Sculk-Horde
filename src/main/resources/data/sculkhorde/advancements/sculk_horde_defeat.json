@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:sculk_ancient_node"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_horde_defeat.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_horde_defeat.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:craft_heart_of_purity",
+  "criteria": {
+    "sculk_horde_start": {
+      "trigger": "sculkhorde:sculk_horde_defeat_trigger"
+    }
+  }
+}

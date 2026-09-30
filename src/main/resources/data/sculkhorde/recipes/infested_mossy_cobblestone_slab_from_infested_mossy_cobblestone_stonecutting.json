@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "sculkhorde:infested_mossy_cobblestone"
+  },
+  "result": "sculkhorde:infested_mossy_cobblestone_slab"
+}

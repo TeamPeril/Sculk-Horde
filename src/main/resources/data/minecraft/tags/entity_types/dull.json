@@ -1,0 +1,33 @@
+{
+  "values": [
+    "sculkhorde:sculk_mite",
+    "sculkhorde:sculk_mite_aggressor",
+    "sculkhorde:sculk_bee_harvester",
+    "sculkhorde:sculk_bee_infector",
+    "sculkhorde:sculk_creeper",
+    "sculkhorde:sculk_enderman",
+    "sculkhorde:sculk_hatcher",
+    "sculkhorde:sculk_ravager",
+    "sculkhorde:sculk_spitter",
+    "sculkhorde:sculk_spore_spewer",
+    "sculkhorde:sculk_vindicator",
+    "sculkhorde:sculk_zombie",
+    "sculkhorde:sculk_phantom",
+    "sculkhorde:sculk_phantom_corpse",
+    "sculkhorde:sculk_salmon",
+    "sculkhorde:sculk_squid",
+    "sculkhorde:sculk_pufferfish",
+    "sculkhorde:sculk_witch",
+    "sculkhorde:angel_of_reaping",
+    "sculkhorde:sculk_vex",
+    "sculkhorde:living_armor",
+    "sculkhorde:sculk_guardian",
+    "sculkhorde:sculk_brood_hatcher",
+    "sculkhorde:sculk_brood_spitter",
+    "sculkhorde:sculk_sheep",
+    "sculkhorde:sculk_metamorphosis_pod",
+    "sculkhorde:sculk_ghast",
+    "sculkhorde:sculk_leech",
+    "sculkhorde:sculk_stinger"
+  ]
+}

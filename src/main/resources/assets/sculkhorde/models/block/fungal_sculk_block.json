@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "sculkhorde:block/fungal_sculk_block"
+  }
+}

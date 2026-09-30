@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "sculkhorde:block/fungal_sculk_stem_block_inside",
+    "side": "sculkhorde:block/fungal_sculk_stem_block_side"
+  }
+}

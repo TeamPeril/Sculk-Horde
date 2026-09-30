@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:soul_harvester"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.use_soul_harvester.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.use_soul_harvester.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:craft_dormant_heart_of_the_horde",
+  "criteria": {
+    "soul_harvester_trigger": {
+      "trigger": "sculkhorde:soul_harvester_trigger"
+    }
+  }
+}

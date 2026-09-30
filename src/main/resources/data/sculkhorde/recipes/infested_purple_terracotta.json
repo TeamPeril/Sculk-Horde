@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "infested_stained_terracotta",
+  "key": {
+    "#": {
+      "item": "sculkhorde:infested_terracotta"
+    },
+    "X": {
+      "item": "minecraft:purple_dye"
+    }
+  },
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "sculkhorde:infested_purple_terracotta"
+  },
+  "show_notification": true
+}

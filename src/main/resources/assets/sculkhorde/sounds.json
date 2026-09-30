@@ -1,0 +1,335 @@
+{
+  "raid_start_sound": {
+    "subtitle": "sounds.sculkhorde.raid_start_sound",
+    "sounds": [
+      "sculkhorde:raid_start_sound"
+    ]
+  },
+  "horde_start_sound": {
+    "subtitle": "sounds.sculkhorde.horde_start_sound",
+    "sounds": [
+      "sculkhorde:horde_start_sound"
+    ]
+  },
+  "raid_scout_sound": {
+    "subtitle": "sounds.sculkhorde.raid_scout_sound",
+    "sounds": [
+      "sculkhorde:raid_scout_sound"
+    ]
+  },
+  "node_spawn_sound": {
+    "subtitle": "sounds.sculkhorde.node_spawn_sound",
+    "sounds": [
+      "sculkhorde:node_spawn_sound"
+    ]
+  },
+  "node_destroy_sound": {
+      "subtitle": "sounds.sculkhorde.node_destroy_sound",
+      "sounds": [
+      "sculkhorde:node_destroy_sound"
+      ]
+  },
+  "deep_green": {
+    "sounds": [
+      {
+        "name": "sculkhorde:deep_green",
+        "stream": true
+      }
+    ]
+  },
+  "blind_and_alone": {
+    "sounds": [
+      {
+        "name": "sculkhorde:blind_and_alone",
+        "stream": true
+      }
+    ]
+  },
+  "sculk_enderman_death": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_death",
+    "sounds": [
+      "sculkhorde:sculk_enderman_death"
+    ]
+  },
+  "sculk_enderman_hit": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_hit",
+    "sounds": [
+      "sculkhorde:sculk_enderman_hit1",
+      "sculkhorde:sculk_enderman_hit2",
+      "sculkhorde:sculk_enderman_hit3",
+      "sculkhorde:sculk_enderman_hit4"
+    ]
+  },
+  "sculk_enderman_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_idle",
+    "sounds": [
+      "sculkhorde:sculk_enderman_idle1",
+      "sculkhorde:sculk_enderman_idle2",
+      "sculkhorde:sculk_enderman_idle3",
+      "sculkhorde:sculk_enderman_idle4",
+      "sculkhorde:sculk_enderman_idle5"
+    ]
+  },
+  "sculk_enderman_portal": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_portal",
+    "sounds": [
+      "sculkhorde:sculk_enderman_portal1",
+      "sculkhorde:sculk_enderman_portal2"
+    ]
+  },
+  "sculk_enderman_scream": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_scream",
+    "sounds": [
+      "sculkhorde:sculk_enderman_scream1",
+      "sculkhorde:sculk_enderman_scream2",
+      "sculkhorde:sculk_enderman_scream3",
+      "sculkhorde:sculk_enderman_scream4"
+    ]
+  },
+  "sculk_enderman_stare": {
+    "subtitle": "sounds.sculkhorde.sculk_enderman_stare",
+    "sounds": [
+      "sculkhorde:sculk_enderman_stare"
+    ]
+  },
+  "soul_harvester_active": {
+    "subtitle": "sounds.sculkhorde.soul_harvester_active",
+    "sounds": [
+      "sculkhorde:soul_harvester_active"
+    ]
+  },
+  "soul_harvester_finished": {
+    "subtitle": "sounds.sculkhorde.soul_harvester_finished",
+    "sounds": [
+      "sculkhorde:soul_harvester_finished"
+    ]
+  },
+  "soul_harvester_item_inserted": {
+    "subtitle": "sounds.sculkhorde.soul_harvester_item_inserted",
+    "sounds": [
+      "sculkhorde:soul_harvester_item_inserted"
+    ]
+  },
+  "ender_bubble_loop": {
+    "subtitle": "sounds.sculkhorde.ender_bubble_loop",
+    "sounds": [
+      "sculkhorde:ender_bubble_loop"
+    ]
+  },
+  "sculk_zombie_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_zombie_idle",
+    "sounds": [
+      "sculkhorde:sculk_zombie_idle1",
+      "sculkhorde:sculk_zombie_idle2",
+      "sculkhorde:sculk_zombie_idle3"
+    ]
+  },
+  "sculk_zombie_hurt": {
+    "subtitle": "sounds.sculkhorde.sculk_zombie_hurt",
+    "sounds": [
+      "sculkhorde:sculk_zombie_hurt1",
+      "sculkhorde:sculk_zombie_hurt2"
+    ]
+  },
+  "sculk_zombie_death": {
+    "subtitle": "sounds.sculkhorde.sculk_zombie_death",
+    "sounds": [
+      "sculkhorde:sculk_zombie_death"
+    ]
+  },
+  "sculk_vindicator_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_vindicator_idle",
+    "sounds": [
+      "sculkhorde:sculk_vindicator_idle1",
+      "sculkhorde:sculk_vindicator_idle2",
+      "sculkhorde:sculk_vindicator_idle3",
+      "sculkhorde:sculk_vindicator_idle4",
+      "sculkhorde:sculk_vindicator_idle5"
+    ]
+  },
+  "sculk_vindicator_hurt": {
+    "subtitle": "sounds.sculkhorde.sculk_vindicator_hurt",
+    "sounds": [
+      "sculkhorde:sculk_vindicator_hurt1",
+      "sculkhorde:sculk_vindicator_hurt2",
+      "sculkhorde:sculk_vindicator_hurt3"
+    ]
+  },
+  "sculk_vindicator_death": {
+    "subtitle": "sounds.sculkhorde.sculk_vindicator_death",
+    "sounds": [
+      "sculkhorde:sculk_vindicator_death1",
+      "sculkhorde:sculk_vindicator_death2"
+    ]
+  },
+  "burrowed_burst": {
+    "subtitle": "sounds.sculkhorde.burrowed_burst",
+    "sounds": [
+      "sculkhorde:burrowed_burst"
+    ]
+    },
+  "zoltraak": {
+    "subtitle": "sounds.sculkhorde.zoltraak",
+    "sounds": [
+      "sculkhorde:zoltraak"
+    ]
+  },
+  "sculk_mite_death": {
+    "subtitle": "sounds.sculkhorde.sculk_mite_death",
+    "sounds": [
+      "sculkhorde:sculk_mite_death1",
+      "sculkhorde:sculk_mite_death2",
+      "sculkhorde:sculk_mite_death3"
+    ]
+  },
+  "sculk_mite_hurt": {
+    "subtitle": "sounds.sculkhorde.sculk_mite_hurt",
+    "sounds": [
+      "sculkhorde:sculk_mite_hurt1",
+      "sculkhorde:sculk_mite_hurt2"
+    ]
+  },
+  "sculk_mite_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_mite_idle",
+    "sounds": [
+      "sculkhorde:sculk_mite_idle1",
+      "sculkhorde:sculk_mite_idle2",
+      "sculkhorde:sculk_mite_idle3"
+    ]
+  },
+  "sculk_ravager_ambient": {
+    "subtitle": "sounds.sculkhorde.sculk_ravager_ambient",
+    "sounds": [
+      "sculkhorde:sculk_ravager_ambient1",
+      "sculkhorde:sculk_ravager_ambient2",
+      "sculkhorde:sculk_ravager_ambient3"
+    ]
+  },
+  "sculk_ravager_hurt": {
+    "subtitle": "sounds.sculkhorde.sculk_ravager_hurt",
+    "sounds": [
+      "sculkhorde:sculk_ravager_hurt"
+    ]
+  },
+  "sculk_ravager_death": {
+    "subtitle": "sounds.sculkhorde.sculk_ravager_death",
+    "sounds": [
+      "sculkhorde:sculk_ravager_hurt"
+    ]
+  },
+  "sculk_ravager_screech": {
+    "subtitle": "sounds.sculkhorde.sculk_ravager_screech",
+    "sounds": [
+      "sculkhorde:sculk_ravager_screech1",
+      "sculkhorde:sculk_ravager_screech2"
+    ]
+  },
+  "sculk_ravager_bite": {
+    "subtitle": "sounds.sculkhorde.sculk_ravager_bite",
+    "sounds": [
+      "sculkhorde:sculk_ravager_bite"
+    ]
+  },
+
+  "soulite_ambience": {
+    "subtitle": "sounds.sculkhorde.soulite_ambience",
+    "sounds": [
+      "sculkhorde:soulite_ambience"
+    ]
+  },
+  "infestation_ambience": {
+    "subtitle": "sounds.sculkhorde.infestation_ambience",
+    "sounds": [
+      "sculkhorde:infestation_ambience"
+    ]
+  },
+  "soul_spear_emerge": {
+    "subtitle": "sounds.sculkhorde.soul_spear_emerge",
+    "sounds": [
+      "sculkhorde:soul_spear_emerge_1",
+      "sculkhorde:soul_spear_emerge_2",
+      "sculkhorde:soul_spear_emerge_3"
+    ]
+  },
+
+  "sculk_ghast_charge": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_charge",
+    "sounds": [
+      "sculkhorde:sculk_ghast_charge"
+    ]
+  },
+
+  "sculk_ghast_death": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_death",
+    "sounds": [
+      "sculkhorde:sculk_ghast_death"
+    ]
+  },
+  "sculk_ghast_moan": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_moan",
+    "sounds": [
+      "sculkhorde:sculk_ghast_moan1",
+      "sculkhorde:sculk_ghast_moan2",
+      "sculkhorde:sculk_ghast_moan3",
+      "sculkhorde:sculk_ghast_moan4",
+      "sculkhorde:sculk_ghast_moan5",
+      "sculkhorde:sculk_ghast_moan6"
+    ]
+  },
+  "sculk_ghast_scream": {
+    "subtitle": "sounds.sculkhorde.sculk_ghast_scream",
+    "sounds": [
+      "sculkhorde:sculk_ghast_scream1",
+      "sculkhorde:sculk_ghast_scream2",
+      "sculkhorde:sculk_ghast_scream3",
+      "sculkhorde:sculk_ghast_scream4",
+      "sculkhorde:sculk_ghast_scream5"
+    ]
+  },
+  "sculk_pod_open": {
+    "subtitle": "sounds.sculkhorde.sculk_pod_open",
+    "sounds": [
+      "sculkhorde:sculk_pod_open"
+    ]
+  },
+  "sculk_brood_fly_loop": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_fly_loop",
+    "sounds": [
+      "sculkhorde:sculk_brood_fly_loop"
+    ],
+    "stream": true
+  },
+
+  "sculk_brood_fly_start": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_fly_start",
+    "sounds": [
+      "sculkhorde:sculk_brood_fly_start1",
+      "sculkhorde:sculk_brood_fly_start2",
+      "sculkhorde:sculk_brood_fly_start3",
+      "sculkhorde:sculk_brood_fly_start4",
+      "sculkhorde:sculk_brood_fly_start5",
+      "sculkhorde:sculk_brood_fly_start6",
+      "sculkhorde:sculk_brood_fly_start7",
+      "sculkhorde:sculk_brood_fly_start8"
+    ]
+  },
+  "sculk_brood_hurt": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_hurt",
+    "sounds": [
+      "sculkhorde:sculk_brood_hurt1",
+      "sculkhorde:sculk_brood_hurt2",
+      "sculkhorde:sculk_brood_hurt3"
+    ]
+  },
+  "sculk_brood_idle": {
+    "subtitle": "sounds.sculkhorde.sculk_brood_idle",
+    "sounds": [
+      "sculkhorde:sculk_brood_idle1",
+      "sculkhorde:sculk_brood_idle2",
+      "sculkhorde:sculk_brood_idle3",
+      "sculkhorde:sculk_brood_idle4",
+      "sculkhorde:sculk_brood_idle5",
+      "sculkhorde:sculk_brood_idle6"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "planks",
+  "ingredients": [
+    {
+      "item": "sculkhorde:infested_log"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "sculkhorde:infested_wood_mass"
+  }
+}

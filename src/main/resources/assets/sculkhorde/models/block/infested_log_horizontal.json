@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "sculkhorde:block/infested_log",
+    "side": "sculkhorde:block/infested_log_side"
+  }
+}

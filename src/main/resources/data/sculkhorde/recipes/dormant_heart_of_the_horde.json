@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "BEB",
+    "BHB",
+    "BEB"
+  ],
+
+  "key":
+  {
+    "H":
+    {
+      "item": "minecraft:heart_of_the_sea"
+    },
+    "E":
+    {
+      "item": "minecraft:echo_shard"
+    },
+    "B":
+    {
+      "item": "sculkhorde:chunk_o_brain"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:dormant_heart_of_the_horde",
+    "count": 1
+  }
+}

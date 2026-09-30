@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:sculk_node"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_evolve_mature.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_evolve_mature.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:sculk_evolve_immature",
+  "criteria": {
+    "gravemind_evolved": {
+      "trigger": "sculkhorde:gravemind_evolve_mature_trigger"
+    }
+  }
+}

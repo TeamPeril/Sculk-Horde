@@ -1,0 +1,58 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.sculk_leech",
+				"texture_width": 32,
+				"texture_height": 32,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 1.5,
+				"visible_bounds_offset": [0, 0.25, 0]
+			},
+			"bones": [
+				{
+					"name": "body",
+					"pivot": [0, 3.5, -2]
+				},
+				{
+					"name": "head",
+					"parent": "body",
+					"pivot": [0, 2, 0],
+					"cubes": [
+						{"origin": [-3, 2, -5], "size": [6, 3, 6], "uv": [0, 7]}
+					]
+				},
+				{
+					"name": "tail1",
+					"parent": "body",
+					"pivot": [0, 3, 1]
+				},
+				{
+					"name": "tailpart1",
+					"parent": "tail1",
+					"pivot": [0, 2, 2],
+					"cubes": [
+						{"origin": [-2, 2, 1], "size": [4, 2, 5], "uv": [0, 16]}
+					]
+				},
+				{
+					"name": "tail2",
+					"parent": "tail1",
+					"pivot": [0, 2.5, 6],
+					"cubes": [
+						{"origin": [-4, 2.5, 6], "size": [8, 0, 7], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "tailpart2",
+					"parent": "tail2",
+					"pivot": [0, 2, 7],
+					"cubes": [
+						{"origin": [-1, 2, 6], "size": [2, 1, 5], "uv": [18, 16]}
+					]
+				}
+			]
+		}
+	]
+}

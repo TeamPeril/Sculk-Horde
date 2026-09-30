@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "default": "outlined_sprite:sculkhorde/living_armor.png",
+    "layersAllowed": true
+  }
+}

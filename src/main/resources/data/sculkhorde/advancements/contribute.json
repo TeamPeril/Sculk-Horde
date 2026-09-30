@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:coin_of_contribution"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.contribute.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.contribute.desc"
+    },
+    "frame": "goal",
+    "hide": true,
+    "show_toast": true,
+    "announce_to_chat": false
+  },
+  "parent": "sculkhorde:sculk_tomb_visit",
+  "criteria": {
+    "0": {
+      "trigger": "sculkhorde:contribute_trigger"
+    }
+  }
+}

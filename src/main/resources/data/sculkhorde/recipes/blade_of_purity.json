@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "EPE",
+    "SDS",
+    "EPE"
+  ],
+
+  "key":
+  {
+    "E":
+    {
+      "item": "sculkhorde:essence_of_purity"
+    },
+    "S":
+    {
+      "item": "sculkhorde:soulite_shard"
+    },
+    "D":
+    {
+      "item": "minecraft:diamond_sword"
+    },
+    "P":
+    {
+      "item": "sculkhorde:infestation_purifier"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:blade_of_purity",
+    "count": 1
+  }
+}

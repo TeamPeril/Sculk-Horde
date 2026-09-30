@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "sculkhorde:block/ancient_bookshelf_top_block",
+    "side": "sculkhorde:block/ancient_bookshelf_block"
+  }
+}
