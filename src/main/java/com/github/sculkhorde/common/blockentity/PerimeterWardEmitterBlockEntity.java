@@ -23,167 +23,40 @@ import java.util.Optional;
 import static com.github.sculkhorde.util.WardZoneUtil.findNextRelay;
 import static com.github.sculkhorde.util.WardZoneUtil.findPreviousRelay;
 
-public class PerimeterWardEmitterBlockEntity extends BlockEntity {
-
-    public static final String parentWardBlockPosID = "parentWardBlockPos";
-
-    protected long lastTickTime = 0;
-
-    protected int tickInterval = TickUnits.convertSecondsToTicks(3);
-
-    public Optional<BlockPos> parentRelayPos = Optional.empty();
-    public Optional<BlockPos> previousRelayPos = Optional.empty();
-    public Optional<BlockPos> nextRelayPos = Optional.empty();
+public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEntity {
 
 
     /**
      * The Constructor that takes in properties
+     *
+     * @param pos
+     * @param state
      */
     public PerimeterWardEmitterBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get(), pos, state);
-        parentRelayPos = Optional.of(pos);
+        super(pos, state);
+        parentRelayPos = Optional.of(getBlockPos());
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterWardEmitterBlockEntity blockEntity)
+    @Override
+    public boolean isRelayingWard()
     {
-        // If world is not a server world, return
-        if(level.isClientSide && blockEntity == null || blockEntity.level == null)
-        {
-            return;
-        }
-        if(!TickUnits.hasTicksPassed(blockEntity.lastTickTime, blockEntity.level, blockEntity.tickInterval))
-        {
-            return;
-        }
-        blockEntity.lastTickTime = level.getGameTime();
-
-        blockEntity.updateConnections();
-
-        blockEntity.drawParticlesFromPreviousRelay();
-        blockEntity.getSignalFromPreviousRelay();
-
-        blockEntity.spawnPurityParticlesIfRelayingWard();
-        blockEntity.spawnPurityParticlesIfRelayingWard();
-        blockEntity.spawnPurityParticlesIfRelayingWard();
-        blockEntity.spawnPurityParticlesIfRelayingWard();
-        blockEntity.spawnPurityParticlesIfRelayingWard();
-        blockEntity.spawnPurityParticlesIfRelayingWard();
-
+        return true;
     }
 
-    public void setRelayingWard(boolean value)
-    {
-        if (level == null) {
-            return;
-        }
-
-        BlockState blockState = getBlockState();
-        if (!WardZoneUtil.canRelayWard(blockState)) {
-            return;
-        }
-    }
-
+    @Override
     public void getSignalFromPreviousRelay()
     {
-        if(!isPreviousRelayValid() || previousRelayPos.isEmpty() || level == null)
-        {
-            return;
-        }
 
-        setRelayingWard(WardZoneUtil.isBlockRelayingWard(level, previousRelayPos.get()));
-        parentRelayPos = WardZoneUtil.getParent(level, previousRelayPos.get());
     }
-
-    public static boolean isRelayValid(Level level, BlockPos pos)
-    {
-        if(pos == null || level == null || level.isClientSide)
-        {
-            return false;
-        }
-
-        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isPresent();
-    }
-
-    public boolean isNextRelayValid()
-    {
-        if(nextRelayPos.isEmpty())
-        {
-            return false;
-        }
-
-        return isRelayValid(getLevel(), nextRelayPos.get());
-    }
-
-    public boolean isPreviousRelayValid()
-    {
-        if(previousRelayPos.isEmpty())
-        {
-            return false;
-        }
-
-        return isRelayValid(getLevel(), previousRelayPos.get());
-    }
-
-    public void updateConnections()
-    {
-        if(!isPreviousRelayValid())
-        {
-            previousRelayPos = Optional.empty();
-            previousRelayPos = findPreviousRelay(level, getBlockPos());
-            return;
-        }
-
-        if(!isNextRelayValid())
-        {
-            nextRelayPos = Optional.empty();
-            nextRelayPos = findNextRelay(level, getBlockPos());
-            return;
-        }
-    }
-
-    public void drawParticlesFromPreviousRelay() {
-        if (!isNextRelayValid()) {
-            return;
-        }
-
-        ParticleUtil.spawnParticleBeam((ServerLevel) level, ParticleTypes.END_ROD, getBlockPos().getCenter(), nextRelayPos.get().getCenter(), 0.5F, 5);
-    }
-
-    public void spawnPurityParticlesIfRelayingWard()
-    {
-        if(level == null)
-        {
-            return;
-        }
-        //Get random spawnX, y, and z, around block position
-        Vector3f spawnPos = new Vector3f(
-                (float) worldPosition.getX() + (level.getRandom().nextFloat() * 2),
-                (float) worldPosition.getY() + (level.getRandom().nextFloat() * 2),
-                (float) worldPosition.getZ() + (level.getRandom().nextFloat() * 2)
-        );
-
-        ParticleUtil.spawnColoredDustParticleOnServer((ServerLevel) level, ColorUtil.getRandomPurityColor(level.getRandom()), 1.0F, spawnPos);
-    }
-
-
-
     @Override
-    public void load(CompoundTag compoundNBT) {
-        super.load(compoundNBT);
+    public void setRelayingWard(boolean value)
+    {
 
-        if(compoundNBT.contains(parentWardBlockPosID))
-        {
-            parentRelayPos = Optional.of(BlockPos.of(compoundNBT.getLong(parentWardBlockPosID)));
-        }
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
-        super.saveAdditional(compoundNBT);
-
-        if(parentRelayPos.isPresent())
-        {
-            compoundNBT.putLong(parentWardBlockPosID, parentRelayPos.get().asLong());
-        }
+    public void updateConnections() {
+        parentRelayPos = Optional.of(getBlockPos());
+        super.updateConnections();
     }
 }

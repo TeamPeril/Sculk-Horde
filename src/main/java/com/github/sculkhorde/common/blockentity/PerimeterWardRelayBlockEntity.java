@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
+import com.github.sculkhorde.common.block.PerimeterWardRelayBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.ColorUtil;
@@ -18,8 +19,7 @@ import org.joml.Vector3f;
 
 import java.util.Optional;
 
-import static com.github.sculkhorde.util.WardZoneUtil.findNextRelay;
-import static com.github.sculkhorde.util.WardZoneUtil.findPreviousRelay;
+import static com.github.sculkhorde.util.WardZoneUtil.*;
 
 public class PerimeterWardRelayBlockEntity extends BlockEntity {
 
@@ -141,7 +141,6 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
         if(!isPreviousRelayValid())
         {
             previousRelayPos = Optional.empty();
-            previousRelayPos = findPreviousRelay(level, getBlockPos());
             return;
         }
 
@@ -149,8 +148,12 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
         {
             nextRelayPos = Optional.empty();
             nextRelayPos = findNextRelay(level, getBlockPos());
+            nextRelayPos.ifPresent(pos -> setPrevRelay((ServerLevel) level, pos, getBlockPos()));
+            parentRelayPos.ifPresent(pos -> setParentRelay((ServerLevel) level, pos, parentRelayPos.get()));
+
             return;
         }
+
 
         // If the previous relay is an emitter, then that is our new parent.
         if(previousRelayPos.isPresent() && level.getBlockState(previousRelayPos.get()).getBlock() instanceof PerimeterWardEmitterBlock)

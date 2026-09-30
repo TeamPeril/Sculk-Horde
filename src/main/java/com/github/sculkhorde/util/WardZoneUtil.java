@@ -2,11 +2,15 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.PerimeterWardRelayBlock;
+import com.github.sculkhorde.common.blockentity.PerimeterWardEmitterBlockEntity;
+import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
+import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +41,27 @@ public class WardZoneUtil {
         }
 
         return block.getValue(IS_RELAYING_WARD);
+    }
+
+    public static Optional<PerimeterWardRelayBlockEntity> getWardRelayBlockEntity(ServerLevel level, BlockPos pos)
+    {
+        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get());
+    }
+
+    public static void setPrevRelay(ServerLevel level, BlockPos targetRelay, BlockPos value)
+    {
+        if(getWardRelayBlockEntity(level, targetRelay).isPresent())
+        {
+            getWardRelayBlockEntity(level, targetRelay).get().previousRelayPos = Optional.of(value);
+        }
+    }
+
+    public static void setParentRelay(ServerLevel level, BlockPos targetRelay, BlockPos value)
+    {
+        if(getWardRelayBlockEntity(level, targetRelay).isPresent())
+        {
+            getWardRelayBlockEntity(level, targetRelay).get().parentRelayPos = Optional.of(value);
+        }
     }
 
     /**
