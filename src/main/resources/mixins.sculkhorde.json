@@ -5,10 +5,6 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "sculkhorde.refmap.json",
   "mixins": [
-    "structures.StructureProcessorAccessor",
-    "structures.StructureTemplateAccessor",
-    "structures.StructureTemplateMixin",
-    "world.biome.BiomeSpecialEffectsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
