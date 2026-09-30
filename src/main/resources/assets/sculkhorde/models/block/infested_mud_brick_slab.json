@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "sculkhorde:block/infested_mud_bricks",
-    "side": "sculkhorde:block/infested_mud_bricks",
-    "top": "sculkhorde:block/infested_mud_bricks"
-  }
-}

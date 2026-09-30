@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/stairs",
-  "textures": {
-    "bottom": "sculkhorde:block/infested_sandstone",
-    "side": "sculkhorde:block/infested_sandstone",
-    "top": "sculkhorde:block/infested_sandstone"
-  }
-}

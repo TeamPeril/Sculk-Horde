@@ -1,8 +1,0 @@
-{
-  "processors":
-  [
-    {
-      "processor_type": "sculkhorde:waterlogging_fix_processor"
-    }
-  ]
-}

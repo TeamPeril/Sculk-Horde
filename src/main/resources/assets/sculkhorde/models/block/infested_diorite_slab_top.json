@@ -1,8 +1,0 @@
-{ 
-  "parent": "minecraft:block/slab_top",
-  "textures": {
-    "bottom": "sculkhorde:block/infested_diorite",
-    "side": "sculkhorde:block/infested_diorite",
-    "top": "sculkhorde:block/infested_diorite"
-  }
-}

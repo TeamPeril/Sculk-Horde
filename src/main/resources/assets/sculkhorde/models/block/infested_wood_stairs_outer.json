@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/outer_stairs",
-  "textures": {
-    "bottom": "sculkhorde:block/infested_wood_mass",
-    "side": "sculkhorde:block/infested_wood_mass",
-    "top": "sculkhorde:block/infested_wood_mass"
-  }
-}

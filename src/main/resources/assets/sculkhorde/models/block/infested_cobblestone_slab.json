@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "sculkhorde:block/infested_cobblestone",
-    "side": "sculkhorde:block/infested_cobblestone",
-    "top": "sculkhorde:block/infested_cobblestone"
-  }
-}

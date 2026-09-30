@@ -1,7 +1,0 @@
-{
-	"parent":"block/block",
-	"credit": "Made with Blockbench",
-	"textures": {
-		"particle": "sculkhorde:block/soul_harvester"
-	}
-}

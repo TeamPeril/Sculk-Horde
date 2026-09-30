@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "count": 1,
-  "ingredient": {
-    "item": "sculkhorde:infested_granite"
-  },
-  "result": "sculkhorde:infested_granite_stairs"
-}
