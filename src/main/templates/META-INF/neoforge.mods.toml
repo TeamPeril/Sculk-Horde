@@ -36,6 +36,3 @@ type="required"
 versionRange="[${geckolib_version},)"
 ordering="NONE"
 side="BOTH"
-
-[modproperties.${mod_id}]
-configuredBackground="minecraft:textures/block/sculk.png"
