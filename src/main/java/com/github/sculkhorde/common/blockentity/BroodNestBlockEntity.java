@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.entity.InfestationPurifierEntity;
 import com.github.sculkhorde.common.entity.SculkBroodSpitterEntity;
 import com.github.sculkhorde.common.entity.SculkBroodHatcherEntity;
+import com.github.sculkhorde.common.entity.SculkBroodStrikerEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
@@ -44,7 +45,7 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
     protected int minTickInterval = TickUnits.convertSecondsToTicks(15);
 
     public ArrayList<LivingEntity> spawnedEntities = new ArrayList<>();
-    public final int MAX_ENTITIES = 6;
+    public final int MAX_ENTITIES = 8;
 
     private boolean isBroodHatcherInside = true;
     private UUID nestUUID = UUID.randomUUID();
@@ -77,7 +78,11 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
                 break;
             }
 
-            SculkBroodSpitterEntity broodling = new SculkBroodSpitterEntity(level, pos);
+            LivingEntity broodling = new SculkBroodSpitterEntity(level, pos);
+            level.addFreshEntity(broodling);
+            spawnedEntities.add(broodling);
+
+            broodling = new SculkBroodStrikerEntity(level, pos);
             level.addFreshEntity(broodling);
             spawnedEntities.add(broodling);
         }

@@ -499,7 +499,10 @@
 
   "item.sculkhorde.angel_of_reaping_soul": "Angel of Reaping Soul",
   "tooltip.sculkhorde.angel_of_reaping_soul.functionality": "§7§o Dropped from the Angel of Reaping. It is a crafting ingredient that can be used to make the Soul Animator and Soul Disrupter. This trophy represents your achievement in conquering one of the Gravemind's Angels: The Angel of Reaping.",
-  "tooltip.sculkhorde.angel_of_reaping_soul.lore": "§7§o Vanquishing the Great Angel of Reaping has granted you his corrupted soul. Holding it makes your hand feel numb and fills you with dread. You've never felt such power and such evil. Your soul feels like its being drained and you feel unusually tired. This soul was forged by the Gravemind itself and is one of several souls that belong to the Gravemind's Angels."
+  "tooltip.sculkhorde.angel_of_reaping_soul.lore": "§7§o Vanquishing the Great Angel of Reaping has granted you his corrupted soul. Holding it makes your hand feel numb and fills you with dread. You've never felt such power and such evil. Your soul feels like its being drained and you feel unusually tired. This soul was forged by the Gravemind itself and is one of several souls that belong to the Gravemind's Angels.",
+
+  "entity.sculkhorde.sculk_broodling_striker": "Sculk Broodling Striker",
+  "item.sculkhorde.sculk_broodling_striker_spawn_egg": "Sculk Broodling Striker Spawn Egg"
 }
 
 
