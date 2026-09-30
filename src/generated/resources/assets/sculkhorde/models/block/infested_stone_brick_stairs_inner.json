@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "bottom": "sculkhorde:block/infested_stone_bricks",
-    "side": "sculkhorde:block/infested_stone_bricks",
-    "top": "sculkhorde:block/infested_stone_bricks"
-  }
-}
