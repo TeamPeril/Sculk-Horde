@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.sculkhorde.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "sculkhorde.refmap.json",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
