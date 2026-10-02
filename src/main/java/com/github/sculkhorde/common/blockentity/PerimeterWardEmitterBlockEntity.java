@@ -20,8 +20,8 @@ import org.joml.Vector3f;
 
 import java.util.Optional;
 
-import static com.github.sculkhorde.util.WardZoneUtil.findNextRelay;
-import static com.github.sculkhorde.util.WardZoneUtil.findPreviousRelay;
+import static com.github.sculkhorde.util.WardZoneUtil.*;
+import static com.github.sculkhorde.util.WardZoneUtil.setParentRelay;
 
 public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEntity {
 
@@ -33,9 +33,10 @@ public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEnti
      * @param state
      */
     public PerimeterWardEmitterBlockEntity(BlockPos pos, BlockState state) {
-        super(pos, state);
+        super(ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get(), pos, state);
         parentRelayPos = Optional.of(getBlockPos());
     }
+
 
     @Override
     public boolean isRelayingWard()
@@ -57,6 +58,14 @@ public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEnti
     @Override
     public void updateConnections() {
         parentRelayPos = Optional.of(getBlockPos());
-        super.updateConnections();
+
+        if(!isNextRelayValid())
+        {
+            nextRelayPos = Optional.empty();
+            nextRelayPos = findNextRelay(level, getBlockPos());
+            nextRelayPos.ifPresent(pos -> setPrevRelay((ServerLevel) level, pos, getBlockPos()));
+            parentRelayPos.ifPresent(pos -> setParentRelay((ServerLevel) level, pos, parentRelayPos.get()));
+        }
+
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3f;
 
@@ -37,8 +38,12 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
     /**
      * The Constructor that takes in properties
      */
+    public PerimeterWardRelayBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
     public PerimeterWardRelayBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
+        this(ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get(), pos, state);
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, PerimeterWardRelayBlockEntity blockEntity)
@@ -99,11 +104,11 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
     {
         if(!isPreviousRelayValid() || previousRelayPos.isEmpty() || level == null)
         {
+            setRelayingWard(false);
             return;
         }
 
         setRelayingWard(WardZoneUtil.isBlockRelayingWard(level, previousRelayPos.get()));
-        parentRelayPos = WardZoneUtil.getParent(level, previousRelayPos.get());
     }
 
     public static boolean isRelayValid(Level level, BlockPos pos)
@@ -116,14 +121,27 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
         return WardZoneUtil.canRelayWard(level.getBlockState(pos));
     }
 
-    public boolean isNextRelayValid()
-    {
-        if(nextRelayPos.isEmpty())
-        {
+    public boolean isNextRelayValid() {
+        if (nextRelayPos.isEmpty()) {
+            return false;
+        }
+        BlockPos nextRelay = nextRelayPos.get();
+
+        if (!isRelayValid(getLevel(), nextRelay)) {
             return false;
         }
 
-        return isRelayValid(getLevel(), nextRelayPos.get());
+        if (WardZoneUtil.getWardRelayBlockEntity((ServerLevel) level, nextRelay).isEmpty()) {
+            return false;
+        }
+
+        PerimeterWardRelayBlockEntity wardRelay = WardZoneUtil.getWardRelayBlockEntity((ServerLevel) level, nextRelay).get();
+
+        if (wardRelay.isRelayingWard() != isRelayingWard()) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean isPreviousRelayValid()
@@ -141,7 +159,6 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
         if(!isPreviousRelayValid())
         {
             previousRelayPos = Optional.empty();
-            return;
         }
 
         if(!isNextRelayValid())
@@ -150,16 +167,6 @@ public class PerimeterWardRelayBlockEntity extends BlockEntity {
             nextRelayPos = findNextRelay(level, getBlockPos());
             nextRelayPos.ifPresent(pos -> setPrevRelay((ServerLevel) level, pos, getBlockPos()));
             parentRelayPos.ifPresent(pos -> setParentRelay((ServerLevel) level, pos, parentRelayPos.get()));
-
-            return;
-        }
-
-
-        // If the previous relay is an emitter, then that is our new parent.
-        if(previousRelayPos.isPresent() && level.getBlockState(previousRelayPos.get()).getBlock() instanceof PerimeterWardEmitterBlock)
-        {
-            parentRelayPos = previousRelayPos;
-            DebuggerSystem.cursorDebuggerModule.logDebug("PerimeterWardRelayBlock " + getBlockPos().toShortString() + " | now has a parent " + parentRelayPos.get().toShortString());
         }
     }
 

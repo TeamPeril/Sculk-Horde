@@ -45,7 +45,12 @@ public class WardZoneUtil {
 
     public static Optional<PerimeterWardRelayBlockEntity> getWardRelayBlockEntity(ServerLevel level, BlockPos pos)
     {
-        return level.getBlockEntity(pos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get());
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if(blockEntity instanceof PerimeterWardRelayBlockEntity relayBlockEntity)
+        {
+            return Optional.of(relayBlockEntity);
+        }
+        return Optional.empty();
     }
 
     public static void setPrevRelay(ServerLevel level, BlockPos targetRelay, BlockPos value)
