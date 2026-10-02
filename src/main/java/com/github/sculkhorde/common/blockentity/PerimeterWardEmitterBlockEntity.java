@@ -57,6 +57,7 @@ public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEnti
 
     @Override
     public void updateConnections() {
+        getOrCreatePerimeterWardZone(getLevel(), getBlockPos());
         parentRelayPos = Optional.of(getBlockPos());
 
         if(!isNextRelayValid())

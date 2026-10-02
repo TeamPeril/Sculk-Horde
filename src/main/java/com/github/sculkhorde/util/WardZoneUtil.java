@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -70,38 +71,6 @@ public class WardZoneUtil {
     }
 
     /**
-     * Will check all directions except the facing direction for a max of 32 blocks for another relay block.
-     * If it finds one, it will return the position of that block.
-     * If it doesn't find one, it will return null.
-     * @return The position of the previous relay block, or null if it doesn't find one.
-     */
-    public static Optional<BlockPos> findPreviousRelay(LevelReader level, BlockPos worldPosition)
-    {
-        BlockState currentBlock = level.getBlockState(worldPosition);
-        Direction facingDirection = currentBlock.getValue(PerimeterWardRelayBlock.FACING);
-
-        // Check all directions except the facing direction
-        for(Direction dir : Direction.values())
-        {
-            if(dir == facingDirection)
-            {
-                continue;
-            }
-
-            for(int i = 1; i <= 32; i++)
-            {
-                BlockPos checkPos = worldPosition.relative(dir, i);
-                if(canRelayWard(level.getBlockState(checkPos)))
-                {
-                    DebuggerSystem.cursorDebuggerModule.logDebug("Relay at " + worldPosition.toShortString() + " found prev relay at " + checkPos.toShortString());
-                    return Optional.of(checkPos);
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
      * Will check the facing direction for a max of 32 blocks for another relay block.
      * If it finds one, it will return the position of that block.
      * If it doesn't find one, it will return null.
@@ -124,15 +93,15 @@ public class WardZoneUtil {
         return Optional.empty();
     }
 
-    public static ModSavedData.PerimeterWardZoneEntry getOrCreatePerimeterWardZone(BlockPos parentRelay)
+    public static ModSavedData.PerimeterWardZoneEntry getOrCreatePerimeterWardZone(Level level, BlockPos parentRelay)
     {
-        if(ModSavedData.getSaveData().getPerimeterWardZoneEntries().containsKey(parentRelay))
+        if(doesZoneExist(parentRelay))
         {
             return ModSavedData.getSaveData().getPerimeterWardZoneEntries().get(parentRelay);
         }
 
         DebuggerSystem.cursorDebuggerModule.logDebug("Creating ward zone for relay " + parentRelay.toShortString());
-        return createZoneEntry(parentRelay);
+        return createZoneEntry(level, parentRelay);
     }
 
     public static boolean doesZoneExist(BlockPos parentRelay)
@@ -140,17 +109,18 @@ public class WardZoneUtil {
         return ModSavedData.getSaveData().getPerimeterWardZoneEntries().containsKey(parentRelay);
     }
 
-    public static ModSavedData.PerimeterWardZoneEntry createZoneEntry(BlockPos parentRelay)
+    public static ModSavedData.PerimeterWardZoneEntry createZoneEntry(Level level, BlockPos parentRelay)
     {
-        ModSavedData.PerimeterWardZoneEntry zone = new ModSavedData.PerimeterWardZoneEntry(parentRelay);
+        ModSavedData.PerimeterWardZoneEntry zone = new ModSavedData.PerimeterWardZoneEntry(level, parentRelay);
+        ModSavedData.getSaveData().getPerimeterWardZoneEntries().put(zone.uuid, zone);
         return zone;
     }
 
-    public static boolean isPosInAnyWardZone(BlockPos pos)
+    public static boolean isPosInAnyWardZone(Level level, BlockPos pos)
     {
         for(ModSavedData.PerimeterWardZoneEntry zone : ModSavedData.getSaveData().getPerimeterWardZoneEntries().values())
         {
-            if(zone.isPosInsideOfZone(pos))
+            if(zone.isPosInsideOfZone(level, pos))
             {
                 return true;
             }

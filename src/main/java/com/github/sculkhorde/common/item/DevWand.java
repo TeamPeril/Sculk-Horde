@@ -4,6 +4,7 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.StructureUtil;
+import com.github.sculkhorde.util.WardZoneUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -85,35 +86,7 @@ public class DevWand extends Item implements IForgeItem {
 		Vec3 hitPos = rayTrace.getTo();
 		BlockPos hitPosBlock = BlockPos.containing(hitPos);
 
-        BlockAlgorithms.getLargestAreaAboveBlock(serverLevel, BlockPos.containing(playerIn.getEyePosition()));
-
-        /*
-		if(!level.canSeeSky(BlockPos.containing(hitPos)))
-		{
-			playerIn.sendSystemMessage(Component.literal("Error: Cannot See Sky."));
-			return InteractionResultHolder.fail(itemstack);
-		}
-
-		Optional<ModSavedData.NodeEntry> closestNode = NodeUtil.getClosestNode(serverLevel, playerIn.blockPosition());
-
-		if(closestNode.isEmpty())
-		{
-			playerIn.sendSystemMessage(Component.literal("Error: No Nearby Node."));
-			return InteractionResultHolder.fail(itemstack);
-		}
-
-		PathBuilderRequest request = new PathBuilderRequest(serverLevel, closestNode.get().getPosition(), BlockPos.containing(playerIn.getEyePosition()), 10, null, null);
-		SculkHorde.pathBuilderSystem.addPathBuilderRequest(request);
-
-
-
-        GhastDeploymentEvent event = new GhastDeploymentEvent(playerIn.level().dimension(), playerIn.blockPosition().above(20));
-
-        SculkHorde.eventSystem.addEvent(event);
-        */
-
-		/*
-        if(WardZoneUtil.isPosInAnyWardZone(playerIn.blockPosition()))
+        if(WardZoneUtil.isPosInAnyWardZone(playerIn.level(), playerIn.blockPosition()))
         {
             playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
         }
@@ -122,7 +95,6 @@ public class DevWand extends Item implements IForgeItem {
 			playerIn.sendSystemMessage(Component.literal("Not In Infestation Ward Zone."));
 		}
 
-		 */
 		SculkHorde.sculkNodesSystem.DeactivateAllNodes();
 		SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
 		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);

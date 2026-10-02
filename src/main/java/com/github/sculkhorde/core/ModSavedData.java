@@ -1,6 +1,8 @@
 package com.github.sculkhorde.core;
 
+import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.blockentity.PerimeterWardEmitterBlockEntity;
 import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
@@ -2144,14 +2146,16 @@ public class ModSavedData extends SavedData {
      */
     public static class PerimeterWardZoneEntry
     {
+        public final UUID uuid = UUID.randomUUID();
         public BlockPos parentRelaypos;
         public ArrayList<BlockPos> relayPositions = new ArrayList<>();
         public ResourceKey<Level> dimension;
 
 
-        public PerimeterWardZoneEntry(BlockPos parentRelayposIn)
+        public PerimeterWardZoneEntry(Level level, BlockPos parentRelayposIn)
         {
             parentRelaypos = parentRelayposIn;
+            dimension = level.dimension();
         }
 
         public ServerLevel getDimension()
@@ -2166,12 +2170,12 @@ public class ModSavedData extends SavedData {
                 return false;
             }
 
-            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isEmpty())
+            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get()).isEmpty())
             {
                 return false;
             }
 
-            PerimeterWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
+            PerimeterWardEmitterBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get()).get();
 
             if(!parentRelay.getBlockPos().equals(parentRelaypos))
             {
@@ -2193,12 +2197,12 @@ public class ModSavedData extends SavedData {
 
             int maxIteration = 100;
             BlockPos currentRelayPos = parentRelaypos;
-            for (int index = 0; index < maxIteration || currentRelayPos != null; index++) {
-                if (!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) {
-                    break;
-                }
+            for (int index = 0; index < maxIteration; index++) {
 
-                PerimeterWardRelayBlockEntity currentRelay = getDimension().getBlockEntity(currentRelayPos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
+                if(!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) { break; }
+                if(index > 0 && currentRelayPos.equals(parentRelaypos)) { break; }
+
+                PerimeterWardRelayBlockEntity currentRelay = (PerimeterWardRelayBlockEntity) getDimension().getBlockEntity(currentRelayPos);
                 relayPositions.add(currentRelayPos);
                 currentRelayPos = currentRelay.nextRelayPos.orElse(null);
             }
@@ -2209,9 +2213,14 @@ public class ModSavedData extends SavedData {
          * @param pos
          * @return
          */
-        public boolean isPosInsideOfZone(BlockPos pos)
+        public boolean isPosInsideOfZone(Level level, BlockPos pos)
         {
             if (relayPositions == null || relayPositions.size() < 4)
+            {
+                return false;
+            }
+
+            if(!BlockAlgorithms.areTheseDimensionsEqual(level.dimension(), getDimension().dimension()))
             {
                 return false;
             }
