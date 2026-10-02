@@ -2,6 +2,7 @@ package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.common.structures.procedural.PlannedBlock;
 import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -609,13 +610,27 @@ public class BlockAlgorithms {
      */
     public static boolean isExposedToInfestationWardBlock(ServerLevel serverWorld, BlockPos targetPos)
     {
-        ArrayList<BlockPos> list = getAdjacentNeighbors(targetPos);
-
-        for(BlockPos position : list)
+        if(ModConfig.isExperimentalFeaturesEnabled())
         {
-            if(serverWorld.getBlockState(position).is(ModBlocks.BlockTags.WARDS_AGAINST_INFESTATION))
+            if(serverWorld.getBlockState(targetPos).is(ModBlocks.BlockTags.WARDS_AGAINST_INFESTATION))
             {
                 return true;
+            }
+            else if(WardZoneUtil.isPosInAnyWardZone(serverWorld, targetPos))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            ArrayList<BlockPos> list = getAdjacentNeighbors(targetPos);
+
+            for(BlockPos position : list)
+            {
+                if(serverWorld.getBlockState(position).is(ModBlocks.BlockTags.WARDS_AGAINST_INFESTATION))
+                {
+                    return true;
+                }
             }
         }
 
