@@ -1,6 +1,8 @@
 package com.github.sculkhorde.core;
 
+import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
+import com.github.sculkhorde.common.blockentity.PerimeterWardEmitterBlockEntity;
 import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
@@ -18,8 +20,6 @@ import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,7 +34,9 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -85,13 +87,9 @@ public class ModSavedData extends SavedData {
         initializeSystems();
     }
 
-    public static SavedData.Factory<ModSavedData> factory() {
-        return new SavedData.Factory<>(ModSavedData::new, ModSavedData::load, null);
-    }
-
     public static ModSavedData getSaveData()
     {
-        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(factory(), SculkHorde.SAVE_DATA_ID);
+        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID);
         data.setDirty();
         return data;
     }
@@ -238,9 +236,8 @@ public class ModSavedData extends SavedData {
      * We extract data from the memory and store it in variables.
      *
      * @param nbt The memory where data is stored
-     * @param provider Registry lookup provider
      */
-    public static ModSavedData load(CompoundTag nbt, HolderLookup.Provider provider) {
+    public static ModSavedData load(CompoundTag nbt) {
 
 
 
@@ -405,10 +402,9 @@ public class ModSavedData extends SavedData {
      * We take the data in our variables and store it to memory.
      *
      * @param nbt The memory where data is stored
-     * @param provider Registry lookup provider
      */
     @Override
-    public @NotNull CompoundTag save(CompoundTag nbt, HolderLookup.Provider provider) {
+    public @NotNull CompoundTag save(CompoundTag nbt) {
         //CompoundTag gravemindData = new CompoundTag();
 
         nbt.putInt("hordeState", hordeState.ordinal());
@@ -1187,7 +1183,7 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
@@ -1403,7 +1399,7 @@ public class ModSavedData extends SavedData {
          */
         public static BeeNestEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             BlockPos pos = BlockPos.of(nbt.getLong("position"));
             BlockPos parentPos = nbt.contains("parentNodePosition") ? BlockPos.of(nbt.getLong("parentNodePosition")) : null;
 
@@ -1530,7 +1526,7 @@ public class ModSavedData extends SavedData {
          */
         public static DeathAreaEntry load(CompoundTag nbt) {
 
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
         }
     }
@@ -1602,7 +1598,7 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static AreaOfInterestEntry load(CompoundTag nbt) {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
@@ -1699,7 +1695,7 @@ public class ModSavedData extends SavedData {
          */
         public static NoRaidZoneEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }
@@ -1973,7 +1969,7 @@ public class ModSavedData extends SavedData {
             {
                 return false;
             }
-            return BuiltInRegistries.ENTITY_TYPE.containsKey(BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
+            return ForgeRegistries.ENTITY_TYPES.containsKey(ForgeRegistries.ENTITY_TYPES.getKey(entityType));
         }
 
         public EntityType getEntityType()
@@ -2081,7 +2077,7 @@ public class ModSavedData extends SavedData {
         {
             CompoundTag nbt = new CompoundTag();
 
-            nbt.putString("entityType", BuiltInRegistries.ENTITY_TYPE.getKey(entityType).toString());
+            nbt.putString("entityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
             nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
             nbt.putInt("sculkHordeKills", sculkHordeKills);
             nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
@@ -2092,8 +2088,8 @@ public class ModSavedData extends SavedData {
 
         public static MobProfileEntry load(CompoundTag nbt)
         {
-            ResourceLocation id = ResourceLocation.parse(nbt.getString("entityType"));
-            EntityType type = BuiltInRegistries.ENTITY_TYPE.get(id);
+            ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
+            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
             if(type == null) {
                 DebuggerSystem.eventDebuggerModule.logError("Failed to load MobProfileEntry. EntityType was null for id: " + id);
                 type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.
@@ -2150,14 +2146,16 @@ public class ModSavedData extends SavedData {
      */
     public static class PerimeterWardZoneEntry
     {
+        public final UUID uuid = UUID.randomUUID();
         public BlockPos parentRelaypos;
         public ArrayList<BlockPos> relayPositions = new ArrayList<>();
         public ResourceKey<Level> dimension;
 
 
-        public PerimeterWardZoneEntry(BlockPos parentRelayposIn)
+        public PerimeterWardZoneEntry(Level level, BlockPos parentRelayposIn)
         {
             parentRelaypos = parentRelayposIn;
+            dimension = level.dimension();
         }
 
         public ServerLevel getDimension()
@@ -2172,12 +2170,12 @@ public class ModSavedData extends SavedData {
                 return false;
             }
 
-            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).isEmpty())
+            if(getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get()).isEmpty())
             {
                 return false;
             }
 
-            PerimeterWardRelayBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
+            PerimeterWardEmitterBlockEntity parentRelay = getDimension().getBlockEntity(parentRelaypos, ModBlockEntities.PERIMETER_WARD_EMITTER_BLOCK_ENTITY.get()).get();
 
             if(!parentRelay.getBlockPos().equals(parentRelaypos))
             {
@@ -2199,12 +2197,12 @@ public class ModSavedData extends SavedData {
 
             int maxIteration = 100;
             BlockPos currentRelayPos = parentRelaypos;
-            for (int index = 0; index < maxIteration || currentRelayPos != null; index++) {
-                if (!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) {
-                    break;
-                }
+            for (int index = 0; index < maxIteration; index++) {
 
-                PerimeterWardRelayBlockEntity currentRelay = getDimension().getBlockEntity(currentRelayPos, ModBlockEntities.PERIMETER_WARD_RELAY_BLOCK_ENTITY.get()).get();
+                if(!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) { break; }
+                if(index > 0 && currentRelayPos.equals(parentRelaypos)) { break; }
+
+                PerimeterWardRelayBlockEntity currentRelay = (PerimeterWardRelayBlockEntity) getDimension().getBlockEntity(currentRelayPos);
                 relayPositions.add(currentRelayPos);
                 currentRelayPos = currentRelay.nextRelayPos.orElse(null);
             }
@@ -2215,9 +2213,14 @@ public class ModSavedData extends SavedData {
          * @param pos
          * @return
          */
-        public boolean isPosInsideOfZone(BlockPos pos)
+        public boolean isPosInsideOfZone(Level level, BlockPos pos)
         {
             if (relayPositions == null || relayPositions.size() < 4)
+            {
+                return false;
+            }
+
+            if(!BlockAlgorithms.areTheseDimensionsEqual(level.dimension(), getDimension().dimension()))
             {
                 return false;
             }
