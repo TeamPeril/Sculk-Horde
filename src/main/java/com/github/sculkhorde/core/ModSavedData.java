@@ -18,6 +18,7 @@ import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -32,9 +33,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -1181,7 +1180,7 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
@@ -1397,7 +1396,7 @@ public class ModSavedData extends SavedData {
          */
         public static BeeNestEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
             BlockPos pos = BlockPos.of(nbt.getLong("position"));
             BlockPos parentPos = nbt.contains("parentNodePosition") ? BlockPos.of(nbt.getLong("parentNodePosition")) : null;
 
@@ -1524,7 +1523,7 @@ public class ModSavedData extends SavedData {
          */
         public static DeathAreaEntry load(CompoundTag nbt) {
 
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
         }
     }
@@ -1596,7 +1595,7 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static AreaOfInterestEntry load(CompoundTag nbt) {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
             return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
@@ -1693,7 +1692,7 @@ public class ModSavedData extends SavedData {
          */
         public static NoRaidZoneEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(nbt.getString("dimension")));
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }
@@ -1967,7 +1966,7 @@ public class ModSavedData extends SavedData {
             {
                 return false;
             }
-            return ForgeRegistries.ENTITY_TYPES.containsKey(ForgeRegistries.ENTITY_TYPES.getKey(entityType));
+            return BuiltInRegistries.ENTITY_TYPE.containsKey(BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
         }
 
         public EntityType getEntityType()
@@ -2075,7 +2074,7 @@ public class ModSavedData extends SavedData {
         {
             CompoundTag nbt = new CompoundTag();
 
-            nbt.putString("entityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
+            nbt.putString("entityType", BuiltInRegistries.ENTITY_TYPE.getKey(entityType).toString());
             nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
             nbt.putInt("sculkHordeKills", sculkHordeKills);
             nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
@@ -2086,8 +2085,8 @@ public class ModSavedData extends SavedData {
 
         public static MobProfileEntry load(CompoundTag nbt)
         {
-            ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
-            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
+            ResourceLocation id = ResourceLocation.parse(nbt.getString("entityType"));
+            EntityType type = BuiltInRegistries.ENTITY_TYPE.get(id);
             if(type == null) {
                 DebuggerSystem.eventDebuggerModule.logError("Failed to load MobProfileEntry. EntityType was null for id: " + id);
                 type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.

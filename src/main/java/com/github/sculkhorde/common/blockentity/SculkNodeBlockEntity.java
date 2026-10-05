@@ -14,6 +14,7 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.PlayerProfileHandler;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -204,20 +205,19 @@ public class SculkNodeBlockEntity extends BlockEntity
      * @param compoundNBT Where NBT data is stored.
      */
     @Override
-    public void load(CompoundTag compoundNBT) {
-        super.load(compoundNBT);
+    protected void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(compoundNBT, lookupProvider);
         this.currentInfestationRadius = compoundNBT.getInt(currentInfestationRadiusIdentifier);
         this.timeOfLastAtmosphereInfestation = compoundNBT.getInt(timeOfLastAtmosphereInfestationIdentifier);
         this.creationTime = compoundNBT.getLong(creationTimeID);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
-
+    protected void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
         compoundNBT.putInt(currentInfestationRadiusIdentifier, this.currentInfestationRadius);
         compoundNBT.putInt(timeOfLastAtmosphereInfestationIdentifier, this.timeOfLastAtmosphereInfestation);
         compoundNBT.putLong(creationTimeID, this.creationTime);
-        super.saveAdditional(compoundNBT);
+        super.saveAdditional(compoundNBT, lookupProvider);
     }
 
     public int getCurrentInfestationRadius()

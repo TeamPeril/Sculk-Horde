@@ -28,6 +28,7 @@ public class ModEventSubscriber {
     {
         EntityFactory.initialize();
         BlockInfestationSystem.initialize();
+        event.enqueueWork(ModEventSubscriber::afterCommonSetup);
     }
 
     @SubscribeEvent

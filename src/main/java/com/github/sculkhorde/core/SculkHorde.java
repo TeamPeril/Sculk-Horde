@@ -75,7 +75,6 @@ public class SculkHorde {
         ModPotions.register(bus); //Load Potions
         ModMenuTypes.register(bus); //Load Menus
         ModMobEffects.EFFECTS.register(bus); //Load Effects
-        ModCriterionTriggers.TRIGGERS.register(bus);
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs

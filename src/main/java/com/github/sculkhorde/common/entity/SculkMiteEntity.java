@@ -12,6 +12,7 @@ import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
@@ -70,7 +71,7 @@ public class SculkMiteEntity extends Monster implements GeoEntity, ISculkSmartEn
     //INFECT_RANGE determines from how far away this mob can infect another
     public static int INFECT_RANGE  = 2;
     //INFECT_EFFECT The effect given to living entities when attacked
-    public static MobEffect INFECT_EFFECT = ModMobEffects.SCULK_INFECTION.value();
+    public static Holder<MobEffect> INFECT_EFFECT = ModMobEffects.SCULK_INFECTION;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /**
