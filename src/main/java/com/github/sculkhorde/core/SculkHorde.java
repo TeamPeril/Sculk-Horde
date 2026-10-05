@@ -20,11 +20,13 @@ import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
 //It takes in our mod id so it knows what mod it is loading.
+@Mod(SculkHorde.MOD_ID)
 public class SculkHorde {
 
     //Here I've created a variable of our mod id so we can use it throughout our project
@@ -80,6 +82,7 @@ public class SculkHorde {
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
         ModRecipes.register(bus); //Load Recipes
         ModLootModifier.register(bus);
+        ModAdvancementTriggers.register(bus);
     }
 
     public static boolean isDebugMode() {

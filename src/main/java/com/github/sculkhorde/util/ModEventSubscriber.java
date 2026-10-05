@@ -1,6 +1,5 @@
 package com.github.sculkhorde.util;
 
-import com.github.sculkhorde.common.advancement.*;
 import com.github.sculkhorde.common.entity.*;
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkEndermanEntity;
 import com.github.sculkhorde.common.entity.boss.angel_of_reaping.LivingArmorEntity;
@@ -10,7 +9,6 @@ import com.github.sculkhorde.core.ModPotions;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -28,7 +26,6 @@ public class ModEventSubscriber {
     {
         EntityFactory.initialize();
         BlockInfestationSystem.initialize();
-        event.enqueueWork(ModEventSubscriber::afterCommonSetup);
     }
 
     @SubscribeEvent
@@ -41,19 +38,6 @@ public class ModEventSubscriber {
     @SubscribeEvent
     public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
         ModPotions.registerRecipes(event);
-    }
-
-    // runs on main thread after common setup event
-    // adding things to unsynchronized registries (i.e. most vanilla registries) can be done here
-    private static void afterCommonSetup()
-    {
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":gravemind_evolve_immature_trigger", GravemindEvolveImmatureTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":gravemind_evolve_mature_trigger", GravemindEvolveMatureTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":sculk_horde_start", SculkHordeStartTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":sculk_node_spawn", SculkNodeSpawnTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":soul_harvester_trigger", SoulHarvesterTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":sculk_horde_defeat_trigger", SculkHordeDefeatTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHorde.MOD_ID + ":contribute_trigger", ContributeTrigger.INSTANCE);
     }
 
     /* entityAttributes

@@ -18,6 +18,7 @@ import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -84,9 +85,13 @@ public class ModSavedData extends SavedData {
         initializeSystems();
     }
 
+    public static SavedData.Factory<ModSavedData> factory() {
+        return new SavedData.Factory<>(ModSavedData::new, ModSavedData::load, null);
+    }
+
     public static ModSavedData getSaveData()
     {
-        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID);
+        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(factory(), SculkHorde.SAVE_DATA_ID);
         data.setDirty();
         return data;
     }
@@ -233,8 +238,9 @@ public class ModSavedData extends SavedData {
      * We extract data from the memory and store it in variables.
      *
      * @param nbt The memory where data is stored
+     * @param provider Registry lookup provider
      */
-    public static ModSavedData load(CompoundTag nbt) {
+    public static ModSavedData load(CompoundTag nbt, HolderLookup.Provider provider) {
 
 
 
@@ -399,9 +405,10 @@ public class ModSavedData extends SavedData {
      * We take the data in our variables and store it to memory.
      *
      * @param nbt The memory where data is stored
+     * @param provider Registry lookup provider
      */
     @Override
-    public @NotNull CompoundTag save(CompoundTag nbt) {
+    public @NotNull CompoundTag save(CompoundTag nbt, HolderLookup.Provider provider) {
         //CompoundTag gravemindData = new CompoundTag();
 
         nbt.putInt("hordeState", hordeState.ordinal());
