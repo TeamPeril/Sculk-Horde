@@ -17,6 +17,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -174,7 +176,7 @@ public class EntityAlgorithms {
         float effectiveArmor = armor * (1.0f - armorPenetration);
 
         // Use Minecraft's internal logic to calculate final damage after armor
-        float damageToDeal = CombatRules.getDamageAfterAbsorb(amount, effectiveArmor, toughness);
+        float damageToDeal = CombatRules.getDamageAfterAbsorb(target, amount, target.damageSources().generic(), effectiveArmor, toughness);
 
         // Apply the damage using our piercing source (which bypasses the game's default armor check)
         target.hurt(ModDamageSources.sculkPiercing(target, aggressor), damageToDeal);
@@ -202,14 +204,16 @@ public class EntityAlgorithms {
 
     public static boolean canApplyEffectsToTarget(LivingEntity entity, MobEffect debuff)
     {
-        boolean isEntityNull = entity == null;
-        boolean isEntityDead = entity.isDeadOrDying();
-        if(isEntityNull || isEntityDead)
+        return canApplyEffectsToTarget(entity, BuiltInRegistries.MOB_EFFECT.wrapAsHolder(debuff));
+    }
+
+    public static boolean canApplyEffectsToTarget(LivingEntity entity, Holder<MobEffect> debuff)
+    {
+        if(entity == null || entity.isDeadOrDying())
         {
             return false;
         }
-
-		boolean isEntityImmune = !entity.canBeAffected(new MobEffectInstance(debuff, 5, 0));
+        boolean isEntityImmune = !entity.canBeAffected(new MobEffectInstance(debuff, 5, 0));
         boolean isEntityInvulnerable = entity.isInvulnerable();
         boolean isEntityAttackable = entity.isAttackable();
         boolean doesEntityHaveDebuffAlready = entity.hasEffect(debuff);
@@ -217,33 +221,32 @@ public class EntityAlgorithms {
         {
             return false;
         }
-
-        boolean doesHaveNeurotoxinEffect = entity.hasEffect(ModMobEffects.ROOTED_EFFECT.get());
-
-        boolean isApplyingNeurotoxinEffect = debuff instanceof RootedEffect;
-
+        boolean doesHaveNeurotoxinEffect = entity.hasEffect(ModMobEffects.ROOTED_EFFECT);
+        boolean isApplyingNeurotoxinEffect = debuff.value() instanceof RootedEffect;
         if(doesHaveNeurotoxinEffect && isApplyingNeurotoxinEffect)
         {
             return false;
         }
-
-        if(entity instanceof InfestationPurifierEntity && debuff instanceof SculkBurrowedEffect)
+        if(entity instanceof InfestationPurifierEntity && debuff.value() instanceof SculkBurrowedEffect)
         {
             return false;
         }
-
         return true;
     }
 
     public static void applyEffectToTarget(LivingEntity entity, MobEffect debuff, int duration, int amplifier)
+    {
+        applyEffectToTarget(entity, BuiltInRegistries.MOB_EFFECT.wrapAsHolder(debuff), duration, amplifier);
+    }
+
+    public static void applyEffectToTarget(LivingEntity entity, Holder<MobEffect> debuff, int duration, int amplifier)
     {
         if(canApplyEffectsToTarget(entity, debuff))
         {
             entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
                 entity.addEffect(new MobEffectInstance(debuff, duration, amplifier));
             }));
-
-            if(debuff == ModMobEffects.SCULK_INFECTION.get() || debuff == ModMobEffects.DISEASED_CYSTS.get() || debuff == ModMobEffects.ROOTED_EFFECT.get())
+            if(debuff == ModMobEffects.SCULK_INFECTION || debuff == ModMobEffects.DISEASED_CYSTS || debuff == ModMobEffects.ROOTED_EFFECT)
             {
                 SculkHorde.statisticsData.incrementTotalVictimsInfested();
             }
@@ -252,13 +255,13 @@ public class EntityAlgorithms {
 
     public static void reducePurityEffectDuration(LivingEntity entity, int amountInTicks)
     {
-        if(entity.hasEffect(ModMobEffects.PURITY.get()))
+        if(entity.hasEffect(ModMobEffects.PURITY))
         {
             entity.getServer().tell(new TickTask(entity.getServer().getTickCount() + 1, () -> {
-                MobEffectInstance purityEffect = entity.getEffect(ModMobEffects.PURITY.get());
+                MobEffectInstance purityEffect = entity.getEffect(ModMobEffects.PURITY);
                 int newDuration = Math.max(purityEffect.getDuration() - amountInTicks, 0);
-                entity.removeEffect(ModMobEffects.PURITY.get());
-                entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), newDuration, purityEffect.getAmplifier()));
+                entity.removeEffect(ModMobEffects.PURITY);
+                entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY, newDuration, purityEffect.getAmplifier()));
             }));
         }
     }
@@ -342,9 +345,9 @@ public class EntityAlgorithms {
      */
     public static boolean isLivingEntityInfected(LivingEntity e)
     {
-        return e.hasEffect(ModMobEffects.SCULK_INFECTION.get()) ||
-                e.hasEffect(ModMobEffects.DISEASED_CYSTS.get()) ||
-                e.hasEffect(ModMobEffects.ROOTED_EFFECT.get());
+        return e.hasEffect(ModMobEffects.SCULK_INFECTION) ||
+                e.hasEffect(ModMobEffects.DISEASED_CYSTS) ||
+                e.hasEffect(ModMobEffects.ROOTED_EFFECT);
     }
 
 
@@ -554,7 +557,7 @@ public class EntityAlgorithms {
             return true;
         }
 
-        if(entity instanceof Player player && player.hasEffect(ModMobEffects.SCULK_VESSEL.get()))
+        if(entity instanceof Player player && player.hasEffect(ModMobEffects.SCULK_VESSEL))
         {
             return true;
         }

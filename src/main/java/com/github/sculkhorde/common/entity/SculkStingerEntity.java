@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.entity;
 
 import com.github.sculkhorde.common.entity.components.*;
 import com.github.sculkhorde.common.entity.goal.*;
+import com.github.sculkhorde.core.ModMobEffects;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.DifficultyUtil;
@@ -16,13 +17,13 @@ import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
@@ -62,7 +63,7 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
     public SculkStingerEntity(EntityType<? extends SculkStingerEntity> type, Level worldIn)
     {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
@@ -81,7 +82,7 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.FLYING_SPEED, 0.2F)
-                .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY, 0.0);
     }
 
     @Override
@@ -225,7 +226,7 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
     }
 
     protected float getStandingEyeHeight(@NotNull Pose p_33136_, EntityDimensions p_33137_) {
-        return p_33137_.height * 0.35F;
+        return p_33137_.height() * 0.35F;
     }
 
     public int getUniqueFlapTickOffset() {
@@ -355,7 +356,7 @@ public class SculkStingerEntity extends FlyingMob implements GeoEntity, ISculkSm
             {
                 SculkStingerEntity.this.doHurtTarget(target);
 
-                if(isHealthBelow50Percent && !target.hasEffect(SculkMiteEntity.INFECT_EFFECT))
+                if(isHealthBelow50Percent && !target.hasEffect(ModMobEffects.SCULK_INFECTION))
                 {
                     if(DifficultyUtil.isCurrentDifficultyEasy())
                     {

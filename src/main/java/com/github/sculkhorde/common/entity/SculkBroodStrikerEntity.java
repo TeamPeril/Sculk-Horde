@@ -31,17 +31,17 @@ import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class SculkBroodStrikerEntity extends Monster implements GeoEntity, ISculkSmartEntity {
@@ -85,12 +85,12 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
      */
     public SculkBroodStrikerEntity(EntityType<? extends SculkBroodStrikerEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
     }
 
     public SculkBroodStrikerEntity(Level level, BlockPos pos)
     {
-        this(ModEntities.SCULK_BROOD_SPITTER.get(), level);
+        this(ModEntities.SCULK_BROOD_STRIKER.get(), level);
         moveTo(pos.getCenter());
     }
 
@@ -183,8 +183,8 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
                         //new AttackGoal(),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
                                 new GetInRangeAttackStep(this),
-                                new ShootWebAttackStep(this),
-                                new LeapAwayAttackStep(this)
+                                new GetInRangeAttackStep(this),
+                                new LeapTowardsAttackStep(this)
                         ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
                         new OpenDoorGoal(this, true)
@@ -277,7 +277,7 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
     }
 
     @Override
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.1F;
     }
 
@@ -336,8 +336,7 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
         return true;
     }
 
-    @Override
-    public float getEyeHeight(Pose p_20237_) {
+    public float getBroodEyeHeight(Pose p_20237_) {
         return getBbHeight();
     }
 

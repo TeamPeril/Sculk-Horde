@@ -19,21 +19,23 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.function.Predicate;
 
 
-@Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ForgeEventSubscriber {
 
     @SubscribeEvent
@@ -48,10 +50,10 @@ public class ForgeEventSubscriber {
      * @param event The event with all the details
      */
     @SubscribeEvent
-    public static void WorldTickEvent(TickEvent.LevelTickEvent event)
+    public static void WorldTickEvent(LevelTickEvent.Post event)
     {
         // If we are on client, or we are not in the overworld, return
-        if(event.level.isClientSide() || (event.phase == TickEvent.Phase.END) || !event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.getLevel().isClientSide() || false || !event.getLevel().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             return;
         }
@@ -72,10 +74,10 @@ public class ForgeEventSubscriber {
 
 
     @SubscribeEvent
-    public static void ServerTickEvent(TickEvent.ServerTickEvent event)
+    public static void ServerTickEvent(ServerTickEvent.Post event)
     {
         // If we are on client, or we are not in the overworld, return
-        if((event.phase == TickEvent.Phase.END))
+        if(false)
         {
             return;
         }
@@ -161,7 +163,7 @@ public class ForgeEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void OnLivingDamageEvent(LivingDamageEvent event)
+    public static void OnLivingDamageEvent(LivingDamageEvent.Post event)
     {
 
 
@@ -183,7 +185,7 @@ public class ForgeEventSubscriber {
             {
                 if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
                 {
-                    itemStack.setDamageValue((int) Math.max(0, itemStack.getDamageValue() - event.getAmount()));
+                    itemStack.setDamageValue((int) Math.max(0, itemStack.getDamageValue() - event.getNewDamage()));
                 }
             }
         }
@@ -223,18 +225,18 @@ public class ForgeEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    public static void onPlayerTick(PlayerTickEvent.Post event)
     {
-        if(event.player.level().isClientSide())
+        if(event.getEntity().level().isClientSide())
         {
             return;
         }
 
-        checkAndApplyIllamentsToPlayer(event.player);
+        checkAndApplyIllamentsToPlayer(event.getEntity());
 
-        if(event.player.tickCount % 20 == 0)
+        if(event.getEntity().tickCount % 20 == 0)
         {
-            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
+            AdvancementUtil.advancementHandlingTick((ServerLevel) event.getEntity().level());
         }
     }
 
@@ -258,7 +260,7 @@ public class ForgeEventSubscriber {
     {
         if(PlayerProfileHandler.isPlayerActiveVessel(event.getEntity()))
         {
-            MobEffectInstance effectInstance = new MobEffectInstance(ModMobEffects.SCULK_VESSEL.get(), Integer.MAX_VALUE);
+            MobEffectInstance effectInstance = new MobEffectInstance(ModMobEffects.SCULK_VESSEL, Integer.MAX_VALUE);
             event.getEntity().addEffect(effectInstance);
         }
     }

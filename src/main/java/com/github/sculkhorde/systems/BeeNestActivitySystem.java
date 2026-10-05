@@ -3,7 +3,7 @@ package com.github.sculkhorde.systems;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Collection;
 import java.util.List;

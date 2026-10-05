@@ -11,14 +11,16 @@ import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ModEventSubscriber {
 
     @SubscribeEvent
@@ -26,29 +28,31 @@ public class ModEventSubscriber {
     {
         EntityFactory.initialize();
         BlockInfestationSystem.initialize();
+    }
 
-        event.enqueueWork(() -> {
-            SpawnPlacements.register(ModEntities.SCULK_MITE.get(),
-                    SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                    SculkMiteEntity::additionalSpawnCheck);
-            afterCommonSetup();
-            ModPotions.registerRecipes();
-        });
+    @SubscribeEvent
+    public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(ModEntities.SCULK_MITE.get(),
+                SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                SculkMiteEntity::additionalSpawnCheck, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    }
 
-
+    @SubscribeEvent
+    public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
+        ModPotions.registerRecipes(event);
     }
 
     // runs on main thread after common setup event
     // adding things to unsynchronized registries (i.e. most vanilla registries) can be done here
     private static void afterCommonSetup()
     {
-        CriteriaTriggers.register(GravemindEvolveImmatureTrigger.INSTANCE);
-        CriteriaTriggers.register(GravemindEvolveMatureTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHordeStartTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkNodeSpawnTrigger.INSTANCE);
-        CriteriaTriggers.register(SoulHarvesterTrigger.INSTANCE);
-        CriteriaTriggers.register(SculkHordeDefeatTrigger.INSTANCE);
-        CriteriaTriggers.register(ContributeTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":gravemind_evolve_immature_trigger", GravemindEvolveImmatureTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":gravemind_evolve_mature_trigger", GravemindEvolveMatureTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":sculk_horde_start", SculkHordeStartTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":sculk_node_spawn", SculkNodeSpawnTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":soul_harvester_trigger", SoulHarvesterTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":sculk_horde_defeat_trigger", SculkHordeDefeatTrigger.INSTANCE);
+        CriteriaTriggers.register(SculkHorde.MOD_ID + ":contribute_trigger", ContributeTrigger.INSTANCE);
     }
 
     /* entityAttributes
@@ -82,6 +86,7 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_GUARDIAN.get(), SculkGuardianEntity.createAttributes().build());
         event.put(ModEntities.SCULK_BROOD_HATCHER.get(), SculkBroodHatcherEntity.createAttributes().build());
         event.put(ModEntities.SCULK_BROOD_SPITTER.get(), SculkBroodSpitterEntity.createAttributes().build());
+        event.put(ModEntities.SCULK_BROOD_STRIKER.get(), SculkBroodStrikerEntity.createAttributes().build());
         event.put(ModEntities.SCULK_SHEEP.get(), SculkSheepEntity.createAttributes().build());
         event.put(ModEntities.SCULK_METAMORPHOSIS_POD.get(), SculkMetamorphosisPodEntity.createAttributes().build());
         event.put(ModEntities.SCULK_GHAST.get(), SculkGhastEntity.createAttributes().build());
@@ -89,4 +94,3 @@ public class ModEventSubscriber {
         event.put(ModEntities.SCULK_STINGER.get(), SculkStingerEntity.createAttributes().build());
     }
 }
-

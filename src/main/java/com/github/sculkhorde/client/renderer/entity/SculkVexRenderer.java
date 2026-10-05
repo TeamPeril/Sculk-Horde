@@ -1,8 +1,8 @@
 package com.github.sculkhorde.client.renderer.entity;
 
+import com.github.sculkhorde.client.renderer.layer.CompatibilityAwareAutoGlowingGeoLayer;
 import com.github.sculkhorde.client.model.enitity.SculkVexModel;
 import com.github.sculkhorde.common.entity.SculkVexEntity;
-import com.github.sculkhorde.core.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -17,7 +17,6 @@ import net.minecraft.world.item.ShieldItem;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 import software.bernie.geckolib.renderer.layer.ItemArmorGeoLayer;
 
@@ -42,11 +41,11 @@ public class SculkVexRenderer extends GeoEntityRenderer<SculkVexEntity> {
     public SculkVexRenderer(EntityRendererProvider.Context renderManager)
     {
         super(renderManager, new SculkVexModel());
-        if(!ModConfig.SERVER.enable_gpu_compatibility_mode.get()) {this.addRenderLayer(new AutoGlowingGeoLayer(this));}
+        this.addRenderLayer(new CompatibilityAwareAutoGlowingGeoLayer<>(this));
 
         this.addRenderLayer(new ItemArmorGeoLayer<SculkVexEntity>(this) {
             @Nullable
-            protected ItemStack getArmorItemForBone(GeoBone bone, SculkVexRenderer animatable) {
+            protected ItemStack getArmorItemForBone(GeoBone bone, SculkVexEntity animatable) {
                 ItemStack itemStack;
                 switch (bone.getName()) {
                     case LEFT_BOOT, RIGHT_BOOT:
@@ -161,7 +160,7 @@ public class SculkVexRenderer extends GeoEntityRenderer<SculkVexEntity> {
                 return displayContext;
             }
 
-            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, SculkVexEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
+            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, SculkVexEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay, int renderColor) {
                 if (stack == SculkVexRenderer.this.mainHandItem) {
                     //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
@@ -185,8 +184,9 @@ public class SculkVexRenderer extends GeoEntityRenderer<SculkVexEntity> {
         });
     }
 
-    public void preRender(PoseStack poseStack, SculkVexEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    @Override
+    public void preRender(PoseStack poseStack, SculkVexEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int renderColor) {
+        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, renderColor);
         this.mainHandItem = animatable.getMainHandItem();
         this.offhandItem = animatable.getOffhandItem();
     }

@@ -12,11 +12,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
-public class InfestedWallBlock extends WallBlock implements EntityBlock, IForgeBlock, ITagInfestedBlock {
+public class InfestedWallBlock extends WallBlock implements EntityBlock, ITagInfestedBlock {
 
     public InfestedWallBlock(Properties properties) {
         super(properties);

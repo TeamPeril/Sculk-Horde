@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.SculkSummonerBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.material.FluidState;
@@ -28,15 +30,19 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+public class SculkSummonerBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(SculkSummonerBlock::new);
+    }
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -87,7 +93,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.copy(Blocks.SCULK_SHRIEKER)
+        Properties prop = Properties.ofFullCopy(Blocks.SCULK_SHRIEKER)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .noLootTable()
                 .noOcclusion()
@@ -141,7 +147,7 @@ public class SculkSummonerBlock extends BaseEntityBlock implements IForgeBlock, 
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_summoner.functionality"));

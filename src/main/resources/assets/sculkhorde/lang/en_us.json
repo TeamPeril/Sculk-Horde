@@ -499,7 +499,19 @@
 
   "item.sculkhorde.angel_of_reaping_soul": "Angel of Reaping Soul",
   "tooltip.sculkhorde.angel_of_reaping_soul.functionality": "§7§o Dropped from the Angel of Reaping. It is a crafting ingredient that can be used to make the Soul Animator and Soul Disrupter. This trophy represents your achievement in conquering one of the Gravemind's Angels: The Angel of Reaping.",
-  "tooltip.sculkhorde.angel_of_reaping_soul.lore": "§7§o Vanquishing the Great Angel of Reaping has granted you his corrupted soul. Holding it makes your hand feel numb and fills you with dread. You've never felt such power and such evil. Your soul feels like its being drained and you feel unusually tired. This soul was forged by the Gravemind itself and is one of several souls that belong to the Gravemind's Angels."
+  "tooltip.sculkhorde.angel_of_reaping_soul.lore": "§7§o Vanquishing the Great Angel of Reaping has granted you his corrupted soul. Holding it makes your hand feel numb and fills you with dread. You've never felt such power and such evil. Your soul feels like its being drained and you feel unusually tired. This soul was forged by the Gravemind itself and is one of several souls that belong to the Gravemind's Angels.",
+  "sounds.sculkhorde.raid_scout_sound": "Sculk Horde scouts signal",
+  "sounds.sculkhorde.ender_bubble_loop": "Ender bubble hums",
+  "sounds.sculkhorde.zoltraak": "Zoltraak is cast",
+  "sounds.sculkhorde.sculk_ghast_charge": "Sculk Ghast charges",
+  "sounds.sculkhorde.sculk_ghast_death": "Sculk Ghast dies",
+  "sounds.sculkhorde.sculk_ghast_moan": "Sculk Ghast moans",
+  "sounds.sculkhorde.sculk_ghast_scream": "Sculk Ghast screams",
+  "sounds.sculkhorde.sculk_pod_open": "Sculk pod opens",
+  "sounds.sculkhorde.sculk_brood_fly_loop": "Sculk Brood flies",
+  "sounds.sculkhorde.sculk_brood_fly_start": "Sculk Brood takes off",
+  "sounds.sculkhorde.sculk_brood_hurt": "Sculk Brood is hurt",
+  "sounds.sculkhorde.sculk_brood_idle": "Sculk Brood chitters"
 }
 
 

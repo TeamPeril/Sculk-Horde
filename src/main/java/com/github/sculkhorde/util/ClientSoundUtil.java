@@ -4,8 +4,8 @@ import com.github.sculkhorde.client.sound.BroodFlightSoundInstance;
 import com.github.sculkhorde.core.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Mob;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.WeakHashMap;
 

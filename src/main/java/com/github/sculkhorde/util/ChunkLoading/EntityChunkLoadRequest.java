@@ -61,7 +61,7 @@ public class EntityChunkLoadRequest extends ChunkLoadRequest {
         String requestID = compound.getString("requestID");
         long ticksUntilExpiration = compound.getLong("ticksUntilExpiration");
         ChunkPos[] chunkPositionsToLoad = new ChunkPos[chunkPositionsToLoadLength];
-        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("dimension")));
+        ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(compound.getString("dimension")));
         for(int i = 0; i < chunkPositionsToLoadLength; i++)
         {
             chunkPositionsToLoad[i] = new ChunkPos(compound.getLong("chunkPositionsToLoad" + i));

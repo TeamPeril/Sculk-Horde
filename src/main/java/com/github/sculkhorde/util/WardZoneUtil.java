@@ -146,7 +146,7 @@ public class WardZoneUtil {
             return Optional.empty();
         }
 
-        CompoundTag tag = blockEntity.saveWithoutMetadata();
+        CompoundTag tag = blockEntity.getLevel() == null ? new CompoundTag() : blockEntity.saveWithoutMetadata(blockEntity.getLevel().registryAccess());
 
         if(tag.contains(parentWardBlockPosID))
         {

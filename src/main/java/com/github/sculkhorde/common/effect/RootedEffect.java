@@ -8,12 +8,14 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +38,10 @@ public class RootedEffect extends MobEffect implements IPotionExpireEffect{
      */
     protected RootedEffect(MobEffectCategory effectType, int liquidColor) {
         super(effectType, liquidColor);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, -0.8F, AttributeModifier.Operation.MULTIPLY_BASE);
-        addAttributeModifier(Attributes.MAX_HEALTH, -0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
-        addAttributeModifier(Attributes.ATTACK_KNOCKBACK, -1F, AttributeModifier.Operation.MULTIPLY_BASE);
-        addAttributeModifier(Attributes.ATTACK_SPEED, -0.5F, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, -0.8F, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addAttributeModifier(Attributes.MAX_HEALTH, -0.5F, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addAttributeModifier(Attributes.ATTACK_KNOCKBACK, -1F, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addAttributeModifier(Attributes.ATTACK_SPEED, -0.5F, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
     }
 
     /**
@@ -51,17 +53,18 @@ public class RootedEffect extends MobEffect implements IPotionExpireEffect{
 
 
     @Override
-    public void applyEffectTick(LivingEntity sourceEntity, int amp) {
+    public boolean applyEffectTick(LivingEntity sourceEntity, int amp) {
 
         if(sourceEntity.level().isClientSide())
         {
-            return;
+            return false;
         }
 
         if(sourceEntity instanceof ServerPlayer player)
         {
             player.causeFoodExhaustion(10F);
         }
+        return true;
 
     }
 
@@ -94,7 +97,7 @@ public class RootedEffect extends MobEffect implements IPotionExpireEffect{
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         if(cooldownTicksRemaining > 0)
         {
             cooldownTicksRemaining--;
@@ -105,14 +108,13 @@ public class RootedEffect extends MobEffect implements IPotionExpireEffect{
 
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;
     }
 
-    public MobEffect addAttributeModifier(Attribute attribute, double value, AttributeModifier.Operation operation) {
-        return addAttributeModifier(attribute, UUID.randomUUID().toString(), value, operation);
+    public MobEffect addAttributeModifier(Holder<Attribute> attribute, double value, AttributeModifier.Operation operation) {
+        return addAttributeModifier(attribute, ResourceLocation.fromNamespaceAndPath("sculkhorde", "rooted_" + UUID.randomUUID()), value, operation);
     }
 
 }

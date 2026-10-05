@@ -5,14 +5,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -22,7 +22,7 @@ import java.util.List;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkLivingRockBlock extends Block implements IForgeBlock {
+public class SculkLivingRockBlock extends Block {
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -77,7 +77,7 @@ public class SculkLivingRockBlock extends Block implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.copy(Blocks.STONE)
+        Properties prop = Properties.ofFullCopy(Blocks.STONE)
                 .mapColor(MapColor.TERRACOTTA_GRAY)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.ANCIENT_DEBRIS);
@@ -86,7 +86,7 @@ public class SculkLivingRockBlock extends Block implements IForgeBlock {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_living_rock.functionality"));

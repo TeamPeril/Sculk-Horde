@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.StructureCoreBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -12,7 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +20,12 @@ import javax.annotation.Nullable;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class StructureCoreBlock extends BaseEntityBlock implements IForgeBlock {
+public class StructureCoreBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(StructureCoreBlock::new);
+    }
 
     /**
      * HARDNESS determines how difficult a block is to break<br>

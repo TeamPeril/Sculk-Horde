@@ -8,6 +8,7 @@ import com.github.sculkhorde.util.ColorUtil;
 import com.github.sculkhorde.util.ParticleUtil;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.WardZoneUtil;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -168,8 +169,8 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
 
 
     @Override
-    public void load(CompoundTag compoundNBT) {
-        super.load(compoundNBT);
+    protected void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(compoundNBT, lookupProvider);
 
         if(compoundNBT.contains(parentWardBlockPosID))
         {
@@ -178,8 +179,8 @@ public class PerimeterWardEmitterBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
-        super.saveAdditional(compoundNBT);
+    protected void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
+        super.saveAdditional(compoundNBT, lookupProvider);
 
         if(parentRelayPos.isPresent())
         {

@@ -19,12 +19,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -112,7 +112,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
 
                 Vec3 vec3 = entity.position();
                 level().gameEvent(GameEvent.TELEPORT, vec3, GameEvent.Context.of(entity));
-                net.minecraftforge.event.entity.EntityTeleportEvent.ChorusFruit event = net.minecraftforge.event.ForgeEventFactory.onChorusFruitTeleport(entity, d3, d4, d5);
+                net.neoforged.neoforge.event.entity.EntityTeleportEvent.ChorusFruit event = net.neoforged.neoforge.event.EventHooks.onChorusFruitTeleport(entity, d3, d4, d5);
                 if (event.isCanceled()) return;
                 if (entity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {
                     SoundEvent soundevent = entity instanceof Fox ? SoundEvents.FOX_TELEPORT : SoundEvents.CHORUS_FRUIT_TELEPORT;
@@ -120,7 +120,7 @@ public class ChaosTeleporationRiftEntity extends SpecialEffectEntity implements 
                     entity.playSound(soundevent, 1.0F, 1.0F);
                     entity.hurt(this.damageSources().magic(), 2.0F);
                     // Give entity darkness potion effect
-                    EntityAlgorithms.applyEffectToTarget(entity, MobEffects.DARKNESS, TickUnits.convertSecondsToTicks(5), 0);
+                    EntityAlgorithms.applyEffectToTarget(entity, MobEffects.DARKNESS.value(), TickUnits.convertSecondsToTicks(5), 0);
                     break;
                 }
             }

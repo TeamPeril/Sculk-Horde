@@ -15,7 +15,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,14 +104,15 @@ public class SculkBurrowedEffect extends MobEffect implements IPotionExpireEffec
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
-        if(entity.level().isClientSide()) { return;}
+        if(entity.level().isClientSide()) { return false;}
         if(EntityAlgorithms.isSculkLivingEntity.test(entity) || ModSavedData.getSaveData().isHordeDefeated())
         {
             // Remove effect
-            entity.removeEffect(ModMobEffects.SCULK_INFECTION.get());
+            entity.removeEffect(ModMobEffects.SCULK_INFECTION);
         }
+        return true;
     }
 
     /**
@@ -124,7 +125,7 @@ public class SculkBurrowedEffect extends MobEffect implements IPotionExpireEffec
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
 
         if(cooldownTicksRemaining > 0)
         {
@@ -136,7 +137,6 @@ public class SculkBurrowedEffect extends MobEffect implements IPotionExpireEffec
 
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;

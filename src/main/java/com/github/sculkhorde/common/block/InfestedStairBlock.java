@@ -12,18 +12,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
-public class InfestedStairBlock extends StairBlock implements EntityBlock, IForgeBlock, ITagInfestedBlock {
+public class InfestedStairBlock extends StairBlock implements EntityBlock, ITagInfestedBlock {
 	
 	public InfestedStairBlock(Properties properties) {
-		this(() -> InfestedStairBlock.stateById(0), properties);
+		this(InfestedStairBlock.stateById(0), properties);
 	}
 
-	public InfestedStairBlock(Supplier<BlockState> state, Properties properties) {
+	public InfestedStairBlock(BlockState state, Properties properties) {
 		super(state, properties);
 	}
 	

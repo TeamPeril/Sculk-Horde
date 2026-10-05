@@ -11,7 +11,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,7 +39,7 @@ public class EntityFactoryEntry {
     protected Gravemind.evolution_states minEvolutionRequired = Gravemind.evolution_states.Undeveloped;
 
     boolean experimentalMode = false;
-    protected ForgeConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.experimental_features_enabled;
+    protected ModConfigSpec.ConfigValue<Boolean> requiredConfig = ModConfig.SERVER.experimental_features_enabled;
 
     public EntityFactoryEntry(EntityType entity)
     {
@@ -95,7 +95,7 @@ public class EntityFactoryEntry {
         return this;
     }
 
-    public EntityFactoryEntry enableExperimentalMode(ForgeConfigSpec.ConfigValue<Boolean> configOptionThatNeedsToBeTrue)
+    public EntityFactoryEntry enableExperimentalMode(ModConfigSpec.ConfigValue<Boolean> configOptionThatNeedsToBeTrue)
     {
         experimentalMode = true;
         requiredConfig = configOptionThatNeedsToBeTrue;

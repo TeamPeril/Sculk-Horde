@@ -33,12 +33,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -106,7 +106,7 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
 
     protected float getStandingEyeHeight(Pose p_260180_, EntityDimensions p_260049_) {
-        return p_260049_.height - 0.28125F;
+        return p_260049_.height() - 0.28125F;
     }
 
     public boolean isFlapping() {
@@ -287,9 +287,9 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
         return goals;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public void readAdditionalSaveData(CompoundTag p_34008_) {
@@ -380,11 +380,11 @@ public class SculkVexEntity extends Monster implements GeoEntity, ISculkSmartEnt
 
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34002_, DifficultyInstance p_34003_, MobSpawnType p_34004_, @Nullable SpawnGroupData p_34005_, @Nullable CompoundTag p_34006_) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_34002_, DifficultyInstance p_34003_, MobSpawnType p_34004_, @Nullable SpawnGroupData p_34005_) {
         RandomSource randomsource = p_34002_.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, p_34003_);
-        this.populateDefaultEquipmentEnchantments(randomsource, p_34003_);
-        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_, p_34006_);
+        this.populateDefaultEquipmentEnchantments(p_34002_, randomsource, p_34003_);
+        return super.finalizeSpawn(p_34002_, p_34003_, p_34004_, p_34005_);
     }
 
     protected void populateDefaultEquipmentSlots(RandomSource p_219135_, DifficultyInstance p_219136_) {

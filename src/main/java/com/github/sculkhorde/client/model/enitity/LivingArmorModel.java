@@ -10,7 +10,7 @@ public class LivingArmorModel extends DefaultedEntityGeoModel<LivingArmorEntity>
 
 
     public LivingArmorModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "living_armor"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "living_armor"));
     }
 
     // We want our model to render using the translucent render type

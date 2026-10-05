@@ -81,7 +81,7 @@ public class SummonVexAttackGoal extends Goal
         {
             SculkVexEntity entity = new SculkVexEntity(mob.level());
             entity.setPos(mob.getX(), mob.getY() + 1, mob.getZ());
-            entity.finalizeSpawn((ServerLevelAccessor) mob.level(), mob.level().getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null, (CompoundTag)null);
+            entity.finalizeSpawn((ServerLevelAccessor) mob.level(), mob.level().getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null);
             entity.setOwner(mob);
             entity.setBoundOrigin(mob.blockPosition());
             entity.setLimitedLife(TickUnits.convertMinutesToTicks(5));

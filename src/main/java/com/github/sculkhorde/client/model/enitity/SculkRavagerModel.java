@@ -9,7 +9,7 @@ public class SculkRavagerModel extends DefaultedEntityGeoModel<SculkRavagerEntit
 
     public SculkRavagerModel()
     {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_ravager"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_ravager"));
     }
 
     /*

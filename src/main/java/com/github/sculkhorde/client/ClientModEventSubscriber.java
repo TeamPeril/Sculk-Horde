@@ -10,23 +10,23 @@ import com.github.sculkhorde.client.renderer.entity.*;
 import com.github.sculkhorde.common.screen.SoulHarvesterScreen;
 import com.github.sculkhorde.core.*;
 import com.google.common.collect.Maps;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEventSubscriber {
 
     public final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.newHashMap();
@@ -39,7 +39,7 @@ public class ClientModEventSubscriber {
     @SubscribeEvent
     public static void init(final FMLClientSetupEvent event) {
         // Register any client-specific handlers
-        MinecraftForge.EVENT_BUS.register(new SculkFogRenderer());
+        NeoForge.EVENT_BUS.register(new SculkFogRenderer());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -89,6 +89,7 @@ public class ClientModEventSubscriber {
         event.registerEntityRenderer(ModEntities.SCULK_GUARDIAN.get(), SculkGuardianRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_BROOD_HATCHER.get(), SculkBroodHatcherRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_BROOD_SPITTER.get(), SculkBroodSpitterRenderer::new);
+        event.registerEntityRenderer(ModEntities.SCULK_BROOD_STRIKER.get(), SculkBroodStrikerRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_SHEEP.get(), SculkSheepRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_METAMORPHOSIS_POD.get(), SculkMetamorphosisPodRenderer::new);
         event.registerEntityRenderer(ModEntities.SCULK_GHAST.get(), SculkGhastRenderer::new);
@@ -124,12 +125,12 @@ public class ClientModEventSubscriber {
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event) {
+        public static void onClientSetup(RegisterMenuScreensEvent event) {
 
-            MenuScreens.register(ModMenuTypes.SOUL_HARVESTER_MENU.get(), SoulHarvesterScreen::new);
+            event.register(ModMenuTypes.SOUL_HARVESTER_MENU.get(), SoulHarvesterScreen::new);
         }
     }
 }

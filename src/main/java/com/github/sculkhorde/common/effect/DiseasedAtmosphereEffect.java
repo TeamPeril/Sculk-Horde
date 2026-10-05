@@ -44,8 +44,7 @@ public class DiseasedAtmosphereEffect extends MobEffect {
            return;
         }
 
-        DiseasedAtmosphereEffect effect = ModMobEffects.DISEASED_ATMOSPHERE.get();
-        victim.addEffect(new MobEffectInstance(effect, duration, 0));
+        victim.addEffect(new MobEffectInstance(ModMobEffects.DISEASED_ATMOSPHERE, duration, 0));
     }
 
     public static boolean isEntityAffectableByThisEffect(LivingEntity victim)
@@ -55,14 +54,12 @@ public class DiseasedAtmosphereEffect extends MobEffect {
             return false;
         }
 
-        DiseasedAtmosphereEffect effect = ModMobEffects.DISEASED_ATMOSPHERE.get();
-        PurityEffect purity = ModMobEffects.PURITY.get();
-        if(victim.hasEffect(effect) || victim.hasEffect(purity))
+        if(victim.hasEffect(ModMobEffects.DISEASED_ATMOSPHERE) || victim.hasEffect(ModMobEffects.PURITY))
         {
             return true;
         }
 
-        return victim.canBeAffected(new MobEffectInstance(effect, 0, 0));
+        return victim.canBeAffected(new MobEffectInstance(ModMobEffects.DISEASED_ATMOSPHERE, 0, 0));
     }
 
     
@@ -73,7 +70,7 @@ public class DiseasedAtmosphereEffect extends MobEffect {
 
 
     @Override
-    public void applyEffectTick(LivingEntity victimEntity, int amp) {
+    public boolean applyEffectTick(LivingEntity victimEntity, int amp) {
         if(victimEntity.level().isClientSide())
         {
             float spawnWidth = victimEntity.getBbWidth() / 2;
@@ -92,11 +89,9 @@ public class DiseasedAtmosphereEffect extends MobEffect {
             spawnRandomParticle(victimEntity, spawnWidth, spawnHeight);
         }
 
-        PurityEffect purity = ModMobEffects.PURITY.get();
-
-        if(victimEntity.hasEffect(purity) || Math.abs(victimEntity.level().getGameTime() - timeOfLastDamageTick) < DAMAGE_COOLDOWN)
+        if(victimEntity.hasEffect(ModMobEffects.PURITY) || Math.abs(victimEntity.level().getGameTime() - timeOfLastDamageTick) < DAMAGE_COOLDOWN)
         {
-            return;
+            return false;
         }
         timeOfLastDamageTick = victimEntity.level().getGameTime();
 
@@ -105,6 +100,7 @@ public class DiseasedAtmosphereEffect extends MobEffect {
         {
             player.causeFoodExhaustion(4F);
         }
+        return true;
     }
 
     private void spawnRandomParticle(LivingEntity victimEntity, float maxWidthOffset, float maxHeightOffset)
@@ -130,7 +126,7 @@ public class DiseasedAtmosphereEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         if(cooldownTicksRemaining > 0)
         {
             cooldownTicksRemaining--;

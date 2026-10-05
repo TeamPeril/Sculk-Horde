@@ -9,9 +9,8 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
-public class InfestedPillarBlock extends RotatedPillarBlock implements EntityBlock, IForgeBlock, ITagInfestedBlock {
+public class InfestedPillarBlock extends RotatedPillarBlock implements EntityBlock, ITagInfestedBlock {
 
     public InfestedPillarBlock(Properties prop) {
         super(prop);

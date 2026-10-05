@@ -7,7 +7,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public class ModColaborationHelper {
 
@@ -29,7 +29,7 @@ public class ModColaborationHelper {
 
     // https://www.curseforge.com/minecraft/mc-mods/from-another-world
     public static String FROM_ANOTHER_WORLD_ID = "fromanotherworld";
-    private static TagKey<EntityType<?>> FROM_ANOTHER_WORLD_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(FROM_ANOTHER_WORLD_ID + ":things"));
+    private static TagKey<EntityType<?>> FROM_ANOTHER_WORLD_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(FROM_ANOTHER_WORLD_ID + ":things"));
 
     public static boolean isFromAnotherWorldLoaded()
     {
@@ -55,7 +55,7 @@ public class ModColaborationHelper {
         return ModList.get().isLoaded(SPORE_ID);
     }
 
-    private static TagKey<EntityType<?>> SPORE_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(SPORE_ID + ":fungus_entities"));
+    private static TagKey<EntityType<?>> SPORE_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(SPORE_ID + ":fungus_entities"));
 
     public static boolean doesEntityBelongToSporeMod(LivingEntity entity)
     {
@@ -150,7 +150,7 @@ public class ModColaborationHelper {
 
     /// #### The Flesh That Hates ####
     public static String FLESH_THAT_HATES_ID = "the_flesh_that_hates";
-    private static TagKey<EntityType<?>> FLESH_THAT_HATES_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(FLESH_THAT_HATES_ID + ":fleshy_entities"));
+    private static TagKey<EntityType<?>> FLESH_THAT_HATES_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(FLESH_THAT_HATES_ID + ":fleshy_entities"));
     public static boolean isTheFleshThatHatesLoaded()
     {
         return ModList.get().isLoaded(FLESH_THAT_HATES_ID);
@@ -380,7 +380,7 @@ public class ModColaborationHelper {
         return ModList.get().isLoaded(DULLING_ID);
     }
 
-    private static TagKey<EntityType<?>> DULL_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("minecraft" + ":dull"));
+    private static TagKey<EntityType<?>> DULL_TAG_KEY = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse("minecraft" + ":dull"));
 
     public static boolean doesEntityBelongToDullingMod(LivingEntity entity)
     {

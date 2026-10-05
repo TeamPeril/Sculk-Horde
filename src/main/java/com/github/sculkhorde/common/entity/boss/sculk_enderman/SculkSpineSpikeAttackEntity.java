@@ -12,12 +12,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.keyframe.event.CustomInstructionKeyframeEvent;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.keyframe.event.CustomInstructionKeyframeEvent;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements TraceableEntity, GeoEntity {
@@ -61,8 +61,8 @@ public class SculkSpineSpikeAttackEntity extends SpecialEffectEntity implements 
 
             targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), 6.0F);
             // Give weakness and levitation
-            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0);
-            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.LEVITATION, TickUnits.convertSecondsToTicks(20), 0);
+            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS.value(), TickUnits.convertMinutesToTicks(1), 0);
+            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.LEVITATION.value(), TickUnits.convertSecondsToTicks(20), 0);
         }
     }
 

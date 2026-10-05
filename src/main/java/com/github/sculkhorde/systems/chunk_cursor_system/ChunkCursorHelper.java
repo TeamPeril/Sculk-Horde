@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.IPlantable;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -82,10 +81,10 @@ public class ChunkCursorHelper {
 
         if (!noGrass) {
             Random rand = new Random();
-            boolean canCuredBlockSustainPlant = world.getBlockState(targetPos).canSustainPlant(world, targetPos, Direction.UP, (IPlantable) Blocks.POPPY);
+            boolean canCuredBlockSustainPlant = world.getBlockState(targetPos).isFaceSturdy(world, targetPos, Direction.UP);
 
             if(rand.nextBoolean() && canCuredBlockSustainPlant && world.getBlockState(targetPos.above()).isAir()) {
-                BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.GRASS.defaultBlockState());
+                BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.GRASS_BLOCK.defaultBlockState());
             }
         }
 

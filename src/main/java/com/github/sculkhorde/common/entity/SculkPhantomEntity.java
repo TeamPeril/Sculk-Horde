@@ -30,17 +30,17 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -96,7 +96,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public SculkPhantomEntity(EntityType<? extends SculkPhantomEntity> type, Level worldIn)
     {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
@@ -120,7 +120,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.FLYING_SPEED, 3F)
-                .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY, 0.0);
     }
 
 
@@ -278,7 +278,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     }
 
     protected float getStandingEyeHeight(@NotNull Pose p_33136_, EntityDimensions p_33137_) {
-        return p_33137_.height * 0.35F;
+        return p_33137_.height() * 0.35F;
     }
 
     public int getUniqueFlapTickOffset() {
@@ -344,9 +344,9 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
     }
 
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33126_, @NotNull DifficultyInstance p_33127_, @NotNull MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_, @Nullable CompoundTag p_33130_) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor p_33126_, @NotNull DifficultyInstance p_33127_, @NotNull MobSpawnType p_33128_, @Nullable SpawnGroupData p_33129_) {
         this.anchorPoint = this.blockPosition().above(5);
-        return super.finalizeSpawn(p_33126_, p_33127_, p_33128_, p_33129_, p_33130_);
+        return super.finalizeSpawn(p_33126_, p_33127_, p_33128_, p_33129_);
     }
 
     protected @NotNull BodyRotationControl createBodyControl() {
@@ -414,7 +414,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             level().addFreshEntity(corpse);
 
             // Give spore spewer slow falling
-            EntityAlgorithms.applyEffectToTarget(corpse, MobEffects.SLOW_FALLING, TickUnits.convertSecondsToTicks(20), 0);
+            EntityAlgorithms.applyEffectToTarget(corpse, MobEffects.SLOW_FALLING.value(), TickUnits.convertSecondsToTicks(20), 0);
         }));
     }
 
@@ -635,15 +635,15 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
                 if(DifficultyUtil.isCurrentDifficultyEasy())
                 {
-                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.SCULK_INFECTION.value(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 }
                 else if(DifficultyUtil.isCurrentDifficultyNormal())
                 {
-                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(10), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.value(), TickUnits.convertSecondsToTicks(10), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 }
                 else if(DifficultyUtil.isCurrentDifficultyHard())
                 {
-                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(15), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                    EntityAlgorithms.applyEffectToTarget(target, ModMobEffects.DISEASED_CYSTS.value(), TickUnits.convertSecondsToTicks(15), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 }
 
 

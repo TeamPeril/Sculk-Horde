@@ -47,16 +47,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -129,10 +129,14 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
      */
     public AngelOfReapingEntity(EntityType<? extends AngelOfReapingEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setMaxUpStep(1.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
+    }
+
+    @Override
+    public float maxUpStep() {
+        return 1.0F;
     }
 
     public AngelOfReapingEntity(Level level, BlockPos pos)
@@ -290,8 +294,8 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource damageSource, int lootLevel, boolean isNotPlayer) {
-        super.dropCustomDeathLoot(damageSource, lootLevel, isNotPlayer);
+    protected void dropCustomDeathLoot(net.minecraft.server.level.ServerLevel lootLevel, DamageSource damageSource, boolean isNotPlayer) {
+        super.dropCustomDeathLoot(lootLevel, damageSource, isNotPlayer);
 
         if(ModConfig.isExperimentalFeaturesEnabled())
         {
@@ -625,9 +629,9 @@ public class AngelOfReapingEntity extends Monster implements GeoEntity, ISculkSm
     }
 
     // ###### Data Code ########
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     private boolean getFlag(int id) {

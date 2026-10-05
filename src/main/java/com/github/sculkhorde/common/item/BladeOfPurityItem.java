@@ -15,22 +15,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class BladeOfPurityItem extends SwordItem implements IForgeItem {
+public class BladeOfPurityItem extends SwordItem {
 
     public BladeOfPurityItem() {
         this(Tiers.DIAMOND, 4, -3F, new Properties().rarity(Rarity.EPIC).setNoRepair().durability(1561));
     }
     public BladeOfPurityItem(Tier tier, int baseDamage, float baseAttackSpeed, Properties prop) {
-        super(tier, baseDamage, baseAttackSpeed, prop);
+        super(tier, prop.attributes(SwordItem.createAttributes(tier, baseDamage, baseAttackSpeed)));
     }
 
 
@@ -55,7 +54,7 @@ public class BladeOfPurityItem extends SwordItem implements IForgeItem {
                     ownerEntity.level().addFreshEntity(purifier);
 
                     // Add Effect
-                    hitEntity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertSecondsToTicks(10), 0));
+                    hitEntity.addEffect(new MobEffectInstance(ModMobEffects.PURITY, TickUnits.convertSecondsToTicks(10), 0));
                 }
             }
         }
@@ -72,7 +71,7 @@ public class BladeOfPurityItem extends SwordItem implements IForgeItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.blade_of_purity.functionality"));

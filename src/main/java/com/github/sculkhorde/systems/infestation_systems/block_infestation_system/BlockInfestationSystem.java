@@ -28,7 +28,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.IPlantable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -414,11 +413,11 @@ public class BlockInfestationSystem {
             BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.AIR.defaultBlockState());
         }
 
-        boolean canCuredBlockSustatinPlant = world.getBlockState(targetPos).canSustainPlant(world, targetPos, Direction.UP, (IPlantable) Blocks.POPPY);
+        boolean canCuredBlockSustatinPlant = world.getBlockState(targetPos).isFaceSturdy(world, targetPos, Direction.UP);
         Random rand = new Random();
         if(rand.nextBoolean() && canCuredBlockSustatinPlant && world.getBlockState(targetPos.above()).isAir())
         {
-            BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.GRASS.defaultBlockState());
+            BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.GRASS_BLOCK.defaultBlockState());
         }
 
         return true;
@@ -498,7 +497,7 @@ public class BlockInfestationSystem {
             BlockState blockState = world.getBlockState(neighbors);
             if(blockState.getBlock() == ModBlocks.TENDRILS.get())
             {
-                if(!blockState.getBlock().canSurvive(blockState, world, neighbors))
+                if(!blockState.canSurvive(world, neighbors))
                     world.destroyBlock(neighbors, false);
 
             }

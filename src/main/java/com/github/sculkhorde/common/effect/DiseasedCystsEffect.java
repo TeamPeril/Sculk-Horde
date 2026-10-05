@@ -45,17 +45,17 @@ public class DiseasedCystsEffect extends MobEffect {
 
 
     @Override
-    public void applyEffectTick(LivingEntity sourceEntity, int amp) {
+    public boolean applyEffectTick(LivingEntity sourceEntity, int amp) {
 
         if(sourceEntity.level().isClientSide())
         {
-            return;
+            return false;
         }
 
         if(EntityAlgorithms.isSculkLivingEntity.test(sourceEntity) || ModSavedData.getSaveData().isHordeDefeated())
         {
             // Remove effect
-            sourceEntity.removeEffect(ModMobEffects.SCULK_INFECTION.get());
+            sourceEntity.removeEffect(ModMobEffects.SCULK_INFECTION);
         }
 
         // Create AABB bounding box around entity and check if there are any non-sculk entities inside
@@ -93,6 +93,7 @@ public class DiseasedCystsEffect extends MobEffect {
             }
         }
 
+        return true;
     }
 
     /**
@@ -105,7 +106,7 @@ public class DiseasedCystsEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         if(cooldownTicksRemaining > 0)
         {
             cooldownTicksRemaining--;
@@ -116,7 +117,6 @@ public class DiseasedCystsEffect extends MobEffect {
 
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;

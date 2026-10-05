@@ -1,8 +1,8 @@
 package com.github.sculkhorde.client.renderer.entity;
 
+import com.github.sculkhorde.client.renderer.layer.CompatibilityAwareAutoGlowingGeoLayer;
 import com.github.sculkhorde.client.model.enitity.ZoltraakAttackModel;
 import com.github.sculkhorde.common.entity.boss.angel_of_reaping.ZoltraakAttackEntity;
-import com.github.sculkhorde.core.ModConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -15,11 +15,10 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import java.util.Objects;
 
@@ -28,7 +27,7 @@ public class ZoltraakAttackRenderer extends GeoEntityRenderer<ZoltraakAttackEnti
 
     public ZoltraakAttackRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ZoltraakAttackModel());
-        if(!ModConfig.SERVER.enable_gpu_compatibility_mode.get()) {this.addRenderLayer(new AutoGlowingGeoLayer(this));}
+        this.addRenderLayer(new CompatibilityAwareAutoGlowingGeoLayer<>(this));
     }
     /*
     @Override
@@ -44,7 +43,7 @@ public class ZoltraakAttackRenderer extends GeoEntityRenderer<ZoltraakAttackEnti
      */
 
     @Override
-    public void actuallyRender(PoseStack poseStack, ZoltraakAttackEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void actuallyRender(PoseStack poseStack, ZoltraakAttackEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int renderColor) {
         poseStack.pushPose();
 
         if (!isReRender) {
@@ -58,7 +57,7 @@ public class ZoltraakAttackRenderer extends GeoEntityRenderer<ZoltraakAttackEnti
             animationState.setData(DataTickets.ENTITY, animatable);
             Objects.requireNonNull(animationState);
             currentModel.addAdditionalStateData(animatable, instanceId, animationState::setData);
-            currentModel.handleAnimations(animatable, instanceId, animationState);
+            currentModel.handleAnimations(animatable, instanceId, animationState, partialTick);
         }
 
         // Apply entity rotation
@@ -76,7 +75,7 @@ public class ZoltraakAttackRenderer extends GeoEntityRenderer<ZoltraakAttackEnti
         }
 
         if (renderType != null) {
-            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, renderColor);
         }
 
         poseStack.popPose();

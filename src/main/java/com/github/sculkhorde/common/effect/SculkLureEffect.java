@@ -14,7 +14,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,21 +63,21 @@ public class SculkLureEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int p_19468_) {
+    public boolean applyEffectTick(LivingEntity entity, int p_19468_) {
 
-        if(entity.level().isClientSide()) { return;}
+        if(entity.level().isClientSide()) { return false;}
         if(EntityAlgorithms.isSculkLivingEntity.test(entity))
         {
             // Remove effect
-            entity.removeEffect(ModMobEffects.SCULK_LURE.get());
-            return;
+            entity.removeEffect(ModMobEffects.SCULK_LURE);
+            return true;
         }
 
         if(ModSavedData.getSaveData() != null) { ModSavedData.getSaveData().reportDeath((ServerLevel) entity.level(), entity.blockPosition()); }
 
 
         GhastDeploymentEvent.trySendGhastDepolymentEvent(entity);
-
+        return true;
 
     }
 
@@ -91,7 +91,7 @@ public class SculkLureEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         int cooldown = getCooldownBasedOnDifficulty();
         if(cooldown > 0)
         {
@@ -100,7 +100,6 @@ public class SculkLureEffect extends MobEffect {
         return true;
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;

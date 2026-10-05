@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
@@ -26,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +37,12 @@ import java.util.concurrent.TimeUnit;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBlock {
+public class SculkAncientNodeBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(SculkAncientNodeBlock::new);
+    }
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>

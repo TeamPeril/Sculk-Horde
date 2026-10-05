@@ -157,11 +157,7 @@ public final class ProjectileUtil {
 
     public static AbstractArrow getMobArrow(LivingEntity p_37301_, ItemStack p_37302_, float p_37303_) {
         ArrowItem arrowitem = (ArrowItem)(p_37302_.getItem() instanceof ArrowItem ? p_37302_.getItem() : Items.ARROW);
-        AbstractArrow abstractarrow = arrowitem.createArrow(p_37301_.level(), p_37302_, p_37301_);
-        abstractarrow.setEnchantmentEffectsFromEntity(p_37301_, p_37303_);
-        if (p_37302_.is(Items.TIPPED_ARROW) && abstractarrow instanceof Arrow) {
-            ((Arrow)abstractarrow).setEffectsFromItem(p_37302_);
-        }
+        AbstractArrow abstractarrow = arrowitem.createArrow(p_37301_.level(), p_37302_, p_37301_, p_37302_);
 
         return abstractarrow;
     }

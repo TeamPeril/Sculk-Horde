@@ -37,28 +37,28 @@ public class PurityEffect extends MobEffect {
 
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amp) {
+    public boolean applyEffectTick(LivingEntity entity, int amp) {
 
-        if(entity.level().isClientSide()) { return;}
+        if(entity.level().isClientSide()) { return false;}
         // IF entity has a sculk infection, remove it
-        if(entity.hasEffect(ModMobEffects.SCULK_INFECTION.get()))
+        if(entity.hasEffect(ModMobEffects.SCULK_INFECTION))
         {
-            entity.removeEffect(ModMobEffects.SCULK_INFECTION.get());
+            entity.removeEffect(ModMobEffects.SCULK_INFECTION);
         }
 
-        if(entity.hasEffect(ModMobEffects.SCULK_LURE.get()))
+        if(entity.hasEffect(ModMobEffects.SCULK_LURE))
         {
-            entity.removeEffect(ModMobEffects.SCULK_LURE.get());
+            entity.removeEffect(ModMobEffects.SCULK_LURE);
         }
 
-        if(entity.hasEffect(ModMobEffects.DISEASED_CYSTS.get()))
+        if(entity.hasEffect(ModMobEffects.DISEASED_CYSTS))
         {
-            entity.removeEffect(ModMobEffects.DISEASED_CYSTS.get());
+            entity.removeEffect(ModMobEffects.DISEASED_CYSTS);
         }
 
-        if(entity.hasEffect(ModMobEffects.ROOTED_EFFECT.get()))
+        if(entity.hasEffect(ModMobEffects.ROOTED_EFFECT))
         {
-            entity.removeEffect(ModMobEffects.ROOTED_EFFECT.get());
+            entity.removeEffect(ModMobEffects.ROOTED_EFFECT);
         }
 
         // If Sculk Living Entity, do damage
@@ -66,6 +66,7 @@ public class PurityEffect extends MobEffect {
         {
             entity.hurt(entity.damageSources().magic(), 1);
         }
+        return true;
 
     }
 
@@ -79,7 +80,7 @@ public class PurityEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
 
         if(cooldownTicksRemaining > 0)
         {
@@ -91,7 +92,6 @@ public class PurityEffect extends MobEffect {
 
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;

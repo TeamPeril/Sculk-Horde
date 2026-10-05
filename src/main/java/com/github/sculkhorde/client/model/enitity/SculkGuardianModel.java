@@ -10,7 +10,7 @@ public class SculkGuardianModel extends DefaultedEntityGeoModel<SculkGuardianEnt
 
 
     public SculkGuardianModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_guardian"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_guardian"));
     }
 
     // We want our model to render using the translucent render type

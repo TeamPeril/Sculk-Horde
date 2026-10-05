@@ -14,12 +14,12 @@ public class SoulHarvesterModel extends DefaultedBlockGeoModel<SoulHarvesterBloc
      * The asset path should be the truncated relative path from the base folder.<br>
      * E.G.
      * <pre>{@code
-     * 	new ResourceLocation("myMod", "workbench/sawmill")
+     * 	ResourceLocation.fromNamespaceAndPath("myMod", "workbench/sawmill")
      * }</pre>
      *
      */
     public SoulHarvesterModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "soul_harvester"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "soul_harvester"));
     }
 
     @Override

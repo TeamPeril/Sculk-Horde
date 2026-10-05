@@ -12,13 +12,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-public class CustomItemProjectileItem extends Item implements IForgeItem {
+public class CustomItemProjectileItem extends Item {
 
     /** CONSTRUCTORS **/
 
@@ -105,7 +104,7 @@ public class CustomItemProjectileItem extends Item implements IForgeItem {
     //This changes the text you see when hovering over an item
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         tooltip.add(Component.translatable("tooltip.sculkhorde.custom_item_projectile")); //Text that displays if not holding shift
 

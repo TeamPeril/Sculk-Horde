@@ -113,7 +113,7 @@ public class SculkPhantomWanderGoal extends Goal {
     public static Vec3 getGroundPos(Level level, Vec3 origin)
     {
         // Shoot ray cast downward to find ground
-        ClipContext context = new ClipContext(origin, origin.add(0, level.getMaxBuildHeight() * -1, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null);
+        ClipContext context = new ClipContext(origin, origin.add(0, level.getMaxBuildHeight() * -1, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, (net.minecraft.world.entity.Entity) null);
         BlockHitResult optional = level.clip(context);
         if(optional.getType() == BlockHitResult.Type.MISS)
         {

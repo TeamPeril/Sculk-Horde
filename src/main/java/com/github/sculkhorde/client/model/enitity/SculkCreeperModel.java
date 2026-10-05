@@ -10,7 +10,7 @@ public class SculkCreeperModel extends DefaultedEntityGeoModel<SculkCreeperEntit
 
 
     public SculkCreeperModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_creeper"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_creeper"));
     }
 
     // We want our model to render using the translucent render type

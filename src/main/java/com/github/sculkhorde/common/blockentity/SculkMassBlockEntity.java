@@ -12,6 +12,7 @@ import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFacto
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -51,8 +52,8 @@ public class SculkMassBlockEntity extends BlockEntity {
      * @param compoundNBT Where NBT data is stored.
      */
     @Override
-    public void load(CompoundTag compoundNBT) {
-        super.load(compoundNBT);
+    protected void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(compoundNBT, lookupProvider);
         this.storedSculkMass = compoundNBT.getInt(storedSculkMassIdentifier);
     }
 
@@ -62,10 +63,10 @@ public class SculkMassBlockEntity extends BlockEntity {
      * @return ???
      */
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
+    protected void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
 
         compoundNBT.putInt(storedSculkMassIdentifier, this.storedSculkMass);
-        super.saveAdditional(compoundNBT);
+        super.saveAdditional(compoundNBT, lookupProvider);
     }
 
     public int getStoredSculkMass()

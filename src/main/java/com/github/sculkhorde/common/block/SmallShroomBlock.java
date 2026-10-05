@@ -2,8 +2,7 @@ package com.github.sculkhorde.common.block;
 
 import com.github.sculkhorde.core.ModBlocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraftforge.common.extensions.IForgeBlock;
-public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
+public class SmallShroomBlock extends SculkFloraBlock {
 
     /*
      *  NOTE:
@@ -47,7 +46,7 @@ public class SmallShroomBlock extends SculkFloraBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.copy(ModBlocks.GRASS.get())
+        return Properties.ofFullCopy(ModBlocks.GRASS.get())
                 .sound(SoundType.SLIME_BLOCK);
     }
 }

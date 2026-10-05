@@ -8,7 +8,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class ChaosTeleporationRiftModel extends DefaultedEntityGeoModel<ChaosTeleporationRiftEntity> {
     public ChaosTeleporationRiftModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "chaos_teleporation_rift"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "chaos_teleporation_rift"));
     }
 
     // We want our model to render using the translucent render type

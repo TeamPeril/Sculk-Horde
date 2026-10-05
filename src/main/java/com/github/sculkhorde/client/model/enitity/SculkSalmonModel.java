@@ -15,12 +15,12 @@ public class SculkSalmonModel extends DefaultedEntityGeoModel<SculkSalmonEntity>
      * The asset path should be the truncated relative path from the base folder.<br>
      * E.G.
      * <pre>{@code
-     * 	new ResourceLocation("myMod", "animals/red_fish")
+     * 	ResourceLocation.fromNamespaceAndPath("myMod", "animals/red_fish")
      * }</pre>
      *
      */
     public SculkSalmonModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_salmon"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_salmon"));
     }
 
     // We want our model to render using the translucent render type

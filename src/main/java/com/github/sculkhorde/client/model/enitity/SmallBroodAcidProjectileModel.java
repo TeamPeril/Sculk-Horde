@@ -13,7 +13,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 public class SmallBroodAcidProjectileModel extends DefaultedEntityGeoModel<SmallBroodAcidProjectileEntity> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public SmallBroodAcidProjectileModel() {
-		super(new ResourceLocation(SculkHorde.MOD_ID, "soul_poison_projectile"));
+		super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "soul_poison_projectile"));
 	}
 
 	// We want our model to render using the translucent render type

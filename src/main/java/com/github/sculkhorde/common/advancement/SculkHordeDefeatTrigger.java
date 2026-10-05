@@ -2,41 +2,34 @@ package com.github.sculkhorde.common.advancement;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public class SculkHordeDefeatTrigger extends SimpleCriterionTrigger<SculkHordeDefeatTrigger.SculkHordeDefeatCriterion> implements CustomCriterionTrigger{
-
+/** Codec-backed custom advancement trigger for 1.21.1. */
+public class SculkHordeDefeatTrigger extends SimpleCriterionTrigger<SculkHordeDefeatTrigger.SculkHordeDefeatCriterion> implements CustomCriterionTrigger {
     public static final SculkHordeDefeatTrigger INSTANCE = new SculkHordeDefeatTrigger();
-
-    /**
-     * Need to be registered in {@link com.github.sculkhorde.util.ModEventSubscriber}.
-     */
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "sculk_horde_defeat_trigger");
+    static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_horde_defeat_trigger");
 
     @Override
-    public ResourceLocation getId() {
-        return ID;
+    public Codec<SculkHordeDefeatCriterion> codec() {
+        return SculkHordeDefeatCriterion.CODEC;
     }
 
     @Override
-    public SculkHordeDefeatCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
-        return new SculkHordeDefeatCriterion(awarePredicate);
-    }
-
     public void trigger(ServerPlayer player) {
-        this.trigger(player, Predicates.alwaysTrue());
+        trigger(player, Predicates.alwaysTrue());
     }
 
-    public static class SculkHordeDefeatCriterion extends AbstractCriterionTriggerInstance {
-
-        public SculkHordeDefeatCriterion(ContextAwarePredicate awarePredicate) {
-            super(ID, awarePredicate);
-        }
+    public static record SculkHordeDefeatCriterion(java.util.Optional<ContextAwarePredicate> player)
+            implements SimpleCriterionTrigger.SimpleInstance {
+        public static final Codec<SculkHordeDefeatCriterion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player")
+                        .forGetter(SculkHordeDefeatCriterion::player)
+        ).apply(instance, SculkHordeDefeatCriterion::new));
     }
 }

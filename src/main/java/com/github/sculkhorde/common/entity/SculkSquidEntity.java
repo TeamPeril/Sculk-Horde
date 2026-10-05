@@ -38,15 +38,15 @@ import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -90,7 +90,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     {
         super(type, worldIn);
         this.moveControl = new FishMoveControl(this);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**
@@ -181,12 +181,12 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         if(SculkHorde.isDebugMode())
         {
-            player.displayClientMessage(Component.literal("Running Goals: " + goalSelector.getRunningGoals().toString()), false);
+            player.displayClientMessage(Component.literal("Running Goals: " + goalSelector.getAvailableGoals().stream().filter(goal -> goal.isRunning()).toList().toString()), false);
             player.displayClientMessage(Component.literal("\nTarget: " + getTarget()), false);
 
             if(getTarget() != null)
             {
-                EntityAlgorithms.applyEffectToTarget(getTarget(), MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0);
+                EntityAlgorithms.applyEffectToTarget(getTarget(), MobEffects.GLOWING.value(), TickUnits.convertSecondsToTicks(10), 0);
             }
 
             return InteractionResult.PASS;
@@ -402,7 +402,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
         @Override
         public void start() {
-            EntityAlgorithms.applyEffectToTarget(mob, MobEffects.MOVEMENT_SPEED, TickUnits.convertSecondsToTicks(CHARGE_DURATION), 4);
+            EntityAlgorithms.applyEffectToTarget(mob, MobEffects.MOVEMENT_SPEED.value(), TickUnits.convertSecondsToTicks(CHARGE_DURATION), 4);
             lastTimeOfAttack = level().getGameTime();
             attackStartTime = level().getGameTime();
             triggerAnim("boost_controller", "boost");
@@ -448,7 +448,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
             if(this.mob instanceof SculkSquidEntity squid && DifficultyUtil.isCurrentDifficultyHard())
             {
-                EntityAlgorithms.applyEffectToTarget(target, MobEffects.BLINDNESS, TickUnits.convertSecondsToTicks(3), 0);
+                EntityAlgorithms.applyEffectToTarget(target, MobEffects.BLINDNESS.value(), TickUnits.convertSecondsToTicks(3), 0);
                 squid.spawnInk();
             }
         }
@@ -502,7 +502,7 @@ public class SculkSquidEntity extends WaterAnimal implements GeoEntity, ISculkSm
 
             if(targetMob.getHealth() < ATTACK_DAMAGE)
             {
-                EntityAlgorithms.applyEffectToTarget(targetMob, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(targetMob, ModMobEffects.SCULK_INFECTION.value(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 spawnInk();
             }
             else

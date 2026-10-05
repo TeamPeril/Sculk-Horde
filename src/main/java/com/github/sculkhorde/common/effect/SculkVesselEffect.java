@@ -42,24 +42,25 @@ public class SculkVesselEffect extends MobEffect {
 
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amp) {
-        if(entity.level().isClientSide() ) { return;}
+    public boolean applyEffectTick(LivingEntity entity, int amp) {
+        if(entity.level().isClientSide() ) { return false;}
 
         // Give strength and speed to the player if near sculk node
         Optional<ModSavedData.NodeEntry> nearestNode = NodeUtil.getClosestNode((ServerLevel) entity.level(), entity.blockPosition());
 
         if(nearestNode.isEmpty() || ModSavedData.getSaveData().isHordeDefeated())
         {
-            return;
+            return false;
         }
 
         boolean isInSameDimension = BlockAlgorithms.areTheseDimensionsEqual((ServerLevel) entity.level(), nearestNode.get().getDimension());
         boolean inRangeOfNode = BlockAlgorithms.getBlockDistance(entity.blockPosition(), nearestNode.get().getPosition()) <= 200;
         if(isInSameDimension && inRangeOfNode)
         {
-            EntityAlgorithms.applyEffectToTarget(entity, MobEffects.MOVEMENT_SPEED, TickUnits.convertMinutesToTicks(2), 0);
-            EntityAlgorithms.applyEffectToTarget(entity, MobEffects.DAMAGE_BOOST, TickUnits.convertMinutesToTicks(2), 0);
+            EntityAlgorithms.applyEffectToTarget(entity, MobEffects.MOVEMENT_SPEED.value(), TickUnits.convertMinutesToTicks(2), 0);
+            EntityAlgorithms.applyEffectToTarget(entity, MobEffects.DAMAGE_BOOST.value(), TickUnits.convertMinutesToTicks(2), 0);
         }
+        return true;
 
     }
 
@@ -73,7 +74,7 @@ public class SculkVesselEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         if(cooldownTicksRemaining > 0)
         {
             cooldownTicksRemaining--;
@@ -83,7 +84,6 @@ public class SculkVesselEffect extends MobEffect {
         return true;
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;

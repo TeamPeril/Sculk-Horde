@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ModItems;
@@ -7,10 +8,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,9 +23,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -38,7 +40,12 @@ import org.lwjgl.glfw.GLFW;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBlock {
+public class SculkBeeNestCellBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(SculkBeeNestCellBlock::new);
+    }
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -117,7 +124,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.copy(Blocks.BEE_NEST)
+        Properties prop = Properties.ofFullCopy(Blocks.BEE_NEST)
                 .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
@@ -191,10 +198,8 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
             {
                 pLevel.playSound(pPlayer, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 dropResin(pLevel, pPos);
-                itemstack.hurtAndBreak(1, pPlayer, (p_226874_1_) ->
-                {
-                    p_226874_1_.broadcastBreakEvent(pHand);
-                });
+                itemstack.hurtAndBreak(1, pPlayer,
+                        pHand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 resetMature(pLevel, pState, pPos);
 
                 return InteractionResult.sidedSuccess(pLevel.isClientSide);
@@ -210,7 +215,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     /** TOOLTIPS **/
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_bee_nest_cell.functionality"));

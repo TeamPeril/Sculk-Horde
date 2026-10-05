@@ -7,6 +7,7 @@ import com.github.sculkhorde.util.TickUnits;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -20,21 +21,20 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class SculkSweeperSword extends SwordItem implements IForgeItem {
+public class SculkSweeperSword extends SwordItem {
 
     public SculkSweeperSword() {
         this(Tiers.DIAMOND, 3, -2.2F, new Item.Properties().rarity(Rarity.EPIC).setNoRepair().durability(100));
     }
     public SculkSweeperSword(Tier tier, int baseDamage, float baseAttackSpeed, Properties prop) {
-        super(tier, baseDamage, baseAttackSpeed, prop);
+        super(tier, prop.attributes(SwordItem.createAttributes(tier, baseDamage, baseAttackSpeed)));
     }
 
     private void doSpikeAttack(LivingEntity ownerEntity, LivingEntity targetEntity, ItemStack itemStack)
@@ -97,7 +97,7 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_sweeper_sword.functionality"));
@@ -126,11 +126,11 @@ public class SculkSweeperSword extends SwordItem implements IForgeItem {
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
     {
-        if(enchantment == Enchantments.MENDING)
+        if(enchantment.description().equals(net.minecraft.network.chat.Component.translatable("enchantment.minecraft.mending")))
         {
             return false;
         }
 
-        return enchantment.category.canEnchant(stack.getItem());
+        return enchantment.canEnchant(stack);
     }
 }

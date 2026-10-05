@@ -33,17 +33,17 @@ public class DenseEffect extends MobEffect {
 
         DenseEffect effect = ModMobEffects.DENSE.get();
 
-        if(victim.hasEffect(effect))
+        if(victim.hasEffect(ModMobEffects.DENSE))
         {
-            victim.addEffect(new MobEffectInstance(effect, duration + victim.getEffect(ModMobEffects.DENSE.get()).getDuration(), 0));
+            victim.addEffect(new MobEffectInstance(ModMobEffects.DENSE, duration + victim.getEffect(ModMobEffects.DENSE).getDuration(), 0));
             return;
         }
 
-        victim.addEffect(new MobEffectInstance(effect, duration, 0));
+        victim.addEffect(new MobEffectInstance(ModMobEffects.DENSE, duration, 0));
     }
 
     @Override
-    public void applyEffectTick(LivingEntity victimEntity, int amp) {
+    public boolean applyEffectTick(LivingEntity victimEntity, int amp) {
 
         if(!victimEntity.onGround() && isBeyondRequiredDistanceFromGround(victimEntity))
         {
@@ -51,6 +51,7 @@ public class DenseEffect extends MobEffect {
             victimEntity.push(0, -0.07 - (0.1 * victimEntity.getSpeed()), 0);
             victimEntity.hurtMarked = true;
         }
+        return true;
     }
 
     public static boolean isBeyondRequiredDistanceFromGround(LivingEntity e) {
@@ -81,7 +82,7 @@ public class DenseEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         return true;
     }
 }

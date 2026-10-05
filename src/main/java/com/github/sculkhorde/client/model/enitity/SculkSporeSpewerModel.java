@@ -8,7 +8,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SculkSporeSpewerModel extends DefaultedEntityGeoModel<SculkSporeSpewerEntity> {
     public SculkSporeSpewerModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_spore_spewer"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_spore_spewer"));
     }
 
     // We want our model to render using the translucent render type

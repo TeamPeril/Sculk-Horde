@@ -16,8 +16,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -29,7 +29,7 @@ public class SmallBroodAcidProjectileRenderer extends GeoEntityRenderer<SmallBro
     }
 
     @Override
-    public void actuallyRender(PoseStack poseStack, SmallBroodAcidProjectileEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void actuallyRender(PoseStack poseStack, SmallBroodAcidProjectileEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int renderColor) {
         poseStack.pushPose();
 
         if (!isReRender) {
@@ -43,7 +43,7 @@ public class SmallBroodAcidProjectileRenderer extends GeoEntityRenderer<SmallBro
             animationState.setData(DataTickets.ENTITY, animatable);
             Objects.requireNonNull(animationState);
             currentModel.addAdditionalStateData(animatable, instanceId, animationState::setData);
-            currentModel.handleAnimations(animatable, instanceId, animationState);
+            currentModel.handleAnimations(animatable, instanceId, animationState, partialTick);
         }
 
         // Apply entity rotation
@@ -61,7 +61,7 @@ public class SmallBroodAcidProjectileRenderer extends GeoEntityRenderer<SmallBro
         }
 
         if (renderType != null) {
-            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, renderColor);
         }
 
         poseStack.popPose();

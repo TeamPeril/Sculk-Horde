@@ -1,7 +1,7 @@
 package com.github.sculkhorde.util;
 
 import com.github.sculkhorde.modding_api.SculkHordeEventHooks;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 public class SculkHordeEventSubscriber {
 

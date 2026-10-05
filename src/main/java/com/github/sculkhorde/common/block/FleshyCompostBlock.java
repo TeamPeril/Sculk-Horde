@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.FleshyCompostBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -27,11 +28,15 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
-public class FleshyCompostBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+public class FleshyCompostBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(FleshyCompostBlock::new);
+    }
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 

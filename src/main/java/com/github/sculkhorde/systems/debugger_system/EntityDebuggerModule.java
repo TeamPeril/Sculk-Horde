@@ -103,7 +103,7 @@ public class EntityDebuggerModule extends DebuggerModule {
     public void setMobNameToGoals(Mob mob)
     {
         String customDebugName = "";
-        for(WrappedGoal wrappedGoal : mob.goalSelector.getRunningGoals().toList())
+        for(WrappedGoal wrappedGoal : mob.goalSelector.getAvailableGoals().stream().filter(WrappedGoal::isRunning).toList())
         {
             Goal goal = wrappedGoal.getGoal();
             if(goal instanceof IDebuggableGoal debugGoal)

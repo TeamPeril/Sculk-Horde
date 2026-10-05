@@ -28,16 +28,16 @@ import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -88,7 +88,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
      */
     public LivingArmorEntity(EntityType<? extends LivingArmorEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
         this.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
         this.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.SHIELD));
         this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
@@ -298,7 +298,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
     }
 
     public void disableShield(boolean increase) {
-        float chance = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
+        float chance = 0.25F + (float) 0 * 0.05F;
         if (increase) chance += 0.75;
         if (this.random.nextFloat() < chance) {
             this.stopUsingItem();
@@ -481,7 +481,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
                 return false;
             }
 
-            if(!getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
+            if(!getItemInOffHand().canPerformAction(ItemAbilities.SHIELD_BLOCK))
             {
                 return false;
             }
@@ -512,7 +512,7 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
         protected Optional<ItemStack> getOffhandStackIfShield()
         {
-            if(!getItemInOffHand().isEmpty() || getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
+            if(!getItemInOffHand().isEmpty() || getItemInOffHand().canPerformAction(ItemAbilities.SHIELD_BLOCK))
             {
                 return Optional.of(getItemInOffHand());
             }
@@ -522,12 +522,12 @@ public class LivingArmorEntity extends Monster implements GeoEntity, ISculkSmart
 
         protected boolean raiseShield()
         {
-            if(getItemInOffHand().canPerformAction(ToolActions.SHIELD_BLOCK))
+            if(getItemInOffHand().canPerformAction(ItemAbilities.SHIELD_BLOCK))
             {
                 startUsingItem(InteractionHand.OFF_HAND);
                 timeOfRaiseShield = level().getGameTime();
                 shieldIsUp = true;
-                level().playSound(LivingArmorEntity.this, blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.HOSTILE, 1.0F, 1.0F);
+                level().playSound(LivingArmorEntity.this, blockPosition(), SoundEvents.ARMOR_EQUIP_CHAIN.value(), SoundSource.HOSTILE, 1.0F, 1.0F);
                 return true;
             }
             return false;

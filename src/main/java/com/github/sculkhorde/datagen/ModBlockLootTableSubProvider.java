@@ -2,8 +2,11 @@ package com.github.sculkhorde.datagen;
 
 import com.github.sculkhorde.core.ModBlocks;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
@@ -14,28 +17,28 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import oshi.util.tuples.Pair;
 
 import java.util.Set;
 
 public class ModBlockLootTableSubProvider extends BlockLootSubProvider {
 
-    protected ModBlockLootTableSubProvider() {
-        super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+    protected ModBlockLootTableSubProvider(HolderLookup.Provider registries) {
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
     }
 
     @Override
     protected void generate() {
-        for (Pair<RegistryObject<? extends Block>, ResourceLocation> pair : ModBlocks.BLOCKS_TO_DATAGEN) {
+        for (Pair<DeferredHolder<Block, ? extends Block>, ResourceLocation> pair : ModBlocks.BLOCKS_TO_DATAGEN) {
             if (pair.getA().get() instanceof SlabBlock) {
                 map.put(
-                        pair.getA().getId().withPrefix("blocks/"),
+                        ResourceKey.create(Registries.LOOT_TABLE, pair.getA().getId().withPrefix("blocks/")),
                         createSlabItemTableWithNoExplosionDecay(pair.getA().get())
                 );
             } else {
                 map.put(
-                        pair.getA().getId().withPrefix("blocks/"),
+                        ResourceKey.create(Registries.LOOT_TABLE, pair.getA().getId().withPrefix("blocks/")),
                         createSingleItemTableWithNoExplosionDecay(pair.getA().get())
                 );
             }

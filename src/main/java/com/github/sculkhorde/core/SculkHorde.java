@@ -2,6 +2,7 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.loot.ModLootModifier;
 import com.github.sculkhorde.common.pools.PoolBlocks;
+import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.misc.contributions.ContributionHandler;
 import com.github.sculkhorde.systems.*;
@@ -18,17 +19,12 @@ import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.bus.api.IEventBus;
 import org.slf4j.Logger;
-import software.bernie.geckolib.GeckoLib;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
 //It takes in our mod id so it knows what mod it is loading.
-@Mod(SculkHorde.MOD_ID)
 public class SculkHorde {
 
     //Here I've created a variable of our mod id so we can use it throughout our project
@@ -63,19 +59,15 @@ public class SculkHorde {
     public static AmbientSFXSystem ambientSFXSystem = new AmbientSFXSystem();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
-    public SculkHorde()
+    public SculkHorde(IEventBus bus, net.neoforged.fml.ModContainer container)
     {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.register(this);
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER, ModConfig.SERVER_SPEC);
+        bus.addListener(SoulHarvesterBlockEntity::registerCapabilities);
 
-        ModConfig.loadConfig(ModConfig.SERVER_SPEC, FMLPaths.CONFIGDIR.get().resolve(MOD_ID + "_config.toml").toString());
-
-        GeckoLib.initialize();
         ModItems.ITEMS.register(bus); //Load Items
         ModBlockEntities.register(bus); //Load Tile Entities
         ModBlocks.BLOCKS.register(bus); //Load Blocks
         ModEntities.register(bus); //Load Entities (this may not be necessary anymore)
-        bus.register(ModEntities.class); //Load Entities
         ModStructures.STRUCTURES.register(bus); //Load Structures
         ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
         ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
@@ -83,6 +75,7 @@ public class SculkHorde {
         ModPotions.register(bus); //Load Potions
         ModMenuTypes.register(bus); //Load Menus
         ModMobEffects.EFFECTS.register(bus); //Load Effects
+        ModCriterionTriggers.TRIGGERS.register(bus);
         ModParticles.PARTICLE_TYPES.register(bus); //Load Particles
         ModSounds.SOUND_EVENTS.register(bus); //Load Sounds
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs

@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.InfestedTagBlockEntity;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.ITagInfestedBlock;
@@ -9,9 +10,13 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
-public class InfestedTagBlock extends BaseEntityBlock implements IForgeBlock, ITagInfestedBlock {
+public class InfestedTagBlock extends BaseEntityBlock implements ITagInfestedBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(InfestedTagBlock::new);
+    }
 
     /**
      * The Constructor that takes in properties

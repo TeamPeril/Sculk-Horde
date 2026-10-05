@@ -18,7 +18,7 @@ import java.util.List;
 public class JEISculkHordePlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(SculkHorde.MOD_ID, "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "jei_plugin");
     }
 
     @Override
@@ -30,7 +30,8 @@ public class JEISculkHordePlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
 
-        List<SoulHarvestingRecipe> soulHarvestingRecipes = recipeManager.getAllRecipesFor(SoulHarvestingRecipe.Type.INSTANCE);
+        List<SoulHarvestingRecipe> soulHarvestingRecipes = recipeManager.getAllRecipesFor(SoulHarvestingRecipe.Type.INSTANCE)
+                .stream().map(holder -> holder.value()).toList();
         registration.addRecipes(SoulHarvestingCategory.SOUL_HARVESTING_TYPE, soulHarvestingRecipes);
     }
 

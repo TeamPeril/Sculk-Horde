@@ -16,6 +16,8 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -39,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
-public class BroodNestBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem{
+public class BroodNestBlockEntity extends BlockEntity implements GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem{
     protected long lastTickTime = 0;
     protected int minTickInterval = TickUnits.convertSecondsToTicks(15);
 
@@ -222,11 +224,11 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
 
     /* ~~~~~~~~ Save/Load Events ~~~~~~~~  */
 
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(nbt, lookupProvider);
 
         if (nbt.contains("listener", 10)) {
-            VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+            VibrationSystem.Data.CODEC.parse(new Dynamic<>(lookupProvider.createSerializationContext(NbtOps.INSTANCE), nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
                 this.vibrationData = data;
             });
         }
@@ -244,10 +246,10 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
 
     }
 
-    protected void saveAdditional(CompoundTag nbt)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider)
     {
-        super.saveAdditional(nbt);
-        VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+        super.saveAdditional(nbt, lookupProvider);
+        VibrationSystem.Data.CODEC.encodeStart(lookupProvider.createSerializationContext(NbtOps.INSTANCE), this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
 
@@ -301,7 +303,7 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
             return GameEventTags.SHRIEKER_CAN_LISTEN;
         }
 
-        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent event, GameEvent.Context context) {
+        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> event, GameEvent.Context context) {
 
             // If world is not a server world, return
             if(level.isClientSide)
@@ -339,7 +341,7 @@ public class BroodNestBlockEntity extends BlockEntity implements GameEventListen
             return true;
         }
 
-        public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
+        public void onReceiveVibration(ServerLevel level, BlockPos blockPos, Holder<GameEvent> gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
             broodNest.lastTickTime = level.getGameTime();
             VirtualWebSpreadCursor cursor = CursorSystem.createWebSpreadCursor(level, broodNest.worldPosition);

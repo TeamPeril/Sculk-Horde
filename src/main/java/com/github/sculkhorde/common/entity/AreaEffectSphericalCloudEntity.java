@@ -7,11 +7,16 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,7 +25,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
@@ -35,16 +40,16 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
 
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int TIME_BETWEEN_APPLICATIONS = 5;
-    private static final EntityDataAccessor<Float> DATA_RADIUS = SynchedEntityData.defineId(AreaEffectCloud.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Integer> DATA_COLOR = SynchedEntityData.defineId(AreaEffectCloud.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_WAITING = SynchedEntityData.defineId(AreaEffectCloud.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<ParticleOptions> DATA_PARTICLE = SynchedEntityData.defineId(AreaEffectCloud.class, EntityDataSerializers.PARTICLE);
+    private static final EntityDataAccessor<Float> DATA_RADIUS = SynchedEntityData.defineId(AreaEffectSphericalCloudEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> DATA_COLOR = SynchedEntityData.defineId(AreaEffectSphericalCloudEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DATA_WAITING = SynchedEntityData.defineId(AreaEffectSphericalCloudEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ParticleOptions> DATA_PARTICLE = SynchedEntityData.defineId(AreaEffectSphericalCloudEntity.class, EntityDataSerializers.PARTICLE);
     private static final float MAX_RADIUS = 32.0F;
     private static final float MINIMAL_RADIUS = 0.5F;
     private static final float DEFAULT_RADIUS = 3.0F;
     public static final float DEFAULT_WIDTH = 6.0F;
     public static final float HEIGHT = 0.5F;
-    private Potion potion = Potions.EMPTY;
+    private PotionContents potionContents = PotionContents.EMPTY;
     private final List<MobEffectInstance> effects = Lists.newArrayList();
     private final Map<Entity, Integer> victims = Maps.newHashMap();
     private int duration = 600;
@@ -74,11 +79,11 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
         this.setPos(x, y, z);
     }
 
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_COLOR, 0);
-        this.getEntityData().define(DATA_RADIUS, DEFAULT_RADIUS);
-        this.getEntityData().define(DATA_WAITING, false);
-        this.getEntityData().define(DATA_PARTICLE, ParticleTypes.ENTITY_EFFECT);
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+        builder.define(DATA_COLOR, 0);
+        builder.define(DATA_RADIUS, DEFAULT_RADIUS);
+        builder.define(DATA_WAITING, false);
+        builder.define(DATA_PARTICLE, ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0));
     }
 
     public void setRadius(float radius) {
@@ -100,23 +105,28 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
         return this.getEntityData().get(DATA_RADIUS);
     }
 
-    public void setPotion(Potion p_19723_) {
-        this.potion = p_19723_;
+    /** Sets the base potion while retaining the 1.21.1 potion_contents representation. */
+    public void setPotion(net.minecraft.core.Holder<Potion> p_19723_) {
+        this.potionContents = p_19723_ == null ? PotionContents.EMPTY : new PotionContents(p_19723_);
         if (!this.fixedColor) {
             this.updateColor();
         }
-
     }
-
+    private void setPotionContents(PotionContents contents) {
+        this.potionContents = contents;
+        if (!this.fixedColor) {
+            this.updateColor();
+        }
+    }
     private void updateColor() {
-        if (this.potion == Potions.EMPTY && this.effects.isEmpty()) {
+        if (!this.potionContents.hasEffects() && this.effects.isEmpty()) {
             this.getEntityData().set(DATA_COLOR, 0);
         } else {
-            this.getEntityData().set(DATA_COLOR, PotionUtils.getColor(PotionUtils.getAllEffects(this.potion, this.effects)));
+            List<MobEffectInstance> allEffects = Lists.newArrayList(this.potionContents.getAllEffects());
+            allEffects.addAll(this.effects);
+            this.getEntityData().set(DATA_COLOR, PotionContents.getColor(allEffects));
         }
-
     }
-
     public void addEffect(MobEffectInstance p_19717_) {
         this.effects.add(p_19717_);
         if (!this.fixedColor) {
@@ -239,7 +249,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
                 });
                 List<MobEffectInstance> list = Lists.newArrayList();
 
-                for(MobEffectInstance mobeffectinstance : this.potion.getEffects()) {
+                for(MobEffectInstance mobeffectinstance : this.potionContents.getAllEffects()) {
                     list.add(new MobEffectInstance(mobeffectinstance.getEffect(), mobeffectinstance.mapDuration((p_267926_) -> {
                         return p_267926_ / 4;
                     }), mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()));
@@ -260,8 +270,8 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
                                     this.victims.put(livingentity, this.tickCount + this.reapplicationDelay);
 
                                     for(MobEffectInstance mobeffectinstance1 : list) {
-                                        if (mobeffectinstance1.getEffect().isInstantenous()) {
-                                            mobeffectinstance1.getEffect().applyInstantenousEffect(this, this.getOwner(), livingentity, mobeffectinstance1.getAmplifier(), 0.5D);
+                                        if (mobeffectinstance1.getEffect().value().isInstantenous()) {
+                                            mobeffectinstance1.getEffect().value().applyInstantenousEffect(this, this.getOwner(), livingentity, mobeffectinstance1.getAmplifier(), 0.5D);
                                         } else {
                                             livingentity.addEffect(new MobEffectInstance(mobeffectinstance1), this);
                                         }
@@ -358,7 +368,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
 
         if (p_19727_.contains("Particle", 8)) {
             try {
-                this.setParticle(ParticleArgument.readParticle(new StringReader(p_19727_.getString("Particle")), BuiltInRegistries.PARTICLE_TYPE.asLookup()));
+                this.setParticle(ParticleArgument.readParticle(new StringReader(p_19727_.getString("Particle")), this.registryAccess()));
             } catch (CommandSyntaxException commandsyntaxexception) {
                 LOGGER.warn("Couldn't load custom particle {}", p_19727_.getString("Particle"), commandsyntaxexception);
             }
@@ -368,8 +378,17 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
             this.setFixedColor(p_19727_.getInt("Color"));
         }
 
-        if (p_19727_.contains("Potion", 8)) {
-            this.setPotion(PotionUtils.getPotion(p_19727_));
+        RegistryOps<Tag> registryOps = this.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        if (p_19727_.contains("potion_contents")) {
+            PotionContents.CODEC.parse(registryOps, p_19727_.get("potion_contents"))
+                    .resultOrPartial(error -> LOGGER.warn("Failed to parse spherical cloud potion contents: {}", error))
+                    .ifPresent(this::setPotionContents);
+        } else if (p_19727_.contains("Potion", 8)) {
+            // Read the pre-1.21 key for existing worlds, then use the component representation going forward.
+            ResourceLocation id = ResourceLocation.tryParse(p_19727_.getString("Potion"));
+            if (id != null) {
+                BuiltInRegistries.POTION.getHolder(id).ifPresent(holder -> this.setPotionContents(new PotionContents(holder)));
+            }
         }
 
         if (p_19727_.contains("Effects", 9)) {
@@ -395,7 +414,7 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
         p_19737_.putFloat("RadiusOnUse", this.radiusOnUse);
         p_19737_.putFloat("RadiusPerTick", this.radiusPerTick);
         p_19737_.putFloat("Radius", this.getRadius());
-        p_19737_.putString("Particle", this.getParticle().writeToString());
+        p_19737_.putString("Particle", this.getParticle().getType().toString());
         if (this.ownerUUID != null) {
             p_19737_.putUUID("Owner", this.ownerUUID);
         }
@@ -404,15 +423,16 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
             p_19737_.putInt("Color", this.getColor());
         }
 
-        if (this.potion != Potions.EMPTY) {
-            p_19737_.putString("Potion", BuiltInRegistries.POTION.getKey(this.potion).toString());
+        RegistryOps<Tag> registryOps = this.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        if (!this.potionContents.equals(PotionContents.EMPTY)) {
+            p_19737_.put("potion_contents", PotionContents.CODEC.encodeStart(registryOps, this.potionContents).getOrThrow());
         }
 
         if (!this.effects.isEmpty()) {
             ListTag listtag = new ListTag();
 
             for(MobEffectInstance mobeffectinstance : this.effects) {
-                listtag.add(mobeffectinstance.save(new CompoundTag()));
+                listtag.add(mobeffectinstance.save());
             }
 
             p_19737_.put("Effects", listtag);
@@ -428,8 +448,13 @@ public class AreaEffectSphericalCloudEntity extends Entity implements TraceableE
         super.onSyncedDataUpdated(p_19729_);
     }
 
+    /** Legacy accessor retained for callers that only need the registered base potion. */
     public Potion getPotion() {
-        return this.potion;
+        return this.potionContents.potion().map(holder -> holder.value()).orElse(null);
+    }
+
+    public PotionContents getPotionContents() {
+        return this.potionContents;
     }
 
     public PushReaction getPistonPushReaction() {

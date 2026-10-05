@@ -8,7 +8,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class EnderBubbleAttackModel extends DefaultedEntityGeoModel<EnderBubbleAttackEntity> {
     public EnderBubbleAttackModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "ender_bubble_attack"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "ender_bubble_attack"));
     }
 
     // We want our model to render using the translucent render type

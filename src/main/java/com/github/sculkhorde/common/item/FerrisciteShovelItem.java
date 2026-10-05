@@ -3,7 +3,9 @@ package com.github.sculkhorde.common.item;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,14 +13,13 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class FerrisciteShovelItem extends ShovelItem implements IForgeItem, IHealthRepairable {
+public class FerrisciteShovelItem extends ShovelItem implements IHealthRepairable {
     protected static float ATTACK_SPEED = -3.0F;
     protected static int ATTACK_DAMAGE = 2;
     public static String blocksBrokenTagID = "blocks_broken";
@@ -27,11 +28,10 @@ public class FerrisciteShovelItem extends ShovelItem implements IForgeItem, IHea
     protected static Properties PROPERTIES = new Properties()
             .setNoRepair()
             .rarity(Rarity.EPIC)
-            .durability(3000)
-            .defaultDurability(3000);
+            .durability(3000);
 
     public FerrisciteShovelItem() {
-        super(Tiers.IRON, ATTACK_DAMAGE, ATTACK_SPEED, PROPERTIES);
+        super(Tiers.IRON, PROPERTIES.attributes(DiggerItem.createAttributes(Tiers.IRON, ATTACK_DAMAGE, ATTACK_SPEED)));
     }
 
     @Override
@@ -72,61 +72,52 @@ public class FerrisciteShovelItem extends ShovelItem implements IForgeItem, IHea
         return super.mineBlock(pickaxe, level, blockState, pos, entity);
     }
 
+    private static CompoundTag getCustomData(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data == null ? new CompoundTag() : data.copyTag();
+    }
+
+    private static void setCustomData(ItemStack stack, CompoundTag data) {
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
+    }
+
     public static int getBlocksBroken(ItemStack stack)
     {
-        CompoundTag nbt = stack.getOrCreateTag();
-        if(!nbt.contains(blocksBrokenTagID))
-        {
-            return 0;
-        }
-
-        return nbt.getInt(blocksBrokenTagID);
+        CompoundTag nbt = getCustomData(stack);
+        return nbt.contains(blocksBrokenTagID) ? nbt.getInt(blocksBrokenTagID) : 0;
     }
 
     public static void incrementBlocksBroken(ItemStack stack)
     {
-        CompoundTag nbt = stack.getOrCreateTag();
-        if(!nbt.contains(blocksBrokenTagID))
-        {
-            return;
-        }
-
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || !data.contains(blocksBrokenTagID)) return;
+        CompoundTag nbt = data.copyTag();
         nbt.putInt(blocksBrokenTagID, Math.min(nbt.getInt(blocksBrokenTagID) + 1, 1000));
+        setCustomData(stack, nbt);
     }
 
     public static void resetBlocksBroken(ItemStack stack)
     {
-        CompoundTag nbt = stack.getOrCreateTag();
-        if(!nbt.contains(blocksBrokenTagID))
-        {
-            return;
-        }
-
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || !data.contains(blocksBrokenTagID)) return;
+        CompoundTag nbt = data.copyTag();
         nbt.putInt(blocksBrokenTagID, Math.max(0, nbt.getInt(blocksBrokenTagID) - 20));
+        setCustomData(stack, nbt);
     }
 
     public static boolean isBlockEqualToLastBlockBroken(ItemStack stack, Block block)
     {
-        CompoundTag nbt = stack.getOrCreateTag();
-        if(!nbt.contains(lastBlockBrokenID))
-        {
-            return false;
-        }
-
-        return nbt.getString(lastBlockBrokenID).equals(block.toString());
+        CompoundTag nbt = getCustomData(stack);
+        return nbt.contains(lastBlockBrokenID) && nbt.getString(lastBlockBrokenID).equals(block.toString());
     }
 
     public static void updateLastBlockBroken(ItemStack stack, Block block)
     {
-        CompoundTag nbt = stack.getOrCreateTag();
-
-        if(!nbt.contains(lastBlockBrokenID))
-        {
-            return;
-        }
-
-
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || !data.contains(lastBlockBrokenID)) return;
+        CompoundTag nbt = data.copyTag();
         nbt.putString(lastBlockBrokenID, block.toString());
+        setCustomData(stack, nbt);
     }
 
 
@@ -135,7 +126,7 @@ public class FerrisciteShovelItem extends ShovelItem implements IForgeItem, IHea
     public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int slot, boolean selected) {
         if(!level.isClientSide())
         {
-            CompoundTag nbt = itemStack.getOrCreateTag();
+            CompoundTag nbt = getCustomData(itemStack);
             if(!nbt.contains(blocksBrokenTagID))
             {
                 nbt.putInt(blocksBrokenTagID, 0);
@@ -145,6 +136,7 @@ public class FerrisciteShovelItem extends ShovelItem implements IForgeItem, IHea
             {
                 nbt.putString(lastBlockBrokenID, "");
             }
+            setCustomData(itemStack, nbt);
 
         }
 
@@ -158,7 +150,7 @@ public class FerrisciteShovelItem extends ShovelItem implements IForgeItem, IHea
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.ferriscite_shovel.functionality"));

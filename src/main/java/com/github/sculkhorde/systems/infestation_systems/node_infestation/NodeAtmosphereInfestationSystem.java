@@ -10,7 +10,7 @@ import com.github.sculkhorde.util.InfestationUtil;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class NodeAtmosphereInfestationSystem {
     // The parent tile entity

@@ -2,37 +2,34 @@ package com.github.sculkhorde.common.advancement;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public class SculkNodeSpawnTrigger extends SimpleCriterionTrigger<SculkNodeSpawnTrigger.SculkNodeSpawnCriterion> implements CustomCriterionTrigger{
-
+/** Codec-backed custom advancement trigger for 1.21.1. */
+public class SculkNodeSpawnTrigger extends SimpleCriterionTrigger<SculkNodeSpawnTrigger.SculkNodeSpawnCriterion> implements CustomCriterionTrigger {
     public static final SculkNodeSpawnTrigger INSTANCE = new SculkNodeSpawnTrigger();
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "sculk_node_spawn");
+    static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_node_spawn");
 
     @Override
-    public ResourceLocation getId() {
-        return ID;
+    public Codec<SculkNodeSpawnCriterion> codec() {
+        return SculkNodeSpawnCriterion.CODEC;
     }
 
     @Override
-    public SculkNodeSpawnCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
-        return new SculkNodeSpawnCriterion(awarePredicate);
-    }
-
     public void trigger(ServerPlayer player) {
-        this.trigger(player, Predicates.alwaysTrue());
+        trigger(player, Predicates.alwaysTrue());
     }
 
-    public static class SculkNodeSpawnCriterion extends AbstractCriterionTriggerInstance {
-
-        public SculkNodeSpawnCriterion(ContextAwarePredicate awarePredicate) {
-            super(ID, awarePredicate);
-        }
+    public static record SculkNodeSpawnCriterion(java.util.Optional<ContextAwarePredicate> player)
+            implements SimpleCriterionTrigger.SimpleInstance {
+        public static final Codec<SculkNodeSpawnCriterion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player")
+                        .forGetter(SculkNodeSpawnCriterion::player)
+        ).apply(instance, SculkNodeSpawnCriterion::new));
     }
 }

@@ -8,7 +8,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SoulSpearSummonerModel extends DefaultedEntityGeoModel<SoulSpearSummonerAttackEntity> {
     public SoulSpearSummonerModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "soul_spear_summoner"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "soul_spear_summoner"));
     }
 
     // We want our model to render using the translucent render type

@@ -13,9 +13,8 @@ import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
-public class BuddingSouliteBlock extends HalfTransparentBlock implements IForgeBlock {
+public class BuddingSouliteBlock extends HalfTransparentBlock {
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -60,7 +59,7 @@ public class BuddingSouliteBlock extends HalfTransparentBlock implements IForgeB
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.copy(Blocks.STONE)
+        Properties prop = Properties.ofFullCopy(Blocks.STONE)
                 .mapColor(MapColor.COLOR_CYAN)
                 .strength(HARDNESS, BLAST_RESISTANCE)//Hardness & Resistance
                 .sound(SoundType.HONEY_BLOCK)

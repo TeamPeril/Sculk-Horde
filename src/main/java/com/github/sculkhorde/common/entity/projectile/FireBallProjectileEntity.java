@@ -24,8 +24,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -193,7 +193,7 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
                     entity.hurt(damageSources().generic(), getDamage());
                 }
 
-                entity.setSecondsOnFire(5 + (5 * DifficultyUtil.getCurrentDifficulty().getId()));
+                entity.setRemainingFireTicks((int)(20 * (5 + (5 * DifficultyUtil.getCurrentDifficulty().getId()))));
 
                 // Push non-player entities away from the explosion
                 if (!(entity instanceof Player))
@@ -231,7 +231,7 @@ public class FireBallProjectileEntity extends AbstractProjectileEntity implement
 
     @Override
     public Optional<SoundEvent> getImpactSound() {
-        return Optional.of(SoundEvents.GENERIC_EXPLODE);
+        return Optional.of(SoundEvents.GENERIC_EXPLODE.value());
     }
 
 
