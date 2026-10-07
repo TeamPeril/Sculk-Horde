@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "SSS",
+    "SES",
+    "SSS"
+  ],
+
+  "key":
+  {
+    "E":
+    {
+      "item": "sculkhorde:essence_of_purity"
+    },
+    "S":
+    {
+      "item": "sculkhorde:sculk_living_rock"
+    }
+  },
+
+  "result":
+  {
+    "item": "sculkhorde:infestation_ward_block",
+    "count": 16
+  }
+}

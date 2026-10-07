@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "sculkhorde:sculk_node"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_node_spawn.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_node_spawn.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "sculkhorde:sculk_horde_start",
+  "criteria": {
+    "sculk_horde_start": {
+      "trigger": "sculkhorde:sculk_node_spawn"
+    }
+  }
+}

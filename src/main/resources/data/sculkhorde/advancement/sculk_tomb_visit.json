@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:sculk"
+    },
+    "title": {
+      "translate": "achievement.sculkhorde.sculk_tomb_visit.title"
+    },
+    "description": {
+      "translate": "achievement.sculkhorde.sculk_tomb_visit.desc"
+    },
+    "background": "sculkhorde:textures/block/infested_stone.png",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "structure": "sculkhorde:sculk_tomb_main"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
