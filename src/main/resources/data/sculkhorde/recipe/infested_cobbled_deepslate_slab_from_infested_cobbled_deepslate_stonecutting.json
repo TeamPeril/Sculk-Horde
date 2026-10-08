@@ -1,8 +1,11 @@
 {
   "type": "minecraft:stonecutting",
-  "count": 2,
   "ingredient": {
     "item": "sculkhorde:infested_cobbled_deepslate"
   },
-  "result": "sculkhorde:infested_cobbled_deepslate_slab"
+  "result":
+  {
+    "id": "sculkhorde:infested_cobbled_deepslate_slab",
+    "count": 2
+  }
 }

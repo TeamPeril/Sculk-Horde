@@ -1,8 +1,11 @@
 {
   "type": "minecraft:stonecutting",
-  "count": 1,
   "ingredient": {
     "item": "sculkhorde:infested_cobblestone"
   },
-  "result": "sculkhorde:infested_cobblestone_stairs"
+  "result":
+  {
+    "id": "sculkhorde:infested_cobblestone_stairs",
+    "count": 1
+  }
 }

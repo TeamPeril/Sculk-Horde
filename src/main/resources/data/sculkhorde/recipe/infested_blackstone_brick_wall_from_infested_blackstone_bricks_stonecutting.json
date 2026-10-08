@@ -1,8 +1,11 @@
 {
   "type": "minecraft:stonecutting",
-  "count": 1,
   "ingredient": {
     "item": "sculkhorde:infested_blackstone_bricks"
   },
-  "result": "sculkhorde:infested_blackstone_brick_wall"
+  "result":
+  {
+    "id": "sculkhorde:infested_blackstone_brick_wall",
+    "count": 1
+  }
 }
