@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "#": {
-      "item": "sculkhorde:infested_cobbled_deepslate"
+      "id": "sculkhorde:infested_cobbled_deepslate"
     }
   },
   "pattern": [
@@ -11,7 +11,7 @@
   ],
   "result": {
     "count": 6,
-    "item": "sculkhorde:infested_cobbled_deepslate_slab"
+    "id": "sculkhorde:infested_cobbled_deepslate_slab"
   },
   "show_notification": true
 }

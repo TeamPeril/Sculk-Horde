@@ -8,7 +8,9 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.EnumSet;
 
@@ -106,15 +108,26 @@ public class FlyingWanderGoal extends Goal {
 
     public static Vec3 getGroundPos(Level level, Vec3 origin)
     {
-        // Shoot ray cast downward to find ground
-        ClipContext context = new ClipContext(origin, origin.add(0, level.getMaxBuildHeight() * -1, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, (net.minecraft.world.entity.Entity) null);
-        BlockHitResult optional = level.clip(context);
-        if(optional.getType() == BlockHitResult.Type.MISS)
+        // Shoot ray cast downward to the very bottom of the world
+        Vec3 destination = new Vec3(origin.x, level.getMinBuildHeight(), origin.z);
+
+        // Use CollisionContext.empty() instead of a null Entity
+        ClipContext context = new ClipContext(
+                origin,
+                destination,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.ANY,
+                CollisionContext.empty()
+        );
+
+        BlockHitResult hitResult = level.clip(context);
+
+        if(hitResult.getType() == HitResult.Type.MISS)
         {
             return origin;
         }
 
-        return optional.getLocation();
+        return hitResult.getLocation();
     }
 
     private Vec3 getRandomPosition() {

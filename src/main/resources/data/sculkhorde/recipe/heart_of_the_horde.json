@@ -7,7 +7,7 @@
   ],
   "output": {
     "count": 1,
-    "item": "sculkhorde:heart_of_the_horde"
+    "id": "sculkhorde:heart_of_the_horde"
   },
   "healthRequired": 1000
 }
