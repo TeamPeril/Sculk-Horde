@@ -46,7 +46,7 @@ public class SculkBurrowedEffect extends MobEffect implements IPotionExpireEffec
         this(effectType, liquidColor);
     }
 
-
+    @Override
     public void onPotionExpire(MobEffectEvent.Expired event)
     {
         if(event.getEntity().level().isClientSide()) { return;}

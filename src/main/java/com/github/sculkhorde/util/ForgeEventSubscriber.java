@@ -156,7 +156,7 @@ public class ForgeEventSubscriber {
             return;
         }
 
-        if(effectInstance.getEffect() instanceof IPotionExpireEffect iPotionExpireEffect)
+        if(effectInstance.getEffect().value() instanceof IPotionExpireEffect iPotionExpireEffect)
         {
             iPotionExpireEffect.onPotionExpire(event);
         }
