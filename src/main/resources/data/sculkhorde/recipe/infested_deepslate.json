@@ -6,5 +6,10 @@
   "ingredient": {
     "item": "sculkhorde:infested_cobbled_deepslate"
   },
-  "result": "sculkhorde:infested_deepslate"
+  "result":
+  {
+    "id": "sculkhorde:infested_deepslate",
+    "count": 1
+  }
+
 }

@@ -6,5 +6,8 @@
   "ingredient": {
     "item": "sculkhorde:infested_cobblestone"
   },
-  "result": "sculkhorde:infested_stone"
+  "result": {
+    "id": "sculkhorde:infested_stone",
+    "count": 1
+  }
 }

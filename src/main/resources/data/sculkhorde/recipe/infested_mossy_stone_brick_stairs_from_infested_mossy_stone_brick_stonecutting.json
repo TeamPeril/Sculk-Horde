@@ -1,8 +1,11 @@
 {
   "type": "minecraft:stonecutting",
-  "count": 1,
   "ingredient": {
     "item": "sculkhorde:infested_mossy_stone_bricks"
   },
-  "result": "sculkhorde:infested_mossy_stone_brick_stairs"
+  "result":
+  {
+    "id": "sculkhorde:infested_mossy_stone_brick_stairs",
+    "count": 1
+  }
 }

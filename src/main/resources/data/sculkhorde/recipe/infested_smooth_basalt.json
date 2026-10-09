@@ -6,5 +6,9 @@
   "ingredient": {
     "item": "sculkhorde:infested_basalt"
   },
-  "result": "sculkhorde:infested_smooth_basalt"
+  "result":
+  {
+    "id": "sculkhorde:infested_smooth_basalt",
+    "count": 1
+  }
 }

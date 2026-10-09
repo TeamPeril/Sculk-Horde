@@ -6,5 +6,8 @@
   "ingredient": {
     "item": "sculkhorde:infested_clay"
   },
-  "result": "sculkhorde:infested_terracotta"
+  "result": {
+    "id": "sculkhorde:infested_terracotta",
+    "count": 1
+  }
 }
