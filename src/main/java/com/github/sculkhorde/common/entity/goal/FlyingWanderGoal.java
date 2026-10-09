@@ -1,5 +1,6 @@
 package com.github.sculkhorde.common.entity.goal;
 
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
@@ -106,30 +107,6 @@ public class FlyingWanderGoal extends Goal {
         }
     }
 
-    public static Vec3 getGroundPos(Level level, Vec3 origin)
-    {
-        // Shoot ray cast downward to the very bottom of the world
-        Vec3 destination = new Vec3(origin.x, level.getMinBuildHeight(), origin.z);
-
-        // Use CollisionContext.empty() instead of a null Entity
-        ClipContext context = new ClipContext(
-                origin,
-                destination,
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.ANY,
-                CollisionContext.empty()
-        );
-
-        BlockHitResult hitResult = level.clip(context);
-
-        if(hitResult.getType() == HitResult.Type.MISS)
-        {
-            return origin;
-        }
-
-        return hitResult.getLocation();
-    }
-
     private Vec3 getRandomPosition() {
         RandomSource random = mob.getRandom();
         double angle = random.nextDouble() * 2.0 * Math.PI;
@@ -141,7 +118,7 @@ public class FlyingWanderGoal extends Goal {
 
         Vec3 currentPosition = mob.position();
         Vec3 targetPosition = currentPosition.add(dx, dy, dz);
-        Vec3 groundPosition = getGroundPos(mob.level(), targetPosition);
+        Vec3 groundPosition = EntityAlgorithms.getGroundPos(mob.level(), targetPosition);
 
         if(groundPosition.distanceTo(currentPosition) > maxHeightOffGround)
         {

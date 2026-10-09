@@ -99,7 +99,7 @@ public class ChaosRiftAttackGoal extends MeleeAttackGoal
         {
             BlockPos spawnPos = possibleSpawns.get(i);
             // Spawn unit
-            SpecialEffectEntity entity = ChaosTeleporationRiftEntity.spawn( mob.level(), mob, spawnPos.above().above(), ModEntities.CHAOS_TELEPORATION_RIFT.get());
+            SpecialEffectEntity entity = ChaosTeleporationRiftEntity.spawn((ServerLevel) mob.level(), mob, spawnPos.above().above(), ModEntities.CHAOS_TELEPORATION_RIFT.get());
             entity.setOwner(mob);
         }
     }

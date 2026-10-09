@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.entity.goal;
 
 import com.github.sculkhorde.common.entity.SculkPhantomEntity;
+import com.github.sculkhorde.util.EntityAlgorithms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
@@ -110,18 +111,6 @@ public class SculkPhantomWanderGoal extends Goal {
         }
     }
 
-    public static Vec3 getGroundPos(Level level, Vec3 origin)
-    {
-        // Shoot ray cast downward to find ground
-        ClipContext context = new ClipContext(origin, origin.add(0, level.getMaxBuildHeight() * -1, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, (net.minecraft.world.entity.Entity) null);
-        BlockHitResult optional = level.clip(context);
-        if(optional.getType() == BlockHitResult.Type.MISS)
-        {
-            return origin;
-        }
-
-        return optional.getLocation();
-    }
 
     private Vec3 getRandomPosition() {
         RandomSource random = mob.getRandom();
@@ -134,7 +123,7 @@ public class SculkPhantomWanderGoal extends Goal {
 
         Vec3 currentPosition = mob.position();
         Vec3 targetPosition = currentPosition.add(dx, dy, dz);
-        Vec3 groundPosition = getGroundPos(mob.level(), targetPosition);
+        Vec3 groundPosition = EntityAlgorithms.getGroundPos(mob.level(), targetPosition);
 
         if(groundPosition.distanceTo(currentPosition) > maxHeightOffGround)
         {

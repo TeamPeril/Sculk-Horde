@@ -24,7 +24,6 @@ import java.util.UUID;
 
 public abstract class SpecialEffectEntity extends Entity implements TraceableEntity
 {
-    private static final EntityDataAccessor<Optional<UUID>> SOURCE_ENTITY = SynchedEntityData.defineId(SpecialEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     @Nullable
     private LivingEntity owner;
     @Nullable
@@ -33,6 +32,11 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     public SpecialEffectEntity(EntityType<?> entityType, Level level)
     {
         super(entityType, level);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+
     }
 
     public void setOwner(@Nullable LivingEntity p_36939_) {
@@ -74,11 +78,6 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     }
 
     @Override
-    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
-
-    }
-
-    @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         if (tag.hasUUID("Owner")) {
             this.ownerUUID = tag.getUUID("Owner");
@@ -92,11 +91,13 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
         }
     }
 
-    public static SpecialEffectEntity spawn(Level world, LivingEntity owner, BlockPos pos, EntityType<?> type) {
-        SpecialEffectEntity entity = (SpecialEffectEntity) type.spawn((ServerLevel) world, pos, MobSpawnType.REINFORCEMENT);
-        assert entity != null;
-        entity.setOwner(owner);
-        world.addFreshEntity(entity);
+    public static SpecialEffectEntity spawn(ServerLevel world, LivingEntity owner, BlockPos pos, EntityType<?> type) {
+        SpecialEffectEntity entity = (SpecialEffectEntity) type.create(world);
+        if (entity != null) {
+            entity.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+            entity.setOwner(owner);
+            world.addFreshEntity(entity);
+        }
         return entity;
     }
 

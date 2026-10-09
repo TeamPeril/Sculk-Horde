@@ -35,6 +35,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -394,6 +395,30 @@ public class EntityAlgorithms {
         }
 
         return !entity.onGround(); // If no blocks found and not on ground, it's flying
+    }
+
+    public static Vec3 getGroundPos(Level level, Vec3 origin)
+    {
+        // Shoot ray cast downward to the very bottom of the world
+        Vec3 destination = new Vec3(origin.x, level.getMinBuildHeight(), origin.z);
+
+        // Use CollisionContext.empty() instead of a null Entity
+        ClipContext context = new ClipContext(
+                origin,
+                destination,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.ANY,
+                CollisionContext.empty()
+        );
+
+        BlockHitResult hitResult = level.clip(context);
+
+        if(hitResult.getType() == HitResult.Type.MISS)
+        {
+            return origin;
+        }
+
+        return hitResult.getLocation();
     }
 
     public static boolean isLivingEntityInvulnerable(LivingEntity entity)
