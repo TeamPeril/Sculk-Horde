@@ -9,10 +9,12 @@ import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -173,8 +175,8 @@ public class SoulHarvesterBlock extends BaseEntityBlock {
         }
 
         BlockEntity entity = pLevel.getBlockEntity(pPos);
-        if(entity instanceof SoulHarvesterBlockEntity) {
-            pPlayer.openMenu((SoulHarvesterBlockEntity) entity);
+        if(entity instanceof SoulHarvesterBlockEntity soulHarvester && pPlayer instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(soulHarvester, pPos);
         } else {
             throw new IllegalStateException("Our Container provider is missing!");
         }
@@ -194,16 +196,11 @@ public class SoulHarvesterBlock extends BaseEntityBlock {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
-        {
+        if (Screen.hasShiftDown()) {
             tooltip.add(Component.translatable("tooltip.sculkhorde.soul_harvester.functionality"));
-        }
-        else if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL))
-        {
+        } else if (Screen.hasControlDown()) {
             tooltip.add(Component.translatable("tooltip.sculkhorde.soul_harvester.lore"));
-        }
-        else
-        {
+        } else {
             tooltip.add(Component.translatable("tooltip.sculkhorde.default"));
         }
     }
