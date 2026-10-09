@@ -33,8 +33,13 @@ public class SculkNodeBlockEntity extends BlockEntity
 {
     protected long tickedAt = System.nanoTime();
     protected SculkNodeProceduralStructure nodeProceduralStructure;
-    protected final long REPAIR_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
-    protected long timeOfLastRepair = -1;
+
+    protected final long REPAIR_PERIOD_COOLDOWN = TickUnits.convertHoursToTicks(1);
+    protected long timeOfLastRepairPeriod = 0;
+    protected final long REPAIR_INTERVAL_TICKS = TickUnits.convertSecondsToTicks(1);
+    protected long timeOfLastRepairTick = 0;
+
+
     public static final int chunkLoadIntervalTicks = TickUnits.convertMinutesToTicks(5);
     public long timeOfLastChunkLoadTick = 0;
     protected NodeBranchingInfestationSystem branchingInfestationHandler;
@@ -122,7 +127,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         InfestationHandlerTick(blockEntity);
         addDarknessEffectToNearbyPlayers(level, blockPos, 50);
-        repairNodeTick(blockEntity);
+        repairServerTick(blockEntity);
 
         if(TickUnits.hasTicksPassed(blockEntity.timeOfLastChunkLoadTick, level, chunkLoadIntervalTicks)) {
             // Update the tickedAt time
@@ -144,28 +149,38 @@ public class SculkNodeBlockEntity extends BlockEntity
         }
     }
 
-    protected static void repairNodeTick(SculkNodeBlockEntity blockEntity)
+    protected static void repairServerTick(SculkNodeBlockEntity blockEntity)
     {
-        /** Building Shell Process **/
+
+        if(!TickUnits.hasTicksPassed(blockEntity.timeOfLastRepairTick, blockEntity.level, blockEntity.REPAIR_INTERVAL_TICKS))
+        {
+            return;
+        }
+
+        blockEntity.timeOfLastRepairTick = blockEntity.getLevel().getGameTime();
+
         //If the structure has not been initialized yet, do it
         if(blockEntity.nodeProceduralStructure == null)
         {
             //Create Structure
             blockEntity.nodeProceduralStructure = new SculkNodeProceduralStructure((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos());
             blockEntity.nodeProceduralStructure.generatePlan();
+            blockEntity.nodeProceduralStructure.startBuildProcedure();
+        }
+
+        //If enough time has passed and we can build, start build
+        else if((TickUnits.hasTicksPassed(blockEntity.timeOfLastRepairPeriod, blockEntity.getLevel(), blockEntity.REPAIR_PERIOD_COOLDOWN)) && blockEntity.nodeProceduralStructure.canStartToBuild())
+        {
+            blockEntity.nodeProceduralStructure.startBuildProcedure();
         }
 
         //If currently building, call build tick.
         if(blockEntity.nodeProceduralStructure.isCurrentlyBuilding())
         {
             blockEntity.nodeProceduralStructure.buildTick();
-            blockEntity.timeOfLastRepair = blockEntity.getLevel().getGameTime();
+            blockEntity.timeOfLastRepairPeriod = blockEntity.getLevel().getGameTime();
         }
-        //If enough time has passed, or we haven't built yet, and we can build, start build
-        else if((TickUnits.hasTicksPassed(blockEntity.timeOfLastRepair, blockEntity.getLevel(), blockEntity.REPAIR_INTERVAL_TICKS) || blockEntity.timeOfLastRepair <= 0) && blockEntity.nodeProceduralStructure.canStartToBuild())
-        {
-            blockEntity.nodeProceduralStructure.startBuildProcedure();
-        }
+
     }
 
     protected static void InfestationHandlerTick(SculkNodeBlockEntity blockEntity)
