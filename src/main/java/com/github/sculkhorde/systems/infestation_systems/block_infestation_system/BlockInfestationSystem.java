@@ -417,7 +417,7 @@ public class BlockInfestationSystem {
         Random rand = new Random();
         if(rand.nextBoolean() && canCuredBlockSustatinPlant && world.getBlockState(targetPos.above()).isAir())
         {
-            BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.GRASS_BLOCK.defaultBlockState());
+            BlockAlgorithms.setBlockCursor(world, targetPos.above(), Blocks.SHORT_GRASS.defaultBlockState());
         }
 
         return true;

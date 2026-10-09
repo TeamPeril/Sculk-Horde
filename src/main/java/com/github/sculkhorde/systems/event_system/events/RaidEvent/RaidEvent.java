@@ -415,6 +415,7 @@ public class RaidEvent extends Event {
     public void setFailure(failureType failure) {
         setState(State.FAILURE);
         this.failure = failure;
+        DebuggerSystem.eventDebuggerModule.logInfo("RaidEvent | Failed: "+ failure);
 
     }
 
