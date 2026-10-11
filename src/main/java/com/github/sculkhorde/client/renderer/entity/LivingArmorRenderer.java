@@ -33,6 +33,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
     private static final String RIGHT_ARMOR_LEG = "rightLeg";
     private static final String CHESTPLATE = "body";
     private static final String HELMET = "head";
+    private static final String LEFT_SHOULDER = "leftShoulder";
+    private static final String RIGHT_SHOULDER = "rightShoulder";
 
     protected ItemStack mainHandItem;
     protected ItemStack offhandItem;
@@ -50,6 +52,10 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                         break;
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         itemStack = this.leggingsStack;
+                        break;
+                    case LEFT_SHOULDER, RIGHT_SHOULDER:
+                        // Map shoulder armor to chestplate layer
+                        itemStack = this.chestplateStack;
                         break;
                     case CHESTPLATE:
                         // FIXED: Only map chestplate to body bone, NOT arm bones
@@ -76,6 +82,10 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                         break;
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         var10000 = EquipmentSlot.LEGS;
+                        break;
+                    case LEFT_SHOULDER, RIGHT_SHOULDER:
+                        // Map shoulder armor to CHEST slot
+                        var10000 = EquipmentSlot.CHEST;
                         break;
                     case CHESTPLATE:
                         // FIXED: Only map chestplate bone to CHEST slot
