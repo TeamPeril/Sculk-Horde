@@ -32,9 +32,9 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
     private static final String LEFT_ARMOR_LEG = "leftLeg";
     private static final String RIGHT_ARMOR_LEG = "rightLeg";
     private static final String CHESTPLATE = "body";
+    private static final String RIGHT_SLEEVE = "rightArm";
+    private static final String LEFT_SLEEVE = "leftArm";
     private static final String HELMET = "head";
-    private static final String LEFT_SHOULDER = "leftShoulder";
-    private static final String RIGHT_SHOULDER = "rightShoulder";
 
     protected ItemStack mainHandItem;
     protected ItemStack offhandItem;
@@ -53,14 +53,9 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         itemStack = this.leggingsStack;
                         break;
-                    case LEFT_SHOULDER, RIGHT_SHOULDER:
-                        // Map shoulder armor to chestplate layer
-                        itemStack = this.chestplateStack;
-                        break;
                     case CHESTPLATE:
-                        // FIXED: Only map chestplate to body bone, NOT arm bones
-                        // Arm bones (rightArm/leftArm) are used by BlockAndItemGeoLayer for held items
-                        // Using them for armor causes conflicts and weird rendering
+                        // FIXED: Only map chestplate to body bone. Arm bones (rightArm/leftArm) are NOT mapped here.
+                        // GeckoLib needs arm bones available for projecting chestplate sleeves from leggings texture.
                         itemStack = this.chestplateStack;
                         break;
                     case HELMET:
@@ -83,13 +78,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         var10000 = EquipmentSlot.LEGS;
                         break;
-                    case LEFT_SHOULDER, RIGHT_SHOULDER:
-                        // Map shoulder armor to CHEST slot
-                        var10000 = EquipmentSlot.CHEST;
-                        break;
+
                     case CHESTPLATE:
-                        // FIXED: Only map chestplate bone to CHEST slot
-                        // Removed RIGHT_SLEEVE and LEFT_SLEEVE mappings which conflicted with item rendering
                         var10000 = EquipmentSlot.CHEST;
                         break;
                     case HELMET:
@@ -113,10 +103,12 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                         var10000 = baseModel.rightLeg;
                         break;
                     case CHESTPLATE:
-                        // FIXED: Only map chestplate to body, NOT arm bones
-                        // Arm bones are used by BlockAndItemGeoLayer for held items
                         var10000 = baseModel.body;
                         break;
+                    case "rightArm":
+                        return baseModel.rightArm;
+                    case "leftArm":
+                        return baseModel.leftArm;
                     case HELMET:
                         var10000 = baseModel.head;
                         break;
@@ -162,21 +154,19 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                 return displayContext;
             }
 
-            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay, int renderColor) {
+            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
                 if (stack == LivingArmorRenderer.this.mainHandItem) {
-                    // FIXED: Add scale transform to match SculkVexRenderer and make items proportional
+                    //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-                    poseStack.scale(0.5F, 0.5F, 0.5F);
                     if (stack.getItem() instanceof ShieldItem) {
-                        // FIXED: Adjusted shield positioning for main hand
+                        //poseStack.translate(0, 0.13, -1.25);
                         poseStack.translate(0.0, 0.125, -0.25);
                     }
                 } else if (stack == LivingArmorRenderer.this.offhandItem) {
-                    // FIXED: Add scale transform to match SculkVexRenderer and make items proportional
+                    //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-                    poseStack.scale(0.5F, 0.5F, 0.5F);
                     if (stack.getItem() instanceof ShieldItem) {
-                        // FIXED: Adjusted shield positioning for off hand
+                        //poseStack.translate(0, 0.13, -1.25);
                         poseStack.translate(0.0, 0.125, 0.25);
                         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     }
@@ -188,9 +178,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
 
     }
 
-    @Override
-    public void preRender(PoseStack poseStack, LivingArmorEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int renderColor) {
-        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, renderColor);
+    public void preRender(PoseStack poseStack, LivingArmorEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
         this.mainHandItem = animatable.getMainHandItem();
         this.offhandItem = animatable.getOffhandItem();
     }
