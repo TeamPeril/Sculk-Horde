@@ -53,7 +53,9 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         itemStack = this.leggingsStack;
                         break;
-                    case CHESTPLATE, RIGHT_SLEEVE, LEFT_SLEEVE:
+                    case CHESTPLATE:
+                        // FIXED: Only map chestplate to body bone. Arm bones (rightArm/leftArm) are NOT mapped here.
+                        // GeckoLib needs arm bones available for projecting chestplate sleeves from leggings texture.
                         itemStack = this.chestplateStack;
                         break;
                     case HELMET:
@@ -76,12 +78,7 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         var10000 = EquipmentSlot.LEGS;
                         break;
-                    case RIGHT_SLEEVE:
-                        var10000 = !animatable.isLeftHanded() ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                        break;
-                    case LEFT_SLEEVE:
-                        var10000 = animatable.isLeftHanded() ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
-                        break;
+
                     case CHESTPLATE:
                         var10000 = EquipmentSlot.CHEST;
                         break;
@@ -105,15 +102,13 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case RIGHT_BOOT, RIGHT_ARMOR_LEG:
                         var10000 = baseModel.rightLeg;
                         break;
-                    case RIGHT_SLEEVE:
-                        var10000 = baseModel.rightArm;
-                        break;
-                    case LEFT_SLEEVE:
-                        var10000 = baseModel.leftArm;
-                        break;
                     case CHESTPLATE:
                         var10000 = baseModel.body;
                         break;
+                    case "rightArm":
+                        return baseModel.rightArm;
+                    case "leftArm":
+                        return baseModel.leftArm;
                     case HELMET:
                         var10000 = baseModel.head;
                         break;
