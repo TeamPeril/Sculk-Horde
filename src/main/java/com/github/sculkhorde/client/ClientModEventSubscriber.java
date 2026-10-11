@@ -26,7 +26,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.Map;
 
-@EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = SculkHorde.MOD_ID, value = Dist.CLIENT)
 public class ClientModEventSubscriber {
 
     public final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.newHashMap();
@@ -125,7 +125,7 @@ public class ClientModEventSubscriber {
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = SculkHorde.MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(RegisterMenuScreensEvent event) {
