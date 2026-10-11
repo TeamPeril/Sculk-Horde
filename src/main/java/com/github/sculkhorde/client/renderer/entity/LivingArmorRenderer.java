@@ -32,8 +32,6 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
     private static final String LEFT_ARMOR_LEG = "leftLeg";
     private static final String RIGHT_ARMOR_LEG = "rightLeg";
     private static final String CHESTPLATE = "body";
-    private static final String RIGHT_SLEEVE = "rightArm";
-    private static final String LEFT_SLEEVE = "leftArm";
     private static final String HELMET = "head";
 
     protected ItemStack mainHandItem;
@@ -53,7 +51,10 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         itemStack = this.leggingsStack;
                         break;
-                    case CHESTPLATE, RIGHT_SLEEVE, LEFT_SLEEVE:
+                    case CHESTPLATE:
+                        // FIXED: Only map chestplate to body bone, NOT arm bones
+                        // Arm bones (rightArm/leftArm) are used by BlockAndItemGeoLayer for held items
+                        // Using them for armor causes conflicts and weird rendering
                         itemStack = this.chestplateStack;
                         break;
                     case HELMET:
@@ -76,13 +77,9 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG:
                         var10000 = EquipmentSlot.LEGS;
                         break;
-                    case RIGHT_SLEEVE:
-                        var10000 = !animatable.isLeftHanded() ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                        break;
-                    case LEFT_SLEEVE:
-                        var10000 = animatable.isLeftHanded() ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
-                        break;
                     case CHESTPLATE:
+                        // FIXED: Only map chestplate bone to CHEST slot
+                        // Removed RIGHT_SLEEVE and LEFT_SLEEVE mappings which conflicted with item rendering
                         var10000 = EquipmentSlot.CHEST;
                         break;
                     case HELMET:
@@ -105,13 +102,9 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
                     case RIGHT_BOOT, RIGHT_ARMOR_LEG:
                         var10000 = baseModel.rightLeg;
                         break;
-                    case RIGHT_SLEEVE:
-                        var10000 = baseModel.rightArm;
-                        break;
-                    case LEFT_SLEEVE:
-                        var10000 = baseModel.leftArm;
-                        break;
                     case CHESTPLATE:
+                        // FIXED: Only map chestplate to body, NOT arm bones
+                        // Arm bones are used by BlockAndItemGeoLayer for held items
                         var10000 = baseModel.body;
                         break;
                     case HELMET:
@@ -161,17 +154,19 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
 
             protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay, int renderColor) {
                 if (stack == LivingArmorRenderer.this.mainHandItem) {
-                    //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    // FIXED: Add scale transform to match SculkVexRenderer and make items proportional
                     poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                    poseStack.scale(0.5F, 0.5F, 0.5F);
                     if (stack.getItem() instanceof ShieldItem) {
-                        //poseStack.translate(0, 0.13, -1.25);
+                        // FIXED: Adjusted shield positioning for main hand
                         poseStack.translate(0.0, 0.125, -0.25);
                     }
                 } else if (stack == LivingArmorRenderer.this.offhandItem) {
-                    //poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    // FIXED: Add scale transform to match SculkVexRenderer and make items proportional
                     poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                    poseStack.scale(0.5F, 0.5F, 0.5F);
                     if (stack.getItem() instanceof ShieldItem) {
-                        //poseStack.translate(0, 0.13, -1.25);
+                        // FIXED: Adjusted shield positioning for off hand
                         poseStack.translate(0.0, 0.125, 0.25);
                         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                     }
