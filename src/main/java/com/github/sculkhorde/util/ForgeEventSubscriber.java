@@ -35,7 +35,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import java.util.function.Predicate;
 
 
-@EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = SculkHorde.MOD_ID)
 public class ForgeEventSubscriber {
 
     @SubscribeEvent
