@@ -2,12 +2,18 @@ package com.github.sculkhorde.client.renderer.entity;
 
 import com.github.sculkhorde.client.model.enitity.LivingArmorModel;
 import com.github.sculkhorde.common.entity.boss.angel_of_reaping.LivingArmorEntity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
+import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
@@ -122,16 +128,56 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
              */
         });
 
+        // Held Item & Block Rendering Layer
+        this.addRenderLayer(new BlockAndItemGeoLayer<LivingArmorEntity>(this) {
+            @Nullable
+            @Override
+            protected ItemStack getStackForBone(GeoBone bone, LivingArmorEntity animatable) {
+                return switch (bone.getName()) {
+                    case LEFT_HAND -> animatable.isLeftHanded() ? LivingArmorRenderer.this.mainHandItem : LivingArmorRenderer.this.offhandItem;
+                    case RIGHT_HAND -> animatable.isLeftHanded() ? LivingArmorRenderer.this.offhandItem : LivingArmorRenderer.this.mainHandItem;
+                    default -> null;
+                };
+            }
+
+            @Override
+            protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack, LivingArmorEntity animatable) {
+                return switch (bone.getName()) {
+                    case LEFT_HAND -> ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+                    case RIGHT_HAND -> ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+                    default -> ItemDisplayContext.NONE;
+                };
+            }
+
+            @Override
+            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, LivingArmorEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
+                if (stack == LivingArmorRenderer.this.mainHandItem) {
+                    poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                    poseStack.scale(0.5F, 0.5F, 0.5F);
+                    if (stack.getItem() instanceof ShieldItem) {
+                        poseStack.translate(0.0, 0.125, -0.25);
+                    }
+                } else if (stack == LivingArmorRenderer.this.offhandItem) {
+                    poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                    poseStack.scale(0.5F, 0.5F, 0.5F);
+                    if (stack.getItem() instanceof ShieldItem) {
+                        poseStack.translate(0.0, 0.125, 0.25);
+                        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    }
+                }
+
+                super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight, packedOverlay);
+            }
+        });
+
 
     }
 
-    /*
+
     @Override
     public void preRender(PoseStack poseStack, LivingArmorEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int renderColor) {
         super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, renderColor);
         this.mainHandItem = animatable.getMainHandItem();
         this.offhandItem = animatable.getOffhandItem();
     }
-
-     */
 }
