@@ -24,6 +24,7 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
     private static final String RIGHT_BOOT = "rightBoot";
     private static final String LEFT_ARMOR_LEG = "leftLeg";
     private static final String RIGHT_ARMOR_LEG = "rightLeg";
+    private static final String BELT = "belt";
     private static final String CHESTPLATE = "body";
     private static final String LEFT_ARM = "leftArm";
     private static final String RIGHT_ARM = "rightArm";
@@ -36,16 +37,14 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
         super(renderManager, new LivingArmorModel());
 
         this.addRenderLayer(new ItemArmorGeoLayer<LivingArmorEntity>(this) {
+
             @Nullable
             @Override
             protected ItemStack getArmorItemForBone(GeoBone bone, LivingArmorEntity animatable) {
                 return switch (bone.getName()) {
                     case LEFT_BOOT, RIGHT_BOOT -> this.bootsStack;
-                    case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG -> this.leggingsStack;
-                    case LEFT_ARM, RIGHT_ARM -> this.chestplateStack;
-                    case CHESTPLATE -> (this.chestplateStack != null && !this.chestplateStack.isEmpty())
-                            ? this.chestplateStack
-                            : this.leggingsStack;
+                    case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG, BELT -> this.leggingsStack;
+                    case CHESTPLATE, LEFT_ARM, RIGHT_ARM -> this.chestplateStack;
                     case HELMET -> this.helmetStack;
                     default -> null;
                 };
@@ -56,9 +55,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
             protected EquipmentSlot getEquipmentSlotForBone(GeoBone bone, ItemStack stack, LivingArmorEntity animatable) {
                 return switch (bone.getName()) {
                     case LEFT_BOOT, RIGHT_BOOT -> EquipmentSlot.FEET;
-                    case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG -> EquipmentSlot.LEGS;
-                    case LEFT_ARM, RIGHT_ARM -> EquipmentSlot.CHEST;
-                    case CHESTPLATE -> (stack == this.leggingsStack) ? EquipmentSlot.LEGS : EquipmentSlot.CHEST;
+                    case LEFT_ARMOR_LEG, RIGHT_ARMOR_LEG, BELT -> EquipmentSlot.LEGS;
+                    case CHESTPLATE, LEFT_ARM, RIGHT_ARM -> EquipmentSlot.CHEST;
                     case HELMET -> EquipmentSlot.HEAD;
                     default -> super.getEquipmentSlotForBone(bone, stack, animatable);
                 };
@@ -67,10 +65,11 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
             @Nonnull
             @Override
             protected ModelPart getModelPartForBone(GeoBone bone, EquipmentSlot slot, ItemStack stack, LivingArmorEntity animatable, HumanoidModel<?> baseModel) {
+                // NEVER return null here — GeckoLib unconditionally dereferences modelPart.cubes
                 return switch (bone.getName()) {
                     case LEFT_BOOT, LEFT_ARMOR_LEG -> baseModel.leftLeg;
                     case RIGHT_BOOT, RIGHT_ARMOR_LEG -> baseModel.rightLeg;
-                    case CHESTPLATE -> baseModel.body;
+                    case CHESTPLATE, BELT -> baseModel.body;
                     case RIGHT_ARM -> baseModel.rightArm;
                     case LEFT_ARM -> baseModel.leftArm;
                     case HELMET -> baseModel.head;
@@ -122,6 +121,8 @@ public class LivingArmorRenderer extends GeoEntityRenderer<LivingArmorEntity> {
 
              */
         });
+
+
     }
 
     /*
