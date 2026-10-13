@@ -3,6 +3,7 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.PerimeterWardRelayBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.ColorUtil;
 import com.github.sculkhorde.util.ParticleUtil;
@@ -57,7 +58,7 @@ public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEnti
 
     @Override
     public void updateConnections() {
-        getOrCreatePerimeterWardZone(getLevel(), getBlockPos());
+        ModSavedData.PerimeterWardZoneEntry zone = getOrCreatePerimeterWardZone(getLevel(), getBlockPos());
         parentRelayPos = Optional.of(getBlockPos());
 
         if(!isNextRelayValid())
@@ -67,6 +68,7 @@ public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEnti
             nextRelayPos.ifPresent(pos -> setPrevRelay((ServerLevel) level, pos, getBlockPos()));
             parentRelayPos.ifPresent(pos -> setParentRelay((ServerLevel) level, pos, parentRelayPos.get()));
         }
+        zone.updateRelayPositions();
 
     }
 }
