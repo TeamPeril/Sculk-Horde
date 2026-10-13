@@ -301,10 +301,11 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                DefaultAnimations.genericWalkRunIdleController(this),
-                FLIGHT_ANIMATION_CONTROLLER,
-                ATTACK_ANIMATION_CONTROLLER,
-                DefaultAnimations.genericLivingController(this)
+                //DefaultAnimations.genericWalkRunIdleController(this),
+                //FLIGHT_ANIMATION_CONTROLLER,
+                //ATTACK_ANIMATION_CONTROLLER,
+                //DefaultAnimations.genericLivingController(this)
+                DefaultAnimations.genericIdleController(this)
         );
     }
 
