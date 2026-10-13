@@ -250,7 +250,7 @@
   "effect.sculkhorde.sculk_lure": "Lure",
   "effect.sculkhorde.sculk_lure.description": "Allows the Gravemind to track you from long distances.",
   "effect.sculkhorde.diseased_cysts": "Diseased Cysts",
-  "effect.sculkhorde.diseased_cysts.description": "Can damage and infect other entities near the initial victim. It can be cursed using a Purification Flask.",
+  "effect.sculkhorde.diseased_cysts.description": "Can damage and infect other entities near the initial victim. It can be purified using a Purification Flask.",
   "effect.sculkhorde.sculk_vessel": "Sculk Vessel",
   "effect.sculkhorde.sculk_vessel.description": "§1§kDescription missing§r",
   "effect.sculkhorde.corroded": "Corroded",
@@ -347,7 +347,7 @@
   "achievement.sculkhorde.contribute.desc": "Prove yourself to go above and beyond and be a contributor to the Sculk Horde Mod.",
 
   "block.sculkhorde.diseased_kelp_block": "Diseased Kelp",
-  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oA dangerous under-water sculk plant that pricks you and gives you Diseased Cysts.",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oA dangerous under-water sculk plant that pricks you and gives you Burrowed.",
   "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oA hybrid design between the surface Spikes that normally spawn, and kelp which grows plentiful underwater. This plant serves the purpose of spreading disease and triggering Summoners, ultimately ending with the demise of its victim.",
   "entity.sculkhorde.sculk_squid": "Sculk Squid",
   "item.sculkhorde.sculk_squid_spawn_egg": "Sculk Squid Spawn Egg",
