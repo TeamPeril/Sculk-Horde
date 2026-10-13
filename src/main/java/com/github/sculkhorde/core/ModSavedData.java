@@ -1,6 +1,5 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.blockentity.PerimeterWardEmitterBlockEntity;
 import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
@@ -20,6 +19,8 @@ import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,9 +35,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -89,7 +88,8 @@ public class ModSavedData extends SavedData {
 
     public static ModSavedData getSaveData()
     {
-        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().computeIfAbsent(ModSavedData::load, ModSavedData::new, SculkHorde.SAVE_DATA_ID);
+        ModSavedData data = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage()
+                .computeIfAbsent(new SavedData.Factory<>(ModSavedData::new, ModSavedData::load), SculkHorde.SAVE_DATA_ID);
         data.setDirty();
         return data;
     }
@@ -122,9 +122,9 @@ public class ModSavedData extends SavedData {
 
 
     /**
-     * Note: We initialize systems in {@link ModSavedData#load(CompoundTag)}
+     * Note: We initialize systems in {@link ModSavedData#load(CompoundTag, HolderLookup.Provider)}
      * instead of {@link com.github.sculkhorde.util.ForgeEventSubscriber#onWorldLoad(LevelEvent.Load)} because
-     * it fires after {@link ModSavedData#load(CompoundTag)} which causes the following side effects.
+     * it fires after {@link ModSavedData#load(CompoundTag, HolderLookup.Provider)} which causes the following side effects.
      * <br><br>
      * 1. Data will be loaded into systems, then wiped out by {@link com.github.sculkhorde.util.ForgeEventSubscriber#onWorldLoad(LevelEvent.Load)}<br>
      * 2. Data won't be properly reset between world loads if you try to remedy this with individual null checks.<br>
@@ -235,9 +235,10 @@ public class ModSavedData extends SavedData {
      * This method gets called every time the world loads data from memory.
      * We extract data from the memory and store it in variables.
      *
-     * @param nbt The memory where data is stored
+     * @param nbt        The memory where data is stored
+     * @param registries
      */
-    public static ModSavedData load(CompoundTag nbt) {
+    public static ModSavedData load(CompoundTag nbt, HolderLookup.Provider registries) {
 
 
 
@@ -404,7 +405,7 @@ public class ModSavedData extends SavedData {
      * @param nbt The memory where data is stored
      */
     @Override
-    public @NotNull CompoundTag save(CompoundTag nbt) {
+    public @NotNull CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
         //CompoundTag gravemindData = new CompoundTag();
 
         nbt.putInt("hordeState", hordeState.ordinal());
@@ -484,7 +485,6 @@ public class ModSavedData extends SavedData {
     }
 
     public int getTicksSinceLastRaid() {
-        setDirty();
         return ticksSinceLastRaid;
     }
 
@@ -514,7 +514,6 @@ public class ModSavedData extends SavedData {
     }
 
     public int getTicksElapsedForNodeSpawningCooldown() {
-        setDirty();
         return noNodeSpawningTicksElapsed;
     }
 
@@ -540,8 +539,6 @@ public class ModSavedData extends SavedData {
      * @return An integer representing all Sculk mass accumulated.
      */
     public int getSculkAccumulatedMass() {
-        setDirty();
-
         if(getSaveData().isHordeDefeated())
         {
             return 0;
@@ -703,7 +700,7 @@ public class ModSavedData extends SavedData {
         // If already exists in memory, dont add it again
         for(int i = 0; i < getDeathAreaEntries().size(); i++)
         {
-            if(getDeathAreaEntries().get(i).position == positionIn)
+            if(getDeathAreaEntries().get(i).position.equals(positionIn))
             {
                 return;
             }
@@ -724,7 +721,7 @@ public class ModSavedData extends SavedData {
         // If already exists in memory, dont add it again
         for(int i = 0; i < getAreasOfInterestEntries().size(); i++)
         {
-            if(getAreasOfInterestEntries().get(i).position == positionIn || getAreasOfInterestEntries().get(i).position.closerThan(positionIn, 100))
+            if(getAreasOfInterestEntries().get(i).position.equals(positionIn) || getAreasOfInterestEntries().get(i).position.closerThan(positionIn, 100))
             {
                 return Optional.empty();
             }
@@ -832,7 +829,7 @@ public class ModSavedData extends SavedData {
         if(getAreasOfInterestEntries() == null)
         {
             DebuggerSystem.eventDebuggerModule.logWarn("Attempted to get an area of interest from memory but the list was null");
-            return null;
+            return Optional.empty();
         }
 
         for(int i = 0; i < getAreasOfInterestEntries().size(); i++)
@@ -989,7 +986,7 @@ public class ModSavedData extends SavedData {
 
         for(int i = 0; i < getDeathAreaEntries().size(); i++)
         {
-            if(getDeathAreaEntries().get(i).position == positionIn)
+            if(getDeathAreaEntries().get(i).position.equals(positionIn))
             {
                 getDeathAreaEntries().remove(i);
                 setDirty();
@@ -1009,7 +1006,7 @@ public class ModSavedData extends SavedData {
 
         for(int i = 0; i < getAreasOfInterestEntries().size(); i++)
         {
-            if(getAreasOfInterestEntries().get(i).position == positionIn)
+            if(getAreasOfInterestEntries().get(i).position.equals(positionIn))
             {
                 getAreasOfInterestEntries().remove(i);
                 setDirty();
@@ -1183,7 +1180,10 @@ public class ModSavedData extends SavedData {
          */
         public static NodeEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceLocation dimLoc = ResourceLocation.tryParse(nbt.getString("dimension"));
+            ResourceKey<Level> dimensionResourceKey = dimLoc != null
+                ? ResourceKey.create(Registries.DIMENSION, dimLoc)
+                : Level.OVERWORLD;
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
@@ -1236,7 +1236,7 @@ public class ModSavedData extends SavedData {
 
         public ServerLevel getDimension()
         {
-            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
         }
 
         public BlockPos getPosition() { return position; }
@@ -1399,7 +1399,10 @@ public class ModSavedData extends SavedData {
          */
         public static BeeNestEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceLocation dimLoc = ResourceLocation.tryParse(nbt.getString("dimension"));
+            ResourceKey<Level> dimensionResourceKey = dimLoc != null
+                ? ResourceKey.create(Registries.DIMENSION, dimLoc)
+                : Level.OVERWORLD;
             BlockPos pos = BlockPos.of(nbt.getLong("position"));
             BlockPos parentPos = nbt.contains("parentNodePosition") ? BlockPos.of(nbt.getLong("parentNodePosition")) : null;
 
@@ -1476,7 +1479,7 @@ public class ModSavedData extends SavedData {
 
         public ServerLevel getDimension()
         {
-            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
         }
 
         public void setDeathCount(int deathCountIn)
@@ -1526,7 +1529,10 @@ public class ModSavedData extends SavedData {
          */
         public static DeathAreaEntry load(CompoundTag nbt) {
 
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceLocation dimLoc = ResourceLocation.tryParse(nbt.getString("dimension"));
+            ResourceKey<Level> dimensionResourceKey = dimLoc != null
+                ? ResourceKey.create(Registries.DIMENSION, dimLoc)
+                : Level.OVERWORLD;
             return new DeathAreaEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("deathCount"));
         }
     }
@@ -1557,7 +1563,7 @@ public class ModSavedData extends SavedData {
 
         public ServerLevel getDimension()
         {
-            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
         }
 
         public boolean isInNoRaidZone()
@@ -1598,7 +1604,10 @@ public class ModSavedData extends SavedData {
          * @return The nbt with our data
          */
         public static AreaOfInterestEntry load(CompoundTag nbt) {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceLocation dimLoc = ResourceLocation.tryParse(nbt.getString("dimension"));
+            ResourceKey<Level> dimensionResourceKey = dimLoc != null
+                ? ResourceKey.create(Registries.DIMENSION, dimLoc)
+                : Level.OVERWORLD;
             return new AreaOfInterestEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getLong("ticksSinceLastRaid"));
         }
     }
@@ -1632,7 +1641,7 @@ public class ModSavedData extends SavedData {
 
         public ServerLevel getDimension()
         {
-            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
         }
 
         public BlockPos getPosition()
@@ -1695,7 +1704,10 @@ public class ModSavedData extends SavedData {
          */
         public static NoRaidZoneEntry load(CompoundTag nbt)
         {
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
+            ResourceLocation dimLoc = ResourceLocation.tryParse(nbt.getString("dimension"));
+            ResourceKey<Level> dimensionResourceKey = dimLoc != null
+                ? ResourceKey.create(Registries.DIMENSION, dimLoc)
+                : Level.OVERWORLD;
             return new NoRaidZoneEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")), nbt.getInt("radius"), nbt.getLong("gameTimeStamp"), nbt.getLong("durationUntilExpiration"));
         }
     }
@@ -1944,7 +1956,7 @@ public class ModSavedData extends SavedData {
 
     public static class MobProfileEntry
     {
-        public final EntityType entityType;
+        public final EntityType<?> entityType;
         public int relationshipToTheHorde;
         public int sculkHordeKills = 0;
         public long timeOfLastHit = 0;
@@ -1958,21 +1970,21 @@ public class ModSavedData extends SavedData {
             this.entityType = mob.getType();
         }
 
-        public MobProfileEntry(EntityType entityTypeIn)
+        public MobProfileEntry(EntityType<?> entityTypeIn)
         {
             this.entityType = entityTypeIn;
         }
 
         public boolean isValid()
         {
-            if(entityType.equals(EntityType.PIG))
+            if (entityType.equals(EntityType.PIG))
             {
                 return false;
             }
-            return ForgeRegistries.ENTITY_TYPES.containsKey(ForgeRegistries.ENTITY_TYPES.getKey(entityType));
+            return BuiltInRegistries.ENTITY_TYPE.containsKey(BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
         }
 
-        public EntityType getEntityType()
+        public EntityType<?> getEntityType()
         {
             return entityType;
         }
@@ -2040,7 +2052,7 @@ public class ModSavedData extends SavedData {
 
         public void setRelationshipToTheHorde(int value)
         {
-            if(value < 0)
+            if (value < 0)
             {
                 relationshipToTheHorde = Math.max(MIN_RELATIONSHIP_VALUE, value);
             }
@@ -2054,7 +2066,6 @@ public class ModSavedData extends SavedData {
         {
             setRelationshipToTheHorde(getRelationshipToTheHorde() + value);
         }
-
 
         public int getDifficultyOfNextHit()
         {
@@ -2071,13 +2082,12 @@ public class ModSavedData extends SavedData {
             difficultyOfNextHit = Math.max(1, difficultyOfNextHit - 1);
         }
 
-
-
         public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
 
-            nbt.putString("entityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
+            ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
+            nbt.putString("entityType", key.toString());
             nbt.putInt("relationshipToTheHorde", relationshipToTheHorde);
             nbt.putInt("sculkHordeKills", sculkHordeKills);
             nbt.putLong("timeofLastGhastDeployment", timeofLastGhastDeployment);
@@ -2088,37 +2098,43 @@ public class ModSavedData extends SavedData {
 
         public static MobProfileEntry load(CompoundTag nbt)
         {
-            ResourceLocation id = new ResourceLocation(nbt.getString("entityType"));
-            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(id);
-            if(type == null) {
+            ResourceLocation id = ResourceLocation.tryParse(nbt.getString("entityType"));
+            EntityType<?> type = null;
+
+            if (id != null)
+            {
+                type = BuiltInRegistries.ENTITY_TYPE.getOptional(id).orElse(null);
+            }
+
+            if (type == null)
+            {
                 DebuggerSystem.eventDebuggerModule.logError("Failed to load MobProfileEntry. EntityType was null for id: " + id);
                 type = EntityType.PIG; // Default to pig if we fail to load the entity type so that we can at least load the rest of the data and not lose it.
             }
 
             MobProfileEntry entry = new MobProfileEntry(type);
-            if(nbt.contains("relationshipToTheHorde"))
+            if (nbt.contains("relationshipToTheHorde"))
             {
                 entry.setRelationshipToTheHorde(nbt.getInt("relationshipToTheHorde"));
             }
-            if(nbt.contains("sculkHordeKills"))
+            if (nbt.contains("sculkHordeKills"))
             {
                 entry.setSculkHordeKills(nbt.getInt("sculkHordeKills"));
             }
-            if(nbt.contains("timeofLastGhastDeployment"))
+            if (nbt.contains("timeofLastGhastDeployment"))
             {
                 entry.setTimeofLastGhastDeployment(nbt.getLong("timeofLastGhastDeployment"));
             }
-            if(nbt.contains("timeOfLastHit"))
+            if (nbt.contains("timeOfLastHit"))
             {
                 entry.setTimeOfLastHit(nbt.getLong("timeOfLastHit"));
             }
-            if(nbt.contains("difficultyOfNextHit"))
+            if (nbt.contains("difficultyOfNextHit"))
             {
                 entry.difficultyOfNextHit = nbt.getInt("difficultyOfNextHit");
             }
             return entry;
         }
-
 
         @Override
         public String toString() {
@@ -2160,7 +2176,7 @@ public class ModSavedData extends SavedData {
 
         public ServerLevel getDimension()
         {
-            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
         }
 
         public boolean isParentRelayValid()
