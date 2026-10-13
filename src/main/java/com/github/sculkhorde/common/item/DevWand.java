@@ -90,9 +90,9 @@ public class DevWand extends Item {
 			playerIn.sendSystemMessage(Component.literal("Not In Infestation Ward Zone."));
 		}
 
-		SculkHorde.sculkNodesSystem.DeactivateAllNodes();
-		SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
-		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
+		//SculkHorde.sculkNodesSystem.DeactivateAllNodes();
+		//SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
+		//NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

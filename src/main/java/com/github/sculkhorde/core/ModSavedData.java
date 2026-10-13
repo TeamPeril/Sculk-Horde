@@ -68,7 +68,7 @@ public class ModSavedData extends SavedData {
     private final ArrayList<NoRaidZoneEntry> noRaidZoneEntries = new ArrayList<>();
     private final ArrayList<PlayerProfileEntry> playerProfileEntries = new ArrayList<>();
     private final ArrayList<MobProfileEntry> mobProfileEntries = new ArrayList<>();
-    private final HashMap<UUID, PerimeterWardZoneEntry> perimeterInfestationWardZoneEntries = new HashMap<>();
+    private final HashMap<BlockPos, PerimeterWardZoneEntry> perimeterInfestationWardZoneEntries = new HashMap<>();
 
     private int sculkAccumulatedMass = 0;
     private static final String sculkAccumulatedMassIdentifier = "sculkAccumulatedMass";
@@ -373,6 +373,17 @@ public class ModSavedData extends SavedData {
         }
         SculkHorde.LOGGER.info("ModSavedData | Loaded MobProfile Entries Successfully.");
 
+        SculkHorde.LOGGER.info("ModSavedData | Loading PerimeterWardZone Entries.");
+        savedData.getPerimeterWardZoneEntries().clear();
+        if (nbt.contains("perimeter_ward_zone_entries", Tag.TAG_LIST)) {
+            ListTag wardZoneEntriesTag = nbt.getList("perimeter_ward_zone_entries", Tag.TAG_COMPOUND);
+            for (int i = 0; i < wardZoneEntriesTag.size(); i++) {
+                PerimeterWardZoneEntry entry = PerimeterWardZoneEntry.load(wardZoneEntriesTag.getCompound(i));
+                savedData.getPerimeterWardZoneEntries().put(entry.parentRelaypos, entry);
+            }
+        }
+        SculkHorde.LOGGER.info("ModSavedData | Loaded PerimeterWardZone Entries Successfully.");
+
         SculkHorde.LOGGER.info("ModSavedData | Loading statisticsData.");
         if(SculkHorde.statisticsData == null)
         {
@@ -462,7 +473,11 @@ public class ModSavedData extends SavedData {
         }
         nbt.put("mob_profile_entries", mobProfileEntriesTag);
 
-        //nbt.put("gravemindData", gravemindData);
+        ListTag wardZoneEntriesTag = new ListTag();
+        for (PerimeterWardZoneEntry entry : getPerimeterWardZoneEntries().values()) {
+            wardZoneEntriesTag.add(entry.save());
+        }
+        nbt.put("perimeter_ward_zone_entries", wardZoneEntriesTag);
 
         StatisticsData.save(nbt);
         BlockEntityChunkLoaderHelper.save(nbt);
@@ -2150,7 +2165,7 @@ public class ModSavedData extends SavedData {
     }
 
     //#### Perimeter Infestation Ward Entry ####
-    public HashMap<UUID, PerimeterWardZoneEntry> getPerimeterWardZoneEntries() {
+    public HashMap<BlockPos, PerimeterWardZoneEntry> getPerimeterWardZoneEntries() {
         return perimeterInfestationWardZoneEntries;
     }
 
@@ -2162,7 +2177,7 @@ public class ModSavedData extends SavedData {
      */
     public static class PerimeterWardZoneEntry
     {
-        public final UUID uuid = UUID.randomUUID();
+        public UUID uuid = UUID.randomUUID();
         public BlockPos parentRelaypos;
         public ArrayList<BlockPos> relayPositions = new ArrayList<>();
         public ResourceKey<Level> dimension;
@@ -2174,9 +2189,15 @@ public class ModSavedData extends SavedData {
             dimension = level.dimension();
         }
 
+        public PerimeterWardZoneEntry(ResourceKey<Level> dimension, BlockPos parentRelayposIn)
+        {
+            this.parentRelaypos = parentRelayposIn;
+            this.dimension = dimension;
+        }
+
         public ServerLevel getDimension()
         {
-            return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
+            return ServerLifecycleHooks.getCurrentServer().overworld().getServer().getLevel(dimension);
         }
 
         public boolean isParentRelayValid()
@@ -2213,14 +2234,22 @@ public class ModSavedData extends SavedData {
 
             int maxIteration = 100;
             BlockPos currentRelayPos = parentRelaypos;
+            boolean closed = false;
             for (int index = 0; index < maxIteration; index++) {
-
                 if(!PerimeterWardRelayBlockEntity.isRelayValid(getDimension(), currentRelayPos)) { break; }
-                if(index > 0 && currentRelayPos.equals(parentRelaypos)) { break; }
+                if(index > 0 && currentRelayPos.equals(parentRelaypos)) {
+                    closed = true;
+                    break;
+                }
 
                 PerimeterWardRelayBlockEntity currentRelay = (PerimeterWardRelayBlockEntity) getDimension().getBlockEntity(currentRelayPos);
                 relayPositions.add(currentRelayPos);
                 currentRelayPos = currentRelay.nextRelayPos.orElse(null);
+            }
+
+            // If it broke off early and didn't loop back to the emitter, it's not a closed zone!
+            if (!closed) {
+                relayPositions.clear();
             }
         }
 
@@ -2267,6 +2296,63 @@ public class ModSavedData extends SavedData {
             }
 
             return (crossings % 2) == 1;
+        }
+
+        // --- Save & Load Methods ---
+
+        public CompoundTag save()
+        {
+            CompoundTag nbt = new CompoundTag();
+            nbt.putUUID("uuid", uuid);
+            if (parentRelaypos != null)
+            {
+                nbt.putLong("parentRelaypos", parentRelaypos.asLong());
+            }
+            if (dimension != null)
+            {
+                nbt.putString("dimension", dimension.location().toString());
+            }
+
+            ListTag relayList = new ListTag();
+            for (BlockPos pos : relayPositions)
+            {
+                CompoundTag posTag = new CompoundTag();
+                posTag.putLong("pos", pos.asLong());
+                relayList.add(posTag);
+            }
+            nbt.put("relayPositions", relayList);
+
+            return nbt;
+        }
+
+        public static PerimeterWardZoneEntry load(CompoundTag nbt)
+        {
+            ResourceLocation dimLoc = ResourceLocation.tryParse(nbt.getString("dimension"));
+            ResourceKey<Level> dimKey = dimLoc != null
+                    ? ResourceKey.create(Registries.DIMENSION, dimLoc)
+                    : Level.OVERWORLD;
+
+            BlockPos parentPos = nbt.contains("parentRelaypos")
+                    ? BlockPos.of(nbt.getLong("parentRelaypos"))
+                    : BlockPos.ZERO;
+
+            PerimeterWardZoneEntry entry = new PerimeterWardZoneEntry(dimKey, parentPos);
+
+            if (nbt.hasUUID("uuid"))
+            {
+                entry.uuid = nbt.getUUID("uuid");
+            }
+
+            if (nbt.contains("relayPositions", Tag.TAG_LIST))
+            {
+                ListTag relayList = nbt.getList("relayPositions", Tag.TAG_COMPOUND);
+                for (int i = 0; i < relayList.size(); i++)
+                {
+                    entry.relayPositions.add(BlockPos.of(relayList.getCompound(i).getLong("pos")));
+                }
+            }
+
+            return entry;
         }
     }
 }

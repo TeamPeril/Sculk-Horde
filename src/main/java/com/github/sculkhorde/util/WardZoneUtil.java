@@ -59,6 +59,7 @@ public class WardZoneUtil {
         if(getWardRelayBlockEntity(level, targetRelay).isPresent())
         {
             getWardRelayBlockEntity(level, targetRelay).get().previousRelayPos = Optional.of(value);
+            setRelayingWard(level, targetRelay, isBlockRelayingWard(level, value));
         }
     }
 
@@ -67,6 +68,15 @@ public class WardZoneUtil {
         if(getWardRelayBlockEntity(level, targetRelay).isPresent())
         {
             getWardRelayBlockEntity(level, targetRelay).get().parentRelayPos = Optional.of(value);
+        }
+    }
+
+
+    public static void setRelayingWard(ServerLevel level, BlockPos targetRelay, boolean value)
+    {
+        if(getWardRelayBlockEntity(level, targetRelay).isPresent())
+        {
+            getWardRelayBlockEntity(level, targetRelay).get().setRelayingWard(value);
         }
     }
 
@@ -112,7 +122,7 @@ public class WardZoneUtil {
     public static ModSavedData.PerimeterWardZoneEntry createZoneEntry(Level level, BlockPos parentRelay)
     {
         ModSavedData.PerimeterWardZoneEntry zone = new ModSavedData.PerimeterWardZoneEntry(level, parentRelay);
-        ModSavedData.getSaveData().getPerimeterWardZoneEntries().put(zone.uuid, zone);
+        ModSavedData.getSaveData().getPerimeterWardZoneEntries().put(parentRelay, zone);
         return zone;
     }
 
@@ -135,24 +145,5 @@ public class WardZoneUtil {
         {
             zone.updateRelayPositions();
         }
-    }
-
-    public static Optional<BlockPos> getParent(LevelReader level, BlockPos pos)
-    {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-
-        if(blockEntity == null)
-        {
-            return Optional.empty();
-        }
-
-        CompoundTag tag = blockEntity.getLevel() == null ? new CompoundTag() : blockEntity.saveWithoutMetadata(blockEntity.getLevel().registryAccess());
-
-        if(tag.contains(parentWardBlockPosID))
-        {
-            return Optional.of(BlockPos.of(tag.getLong(parentWardBlockPosID)));
-        }
-
-        return Optional.empty();
     }
 }
