@@ -343,7 +343,7 @@
   "achievement.sculkhorde.contribute.desc": "Beweisen Sie, dass Sie über sich hinausgehen und einen Beitrag zum Sculk Horde Mod leisten.",
 
   "block.sculkhorde.diseased_kelp_block": "Kranker Seetang",
-  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oEine gefährliche Unterwasser-Sculk-Pflanze, die Sie sticht und Ihnen kranke Zysten beschert.",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oEine gefährliche Unterwasser-Sculk-Pflanze, die Sie sticht und Ihnen Eingegraben beschert.",
   "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oEin Hybriddesign zwischen den normalerweise an der Oberfläche erscheinenden Dornen und dem unter Wasser in großen Mengen wachsenden Seetang. Diese Pflanze dient dazu, Krankheiten zu verbreiten und Beschwörer auszulösen, was letztendlich zum Tod ihres Opfers führt.",
   "entity.sculkhorde.sculk_squid": "Sculk Tintenfisch",
   "item.sculkhorde.sculk_squid_spawn_egg": "Sculk-Tintenfisch-Spawn-Ei",
