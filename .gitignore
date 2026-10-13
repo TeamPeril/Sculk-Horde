@@ -24,3 +24,6 @@ run
 # Files from Forge MDK
 forge*changelog.txt
 setup.bat
+.agentbridge/conversation.db
+.agentbridge/conversation.db-shm
+.agentbridge/conversation.db-wal
