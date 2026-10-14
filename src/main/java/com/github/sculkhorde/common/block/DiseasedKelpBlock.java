@@ -321,8 +321,8 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
     }
 
     @Override
-    public void onPlace(BlockState newState, Level level, BlockPos pos, BlockState oldState, boolean idk) {
-        super.onPlace(newState, level, pos, newState, idk);
+    public void onPlace(BlockState newState, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(newState, level, pos, newState, isMoving);
 
         if(level.isClientSide)
         {
