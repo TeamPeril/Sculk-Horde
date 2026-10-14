@@ -50,7 +50,6 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected String timeOfLastAtmosphereInfestationIdentifier = "timeOfLastAtmosphereInfestation";
     protected long creationTime = 0;
     protected String creationTimeID = "creationTime";
-    public boolean isBeingMoved = false;
 
     protected NodeAtmosphereInfestationSystem matureInfestationSystem;
 

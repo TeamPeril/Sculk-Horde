@@ -1061,11 +1061,12 @@ public class ModSavedData extends SavedData {
      */
     public static class NodeEntry
     {
-        private final BlockPos position; //The Location in the world where the node is
-        private long lastTimeWasActive = 0;
-        private long activationTimeStamp = 0;
-        private boolean IsActive = false;
-        private ResourceKey<Level> dimension;
+        protected final BlockPos position; //The Location in the world where the node is
+        protected long lastTimeWasActive = 0;
+        protected long activationTimeStamp = 0;
+        protected boolean IsActive = false;
+        protected ResourceKey<Level> dimension;
+        protected boolean isBeingRelocated = false;
 
 
         /**
@@ -1095,6 +1096,16 @@ public class ModSavedData extends SavedData {
         public BlockPos getPosition()
         {
             return position;
+        }
+
+        public boolean isBeingRelocated()
+        {
+            return isBeingRelocated;
+        }
+
+        public void setBeingRelocated(boolean beingRelocated)
+        {
+            isBeingRelocated = beingRelocated;
         }
 
         public boolean isActive()
@@ -1184,6 +1195,7 @@ public class ModSavedData extends SavedData {
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
             nbt.putLong("activationTimeStamp", activationTimeStamp);
             nbt.putBoolean("IsActive", IsActive);
+            nbt.putBoolean("isBeingRelocated", isBeingRelocated);
             // Put Dimension ID
             nbt.putString("dimension", dimension.location().toString());
             return nbt;
@@ -1203,6 +1215,7 @@ public class ModSavedData extends SavedData {
             entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
             entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
             entry.setActive(nbt.getBoolean("IsActive"));
+            entry.setBeingRelocated(nbt.getBoolean("isBeingRelocated"));
             // Get Dimension
 
             return entry;

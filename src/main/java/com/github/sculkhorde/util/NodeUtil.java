@@ -71,6 +71,18 @@ public class NodeUtil {
         }
     }
 
+    public static Optional<ModSavedData.NodeEntry> getNodeEntryAtBlockPos(ServerLevel level, BlockPos pos)
+    {
+        for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
+        {
+            if(entry.getPosition().equals(pos) && BlockAlgorithms.areTheseDimensionsEqual(level, entry.getDimension()))
+            {
+                return Optional.of(entry);
+            }
+        }
+        return Optional.empty();
+    }
+
     public static Optional<SculkNodeBlockEntity> getNodeBlockEntity(ModSavedData.NodeEntry nodeEntry)
     {
         return getNodeBlockEntity(nodeEntry.getDimension(), nodeEntry.getPosition());
@@ -170,7 +182,7 @@ public class NodeUtil {
         }
 
         SculkHorde.sculkNodesSystem.timeOfLastNodeMove = level.getGameTime();
-        getNodeBlockEntity(nodeToMove.get()).get().isBeingMoved = true;
+        nodeToMove.get().setBeingRelocated(true);
         level.destroyBlock(nodeToMove.get().getPosition(), false);
 
         SculkNodeBlock.PlaceNode(level, pos, true);

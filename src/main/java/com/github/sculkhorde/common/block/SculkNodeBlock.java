@@ -347,7 +347,7 @@ public class SculkNodeBlock extends BaseEntityBlock {
         boolean isNodeRelocating = false;
         if(NodeUtil.getNodeBlockEntity((ServerLevel) worldIn, pos).isPresent())
         {
-            isNodeRelocating = NodeUtil.getNodeBlockEntity((ServerLevel) worldIn, pos).get().isBeingMoved;
+            isNodeRelocating = NodeUtil.getNodeEntryAtBlockPos((ServerLevel) worldIn, pos).get().isBeingRelocated();
         }
 
         ModSavedData.getSaveData().removeNodeFromMemory(pos);

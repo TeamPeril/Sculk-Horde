@@ -49,6 +49,7 @@ public class SculkNodesSystem {
         return ModSavedData.getSaveData().getNodeEntries();
     }
 
+
     protected Optional<ModSavedData.NodeEntry> getNodeWithLongestTimeOfInactivity()
     {
         Optional<ModSavedData.NodeEntry> nodeWithLongestTimeOfInactivity = Optional.empty();
