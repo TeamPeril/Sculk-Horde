@@ -178,14 +178,17 @@ public class ForgeEventSubscriber {
         }
 
         // Sculk Sweeper Sword Repair System
-        if(damageSourceEntity instanceof LivingEntity attackingEntity)
+        // Ensure it's a direct attack (melee strike, not projectile/indirect)
+        if (damageSourceEntity instanceof LivingEntity attackingEntity && event.getSource().getDirectEntity() == attackingEntity)
         {
             itemStack = attackingEntity.getMainHandItem();
-            if(itemStack.getItem().equals(ModItems.SCULK_SWEEPER_SWORD.get()))
+            if (itemStack.is(ModItems.SCULK_SWEEPER_SWORD.get()) && EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
             {
-                if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
+                int repairAmount = Math.round(event.getNewDamage());
+                if (repairAmount > 0)
                 {
-                    itemStack.setDamageValue((int) Math.max(0, itemStack.getDamageValue() - event.getNewDamage()));
+                    // Offset by +1 so vanilla's attack durability cost doesn't undo the repair
+                    itemStack.setDamageValue(Math.max(0, itemStack.getDamageValue() - (repairAmount + 1)));
                 }
             }
         }

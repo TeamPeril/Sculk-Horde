@@ -1,12 +1,14 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.common.entity.boss.sculk_enderman.SculkSpineSpikeAttackEntity;
+import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -18,8 +20,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -35,6 +40,11 @@ public class SculkSweeperSword extends SwordItem {
     }
     public SculkSweeperSword(Tier tier, int baseDamage, float baseAttackSpeed, Properties prop) {
         super(tier, prop.attributes(SwordItem.createAttributes(tier, baseDamage, baseAttackSpeed)));
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return 100;
     }
 
     private void doSpikeAttack(LivingEntity ownerEntity, LivingEntity targetEntity, ItemStack itemStack)
@@ -59,18 +69,6 @@ public class SculkSweeperSword extends SwordItem {
         itemStack.setDamageValue(itemStack.getMaxDamage());
     }
 
-
-
-    @Override
-    public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity, LivingEntity ownerEntity) {
-        boolean isSculkLivingEntity = EntityAlgorithms.isSculkLivingEntity.test(targetEntity);
-        if(isSculkLivingEntity)
-        {
-            //itemStack.setDamageValue(Math.max(0, itemStack.getDamageValue() - 1));
-        }
-        return true;
-    }
-
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 
@@ -90,8 +88,9 @@ public class SculkSweeperSword extends SwordItem {
         return target.getBoundingBox().inflate(3.0D, 0.25D, 3.0D);
     }
 
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player)
-    {
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {
+        // Return true without calling super.mineBlock(), so no durability is deducted
         return true;
     }
 
@@ -124,13 +123,29 @@ public class SculkSweeperSword extends SwordItem {
         return false;
     }
 
+    Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
     {
-        if(enchantment.description().equals(net.minecraft.network.chat.Component.translatable("enchantment.minecraft.mending")))
+        // If your loader passes Holder<Enchantment>, use enchantment.is(Enchantments.MENDING)
+        if (enchantment.description().getString().equalsIgnoreCase("Mending") ||
+                enchantment.description().toString().contains("mending"))
         {
             return false;
         }
-
         return enchantment.canEnchant(stack);
+    }
+    
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book)
+    {
+        ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(book);
+        for (Holder<Enchantment> holder : enchantments.keySet())
+        {
+            if (holder.is(Enchantments.MENDING))
+            {
+                return false; // Rejects the anvil recipe
+            }
+        }
+        return super.isBookEnchantable(stack, book);
     }
 }
