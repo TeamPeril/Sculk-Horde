@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "sculkhorde:sculk_node",
+    "sculkhorde:soulite_core_block",
+    "sculkhorde:fungal_shroom_core_block"
+  ]
+}

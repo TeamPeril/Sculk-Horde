@@ -1,0 +1,13 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:deep_dark"
+  ],
+  "spawners": {
+    "type": "sculkhorde:sculk_mite",
+    "weight": 10,
+    "minCount": 2,
+    "maxCount": 3,
+    "category": "monster"
+  }
+}
