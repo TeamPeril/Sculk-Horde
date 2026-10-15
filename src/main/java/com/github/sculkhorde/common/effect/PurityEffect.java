@@ -5,11 +5,14 @@ import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.EffectCure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class PurityEffect extends MobEffect {
 
@@ -39,7 +42,7 @@ public class PurityEffect extends MobEffect {
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amp) {
 
-        if(entity.level().isClientSide()) { return false;}
+        if(entity.level().isClientSide()) { return true;}
         // IF entity has a sculk infection, remove it
         if(entity.hasEffect(ModMobEffects.SCULK_INFECTION))
         {
@@ -79,22 +82,15 @@ public class PurityEffect extends MobEffect {
      * @param amplifier The level of the effect
      * @return Determines if the effect should apply.
      */
+    // Stateless check: triggers every 40 ticks (2 seconds) for each entity independently
     @Override
     public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
-
-        if(cooldownTicksRemaining > 0)
-        {
-            cooldownTicksRemaining--;
-            return false;
-        }
-        cooldownTicksRemaining = COOLDOWN;
-        return true;
-
+        return ticksLeft % TickUnits.convertSecondsToTicks(2) == 0;
     }
 
-    public List<ItemStack> getCurativeItems() {
-        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-        return ret;
+    @Override
+    public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
+        // Leave cures empty so that milk (or any other cure) cannot remove this effect!
     }
 
 }
