@@ -5,13 +5,11 @@ import com.github.sculkhorde.common.item.*;
 import com.github.sculkhorde.util.ColorUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
@@ -406,12 +404,9 @@ public class ModItems {
 	public static final DeferredHolder<Item, DeferredSpawnEggItem> SCULK_STINGER_SPAWN_EGG = ITEMS.register("sculk_stinger_spawn_egg",() ->  new DeferredSpawnEggItem(ModEntities.SCULK_STINGER, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkLightColor6), new Item.Properties()));
 	public static final DeferredHolder<Item, AngelOfReapingSpawnEggItem> ANGEL_OF_REAPING_SPAWN_EGG = ITEMS.register("angel_of_reaping_spawn_egg",() ->  new AngelOfReapingSpawnEggItem(ModEntities.ANGEL_OF_REAPING, hexToInt(ColorUtil.sculkBaseColor6), hexToInt(ColorUtil.sculkAcidColor1), new Item.Properties()));
 
-	private static Item.Properties musicDiscProperties(String songId) {
-		return new Item.Properties().stacksTo(1).jukeboxPlayable(ResourceKey.create(
-				Registries.JUKEBOX_SONG,
-				ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, songId)));
-	}
+    public static final DeferredHolder<Item, Item> DEEP_GREEN_MUSIC_DISC = ITEMS.register("deep_green_music_disc",
+            () -> new Item(new Item.Properties().jukeboxPlayable(ModSounds.DEEP_GREEN_KEY).stacksTo(1).rarity(Rarity.RARE)));
+    public static final DeferredHolder<Item, Item> BLIND_AND_ALONE_MUSIC_DISC = ITEMS.register("blind_and_alone_music_disc",
+            () -> new Item(new Item.Properties().jukeboxPlayable(ModSounds.BLIND_AND_ALONE_KEY).stacksTo(1).rarity(Rarity.RARE)));
 
-	public static final DeferredHolder<Item, Item> DEEP_GREEN_MUSIC_DISC = ITEMS.register("deep_green_music_disc", () -> new Item(musicDiscProperties("deep_green")));
-	public static final DeferredHolder<Item, Item> BLIND_AND_ALONE_MUSIC_DISC = ITEMS.register("blind_and_alone_music_disc", () -> new Item(musicDiscProperties("blind_and_alone")));
 }

@@ -1,0 +1,8 @@
+{
+  "comparator_output": 15,
+  "description": {
+    "translate": "item.sculkhorde.deep_green_music_disc.desc"
+  },
+  "length_in_seconds": 256.0,
+  "sound_event": "sculkhorde:deep_green"
+}

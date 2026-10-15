@@ -1,7 +1,9 @@
 package com.github.sculkhorde.core;
 
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.JukeboxSong;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.Registries;
@@ -18,8 +20,6 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> NODE_SPAWN_SOUND = registerSoundEvent("node_spawn_sound");
     public static final DeferredHolder<SoundEvent, SoundEvent> NODE_DESTROY_SOUND = registerSoundEvent("node_destroy_sound");
 
-    public static final DeferredHolder<SoundEvent, SoundEvent> DEEP_GREEN = registerSoundEvent("deep_green");
-    public static final DeferredHolder<SoundEvent, SoundEvent> BLIND_AND_ALONE = registerSoundEvent("blind_and_alone");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCULK_ENDERMAN_IDLE = registerSoundEvent("sculk_enderman_idle");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCULK_ENDERMAN_PORTAL = registerSoundEvent("sculk_enderman_portal");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCULK_ENDERMAN_SCREAM = registerSoundEvent("sculk_enderman_scream");
@@ -65,6 +65,14 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SCULK_BROOD_IDLE = registerSoundEvent("sculk_brood_idle");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCULK_BROOD_HURT = registerSoundEvent("sculk_brood_hurt");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> DEEP_GREEN = registerSoundEvent("deep_green");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BLIND_AND_ALONE = registerSoundEvent("blind_and_alone");
+    public static final ResourceKey<JukeboxSong> DEEP_GREEN_KEY = createSong("deep_green");
+    public static final ResourceKey<JukeboxSong> BLIND_AND_ALONE_KEY = createSong("blind_and_alone");
+
+    private static ResourceKey<JukeboxSong> createSong(String name) {
+        return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, name));
+    }
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, name);
