@@ -1,0 +1,8 @@
+{
+  "comparator_output": 15,
+  "description": {
+    "translate": "item.sculkhorde.blind_and_alone_music_disc.desc"
+  },
+  "length_in_seconds": 246.0,
+  "sound_event": "sculkhorde:blind_and_alone"
+}
