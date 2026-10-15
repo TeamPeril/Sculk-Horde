@@ -36,7 +36,10 @@ import java.util.List;
 public class SculkSweeperSword extends SwordItem {
 
     public SculkSweeperSword() {
-        this(Tiers.DIAMOND, 3, -2.2F, new Item.Properties().rarity(Rarity.EPIC).setNoRepair().durability(100));
+        this(Tiers.DIAMOND, 3, -2.2F, new Item.Properties()
+                .rarity(Rarity.EPIC)
+                .setNoRepair()
+                .durability(100));
     }
     public SculkSweeperSword(Tier tier, int baseDamage, float baseAttackSpeed, Properties prop) {
         super(tier, prop.attributes(SwordItem.createAttributes(tier, baseDamage, baseAttackSpeed)));
@@ -89,12 +92,6 @@ public class SculkSweeperSword extends SwordItem {
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {
-        // Return true without calling super.mineBlock(), so no durability is deducted
-        return true;
-    }
-
-    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
@@ -116,6 +113,18 @@ public class SculkSweeperSword extends SwordItem {
     public float getXpRepairRatio(ItemStack stack)
     {
         return 1f;
+    }
+
+    // 1. Completely disable the 1 durability cost on ALL attacks
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        return false; // Returning false tells vanilla NOT to call hurtAndBreak()
+    }
+
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {
+        // Return true without calling super.mineBlock(), so no durability is deducted
+        return true;
     }
 
     public boolean isRepairable(@NotNull ItemStack stack)
