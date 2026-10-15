@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.effect.IPotionExpireEffect;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,6 +20,11 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -265,6 +271,23 @@ public class ForgeEventSubscriber {
         {
             MobEffectInstance effectInstance = new MobEffectInstance(ModMobEffects.SCULK_VESSEL, Integer.MAX_VALUE);
             event.getEntity().addEffect(effectInstance);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAnvilUpdate(AnvilUpdateEvent event)
+    {
+        if (event.getLeft().is(ModItems.SCULK_SWEEPER_SWORD.get()))
+        {
+            ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(event.getRight());
+            for (Holder<Enchantment> holder : enchantments.keySet())
+            {
+                if (holder.is(Enchantments.MENDING))
+                {
+                    event.setCanceled(true); // Turns the anvil output slot to a red cross
+                    return;
+                }
+            }
         }
     }
 

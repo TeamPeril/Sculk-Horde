@@ -123,18 +123,6 @@ public class SculkSweeperSword extends SwordItem {
         return false;
     }
 
-    Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
-    {
-        // If your loader passes Holder<Enchantment>, use enchantment.is(Enchantments.MENDING)
-        if (enchantment.description().getString().equalsIgnoreCase("Mending") ||
-                enchantment.description().toString().contains("mending"))
-        {
-            return false;
-        }
-        return enchantment.canEnchant(stack);
-    }
-    
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book)
     {
