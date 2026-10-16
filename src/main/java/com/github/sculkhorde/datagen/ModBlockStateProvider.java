@@ -5,6 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import oshi.util.tuples.Pair;
@@ -18,20 +19,31 @@ public class ModBlockStateProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         for (Pair<DeferredHolder<Block, ? extends Block>, ResourceLocation> pair : ModBlocks.BLOCKS_TO_DATAGEN) {
-            if (pair.getA().get() instanceof StairBlock stairs) {
-                stairsBlock(stairs, pair.getB().withPrefix("block/"));
-            } else if (pair.getA().get() instanceof SlabBlock slab) {
-                slabBlock(slab, pair.getB(), pair.getB().withPrefix("block/"));
-            } else if (pair.getA().get() instanceof WallBlock wall) {
-                wallBlock(wall, pair.getB().withPrefix("block/"));
-            } else if (pair.getA().get() instanceof FenceBlock fence) {
-                fenceBlock(fence, pair.getB().withPrefix("block/"));
-            } else if (pair.getA().get() instanceof FenceGateBlock fenceGate) {
-                fenceGateBlock(fenceGate, pair.getB().withPrefix("block/"));
+            Block block = pair.getA().get();
+            String name = pair.getA().getId().getPath();
+            ResourceLocation texture = pair.getB().withPrefix("block/");
+
+            if (block instanceof StairBlock stairs) {
+                stairsBlock(stairs, texture);
+                simpleBlockItem(stairs, models().getExistingFile(modLoc("block/" + name)));
+            } else if (block instanceof SlabBlock slab) {
+                // Uses the double-slab model if existing, otherwise uses texture for the slab models
+                slabBlock(slab, texture, texture);
+                simpleBlockItem(slab, models().getExistingFile(modLoc("block/" + name)));
+            } else if (block instanceof WallBlock wall) {
+                wallBlock(wall, texture);
+                itemModels().wallInventory(name, texture);
+            } else if (block instanceof FenceBlock fence) {
+                fenceBlock(fence, texture);
+                itemModels().fenceInventory(name, texture);
+            } else if (block instanceof FenceGateBlock fenceGate) {
+                fenceGateBlock(fenceGate, texture);
+                simpleBlockItem(fenceGate, models().getExistingFile(modLoc("block/" + name)));
             } else {
-                simpleBlock(pair.getA().get(), models().cubeAll(pair.getA().getId().getPath(), pair.getB().withPrefix("block/")));
+                ModelFile model = models().cubeAll(name, texture);
+                simpleBlock(block, model);
+                simpleBlockItem(block, model);
             }
-            simpleBlockItem(pair.getA().get(), models().getExistingFile(pair.getA().getId()));
         }
     }
 }
