@@ -3,11 +3,13 @@ package com.github.sculkhorde.datagen;
 import com.github.sculkhorde.core.ModBlocks;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.properties.SlabType;
@@ -30,19 +32,34 @@ public class ModBlockLootTableSubProvider extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        for (Pair<DeferredHolder<Block, ? extends Block>, ResourceLocation> pair : ModBlocks.BLOCKS_TO_DATAGEN) {
-            if (pair.getA().get() instanceof SlabBlock) {
-                map.put(
-                        ResourceKey.create(Registries.LOOT_TABLE, pair.getA().getId().withPrefix("blocks/")),
-                        createSlabItemTableWithNoExplosionDecay(pair.getA().get())
-                );
+        ModBlocks.BLOCKS_TO_DATAGEN.forEach(pair -> {
+            Block block = pair.getA().get();
+            Item dropItem = BuiltInRegistries.ITEM.get(pair.getB());
+
+            if (block instanceof SlabBlock slab) {
+                this.add(slab, createSlabDrop(slab, dropItem));
+            } else if (block.asItem() == dropItem) {
+                this.dropSelf(block);
             } else {
-                map.put(
-                        ResourceKey.create(Registries.LOOT_TABLE, pair.getA().getId().withPrefix("blocks/")),
-                        createSingleItemTableWithNoExplosionDecay(pair.getA().get())
-                );
+                this.dropOther(block, dropItem);
             }
-        }
+        });
+    }
+
+    protected LootTable.Builder createSlabDrop(Block block, Item dropItem) {
+        return LootTable.lootTable().withPool(
+                LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(dropItem)
+                                .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F))
+                                        .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block)
+                                                .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                        .hasProperty(SlabBlock.TYPE, SlabType.DOUBLE))))));
+    }
+
+    @Override
+    protected Iterable<Block> getKnownBlocks() {
+        return ModBlocks.BLOCKS_TO_DATAGEN.stream().map(pair -> (Block) pair.getA().get()).toList();
     }
 
     // original sculk horde loot tables do not have explosion decay. i maintained this for datagen
@@ -57,12 +74,5 @@ public class ModBlockLootTableSubProvider extends BlockLootSubProvider {
                 .withPool(LootPool.lootPool()
                         .add(LootItem.lootTableItem(block.asItem()))
                         .apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SlabBlock.TYPE, SlabType.DOUBLE))))); //stole from BlockLootSubProvider
-    }
-
-    @Override
-    protected Iterable<Block> getKnownBlocks() {
-        return ModBlocks.BLOCKS_TO_DATAGEN.stream()
-                .map(pair -> (Block) pair.getA().get())
-                ::iterator;
     }
 }
