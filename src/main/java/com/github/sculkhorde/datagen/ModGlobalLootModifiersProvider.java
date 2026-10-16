@@ -24,17 +24,17 @@ public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
     protected void start() {
         add("sculk_ancient_city_chest", new AddItemModifier(new LootItemCondition[]{
                 LootTableIdCondition.builder(BuiltInLootTables.ANCIENT_CITY.location()).build(),
-                LootItemRandomChanceCondition.randomChance(0.2F).build()
+                LootItemRandomChanceCondition.randomChance(0.5F).build()
         }, ModItems.SCULK_RESIN.get()));
 
         add("sculk_ancient_city_chest", new AddItemModifier(new LootItemCondition[]{
                 LootTableIdCondition.builder(BuiltInLootTables.ANCIENT_CITY.location()).build(),
-                LootItemRandomChanceCondition.randomChance(0.1F).build()
+                LootItemRandomChanceCondition.randomChance(0.3F).build()
         }, ModItems.SOULITE_SHARD.get()));
 
         add("sculk_ancient_city_chest", new AddItemModifier(new LootItemCondition[]{
                 LootTableIdCondition.builder(BuiltInLootTables.ANCIENT_CITY.location()).build(),
-                LootItemRandomChanceCondition.randomChance(0.2F).build()
+                LootItemRandomChanceCondition.randomChance(0.4F).build()
         }, ModItems.ESSENCE_OF_PURITY.get()));
     }
 }
