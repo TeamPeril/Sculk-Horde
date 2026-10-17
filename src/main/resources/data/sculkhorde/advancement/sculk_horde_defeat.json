@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:sculk_ancient_node"
+      "id": "sculkhorde:sculk_ancient_node"
     },
     "title": {
       "translate": "achievement.sculkhorde.sculk_horde_defeat.title"

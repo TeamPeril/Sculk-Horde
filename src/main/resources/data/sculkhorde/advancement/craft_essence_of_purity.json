@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:essence_of_purity"
+      "id": "sculkhorde:essence_of_purity"
     },
     "title": {
       "translate": "achievement.sculkhorde.craft_essence_of_purity.title"
