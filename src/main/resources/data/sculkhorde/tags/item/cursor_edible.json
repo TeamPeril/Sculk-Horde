@@ -7,23 +7,23 @@
     "#minecraft:saplings",
     {
       "required": false,
-      "id": "#forge:seeds"
+      "id": "#c:seeds"
     },
     {
       "required": false,
-      "id": "#forge:fruits"
+      "id": "#c:foods/fruit"
     },
     {
       "required": false,
-      "id": "#forge:crops"
+      "id": "#c:crops"
     },
     {
       "required": false,
-      "id": "#forge:vegetables"
+      "id": "#c:foods/vegetable"
     },
     {
       "required": false,
-      "id": "#forge:raw_meat"
+      "id": "#c:foods/raw_meat"
     }
   ]
 }

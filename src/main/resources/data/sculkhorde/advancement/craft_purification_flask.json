@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:purification_flask"
+      "id": "sculkhorde:purification_flask"
     },
     "title": {
       "translate": "achievement.sculkhorde.craft_purification_flask.title"

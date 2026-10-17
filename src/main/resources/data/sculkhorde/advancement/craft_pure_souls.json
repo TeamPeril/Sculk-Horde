@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:pure_souls"
+      "id": "sculkhorde:pure_souls"
     },
     "title": {
       "translate": "achievement.sculkhorde.craft_pure_souls.title"
