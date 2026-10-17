@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:sculk_node"
+      "id": "sculkhorde:sculk_node"
     },
     "title": {
       "translate": "achievement.sculkhorde.sculk_evolve_mature.title"

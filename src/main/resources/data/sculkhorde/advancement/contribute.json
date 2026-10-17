@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:coin_of_contribution"
+      "id": "sculkhorde:coin_of_contribution"
     },
     "title": {
       "translate": "achievement.sculkhorde.contribute.title"

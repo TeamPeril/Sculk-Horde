@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "sculkhorde:soul_harvester"
+      "id": "sculkhorde:soul_harvester"
     },
     "title": {
       "translate": "achievement.sculkhorde.use_soul_harvester.title"
