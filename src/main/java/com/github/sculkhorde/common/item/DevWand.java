@@ -1,10 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.NodeUtil;
-import com.github.sculkhorde.util.StructureUtil;
-import com.github.sculkhorde.util.WardZoneUtil;
+import com.github.sculkhorde.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -86,18 +83,7 @@ public class DevWand extends Item implements IForgeItem {
 		Vec3 hitPos = rayTrace.getTo();
 		BlockPos hitPosBlock = BlockPos.containing(hitPos);
 
-        if(WardZoneUtil.isPosInAnyWardZone(playerIn.level(), playerIn.blockPosition()))
-        {
-            playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
-        }
-		else
-		{
-			playerIn.sendSystemMessage(Component.literal("Not In Infestation Ward Zone."));
-		}
-
-		SculkHorde.sculkNodesSystem.DeactivateAllNodes();
-		SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
-		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
+		InfestationUtil.infestArea((ServerLevel) level, hitPosBlock, hitPosBlock);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

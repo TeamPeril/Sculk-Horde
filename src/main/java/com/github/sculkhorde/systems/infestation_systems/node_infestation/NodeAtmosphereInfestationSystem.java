@@ -14,8 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class NodeAtmosphereInfestationSystem {
     // The parent tile entity
@@ -39,8 +39,9 @@ public class NodeAtmosphereInfestationSystem {
     protected int currentX = 0;
     protected int symmetryStep = 0;
 
-    // Reusable buffer to hold the current chunk of coordinates
-    protected final List<BlockPos> coordinateChunkBuffer = new ArrayList<>(CHUNK_BATCH_SIZE);
+    // LinkedHashSet automatically filters out duplicate coordinates so we don't
+    // flood SculkHorde.cursorSystem with 8 identical cursors on the same block!
+    protected final Set<BlockPos> coordinateChunkBuffer = new LinkedHashSet<>(CHUNK_BATCH_SIZE);
 
     public NodeAtmosphereInfestationSystem(SculkNodeBlockEntity parent) {
         this.parent = parent;
@@ -157,14 +158,14 @@ public class NodeAtmosphereInfestationSystem {
     /**
      * Processes the collected chunk of coordinates.
      */
-    protected void processCoordinateChunk(ServerLevel level, List<BlockPos> chunk) {
+    protected void processCoordinateChunk(ServerLevel level, Set<BlockPos> chunk) {
         for (BlockPos pos : chunk) {
 
-            float chanceOfSuccess = 100F;
+            float chanceOfSuccess = 1.0F;
             float distanceFromCenter = BlockAlgorithms.getBlockDistanceXZ(pos, parent.getBlockPos());
             float distanceToEdge = Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES - distanceFromCenter;
 
-            if(distanceToEdge <= 100)
+            if(distanceToEdge <= 1.0F)
             {
                 chanceOfSuccess = distanceToEdge;
             }
