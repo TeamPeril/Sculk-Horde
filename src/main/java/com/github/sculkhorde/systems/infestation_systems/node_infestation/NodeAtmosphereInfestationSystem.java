@@ -161,16 +161,16 @@ public class NodeAtmosphereInfestationSystem {
     protected void processCoordinateChunk(ServerLevel level, Set<BlockPos> chunk) {
         for (BlockPos pos : chunk) {
 
-            float chanceOfSuccess = 1.0F;
+            float chanceOfSuccess = 100.0F;
             float distanceFromCenter = BlockAlgorithms.getBlockDistanceXZ(pos, parent.getBlockPos());
             float distanceToEdge = Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES - distanceFromCenter;
 
-            if(distanceToEdge <= 1.0F)
+            if(distanceToEdge <= 100)
             {
                 chanceOfSuccess = distanceToEdge;
             }
 
-            boolean willInfectBlock = parent.getLevel().random.nextFloat() <= chanceOfSuccess;
+            boolean willInfectBlock = (parent.getLevel().random.nextFloat() * 100) <= chanceOfSuccess;
 
             if(willInfectBlock)
             {
