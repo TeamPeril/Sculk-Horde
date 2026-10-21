@@ -15,6 +15,8 @@ import java.util.Optional;
 
 public class NodeUtil {
 
+
+
     public static Optional<ModSavedData.NodeEntry> getClosestNode(ServerLevel dimension, BlockPos pos) {
         Optional<ModSavedData.NodeEntry> closestNode = Optional.empty();
         double closestDistance = Double.MAX_VALUE;

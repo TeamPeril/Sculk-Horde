@@ -99,20 +99,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     }
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
-        if(blockEntity.creationTime == 0)
-        {
-            blockEntity.creationTime = level.getGameTime();
-        }
-
-        if(level.isClientSide)
-        {
-            if(System.currentTimeMillis() - blockEntity.lastHeartBeat > blockEntity.heartBeatDelayMillis)
-            {
-                blockEntity.lastHeartBeat = System.currentTimeMillis();
-                level.playLocalSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);
-            }
-            return;
-        }
+        blockEntity.coreSystemsTick();
 
         if(!Gravemind.isGravemindActive())
         {
@@ -129,6 +116,24 @@ public class SculkNodeBlockEntity extends BlockEntity
             chunkloadTick(blockEntity);
         }
 
+    }
+
+    public void coreSystemsTick()
+    {
+        if(creationTime == 0)
+        {
+            creationTime = level.getGameTime();
+        }
+
+        if(level.isClientSide)
+        {
+            if(System.currentTimeMillis() - lastHeartBeat > heartBeatDelayMillis)
+            {
+                lastHeartBeat = System.currentTimeMillis();
+                level.playLocalSound(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 5.0F, 1.0F, false);
+            }
+            return;
+        }
     }
 
     protected static void chunkloadTick(SculkNodeBlockEntity blockEntity)

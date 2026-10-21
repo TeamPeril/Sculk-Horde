@@ -1,6 +1,5 @@
 package com.github.sculkhorde.core;
 
-import com.github.sculkhorde.common.block.PerimeterWardEmitterBlock;
 import com.github.sculkhorde.common.block.SculkBeeNestBlock;
 import com.github.sculkhorde.common.blockentity.PerimeterWardEmitterBlockEntity;
 import com.github.sculkhorde.common.blockentity.PerimeterWardRelayBlockEntity;
@@ -9,7 +8,7 @@ import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.systems.AutoPerformanceSystem;
 import com.github.sculkhorde.systems.BeeNestActivitySystem;
 import com.github.sculkhorde.systems.DebugSlimeSystem;
-import com.github.sculkhorde.systems.SculkNodesSystem;
+import com.github.sculkhorde.systems.node_system.SculkNodesSystem;
 import com.github.sculkhorde.systems.chunk_cursor_system.ChunkInfestationSystem;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
@@ -1064,11 +1063,17 @@ public class ModSavedData extends SavedData {
      */
     public static class NodeEntry
     {
-        private final BlockPos position; //The Location in the world where the node is
-        private long lastTimeWasActive = 0;
-        private long activationTimeStamp = 0;
-        private boolean IsActive = false;
-        private ResourceKey<Level> dimension;
+        protected final BlockPos position; //The Location in the world where the node is
+        protected long lastTimeWasActive = 0;
+        protected long activationTimeStamp = 0;
+        protected boolean IsActive = false;
+        protected ResourceKey<Level> dimension;
+
+        public final int STATE_IDLE = 0;
+        public final int STATE_SPREAD = 1;
+        public final int STATE_DEFENSE = 2;
+        public final int STATE_OFFENSE = 3;
+        protected int state = STATE_IDLE;
 
 
         /**
@@ -1090,6 +1095,37 @@ public class ModSavedData extends SavedData {
             position = positionIn;
             this.dimension = dimensionResource;
         }
+
+        public int getState()
+        {
+            return state;
+        }
+
+        public void setState(int state)
+        {
+            SculkHorde.debuggerSystem.entityDebuggerModule.logDebug(" State: " + getState());
+        }
+
+        public void setStateIdle()
+        {
+            setState(STATE_IDLE);
+        }
+
+        public void setStateSpread()
+        {
+            setState(STATE_SPREAD);
+        }
+
+        public void setStateDefense()
+        {
+            setState(STATE_DEFENSE);
+        }
+
+        public void setStateOffense()
+        {
+            setState(STATE_OFFENSE);
+        }
+
         public ServerLevel getDimension()
         {
             return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);

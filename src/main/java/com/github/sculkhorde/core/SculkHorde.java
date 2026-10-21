@@ -12,6 +12,7 @@ import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadDispatcherSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
+import com.github.sculkhorde.systems.node_system.SculkNodesSystem;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;

@@ -1,4 +1,4 @@
-package com.github.sculkhorde.systems;
+package com.github.sculkhorde.systems.node_system;
 
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
