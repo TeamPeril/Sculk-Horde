@@ -1,10 +1,15 @@
 package com.github.sculkhorde.systems.node_system;
 
+import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.util.behavior_tree.BehaviorNode;
 
-public class SculkNodeDefenseBehavior extends BehaviorNode {
-    public SculkNodeDefenseBehavior(String id) {
+public class SculkNodeBehavior extends BehaviorNode {
+
+    public final SculkNodeBlockEntity node;
+
+    public SculkNodeBehavior(String id, SculkNodeBlockEntity node) {
         super(id);
+        this.node = node;
     }
 
     @Override

@@ -12,9 +12,9 @@ public class SculkNodeSelectorNode extends SelectorNode {
         this.node = node;
     }
 
-    public SculkNodeSelectorNode(SculkNodeBlockEntity node, SculkNodeBlockEntity node1)
+    public SculkNodeSelectorNode(SculkNodeBlockEntity node)
     {
-        this("main_selector", node1);
+        this("main_selector", node);
     }
 
 

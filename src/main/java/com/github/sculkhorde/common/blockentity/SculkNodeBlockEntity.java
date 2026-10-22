@@ -8,6 +8,7 @@ import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeBr
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.systems.node_system.SculkNodeSelectorNode;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -36,7 +37,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected long timeOfLastRepair = -1;
     public static final int chunkLoadIntervalTicks = TickUnits.convertMinutesToTicks(5);
     public long timeOfLastChunkLoadTick = 0;
-    protected NodeBranchingInfestationSystem branchingInfestationHandler;
+
 
     protected int currentInfestationRadius = 0;
     protected String currentInfestationRadiusIdentifier = "currentInfestationRadius";
@@ -46,15 +47,15 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected String creationTimeID = "creationTime";
     public boolean isBeingMoved = false;
 
-    protected NodeAtmosphereInfestationSystem matureInfestationSystem;
+    protected final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
+    protected long lastHeartBeat = System.currentTimeMillis();
+
+    SculkNodeSelectorNode selectorNode;
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
-        matureInfestationSystem = new NodeAtmosphereInfestationSystem(this);
+        selectorNode = new SculkNodeSelectorNode(this);
     }
-
-    protected final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
-    protected long lastHeartBeat = System.currentTimeMillis();
 
     /** Accessors **/
 
@@ -89,33 +90,15 @@ public class SculkNodeBlockEntity extends BlockEntity
         });
     }
 
-    protected void initializeInfectionHandler()
-    {
-        if(branchingInfestationHandler == null)
-        {
-            branchingInfestationHandler = new NodeBranchingInfestationSystem(this, getBlockPos(), false);
-            branchingInfestationHandler.spawnOnSurface = false;
-        }
-    }
+
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
-        blockEntity.coreSystemsTick();
-
         if(!Gravemind.isGravemindActive())
         {
             return;
         }
 
-        InfestationHandlerTick(blockEntity);
-        addDarknessEffectToNearbyPlayers(level, blockPos, 50);
-        repairNodeTick(blockEntity);
-
-        if(TickUnits.hasTicksPassed(blockEntity.timeOfLastChunkLoadTick, level, chunkLoadIntervalTicks)) {
-            // Update the tickedAt time
-            blockEntity.tickedAt = System.nanoTime();
-            chunkloadTick(blockEntity);
-        }
-
+        blockEntity.coreSystemsTick();
     }
 
     public void coreSystemsTick()
@@ -134,6 +117,15 @@ public class SculkNodeBlockEntity extends BlockEntity
             }
             return;
         }
+
+        if(TickUnits.hasTicksPassed(timeOfLastChunkLoadTick, level, chunkLoadIntervalTicks)) {
+            // Update the tickedAt time
+            tickedAt = System.nanoTime();
+            chunkloadTick(this);
+        }
+
+        addDarknessEffectToNearbyPlayers(level, getBlockPos(), 50);
+        repairNodeTick(this);
     }
 
     protected static void chunkloadTick(SculkNodeBlockEntity blockEntity)
@@ -172,37 +164,7 @@ public class SculkNodeBlockEntity extends BlockEntity
         }
     }
 
-    protected static void InfestationHandlerTick(SculkNodeBlockEntity blockEntity)
-    {
-        if(!blockEntity.isActive())
-        {
-            return;
-        }
 
-        if(SculkHorde.gravemind.isEvolutionInMatureState() && DifficultyUtil.isCurrentDifficultyGreaterThanEasy() && ModConfig.isExperimentalFeaturesEnabled())
-        {
-            blockEntity.matureInfestationSystem.serverTick();
-            return;
-        }
-
-        // Initialize the infection handler
-        if(blockEntity.branchingInfestationHandler == null)
-        {
-            blockEntity.initializeInfectionHandler();
-        }
-
-        if(blockEntity.branchingInfestationHandler.canBeActivated() && blockEntity.isActive())
-        {
-            blockEntity.branchingInfestationHandler.activate();
-        }
-
-        if(!blockEntity.isActive())
-        {
-            blockEntity.branchingInfestationHandler.deactivate();
-        }
-
-        blockEntity.branchingInfestationHandler.tick();
-    }
 
     /**
      * Called when loading block entity from world.
