@@ -16,6 +16,10 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
         super(id, node);
     }
 
+    public SculkNodeSpreadBehavior(SculkNodeBlockEntity node) {
+        this("spread_behavior", node);
+    }
+
     @Override
     public boolean canExecute() {
         return false;

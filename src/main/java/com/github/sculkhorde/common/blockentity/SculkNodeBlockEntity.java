@@ -9,6 +9,7 @@ import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStr
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.systems.node_system.SculkNodeSelectorNode;
+import com.github.sculkhorde.systems.node_system.SculkNodeSpreadBehavior;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DifficultyUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
@@ -55,6 +56,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
         selectorNode = new SculkNodeSelectorNode(this);
+        selectorNode.addChild(new SculkNodeSpreadBehavior(this));
     }
 
     /** Accessors **/
@@ -99,6 +101,8 @@ public class SculkNodeBlockEntity extends BlockEntity
         }
 
         blockEntity.coreSystemsTick();
+
+        blockEntity.selectorNode.execute();
     }
 
     public void coreSystemsTick()

@@ -6,7 +6,7 @@ import java.util.List;
 public class SelectorNode extends BehaviorNode {
 
     protected final List<BehaviorNode> children = new ArrayList<>();
-    protected int currentChildIndex = 0;
+    protected int runningChildIndex = -1; // -1 means nothing is currently running
 
     public SelectorNode(String id) {
         super(id);
@@ -19,39 +19,60 @@ public class SelectorNode extends BehaviorNode {
 
     @Override
     public boolean canExecute() {
-        // Always allowed to run if it has children
         return !children.isEmpty();
     }
 
     @Override
     protected void onStart() {
-        currentChildIndex = 0;
+        runningChildIndex = -1;
     }
 
     @Override
     protected BehaviorStatus onTick() {
-        while (currentChildIndex < children.size()) {
-            BehaviorNode child = children.get(currentChildIndex);
-            BehaviorStatus result = child.execute();
+        for (int i = 0; i < children.size(); i++) {
+            BehaviorNode child = children.get(i);
 
-            if (result == BehaviorStatus.RUNNING) {
-                return BehaviorStatus.RUNNING;
+            // Check if this child can run (or is already the active running child)
+            if (i == runningChildIndex || child.canExecute()) {
+
+                // If a higher-priority child took over, abort the previously running lower-priority child
+                if (runningChildIndex != -1 && runningChildIndex != i) {
+                    children.get(runningChildIndex).abort();
+                }
+
+                BehaviorStatus status = child.execute();
+
+                if (status == BehaviorStatus.RUNNING) {
+                    runningChildIndex = i;
+                    return BehaviorStatus.RUNNING;
+                }
+
+                if (status == BehaviorStatus.SUCCESS) {
+                    runningChildIndex = -1;
+                    return BehaviorStatus.SUCCESS;
+                }
+
+                // Child returned FAILURE -> clear and allow lower priorities to evaluate
+                if (runningChildIndex == i) {
+                    runningChildIndex = -1;
+                }
             }
-
-            if (result == BehaviorStatus.SUCCESS) {
-                return BehaviorStatus.SUCCESS;
-            }
-
-            // Child failed its condition or action; advance to next priority
-            currentChildIndex++;
         }
+
+        // If nothing could run or all failed, ensure any previously running task is aborted
+        if (runningChildIndex != -1) {
+            children.get(runningChildIndex).abort();
+            runningChildIndex = -1;
+        }
+
         return BehaviorStatus.FAILURE;
     }
 
     @Override
     public void abort() {
-        if (currentChildIndex < children.size()) {
-            children.get(currentChildIndex).abort();
+        if (runningChildIndex != -1 && runningChildIndex < children.size()) {
+            children.get(runningChildIndex).abort();
+            runningChildIndex = -1;
         }
         super.abort();
     }
