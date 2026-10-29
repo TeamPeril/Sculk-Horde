@@ -22,13 +22,13 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
 
     @Override
     public boolean canExecute() {
-        return false;
+        return true;
     }
 
     @Override
     protected BehaviorStatus onTick() {
         InfestationHandlerTick(node);
-        return null;
+        return BehaviorStatus.RUNNING;
     }
 
     @Override
@@ -49,11 +49,6 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
 
     protected void InfestationHandlerTick(SculkNodeBlockEntity blockEntity)
     {
-        if(!blockEntity.isActive())
-        {
-            return;
-        }
-
         if(SculkHorde.gravemind.isEvolutionInMatureState() && DifficultyUtil.isCurrentDifficultyGreaterThanEasy() && ModConfig.isExperimentalFeaturesEnabled())
         {
             matureInfestationSystem.serverTick();

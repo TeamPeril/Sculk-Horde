@@ -102,6 +102,11 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         blockEntity.coreSystemsTick();
 
+        if(level.isClientSide)
+        {
+            return;
+        }
+
         blockEntity.selectorNode.execute();
     }
 
