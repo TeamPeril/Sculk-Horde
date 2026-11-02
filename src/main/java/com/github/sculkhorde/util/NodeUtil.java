@@ -6,8 +6,11 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +84,19 @@ public class NodeUtil {
     public static Optional<SculkNodeBlockEntity> getNodeBlockEntity(ServerLevel level, BlockPos pos)
     {
         return level.getBlockEntity(pos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+    }
+
+    public static Optional<ModSavedData.NodeEntry> getNodeEntry(ServerLevel level, BlockPos pos)
+    {
+        for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
+        {
+            if(entry.getPosition().equals(pos) && BlockAlgorithms.areTheseDimensionsEqual(entry.getDimension().dimension(), level.dimension()))
+            {
+                return Optional.of(entry);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public static long getNodeAgeTicks(ModSavedData.NodeEntry nodeEntry)
@@ -178,4 +194,27 @@ public class NodeUtil {
         SculkNodeBlock.PlaceNode(level, pos, true);
     }
 
+    public static boolean isAnyPlayerNearNode(SculkNodeBlockEntity blockEntity, int distance)
+    {
+        Optional<ModSavedData.NodeEntry> node = getNodeEntry((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos());
+
+        if(node.isEmpty())
+        {
+            DebuggerSystem.eventDebuggerModule.logError("isAnyPlayerNearNode | Was not able to locate node that should have been there.");
+            return false;
+        }
+        return isAnyPlayerNearNode(node.get(), distance);
+    }
+    public static boolean isAnyPlayerNearNode(ModSavedData.NodeEntry entry, int distance)
+    {
+        for(Player player : entry.getDimension().players())
+        {
+            if(BlockAlgorithms.getBlockDistanceXZ(entry.getPosition(), player.blockPosition()) <= 150 && BlockAlgorithms.areTheseDimensionsEqual(player.level().dimension(), entry.getDimension().dimension()))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
