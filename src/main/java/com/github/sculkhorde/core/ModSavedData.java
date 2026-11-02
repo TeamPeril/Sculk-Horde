@@ -1126,6 +1126,11 @@ public class ModSavedData extends SavedData {
             setState(STATE_OFFENSE);
         }
 
+        public boolean isStateDefensive()
+        {
+            return getState() == STATE_DEFENSE;
+        }
+
         public ServerLevel getDimension()
         {
             return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);

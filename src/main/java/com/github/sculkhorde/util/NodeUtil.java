@@ -217,4 +217,15 @@ public class NodeUtil {
 
         return false;
     }
+
+    public static boolean isClosestNodeDefensive(ServerLevel level, BlockPos pos)
+    {
+        Optional<ModSavedData.NodeEntry> node = getClosestNode(level, pos);
+        if(node.isEmpty())
+        {
+            return true;
+        }
+
+        return node.get().isStateDefensive();
+    }
 }
