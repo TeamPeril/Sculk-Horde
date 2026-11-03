@@ -8,6 +8,7 @@ import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeBr
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.systems.node_system.SculkNodeDefendBehavior;
 import com.github.sculkhorde.systems.node_system.SculkNodeSelectorNode;
 import com.github.sculkhorde.systems.node_system.SculkNodeSpreadBehavior;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
@@ -56,6 +57,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
         selectorNode = new SculkNodeSelectorNode(this);
+        selectorNode.addChild(new SculkNodeDefendBehavior(this));
         selectorNode.addChild(new SculkNodeSpreadBehavior(this));
     }
 

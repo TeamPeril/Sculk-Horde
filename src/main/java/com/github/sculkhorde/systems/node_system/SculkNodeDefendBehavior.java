@@ -13,6 +13,11 @@ public class SculkNodeDefendBehavior extends SculkNodeBehavior {
         super(id, node);
     }
 
+    public SculkNodeDefendBehavior(SculkNodeBlockEntity node) {
+        super("defense", node);
+    }
+
+
     @Override
     public boolean canExecute() {
 

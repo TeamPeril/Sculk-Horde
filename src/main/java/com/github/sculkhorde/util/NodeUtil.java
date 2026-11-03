@@ -209,6 +209,12 @@ public class NodeUtil {
     {
         for(Player player : entry.getDimension().players())
         {
+            if(EntityAlgorithms.isInvalidTargetForSculkHorde(player))
+            {
+                continue;
+            }
+
+
             if(BlockAlgorithms.getBlockDistanceXZ(entry.getPosition(), player.blockPosition()) <= 150 && BlockAlgorithms.areTheseDimensionsEqual(player.level().dimension(), entry.getDimension().dimension()))
             {
                 return true;

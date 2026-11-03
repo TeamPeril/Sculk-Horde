@@ -3,17 +3,15 @@ package com.github.sculkhorde.common.blockentity;
 import com.github.sculkhorde.common.block.SculkSummonerBlock;
 import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactoryEntry;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.ReinforcementRequest;
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.BlockInfestationSystem;
-import com.github.sculkhorde.util.BlockAlgorithms;
-import com.github.sculkhorde.util.DifficultyUtil;
-import com.github.sculkhorde.util.EntityAlgorithms;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.common.entity.components.TargetFilter;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
-import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
@@ -48,7 +46,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+
+import static com.github.sculkhorde.util.NodeUtil.isClosestNodeDefensive;
 
 
 public class SculkSummonerBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem, GeoBlockEntity
@@ -186,6 +187,16 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         return false;
     }
 
+    protected int getAmountOfReinforcementsToRequest()
+    {
+        if(isClosestNodeDefensive((ServerLevel) level, getBlockPos()))
+        {
+            return 5;
+        }
+
+        return 3;
+    }
+
     public void requestReinforcementsFromGravemind()
     {
         boolean isSummonerWaterLogged = getBlockState().getValue(BlockStateProperties.WATERLOGGED);
@@ -193,7 +204,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, this.getBlockPos().getX() + 0.5D, this.getBlockPos().getY() + 1.15D, this.getBlockPos().getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
         level.playSound(null, this.getBlockPos(), SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
         //Choose spawn positions
-        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), 5, this.MAX_SPAWNED_ENTITIES, isSummonerWaterLogged);
+        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), getAmountOfReinforcementsToRequest(), this.MAX_SPAWNED_ENTITIES, isSummonerWaterLogged);
 
         BlockPos[] finalizedSpawnPositions = new BlockPos[this.MAX_SPAWNED_ENTITIES];
 
@@ -230,7 +241,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             request.approvedStrategicValues.add(EntityFactoryEntry.StrategicValues.EffectiveInSkies);
         }
 
-        if (!this.possibleAggressorTargets.isEmpty()) {
+        if (!this.possibleAggressorTargets.isEmpty() && isClosestNodeDefensive((ServerLevel) level, getBlockPos())) {
             this.request.is_aggressor_nearby = true;
         }
 
