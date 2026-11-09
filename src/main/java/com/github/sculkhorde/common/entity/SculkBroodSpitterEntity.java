@@ -301,11 +301,10 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                //DefaultAnimations.genericWalkRunIdleController(this),
-                //FLIGHT_ANIMATION_CONTROLLER,
-                //ATTACK_ANIMATION_CONTROLLER,
-                //DefaultAnimations.genericLivingController(this)
-                DefaultAnimations.genericIdleController(this)
+                DefaultAnimations.genericWalkRunIdleController(this),
+                FLIGHT_ANIMATION_CONTROLLER,
+                ATTACK_ANIMATION_CONTROLLER,
+                DefaultAnimations.genericLivingController(this)
         );
     }
 
@@ -485,7 +484,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
         @Override
         protected void playPreAttackAnimation()
         {
-            //getReaper().triggerAnim(AngelOfReapingEntity.COMBAT_ATTACK_ANIMATION_CONTROLLER_ID, AngelOfReapingEntity.FLOOR_SPEARS_SPELL_USE_ID);
+            triggerAnim(ATTACK_ANIMATION_CONTROLLER, "attack");
         }
 
         @Override
