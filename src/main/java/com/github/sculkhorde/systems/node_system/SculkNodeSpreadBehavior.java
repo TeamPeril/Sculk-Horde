@@ -35,7 +35,6 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
     protected void onStart() {
         super.onStart();
         initializeInfectionHandler();
-        matureInfestationSystem = new NodeAtmosphereInfestationSystem(node);
     }
 
     protected void initializeInfectionHandler()
@@ -44,6 +43,11 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
         {
             branchingInfestationHandler = new NodeBranchingInfestationSystem(node, node.getBlockPos(), false);
             branchingInfestationHandler.spawnOnSurface = false;
+        }
+
+        if(matureInfestationSystem == null)
+        {
+            matureInfestationSystem = new NodeAtmosphereInfestationSystem(node);
         }
     }
 

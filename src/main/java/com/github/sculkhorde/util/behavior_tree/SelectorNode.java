@@ -1,5 +1,8 @@
 package com.github.sculkhorde.util.behavior_tree;
 
+import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +41,7 @@ public class SelectorNode extends BehaviorNode {
                 // If a higher-priority child took over, abort the previously running lower-priority child
                 if (runningChildIndex != -1 && runningChildIndex != i) {
                     children.get(runningChildIndex).abort();
+                    DebuggerSystem.cursorDebuggerModule.logDebug("Aborted " + children.get(runningChildIndex).getClass().getSimpleName() + " and switched to " + child.getClass().getSimpleName());
                 }
 
                 BehaviorStatus status = child.execute();

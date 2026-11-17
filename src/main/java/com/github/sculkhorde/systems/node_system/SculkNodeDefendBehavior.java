@@ -21,16 +21,18 @@ public class SculkNodeDefendBehavior extends SculkNodeBehavior {
     @Override
     public boolean canExecute() {
 
-        if(NodeUtil.isAnyPlayerNearNode(node, 300) && startTimeOfPlayerBeingInRange == 0)
+        boolean isPlayerNear = NodeUtil.isAnyPlayerNearNode(node, 300);
+
+        if(isPlayerNear && startTimeOfPlayerBeingInRange == -1)
         {
             startTimeOfPlayerBeingInRange = node.getLevel().getGameTime();
         }
-        else if(!NodeUtil.isAnyPlayerNearNode(node, 300))
+        else if(!isPlayerNear)
         {
-            startTimeOfPlayerBeingInRange = 0;
+            startTimeOfPlayerBeingInRange = -1;
         }
 
-        if(TickUnits.hasTicksPassed(startTimeOfPlayerBeingInRange, node.getLevel(), TickUnits.convertSecondsToTicks(10)))
+        if(isPlayerNear && TickUnits.hasTicksPassed(startTimeOfPlayerBeingInRange, node.getLevel(), TickUnits.convertSecondsToTicks(10)))
         {
             return true;
         }
