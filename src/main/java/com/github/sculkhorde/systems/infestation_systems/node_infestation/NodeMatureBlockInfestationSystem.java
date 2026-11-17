@@ -17,10 +17,12 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class NodeAtmosphereInfestationSystem {
+public class NodeMatureBlockInfestationSystem {
     // The parent tile entity
     protected SculkNodeBlockEntity parent = null;
     protected long timeOfLastInfestationTick = 0;
+
+    protected boolean isBlockInfestationComplete = false;
 
     // Cooldown between processing chunks (e.g., 1 second per batch of coordinates)
     protected long INFESTATION_TICK_COOLDOWN = TickUnits.convertSecondsToTicks(0.25F);
@@ -43,7 +45,7 @@ public class NodeAtmosphereInfestationSystem {
     // flood SculkHorde.cursorSystem with 8 identical cursors on the same block!
     protected final Set<BlockPos> coordinateChunkBuffer = new LinkedHashSet<>(CHUNK_BATCH_SIZE);
 
-    public NodeAtmosphereInfestationSystem(SculkNodeBlockEntity parent) {
+    public NodeMatureBlockInfestationSystem(SculkNodeBlockEntity parent) {
         this.parent = parent;
     }
 
@@ -54,6 +56,16 @@ public class NodeAtmosphereInfestationSystem {
 
         applyDiseasedAtmosphereTick();
         blockInfestationTick();
+    }
+
+    protected void resetBlockInfestation()
+    {
+        timeOfLastInfestationTick = 0;
+        isBlockInfestationComplete = false;
+        currentBlockInfestationRadius = 0.0;
+        currentX = 0;
+        symmetryStep = 0;
+
     }
 
     protected void applyDiseasedAtmosphereTick() {
@@ -74,7 +86,7 @@ public class NodeAtmosphereInfestationSystem {
     }
 
     protected void blockInfestationTick() {
-        if (!ModConfig.SERVER.block_infestation_enabled.get()) {
+        if (!ModConfig.SERVER.block_infestation_enabled.get() || isBlockInfestationComplete) {
             return;
         }
 
@@ -107,7 +119,7 @@ public class NodeAtmosphereInfestationSystem {
                 currentBlockInfestationRadius = 0.0;
                 currentX = 0;
                 symmetryStep = 0;
-                parent.setActive(false);
+                isBlockInfestationComplete = true;
                 break;
             }
 

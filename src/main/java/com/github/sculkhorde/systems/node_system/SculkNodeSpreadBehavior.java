@@ -3,14 +3,14 @@ package com.github.sculkhorde.systems.node_system;
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
-import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeAtmosphereInfestationSystem;
+import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeMatureBlockInfestationSystem;
 import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeBranchingInfestationSystem;
 import com.github.sculkhorde.util.DifficultyUtil;
 
 public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
 
     public static NodeBranchingInfestationSystem branchingInfestationHandler;
-    public NodeAtmosphereInfestationSystem matureInfestationSystem;
+    public NodeMatureBlockInfestationSystem matureInfestationSystem;
 
     public SculkNodeSpreadBehavior(String id, SculkNodeBlockEntity node) {
         super(id, node);
@@ -47,7 +47,7 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
 
         if(matureInfestationSystem == null)
         {
-            matureInfestationSystem = new NodeAtmosphereInfestationSystem(node);
+            matureInfestationSystem = new NodeMatureBlockInfestationSystem(node);
         }
     }
 
