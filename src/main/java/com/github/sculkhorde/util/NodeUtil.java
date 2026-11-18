@@ -15,6 +15,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class NodeUtil {
 
@@ -86,11 +87,29 @@ public class NodeUtil {
         return level.getBlockEntity(pos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
     }
 
+    public static Optional<ModSavedData.NodeEntry> getNodeEntry(SculkNodeBlockEntity blockEntity)
+    {
+        return getNodeEntry((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos());
+    }
+
     public static Optional<ModSavedData.NodeEntry> getNodeEntry(ServerLevel level, BlockPos pos)
     {
         for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
         {
             if(entry.getPosition().equals(pos) && BlockAlgorithms.areTheseDimensionsEqual(entry.getDimension().dimension(), level.dimension()))
+            {
+                return Optional.of(entry);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public static Optional<ModSavedData.NodeEntry> getNodeEntry(UUID uuid)
+    {
+        for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
+        {
+            if(entry.uuid.equals(uuid))
             {
                 return Optional.of(entry);
             }

@@ -1,6 +1,7 @@
 package com.github.sculkhorde.systems.node_system;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.TickUnits;
 
@@ -14,7 +15,7 @@ public class SculkNodeDefendBehavior extends SculkNodeBehavior {
     }
 
     public SculkNodeDefendBehavior(SculkNodeBlockEntity node) {
-        super("defense", node);
+        this("defend_behavior", node);
     }
 
 
@@ -41,7 +42,14 @@ public class SculkNodeDefendBehavior extends SculkNodeBehavior {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        getNodeEntry().ifPresent(ModSavedData.NodeEntry::setStateDefense);
+    }
+
+    @Override
     protected BehaviorStatus onTick() {
+
         return null;
     }
 }

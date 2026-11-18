@@ -214,7 +214,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     {
         BlockPos newOrigin = new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         BlockAlgorithms.setBlockStructure(level, newOrigin, ModBlocks.SCULK_NODE_BLOCK.get().defaultBlockState());
-        ModSavedData.getSaveData().addNodeToMemory(level, newOrigin);
 
         if(!movingNode)
         {

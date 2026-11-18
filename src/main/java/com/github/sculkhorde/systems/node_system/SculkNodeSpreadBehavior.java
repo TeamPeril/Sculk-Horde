@@ -2,6 +2,7 @@ package com.github.sculkhorde.systems.node_system;
 
 import com.github.sculkhorde.common.blockentity.SculkNodeBlockEntity;
 import com.github.sculkhorde.core.ModConfig;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeMatureBlockInfestationSystem;
 import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeBranchingInfestationSystem;
@@ -35,6 +36,7 @@ public class SculkNodeSpreadBehavior extends SculkNodeBehavior {
     protected void onStart() {
         super.onStart();
         initializeInfectionHandler();
+        getNodeEntry().ifPresent(ModSavedData.NodeEntry::setStateSpread);
     }
 
     protected void initializeInfectionHandler()

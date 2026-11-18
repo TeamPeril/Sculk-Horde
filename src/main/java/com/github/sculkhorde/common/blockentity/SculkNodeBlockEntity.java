@@ -1,6 +1,8 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.SculkNodeBlock;
+import com.github.sculkhorde.core.ModBlocks;
+import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -8,10 +10,8 @@ import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.systems.node_system.SculkNodeDefendBehavior;
 import com.github.sculkhorde.systems.node_system.SculkNodeSelectorNode;
 import com.github.sculkhorde.systems.node_system.SculkNodeSpreadBehavior;
+import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
-import com.github.sculkhorde.util.EntityAlgorithms;
-import com.github.sculkhorde.util.PlayerProfileHandler;
-import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -21,7 +21,11 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,6 +33,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class SculkNodeBlockEntity extends BlockEntity
 {
+    protected String nodeEntryUUIDIdentifier = "uuid";
+    @Nullable
+    protected UUID nodeEntryUUID;
     protected long tickedAt = System.nanoTime();
     protected SculkNodeProceduralStructure nodeProceduralStructure;
     protected final long REPAIR_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
@@ -42,7 +49,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected int timeOfLastAtmosphereInfestation = 0;
     protected String timeOfLastAtmosphereInfestationIdentifier = "timeOfLastAtmosphereInfestation";
     protected long creationTime = 0;
-    protected String creationTimeID = "creationTime";
+    protected String creationTimeIdentifier = "creationTime";
     public boolean isBeingMoved = false;
 
     protected final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
@@ -52,6 +59,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
+        createOrUpdateNodeEntryIfAbsent();
         selectorNode = new SculkNodeSelectorNode(this);
         selectorNode.addChild(new SculkNodeDefendBehavior(this));
         selectorNode.addChild(new SculkNodeSpreadBehavior(this));
@@ -90,6 +98,59 @@ public class SculkNodeBlockEntity extends BlockEntity
         });
     }
 
+    public void createOrUpdateNodeEntryIfAbsent()
+    {
+        Optional<ModSavedData.NodeEntry> nodeEntryAtPos = NodeUtil.getNodeEntry((ServerLevel) getLevel(), getBlockPos());
+
+        // IF this block does not already have an assigned entry
+        if(nodeEntryUUID == null)
+        {
+            // If no entry exists for the current position, create one
+            if(nodeEntryAtPos.isEmpty())
+            {
+                ModSavedData.getSaveData().addNodeToMemory((ServerLevel) getLevel(), getBlockPos());
+            }
+            // If a node already exists with this UUID, and the level / pos is not the same, update the entry.
+            else if(nodeEntryAtPos.get().getPosition() != getBlockPos() || BlockAlgorithms.areTheseDimensionsEqual(nodeEntryAtPos.get().getDimension().dimension(), getLevel().dimension()))
+            {
+                // Kill the old node
+                if(nodeEntryAtPos.get().getDimension().getBlockState(nodeEntryAtPos.get().getPosition()).is(ModBlocks.SCULK_NODE_BLOCK.get()))
+                {
+                    nodeEntryAtPos.get().getDimension().destroyBlock(nodeEntryAtPos.get().getPosition(), true);
+                }
+            }
+        }
+        // If this block has an assigned entry
+        else
+        {
+            if(NodeUtil.getNodeEntry(nodeEntryUUID).isEmpty())
+            {
+                ModSavedData.getSaveData().addNodeToMemory((ServerLevel) getLevel(), getBlockPos());
+            }
+            else if(NodeUtil.getNodeEntry((ServerLevel) getLevel(), getBlockPos()).isEmpty())
+            {
+                ModSavedData.getSaveData().addNodeToMemory((ServerLevel) getLevel(), getBlockPos());
+            }
+        }
+
+
+
+    }
+
+    public void syncBlockState()
+    {
+        if(nodeEntryUUID == null)
+        {
+            return;
+        }
+
+        ModSavedData.NodeEntry nodeEntry = NodeUtil.getNodeEntry(nodeEntryUUID).get();
+
+        if(isActive() != nodeEntry.isActive())
+        {
+            setActive(nodeEntry.isActive());
+        }
+    }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
@@ -133,6 +194,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         addDarknessEffectToNearbyPlayers(level, getBlockPos(), 50);
         repairNodeTick(this);
+        syncBlockState();
     }
 
     protected static void chunkloadTick(SculkNodeBlockEntity blockEntity)
@@ -178,19 +240,20 @@ public class SculkNodeBlockEntity extends BlockEntity
      * @param compoundNBT Where NBT data is stored.
      */
     @Override
-    public void load(CompoundTag compoundNBT) {
+    public void load(@NotNull CompoundTag compoundNBT) {
         super.load(compoundNBT);
-        this.currentInfestationRadius = compoundNBT.getInt(currentInfestationRadiusIdentifier);
-        this.timeOfLastAtmosphereInfestation = compoundNBT.getInt(timeOfLastAtmosphereInfestationIdentifier);
-        this.creationTime = compoundNBT.getLong(creationTimeID);
+        if(compoundNBT.contains(nodeEntryUUIDIdentifier)) { this.nodeEntryUUID = compoundNBT.getUUID(nodeEntryUUIDIdentifier);}
+        if(compoundNBT.contains(currentInfestationRadiusIdentifier)) { this.currentInfestationRadius = compoundNBT.getInt(currentInfestationRadiusIdentifier); }
+        if(compoundNBT.contains(timeOfLastAtmosphereInfestationIdentifier)) { this.timeOfLastAtmosphereInfestation = compoundNBT.getInt(timeOfLastAtmosphereInfestationIdentifier); }
+        if(compoundNBT.contains(creationTimeIdentifier)) { this.creationTime = compoundNBT.getLong(creationTimeIdentifier); }
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
-
+    public void saveAdditional(@NotNull CompoundTag compoundNBT) {
+        if(nodeEntryUUID != null) { compoundNBT.putUUID(nodeEntryUUIDIdentifier, this.nodeEntryUUID);}
         compoundNBT.putInt(currentInfestationRadiusIdentifier, this.currentInfestationRadius);
         compoundNBT.putInt(timeOfLastAtmosphereInfestationIdentifier, this.timeOfLastAtmosphereInfestation);
-        compoundNBT.putLong(creationTimeID, this.creationTime);
+        compoundNBT.putLong(creationTimeIdentifier, this.creationTime);
         super.saveAdditional(compoundNBT);
     }
 

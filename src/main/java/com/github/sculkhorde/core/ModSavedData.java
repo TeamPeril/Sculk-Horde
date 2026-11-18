@@ -1063,10 +1063,11 @@ public class ModSavedData extends SavedData {
      */
     public static class NodeEntry
     {
+        public UUID uuid;
         protected final BlockPos position; //The Location in the world where the node is
         protected long lastTimeWasActive = 0;
         protected long activationTimeStamp = 0;
-        protected boolean IsActive = false;
+        protected boolean isActive = false;
         protected ResourceKey<Level> dimension;
 
         public final int STATE_IDLE = 0;
@@ -1076,14 +1077,27 @@ public class ModSavedData extends SavedData {
         protected int state = STATE_IDLE;
 
 
+        public NodeEntry(UUID uuid, ServerLevel level, BlockPos positionIn)
+        {
+            this(level, positionIn);
+            this.uuid = uuid;
+        }
+
         /**
          * Default Constructor
          * @param positionIn The physical location
          */
         public NodeEntry(ServerLevel level, BlockPos positionIn)
         {
+            uuid = UUID.randomUUID();
             position = positionIn;
             this.dimension = level.dimension();
+        }
+
+        public NodeEntry(UUID uuid, ResourceKey<Level> dimensionResource, BlockPos positionIn)
+        {
+            this(dimensionResource, positionIn);
+            this.uuid = uuid;
         }
 
         /**
@@ -1092,6 +1106,7 @@ public class ModSavedData extends SavedData {
          */
         public NodeEntry(ResourceKey<Level> dimensionResource, BlockPos positionIn)
         {
+            uuid = UUID.randomUUID();
             position = positionIn;
             this.dimension = dimensionResource;
         }
@@ -1143,7 +1158,7 @@ public class ModSavedData extends SavedData {
 
         public boolean isActive()
         {
-            return IsActive;
+            return isActive;
         }
 
         public void setActive(boolean activeIn)
@@ -1164,7 +1179,7 @@ public class ModSavedData extends SavedData {
                 return;
             }
 
-            IsActive = activeIn;
+            isActive = activeIn;
             SculkNodeBlockEntity sculkNodeBlockEntity = (SculkNodeBlockEntity) getDimension().getBlockEntity(position);
             sculkNodeBlockEntity.setActive(activeIn);
         }
@@ -1227,7 +1242,7 @@ public class ModSavedData extends SavedData {
             nbt.putLong("position", position.asLong());
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
             nbt.putLong("activationTimeStamp", activationTimeStamp);
-            nbt.putBoolean("IsActive", IsActive);
+            nbt.putBoolean("IsActive", isActive);
             // Put Dimension ID
             nbt.putString("dimension", dimension.location().toString());
             return nbt;
