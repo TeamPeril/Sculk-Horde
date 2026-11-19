@@ -71,19 +71,19 @@ public class NodeCommand implements Command<CommandSourceStack> {
     }
 
     private static int deactivateAll(CommandContext<CommandSourceStack> context) {
-        SculkHorde.sculkNodesSystem.DeactivateAllNodes();
+        SculkHorde.sculkNodesSystem.deactivateAllNodes();
         context.getSource().sendSuccess(() -> Component.literal("Deactivated all nodes."), true);
         return 0;
     }
 
     private static int activateMostIdle(CommandContext<CommandSourceStack> context) {
-        SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
+        SculkHorde.sculkNodesSystem.activateNodeWithLongestDurationOfInactivity();
         context.getSource().sendSuccess(() -> Component.literal("Activated the most idle node."), true);
         return 0;
     }
 
     private static int activateAll(CommandContext<CommandSourceStack> context) {
-        SculkHorde.sculkNodesSystem.ActivateAllNodes();
+        SculkHorde.sculkNodesSystem.activateAllNodes();
         context.getSource().sendSuccess(() -> Component.literal("Activated all nodes."), true);
         return 0;
     }
