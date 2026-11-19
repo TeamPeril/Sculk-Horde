@@ -215,7 +215,7 @@ public class NodeUtil {
 
     public static boolean isAnyPlayerNearNode(SculkNodeBlockEntity blockEntity, int distance)
     {
-        Optional<ModSavedData.NodeEntry> node = getNodeEntry((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos());
+        Optional<ModSavedData.NodeEntry> node = getNodeEntry(blockEntity);
 
         if(node.isEmpty())
         {
@@ -234,7 +234,7 @@ public class NodeUtil {
             }
 
 
-            if(BlockAlgorithms.getBlockDistanceXZ(entry.getPosition(), player.blockPosition()) <= 150 && BlockAlgorithms.areTheseDimensionsEqual(player.level().dimension(), entry.getDimension().dimension()))
+            if(BlockAlgorithms.getBlockDistanceXZ(entry.getPosition(), player.blockPosition()) <= distance && BlockAlgorithms.areTheseDimensionsEqual(player.level().dimension(), entry.getDimension().dimension()))
             {
                 return true;
             }

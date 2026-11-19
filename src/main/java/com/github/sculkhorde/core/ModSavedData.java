@@ -545,7 +545,6 @@ public class ModSavedData extends SavedData {
     }
 
     public void resetNoNodeSpawningTicksElapsed() {
-        //Send message to all players that node has spawned
         this.noNodeSpawningTicksElapsed = 0;
         setDirty();
     }
@@ -869,15 +868,15 @@ public class ModSavedData extends SavedData {
      */
     public void cleanUpNodeEntries() {
         long startTime = System.nanoTime();
-        Iterator<NodeEntry> iterator = getNodeEntries().iterator();
-        while (iterator.hasNext()) {
-            NodeEntry entry = iterator.next();
-            if (!entry.isEntryValid()) {
-                resetNoNodeSpawningTicksElapsed();
-                iterator.remove();
-                setDirty();
+        //TODO Why am i using this here: resetNoNodeSpawningTicksElapsed();
+        getNodeEntries().removeIf(nodeEntry -> {
+            if(!nodeEntry.isEntryValid())
+            {
+                return true;
             }
-        }
+            return false;
+        });
+
         long endTime = System.nanoTime();
         if (SculkHorde.isDebugMode()) {
             System.out.println("Node Validation Took " +
@@ -885,7 +884,6 @@ public class ModSavedData extends SavedData {
                     " milliseconds");
         }
     }
-
 
     /**
      * Will verify all enties to see if they exist in the world.
@@ -982,16 +980,9 @@ public class ModSavedData extends SavedData {
             return;
         }
 
-        for(int i = 0; i < getNodeEntries().size(); i++)
-        {
-            if(getNodeEntries().get(i).position.equals(positionIn))
-            {
-                getNodeEntries().remove(i);
-                setDirty();
-                resetNoNodeSpawningTicksElapsed();
-                return;
-            }
-        }
+        //TODO What the fuck is this for resetNoNodeSpawningTicksElapsed();
+
+        getNodeEntries().removeIf(nodeEntry -> nodeEntry.position.equals(positionIn));
         setDirty();
     }
 
@@ -1254,6 +1245,8 @@ public class ModSavedData extends SavedData {
             }
 
             toBeDeleted = true;
+            DebuggerSystem.cursorDebuggerModule.logInfo("Node at " + getPosition() + " was destroyed.");
+
 
             // Subtract 10% of total mass
             int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);

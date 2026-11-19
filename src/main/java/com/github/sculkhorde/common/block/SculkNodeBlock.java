@@ -178,12 +178,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
             return false;
         }
 
-        // Need to be far away from ancient node at 0,0
-        if(worldIn.equals(ServerLifecycleHooks.getCurrentServer().overworld()) && BlockAlgorithms.getBlockDistanceXZ(positionIn, BlockPos.ZERO) < Gravemind.MINIMUM_DISTANCE_BETWEEN_NODES)
-        {
-            return false;
-        }
-
         for (ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
         {
             if(!entry.isEntryValid()) { continue; }
@@ -308,6 +302,8 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
+        super.onRemove(state, worldIn, pos, newState, isMoving);
+
         if(newState.getBlock() == this)
         {
             return;
@@ -327,7 +323,6 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
 
         decayRemainingNodeBlocks((ServerLevel) worldIn, pos, 12);
 
-        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     public void decayRemainingNodeBlocks(ServerLevel level, BlockPos origin, int searchLength)
