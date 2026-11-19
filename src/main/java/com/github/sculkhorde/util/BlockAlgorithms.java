@@ -879,7 +879,7 @@ public class BlockAlgorithms {
     {
         for(BlockPos pos : getBlockPosInCube(origin, range, true))
         {
-            if(level.getFluidState(pos).getType() != Fluids.EMPTY && !level.getFluidState(pos).is(FluidTags.WATER))
+            if(!level.getFluidState(pos).getType().isSame(Fluids.EMPTY) && !level.getFluidState(pos).is(FluidTags.WATER))
             {
                 return true;
             }
