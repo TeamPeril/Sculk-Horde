@@ -36,7 +36,6 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected String nodeEntryUUIDIdentifier = "uuid";
     @Nullable
     protected UUID nodeEntryUUID;
-    protected long tickedAt = System.nanoTime();
     protected SculkNodeProceduralStructure nodeProceduralStructure;
     protected final long REPAIR_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
     protected long timeOfLastRepair = -1;
@@ -59,10 +58,19 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     public SculkNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get(), blockPos, blockState);
-        createOrUpdateNodeEntryIfAbsent();
-        selectorNode = new SculkNodeSelectorNode(this);
-        selectorNode.addChild(new SculkNodeDefendBehavior(this));
-        selectorNode.addChild(new SculkNodeSpreadBehavior(this));
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+
+        if(!level.isClientSide())
+        {
+            createOrUpdateNodeEntryIfAbsent();
+            selectorNode = new SculkNodeSelectorNode(this);
+            selectorNode.addChild(new SculkNodeDefendBehavior(this));
+            selectorNode.addChild(new SculkNodeSpreadBehavior(this));
+        }
     }
 
     /** Accessors **/
@@ -90,12 +98,15 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     protected static void addDarknessEffectToNearbyPlayers(Level level, BlockPos blockPos, int distance)
     {
-        level.players().forEach((player) -> {
-            if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator() && !PlayerProfileHandler.isPlayerVessel(player))
-            {
-                EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 0);
-            }
-        });
+        if (level.getGameTime() % 20 == 0)
+        {
+            level.players().forEach((player) -> {
+                if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator() && !PlayerProfileHandler.isPlayerVessel(player))
+                {
+                    EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 0);
+                }
+            });
+        }
     }
 
     public void createOrUpdateNodeEntryIfAbsent()
@@ -109,13 +120,15 @@ public class SculkNodeBlockEntity extends BlockEntity
             if(nodeEntryAtPos.isEmpty())
             {
                 ModSavedData.getSaveData().addNodeToMemory((ServerLevel) getLevel(), getBlockPos());
+                nodeEntryUUID = NodeUtil.getNodeEntry(this).get().uuid;
             }
             // If a node already exists with this UUID, and the level / pos is not the same, update the entry.
-            else if(nodeEntryAtPos.get().getPosition() != getBlockPos() || BlockAlgorithms.areTheseDimensionsEqual(nodeEntryAtPos.get().getDimension().dimension(), getLevel().dimension()))
+            else if(!nodeEntryAtPos.get().getPosition().equals(getBlockPos()) || !BlockAlgorithms.areTheseDimensionsEqual(nodeEntryAtPos.get().getDimension().dimension(), getLevel().dimension()))
             {
-                // Kill the old node
-                if(nodeEntryAtPos.get().getDimension().getBlockState(nodeEntryAtPos.get().getPosition()).is(ModBlocks.SCULK_NODE_BLOCK.get()))
+                // Kill the old node if it exists
+                if(NodeUtil.getNodeBlockEntity(nodeEntryAtPos.get()).isPresent())
                 {
+                    NodeUtil.getNodeBlockEntity(nodeEntryAtPos.get()).get().isBeingMoved = true;
                     nodeEntryAtPos.get().getDimension().destroyBlock(nodeEntryAtPos.get().getPosition(), true);
                 }
             }
@@ -132,34 +145,35 @@ public class SculkNodeBlockEntity extends BlockEntity
                 ModSavedData.getSaveData().addNodeToMemory((ServerLevel) getLevel(), getBlockPos());
             }
         }
-
-
-
     }
 
     public void syncBlockState()
     {
+        if (level.getGameTime() % 20 != 0) {
+            return;
+        }
+
         if(nodeEntryUUID == null)
         {
             return;
         }
 
-        ModSavedData.NodeEntry nodeEntry = NodeUtil.getNodeEntry(nodeEntryUUID).get();
-
-        if(isActive() != nodeEntry.isActive())
-        {
-            setActive(nodeEntry.isActive());
-        }
+        NodeUtil.getNodeEntry(nodeEntryUUID).ifPresent(nodeEntry -> {
+            if(isActive() != nodeEntry.isActive())
+            {
+                setActive(nodeEntry.isActive());
+            }
+        });
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, SculkNodeBlockEntity blockEntity)
     {
+        blockEntity.coreSystemsTick();
+
         if(!Gravemind.isGravemindActive())
         {
             return;
         }
-
-        blockEntity.coreSystemsTick();
 
         if(level.isClientSide)
         {
@@ -188,7 +202,7 @@ public class SculkNodeBlockEntity extends BlockEntity
 
         if(TickUnits.hasTicksPassed(timeOfLastChunkLoadTick, level, chunkLoadIntervalTicks)) {
             // Update the tickedAt time
-            tickedAt = System.nanoTime();
+            timeOfLastChunkLoadTick = System.nanoTime();
             chunkloadTick(this);
         }
 
