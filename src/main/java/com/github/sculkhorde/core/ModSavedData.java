@@ -23,9 +23,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -1069,6 +1071,8 @@ public class ModSavedData extends SavedData {
         protected long activationTimeStamp = 0;
         protected boolean isActive = false;
         protected ResourceKey<Level> dimension;
+        protected boolean isBeingMoved = false;
+        protected boolean toBeDeleted = true;
 
         public final int STATE_IDLE = 0;
         public final int STATE_SPREAD = 1;
@@ -1211,7 +1215,7 @@ public class ModSavedData extends SavedData {
         public boolean isEntryValid()
         {
 
-            if(getDimension() == null || getPosition() == null)
+            if(getDimension() == null || getPosition() == null || toBeDeleted)
             {
                 SculkHorde.sculkNodesSystem.flagCleanUpRequired();
                 return false;
@@ -1230,6 +1234,46 @@ public class ModSavedData extends SavedData {
             }
 
             return true;
+        }
+
+        public void setIsBeingMoved(boolean value)
+        {
+            isBeingMoved = value;
+        }
+
+        public boolean isBeingMoved()
+        {
+            return isBeingMoved;
+        }
+
+        public void destroy()
+        {
+            if(isBeingMoved)
+            {
+                return;
+            }
+
+            toBeDeleted = true;
+
+            // Subtract 10% of total mass
+            int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);
+            ModSavedData.getSaveData().subtractSculkAccumulatedMass(subtractAmount);
+            SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
+
+            getDimension().players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
+            getDimension().players().forEach(player -> getDimension().playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
+            SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+            // Get Nearby Players and update the number of nodes they destroyed
+            getDimension().players().forEach((player) ->
+                {
+                    if(player.blockPosition().closerThan(getPosition(), 50) && !EntityAlgorithms.isInvalidTargetForSculkHorde(player))
+                    {
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
+                    }
+                }
+            );
         }
 
         /**
