@@ -36,7 +36,7 @@ public class SculkNodeBlockEntity extends BlockEntity
     @Nullable
     protected UUID nodeEntryUUID;
     protected SculkNodeProceduralStructure nodeProceduralStructure;
-    protected final long REPAIR_SESSION_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
+    protected final long REPAIR_SESSION_INTERVAL_TICKS = TickUnits.convertMinutesToTicks(5);
     protected long timeOfLastRepairSession = -1;
     protected long timeOfLastRepairTick = 0;
     public static final int chunkLoadIntervalTicks = TickUnits.convertMinutesToTicks(5);
