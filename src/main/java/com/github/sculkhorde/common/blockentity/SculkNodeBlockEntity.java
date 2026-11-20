@@ -1,7 +1,6 @@
 package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.common.block.SculkNodeBlock;
-import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.common.structures.procedural.SculkNodeProceduralStructure;
@@ -37,8 +36,9 @@ public class SculkNodeBlockEntity extends BlockEntity
     @Nullable
     protected UUID nodeEntryUUID;
     protected SculkNodeProceduralStructure nodeProceduralStructure;
-    protected final long REPAIR_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
-    protected long timeOfLastRepair = -1;
+    protected final long REPAIR_SESSION_INTERVAL_TICKS = TickUnits.convertHoursToTicks(1);
+    protected long timeOfLastRepairSession = -1;
+    protected long timeOfLastRepairTick = 0;
     public static final int chunkLoadIntervalTicks = TickUnits.convertMinutesToTicks(5);
     public long timeOfLastChunkLoadTick = 0;
 
@@ -92,6 +92,22 @@ public class SculkNodeBlockEntity extends BlockEntity
     public UUID getNodeEntryUUID()
     {
         return nodeEntryUUID;
+    }
+
+    public float getRepairTickInterval()
+    {
+        if(DifficultyUtil.isCurrentDifficultyHard())
+        {
+            return TickUnits.convertSecondsToTicks(0.1F);
+        }
+        else if(DifficultyUtil.isCurrentDifficultyNormal())
+        {
+            return TickUnits.convertSecondsToTicks(0.5F);
+        }
+        else
+        {
+            return TickUnits.convertSecondsToTicks(1);
+        }
     }
 
 
@@ -230,6 +246,15 @@ public class SculkNodeBlockEntity extends BlockEntity
 
     protected static void repairNodeTick(SculkNodeBlockEntity blockEntity)
     {
+        if(blockEntity == null || blockEntity.getLevel() == null) return;
+
+        if(!TickUnits.hasTicksPassed(blockEntity.timeOfLastRepairTick, blockEntity.getLevel(), (long) blockEntity.getRepairTickInterval()))
+        {
+            return;
+        }
+
+        blockEntity.timeOfLastRepairTick = blockEntity.getLevel().getGameTime();
+
         /** Building Shell Process **/
         //If the structure has not been initialized yet, do it
         if(blockEntity.nodeProceduralStructure == null)
@@ -243,10 +268,10 @@ public class SculkNodeBlockEntity extends BlockEntity
         if(blockEntity.nodeProceduralStructure.isCurrentlyBuilding())
         {
             blockEntity.nodeProceduralStructure.buildTick();
-            blockEntity.timeOfLastRepair = blockEntity.getLevel().getGameTime();
+            blockEntity.timeOfLastRepairSession = blockEntity.getLevel().getGameTime();
         }
         //If enough time has passed, or we haven't built yet, and we can build, start build
-        else if((TickUnits.hasTicksPassed(blockEntity.timeOfLastRepair, blockEntity.getLevel(), blockEntity.REPAIR_INTERVAL_TICKS) || blockEntity.timeOfLastRepair <= 0) && blockEntity.nodeProceduralStructure.canStartToBuild())
+        else if((TickUnits.hasTicksPassed(blockEntity.timeOfLastRepairSession, blockEntity.getLevel(), blockEntity.REPAIR_SESSION_INTERVAL_TICKS) || blockEntity.timeOfLastRepairSession <= 0) && blockEntity.nodeProceduralStructure.canStartToBuild())
         {
             blockEntity.nodeProceduralStructure.startBuildProcedure();
         }
