@@ -1273,6 +1273,7 @@ public class ModSavedData extends SavedData {
         public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
+            if(uuid != null) {nbt.putUUID("uuid", uuid);}
             nbt.putLong("position", position.asLong());
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
             nbt.putLong("activationTimeStamp", activationTimeStamp);
@@ -1290,9 +1291,10 @@ public class ModSavedData extends SavedData {
         {
             ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(nbt.getString("dimension")));
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
-            entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
-            entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
-            entry.setActive(nbt.getBoolean("IsActive"));
+            if(nbt.contains("uuid")) entry.uuid = nbt.getUUID("uuid");
+            if(nbt.contains("lastTimeWasActive")) entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
+            if(nbt.contains("activationTimeStamp")) entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
+            if(nbt.contains("IsActive")) entry.setActive(nbt.getBoolean("IsActive"));
             // Get Dimension
 
             return entry;
