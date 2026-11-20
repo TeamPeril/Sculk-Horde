@@ -49,7 +49,6 @@ public class SculkNodeBlockEntity extends BlockEntity
     protected String timeOfLastAtmosphereInfestationIdentifier = "timeOfLastAtmosphereInfestation";
     protected long creationTime = 0;
     protected String creationTimeIdentifier = "creationTime";
-    public boolean isBeingMoved = false;
 
     protected final long heartBeatDelayMillis = TimeUnit.SECONDS.toMillis(10);
     protected long lastHeartBeat = System.currentTimeMillis();
@@ -128,8 +127,9 @@ public class SculkNodeBlockEntity extends BlockEntity
                 // Kill the old node if it exists
                 if(NodeUtil.getNodeBlockEntity(nodeEntryAtPos.get()).isPresent())
                 {
-                    NodeUtil.getNodeBlockEntity(nodeEntryAtPos.get()).get().isBeingMoved = true;
+                    nodeEntryAtPos.get().setIsBeingMoved(true);
                     nodeEntryAtPos.get().getDimension().destroyBlock(nodeEntryAtPos.get().getPosition(), true);
+                    nodeEntryAtPos.get().setIsBeingMoved(false);
                 }
             }
         }

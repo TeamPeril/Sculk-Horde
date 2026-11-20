@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.extensions.IForgeItem;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.w3c.dom.Node;
 
 public class DevWand extends Item implements IForgeItem {
 	/* NOTE:
@@ -83,7 +84,9 @@ public class DevWand extends Item implements IForgeItem {
 		Vec3 hitPos = rayTrace.getTo();
 		BlockPos hitPosBlock = BlockPos.containing(hitPos);
 
-		InfestationUtil.infestArea((ServerLevel) level, hitPosBlock, hitPosBlock);
+		//InfestationUtil.infestArea((ServerLevel) level, hitPosBlock, hitPosBlock);
+
+		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

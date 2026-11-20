@@ -63,6 +63,11 @@ public class NodeUtil {
         return nodes;
     }
 
+    public static List<ModSavedData.NodeEntry> getAllNodes()
+    {
+        return ModSavedData.getSaveData().getNodeEntries();
+    }
+
     public static Optional<ModSavedData.NodeEntry> getRandomActiveNode(ServerLevel level)
     {
         List<ModSavedData.NodeEntry> activeNodes = getActiveNodes();
@@ -162,28 +167,35 @@ public class NodeUtil {
 
     public static Optional<ModSavedData.NodeEntry> getNextNodeToMove(boolean ignoreRequirements)
     {
-        if(getInactiveNodes().isEmpty())
+        if(getAllNodes().isEmpty())
         {
             return Optional.empty();
         }
 
         ModSavedData.NodeEntry oldest = null;
 
-        // Get oldest notest
-        for(ModSavedData.NodeEntry node : getInactiveNodes())
+        if(ignoreRequirements)
         {
-            if((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)) && (canMoveNode(node) || ignoreRequirements))
+            // Get oldest node
+            for(ModSavedData.NodeEntry node : getAllNodes())
             {
-                oldest = node;
+                if((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)))
+                {
+                    oldest = node;
+                }
+            }
+        }
+        else
+        {
+            // Get oldest node
+            for (ModSavedData.NodeEntry node : getInactiveNodes()) {
+                if ((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)) && canMoveNode(node)) {
+                    oldest = node;
+                }
             }
         }
 
-        if(oldest == null)
-        {
-            return Optional.empty();
-        }
-
-        return Optional.of(oldest);
+        return Optional.ofNullable(oldest);
     }
 
     public static void tryMoveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
@@ -207,11 +219,12 @@ public class NodeUtil {
         }
 
         SculkHorde.sculkNodesSystem.timeOfLastNodeMove = level.getGameTime();
-        getNodeBlockEntity(nodeToMove.get()).get().isBeingMoved = true;
+        nodeToMove.get().setIsBeingMoved(true);
         level.destroyBlock(nodeToMove.get().getPosition(), false);
 
         SculkNodeBlock.PlaceNode(level, pos, true);
     }
+
 
     public static boolean isAnyPlayerNearNode(SculkNodeBlockEntity blockEntity, int distance)
     {
