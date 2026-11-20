@@ -868,10 +868,10 @@ public class ModSavedData extends SavedData {
      */
     public void cleanUpNodeEntries() {
         long startTime = System.nanoTime();
-        //TODO Why am i using this here: resetNoNodeSpawningTicksElapsed();
         getNodeEntries().removeIf(nodeEntry -> {
             if(!nodeEntry.isEntryValid())
             {
+                DebuggerSystem.eventDebuggerModule.logError("Removing Node at " + nodeEntry.getPosition());
                 return true;
             }
             return false;
@@ -979,9 +979,6 @@ public class ModSavedData extends SavedData {
             DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove an area of interest from memory but the list was null");
             return;
         }
-
-        //TODO What the fuck is this for resetNoNodeSpawningTicksElapsed();
-
         getNodeEntries().removeIf(nodeEntry -> nodeEntry.position.equals(positionIn));
         setDirty();
     }
@@ -1063,7 +1060,7 @@ public class ModSavedData extends SavedData {
         protected boolean isActive = false;
         protected ResourceKey<Level> dimension;
         protected boolean isBeingMoved = false;
-        protected boolean toBeDeleted = true;
+        protected boolean toBeDeleted = false;
 
         public final int STATE_IDLE = 0;
         public final int STATE_SPREAD = 1;
