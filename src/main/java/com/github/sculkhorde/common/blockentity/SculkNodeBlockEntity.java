@@ -89,6 +89,11 @@ public class SculkNodeBlockEntity extends BlockEntity
         return creationTime;
     }
 
+    public UUID getNodeEntryUUID()
+    {
+        return nodeEntryUUID;
+    }
+
 
     /** Modifiers **/
 

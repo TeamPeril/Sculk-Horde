@@ -1220,6 +1220,11 @@ public class ModSavedData extends SavedData {
                 SculkHorde.sculkNodesSystem.flagCleanUpRequired();
                 return false;
             }
+            else if(!NodeUtil.getNodeBlockEntity(this).get().getNodeEntryUUID().equals(uuid))
+            {
+                SculkHorde.sculkNodesSystem.flagCleanUpRequired();
+                return false;
+            }
 
             return true;
         }
