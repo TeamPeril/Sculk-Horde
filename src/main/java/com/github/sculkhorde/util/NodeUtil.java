@@ -6,12 +6,15 @@ import com.github.sculkhorde.core.ModBlockEntities;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class NodeUtil {
 
@@ -57,6 +60,11 @@ public class NodeUtil {
         return nodes;
     }
 
+    public static List<ModSavedData.NodeEntry> getAllNodes()
+    {
+        return ModSavedData.getSaveData().getNodeEntries();
+    }
+
     public static Optional<ModSavedData.NodeEntry> getRandomActiveNode(ServerLevel level)
     {
         List<ModSavedData.NodeEntry> activeNodes = getActiveNodes();
@@ -71,18 +79,6 @@ public class NodeUtil {
         }
     }
 
-    public static Optional<ModSavedData.NodeEntry> getNodeEntryAtBlockPos(ServerLevel level, BlockPos pos)
-    {
-        for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
-        {
-            if(entry.getPosition().equals(pos) && BlockAlgorithms.areTheseDimensionsEqual(level, entry.getDimension()))
-            {
-                return Optional.of(entry);
-            }
-        }
-        return Optional.empty();
-    }
-
     public static Optional<SculkNodeBlockEntity> getNodeBlockEntity(ModSavedData.NodeEntry nodeEntry)
     {
         return getNodeBlockEntity(nodeEntry.getDimension(), nodeEntry.getPosition());
@@ -91,6 +87,37 @@ public class NodeUtil {
     public static Optional<SculkNodeBlockEntity> getNodeBlockEntity(ServerLevel level, BlockPos pos)
     {
         return level.getBlockEntity(pos, ModBlockEntities.SCULK_NODE_BLOCK_ENTITY.get());
+    }
+
+    public static Optional<ModSavedData.NodeEntry> getNodeEntry(SculkNodeBlockEntity blockEntity)
+    {
+        return getNodeEntry((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos());
+    }
+
+    public static Optional<ModSavedData.NodeEntry> getNodeEntry(ServerLevel level, BlockPos pos)
+    {
+        for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
+        {
+            if(entry.getPosition().equals(pos) && BlockAlgorithms.areTheseDimensionsEqual(entry.getDimension(), level))
+            {
+                return Optional.of(entry);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public static Optional<ModSavedData.NodeEntry> getNodeEntry(UUID uuid)
+    {
+        for(ModSavedData.NodeEntry entry : ModSavedData.getSaveData().getNodeEntries())
+        {
+            if(entry.uuid != null && entry.uuid.equals(uuid))
+            {
+                return Optional.of(entry);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public static long getNodeAgeTicks(ModSavedData.NodeEntry nodeEntry)
@@ -137,28 +164,35 @@ public class NodeUtil {
 
     public static Optional<ModSavedData.NodeEntry> getNextNodeToMove(boolean ignoreRequirements)
     {
-        if(getInactiveNodes().isEmpty())
+        if(getAllNodes().isEmpty())
         {
             return Optional.empty();
         }
 
         ModSavedData.NodeEntry oldest = null;
 
-        // Get oldest notest
-        for(ModSavedData.NodeEntry node : getInactiveNodes())
+        if(ignoreRequirements)
         {
-            if((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)) && (canMoveNode(node) || ignoreRequirements))
+            // Get oldest node
+            for(ModSavedData.NodeEntry node : getAllNodes())
             {
-                oldest = node;
+                if((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)))
+                {
+                    oldest = node;
+                }
+            }
+        }
+        else
+        {
+            // Get oldest node
+            for (ModSavedData.NodeEntry node : getInactiveNodes()) {
+                if ((oldest == null || getNodeAgeTicks(node) > getNodeAgeTicks(oldest)) && canMoveNode(node)) {
+                    oldest = node;
+                }
             }
         }
 
-        if(oldest == null)
-        {
-            return Optional.empty();
-        }
-
-        return Optional.of(oldest);
+        return Optional.ofNullable(oldest);
     }
 
     public static void tryMoveOldestNodeTo(ServerLevel level, BlockPos pos, boolean ignoreRequirements)
@@ -182,10 +216,51 @@ public class NodeUtil {
         }
 
         SculkHorde.sculkNodesSystem.timeOfLastNodeMove = level.getGameTime();
-        nodeToMove.get().setBeingRelocated(true);
+        nodeToMove.get().setIsBeingMoved(true);
         level.destroyBlock(nodeToMove.get().getPosition(), false);
 
         SculkNodeBlock.PlaceNode(level, pos, true);
+    }
+
+    public static boolean isAnyPlayerNearNode(SculkNodeBlockEntity blockEntity, int distance)
+    {
+        Optional<ModSavedData.NodeEntry> node = getNodeEntry(blockEntity);
+
+        if(node.isEmpty())
+        {
+            DebuggerSystem.eventDebuggerModule.logError("isAnyPlayerNearNode | Was not able to locate node that should have been there.");
+            return false;
+        }
+        return isAnyPlayerNearNode(node.get(), distance);
+    }
+
+    public static boolean isAnyPlayerNearNode(ModSavedData.NodeEntry entry, int distance)
+    {
+        for(Player player : entry.getDimension().players())
+        {
+            if(EntityAlgorithms.isInvalidTargetForSculkHorde(player))
+            {
+                continue;
+            }
+
+            if(BlockAlgorithms.getBlockDistanceXZ(entry.getPosition(), player.blockPosition()) <= distance && BlockAlgorithms.areTheseDimensionsEqual(player.level().dimension(), entry.getDimension().dimension()))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isClosestNodeDefensive(ServerLevel level, BlockPos pos)
+    {
+        Optional<ModSavedData.NodeEntry> node = getClosestNode(level, pos);
+        if(node.isEmpty())
+        {
+            return true;
+        }
+
+        return node.get().isStateDefensive();
     }
 
 }

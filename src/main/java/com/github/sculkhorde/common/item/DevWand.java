@@ -81,18 +81,9 @@ public class DevWand extends Item {
 		Vec3 hitPos = rayTrace.getTo();
 		BlockPos hitPosBlock = BlockPos.containing(hitPos);
 
-        if(WardZoneUtil.isPosInAnyWardZone(playerIn.level(), playerIn.blockPosition()))
-        {
-            playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
-        }
-		else
-		{
-			playerIn.sendSystemMessage(Component.literal("Not In Infestation Ward Zone."));
-		}
+		//InfestationUtil.infestArea((ServerLevel) level, hitPosBlock, hitPosBlock);
 
-		//SculkHorde.sculkNodesSystem.DeactivateAllNodes();
-		//SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
-		//NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
+		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

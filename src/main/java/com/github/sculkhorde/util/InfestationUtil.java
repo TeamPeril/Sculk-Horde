@@ -42,6 +42,17 @@ public class InfestationUtil {
         SculkHorde.cursorSystem.addVirtualCursor(infector);
     }
 
+    public static void infestArea(ServerLevel level, BlockPos pos1, BlockPos pos2)
+    {
+        ChunkCursorInfector infector = ChunkCursorInfector.of()
+                .level(level)
+                .pos1(pos1)
+                .pos2(pos2)
+                .blocksPerTick(2);
+
+        SculkHorde.cursorSystem.addVirtualCursor(infector);
+    }
+
     public static void infestChunksInCircle(ServerLevel level, BlockPos center, int radius)
     {
         // Convert the center BlockPos to chunk coordinates (ChunkPos)

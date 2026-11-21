@@ -8,7 +8,10 @@ import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.systems.AutoPerformanceSystem;
 import com.github.sculkhorde.systems.BeeNestActivitySystem;
 import com.github.sculkhorde.systems.DebugSlimeSystem;
-import com.github.sculkhorde.systems.SculkNodesSystem;
+import com.github.sculkhorde.systems.node_system.SculkNodesSystem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
+import java.util.UUID;
 import com.github.sculkhorde.systems.chunk_cursor_system.ChunkInfestationSystem;
 import com.github.sculkhorde.systems.cursor_system.CursorSystem;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
@@ -865,15 +868,15 @@ public class ModSavedData extends SavedData {
      */
     public void cleanUpNodeEntries() {
         long startTime = System.nanoTime();
-        Iterator<NodeEntry> iterator = getNodeEntries().iterator();
-        while (iterator.hasNext()) {
-            NodeEntry entry = iterator.next();
-            if (!entry.isEntryValid()) {
-                resetNoNodeSpawningTicksElapsed();
-                iterator.remove();
-                setDirty();
+        getNodeEntries().removeIf(nodeEntry -> {
+            if(!nodeEntry.isEntryValid())
+            {
+                DebuggerSystem.eventDebuggerModule.logError("Removing Node at " + nodeEntry.getPosition());
+                return true;
             }
-        }
+            return false;
+        });
+
         long endTime = System.nanoTime();
         if (SculkHorde.isDebugMode()) {
             System.out.println("Node Validation Took " +
@@ -977,17 +980,7 @@ public class ModSavedData extends SavedData {
             DebuggerSystem.eventDebuggerModule.logWarn("Attempted to remove an area of interest from memory but the list was null");
             return;
         }
-
-        for(int i = 0; i < getNodeEntries().size(); i++)
-        {
-            if(getNodeEntries().get(i).position.equals(positionIn))
-            {
-                getNodeEntries().remove(i);
-                setDirty();
-                resetNoNodeSpawningTicksElapsed();
-                return;
-            }
-        }
+        getNodeEntries().removeIf(nodeEntry -> nodeEntry.position.equals(positionIn));
         setDirty();
     }
 
@@ -1061,13 +1054,27 @@ public class ModSavedData extends SavedData {
      */
     public static class NodeEntry
     {
+        public UUID uuid;
         protected final BlockPos position; //The Location in the world where the node is
         protected long lastTimeWasActive = 0;
         protected long activationTimeStamp = 0;
-        protected boolean IsActive = false;
+        protected boolean isActive = false;
         protected ResourceKey<Level> dimension;
-        protected boolean isBeingRelocated = false;
+        protected boolean isBeingMoved = false;
+        protected boolean toBeDeleted = false;
 
+        public final int STATE_IDLE = 0;
+        public final int STATE_SPREAD = 1;
+        public final int STATE_DEFENSE = 2;
+        public final int STATE_OFFENSE = 3;
+        protected int state = STATE_IDLE;
+
+
+        public NodeEntry(UUID uuid, ServerLevel level, BlockPos positionIn)
+        {
+            this(level, positionIn);
+            this.uuid = uuid;
+        }
 
         /**
          * Default Constructor
@@ -1075,8 +1082,15 @@ public class ModSavedData extends SavedData {
          */
         public NodeEntry(ServerLevel level, BlockPos positionIn)
         {
+            uuid = UUID.randomUUID();
             position = positionIn;
             this.dimension = level.dimension();
+        }
+
+        public NodeEntry(UUID uuid, ResourceKey<Level> dimensionResource, BlockPos positionIn)
+        {
+            this(dimensionResource, positionIn);
+            this.uuid = uuid;
         }
 
         /**
@@ -1085,9 +1099,46 @@ public class ModSavedData extends SavedData {
          */
         public NodeEntry(ResourceKey<Level> dimensionResource, BlockPos positionIn)
         {
+            uuid = UUID.randomUUID();
             position = positionIn;
             this.dimension = dimensionResource;
         }
+
+        public int getState()
+        {
+            return state;
+        }
+
+        public void setState(int state)
+        {
+            SculkHorde.debuggerSystem.entityDebuggerModule.logDebug(" State: " + getState());
+        }
+
+        public void setStateIdle()
+        {
+            setState(STATE_IDLE);
+        }
+
+        public void setStateSpread()
+        {
+            setState(STATE_SPREAD);
+        }
+
+        public void setStateDefense()
+        {
+            setState(STATE_DEFENSE);
+        }
+
+        public void setStateOffense()
+        {
+            setState(STATE_OFFENSE);
+        }
+
+        public boolean isStateDefensive()
+        {
+            return getState() == STATE_DEFENSE;
+        }
+
         public ServerLevel getDimension()
         {
             return ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
@@ -1100,17 +1151,17 @@ public class ModSavedData extends SavedData {
 
         public boolean isBeingRelocated()
         {
-            return isBeingRelocated;
+            return isBeingMoved;
         }
 
         public void setBeingRelocated(boolean beingRelocated)
         {
-            isBeingRelocated = beingRelocated;
+            isBeingMoved = beingRelocated;
         }
 
         public boolean isActive()
         {
-            return IsActive;
+            return isActive;
         }
 
         public void setActive(boolean activeIn)
@@ -1131,7 +1182,7 @@ public class ModSavedData extends SavedData {
                 return;
             }
 
-            IsActive = activeIn;
+            isActive = activeIn;
             SculkNodeBlockEntity sculkNodeBlockEntity = (SculkNodeBlockEntity) getDimension().getBlockEntity(position);
             sculkNodeBlockEntity.setActive(activeIn);
         }
@@ -1163,7 +1214,7 @@ public class ModSavedData extends SavedData {
         public boolean isEntryValid()
         {
 
-            if(getDimension() == null || getPosition() == null)
+            if(getDimension() == null || getPosition() == null || toBeDeleted)
             {
                 SculkHorde.sculkNodesSystem.flagCleanUpRequired();
                 return false;
@@ -1180,8 +1231,55 @@ public class ModSavedData extends SavedData {
                 SculkHorde.sculkNodesSystem.flagCleanUpRequired();
                 return false;
             }
+            else if(!NodeUtil.getNodeBlockEntity(this).get().getNodeEntryUUID().equals(uuid))
+            {
+                SculkHorde.sculkNodesSystem.flagCleanUpRequired();
+                return false;
+            }
 
             return true;
+        }
+
+        public void setIsBeingMoved(boolean value)
+        {
+            isBeingMoved = value;
+        }
+
+        public boolean isBeingMoved()
+        {
+            return isBeingMoved;
+        }
+
+        public void destroy()
+        {
+            if(isBeingMoved)
+            {
+                return;
+            }
+
+            toBeDeleted = true;
+            DebuggerSystem.cursorDebuggerModule.logInfo("Node at " + getPosition() + " was destroyed.");
+
+
+            // Subtract 10% of total mass
+            int subtractAmount = (int) (ModSavedData.getSaveData().getSculkAccumulatedMass() * 0.1);
+            ModSavedData.getSaveData().subtractSculkAccumulatedMass(subtractAmount);
+            SculkHorde.statisticsData.addTotalMassRemovedFromHorde(subtractAmount);
+
+            getDimension().players().forEach(player -> player.displayClientMessage(Component.literal("A Sculk Node has been Destroyed! " + subtractAmount + " Mass has been removed from the Horde."), true));
+            getDimension().players().forEach(player -> getDimension().playSound(null, player.blockPosition(), ModSounds.NODE_DESTROY_SOUND.get(), SoundSource.HOSTILE, 0.7F, 1.0F));
+            SculkHorde.statisticsData.incrementTotalNodesDestroyed();
+            // Get Nearby Players and update the number of nodes they destroyed
+            getDimension().players().forEach((player) ->
+                {
+                    if(player.blockPosition().closerThan(getPosition(), 50) && !EntityAlgorithms.isInvalidTargetForSculkHorde(player))
+                    {
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).incrementNodesDestroyed();
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).increaseOrDecreaseRelationshipToHorde(-100);
+                        PlayerProfileHandler.getOrCreatePlayerProfile(player).setTimeOfLastHit(0);
+                    }
+                }
+            );
         }
 
         /**
@@ -1191,11 +1289,11 @@ public class ModSavedData extends SavedData {
         public CompoundTag save()
         {
             CompoundTag nbt = new CompoundTag();
+            if(uuid != null) {nbt.putUUID("uuid", uuid);}
             nbt.putLong("position", position.asLong());
             nbt.putLong("lastTimeWasActive", lastTimeWasActive);
             nbt.putLong("activationTimeStamp", activationTimeStamp);
-            nbt.putBoolean("IsActive", IsActive);
-            nbt.putBoolean("isBeingRelocated", isBeingRelocated);
+            nbt.putBoolean("IsActive", isActive);
             // Put Dimension ID
             nbt.putString("dimension", dimension.location().toString());
             return nbt;
@@ -1212,11 +1310,10 @@ public class ModSavedData extends SavedData {
                 ? ResourceKey.create(Registries.DIMENSION, dimLoc)
                 : Level.OVERWORLD;
             NodeEntry entry = new NodeEntry(dimensionResourceKey, BlockPos.of(nbt.getLong("position")));
-            entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
-            entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
-            entry.setActive(nbt.getBoolean("IsActive"));
-            entry.setBeingRelocated(nbt.getBoolean("isBeingRelocated"));
-            // Get Dimension
+            if(nbt.contains("uuid")) entry.uuid = nbt.getUUID("uuid");
+            if(nbt.contains("lastTimeWasActive")) entry.setLastTimeWasActive(nbt.getLong("lastTimeWasActive"));
+            if(nbt.contains("activationTimeStamp")) entry.setActivationTimeStamp(nbt.getLong("activationTimeStamp"));
+            if(nbt.contains("IsActive")) entry.setActive(nbt.getBoolean("IsActive"));
 
             return entry;
         }
