@@ -542,7 +542,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     }
 
     protected ServerBossEvent createBossEvent() {
-        ServerBossEvent event = new ServerBossEvent(Component.literal("Sculk Enderman"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        ServerBossEvent event = new ServerBossEvent(Component.translatable("entity.sculkhorde.sculk_enderman"), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         return event;
     }
 
