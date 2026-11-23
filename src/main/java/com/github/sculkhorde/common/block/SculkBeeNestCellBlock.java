@@ -5,35 +5,34 @@ import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ModItems;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.neoforged.neoforge.common.ItemAbilities;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -187,25 +186,22 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock {
 
     /** EVENTS **/
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
+    public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
     {
-
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-
         if (isMature(pState))
         {
-            if (itemstack.getItem() == Items.SHEARS)
+            if (pStack.canPerformAction(ItemAbilities.SHEARS_HARVEST))
             {
                 pLevel.playSound(pPlayer, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 dropResin(pLevel, pPos);
-                itemstack.hurtAndBreak(1, pPlayer,
-                        pHand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                pStack.hurtAndBreak(1, pPlayer, LivingEntity.getSlotForHand(pHand));
+                pLevel.gameEvent(pPlayer, GameEvent.SHEAR, pPos);
                 resetMature(pLevel, pState, pPos);
 
-                return InteractionResult.sidedSuccess(pLevel.isClientSide);
+                return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
             }
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
     public static void dropResin(Level pLevel, BlockPos pPos) {
