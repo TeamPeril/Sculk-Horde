@@ -450,8 +450,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return false;
             }
 
-            // If less than 300 blocks from spawn point, do not explode.
-            if(BlockAlgorithms.getBlockDistanceXZ(blockPosition(), BlockPos.containing(spawnPoint)) < 100)
+            // If less than 200 blocks from spawn point, do not explode.
+            if(BlockAlgorithms.getBlockDistanceXZ(blockPosition(), BlockPos.containing(spawnPoint)) < 200)
             {
                 return false;
             }
@@ -462,12 +462,16 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
 
             // Find any non-sculk mobs in the area
-            List<LivingEntity> nearbyMobs = EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), groundBlockPos, mobCheckRadius);
+            List<LivingEntity> nearbyMobs = EntityAlgorithms.getAllLivingEntitiesAtBlockPos((ServerLevel) level(), groundBlockPos, mobCheckRadius);
+
 
             for(LivingEntity mob : nearbyMobs)
             {
-                boolean isValidTarget = ((ISculkSmartEntity) SculkPhantomEntity.this).getTargetParameters().isEntityValidSculkHordeTarget(mob);
-                if(isValidTarget)
+                if(EntityAlgorithms.isSculkLivingEntity.test(mob))
+                {
+                    return false;
+                }
+                else if(getTargetParameters().isEntityValidTarget(mob))
                 {
                     return true;
                 }

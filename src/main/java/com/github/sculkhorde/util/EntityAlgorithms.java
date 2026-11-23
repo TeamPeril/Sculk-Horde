@@ -9,6 +9,7 @@ import com.github.sculkhorde.common.entity.goal.LegacyCustomMeleeAttackGoal;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.misc.ModColaborationHelper;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
+import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
@@ -757,6 +758,13 @@ public class EntityAlgorithms {
                 return !EntityAlgorithms.isInvalidTargetForSculkHorde(livingEntity);
             }
         });
+        return livingEntitiesInRange;
+    }
+
+    public static List<LivingEntity> getAllLivingEntitiesAtBlockPos(ServerLevel level, BlockPos origin, int squareLength)
+    {
+        AABB boundingBox = HitboxUtil.createBoundingBoxCubeAtBlockPos(origin.getCenter(), squareLength);
+        List<LivingEntity> livingEntitiesInRange = level.getEntitiesOfClass(LivingEntity.class, boundingBox, Predicates.alwaysTrue());
         return livingEntitiesInRange;
     }
 
