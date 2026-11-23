@@ -347,7 +347,7 @@
   "achievement.sculkhorde.contribute.desc": "Докажите, что вы способны на все, что угодно, и внесите свой вклад в создание мода скалковой орды.",
 
   "block.sculkhorde.diseased_kelp_block": "Поражённая ламинария",
-  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oОпасное подводное скалковое растение, которое колет вас и вызывает Пораженные кисты.",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oОпасное подводное скалковое растение, которое колет вас и вызывает эффект «Поглощёность».",
   "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oЭто гибрид шипов, которые обычно растут на поверхности, и ламинарий, которые в изобилии растут под водой. Это растение служит для распространения болезней и привлечения призывателей, что в конечном итоге приводит к гибели его жертвы.",
   "entity.sculkhorde.sculk_squid": "Скалковый спрут",
   "item.sculkhorde.sculk_squid_spawn_egg": "Яйцо призыва скалкового спрута",

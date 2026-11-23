@@ -338,7 +338,7 @@
   "achievement.sculkhorde.contribute.title": "Reconnaissant envers Vous",
   "achievement.sculkhorde.contribute.desc": "Prouvez que vous allez au-delà et que vous êtes un contributeur au Mod Sculk Horde.",
   "block.sculkhorde.diseased_kelp_block": "Kelp Malade",
-  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oUne plante sculk sous-marine dangereuse qui vous pique et vous donne Enfoui.",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oUne plante sculk sous-marine dangereuse qui vous pique et vous donne Enfouie.",
   "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oUne conception hybride entre les Pics de surface qui apparaissent normalement et le kelp qui pousse abondamment sous l'eau. Cette plante a pour but de propager la maladie et de déclencher les Invocateurs, aboutissant finalement à la disparition de sa victime.",
   "entity.sculkhorde.sculk_squid": "Calmar Sculk",
   "item.sculkhorde.sculk_squid_spawn_egg": "Œuf spawneur de Calmar Sculk",

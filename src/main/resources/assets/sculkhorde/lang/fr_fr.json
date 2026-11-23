@@ -338,7 +338,7 @@
   "achievement.sculkhorde.contribute.title": "Reconnaissant Envers Vous",
   "achievement.sculkhorde.contribute.desc": "Faites vos preuves pour aller au-delà et être un contributeur au Mod Sculk Horde.",
   "block.sculkhorde.diseased_kelp_block": "Varech Malade",
-  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oUne dangereuse plante Sculk sous-marine qui vous pique et vous donne des Kystes Malades.",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oUne dangereuse plante Sculk sous-marine qui vous pique et vous donne Enfouie.",
   "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oUn design hybride entre les Pics de surface qui apparaissent normalement et le varech qui pousse abondamment sous l'eau. Cette plante a pour but de propager la maladie et de déclencher les Invocateurs, conduisant finalement à la perte de sa victime.",
   "entity.sculkhorde.sculk_squid": "Calmar Sculk",
   "item.sculkhorde.sculk_squid_spawn_egg": "Œuf Spawneur de Calmar Sculk",
