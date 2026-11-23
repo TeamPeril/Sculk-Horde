@@ -244,7 +244,7 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         // holding a shield up at the right time, to deflect zoltraak.
         //AABB beamAttackHitBox = new AABB(origin, hitLocation).inflate(radius); // Create a hitbox along the beam path
         BeamHitbox beamAttackHitBox = new BeamHitbox(origin, hitLocation, radius);
-        List<LivingEntity> entitiesToBeHitSorted = getEntitiesInBeamHitbox(getOwner(), beamAttackHitBox); // Damage entities in hit box
+        List<LivingEntity> entitiesToBeHitSorted = getEntitiesInBeamHitbox(level(), getOwner(), beamAttackHitBox); // Damage entities in hit box
         Optional<Player> closestPlayerDeflecting = getClosestPlayerDeflecting(entitiesToBeHitSorted);
 
         if(closestPlayerDeflecting.isPresent())
@@ -305,22 +305,22 @@ public class ZoltraakAttackEntity extends SpecialEffectEntity implements GeoEnti
         return result;
     }
 
-    public static List<LivingEntity> getEntitiesInBeamHitbox(LivingEntity sourceEntity, BeamHitbox hitbox)
+    public static List<LivingEntity> getEntitiesInBeamHitbox(Level level, LivingEntity sourceEntity, BeamHitbox hitbox)
     {
         // Check for entities within the hitbox
         List<LivingEntity> entitiesHit;
 
         if(sourceEntity == null)
         {
-            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(level, sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
         }
         else if(sourceEntity instanceof Player)
         {
-            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, Predicates.alwaysTrue());
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(level, sourceEntity, Predicates.alwaysTrue());
         }
         else
         {
-            entitiesHit = hitbox.getLivingEntitiesInHitbox(sourceEntity.level(), sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
+            entitiesHit = hitbox.getLivingEntitiesInHitbox(level, sourceEntity, EntityAlgorithms.isNotSculkHordeLivingEntity);
         }
 
         entitiesHit.sort(Comparator.comparingDouble(sourceEntity::distanceTo));
