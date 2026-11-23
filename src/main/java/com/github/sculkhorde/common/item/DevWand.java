@@ -1,6 +1,7 @@
 package com.github.sculkhorde.common.item;
 
 import com.github.sculkhorde.core.SculkHorde;
+import com.github.sculkhorde.systems.SculkPopulationSystem;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.StructureUtil;
@@ -86,6 +87,7 @@ public class DevWand extends Item implements IForgeItem {
 		Vec3 hitPos = rayTrace.getTo();
 		BlockPos hitPosBlock = BlockPos.containing(hitPos);
 
+		/*
         if(WardZoneUtil.isPosInAnyWardZone(playerIn.level(), playerIn.blockPosition()))
         {
             playerIn.sendSystemMessage(Component.literal("In Infestation Ward Zone."));
@@ -98,6 +100,10 @@ public class DevWand extends Item implements IForgeItem {
 		SculkHorde.sculkNodesSystem.DeactivateAllNodes();
 		SculkHorde.sculkNodesSystem.ActivateNodeWithLongestDurationOfInactivity();
 		NodeUtil.tryMoveOldestNodeTo((ServerLevel) level, hitPosBlock, true);
+
+		 */
+
+		SculkPopulationSystem.trySpawnScoutingPhantom(level, hitPosBlock, true);
 
 		return InteractionResultHolder.pass(itemstack);
 	}

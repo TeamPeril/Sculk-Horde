@@ -21,15 +21,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public class SculkPopulationSystem {
 
     Collection<ISculkSmartEntity> population = new ArrayList<>();
-
-    protected int scoutingPhantomsPopulation = 0;
+    Collection<SculkPhantomEntity> scoutingPhantomsPopulation = new ArrayList<>();
 
     protected long lastTimeOfPopulationRecount = 0;
     protected int populationRecountInterval = TickUnits.convertSecondsToTicks(30);
@@ -70,7 +67,7 @@ public class SculkPopulationSystem {
 
     public int getScoutingPhantomsPopulation()
     {
-        return scoutingPhantomsPopulation;
+        return scoutingPhantomsPopulation.size();
     }
 
     public int getMaxScoutingPhantomsPopulation()
@@ -78,17 +75,22 @@ public class SculkPopulationSystem {
         return 30;
     }
 
-    public void incrementScoutingPhantomCount() { scoutingPhantomsPopulation++; }
+    public void trackScountingPhantom(SculkPhantomEntity entity) { scoutingPhantomsPopulation.add(entity); }
 
     public boolean isScoutingPhantomPopulationAtMax()
     {
         return getScoutingPhantomsPopulation() >= getMaxScoutingPhantomsPopulation();
     }
 
+    public boolean isScoutingPhantomPopulationTooHigh()
+    {
+        return getScoutingPhantomsPopulation() > getMaxScoutingPhantomsPopulation();
+    }
+
     public void updatePopulationCollection()
     {
         population.clear();
-        scoutingPhantomsPopulation = 0;
+        scoutingPhantomsPopulation.clear();
 
         ServerLifecycleHooks.getCurrentServer().getAllLevels().forEach( level -> {
             Iterable<Entity> listOfEntities = level.getEntities().getAll();
@@ -110,12 +112,9 @@ public class SculkPopulationSystem {
                     continue;
                 }
 
-                if(entity instanceof SculkPhantomEntity phantom)
+                if(entity instanceof SculkPhantomEntity phantom && phantom.isScouter())
                 {
-                    if(phantom.isScouter())
-                    {
-                        scoutingPhantomsPopulation += 1;
-                    }
+                    scoutingPhantomsPopulation.add(phantom);
                 }
 
                 population.add((ISculkSmartEntity) entity);
@@ -126,6 +125,33 @@ public class SculkPopulationSystem {
             DebuggerSystem.entityDebuggerModule.logInfo("Sculk Horde has reached maximum population. Killing Idle Mobs");
             despawnIdleMobs();
         }
+
+        if(isScoutingPhantomPopulationTooHigh())
+        {
+            cullOldestPhantoms();
+        }
+    }
+
+
+    public void cullOldestPhantoms() {
+        int amountToRemove = getScoutingPhantomsPopulation() - getMaxScoutingPhantomsPopulation();
+
+        if (amountToRemove <= 0 || scoutingPhantomsPopulation.isEmpty()) {
+            return;
+        }
+
+        DebuggerSystem.entityDebuggerModule.logInfo("Scouting Phantoms has reached maximum population. Culling " + amountToRemove + " excess scouting phantoms.");
+
+        List<SculkPhantomEntity> toRemove = scoutingPhantomsPopulation.stream()
+                .sorted(Comparator.comparingLong(SculkPhantomEntity::getTimeOfSpawn)) // Ascending: smallest timestamp = oldest
+                .limit(amountToRemove)
+                .toList();
+
+        for (SculkPhantomEntity phantom : toRemove) {
+            phantom.discard();
+        }
+
+        scoutingPhantomsPopulation.removeAll(toRemove);
     }
 
     public void despawnIdleMobs()
@@ -151,9 +177,9 @@ public class SculkPopulationSystem {
         }
     }
 
-    public static void trySpawnScoutingPhantom(Level worldIn, BlockPos spawnPos)
+    public static void trySpawnScoutingPhantom(Level worldIn, BlockPos spawnPos, boolean force)
     {
-        if(SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax())
+        if(SculkHorde.populationHandler.isScoutingPhantomPopulationAtMax() && !force)
         {
             return;
         }
@@ -166,7 +192,7 @@ public class SculkPopulationSystem {
         phantom.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         phantom.spawnPoint = new Vec3(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         worldIn.addFreshEntity(phantom);
-        SculkHorde.populationHandler.incrementScoutingPhantomCount();
+        SculkHorde.populationHandler.trackScountingPhantom(phantom);
         DebuggerSystem.entityDebuggerModule.logInfo("trySpawnScoutingPhantom | Spawned Scouting Phantom at " + spawnPos.toShortString());
     }
 }

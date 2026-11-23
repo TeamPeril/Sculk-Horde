@@ -247,14 +247,14 @@ public class SculkNodeBlock extends BaseEntityBlock implements IForgeBlock {
                 int y = level.getMaxBuildHeight();
                 BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-                SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition);
+                SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition, false);
             }
             return;
         }
 
         for(int i = 0; i < amount; i++)
         {
-            SculkPopulationSystem.trySpawnScoutingPhantom(level, largestSpaceOrigin.get());
+            SculkPopulationSystem.trySpawnScoutingPhantom(level, largestSpaceOrigin.get(), false);
         }
 
     }

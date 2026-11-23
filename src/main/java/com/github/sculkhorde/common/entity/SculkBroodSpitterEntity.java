@@ -484,7 +484,7 @@ public class SculkBroodSpitterEntity extends Monster implements GeoEntity, IScul
         @Override
         protected void playPreAttackAnimation()
         {
-            triggerAnim(ATTACK_ANIMATION_CONTROLLER, "attack");
+            //triggerAnim(ATTACK_ANIMATION_CONTROLLER, "attack");
         }
 
         @Override
