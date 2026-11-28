@@ -1188,7 +1188,7 @@ public class RaidEvent extends Event {
             int y = level.getMaxBuildHeight();
             BlockPos spawnPosition = new BlockPos(origin.getX() + x, y, origin.getZ() + z);
 
-            SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition);
+            SculkPopulationSystem.trySpawnScoutingPhantom(level, spawnPosition, false);
 
         }
     }

@@ -343,7 +343,7 @@
   "achievement.sculkhorde.contribute.desc": "Demuestra tu valía para ir más allá y se un contribuidor del mod Horda de Sculk.",
 
   "block.sculkhorde.diseased_kelp_block": "Alga muerta",
-  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oUna peligrosa planta marina de sculk que te pincha y te da quistes enfermos.",
+  "tooltip.sculkhorde.diseased_kelp_block.functionality": "§7§oUna peligrosa planta marina de sculk que te pincha y te da Enterrado.",
   "tooltip.sculkhorde.diseased_kelp_block.lore": "§7§oUn diseño híbrido entre las espinas de la superficie que se generan normalmente, y alga que crece abundantemente bajo el agua. Esta planta sirve el proposito de propagar enfermedades y activar invocadores, finalmente terminando con fallecimiento de sus víctimas.",
   "entity.sculkhorde.sculk_squid": "Calamar de sculk",
   "item.sculkhorde.sculk_squid_spawn_egg": "Generar calamar de sculk",

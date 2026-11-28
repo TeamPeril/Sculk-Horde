@@ -1,5 +1,6 @@
 package com.github.sculkhorde.client.model.enitity;
 
+import com.github.sculkhorde.common.entity.SculkBroodSpitterEntity;
 import com.github.sculkhorde.common.entity.SculkBroodStrikerEntity;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.client.renderer.RenderType;
@@ -8,6 +9,9 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class SculkBroodStrikerModel extends DefaultedEntityGeoModel<SculkBroodStrikerEntity> {
 
+
+    public SculkBroodStrikerModel() {
+        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_brood_spitter"));
     public SculkBroodStrikerModel() {
         super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_brood_spitter"));
     }

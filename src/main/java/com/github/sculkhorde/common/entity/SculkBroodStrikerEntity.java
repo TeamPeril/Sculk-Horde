@@ -6,13 +6,13 @@ import com.github.sculkhorde.common.entity.components.DefaultTargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.common.entity.components.TargetRetention;
 import com.github.sculkhorde.common.entity.goal.*;
-import com.github.sculkhorde.common.entity.projectile.SmallBroodAcidProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.ClientSoundUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.SoundUtil;
 import com.github.sculkhorde.util.TickUnits;
+import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +31,12 @@ import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+<<<<<<< HEAD
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.AABB;
+=======
 import net.minecraft.world.level.pathfinder.PathType;
+>>>>>>> origin/1.21.1
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -56,7 +61,7 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
      */
 
     //The Health
-    public static final float MAX_HEALTH = 15F;
+    public static final float MAX_HEALTH = 25F;
     //The armor of the mob
     public static final float ARMOR = 5F;
     //ATTACK_DAMAGE determines How much damage it's melee attacks do
@@ -182,9 +187,13 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
                         //new LeapAtTargetGoal(this, 0.5F),
                         //new AttackGoal(),
                         new AttackSequenceGoal(this, TickUnits.convertSecondsToTicks(1),
+<<<<<<< HEAD
+                                new ChaseAndAttackGoal(this)
+=======
                                 new GetInRangeAttackStep(this),
                                 new GetInRangeAttackStep(this),
                                 new LeapTowardsAttackStep(this)
+>>>>>>> origin/1.21.1
                         ),
                         new ImprovedRandomStrollGoal(this, 1.0D).setToAvoidWater(true),
                         new OpenDoorGoal(this, true)
@@ -459,16 +468,17 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
         }
     }
 
-    public class GetInRangeAttackStep extends AttackStepGoal
+    protected class ChaseAndAttackGoal extends AttackStepGoal
     {
+        protected int ticksUntilNextPathRecalculation = 0;
 
-        public GetInRangeAttackStep(Mob mob) {
+        public ChaseAndAttackGoal(Mob mob) {
             super(mob);
         }
 
         @Override
         protected int getPreAttackDelay() {
-            return 0;
+            return TickUnits.convertSecondsToTicks(20);
         }
 
         @Override
@@ -477,24 +487,58 @@ public class SculkBroodStrikerEntity extends Monster implements GeoEntity, IScul
         }
 
         @Override
-        protected void doAttackTick() {
-            super.doAttackTick();
+        public void start() {
+            super.start();
 
-            float MIN_DISTANCE = 10;
-
-            if(getTarget() == null || (EntityAlgorithms.getDistanceBetweenEntities(mob, getTarget()) < MIN_DISTANCE && getSensing().hasLineOfSight(getTarget())))
+            if(getTarget() != null)
             {
-                setPostAttack(true);
-                navigation.stop();
-                return;
+                navigation.moveTo(getTarget(), 1.0D);
             }
-
-            navigation.moveTo(getTarget(), 1.0F);
         }
 
         @Override
-        public void stop() {
-            super.stop();
+        protected void doPreAttackTick() {
+            LivingEntity target = mob.getTarget();
+            if (target == null) {
+                setAttackTickComplete();
+                return;
+            }
+
+            mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            double distanceFromTarget = mob.distanceTo(target);
+
+            if (distanceFromTarget <= 3.0D) {
+                setPreAttack(false);
+                return;
+            }
+
+            ticksUntilNextPathRecalculation--;
+            if (ticksUntilNextPathRecalculation <= 0) {
+                navigation.moveTo(target, 1.0D);
+                ticksUntilNextPathRecalculation = TickUnits.convertSecondsToTicks(0.5F);
+            }
+        }
+
+        @Override
+        protected void doAttackTick() {
+            LivingEntity target = mob.getTarget();
+            if (target == null) {
+                setPostAttack(true);
+                return;
+            }
+
+            AABB hitbox = HitboxUtil.createBoundingBoxCubeAtBlockPos(target.getBoundingBox().getCenter(), 2);
+            for(LivingEntity e : EntityAlgorithms.getNonSculkUnitsInBoundingBox(mob.level(), hitbox))
+            {
+                if(EntityAlgorithms.isInvalidTargetForSculkHorde(e))
+                {
+                    continue;
+                }
+
+                EntityAlgorithms.doCorrodedDamageToEntity(mob, e, 18);
+            }
+
+            setPostAttack(true);
             navigation.stop();
         }
     }

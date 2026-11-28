@@ -24,5 +24,12 @@ run
 # Files from Forge MDK
 forge*changelog.txt
 setup.bat
+
+# agentbridge (from PR)
+.agentbridge/conversation.db
+.agentbridge/conversation.db-shm
+.agentbridge/conversation.db-wal
+
+# aider files (from base)
 .aider*
 /.agentbridge

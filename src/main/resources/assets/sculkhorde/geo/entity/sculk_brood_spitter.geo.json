@@ -18,7 +18,15 @@
 				{
 					"name": "body",
 					"parent": "root",
-					"pivot": [0, 1, 0]
+					"pivot": [0, 1, 0],
+					"locators": {
+						"_null_IK_LWF": [17, 0, 0],
+						"_null_IK_LWM": [17, 0, 3],
+						"_null_IK_LWB": [17, 0, 6],
+						"_null_IK_LEF": [-17, 0, 0],
+						"_null_IK_LEM": [-17, 0, 3],
+						"_null_IK_LEB": [-17, 0, 6]
+					}
 				},
 				{
 					"name": "mid",
@@ -135,7 +143,10 @@
 								"down": {"uv": [13, 66], "uv_size": [13, 0]}
 							}
 						}
-					]
+					],
+					"locators": {
+						"locator3": [-14, 7, 3]
+					}
 				},
 				{
 					"name": "leg_west_middle",
@@ -187,7 +198,10 @@
 								"down": {"uv": [13, 72], "uv_size": [13, 0]}
 							}
 						}
-					]
+					],
+					"locators": {
+						"locator2": [-14, 7, 6]
+					}
 				},
 				{
 					"name": "leg_west_front",
@@ -239,7 +253,10 @@
 								"down": {"uv": [13, 69], "uv_size": [13, 0]}
 							}
 						}
-					]
+					],
+					"locators": {
+						"locator": [-14, 7, 9]
+					}
 				},
 				{
 					"name": "legs_east",
@@ -296,7 +313,10 @@
 								"down": {"uv": [13, 72], "uv_size": [13, 0]}
 							}
 						}
-					]
+					],
+					"locators": {
+						"locator4": [-24, 7, 0]
+					}
 				},
 				{
 					"name": "leg_east_middle",
@@ -348,7 +368,10 @@
 								"down": {"uv": [13, 69], "uv_size": [13, 0]}
 							}
 						}
-					]
+					],
+					"locators": {
+						"locator5": [-24, 7, 3]
+					}
 				},
 				{
 					"name": "leg_east_back",
@@ -400,12 +423,15 @@
 								"down": {"uv": [13, 66], "uv_size": [13, 0]}
 							}
 						}
-					]
+					],
+					"locators": {
+						"locator6": [-24, 7, 6]
+					}
 				},
 				{
 					"name": "butt",
 					"parent": "mid",
-					"pivot": [0, 1, 3],
+					"pivot": [0, 5, 8],
 					"cubes": [
 						{
 							"origin": [-6, 1.5, 8],
@@ -491,7 +517,7 @@
 				{
 					"name": "jaw_west",
 					"parent": "head",
-					"pivot": [-1, 4.5, -8],
+					"pivot": [3, 4.5, -7],
 					"cubes": [
 						{
 							"origin": [2, 3.5, -11],
@@ -533,7 +559,7 @@
 				{
 					"name": "jaw_east",
 					"parent": "head",
-					"pivot": [-7, 4.5, -8],
+					"pivot": [-3, 4.5, -7],
 					"cubes": [
 						{
 							"origin": [-4, 3.5, -11],

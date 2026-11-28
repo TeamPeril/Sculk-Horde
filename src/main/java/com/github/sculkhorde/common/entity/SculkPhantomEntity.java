@@ -87,6 +87,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     public Vec3 spawnPoint = null;
 
     protected boolean isScouter = false;
+    protected long timeOfSpawn = 0;
 
     /**
      * The Constructor
@@ -104,6 +105,11 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
     protected void customServerAiStep() {
         super.customServerAiStep();
         TARGET_PARAMETERS.updateTargets();
+    }
+
+    public long getTimeOfSpawn()
+    {
+        return timeOfSpawn;
     }
 
     /**
@@ -325,11 +331,12 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             if (f > 0.0F && f1 <= 0.0F) {
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.PHANTOM_FLAP, this.getSoundSource(), 0.95F + this.random.nextFloat() * 0.05F, 0.95F + this.random.nextFloat() * 0.05F, false);
             }
-
-            float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F);
-            float f3 = Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * (1.3F + 0.21F);
-            float f4 = (0.3F + f * 0.45F) * (0.2F + 1.0F);
             return;
+        }
+
+        if(timeOfSpawn == 0)
+        {
+            timeOfSpawn = level().getGameTime();
         }
 
         if(spawnPoint == null)
@@ -338,7 +345,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         }
 
         // If this phantom is not scouting, don't bother chunk loading.
-        if(isScouter() && ModConfig.SERVER.should_phantoms_load_chunks.get())
+        if(isScouter() && ModConfig.SERVER.should_phantoms_load_chunks.get() && this.tickCount % 20 == 0)
         {
             EntityChunkLoaderHelper.getEntityChunkLoaderHelper().createChunkLoadRequestSquareForEntityIfAbsent(this,5, 3, TickUnits.convertMinutesToTicks(1));
         }
@@ -360,7 +367,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         if (tag.contains("AX")) {
             this.anchorPoint = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
         }
-        isScouter = tag.getBoolean("scouter");
+        if(tag.contains("isScouter")) isScouter = tag.getBoolean("scouter");
+        if(tag.contains("timeOfSpawn")) timeOfSpawn = tag.getLong("timeOfSpawn");
     }
 
     public void addAdditionalSaveData(@NotNull CompoundTag tag) {
@@ -369,6 +377,7 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
         tag.putInt("AY", this.anchorPoint.getY());
         tag.putInt("AZ", this.anchorPoint.getZ());
         tag.putBoolean("scouter", isScouter);
+        tag.putLong("timeOfSpawn", timeOfSpawn);
 
     }
 
@@ -441,8 +450,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return false;
             }
 
-            // If less than 300 blocks from spawn point, do not explode.
-            if(BlockAlgorithms.getBlockDistanceXZ(blockPosition(), BlockPos.containing(spawnPoint)) < 100)
+            // If less than 200 blocks from spawn point, do not explode.
+            if(BlockAlgorithms.getBlockDistanceXZ(blockPosition(), BlockPos.containing(spawnPoint)) < 200)
             {
                 return false;
             }
@@ -453,12 +462,16 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
             BlockPos groundBlockPos = BlockAlgorithms.getGroundBlockPos(level(), blockPosition(), level().getMaxBuildHeight());
 
             // Find any non-sculk mobs in the area
-            List<LivingEntity> nearbyMobs = EntityAlgorithms.getNonSculkEntitiesAtBlockPos((ServerLevel) level(), groundBlockPos, mobCheckRadius);
+            List<LivingEntity> nearbyMobs = EntityAlgorithms.getAllLivingEntitiesAtBlockPos((ServerLevel) level(), groundBlockPos, mobCheckRadius);
+
 
             for(LivingEntity mob : nearbyMobs)
             {
-                boolean isValidTarget = ((ISculkSmartEntity) SculkPhantomEntity.this).getTargetParameters().isEntityValidSculkHordeTarget(mob);
-                if(isValidTarget)
+                if(EntityAlgorithms.isSculkLivingEntity.test(mob))
+                {
+                    return false;
+                }
+                else if(getTargetParameters().isEntityValidTarget(mob))
                 {
                     return true;
                 }
@@ -500,7 +513,6 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
 
         public boolean canUse()
         {
-            //boolean cooldownNotMet = level().getGameTime() - lastTimeOfExecution < executionCooldown;
             boolean isNotScouter = !isScouter();
             boolean hasTarget = getTarget() != null;
             boolean isWithin100BlocksOfAnchor = distanceToSqr(Vec3.atCenterOf(anchorPoint)) <= 100;
@@ -618,10 +630,8 @@ public class SculkPhantomEntity extends FlyingMob implements GeoEntity, ISculkSm
                 return;
             }
 
-            SculkPhantomEntity.this.getNavigation().moveTo(target, 2.0D);
-            //AABB boundingBox = SculkPhantomEntity.this.getBoundingBox().inflate(0.2F);
+            if(tickCount % 10 == 0) SculkPhantomEntity.this.getNavigation().moveTo(target, 2.0D);
             float attackReach = (getBbWidth()/2) + 2;
-            //boolean doesPhantomIntersectTarget = boundingBox.intersects(target.getBoundingBox());
             boolean doesPhantomIntersectTarget = SculkPhantomEntity.this.distanceTo(target) <= attackReach;
 
             if(doesPhantomIntersectTarget)
