@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "sculkhorde:infested_cobblestone"
+  },
+  "result": {
+    "id": "sculkhorde:infested_stone",
+    "count": 1
+  }
+}

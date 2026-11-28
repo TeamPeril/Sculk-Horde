@@ -13,29 +13,27 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class DepletedGolemOfWrathAnimatorBlock extends Block implements IForgeBlock {
+public class DepletedGolemOfWrathAnimatorBlock extends Block {
 
 
     /**
@@ -75,9 +73,9 @@ public class DepletedGolemOfWrathAnimatorBlock extends Block implements IForgeBl
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        super.appendHoverText(stack, context, tooltip, flagIn); //Not sure why we need this
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.depleted_golem_of_wrath_animator_block.functionality"));
@@ -94,10 +92,10 @@ public class DepletedGolemOfWrathAnimatorBlock extends Block implements IForgeBl
 
     /// #### Function ####
 
-    public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
 
 
-        boolean isRepairItem = playerIn.getMainHandItem().is(ModItems.SOULITE_SHARD.get());
+        boolean isRepairItem = stack.is(ModItems.SOULITE_SHARD.get());
 
         if(isRepairItem)
         {
@@ -105,7 +103,7 @@ public class DepletedGolemOfWrathAnimatorBlock extends Block implements IForgeBl
             if(level.isClientSide())
             {
                 ParticleUtil.spawnPurityDustParticlesOnClient((ClientLevel) level, pos);
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
 
             // Only on server
@@ -115,10 +113,10 @@ public class DepletedGolemOfWrathAnimatorBlock extends Block implements IForgeBl
             BlockAlgorithms.setBlockMisc(level, pos, ModBlocks.GOLEM_OF_WRATH_ANIMATOR_BLOCK.get().defaultBlockState());
             SoundUtil.playSoundInLevel(level, pos, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS);
 
-            return InteractionResult.CONSUME;
+            return ItemInteractionResult.CONSUME;
         }
 
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
     // Block Entity Related

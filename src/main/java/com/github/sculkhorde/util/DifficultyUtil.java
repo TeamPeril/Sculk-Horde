@@ -3,7 +3,7 @@ package com.github.sculkhorde.util;
 import com.github.sculkhorde.core.ModConfig;
 import com.github.sculkhorde.core.SculkHorde;
 import net.minecraft.world.Difficulty;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class DifficultyUtil {
 

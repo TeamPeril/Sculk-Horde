@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sculkhorde:infested_diorite"
+  },
+  "result":
+  {
+    "id": "sculkhorde:infested_diorite_slab",
+    "count": 2
+  }
+}

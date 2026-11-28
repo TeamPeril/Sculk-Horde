@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sculkhorde:infested_sandstone"
+  },
+  "result": {
+    "id": "sculkhorde:infested_sandstone_wall",
+    "count": 1
+  }
+}

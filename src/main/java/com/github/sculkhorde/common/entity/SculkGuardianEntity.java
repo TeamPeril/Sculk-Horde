@@ -30,16 +30,16 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -78,7 +78,7 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     {
         super(type, worldIn);
         this.moveControl = new FishMoveControl(this);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**
@@ -183,12 +183,12 @@ public class SculkGuardianEntity extends WaterAnimal implements GeoEntity, IScul
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         if(SculkHorde.isDebugMode())
         {
-            player.displayClientMessage(Component.literal("Running Goals: " + goalSelector.getRunningGoals().toString()), false);
+            player.displayClientMessage(Component.literal("Running Goals: " + goalSelector.getAvailableGoals().stream().filter(goal -> goal.isRunning()).toList().toString()), false);
             player.displayClientMessage(Component.literal("\nTarget: " + getTarget()), false);
 
             if(getTarget() != null)
             {
-                EntityAlgorithms.applyEffectToTarget(getTarget(), MobEffects.GLOWING, TickUnits.convertSecondsToTicks(10), 0);
+                EntityAlgorithms.applyEffectToTarget(getTarget(), MobEffects.GLOWING.value(), TickUnits.convertSecondsToTicks(10), 0);
             }
 
             return InteractionResult.PASS;

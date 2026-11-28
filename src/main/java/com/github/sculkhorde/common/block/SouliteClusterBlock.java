@@ -73,7 +73,7 @@ public class SouliteClusterBlock extends AmethystBlock implements SimpleWaterlog
     */
    public static Properties getProperties()
    {
-      Properties prop = Properties.copy(Blocks.STONE)
+      Properties prop = Properties.ofFullCopy(Blocks.STONE)
               .mapColor(MapColor.COLOR_CYAN)
               .strength(HARDNESS, BLAST_RESISTANCE)//Hardness & Resistance
               .sound(SoundType.HONEY_BLOCK)

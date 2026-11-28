@@ -3,7 +3,7 @@ package com.github.sculkhorde.systems;
 import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.util.TickUnits;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +13,7 @@ public class BeeNestActivitySystem {
 
     protected int index = 0;
 
-    protected final long DELAY_BETWEEN_NEST_TOGGLING = TickUnits.convertMinutesToTicks(15);
+    protected final long DELAY_BETWEEN_NEST_TOGGLING = TickUnits.convertMinutesToTicks(5);
     protected long timeOfLastToggle = 0;
     protected final int MAX_ENABLED_HIVES = 20;
 
@@ -43,7 +43,7 @@ public class BeeNestActivitySystem {
 
     public void idleTick()
     {
-        if(TickUnits.hasTicksPassed(timeOfLastToggle, ServerLifecycleHooks.getCurrentServer().overworld(), DELAY_BETWEEN_NEST_TOGGLING))
+        if(TickUnits.hasTicksPassed(timeOfLastToggle, ServerLifecycleHooks.getCurrentServer().overworld(), TickUnits.convertMinutesToTicks(15)))
         {
             setStateDeactivation();
         }

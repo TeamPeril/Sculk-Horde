@@ -20,16 +20,16 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.SwellGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, GeoEntity
@@ -46,7 +46,7 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
     public SculkCreeperEntity(EntityType<? extends Creeper> entityType, Level level) {
         super(entityType, level);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
     }
 
     @Override
@@ -152,15 +152,15 @@ public class SculkCreeperEntity extends Creeper implements ISculkSmartEntity, Ge
 
             if(DifficultyUtil.isCurrentDifficultyEasy())
             {
-                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_INFECTION.value(), TickUnits.convertSecondsToTicks(60), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
             }
             else if(DifficultyUtil.isCurrentDifficultyNormal())
             {
-                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(20), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.value(), TickUnits.convertSecondsToTicks(20), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
             }
             else if(DifficultyUtil.isCurrentDifficultyHard())
             {
-                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.value(), TickUnits.convertSecondsToTicks(40), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
             }
 
         });

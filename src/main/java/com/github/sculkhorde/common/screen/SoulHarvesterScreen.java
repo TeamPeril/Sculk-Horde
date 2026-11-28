@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class SoulHarvesterScreen extends AbstractContainerScreen<SoulHarvesterMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(SculkHorde.MOD_ID, "textures/gui/soul_harvester_gui.png");
+            ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "textures/gui/soul_harvester_gui.png");
 
     public SoulHarvesterScreen(SoulHarvesterMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -61,7 +61,7 @@ public class SoulHarvesterScreen extends AbstractContainerScreen<SoulHarvesterMe
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, delta);
         super.render(guiGraphics, mouseX, mouseY, delta);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }

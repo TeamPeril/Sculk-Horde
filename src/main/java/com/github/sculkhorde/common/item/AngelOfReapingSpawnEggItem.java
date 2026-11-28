@@ -24,12 +24,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class AngelOfReapingSpawnEggItem extends ForgeSpawnEggItem {
+public class AngelOfReapingSpawnEggItem extends DeferredSpawnEggItem {
     public AngelOfReapingSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props) {
         super(type, backgroundColor, highlightColor, props);
     }
@@ -48,7 +48,7 @@ public class AngelOfReapingSpawnEggItem extends ForgeSpawnEggItem {
                 BlockEntity blockentity = level.getBlockEntity(blockpos);
                 if (blockentity instanceof SpawnerBlockEntity) {
                     SpawnerBlockEntity spawnerblockentity = (SpawnerBlockEntity)blockentity;
-                    EntityType<?> entitytype = this.getType(itemstack.getTag());
+                    EntityType<?> entitytype = this.getType(itemstack);
                     spawnerblockentity.setEntityId(entitytype, level.getRandom());
                     blockentity.setChanged();
                     level.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
@@ -65,7 +65,7 @@ public class AngelOfReapingSpawnEggItem extends ForgeSpawnEggItem {
                 blockpos1 = blockpos.relative(direction);
             }
 
-            EntityType<?> entitytype1 = this.getType(itemstack.getTag());
+            EntityType<?> entitytype1 = this.getType(itemstack);
             Entity spawnedEntity = entitytype1.spawn((ServerLevel)level, itemstack, context.getPlayer(), blockpos1, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
             
             if (spawnedEntity instanceof AngelOfReapingEntity angel) {
@@ -95,7 +95,7 @@ public class AngelOfReapingSpawnEggItem extends ForgeSpawnEggItem {
             if (!(level.getBlockState(blockpos).getBlock() instanceof net.minecraft.world.level.block.LiquidBlock)) {
                 return InteractionResultHolder.pass(itemstack);
             } else if (level.mayInteract(player, blockpos) && player.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
-                EntityType<?> entitytype = this.getType(itemstack.getTag());
+                EntityType<?> entitytype = this.getType(itemstack);
                 Entity spawnedEntity = entitytype.spawn((ServerLevel)level, itemstack, player, blockpos, MobSpawnType.SPAWN_EGG, false, false);
                 
                 if (spawnedEntity instanceof AngelOfReapingEntity angel) {

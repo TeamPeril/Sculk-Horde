@@ -111,7 +111,7 @@ public class StructureUtil {
                     f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
                     p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
                     if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null, compoundtag);
+                        ((Mob)p_275190_).finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null);
                     }
 
                     p_74524_.addFreshEntityWithPassengers(p_275190_);
@@ -135,8 +135,8 @@ public class StructureUtil {
             // Ensure there are blocks to place and the structure size is valid
             if ((!blockInfoList.isEmpty() || !settings.isIgnoreEntities() && !structureTemplateAccessor.getEntityInfoList().isEmpty()) && structureTemplateAccessor.getSize().getX() >= 1 && structureTemplateAccessor.getSize().getY() >= 1 && structureTemplateAccessor.getSize().getZ() >= 1) {
                 BoundingBox boundingBox = settings.getBoundingBox();
-                List<BlockPos> liquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? blockInfoList.size() : 0);
-                List<BlockPos> sourceLiquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? blockInfoList.size() : 0);
+                List<BlockPos> liquidPositions = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? blockInfoList.size() : 0);
+                List<BlockPos> sourceLiquidPositions = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? blockInfoList.size() : 0);
                 List<Pair<BlockPos, CompoundTag>> blockEntityDataList = Lists.newArrayListWithCapacity(blockInfoList.size());
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
@@ -149,7 +149,7 @@ public class StructureUtil {
                 for (StructureTemplate.StructureBlockInfo blockInfo : processBlockInfos(world, startPos, offsetPos, settings, blockInfoList, structureTemplate)) {
                     BlockPos blockPos = blockInfo.pos();
                     if (boundingBox == null || boundingBox.isInside(blockPos)) {
-                        FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(blockPos) : null;
+                        FluidState fluidState = settings.shouldApplyWaterlogging() ? world.getFluidState(blockPos) : null;
                         BlockState blockState = blockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
 
                         // Handle block entities
@@ -176,7 +176,7 @@ public class StructureUtil {
                                     if (blockEntity1 instanceof RandomizableContainerBlockEntity) {
                                         blockInfo.nbt().putLong("LootTableSeed", random.nextLong());
                                     }
-                                    blockEntity1.load(blockInfo.nbt());
+                                    blockEntity1.loadWithComponents(blockInfo.nbt(), world.registryAccess());
                                 }
                             }
 
@@ -392,8 +392,8 @@ public class StructureUtil {
 
 
                 boundingBox = settings.getBoundingBox();
-                liquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? rawBlockInfoList.size() : 0);
-                sourceLiquidPositions = Lists.newArrayListWithCapacity(settings.shouldKeepLiquids() ? rawBlockInfoList.size() : 0);
+                liquidPositions = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? rawBlockInfoList.size() : 0);
+                sourceLiquidPositions = Lists.newArrayListWithCapacity(settings.shouldApplyWaterlogging() ? rawBlockInfoList.size() : 0);
                 blockEntityDataList = Lists.newArrayListWithCapacity(rawBlockInfoList.size());
                 processedBlockInfoList = processBlockInfos(world, startPos, offsetPos, settings, rawBlockInfoList, structureTemplate);
 
@@ -468,7 +468,7 @@ public class StructureUtil {
 
             if (boundingBox == null || boundingBox.isInside(placePosition))
             {
-                FluidState fluidState = settings.shouldKeepLiquids() ? world.getFluidState(placePosition) : null;
+                FluidState fluidState = settings.shouldApplyWaterlogging() ? world.getFluidState(placePosition) : null;
                 BlockState blockState = blockInfo.state().mirror(settings.getMirror()).rotate(settings.getRotation());
 
                 // Handle block entities
@@ -495,7 +495,7 @@ public class StructureUtil {
                             if (blockEntity1 instanceof RandomizableContainerBlockEntity) {
                                 blockInfo.nbt().putLong("LootTableSeed", random.nextLong());
                             }
-                            blockEntity1.load(blockInfo.nbt());
+                            blockEntity1.loadWithComponents(blockInfo.nbt(), world.registryAccess());
                         }
                     }
 

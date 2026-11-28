@@ -9,7 +9,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 public class SculkHatcherModel extends DefaultedEntityGeoModel<SculkHatcherEntity> {
 
     public SculkHatcherModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_hatcher"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_hatcher"));
     }
 
     // We want our model to render using the translucent render type

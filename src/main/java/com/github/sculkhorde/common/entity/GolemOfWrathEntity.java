@@ -37,16 +37,16 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
@@ -91,7 +91,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
 
     public GolemOfWrathEntity(Level worldIn) {
         super(ModEntities.GOLEM_OF_WRATH.get(), worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**
@@ -101,7 +101,7 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
      */
     public GolemOfWrathEntity(EntityType<? extends GolemOfWrathEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
     }
 
     /**
@@ -191,9 +191,9 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
         super.customServerAiStep();
         targetParameters.updateTargets();
 
-        if(!hasEffect(ModMobEffects.PURITY.get()))
+        if(!hasEffect(ModMobEffects.PURITY))
         {
-            MobEffectInstance effect = new MobEffectInstance(ModMobEffects.PURITY.get(), Integer.MAX_VALUE, 1);
+            MobEffectInstance effect = new MobEffectInstance(ModMobEffects.PURITY, Integer.MAX_VALUE, 1);
             addEffect(effect);
         }
 
@@ -203,9 +203,9 @@ public class GolemOfWrathEntity extends PathfinderMob implements GeoEntity, IPur
             addEffect(effect);
         }
 
-        if(hasEffect(ModMobEffects.CORRODED.get()))
+        if(hasEffect(ModMobEffects.CORRODED))
         {
-            removeEffect(ModMobEffects.CORRODED.get());
+            removeEffect(ModMobEffects.CORRODED);
         }
 
         if(getLastAttacker() != null && getTarget() != null && EntityAlgorithms.isInfectionModEntity.test(getLastAttacker()))

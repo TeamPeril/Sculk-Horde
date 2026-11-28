@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.SculkAncientNodeBlockEntity;
 import com.github.sculkhorde.common.entity.infection.CursorSurfacePurifierEntity;
@@ -9,8 +10,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -26,7 +28,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,12 @@ import java.util.concurrent.TimeUnit;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBlock {
+public class SculkAncientNodeBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(SculkAncientNodeBlock::new);
+    }
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -83,14 +89,14 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
         world.setBlock(position, blockState.setValue(DEFEATED, Boolean.valueOf(value)), 3);
     }
 
-    public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide)
         {
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
 
-        boolean IsHordeCureItem = playerIn.getMainHandItem().is(ModItems.HEART_OF_PURITY.get());
-        boolean IsHordeRevivalItem = playerIn.getMainHandItem().is(ModItems.HEART_OF_THE_HORDE.get());
+        boolean IsHordeCureItem = stack.is(ModItems.HEART_OF_PURITY.get());
+        boolean IsHordeRevivalItem = stack.is(ModItems.HEART_OF_THE_HORDE.get());
 
 
         if(IsHordeCureItem && !ModSavedData.getSaveData().isHordeDefeated() && !ModConfig.SERVER.disable_defeating_sculk_horde.get())
@@ -118,7 +124,7 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
                 level.addFreshEntity(purifier);
             }
 
-            return InteractionResult.CONSUME;
+            return ItemInteractionResult.CONSUME;
         }
 
         if(IsHordeRevivalItem && !ModSavedData.getSaveData().isHordeActive())
@@ -126,9 +132,9 @@ public class SculkAncientNodeBlock extends BaseEntityBlock implements IForgeBloc
             ModSavedData.getSaveData().setHordeState(ModSavedData.HordeState.ACTIVE);
             setDefeated((ServerLevel) playerIn.level(), blockState, pos, false);
             playerIn.getMainHandItem().grow(-1);
-            return InteractionResult.CONSUME;
+            return ItemInteractionResult.CONSUME;
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
     /**

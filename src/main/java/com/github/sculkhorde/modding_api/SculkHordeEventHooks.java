@@ -3,13 +3,12 @@ package com.github.sculkhorde.modding_api;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.ICancellableEvent;
 
 public class SculkHordeEventHooks {
 
-    @Cancelable
-    public static class BlockInfestationEventHook extends net.minecraftforge.eventbus.api.Event
+    public static class BlockInfestationEventHook extends net.neoforged.bus.api.Event implements ICancellableEvent
     {
         public ServerLevel level;
         public BlockPos blockPos;
@@ -26,12 +25,8 @@ public class SculkHordeEventHooks {
 
         public void postEvent()
         {
-            MinecraftForge.EVENT_BUS.post(this);
+            NeoForge.EVENT_BUS.post(this);
         }
 
-        @Override
-        public boolean isCancelable() {
-            return true;
-        }
     }
 }

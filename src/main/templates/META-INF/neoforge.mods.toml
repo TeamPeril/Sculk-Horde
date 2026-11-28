@@ -1,0 +1,41 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+#issueTrackerURL="https://github.com/TeamPeril/Sculk-Horde/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+#updateJSONURL="https://change.me.example.invalid/updates.json"
+#displayURL="https://www.curseforge.com/minecraft/mc-mods/sculk-horde"
+logoFile="sculkhorde.png"
+credits="Thanks to Team Peril"
+authors="${mod_authors}"
+description='''
+Sculk Horde implements a new end-game era to your game that once activated, will force you to fight against the newly awaked ancient sculk horde in order to survive. This ancient enemy seeks to infect and consume the world in it's entirety.
+'''
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="geckolib"
+    type="required"
+    versionRange="[${geckolib_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[mixins]]
+config="mixins.sculkhorde.json"

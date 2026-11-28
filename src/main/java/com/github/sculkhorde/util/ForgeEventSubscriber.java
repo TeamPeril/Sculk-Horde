@@ -6,6 +6,7 @@ import com.github.sculkhorde.common.effect.IPotionExpireEffect;
 import com.github.sculkhorde.core.*;
 import com.github.sculkhorde.systems.debugger_system.DebuggerSystem;
 import com.github.sculkhorde.systems.event_system.events.GhastDeploymentEvent;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,21 +20,28 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.function.Predicate;
 
 
-@Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = SculkHorde.MOD_ID)
 public class ForgeEventSubscriber {
 
     @SubscribeEvent
@@ -48,10 +56,10 @@ public class ForgeEventSubscriber {
      * @param event The event with all the details
      */
     @SubscribeEvent
-    public static void WorldTickEvent(TickEvent.LevelTickEvent event)
+    public static void WorldTickEvent(LevelTickEvent.Post event)
     {
         // If we are on client, or we are not in the overworld, return
-        if(event.level.isClientSide() || (event.phase == TickEvent.Phase.END) || !event.level.equals(ServerLifecycleHooks.getCurrentServer().overworld()))
+        if(event.getLevel().isClientSide() || false || !event.getLevel().equals(ServerLifecycleHooks.getCurrentServer().overworld()))
         {
             return;
         }
@@ -72,10 +80,10 @@ public class ForgeEventSubscriber {
 
 
     @SubscribeEvent
-    public static void ServerTickEvent(TickEvent.ServerTickEvent event)
+    public static void ServerTickEvent(ServerTickEvent.Post event)
     {
         // If we are on client, or we are not in the overworld, return
-        if((event.phase == TickEvent.Phase.END))
+        if(false)
         {
             return;
         }
@@ -154,14 +162,14 @@ public class ForgeEventSubscriber {
             return;
         }
 
-        if(effectInstance.getEffect() instanceof IPotionExpireEffect iPotionExpireEffect)
+        if(effectInstance.getEffect().value() instanceof IPotionExpireEffect iPotionExpireEffect)
         {
             iPotionExpireEffect.onPotionExpire(event);
         }
     }
 
     @SubscribeEvent
-    public static void OnLivingDamageEvent(LivingDamageEvent event)
+    public static void OnLivingDamageEvent(LivingDamageEvent.Post event)
     {
 
 
@@ -176,14 +184,17 @@ public class ForgeEventSubscriber {
         }
 
         // Sculk Sweeper Sword Repair System
-        if(damageSourceEntity instanceof LivingEntity attackingEntity)
+        // Ensure it's a direct attack (melee strike, not projectile/indirect)
+        if (damageSourceEntity instanceof LivingEntity attackingEntity && event.getSource().getDirectEntity() == attackingEntity)
         {
             itemStack = attackingEntity.getMainHandItem();
-            if(itemStack.getItem().equals(ModItems.SCULK_SWEEPER_SWORD.get()))
+            if (itemStack.is(ModItems.SCULK_SWEEPER_SWORD.get()) && EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
             {
-                if(EntityAlgorithms.isSculkLivingEntity.test(targetEntity))
+                int repairAmount = Math.round(event.getNewDamage());
+                if (repairAmount > 0)
                 {
-                    itemStack.setDamageValue((int) Math.max(0, itemStack.getDamageValue() - event.getAmount()));
+                    // Offset by +1 so vanilla's attack durability cost doesn't undo the repair
+                    itemStack.setDamageValue(Math.max(0, itemStack.getDamageValue() - (repairAmount + 1)));
                 }
             }
         }
@@ -223,18 +234,18 @@ public class ForgeEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+    public static void onPlayerTick(PlayerTickEvent.Post event)
     {
-        if(event.player.level().isClientSide())
+        if(event.getEntity().level().isClientSide())
         {
             return;
         }
 
-        checkAndApplyIllamentsToPlayer(event.player);
+        checkAndApplyIllamentsToPlayer(event.getEntity());
 
-        if(event.player.tickCount % 20 == 0)
+        if(event.getEntity().tickCount % 20 == 0)
         {
-            AdvancementUtil.advancementHandlingTick((ServerLevel) event.player.level());
+            AdvancementUtil.advancementHandlingTick((ServerLevel) event.getEntity().level());
         }
     }
 
@@ -258,8 +269,25 @@ public class ForgeEventSubscriber {
     {
         if(PlayerProfileHandler.isPlayerActiveVessel(event.getEntity()))
         {
-            MobEffectInstance effectInstance = new MobEffectInstance(ModMobEffects.SCULK_VESSEL.get(), Integer.MAX_VALUE);
+            MobEffectInstance effectInstance = new MobEffectInstance(ModMobEffects.SCULK_VESSEL, Integer.MAX_VALUE);
             event.getEntity().addEffect(effectInstance);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAnvilUpdate(AnvilUpdateEvent event)
+    {
+        if (event.getLeft().is(ModItems.SCULK_SWEEPER_SWORD.get()))
+        {
+            ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(event.getRight());
+            for (Holder<Enchantment> holder : enchantments.keySet())
+            {
+                if (holder.is(Enchantments.MENDING))
+                {
+                    event.setCanceled(true); // Turns the anvil output slot to a red cross
+                    return;
+                }
+            }
         }
     }
 

@@ -14,12 +14,12 @@ public class SculkEndermanModel extends DefaultedEntityGeoModel<SculkEndermanEnt
      * The asset path should be the truncated relative path from the base folder.<br>
      * E.G.
      * <pre>{@code
-     * 	new ResourceLocation("myMod", "animals/red_fish")
+     * 	ResourceLocation.fromNamespaceAndPath("myMod", "animals/red_fish")
      * }</pre>
      *
      */
     public SculkEndermanModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_enderman"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_enderman"));
     }
 
     // We want our model to render using the translucent render type

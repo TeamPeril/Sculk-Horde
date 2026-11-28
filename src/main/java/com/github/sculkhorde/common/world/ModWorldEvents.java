@@ -1,9 +1,9 @@
 package com.github.sculkhorde.common.world;
 
-import com.github.sculkhorde.core.SculkHorde;
-import net.minecraftforge.fml.common.Mod;
-
-@Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID)
+/**
+ * Legacy placeholder retained from the original mod source.
+ * This class has no event handlers and is not registered as an automatic subscriber.
+ */
 public class ModWorldEvents {
     /* biomeLoadingEvent()
      * @Description Registers stuff when biomeLoadingEvent is called.

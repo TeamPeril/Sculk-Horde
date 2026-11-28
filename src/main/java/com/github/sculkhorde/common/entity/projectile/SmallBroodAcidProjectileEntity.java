@@ -19,8 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -68,7 +68,7 @@ public class SmallBroodAcidProjectileEntity extends AbstractProjectileEntity imp
                 return;
             }
 
-            livingEntity.addEffect(new MobEffectInstance(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(30))));
+            livingEntity.addEffect(new MobEffectInstance(ModMobEffects.CORRODED, TickUnits.convertSecondsToTicks(30)));
         }
     }
 
@@ -102,7 +102,7 @@ public class SmallBroodAcidProjectileEntity extends AbstractProjectileEntity imp
         areaeffectcloud.setRadiusPerTick(-areaeffectcloud.getRadius() / (float)areaeffectcloud.getDuration());
 
         if(getOwner() instanceof LivingEntity livingOwner) { areaeffectcloud.setOwner(livingOwner); }
-        areaeffectcloud.addEffect(new MobEffectInstance(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(30), 1)));
+        areaeffectcloud.addEffect(new MobEffectInstance(ModMobEffects.CORRODED, TickUnits.convertSecondsToTicks(30), 1));
 
 
         this.level().addFreshEntity(areaeffectcloud);

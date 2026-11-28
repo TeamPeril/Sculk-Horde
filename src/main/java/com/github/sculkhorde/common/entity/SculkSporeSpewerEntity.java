@@ -29,11 +29,11 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     protected final int MAX_FAILED_CURSORS = 4;
     protected int failedCursors = 0;
 
-    public static final EntityDataAccessor<Integer> DATA_TICKS_ALIVE = SynchedEntityData.defineId(SculkEndermanEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> DATA_TICKS_ALIVE = SynchedEntityData.defineId(SculkSporeSpewerEntity.class, EntityDataSerializers.INT);
     /**
      * The Constructor
      * @param type The Mob Type
@@ -230,7 +230,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 if(DifficultyUtil.isCurrentDifficultyGreaterThanEasy())
                 {
                     EntityAlgorithms.reducePurityEffectDuration(victim, TickUnits.convertMinutesToTicks(1));
-                    EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_LURE.get(), TickUnits.convertMinutesToTicks(10), 0);
+                    EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.SCULK_LURE.value(), TickUnits.convertMinutesToTicks(10), 0);
                 }
 
                 if(DifficultyUtil.isCurrentDifficultyEasy())
@@ -243,7 +243,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
                 }
                 else if(DifficultyUtil.isCurrentDifficultyHard())
                 {
-                    EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.get(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
+                    EntityAlgorithms.applyEffectToTarget(victim, ModMobEffects.DISEASED_CYSTS.value(), TickUnits.convertSecondsToTicks(30), SculkHorde.gravemind.getPotionAmplificationBasedOnGravemindState());
                 }
             }
         }
@@ -256,7 +256,7 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
         areaeffectcloud.setOwner((LivingEntity) this);
         areaeffectcloud.setRadius(2F);
         areaeffectcloud.setDuration(TickUnits.convertSecondsToTicks(5));
-        areaeffectcloud.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION.get(), TickUnits.convertSecondsToTicks(10), 0));
+        areaeffectcloud.addEffect(new MobEffectInstance(ModMobEffects.SCULK_INFECTION, TickUnits.convertSecondsToTicks(10), 0));
         level().addFreshEntity(areaeffectcloud);
     }
 
@@ -335,10 +335,10 @@ public class SculkSporeSpewerEntity extends Monster implements GeoEntity, ISculk
     String DATA_TICKS_ALIVE_IDENTIFIER = "ticks_alive";
 
     // ###### Data Code ########
-    protected void defineSynchedData()
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder)
     {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TICKS_ALIVE, 0);
+        super.defineSynchedData(builder);
+        builder.define(DATA_TICKS_ALIVE, 0);
     }
 
     public void addAdditionalSaveData(CompoundTag nbt)

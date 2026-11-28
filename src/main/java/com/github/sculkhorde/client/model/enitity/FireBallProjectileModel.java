@@ -12,7 +12,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 public class FireBallProjectileModel extends DefaultedEntityGeoModel<FireBallProjectileEntity> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public FireBallProjectileModel() {
-		super(new ResourceLocation(SculkHorde.MOD_ID, "fire_ball_projectile_entity"));
+		super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "fire_ball_projectile_entity"));
 	}
 
 	// We want our model to render using the translucent render type

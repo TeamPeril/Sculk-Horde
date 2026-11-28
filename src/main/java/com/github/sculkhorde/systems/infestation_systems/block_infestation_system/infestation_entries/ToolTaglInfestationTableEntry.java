@@ -6,7 +6,6 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.TierSortingRegistry;
 
 public class ToolTaglInfestationTableEntry extends BlockEntityInfestationTableEntry
 {
@@ -23,11 +22,7 @@ public class ToolTaglInfestationTableEntry extends BlockEntityInfestationTableEn
 
     public boolean isNormalVariant(BlockState blockState)
     {
-        if(!TierSortingRegistry.isCorrectTierForDrops(tierRequired, blockState))
-        {
-            return false;
-        }
-        else if(blockState.getBlock() instanceof BaseEntityBlock)
+        if(blockState.getBlock() instanceof BaseEntityBlock)
         {
             return false;
         }

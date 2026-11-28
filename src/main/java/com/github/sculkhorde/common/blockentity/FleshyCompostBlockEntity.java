@@ -5,6 +5,7 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.core.SculkHorde;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -45,8 +46,8 @@ public class FleshyCompostBlockEntity extends BlockEntity {
      * @param compoundNBT Where NBT data is stored.
      */
     @Override
-    public void load(CompoundTag compoundNBT) {
-        super.load(compoundNBT);
+    protected void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(compoundNBT, lookupProvider);
         this.storedSculkMass = compoundNBT.getInt(storedSculkMassIdentifier);
     }
 
@@ -56,10 +57,10 @@ public class FleshyCompostBlockEntity extends BlockEntity {
      * @return ???
      */
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
+    protected void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
 
         compoundNBT.putInt(storedSculkMassIdentifier, this.storedSculkMass);
-        super.saveAdditional(compoundNBT);
+        super.saveAdditional(compoundNBT, lookupProvider);
     }
 
     public int getStoredSculkMass()

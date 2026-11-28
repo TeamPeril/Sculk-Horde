@@ -13,24 +13,22 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class DiasciteAxeItem extends AxeItem implements IForgeItem, IHealthRepairable {
+public class DiasciteAxeItem extends AxeItem implements IHealthRepairable {
     protected static float ATTACK_SPEED = -3.0F;
     protected static int ATTACK_DAMAGE = 5;
     protected static Properties PROPERTIES = new Properties()
             .setNoRepair()
             .rarity(Rarity.EPIC)
-            .durability(3000)
-            .defaultDurability(3000);
+            .durability(3000);
 
     public DiasciteAxeItem() {
-        super(Tiers.DIAMOND, ATTACK_DAMAGE, ATTACK_SPEED, PROPERTIES);
+        super(Tiers.DIAMOND, PROPERTIES.attributes(DiggerItem.createAttributes(Tiers.DIAMOND, ATTACK_DAMAGE, ATTACK_SPEED)));
     }
 
     @Override
@@ -62,7 +60,7 @@ public class DiasciteAxeItem extends AxeItem implements IForgeItem, IHealthRepai
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.diascite_axe.functionality"));

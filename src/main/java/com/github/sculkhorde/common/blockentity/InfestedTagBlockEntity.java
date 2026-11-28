@@ -2,6 +2,7 @@ package com.github.sculkhorde.common.blockentity;
 
 import com.github.sculkhorde.systems.infestation_systems.block_infestation_system.infestation_entries.ITagInfestedBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -37,8 +38,8 @@ public class InfestedTagBlockEntity extends BlockEntity implements ITagInfestedB
      * @param compoundNBT Where NBT data is stored.
      */
     @Override
-    public void load(CompoundTag compoundNBT) {
-        super.load(compoundNBT);
+    protected void loadAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(compoundNBT, lookupProvider);
         if(!compoundNBT.contains(storedNormalVariantIdentifier))
         {
             return;
@@ -54,11 +55,11 @@ public class InfestedTagBlockEntity extends BlockEntity implements ITagInfestedB
      * @param compoundNBT Where NBT data is stored
      */
     @Override
-    public void saveAdditional(CompoundTag compoundNBT) {
+    protected void saveAdditional(CompoundTag compoundNBT, HolderLookup.Provider lookupProvider) {
 
         if (getNormalBlockState() != null)
             compoundNBT.put(storedNormalVariantIdentifier, NbtUtils.writeBlockState(getNormalBlockState()));
-        super.saveAdditional(compoundNBT);
+        super.saveAdditional(compoundNBT, lookupProvider);
     }
 
     @Override

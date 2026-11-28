@@ -10,6 +10,8 @@ import com.github.sculkhorde.core.ModSounds;
 import com.github.sculkhorde.util.AdvancementUtil;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -34,6 +36,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,18 +47,16 @@ import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -63,14 +65,13 @@ import java.util.Optional;
 import static com.github.sculkhorde.common.block.SoulHarvesterBlock.MAX_HEALTH;
 
 
-public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity, GameEventListener.Holder<SoulHarvesterBlockEntity.SoulHarvesterListener> {
+public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity, GameEventListener.Provider<SoulHarvesterBlockEntity.SoulHarvesterListener> {
     private final SoulHarvesterListener soulHarvesterListener;
     private AABB searchArea;
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(2);
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     protected final ContainerData data;
     private int progress = 0;
@@ -157,13 +158,16 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
         setHealthHarvested(newTotal);
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
-        }
+    /** Capability provider used by the NeoForge 1.21 block capability registration. */
+    public IItemHandler getItemHandler() {
+        return this.itemHandler;
+    }
 
-        return super.getCapability(cap, side);
+    /** Wire this callback from the mod event bus during RegisterCapabilitiesEvent. */
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
+                ModBlockEntities.SOUL_HARVESTER_BLOCK_ENTITY.get(),
+                (blockEntity, side) -> blockEntity.getItemHandler());
     }
 
     @Override
@@ -184,12 +188,9 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public Optional<SoulHarvestingRecipe> getCurrentRecipe() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for(int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-
-        return this.level.getRecipeManager().getRecipeFor(SoulHarvestingRecipe.Type.INSTANCE, inventory, level);
+        SingleRecipeInput input = new SingleRecipeInput(itemHandler.getStackInSlot(INPUT_SLOT));
+        return this.level.getRecipeManager().getRecipeFor(SoulHarvestingRecipe.Type.INSTANCE, input, level)
+                .map(RecipeHolder::value);
     }
 
     private boolean canInsertItemIntoOutputSlot(Item item) {
@@ -300,10 +301,10 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
             return GameEventListener.DeliveryMode.BY_DISTANCE;
         }
 
-        public boolean handleGameEvent(ServerLevel ServerLevelIn, GameEvent gameEventIn, GameEvent.Context contextIn, Vec3 sourcePosition) {
+        public boolean handleGameEvent(ServerLevel ServerLevelIn, Holder<GameEvent> gameEventIn, GameEvent.Context contextIn, Vec3 sourcePosition) {
 
             // Only execute for entity death events
-            if (gameEventIn != GameEvent.ENTITY_DIE) { return false; }
+            if (!gameEventIn.is(GameEvent.ENTITY_DIE)) { return false; }
             Entity killedEntitiy = contextIn.sourceEntity();
 
             // Do not accept xp from non-living entities
@@ -355,29 +356,19 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
 
     /* ~~~~~~~~~~~~ Data ~~~~~~~~~~~~ */
 
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-    }
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-    }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        pTag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider lookupProvider) {
+        pTag.put("inventory", itemHandler.serializeNBT(lookupProvider));
         pTag.putInt("soul_harvester.progress", progress);
         pTag.putInt("soul_harvester.healthHarvested", healthHarvested);
-        super.saveAdditional(pTag);
+        super.saveAdditional(pTag, lookupProvider);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(pTag, lookupProvider);
+        itemHandler.deserializeNBT(lookupProvider, pTag.getCompound("inventory"));
         progress = pTag.getInt("soul_harvester.progress");
         healthHarvested = pTag.getInt("soul_harvester.healthHarvested");
     }
@@ -390,9 +381,9 @@ public class SoulHarvesterBlockEntity extends BlockEntity implements MenuProvide
      * @return The tag
      */
     @Override
-    public @NotNull CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        saveAdditional(tag);
+    public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
+        CompoundTag tag = super.getUpdateTag(lookupProvider);
+        saveAdditional(tag, lookupProvider);
         return tag;
     }
 

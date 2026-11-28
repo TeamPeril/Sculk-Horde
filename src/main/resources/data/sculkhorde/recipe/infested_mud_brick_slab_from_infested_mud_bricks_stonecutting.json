@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sculkhorde:infested_mud_bricks"
+  },
+  "result":
+  {
+    "id": "sculkhorde:infested_mud_brick_slab",
+    "count": 2
+  }
+}

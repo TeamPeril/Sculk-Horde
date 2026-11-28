@@ -10,7 +10,7 @@ public class SculkMiteModel extends DefaultedEntityGeoModel<SculkMiteEntity> {
 
 
     public SculkMiteModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_mite"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_mite"));
     }
 
     // We want our model to render using the translucent render type

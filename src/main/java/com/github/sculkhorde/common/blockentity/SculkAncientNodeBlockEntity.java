@@ -10,6 +10,8 @@ import com.github.sculkhorde.systems.infestation_systems.node_infestation.NodeBr
 import com.github.sculkhorde.util.*;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -46,7 +48,7 @@ import java.util.function.Predicate;
 /**
  * Chunkloader code created by SuperMartijn642
  */
-public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem
+public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem
 {
 
 
@@ -156,16 +158,22 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
     public ArrayList<BlockPos> getSpawnPositionsInCube(ServerLevel worldIn, BlockPos origin, int amountOfPositions)
     {
         int RADIUS = 20;
-
-        ArrayList<BlockPos> listOfPossibleSpawns = getSpawnPositions(worldIn, origin, VALID_SPAWN_BLOCKS, RADIUS);
         ArrayList<BlockPos> finalList = new ArrayList<>();
         Random rng = new Random();
-        for(int count = 0; count < amountOfPositions && listOfPossibleSpawns.size() > 0; count++)
+        // Avoid scanning tens of thousands of blocks synchronously when the node awakens.
+        int maxAttempts = Math.max(512, amountOfPositions * 512);
+        for(int attempt = 0; attempt < maxAttempts && finalList.size() < amountOfPositions; attempt++)
         {
-            int randomIndex = rng.nextInt(listOfPossibleSpawns.size());
-            //Get random position between 0 and size of list
-            finalList.add(listOfPossibleSpawns.get(randomIndex));
-            listOfPossibleSpawns.remove(randomIndex);
+            int dx = rng.nextInt(RADIUS * 2 + 1) - RADIUS;
+            int dy = rng.nextInt(RADIUS * 2 + 1) - RADIUS;
+            int dz = rng.nextInt(RADIUS * 2 + 1) - RADIUS;
+            if(dx * dx + dy * dy + dz * dz > RADIUS * RADIUS) { continue; }
+
+            BlockPos candidate = origin.offset(dx, dy, dz);
+            if(!finalList.contains(candidate) && VALID_SPAWN_BLOCKS.test(candidate))
+            {
+                finalList.add(candidate);
+            }
         }
         return finalList;
     }
@@ -188,7 +196,7 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
         level.players().forEach((player) -> {
             if(player.blockPosition().closerThan(blockPos, distance) && !player.isCreative() && !player.isInvulnerable() && !player.isSpectator() && !PlayerProfileHandler.isPlayerVessel(player))
             {
-                EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS, TickUnits.convertMinutesToTicks(1), 0);
+                EntityAlgorithms.applyEffectToTarget(player, MobEffects.DARKNESS.value(), TickUnits.convertMinutesToTicks(1), 0);
             }
         });
     }
@@ -338,8 +346,14 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
         addDarknessEffectToNearbyPlayers(level, blockPos, 25);
 
-        if(level.getGameTime() - blockEntity.timeOfLastChunkLoadAttempt >= blockEntity.CHUNK_LOAD_ATTEMPT_COOLDOWN)
+        if(blockEntity.timeOfLastChunkLoadAttempt == 0L)
         {
+            blockEntity.timeOfLastChunkLoadAttempt = level.getGameTime();
+        }
+        else if(level.getGameTime() - blockEntity.timeOfLastChunkLoadAttempt >= blockEntity.CHUNK_LOAD_ATTEMPT_COOLDOWN)
+        {
+            // Start the five-minute cooldown on first activation instead of loading chunks immediately
+            // when a world has already been running for several minutes.
             BlockEntityChunkLoaderHelper.getChunkLoaderHelper().createChunkLoadRequestSquare((ServerLevel) level, blockPos, ModConfig.SERVER.sculk_node_chunkload_radius.get(), 1, TickUnits.convertMinutesToTicks(30));
             blockEntity.timeOfLastChunkLoadAttempt = level.getGameTime();
         }
@@ -439,11 +453,11 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     // Data
 
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(nbt, lookupProvider);
 
         if (nbt.contains("listener", 10)) {
-            VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+            VibrationSystem.Data.CODEC.parse(new Dynamic<>(lookupProvider.createSerializationContext(NbtOps.INSTANCE), nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
                 this.vibrationData = data;
             });
         }
@@ -460,10 +474,10 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
 
     }
 
-    protected void saveAdditional(CompoundTag nbt)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider)
     {
-        super.saveAdditional(nbt);
-        VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+        super.saveAdditional(nbt, lookupProvider);
+        VibrationSystem.Data.CODEC.encodeStart(lookupProvider.createSerializationContext(NbtOps.INSTANCE), this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
 
@@ -517,11 +531,11 @@ public class SculkAncientNodeBlockEntity extends BlockEntity implements GameEven
             return GameEventTags.SHRIEKER_CAN_LISTEN;
         }
 
-        public boolean canReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, GameEvent.Context context) {
+        public boolean canReceiveVibration(ServerLevel level, BlockPos blockPos, Holder<GameEvent> gameEvent, GameEvent.Context context) {
             return true;
         }
 
-        public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
+        public void onReceiveVibration(ServerLevel level, BlockPos sourcePosition, Holder<GameEvent> gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
             if(areAnyPlayersInRange(level, blockEntity.getBlockPos()))
             {

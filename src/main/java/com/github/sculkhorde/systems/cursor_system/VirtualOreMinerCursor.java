@@ -83,7 +83,7 @@ public class VirtualOreMinerCursor extends VirtualCursor{
             this.spawnDropAtLocation(itemstack1);
         }
         BlockAlgorithms.setBlockCursor(level, pos, Blocks.AIR.defaultBlockState());
-        pickaxe.hurt(1, getOwner().get().getRandom(), (ServerPlayer) getOwner().get());
+        pickaxe.hurtAndBreak(1, (ServerLevel) getLevel(), (ServerPlayer) getOwner().get(), item -> {});
         BlockInfestationSystem.placeSculkVeinAroundBlock((ServerLevel) getLevel(), pos);
     }
 

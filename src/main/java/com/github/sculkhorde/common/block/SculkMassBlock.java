@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.SculkMassBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -28,11 +29,15 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
-public class SculkMassBlock extends BaseEntityBlock implements IForgeBlock, SimpleWaterloggedBlock {
+public class SculkMassBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(SculkMassBlock::new);
+    }
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 

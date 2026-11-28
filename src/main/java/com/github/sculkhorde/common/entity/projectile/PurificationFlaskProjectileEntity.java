@@ -79,7 +79,7 @@ public class PurificationFlaskProjectileEntity extends CustomItemProjectileEntit
         // If any entities are close to the impact, remove the infection from them.
         for(LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D)))
         {
-            entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY.get(), TickUnits.convertMinutesToTicks(15)));
+            entity.addEffect(new MobEffectInstance(ModMobEffects.PURITY, TickUnits.convertMinutesToTicks(15)));
         }
 
         this.playSound(SoundEvents.SPLASH_POTION_BREAK, 1.0F, 1.0F + random.nextFloat() * 0.2F);

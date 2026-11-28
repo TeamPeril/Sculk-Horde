@@ -2,41 +2,34 @@ package com.github.sculkhorde.common.advancement;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public class SoulHarvesterTrigger extends SimpleCriterionTrigger<SoulHarvesterTrigger.SoulHarvesterCriterion> implements CustomCriterionTrigger{
-
+/** Codec-backed custom advancement trigger for 1.21.1. */
+public class SoulHarvesterTrigger extends SimpleCriterionTrigger<SoulHarvesterTrigger.SoulHarvesterCriterion> implements CustomCriterionTrigger {
     public static final SoulHarvesterTrigger INSTANCE = new SoulHarvesterTrigger();
-
-    /**
-     * Need to be registered in {@link com.github.sculkhorde.util.ModEventSubscriber}.
-     */
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "soul_harvester_trigger");
+    static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "soul_harvester_trigger");
 
     @Override
-    public ResourceLocation getId() {
-        return ID;
+    public Codec<SoulHarvesterCriterion> codec() {
+        return SoulHarvesterCriterion.CODEC;
     }
 
     @Override
-    public SoulHarvesterCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
-        return new SoulHarvesterCriterion(awarePredicate);
-    }
-
     public void trigger(ServerPlayer player) {
-        this.trigger(player, Predicates.alwaysTrue());
+        trigger(player, Predicates.alwaysTrue());
     }
 
-    public static class SoulHarvesterCriterion extends AbstractCriterionTriggerInstance {
-
-        public SoulHarvesterCriterion(ContextAwarePredicate awarePredicate) {
-            super(ID, awarePredicate);
-        }
+    public static record SoulHarvesterCriterion(java.util.Optional<ContextAwarePredicate> player)
+            implements SimpleCriterionTrigger.SimpleInstance {
+        public static final Codec<SoulHarvesterCriterion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player")
+                        .forGetter(SoulHarvesterCriterion::player)
+        ).apply(instance, SoulHarvesterCriterion::new));
     }
 }

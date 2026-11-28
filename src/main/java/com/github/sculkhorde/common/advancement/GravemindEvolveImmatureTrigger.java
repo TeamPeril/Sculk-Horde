@@ -2,39 +2,34 @@ package com.github.sculkhorde.common.advancement;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.advancements.critereon.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<GravemindEvolveImmatureTrigger.GravemindEvoleImmatureCriterion> implements CustomCriterionTrigger{
-
+/** Codec-backed custom advancement trigger for 1.21.1. */
+public class GravemindEvolveImmatureTrigger extends SimpleCriterionTrigger<GravemindEvolveImmatureTrigger.GravemindEvoleImmatureCriterion> implements CustomCriterionTrigger {
     public static final GravemindEvolveImmatureTrigger INSTANCE = new GravemindEvolveImmatureTrigger();
-
-    /**
-     * Need to be registered in {@link com.github.sculkhorde.util.ModEventSubscriber}.
-     */
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "gravemind_evolve_immature_trigger");
+    static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "gravemind_evolve_immature_trigger");
 
     @Override
-    public ResourceLocation getId() {
-        return ID;
+    public Codec<GravemindEvoleImmatureCriterion> codec() {
+        return GravemindEvoleImmatureCriterion.CODEC;
     }
 
     @Override
-    public GravemindEvoleImmatureCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
-        return new GravemindEvoleImmatureCriterion(awarePredicate);
-    }
-
     public void trigger(ServerPlayer player) {
-        this.trigger(player, Predicates.alwaysTrue());
+        trigger(player, Predicates.alwaysTrue());
     }
 
-    public static class GravemindEvoleImmatureCriterion extends AbstractCriterionTriggerInstance {
-
-        public GravemindEvoleImmatureCriterion(ContextAwarePredicate awarePredicate) {
-            super(ID, awarePredicate);
-        }
+    public static record GravemindEvoleImmatureCriterion(java.util.Optional<ContextAwarePredicate> player)
+            implements SimpleCriterionTrigger.SimpleInstance {
+        public static final Codec<GravemindEvoleImmatureCriterion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player")
+                        .forGetter(GravemindEvoleImmatureCriterion::player)
+        ).apply(instance, GravemindEvoleImmatureCriterion::new));
     }
 }

@@ -16,6 +16,8 @@ import com.github.sculkhorde.common.entity.components.TargetParameters;
 import com.github.sculkhorde.util.TickUnits;
 import com.github.sculkhorde.util.hitboxes.HitboxUtil;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,10 +41,10 @@ import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -50,8 +52,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.github.sculkhorde.util.NodeUtil.isClosestNodeDefensive;
 
-public class SculkSummonerBlockEntity extends BlockEntity implements GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem, GeoBlockEntity
+
+public class SculkSummonerBlockEntity extends BlockEntity implements GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem, GeoBlockEntity
 {
     AABB searchArea;
     //ACTIVATION_DISTANCE - The distance at which this is able to detect mobs.
@@ -186,6 +190,16 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         return false;
     }
 
+    protected int getAmountOfReinforcementsToRequest()
+    {
+        if(isClosestNodeDefensive((ServerLevel) level, getBlockPos()))
+        {
+            return 5;
+        }
+
+        return 3;
+    }
+
     public void requestReinforcementsFromGravemind()
     {
         boolean isSummonerWaterLogged = getBlockState().getValue(BlockStateProperties.WATERLOGGED);
@@ -193,7 +207,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
         ((ServerLevel)level).sendParticles(ParticleTypes.SCULK_SOUL, this.getBlockPos().getX() + 0.5D, this.getBlockPos().getY() + 1.15D, this.getBlockPos().getZ() + 0.5D, 2, 0.2D, 0.0D, 0.2D, 0.0D);
         level.playSound(null, this.getBlockPos(), SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + 1.0F);
         //Choose spawn positions
-        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), 5, this.MAX_SPAWNED_ENTITIES, isSummonerWaterLogged);
+        ArrayList<BlockPos> possibleSpawnPositions = this.getSpawnPositionsInCube((ServerLevel) level, this.getBlockPos(), getAmountOfReinforcementsToRequest(), this.MAX_SPAWNED_ENTITIES, isSummonerWaterLogged);
 
         BlockPos[] finalizedSpawnPositions = new BlockPos[this.MAX_SPAWNED_ENTITIES];
 
@@ -230,7 +244,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             request.approvedStrategicValues.add(EntityFactoryEntry.StrategicValues.EffectiveInSkies);
         }
 
-        if (!this.possibleAggressorTargets.isEmpty()) {
+        if (!this.possibleAggressorTargets.isEmpty() && isClosestNodeDefensive((ServerLevel) level, getBlockPos())) {
             this.request.is_aggressor_nearby = true;
         }
 
@@ -366,21 +380,21 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
 
     // Save & Load Code
 
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(nbt, lookupProvider);
 
         if (nbt.contains("listener", 10)) {
-            VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
+            VibrationSystem.Data.CODEC.parse(new Dynamic<>(lookupProvider.createSerializationContext(NbtOps.INSTANCE), nbt.getCompound("listener"))).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((data) -> {
                 this.vibrationData = data;
             });
         }
 
     }
 
-    protected void saveAdditional(CompoundTag nbt)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookupProvider)
     {
-        super.saveAdditional(nbt);
-        VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
+        super.saveAdditional(nbt, lookupProvider);
+        VibrationSystem.Data.CODEC.encodeStart(lookupProvider.createSerializationContext(NbtOps.INSTANCE), this.vibrationData).resultOrPartial(SculkHorde.LOGGER::error).ifPresent((p_222871_) -> {
             nbt.put("listener", p_222871_);
         });
     }
@@ -424,7 +438,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             return GameEventTags.SHRIEKER_CAN_LISTEN;
         }
 
-        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent event, GameEvent.Context context) {
+        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> event, GameEvent.Context context) {
 
             if(!Gravemind.isGravemindActive())
             {
@@ -434,7 +448,7 @@ public class SculkSummonerBlockEntity extends BlockEntity implements GameEventLi
             return !isBlockStateVibrationCooldownTrue() && !SculkHorde.populationHandler.isPopulationAtMax();
         }
 
-        public void onReceiveVibration(ServerLevel level, BlockPos blockPos, GameEvent gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
+        public void onReceiveVibration(ServerLevel level, BlockPos blockPos, Holder<GameEvent> gameEvent, @Nullable Entity entity, @Nullable Entity entity1, float power)
         {
             receiveVibrationTick(level, blockPos, getBlockState(), summoner, entity);
         }

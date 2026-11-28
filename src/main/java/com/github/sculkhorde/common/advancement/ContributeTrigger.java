@@ -2,41 +2,34 @@ package com.github.sculkhorde.common.advancement;
 
 import com.github.sculkhorde.core.SculkHorde;
 import com.google.common.base.Predicates;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public class ContributeTrigger extends SimpleCriterionTrigger<ContributeTrigger.ContributeCriterion> implements CustomCriterionTrigger{
-
+/** Codec-backed custom advancement trigger for 1.21.1. */
+public class ContributeTrigger extends SimpleCriterionTrigger<ContributeTrigger.ContributeCriterion> implements CustomCriterionTrigger {
     public static final ContributeTrigger INSTANCE = new ContributeTrigger();
-
-    /**
-     * Need to be registered in {@link com.github.sculkhorde.util.ModEventSubscriber}.
-     */
-    static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "contribute_trigger");
+    static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "contribute_trigger");
 
     @Override
-    public ResourceLocation getId() {
-        return ID;
+    public Codec<ContributeCriterion> codec() {
+        return ContributeCriterion.CODEC;
     }
 
     @Override
-    public ContributeCriterion createInstance(JsonObject jsonObject, ContextAwarePredicate awarePredicate, DeserializationContext deserializationContext) {
-        return new ContributeCriterion(awarePredicate);
-    }
-
     public void trigger(ServerPlayer player) {
-        this.trigger(player, Predicates.alwaysTrue());
+        trigger(player, Predicates.alwaysTrue());
     }
 
-    public static class ContributeCriterion extends AbstractCriterionTriggerInstance {
-
-        public ContributeCriterion(ContextAwarePredicate awarePredicate) {
-            super(ID, awarePredicate);
-        }
+    public static record ContributeCriterion(java.util.Optional<ContextAwarePredicate> player)
+            implements SimpleCriterionTrigger.SimpleInstance {
+        public static final Codec<ContributeCriterion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player")
+                        .forGetter(ContributeCriterion::player)
+        ).apply(instance, ContributeCriterion::new));
     }
 }

@@ -11,8 +11,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.material.FogType;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import org.joml.Vector3f;
 
 public class SculkFogRenderer {
@@ -22,7 +22,7 @@ public class SculkFogRenderer {
         Entity entity = event.getCamera().getEntity();
 
         if (entity instanceof Player player) {
-            MobEffectInstance effect = player.getEffect(ModMobEffects.SCULK_FOG.get());
+            MobEffectInstance effect = player.getEffect(ModMobEffects.SCULK_FOG);
 
             if (effect == null)
             {
@@ -60,7 +60,7 @@ public class SculkFogRenderer {
 
         if (entity instanceof Player player) {
             // 1. Check for the specific MobEffect
-            MobEffectInstance effect = player.getEffect(ModMobEffects.DISEASED_ATMOSPHERE.get());
+            MobEffectInstance effect = player.getEffect(ModMobEffects.DISEASED_ATMOSPHERE);
 
             if (effect == null) {
                 return;
@@ -130,7 +130,7 @@ public class SculkFogRenderer {
     public void renderDiseasedAtmosphereListener(ViewportEvent.RenderFog event) {
         if (event.getType().equals(FogType.NONE) && Minecraft.getInstance().cameraEntity instanceof LocalPlayer player && player.level() instanceof ClientLevel clientLevel) {
 
-            MobEffectInstance effect = player.getEffect(ModMobEffects.DISEASED_ATMOSPHERE.get());
+            MobEffectInstance effect = player.getEffect(ModMobEffects.DISEASED_ATMOSPHERE);
 
             if (effect == null) {
                 return;

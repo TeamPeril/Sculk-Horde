@@ -19,8 +19,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -74,7 +74,7 @@ public class AcidBlobProjectileEntity extends AbstractProjectileEntity implement
         if(getOwner() instanceof LivingEntity livingOwner) { effectCloud.setOwner(livingOwner); }
         effectCloud.setRadius(3.0F);
         effectCloud.setDuration(TickUnits.convertSecondsToTicks(5));
-        effectCloud.addEffect(new MobEffectInstance(ModMobEffects.CORRODED.get(), TickUnits.convertSecondsToTicks(30), 1));
+        effectCloud.addEffect(new MobEffectInstance(ModMobEffects.CORRODED, TickUnits.convertSecondsToTicks(30), 1));
         level().addFreshEntity(effectCloud);
         discard();
     }

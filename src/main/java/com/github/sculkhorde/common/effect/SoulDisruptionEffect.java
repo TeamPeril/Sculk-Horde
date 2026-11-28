@@ -36,10 +36,11 @@ public class SoulDisruptionEffect extends MobEffect {
 
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amp) {
+    public boolean applyEffectTick(LivingEntity entity, int amp) {
 
-        if(entity.level().isClientSide()) { return;}
+        if(entity.level().isClientSide()) { return false;}
         // IF entity has a sculk infection, remove it
+        return true;
 
     }
 
@@ -53,7 +54,7 @@ public class SoulDisruptionEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
 
         if(cooldownTicksRemaining > 0)
         {
@@ -65,7 +66,6 @@ public class SoulDisruptionEffect extends MobEffect {
 
     }
 
-    @Override
     public List<ItemStack> getCurativeItems() {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         return ret;

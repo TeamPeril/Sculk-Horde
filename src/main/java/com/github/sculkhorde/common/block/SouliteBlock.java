@@ -4,9 +4,10 @@ import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModItems;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -15,9 +16,8 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
-public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
+public class SouliteBlock extends HalfTransparentBlock {
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -62,7 +62,7 @@ public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.copy(Blocks.STONE)
+        Properties prop = Properties.ofFullCopy(Blocks.STONE)
                 .mapColor(MapColor.COLOR_CYAN)
                 .strength(HARDNESS, BLAST_RESISTANCE)//Hardness & Resistance
                 .sound(SoundType.HONEY_BLOCK)
@@ -78,20 +78,20 @@ public class SouliteBlock extends HalfTransparentBlock implements IForgeBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
-        if(player.getItemInHand(hand).isEmpty())
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+        if(stack.isEmpty())
         {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
 
-        if(player.getItemInHand(hand).is(ModItems.PURE_SOULS.get()))
+        if(stack.is(ModItems.PURE_SOULS.get()))
         {
             BlockAlgorithms.setBlockStructure(level, pos, ModBlocks.DEPLETED_SOULITE_BLOCK.get().defaultBlockState());
             BuddingSouliteBlock.spawnSouliteClusters(level, pos);
 
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 }

@@ -6,18 +6,18 @@ import com.github.sculkhorde.util.TickUnits;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TomeOfSpinesItem extends TomeItem implements IForgeItem {
+public class TomeOfSpinesItem extends TomeItem {
 
 	/**
 	 * The Constructor that takes in properties
@@ -39,9 +39,9 @@ public class TomeOfSpinesItem extends TomeItem implements IForgeItem {
 	//This changes the text you see when hovering over an item
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 		/*
-		super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
+		super.appendHoverText(stack, context, tooltip, flagIn); //Not sure why we need this
 
 		//If User presses left shift, else
 		if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))	{

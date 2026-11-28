@@ -13,8 +13,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -34,7 +34,7 @@ public class SoulFireProjectileAttackEntity extends AbstractProjectileEntity imp
 
     @Override
     protected void applyEffectToEntity(LivingEntity entity) {
-        entity.setSecondsOnFire(10);
+        entity.setRemainingFireTicks((int)(20 * (10)));
     }
 
     @Override

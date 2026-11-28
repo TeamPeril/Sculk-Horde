@@ -2,6 +2,7 @@ package com.github.sculkhorde.core;
 
 import com.github.sculkhorde.common.loot.ModLootModifier;
 import com.github.sculkhorde.common.pools.PoolBlocks;
+import com.github.sculkhorde.common.blockentity.SoulHarvesterBlockEntity;
 import com.github.sculkhorde.misc.StatisticsData;
 import com.github.sculkhorde.misc.contributions.ContributionHandler;
 import com.github.sculkhorde.systems.*;
@@ -12,18 +13,16 @@ import com.github.sculkhorde.systems.event_system.EventSystem;
 import com.github.sculkhorde.systems.event_system.events.HitSquadEvent.HitSquadDispatcherSystem;
 import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.systems.gravemind_system.entity_factory.EntityFactory;
+import com.github.sculkhorde.systems.node_system.SculkNodesSystem;
 import com.github.sculkhorde.systems.path_builder_system.PathBuilderSystem;
 import com.github.sculkhorde.systems.squad_system.SquadSystem;
 import com.github.sculkhorde.util.ChunkLoading.BlockEntityChunkLoaderHelper;
 import com.github.sculkhorde.util.ChunkLoading.EntityChunkLoaderHelper;
 import com.github.sculkhorde.util.DeathAreaInvestigator;
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
-import software.bernie.geckolib.GeckoLib;
 //HOW TO EXPORT MOD: https://www.youtube.com/watch?v=x3wKsiQ37Wc
 
 //The @Mod tag is here to let the compiler know that this is our main mod class
@@ -63,19 +62,15 @@ public class SculkHorde {
     public static AmbientSFXSystem ambientSFXSystem = new AmbientSFXSystem();
 
     //This is the instance of our class, and we register it to the ModEventBus (which I have stored in a variable).
-    public SculkHorde()
+    public SculkHorde(IEventBus bus, net.neoforged.fml.ModContainer container)
     {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.register(this);
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER, ModConfig.SERVER_SPEC);
+        bus.addListener(SoulHarvesterBlockEntity::registerCapabilities);
 
-        ModConfig.loadConfig(ModConfig.SERVER_SPEC, FMLPaths.CONFIGDIR.get().resolve(MOD_ID + "_config.toml").toString());
-
-        GeckoLib.initialize();
         ModItems.ITEMS.register(bus); //Load Items
         ModBlockEntities.register(bus); //Load Tile Entities
         ModBlocks.BLOCKS.register(bus); //Load Blocks
         ModEntities.register(bus); //Load Entities (this may not be necessary anymore)
-        bus.register(ModEntities.class); //Load Entities
         ModStructures.STRUCTURES.register(bus); //Load Structures
         ModStructures.STRUCTURE_PIECES.register(bus); //Load Structure Pieces
         ModStructureProcessors.PROCESSORS.register(bus); //Load Processors
@@ -88,6 +83,7 @@ public class SculkHorde {
         ModCreativeModeTab.TABS.register(bus); //Load Creative Tabs
         ModRecipes.register(bus); //Load Recipes
         ModLootModifier.register(bus);
+        ModAdvancementTriggers.register(bus);
     }
 
     public static boolean isDebugMode() {

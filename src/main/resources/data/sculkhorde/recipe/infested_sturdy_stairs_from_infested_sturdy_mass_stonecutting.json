@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sculkhorde:infested_sturdy_mass"
+  },
+  "result": {
+    "id": "sculkhorde:infested_sturdy_stairs",
+    "count": 1
+  }
+}

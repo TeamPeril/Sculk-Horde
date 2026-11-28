@@ -6,7 +6,7 @@ import com.github.sculkhorde.util.ForgeEventSubscriber;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.network.chat.Component;
@@ -31,14 +31,13 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class InfestationPurifierItem extends Item implements IForgeItem {
+public class InfestationPurifierItem extends Item {
 
     private InfestationPurifierEntity purifier; // The cursor entity
 
@@ -51,9 +50,9 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
 
         DispenserBlock.registerBehavior(this, new DefaultDispenseItemBehavior() {
             public ItemStack execute(BlockSource blockSource, ItemStack itemStack) {
-                Direction direction = blockSource.getBlockState().getValue(DispenserBlock.FACING);
-                Vec3 spawnPos = blockSource.getPos().relative(direction).getCenter();
-                ServerLevel serverlevel = blockSource.getLevel();
+                Direction direction = blockSource.state().getValue(DispenserBlock.FACING);
+                Vec3 spawnPos = blockSource.pos().relative(direction).getCenter();
+                ServerLevel serverlevel = blockSource.level();
 
 
                 InfestationPurifierEntity entity = new InfestationPurifierEntity(serverlevel);
@@ -90,7 +89,7 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
     //This changes the text you see when hovering over an item
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.infestation_purifier.functionality"));
@@ -105,7 +104,6 @@ public class InfestationPurifierItem extends Item implements IForgeItem {
         }
     }
 
-    @Override
     public Rarity getRarity(ItemStack itemStack) {
         return Rarity.RARE;
     }

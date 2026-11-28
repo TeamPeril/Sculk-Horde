@@ -22,8 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -194,11 +194,11 @@ public class InfestationPurifierEntity extends PathfinderMob implements GeoEntit
             if (entity != null && EntityAlgorithms.isSculkLivingEntity.test(entity) || EntityAlgorithms.isLivingEntityAllyToSculkHorde(entity))
             {
                 // Set entity on fire
-                entity.setSecondsOnFire(60);
+                entity.setRemainingFireTicks((int)(20 * (60)));
                 // Give entity potion effects
-                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.MOVEMENT_SLOWDOWN, 60, 3);
-                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.WEAKNESS, 60, 3);
-                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.POISON, 60, 3);
+                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.MOVEMENT_SLOWDOWN.value(), 60, 3);
+                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.WEAKNESS.value(), 60, 3);
+                EntityAlgorithms.applyEffectToTarget(entity, MobEffects.POISON.value(), 60, 3);
             }
         }
 

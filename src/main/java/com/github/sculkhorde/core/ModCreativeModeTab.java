@@ -5,15 +5,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-@Mod.EventBusSubscriber(modid = SculkHorde.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModCreativeModeTab {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, SculkHorde.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> SCULK_HORDE_TAB = TABS.register("sculk_horde_tab", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SCULK_HORDE_TAB = TABS.register("sculk_horde_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.sculkhorde_tab"))
             .icon(() -> new ItemStack(ModBlocks.SCULK_ANCIENT_NODE_BLOCK.get()))
             .displayItems((enabledFeatures, event) -> {
@@ -236,7 +234,7 @@ public class ModCreativeModeTab {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> SCULK_HORDE_EXPERIMENTAL_TAB = TABS.register("sculk_horde_tab_experimental", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SCULK_HORDE_EXPERIMENTAL_TAB = TABS.register("sculk_horde_tab_experimental", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.sculk_horde_tab_experimental"))
             .icon(() -> new ItemStack(ModBlocks.DEV_MASS_INFECTINATOR_3000_BLOCK.get()))
             .displayItems((enabledFeatures, event) -> {

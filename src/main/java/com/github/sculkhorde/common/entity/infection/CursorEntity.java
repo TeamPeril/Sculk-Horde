@@ -409,7 +409,6 @@ public abstract class CursorEntity extends Entity
         this.target = target;
     }
 
-    @Override
     public void onRemovedFromWorld() {
         if(level().isClientSide()) { return; }
     }

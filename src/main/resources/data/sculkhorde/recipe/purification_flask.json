@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "BBB",
+    "BGB",
+    "BBB"
+  ],
+
+  "key":
+  {
+    "G":
+    {
+      "item": "sculkhorde:essence_of_purity"
+    },
+    "B":
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+
+  "result":
+  {
+    "id": "sculkhorde:purification_flask",
+    "count": 8
+  }
+}

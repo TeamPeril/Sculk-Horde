@@ -1,67 +1,62 @@
 package com.github.sculkhorde.common.recipe;
 
+import com.github.sculkhorde.core.ModRecipes;
 import com.github.sculkhorde.core.SculkHorde;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
-public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
+import java.util.List;
 
+public class SoulHarvestingRecipe implements Recipe<RecipeInput> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
     private final ResourceLocation id;
     private final int healthRequired;
 
-    public SoulHarvestingRecipe(NonNullList<Ingredient> inputItems, ItemStack outout, ResourceLocation id, int healthRequired) {
+    public SoulHarvestingRecipe(NonNullList<Ingredient> inputItems, ItemStack output, ResourceLocation id, int healthRequired) {
         this.inputItems = inputItems;
-        this.output = outout;
+        this.output = output;
         this.id = id;
         this.healthRequired = healthRequired;
     }
 
     @Override
-    public boolean matches(SimpleContainer containerIn, Level levelIn) {
-        if(levelIn.isClientSide()) { return false; }
-
-        return inputItems.get(0).test(containerIn.getItem(0));
+    public boolean matches(RecipeInput input, Level level) {
+        return !level.isClientSide() && !inputItems.isEmpty() && input.size() > 0 && inputItems.get(0).test(input.getItem(0));
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients()
-    {
+    public NonNullList<Ingredient> getIngredients() {
         return inputItems;
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer p_44001_, RegistryAccess p_267165_) {
+    public ItemStack assemble(RecipeInput input, HolderLookup.Provider registries) {
         return output.copy();
     }
 
     @Override
-    public boolean canCraftInDimensions(int p_43999_, int p_44000_) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess p_267052_) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return output.copy();
-    }
-
-    public ResourceLocation getId() {
-        return id;
-    }
-
-    public int getHealthRequired() {
-        return healthRequired;
     }
 
     @Override
@@ -72,85 +67,62 @@ public class SoulHarvestingRecipe implements Recipe<SimpleContainer> {
     @Override
     public RecipeType<?> getType() {
         return Type.INSTANCE;
+    }
 
+    public ResourceLocation getId() {
+        return id;
+    }
+
+    public int getHealthRequired() {
+        return healthRequired;
     }
 
     public static class Type implements RecipeType<SoulHarvestingRecipe> {
         public static final Type INSTANCE = new Type();
-
-        public static final String ID = "sculkhorde:soul_harvesting";
+        public static final String ID = SculkHorde.MOD_ID + ":soul_harvesting";
     }
 
     public static class Serializer implements RecipeSerializer<SoulHarvestingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(SculkHorde.MOD_ID, "soul_harvesting");
+        public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "soul_harvesting");
 
+        private static final MapCodec<SoulHarvestingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(recipe -> recipe.inputItems),
+                ItemStack.CODEC.fieldOf("output").forGetter(recipe -> recipe.output),
+                com.mojang.serialization.Codec.INT.optionalFieldOf("healthRequired", 0)
+                        .forGetter(recipe -> recipe.healthRequired)
+        ).apply(instance, (ingredients, output, healthRequired) -> {
+            NonNullList<Ingredient> inputs = NonNullList.withSize(ingredients.size(), Ingredient.EMPTY);
+            for (int i = 0; i < ingredients.size(); i++) {
+                inputs.set(i, ingredients.get(i));
+            }
+            return new SoulHarvestingRecipe(inputs, output, ID, healthRequired);
+        }));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, SoulHarvestingRecipe> STREAM_CODEC =
+                StreamCodec.composite(
+                        ByteBufCodecs.collection(NonNullList::createWithCapacity, Ingredient.CONTENTS_STREAM_CODEC),
+                        recipe -> recipe.inputItems,
+                        ItemStack.STREAM_CODEC,
+                        recipe -> recipe.output,
+                        ByteBufCodecs.VAR_INT,
+                        recipe -> recipe.healthRequired,
+                        (ingredients, output, healthRequired) -> {
+                            NonNullList<Ingredient> inputs = NonNullList.withSize(ingredients.size(), Ingredient.EMPTY);
+                            for (int i = 0; i < ingredients.size(); i++) {
+                                inputs.set(i, ingredients.get(i));
+                            }
+                            return new SoulHarvestingRecipe(inputs, output, ID, healthRequired);
+                        });
 
         @Override
-        public SoulHarvestingRecipe fromJson(ResourceLocation recipeIDIn, JsonObject serializedRecipeIn) {
-            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipeIn, "output"));
-
-            JsonArray ingredients = GsonHelper.getAsJsonArray(serializedRecipeIn, "ingredients");
-            NonNullList<Ingredient> inputItems = NonNullList.withSize(1, Ingredient.EMPTY);
-
-            for(int i = 0; i < ingredients.size(); i++) {
-                inputItems.set(i, Ingredient.fromJson(ingredients.get(i)));
-            }
-
-            int healthRequired = GsonHelper.getAsInt(serializedRecipeIn, "healthRequired", 0);
-
-            return new SoulHarvestingRecipe(inputItems, output, recipeIDIn, healthRequired);
+        public MapCodec<SoulHarvestingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable SoulHarvestingRecipe fromNetwork(ResourceLocation recipeIDIn, FriendlyByteBuf bufferIn) {
-            NonNullList<Ingredient> inputItems = NonNullList.withSize(bufferIn.readInt(), Ingredient.EMPTY);
-
-            for (int i = 0; i < inputItems.size(); i++) {
-                inputItems.set(i, Ingredient.fromNetwork(bufferIn));
-            }
-
-            ItemStack output = bufferIn.readItem();
-
-            int healthRequired = bufferIn.readInt();
-
-            // Log the size of the data being read
-            System.out.println("SoulHarvesterRecipe | Data size being read: " + bufferIn.readableBytes());
-
-            return new SoulHarvestingRecipe(inputItems, output, recipeIDIn, healthRequired);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf bufferIn, SoulHarvestingRecipe recipeIn) {
-            int initialIndex = bufferIn.writerIndex(); // Capture starting position
-            bufferIn.writeInt(recipeIn.inputItems.size());
-
-            for (Ingredient ingredient : recipeIn.getIngredients()) {
-                ingredient.toNetwork(bufferIn);
-            }
-
-            // --- CRITICAL FIX ---
-            // Copy of the output stack.
-            ItemStack clientOutput = recipeIn.getResultItem(null);
-
-            // ONLY KEEP NBT DATA THAT THE CLIENT NEEDS.
-            // If the client doesn't need any NBT, clear it to prevent the crash.
-            if (clientOutput.hasTag()) {
-                // Option A: Clear all NBT (safest)
-                clientOutput = clientOutput.copy();
-                clientOutput.setTag(null);
-            }
-
-            // 3. Write the (now smaller) ItemStack to the network.
-            bufferIn.writeItemStack(clientOutput, false);
-
-            bufferIn.writeInt(recipeIn.getHealthRequired());
-
-            // Log the size of the data being written
-            System.out.printf("SoulHarvestingRecipe | Wrote recipe '%s'. Total bytes: %d, Starting index: %d%n",
-                    recipeIn.getId().toString(),
-                    bufferIn.writerIndex() - initialIndex,
-                    initialIndex);
+        public StreamCodec<RegistryFriendlyByteBuf, SoulHarvestingRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

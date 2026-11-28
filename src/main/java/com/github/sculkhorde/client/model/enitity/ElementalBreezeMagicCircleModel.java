@@ -8,7 +8,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 
 public class ElementalBreezeMagicCircleModel extends DefaultedEntityGeoModel<ElementalBreezeMagicCircleAttackEntity> {
     public ElementalBreezeMagicCircleModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "elemental_breeze_magic_circle"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "elemental_breeze_magic_circle"));
     }
 
     // We want our model to render using the translucent render type

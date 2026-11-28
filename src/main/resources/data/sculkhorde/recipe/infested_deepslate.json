@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "sculkhorde:infested_cobbled_deepslate"
+  },
+  "result":
+  {
+    "id": "sculkhorde:infested_deepslate",
+    "count": 1
+  }
+
+}

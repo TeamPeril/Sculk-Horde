@@ -61,8 +61,8 @@ public class ChunkInfectEntity extends Entity {
     protected int t = 0;
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
 
         DebuggerSystem.entityDebuggerModule.logInfo(this + ": Tracked Entity: " + trackedEntity);
 
@@ -81,7 +81,7 @@ public class ChunkInfectEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (isAddedToWorld()) {
+        if (!isRemoved()) {
             t++;
             if (t >= 10 && trackedEntity != null) {
                 this.setPos(trackedEntity.position());
@@ -112,7 +112,7 @@ public class ChunkInfectEntity extends Entity {
         }
     }
 
-    @Override protected void defineSynchedData() {}
-    @Override protected void readAdditionalSaveData(CompoundTag p_20052_) {}
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {}
+    protected void readAdditionalSaveData(CompoundTag p_20052_) {}
     @Override protected void addAdditionalSaveData(CompoundTag p_20139_) {}
 }

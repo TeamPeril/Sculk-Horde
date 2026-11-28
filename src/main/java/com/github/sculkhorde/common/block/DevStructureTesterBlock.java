@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.DevStructureTesterBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -12,15 +13,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -29,7 +31,12 @@ import java.util.List;
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBlock {
+public class DevStructureTesterBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(DevStructureTesterBlock::new);
+    }
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -99,7 +106,7 @@ public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBl
      * @param type The Mob Category Type
      * @return True to allow a mob of the specified category to spawn, false to prevent it.
      */
-    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacements.Type type, EntityType<?> entityType)
+    public boolean canCreatureSpawn(BlockState state, BlockGetter world, BlockPos pos, SpawnPlacementType type, EntityType<?> entityType)
     {
         return false;
     }
@@ -128,9 +135,9 @@ public class DevStructureTesterBlock extends BaseEntityBlock implements IForgeBl
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        super.appendHoverText(stack, context, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.translatable("tooltip.sculkhorde.dev_structure_tester")); //Text that displays if holding shift
     }
 

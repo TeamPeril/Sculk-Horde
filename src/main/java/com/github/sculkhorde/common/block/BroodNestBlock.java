@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.BroodNestBlockEntity;
 import com.github.sculkhorde.core.ModBlockEntities;
@@ -16,11 +17,15 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import javax.annotation.Nullable;
 
-public class BroodNestBlock extends BaseEntityBlock implements IForgeBlock {
+public class BroodNestBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(BroodNestBlock::new);
+    }
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -106,12 +111,12 @@ public class BroodNestBlock extends BaseEntityBlock implements IForgeBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof BroodNestBlockEntity) {
             ((BroodNestBlockEntity)blockentity).summonBroodHatcher();
         }
-        super.playerWillDestroy(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

@@ -43,13 +43,13 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -95,7 +95,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     protected int timeWithoutHive;
     protected boolean hasHiveInRange;
     protected int disruptorInRange;
-    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(Bee.class, EntityDataSerializers.BYTE);
+    protected static final EntityDataAccessor<Byte> DATA_FLAGS_ID = SynchedEntityData.defineId(SculkBeeHarvesterEntity.class, EntityDataSerializers.BYTE);
     protected static final int FLAG_ROLL = 2;
     protected static final int FLAG_HAS_STUNG = 4;
     protected static final int FLAG_HAS_NECTAR = 8;
@@ -141,11 +141,11 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         super(type, worldIn);
         this.moveControl = new FlyingMoveControl(this, 20, true);
         this.lookControl = new BeeLookControl(this);
-        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 16.0F);
-        this.setPathfindingMalus(BlockPathTypes.COCOA, -1.0F);
-        this.setPathfindingMalus(BlockPathTypes.FENCE, -1.0F);
+        this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.WATER_BORDER, 16.0F);
+        this.setPathfindingMalus(PathType.COCOA, -1.0F);
+        this.setPathfindingMalus(PathType.FENCE, -1.0F);
     }
 
     /**
@@ -157,9 +157,9 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         this(ModEntities.SCULK_BEE_HARVESTER.get(), worldIn);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS_ID, (byte)0);
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS_ID, (byte)0);
     }
 
     public float getWalkTargetValue(BlockPos p_27788_, LevelReader p_27789_) {
@@ -198,12 +198,12 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
     public void readAdditionalSaveData(CompoundTag compoundTag) {
         this.hivePos = null;
         if (compoundTag.contains(TAG_HIVE_POS)) {
-            this.hivePos = NbtUtils.readBlockPos(compoundTag.getCompound(TAG_HIVE_POS));
+            this.hivePos = NbtUtils.readBlockPos(compoundTag, TAG_HIVE_POS).orElse(null);
         }
 
         this.savedFlowerPos = null;
         if (compoundTag.contains(TAG_FLOWER_POS)) {
-            this.savedFlowerPos = NbtUtils.readBlockPos(compoundTag.getCompound(TAG_FLOWER_POS));
+            this.savedFlowerPos = NbtUtils.readBlockPos(compoundTag, TAG_FLOWER_POS).orElse(null);
         }
 
         super.readAdditionalSaveData(compoundTag);
@@ -510,9 +510,7 @@ public class SculkBeeHarvesterEntity extends Monster implements GeoEntity, Flyin
         }
     }
 
-    public MobType getMobType() {
-        return MobType.ARTHROPOD;
-    }
+    // MobType was removed in 1.21.1; arthropod damage/enchantment behavior is tag-driven.
 
     public Vec3 getLeashOffset() {
         return new Vec3(0.0D, (double)(0.5F * this.getEyeHeight()), (double)(this.getBbWidth() * 0.2F));

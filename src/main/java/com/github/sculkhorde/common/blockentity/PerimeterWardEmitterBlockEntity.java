@@ -23,10 +23,14 @@ import java.util.Optional;
 
 import static com.github.sculkhorde.util.WardZoneUtil.*;
 import static com.github.sculkhorde.util.WardZoneUtil.setParentRelay;
+<<<<<<< HEAD
 
 public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEntity {
 
+=======
+>>>>>>> origin/1.21.1
 
+public class PerimeterWardEmitterBlockEntity extends PerimeterWardRelayBlockEntity {
     /**
      * The Constructor that takes in properties
      *

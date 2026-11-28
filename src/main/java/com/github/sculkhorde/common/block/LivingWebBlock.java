@@ -23,7 +23,7 @@ public class LivingWebBlock extends SculkVeinBlock {
 
     public static Properties getProperties()
     {
-        return Properties.copy(Blocks.SCULK_VEIN);
+        return Properties.ofFullCopy(Blocks.SCULK_VEIN);
     }
 
     @Override

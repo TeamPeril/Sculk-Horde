@@ -1,3 +1,6 @@
 {
-  "parent": "sculkhorde:block/infested_crumbling_wall"
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "sculkhorde:block/infested_crumpled_mass"
+  }
 }

@@ -39,15 +39,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -123,10 +123,14 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
      */
     public SculkEndermanEntity(EntityType<? extends SculkEndermanEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setMaxUpStep(1.0F);
-        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
         this.bossEvent = this.createBossEvent();
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
+    }
+
+    @Override
+    public float maxUpStep() {
+        return 1.0F;
     }
 
     public SculkEndermanEntity(Level level, BlockPos pos)
@@ -302,8 +306,8 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource damageSource, int lootLevel, boolean isNotPlayer) {
-        super.dropCustomDeathLoot(damageSource, lootLevel, isNotPlayer);
+    protected void dropCustomDeathLoot(net.minecraft.server.level.ServerLevel lootLevel, DamageSource damageSource, boolean isNotPlayer) {
+        super.dropCustomDeathLoot(lootLevel, damageSource, isNotPlayer);
 
         for(int i = 1; i <= 4; i++)
         {
@@ -515,7 +519,7 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
         boolean isWaterFlag = blockstate.getFluidState().is(FluidTags.WATER);
         if (!isWaterFlag)
         {
-            net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity event = net.minecraftforge.event.ForgeEventFactory.onEnderTeleport(this, x, y, z);
+            net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity event = net.neoforged.neoforge.event.EventHooks.onEnderTeleport(this, x, y, z);
             if (event.isCanceled())
             {
                 return false;
@@ -561,13 +565,13 @@ public class SculkEndermanEntity extends Monster implements GeoEntity, ISculkSma
     // ###### Data Code ########
     String DATA_IS_SCOUTING_IDENTIFIER = "is_scouting";
     String DATA_IS_AGGRO_IDENTIFIER = "is_aggro";
-    protected void defineSynchedData()
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder)
     {
-        super.defineSynchedData();
-        this.entityData.define(DATA_AGGRO, false);
-        this.entityData.define(DATA_SCOUTING, false);
+        super.defineSynchedData(builder);
+        builder.define(DATA_AGGRO, false);
+        builder.define(DATA_SCOUTING, false);
         // define the parent event UUID synched data so it exists and can be set/read
-        this.entityData.define(DATA_PARENT_EVENT_UUID, Optional.empty());
+        builder.define(DATA_PARENT_EVENT_UUID, Optional.empty());
     }
 
     public void addAdditionalSaveData(CompoundTag nbt)

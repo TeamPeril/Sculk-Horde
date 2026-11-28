@@ -36,20 +36,22 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -97,7 +99,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
      */
     public SculkWitchEntity(EntityType<? extends SculkWitchEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
 
         int rng = random.nextInt(0,6);
 
@@ -287,7 +289,7 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
 
     public void performRangedAttack(LivingEntity target, float power) {
 
-        Potion potion = Potions.HARMING;
+        net.minecraft.core.Holder<Potion> potion = Potions.HARMING;
         int duration = 0;
         float rng = random.nextFloat();
 
@@ -309,13 +311,14 @@ public class SculkWitchEntity extends Monster implements GeoEntity, ISculkSmartE
         if(duration > 0)
         {
             // For effects with duration, create a custom potion with the specified duration
-            PotionUtils.setCustomEffects(potionStack, java.util.List.of(
-                    new MobEffectInstance(potion.getEffects().get(0).getEffect(), duration)
-            ));
+            PotionContents contents = PotionContents.EMPTY.withEffectAdded(
+                    new MobEffectInstance(potion.value().getEffects().get(0).getEffect(), duration));
+            potionStack.set(DataComponents.POTION_CONTENTS, contents);
         } else
         {
             // For instant effects like harming
-            PotionUtils.setPotion(potionStack, potion);
+            potionStack.set(DataComponents.POTION_CONTENTS,
+                    PotionContents.EMPTY.withPotion(potion));
         }
 
         ThrownPotion projectile = new ThrownPotion(this.level(), this);

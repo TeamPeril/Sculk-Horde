@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -17,14 +18,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TendrilsBlock extends VineBlock implements IForgeBlock {
+public class TendrilsBlock extends VineBlock {
     /**
      * The Constructor that takes in properties
      * @param prop The Properties
@@ -48,7 +48,7 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.copy(Blocks.VINE)
+        return Properties.ofFullCopy(Blocks.VINE)
                 .mapColor(MapColor.TERRACOTTA_BLUE)
                 .noOcclusion()
                 .noCollission();
@@ -198,9 +198,9 @@ public class TendrilsBlock extends VineBlock implements IForgeBlock {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
-        super.appendHoverText(stack, iBlockReader, tooltip, flagIn); //Not sure why we need this
+        super.appendHoverText(stack, context, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.translatable("tooltip.sculkhorde.tendrils")); //Text that displays if holding shift
 
     }

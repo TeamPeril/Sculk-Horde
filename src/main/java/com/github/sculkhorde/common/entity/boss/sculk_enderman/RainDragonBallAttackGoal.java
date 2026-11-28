@@ -128,7 +128,7 @@ public class RainDragonBallAttackGoal extends Goal
         double yDirection = -3;
         double zDirection = 0;
 
-        DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, xDirection, yDirection, zDirection);
+        DragonFireball dragonfireball = new DragonFireball(mob.level(), mob, new net.minecraft.world.phys.Vec3(xDirection, yDirection, zDirection));
         dragonfireball.moveTo(xSpawn, ySpawn, zSpawn, 0.0F, 0.0F);
         mob.level().addFreshEntity(dragonfireball);
 

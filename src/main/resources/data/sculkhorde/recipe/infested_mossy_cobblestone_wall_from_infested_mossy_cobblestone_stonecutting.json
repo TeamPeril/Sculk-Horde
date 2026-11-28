@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sculkhorde:infested_mossy_cobblestone"
+  },
+  "result":
+  {
+    "id": "sculkhorde:infested_mossy_cobblestone_wall",
+    "count": 1
+  }
+}

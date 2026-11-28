@@ -70,7 +70,7 @@ public class EnderBubbleAttackGoal extends MeleeAttackGoal
         attackBubble.setOwner(mob);
         getSculkEnderman().canTeleport = false;
         this.mob.setInvulnerable(true);
-        EntityAlgorithms.applyEffectToTarget(getSculkEnderman(), MobEffects.REGENERATION, TickUnits.convertSecondsToTicks(5), 4);
+        EntityAlgorithms.applyEffectToTarget(getSculkEnderman(), MobEffects.REGENERATION.value(), TickUnits.convertSecondsToTicks(5), 4);
     }
 
     @Override

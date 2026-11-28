@@ -14,6 +14,7 @@ import com.github.sculkhorde.systems.gravemind_system.Gravemind;
 import com.github.sculkhorde.util.BlockAlgorithms;
 import com.github.sculkhorde.util.TickUnits;
 import com.google.common.collect.Lists;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -422,8 +423,8 @@ public class SculkBeeNestBlockEntity extends BlockEntity
     }
 
 
-    public void load(CompoundTag p_155156_) {
-        super.load(p_155156_);
+    protected void loadAdditional(CompoundTag p_155156_, HolderLookup.Provider lookupProvider) {
+        super.loadAdditional(p_155156_, lookupProvider);
         this.stored.clear();
         ListTag listtag = p_155156_.getList(BEES, 10);
 
@@ -435,13 +436,13 @@ public class SculkBeeNestBlockEntity extends BlockEntity
 
         this.savedFlowerPos = null;
         if (p_155156_.contains(TAG_FLOWER_POS)) {
-            this.savedFlowerPos = NbtUtils.readBlockPos(p_155156_.getCompound(TAG_FLOWER_POS));
+            this.savedFlowerPos = NbtUtils.readBlockPos(p_155156_, TAG_FLOWER_POS).orElse(null);
         }
 
     }
 
-    protected void saveAdditional(CompoundTag p_187467_) {
-        super.saveAdditional(p_187467_);
+    protected void saveAdditional(CompoundTag p_187467_, HolderLookup.Provider lookupProvider) {
+        super.saveAdditional(p_187467_, lookupProvider);
         p_187467_.put(BEES, this.writeBees());
         if (this.hasSavedFlowerPos()) {
             p_187467_.put(TAG_FLOWER_POS, NbtUtils.writeBlockPos(this.savedFlowerPos));

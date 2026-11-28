@@ -1,4 +1,5 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.core.ModBlocks;
 import com.github.sculkhorde.core.ModParticles;
@@ -19,11 +20,15 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.extensions.IForgeBlock;
 
 import java.util.Random;
 
-public class SculkFloraBlock extends BushBlock implements IForgeBlock {
+public class SculkFloraBlock extends BushBlock {
+
+    @Override
+    protected MapCodec<? extends BushBlock> codec() {
+        return simpleCodec(SculkFloraBlock::new);
+    }
 
     /**
      * HARDNESS determines how difficult a block is to break<br>
@@ -69,7 +74,7 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      */
     public static Properties getProperties()
     {
-        return Properties.copy(Blocks.POPPY)
+        return Properties.ofFullCopy(Blocks.POPPY)
                 .mapColor(MapColor.TERRACOTTA_BLUE)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
@@ -117,8 +122,9 @@ public class SculkFloraBlock extends BushBlock implements IForgeBlock {
      * @param pathType ???
      * @return ???
      */
-    public boolean isPathfindable(BlockState blockState, BlockGetter iBlockReader, BlockPos blockPos, PathComputationType pathType) {
-        return pathType == PathComputationType.AIR && !this.hasCollision ? true : super.isPathfindable(blockState, iBlockReader, blockPos, pathType);
+    @Override
+    protected boolean isPathfindable(BlockState blockState, PathComputationType pathType) {
+        return pathType == PathComputationType.AIR && !this.hasCollision ? true : super.isPathfindable(blockState, pathType);
     }
 
     /**

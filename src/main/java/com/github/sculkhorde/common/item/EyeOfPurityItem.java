@@ -4,7 +4,7 @@ import com.github.sculkhorde.core.ModSavedData;
 import com.github.sculkhorde.util.NodeUtil;
 import com.github.sculkhorde.util.SoundUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.network.chat.Component;
@@ -27,14 +27,13 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Optional;
 
-public class EyeOfPurityItem extends Item implements IForgeItem {
+public class EyeOfPurityItem extends Item {
 
     /**
      * The Constructor that takes in properties
@@ -45,9 +44,9 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
 
         DispenserBlock.registerBehavior(this, new DefaultDispenseItemBehavior() {
             public ItemStack execute(BlockSource blockSource, ItemStack itemStack) {
-                Direction direction = blockSource.getBlockState().getValue(DispenserBlock.FACING);
-                BlockPos blockpos = blockSource.getPos().relative(direction);
-                ServerLevel serverlevel = blockSource.getLevel();
+                Direction direction = blockSource.state().getValue(DispenserBlock.FACING);
+                BlockPos blockpos = blockSource.pos().relative(direction);
+                ServerLevel serverlevel = blockSource.level();
 
 
                 Optional<ModSavedData.NodeEntry> node = NodeUtil.getClosestNode(serverlevel, blockpos);
@@ -87,9 +86,9 @@ public class EyeOfPurityItem extends Item implements IForgeItem {
     //This changes the text you see when hovering over an item
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
-        super.appendHoverText(stack, worldIn, tooltip, flagIn); //Not sure why we need this
+        super.appendHoverText(stack, context, tooltip, flagIn); //Not sure why we need this
         tooltip.add(Component.translatable("tooltip.sculkhorde.eye_of_purity")); //Text that displays if not holding shift
 
     }

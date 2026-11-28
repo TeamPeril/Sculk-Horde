@@ -1,44 +1,50 @@
 package com.github.sculkhorde.common.block;
+import com.mojang.serialization.MapCodec;
 
 import com.github.sculkhorde.common.blockentity.SculkBeeNestCellBlockEntity;
 import com.github.sculkhorde.core.ModItems;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.neoforged.neoforge.common.ItemAbilities;
 import org.lwjgl.glfw.GLFW;
 
 /**
  * Chunk Loader Code created by SuperMartijn642
  */
 
-public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBlock {
+public class SculkBeeNestCellBlock extends BaseEntityBlock {
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(SculkBeeNestCellBlock::new);
+    }
     /**
      * HARDNESS determines how difficult a block is to break<br>
      * 0.6f = dirt<br>
@@ -117,7 +123,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
      */
     public static Properties getProperties()
     {
-        Properties prop = Properties.copy(Blocks.BEE_NEST)
+        Properties prop = Properties.ofFullCopy(Blocks.BEE_NEST)
                 .mapColor(MapColor.QUARTZ)
                 .strength(HARDNESS, BLAST_RESISTANCE)
                 .sound(SoundType.GRASS)
@@ -180,27 +186,22 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
 
     /** EVENTS **/
 
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
+    public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
     {
-
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-
         if (isMature(pState))
         {
-            if (itemstack.getItem() == Items.SHEARS)
+            if (pStack.canPerformAction(ItemAbilities.SHEARS_HARVEST))
             {
                 pLevel.playSound(pPlayer, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.NEUTRAL, 1.0F, 1.0F);
                 dropResin(pLevel, pPos);
-                itemstack.hurtAndBreak(1, pPlayer, (p_226874_1_) ->
-                {
-                    p_226874_1_.broadcastBreakEvent(pHand);
-                });
+                pStack.hurtAndBreak(1, pPlayer, LivingEntity.getSlotForHand(pHand));
+                pLevel.gameEvent(pPlayer, GameEvent.SHEAR, pPos);
                 resetMature(pLevel, pState, pPos);
 
-                return InteractionResult.sidedSuccess(pLevel.isClientSide);
+                return ItemInteractionResult.sidedSuccess(pLevel.isClientSide);
             }
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
     public static void dropResin(Level pLevel, BlockPos pPos) {
@@ -210,7 +211,7 @@ public class SculkBeeNestCellBlock extends BaseEntityBlock implements IForgeBloc
     /** TOOLTIPS **/
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
             tooltip.add(Component.translatable("tooltip.sculkhorde.sculk_bee_nest_cell.functionality"));

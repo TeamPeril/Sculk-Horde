@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -24,7 +24,6 @@ import java.util.UUID;
 
 public abstract class SpecialEffectEntity extends Entity implements TraceableEntity
 {
-    private static final EntityDataAccessor<Optional<UUID>> SOURCE_ENTITY = SynchedEntityData.defineId(SpecialEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     @Nullable
     private LivingEntity owner;
     @Nullable
@@ -33,6 +32,11 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     public SpecialEffectEntity(EntityType<?> entityType, Level level)
     {
         super(entityType, level);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+
     }
 
     public void setOwner(@Nullable LivingEntity p_36939_) {
@@ -67,14 +71,10 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
     public void push(Entity entityIn) {
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket()
-    {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
     @Override
-    protected void defineSynchedData() {
-
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity)
+    {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, serverEntity);
     }
 
     @Override
@@ -91,11 +91,13 @@ public abstract class SpecialEffectEntity extends Entity implements TraceableEnt
         }
     }
 
-    public static SpecialEffectEntity spawn(Level world, LivingEntity owner, BlockPos pos, EntityType<?> type) {
-        SpecialEffectEntity entity = (SpecialEffectEntity) type.spawn((ServerLevel) world, pos, MobSpawnType.REINFORCEMENT);
-        assert entity != null;
-        entity.setOwner(owner);
-        world.addFreshEntity(entity);
+    public static SpecialEffectEntity spawn(ServerLevel world, LivingEntity owner, BlockPos pos, EntityType<?> type) {
+        SpecialEffectEntity entity = (SpecialEffectEntity) type.create(world);
+        if (entity != null) {
+            entity.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+            entity.setOwner(owner);
+            world.addFreshEntity(entity);
+        }
         return entity;
     }
 

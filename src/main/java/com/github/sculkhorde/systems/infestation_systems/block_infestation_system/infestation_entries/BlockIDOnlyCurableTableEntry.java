@@ -66,7 +66,7 @@ public class BlockIDOnlyCurableTableEntry implements IBlockInfestationEntry
         //BlockState normalState = normalVariant.defaultBlockState();
 
         // Use the normalVariantID to get the normal variant block
-        Block normalVariantBlock = BuiltInRegistries.BLOCK.get(new ResourceLocation(normalVariantID));
+        Block normalVariantBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(normalVariantID));
         BlockState normalVariantBlockState = normalVariantBlock.defaultBlockState();
 
 
@@ -80,7 +80,7 @@ public class BlockIDOnlyCurableTableEntry implements IBlockInfestationEntry
     public BlockState getInfectedVariant(BlockState blockState)
     {
         // Use the normalVariantID to get the normal variant block
-        Block infectedVariantBlock = BuiltInRegistries.BLOCK.get(new ResourceLocation(infectedVariantID));
+        Block infectedVariantBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(infectedVariantID));
         BlockState infectedVariantBlockState = infectedVariantBlock.defaultBlockState();
 
         // copy block properties of normal block to infected block

@@ -30,17 +30,17 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     public SculkGhastEntity(EntityType<? extends SculkGhastEntity> type, Level worldIn)
     {
         super(type, worldIn);
-        this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
+        this.setPathfindingMalus(PathType.UNPASSABLE_RAIL, 0.0F);
         this.moveControl = new FlyingMoveControl(this, 20, true);
     }
 
@@ -114,7 +114,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
                 .add(Attributes.FOLLOW_RANGE,FOLLOW_RANGE)
                 .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
                 .add(Attributes.FLYING_SPEED, 0.5F)
-                .add(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get(), 0.0);
+                .add(net.minecraft.world.entity.ai.attributes.Attributes.GRAVITY, 0.0);
     }
 
     @Override
@@ -380,7 +380,7 @@ public class SculkGhastEntity extends FlyingMob implements GeoEntity, ISculkSmar
     }
 
     protected float getStandingEyeHeight(@NotNull Pose p_33136_, EntityDimensions p_33137_) {
-        return p_33137_.height * 0.35F;
+        return p_33137_.height() * 0.35F;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class SoulBreezeProjectileModel extends DefaultedEntityGeoModel<SoulBreez
 
 }
 	public SoulBreezeProjectileModel() {
-		super(new ResourceLocation(SculkHorde.MOD_ID, "soul_breeze_projectile"));
+		super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "soul_breeze_projectile"));
 	}
 
 	// We want our model to render using the translucent render type

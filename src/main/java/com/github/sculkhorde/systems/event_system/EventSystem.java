@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -205,7 +205,7 @@ public class EventSystem {
                 continue;
             }
 
-            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(eventTag.getString("dimension")));
+            ResourceKey<Level> dimensionResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(eventTag.getString("dimension")));
             String eventType = eventTag.getString("eventType");
 
             if (HitSquadEvent.class.getName().equals(eventType)) {

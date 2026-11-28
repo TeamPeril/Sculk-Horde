@@ -12,6 +12,8 @@ public class SculkBroodStrikerModel extends DefaultedEntityGeoModel<SculkBroodSt
 
     public SculkBroodStrikerModel() {
         super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_brood_spitter"));
+    public SculkBroodStrikerModel() {
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_brood_spitter"));
     }
 
     // We want our model to render using the translucent render type

@@ -14,12 +14,12 @@ public class SculkStingerModel extends DefaultedEntityGeoModel<SculkStingerEntit
      * The asset path should be the truncated relative path from the base folder.<br>
      * E.G.
      * <pre>{@code
-     * 	new ResourceLocation("myMod", "animals/red_fish")
+     * 	ResourceLocation.fromNamespaceAndPath("myMod", "animals/red_fish")
      * }</pre>
      *
      */
     public SculkStingerModel() {
-        super(new ResourceLocation(SculkHorde.MOD_ID, "sculk_stinger"));
+        super(ResourceLocation.fromNamespaceAndPath(SculkHorde.MOD_ID, "sculk_stinger"));
     }
 
     // We want our model to render using the translucent render type

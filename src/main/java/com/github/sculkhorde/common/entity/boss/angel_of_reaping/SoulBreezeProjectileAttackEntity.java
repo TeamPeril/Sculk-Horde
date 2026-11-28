@@ -4,6 +4,7 @@ import com.github.sculkhorde.common.entity.projectile.AbstractProjectileEntity;
 import com.github.sculkhorde.core.ModEntities;
 import com.github.sculkhorde.util.EntityAlgorithms;
 import com.github.sculkhorde.util.ParticleUtil;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -11,12 +12,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
@@ -45,7 +47,9 @@ public class SoulBreezeProjectileAttackEntity extends AbstractProjectileEntity i
         double d1 = Math.max(0.0D, 1.0D - knockbackResistance);
         Vec3 knockback = direction.scale(knockbackStrength * d1);
         entity.setDeltaMovement(entity.getDeltaMovement().add(knockback).add(0, 0.4F, 0));
-        this.doEnchantDamageEffects((LivingEntity) getOwner(), entity);
+        if (getOwner() instanceof LivingEntity owner && level() instanceof ServerLevel serverLevel) {
+            EnchantmentHelper.doPostAttackEffects(serverLevel, entity, damageSources().mobAttack(owner));
+        }
     }
 
     @Override

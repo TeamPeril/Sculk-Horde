@@ -11,10 +11,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -34,16 +36,15 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.extensions.IForgeBlock;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.util.TriState;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlockContainer {
+public class DiseasedKelpBlock extends Block implements LiquidBlockContainer {
 
     /*
      *  NOTE:
@@ -100,7 +101,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
      */
     public static Properties getProperties()
     {
-        return Properties.copy(ModBlocks.GRASS.get());
+        return Properties.ofFullCopy(ModBlocks.GRASS.get());
     }
 
     /**
@@ -263,7 +264,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter iBlockReader, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 
         if(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT))
         {
@@ -280,7 +281,7 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
     }
 
     @Override
-    public boolean canPlaceLiquid(BlockGetter p_54766_, BlockPos p_54767_, BlockState p_54768_, Fluid p_54769_) {
+    public boolean canPlaceLiquid(Player player, BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
         return false;
     }
 
@@ -306,8 +307,8 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
     }
 
     @Override
-    public boolean canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, IPlantable plantable) {
-        return true;
+    public TriState canSustainPlant(BlockState state, BlockGetter world, BlockPos pos, Direction facing, BlockState plant) {
+        return TriState.TRUE;
     }
 
     @Nullable
@@ -372,7 +373,6 @@ public class DiseasedKelpBlock extends Block implements IForgeBlock, LiquidBlock
         return super.getCollisionShape(state, getter, pos, collisionContext);
     }
 
-    @Override
     public boolean isPathfindable(BlockState p_154258_, BlockGetter p_154259_, BlockPos p_154260_, PathComputationType p_154261_) {
         return true;
     }

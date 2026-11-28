@@ -14,12 +14,12 @@ import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.keyframe.event.CustomInstructionKeyframeEvent;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.keyframe.event.CustomInstructionKeyframeEvent;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements TraceableEntity, GeoEntity {
@@ -67,7 +67,7 @@ public class FloorSoulSpearsAttackEntity extends SpecialEffectEntity implements 
 
             targetEntity.hurt(this.damageSources().indirectMagic(this, livingentity), finalDamage);
             // Give weakness and levitation
-            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS, TickUnits.convertMinutesToTicks(1), 0);
+            EntityAlgorithms.applyEffectToTarget(targetEntity, MobEffects.WEAKNESS.value(), TickUnits.convertMinutesToTicks(1), 0);
         }
     }
 

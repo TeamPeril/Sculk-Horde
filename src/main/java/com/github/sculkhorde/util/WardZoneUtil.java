@@ -146,23 +146,4 @@ public class WardZoneUtil {
             zone.updateRelayPositions();
         }
     }
-
-    public static Optional<BlockPos> getParent(LevelReader level, BlockPos pos)
-    {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-
-        if(blockEntity == null)
-        {
-            return Optional.empty();
-        }
-
-        CompoundTag tag = blockEntity.saveWithoutMetadata();
-
-        if(tag.contains(parentWardBlockPosID))
-        {
-            return Optional.of(BlockPos.of(tag.getLong(parentWardBlockPosID)));
-        }
-
-        return Optional.empty();
-    }
 }

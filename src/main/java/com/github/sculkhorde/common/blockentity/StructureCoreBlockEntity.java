@@ -100,7 +100,7 @@ public class StructureCoreBlockEntity extends BlockEntity
 
         if(blockEntity.structurePlacer == null)
         {
-            ResourceLocation structure = new ResourceLocation(blockEntity.structureResourceLocation);
+            ResourceLocation structure = ResourceLocation.parse(blockEntity.structureResourceLocation);
             StructureTemplateManager structuretemplatemanager = serverLevel.getStructureManager();
             Optional<StructureTemplate> structureTemplate;
             structureTemplate = structuretemplatemanager.get(structure);

@@ -192,7 +192,7 @@ public class ContributionHandler {
 
     public boolean doesPlayerHaveContributionAdvancement(ServerPlayer player)
     {
-        return AdvancementUtil.isAdvancementCompleted(player, new ResourceLocation("sculkhorde:contribute"));
+        return AdvancementUtil.isAdvancementCompleted(player, ResourceLocation.parse("sculkhorde:contribute"));
     }
 
     public boolean isContributor(ServerPlayer player)

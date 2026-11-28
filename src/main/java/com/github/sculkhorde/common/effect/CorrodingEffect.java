@@ -50,24 +50,24 @@ public class CorrodingEffect extends MobEffect {
 
         if(source != null) { effect.setAttacker(source); }
 
-        if(victim.hasEffect(effect))
+        if(victim.hasEffect(ModMobEffects.CORRODED))
         {
-            victim.addEffect(new MobEffectInstance(effect, duration + victim.getEffect(ModMobEffects.CORRODED.get()).getDuration(), 0));
+            victim.addEffect(new MobEffectInstance(ModMobEffects.CORRODED, duration + victim.getEffect(ModMobEffects.CORRODED).getDuration(), 0));
             return;
         }
 
-        victim.addEffect(new MobEffectInstance(effect, duration, 0));
+        victim.addEffect(new MobEffectInstance(ModMobEffects.CORRODED, duration, 0));
     }
 
     public static boolean isEntityAffectableByCorroded(LivingEntity victim)
     {
         CorrodingEffect effect = ModMobEffects.CORRODED.get();
-        if(victim.hasEffect(effect))
+        if(victim.hasEffect(ModMobEffects.CORRODED))
         {
             return true;
         }
 
-        return victim.canBeAffected(new MobEffectInstance(effect, 0, 0));
+        return victim.canBeAffected(new MobEffectInstance(ModMobEffects.CORRODED, 0, 0));
     }
 
     
@@ -78,7 +78,7 @@ public class CorrodingEffect extends MobEffect {
 
 
     @Override
-    public void applyEffectTick(LivingEntity victimEntity, int amp) {
+    public boolean applyEffectTick(LivingEntity victimEntity, int amp) {
         if(victimEntity.level().isClientSide())
         {
             float spawnWidth = victimEntity.getBbWidth() / 2;
@@ -97,6 +97,7 @@ public class CorrodingEffect extends MobEffect {
         {
             EntityAlgorithms.doCorrodedDamageToEntity(victimEntity, victimEntity, 2 + (amp * 2));
         }
+        return true;
     }
 
     private void spawnRandomParticle(LivingEntity victimEntity, float maxWidthOffset, float maxHeightOffset)
@@ -123,7 +124,7 @@ public class CorrodingEffect extends MobEffect {
      * @return Determines if the effect should apply.
      */
     @Override
-    public boolean isDurationEffectTick(int ticksLeft, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int ticksLeft, int amplifier) {
         if(cooldownTicksRemaining > 0)
         {
             cooldownTicksRemaining--;

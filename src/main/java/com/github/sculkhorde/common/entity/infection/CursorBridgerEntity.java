@@ -57,7 +57,7 @@ public class CursorBridgerEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
 
     }
 
@@ -144,8 +144,8 @@ public class CursorBridgerEntity extends Entity {
 
     /*
     @Override
-    public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, serverEntity);
     }
 
      */
